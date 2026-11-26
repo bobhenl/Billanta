@@ -35,6 +35,18 @@ const LANGUAGES = ['cs', 'sk', 'en'] as const;
 const VAT_RATES = ['0', '5', '10', '12', '15', '19', '20', '21', '23'] as const;
 const PAID_STATES = ['unpaid', 'partial', 'full'] as const;
 const CLIENT_RESPONSES = ['accepted', 'rejected', 'none'] as const;
+
+/** `["Projekt","A"]` from the custom_value param (the dropdown's option value). */
+function customValueOf(raw: string | undefined): [string, string] | null {
+  if (!raw) return null;
+  try {
+    const v: unknown = JSON.parse(raw);
+    if (Array.isArray(v) && v.length === 2 && v.every((x) => typeof x === 'string')) return [v[0] as string, v[1] as string];
+  } catch {
+    // hand-edited URL
+  }
+  return null;
+}
 const COUNTRIES = ['CZ', 'SK', 'foreign'] as const;
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -69,6 +81,7 @@ interface Filters {
   symbol?: string;
   order_number?: string;
   custom_field?: string;
+  custom_value?: string;
   has_custom_fields?: string;
   issued_by?: string;
   country?: string;
@@ -106,6 +119,7 @@ const MODAL_KEYS = [
   'symbol',
   'order_number',
   'custom_field',
+  'custom_value',
   'has_custom_fields',
   'issued_by',
   'country',
@@ -166,6 +180,7 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
     symbol: /^\d{1,10}$/.test(searchParams.symbol?.trim() ?? '') ? searchParams.symbol!.trim() : undefined,
     order_number: searchParams.order_number?.trim().slice(0, 60) || undefined,
     custom_field: searchParams.custom_field?.trim().slice(0, 100) || undefined,
+    custom_value: searchParams.custom_value?.slice(0, 200) || undefined,
     has_custom_fields: pick(SENT, searchParams.has_custom_fields),
     issued_by: UUID.test(searchParams.issued_by ?? '') ? searchParams.issued_by : undefined,
     country: pick(COUNTRIES, searchParams.country),
@@ -212,14 +227,16 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
   let team: { members: { userId: string; name: string | null; email: string }[] };
   let home: HomeCurrency;
   let canEdit: boolean;
+  let fieldOptions: { label: string; values: string[] }[];
   try {
-    [invoices, customers, bankAccounts, team, home, canEdit] = await Promise.all([
+    [invoices, customers, bankAccounts, team, home, canEdit, fieldOptions] = await Promise.all([
       apiFetch<InvoiceRow[]>(`/api/v1/invoices${query ? `?${query}` : ''}`),
       apiFetch<{ id: string; legalName: string; color?: string | null }[]>('/api/v1/contacts').catch(() => []),
       apiFetch<BankAccount[]>('/api/v1/tenants/me/bank-accounts').catch(() => []),
       apiFetch<{ members: { userId: string; name: string | null; email: string }[] }>('/api/v1/team').catch(() => ({ members: [] })),
       fetchHomeCurrency(),
-      fetchCanWrite('invoices')
+      fetchCanWrite('invoices'),
+      apiFetch<{ label: string; values: string[] }[]>('/api/v1/invoices/custom-field-options').catch(() => [])
     ]);
   } catch (err) {
     if (err instanceof NotSignedInError) redirect({ href: '/login', locale });
@@ -271,6 +288,10 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
     symbol: () => `${f('symbol')}: ${filters.symbol}`,
     order_number: () => `${tDoc('fields.orderNumber')}: ${filters.order_number}`,
     custom_field: () => `${f('customField')}: „${filters.custom_field}“`,
+    custom_value: () => {
+      const [label, value] = customValueOf(filters.custom_value) ?? ['?', '?'];
+      return `${label}: ${value}`;
+    },
     has_custom_fields: () => `${f('hasCustomFields')}: ${yesNo(filters.has_custom_fields)}`,
     issued_by: () => {
       const m = team.members.find((x) => x.userId === filters.issued_by);
@@ -705,6 +726,26 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
           >
             <input name="custom_field" defaultValue={filters.custom_field} placeholder={tDoc('filters.customFieldPlaceholder')} className={cn(field, 'w-full')} />
           </FilterField>
+          {/* Fields with a short list of values (Projekt: A / B) pick from it instead of typing. */}
+          {fieldOptions.map((o) => {
+            const current = customValueOf(filters.custom_value);
+            return (
+              <FilterField key={o.label} label={o.label}>
+                <select
+                  name="custom_value"
+                  defaultValue={current?.[0] === o.label ? filters.custom_value : ''}
+                  className={cn(field, 'w-full')}
+                >
+                  <option value="">{tDoc('filters.any')}</option>
+                  {o.values.map((v) => (
+                    <option key={v} value={JSON.stringify([o.label, v])}>
+                      {v}
+                    </option>
+                  ))}
+                </select>
+              </FilterField>
+            );
+          })}
           <FilterField label={tDoc('filters.hasCustomFields')}>{yesNoSelect('has_custom_fields')}</FilterField>
           <FilterField label={tDoc('filters.attachments')}>{yesNoSelect('attachments')}</FilterField>
           <FilterField label={tDoc('filters.internalNote')}>{yesNoSelect('internal_note')}</FilterField>

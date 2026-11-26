@@ -12,6 +12,11 @@ export function partnerTags(partners: Pick<TaxPartner, 'id' | 'name'>[]): Record
   const names = partners.map((p) => (p.name || p.id).trim());
   const out: Record<string, string> = {};
   partners.forEach((p, i) => {
+    // A name that already is an abbreviation ("HS") stays whole.
+    if (/^[A-Z0-9]{2,3}$/.test(names[i]!)) {
+      out[p.id] = names[i]!;
+      return;
+    }
     let n = 1;
     while (n < names[i]!.length && names.some((o, j) => j !== i && o.slice(0, n).toUpperCase() === names[i]!.slice(0, n).toUpperCase())) n++;
     out[p.id] = names[i]!.slice(0, n).toUpperCase();

@@ -157,6 +157,13 @@ export class InvoicesController {
   }
 
   // Declared before `:id` so the literal path is never captured as an id.
+  @Get("custom-field-options")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Custom fields with a short list of values, for the list filter" })
+  customFieldOptions(@Req() req: TenantScopedRequest) {
+    return this.invoicesService.customFieldOptions(req.tenantDb!);
+  }
+
   @Get("item-suggestions")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "Line-item typeahead from this tenant's previous invoices" })

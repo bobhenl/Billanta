@@ -36,6 +36,7 @@ import {
   variableSymbolFor,
 } from "./invoice-numbering.util";
 import { computeInvoiceTotal, computeVatBreakdown, formatInvoiceAmount, lineBase, round2 } from "./invoice-total.util";
+import { enumerableCustomFields, hasCustomValue, parseCustomValue } from "./custom-field-options";
 import { documentVars } from "./custom-fields";
 import { resolveTenantForInvoice } from "../tenants/bank-accounts";
 import {
@@ -441,12 +442,14 @@ export class InvoicesService {
     const q = query.q?.trim();
     const note = query.note?.trim();
     const customField = query.custom_field?.trim();
+    const customValue = parseCustomValue(query.custom_value);
     const rows = allRows.filter(
       (r) =>
         (!q || fuzzyScore(q, [r.invoice.invoiceNumber, r.contactName, r.contactIco, r.invoice.variableSymbol, r.invoice.orderNumber]) > 0) &&
         (!note ||
           fuzzyScore(note, [r.invoice.internalNote, r.invoice.noteAbove, r.invoice.noteBelow, r.invoice.clientResponseNote]) > 0) &&
-        (!customField || fuzzyScore(customField, (r.invoice.customFields ?? []).flatMap((f) => [f.label, f.value])) > 0),
+        (!customField || fuzzyScore(customField, (r.invoice.customFields ?? []).flatMap((f) => [f.label, f.value])) > 0) &&
+        (!customValue || hasCustomValue(r.invoice.customFields, customValue)),
     );
 
     const ids = rows.map((r) => r.invoice.id);
@@ -1009,6 +1012,15 @@ export class InvoicesService {
    * it was last billed at — so a repeat item is one pick instead of three
    * fields. Plain SQL over the tenant's own history; no AI involved.
    */
+  /** List-like custom fields and their values, for the filter dropdown. */
+  async customFieldOptions(db: TenantDb) {
+    const rows = await db
+      .select({ customFields: schema.invoices.customFields })
+      .from(schema.invoices)
+      .where(sql`jsonb_array_length(${schema.invoices.customFields}) > 0`);
+    return enumerableCustomFields(rows.map((r) => r.customFields));
+  }
+
   async itemSuggestions(db: TenantDb, rawQuery: string) {
     const q = rawQuery.trim();
     if (q.length < 2) return [];

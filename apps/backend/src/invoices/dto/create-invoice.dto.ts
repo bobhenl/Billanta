@@ -165,6 +165,8 @@ export const listInvoicesQuerySchema = z.object({
   order_number: z.string().trim().max(60).optional(),
   // Label or value of a custom header field.
   custom_field: z.string().trim().max(100).optional(),
+  // Exact value of a list-like custom field, as JSON ["label","value"] (the filter dropdown).
+  custom_value: z.string().max(200).optional(),
   // Team member who issued the document.
   issued_by: z.string().uuid().optional(),
   // Customer's country (ISO 3166-1 alpha-2); "foreign" = anything but CZ/SK.
