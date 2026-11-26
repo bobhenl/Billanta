@@ -57,6 +57,9 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
         linkedInvoiceIds: new Set(matchedRows.map((r) => r.matchedInvoiceId).filter((id): id is string => Boolean(id)))
       }).slice(0, 8)
     : [];
+  // Without a variable symbol or an amount that fits, the suggestions are only
+  // guesses (same payer, an older invoice), and the payment is most likely a new sale.
+  const draftFirst = suggest && !candidates.some((c) => c.reasons.includes('vs') || c.reasons.includes('amount'));
 
   const payment = providerPayment(tx.externalId);
   const facts: [string, ReactNode][] = [
@@ -110,7 +113,10 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
           </div>
           <span className={cn('shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold', TX_STATUS_CLASSES[tx.status])}>{t(`status.${tx.status}`)}</span>
         </div>
-        <TransactionActions id={tx.id} status={tx.status} />
+        <div className="flex flex-wrap gap-2">
+          {draftFirst && <TransactionActions id={tx.id} status={tx.status} createDraft primary />}
+          <TransactionActions id={tx.id} status={tx.status} />
+        </div>
       </div>
 
       <div className="mt-6 grid gap-6 md:grid-cols-[1fr_280px]">
@@ -148,8 +154,14 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
 
           {tx.status === 'unmatched' && amount > 0 && (
             <section className="rounded-xl border border-border bg-card p-4">
+              {draftFirst && (
+                <div className="mb-4 rounded-lg border border-primary/30 bg-primary/5 p-3 text-sm">
+                  <p className="font-semibold">{t('detail.noFitTitle')}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">{t('detail.createDraftHint')}</p>
+                </div>
+              )}
               <InfoHint hint={t('detail.suggestionsHint')} label={t('detail.suggestions')}>
-                <h2 className="font-bold">{t('detail.suggestions')}</h2>
+                <h2 className="font-bold">{t(draftFirst && candidates.length > 0 ? 'detail.weakSuggestions' : 'detail.suggestions')}</h2>
               </InfoHint>
               {candidates.length === 0 ? (
                 <p className="mt-4 text-sm text-muted-foreground">{t('detail.noCandidates')}</p>
@@ -173,16 +185,19 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
                         {paid && <div className="mt-0.5 text-xs text-muted-foreground">{t('detail.paidHint')}</div>}
                       </div>
                       <span className="font-semibold tabular-nums">{formatMoney(invoice.total, invoice.currency, locale)}</span>
-                      <TransactionActions id={tx.id} status={tx.status} matchInvoiceId={invoice.id} matchPaid={paid} />
+                      <TransactionActions id={tx.id} status={tx.status} matchInvoiceId={invoice.id} matchPaid={paid} secondary={draftFirst} />
                     </li>
                   ))}
                 </ul>
               )}
-              {/* No invoice at all (a new sale): a draft to review, never issued from here. */}
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
-                <p className="min-w-0 flex-1 text-xs text-muted-foreground">{t('detail.createDraftHint')}</p>
-                <TransactionActions id={tx.id} status={tx.status} createDraft />
-              </div>
+              {/* No invoice at all (a new sale): a draft to review, never issued from here. With no
+                  real fit the button already leads in the header. */}
+              {!draftFirst && (
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+                  <p className="min-w-0 flex-1 text-xs text-muted-foreground">{t('detail.createDraftHint')}</p>
+                  <TransactionActions id={tx.id} status={tx.status} createDraft />
+                </div>
+              )}
             </section>
           )}
 

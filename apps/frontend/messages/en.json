@@ -1025,7 +1025,9 @@
       "ruleApplied": "Rule “{rule}” handled this payment. You can change rules under Bank › Rules.",
       "expenseGone": "The expense from this payment no longer exists, or you can't view it.",
       "expenseNeedsReview": "Expense waiting for review",
-      "transactionId": "Transaction ID"
+      "transactionId": "Transaction ID",
+      "noFitTitle": "No invoice fits this payment",
+      "weakSuggestions": "Possibly related"
     },
     "connections": {
       "title": "Bank connection",

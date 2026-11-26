@@ -1024,7 +1024,9 @@
       "ruleApplied": "La règle « {rule} » a traité ce paiement. Vous pouvez modifier les règles dans Banque › Règles.",
       "expenseGone": "La dépense issue de ce paiement n’existe plus, ou vous n’avez pas le droit de la voir.",
       "expenseNeedsReview": "Dépense en attente de vérification",
-      "transactionId": "ID de transaction"
+      "transactionId": "ID de transaction",
+      "noFitTitle": "Aucune facture ne correspond à ce paiement",
+      "weakSuggestions": "Peut-être lié"
     },
     "connections": {
       "title": "Connexion bancaire",

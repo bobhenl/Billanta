@@ -1024,7 +1024,9 @@
       "ruleApplied": "La regla “{rule}” ha procesado este pago. Puede cambiar las reglas en Banco › Reglas.",
       "expenseGone": "El gasto de este pago ya no existe o no tiene permiso para verlo.",
       "expenseNeedsReview": "Gasto pendiente de revisión",
-      "transactionId": "ID de la transacción"
+      "transactionId": "ID de la transacción",
+      "noFitTitle": "Ninguna factura encaja con este pago",
+      "weakSuggestions": "Posiblemente relacionado"
     },
     "connections": {
       "title": "Conexión bancaria",

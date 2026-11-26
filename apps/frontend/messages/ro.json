@@ -1024,7 +1024,9 @@
       "ruleApplied": "Regula „{rule}” a procesat această plată. Puteți modifica regulile la Bancă › Reguli.",
       "expenseGone": "Cheltuiala din această plată nu mai există sau nu aveți acces la ea.",
       "expenseNeedsReview": "Cheltuială în așteptarea verificării",
-      "transactionId": "ID tranzacție"
+      "transactionId": "ID tranzacție",
+      "noFitTitle": "Nicio factură nu se potrivește cu această plată",
+      "weakSuggestions": "Posibil legat"
     },
     "connections": {
       "title": "Conexiune bancară",

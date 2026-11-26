@@ -1024,7 +1024,9 @@
       "ruleApplied": "A regra “{rule}” tratou este pagamento. Pode alterar as regras em Banco › Regras.",
       "expenseGone": "A despesa deste pagamento já não existe ou não tem permissão para a ver.",
       "expenseNeedsReview": "Despesa a aguardar revisão",
-      "transactionId": "ID da transação"
+      "transactionId": "ID da transação",
+      "noFitTitle": "Nenhuma fatura corresponde a este pagamento",
+      "weakSuggestions": "Possivelmente relacionado"
     },
     "connections": {
       "title": "Ligação bancária",

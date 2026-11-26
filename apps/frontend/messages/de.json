@@ -1024,7 +1024,9 @@
       "ruleApplied": "Die Regel „{rule}“ hat diese Zahlung verarbeitet. Regeln ändern Sie unter Bank › Regeln.",
       "expenseGone": "Die Ausgabe zu dieser Zahlung existiert nicht mehr oder Sie dürfen sie nicht sehen.",
       "expenseNeedsReview": "Ausgabe wartet auf Prüfung",
-      "transactionId": "Transaktions-ID"
+      "transactionId": "Transaktions-ID",
+      "noFitTitle": "Keine Rechnung passt zu dieser Zahlung",
+      "weakSuggestions": "Möglicherweise verwandt"
     },
     "connections": {
       "title": "Bankverbindung",

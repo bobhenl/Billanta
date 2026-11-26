@@ -14,20 +14,24 @@ import { draftInvoiceFromTransaction, ignoreTransaction, matchTransaction, resto
  * Header actions (ignore / restore) or, with `matchInvoiceId`, the
  * "Spárovat" button of one suggested invoice (`matchPaid`: it is already
  * paid and only gets linked), or with `createDraft` the "Vytvořit fakturu
- * z platby" button.
+ * z platby" button. `primary` / `secondary` pick which of them leads.
  */
 export function TransactionActions({
   id,
   status,
   matchInvoiceId,
   matchPaid,
-  createDraft
+  createDraft,
+  primary,
+  secondary
 }: {
   id: string;
   status: TransactionStatus;
   matchInvoiceId?: string;
   matchPaid?: boolean;
   createDraft?: boolean;
+  primary?: boolean;
+  secondary?: boolean;
 }) {
   const t = useTranslations('bank.detail');
   const router = useRouter();
@@ -51,7 +55,7 @@ export function TransactionActions({
     return (
       <button
         type="button"
-        className={buttonClass.secondary}
+        className={primary ? buttonClass.primary : buttonClass.secondary}
         disabled={pending}
         onClick={() =>
           startTransition(async () => {
@@ -75,7 +79,7 @@ export function TransactionActions({
     return (
       <button
         type="button"
-        className={buttonClass.primary}
+        className={secondary ? buttonClass.secondary : buttonClass.primary}
         disabled={pending}
         onClick={() => run(() => matchTransaction(id, matchInvoiceId), t(matchPaid ? 'linkedDone' : 'matchedDone'))}
       >

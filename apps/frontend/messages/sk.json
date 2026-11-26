@@ -1025,7 +1025,9 @@
       "ruleApplied": "Platbu vybavilo pravidlo „{rule}“. Pravidlá upravíte v Banke › Pravidlá.",
       "expenseGone": "Výdavok z tejto platby už neexistuje alebo ho nemôžete zobraziť.",
       "expenseNeedsReview": "Výdavok čaká na kontrolu",
-      "transactionId": "ID transakcie"
+      "transactionId": "ID transakcie",
+      "noFitTitle": "K platbe nesedí žiadna faktúra",
+      "weakSuggestions": "Možno súvisí"
     },
     "connections": {
       "title": "Napojenie na banku",

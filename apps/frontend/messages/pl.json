@@ -1024,7 +1024,9 @@
       "ruleApplied": "Tę płatność obsłużyła reguła „{rule}”. Reguły zmienisz w sekcji Bank › Reguły.",
       "expenseGone": "Wydatek z tej płatności już nie istnieje albo nie masz uprawnień, aby go zobaczyć.",
       "expenseNeedsReview": "Wydatek czeka na sprawdzenie",
-      "transactionId": "ID transakcji"
+      "transactionId": "ID transakcji",
+      "noFitTitle": "Żadna faktura nie pasuje do tej płatności",
+      "weakSuggestions": "Może powiązane"
     },
     "connections": {
       "title": "Połączenie z bankiem",

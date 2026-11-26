@@ -1024,7 +1024,9 @@
       "ruleApplied": "Ezt a fizetést a(z) „{rule}” szabály kezelte. A szabályokat a Bank › Szabályok menüben módosíthatja.",
       "expenseGone": "A fizetésből készült költség már nem létezik, vagy nincs jogosultsága megtekinteni.",
       "expenseNeedsReview": "Ellenőrzésre váró költség",
-      "transactionId": "Tranzakcióazonosító"
+      "transactionId": "Tranzakcióazonosító",
+      "noFitTitle": "Egyik számla sem illik ehhez a fizetéshez",
+      "weakSuggestions": "Talán kapcsolódik"
     },
     "connections": {
       "title": "Bankkapcsolat",

@@ -1024,7 +1024,9 @@
       "ruleApplied": "Regel “{rule}” heeft deze betaling verwerkt. Je kunt regels wijzigen onder Bank › Regels.",
       "expenseGone": "De uitgave van deze betaling bestaat niet meer, of je mag hem niet bekijken.",
       "expenseNeedsReview": "Uitgave wacht op controle",
-      "transactionId": "Transactie-ID"
+      "transactionId": "Transactie-ID",
+      "noFitTitle": "Geen factuur past bij deze betaling",
+      "weakSuggestions": "Mogelijk gerelateerd"
     },
     "connections": {
       "title": "Bankkoppeling",
