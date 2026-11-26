@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
 /** Bulk invoicing: one document per chosen customer from a saved template (`?template=<id>` preselects it). */
 export default async function BulkInvoicePage(props: { searchParams: Promise<{ template?: string }> }) {
   const searchParams = await props.searchParams;
-  const gate = await writeGate('invoices', '/invoices');
+  const gate = await writeGate('invoices', '/invoices', 'invoices.create');
   if (gate) return gate;
   const t = await getTranslations('bulk');
   const tTpl = await getTranslations('templates');

@@ -1,5 +1,5 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
-import { areaForPath, effectivePermissions } from "./permissions";
+import { meetsRequirement, requirementFor } from "./permissions";
 import type { TenantScopedRequest } from "./tenant-context.middleware";
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
@@ -19,21 +19,20 @@ export const ADMIN_PREFIXES = ["v1/tenants", "v1/team", "v1/api-keys", "v1/billi
 export const under = (path: string, prefix: string) => path === prefix || path.startsWith(`${prefix}/`);
 
 /**
- * Whether `role` (with its per-area `permissions` overrides) may send `method`
- * to `path` (no `/api/` prefix, no query). Owners and admins may do anything.
- * Areas (invoices, contacts, expenses, bank, reports) follow the member's
- * permission level: `read` allows reads, `write` everything, `none` nothing.
- * Outside those areas reads are open and writes follow the role.
+ * Whether `role` (with its `permissions` overrides) may send `method` to
+ * `path` (no `/api/` prefix, no query). Owners and admins may do anything.
+ * Areas follow the member's level (`read` allows reads, `write` writes,
+ * `none` nothing) plus the finer actions `requirementFor` names (issue,
+ * send, settings sections…). Outside the areas reads are open and writes
+ * follow the role. `body` matters only for the company-settings patch.
  */
-export function roleMayAccess(role: string, method: string, path: string, permissions?: unknown): boolean {
+export function roleMayAccess(role: string, method: string, path: string, permissions?: unknown, body?: unknown): boolean {
   const safe = SAFE_METHODS.has(method.toUpperCase());
   if (role === "owner" || role === "admin" || role === "service") return true;
   if (PERSONAL_PREFIXES.some((p) => under(path, p))) return true;
-  const area = areaForPath(path);
-  if (area) {
-    const levelFor = effectivePermissions(role, permissions)[area];
-    return safe ? levelFor !== "none" : levelFor === "write";
-  }
+  const req = requirementFor(method, path, body);
+  if (req === "admin") return false;
+  if (req) return meetsRequirement(role, permissions, req);
   if (safe) return true;
   // Anyone may found another company of their own.
   if (method.toUpperCase() === "POST" && path === "v1/tenants") return true;
@@ -81,7 +80,7 @@ export class RoleAccessGuard implements CanActivate {
     const path = guardPath(req.originalUrl ?? req.url ?? "");
     // Every tenant route lives under `v1/`; anything else means the URL was
     // not parsed the way the router parsed it, so refuse rather than guess.
-    if (under(path, "v1") && roleMayAccess(role, req.method, path, req.user?.permissions)) return true;
+    if (under(path, "v1") && roleMayAccess(role, req.method, path, req.user?.permissions, (req as { body?: unknown }).body)) return true;
     throw new ForbiddenException(
       role === "viewer" ? "Your role is read-only in this company" : "Your access in this company doesn't allow this",
     );

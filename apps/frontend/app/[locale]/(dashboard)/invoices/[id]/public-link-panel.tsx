@@ -5,7 +5,7 @@ import { Copy, Link2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { LinkNameField } from '@/components/link-name-field';
 import { toast } from '@/components/toaster';
-import { useCanWrite } from '@/components/access-provider';
+import { useCanDo, useCanWrite } from '@/components/access-provider';
 import { copyText } from '@/lib/clipboard';
 import { setInvoiceLinkName } from '../actions';
 
@@ -13,7 +13,9 @@ import { setInvoiceLinkName } from '../actions';
 export function PublicLinkPanel({ id, link, defaultLink, slug }: { id: string; link: string; defaultLink: string; slug: string | null }) {
   const t = useTranslations('linkName');
   // Copying the link is for everyone; renaming it changes the document.
-  const canEdit = useCanWrite('invoices');
+  const canWriteInvoices = useCanWrite('invoices');
+  const canSend = useCanDo('invoices.send');
+  const canEdit = canWriteInvoices && canSend;
   // Same form as the {link} in e-mails (no locale: the page picks it up).
   const [base, setBase] = useState('/i/');
   useEffect(() => setBase(`${window.location.origin}/i/`), []);

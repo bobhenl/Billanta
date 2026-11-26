@@ -27,6 +27,7 @@ import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { RequireActiveSubscription } from "../billing/require-active-subscription.guard";
 import { parseIdempotencyKey } from "../common/idempotency";
 import { MAX_VOICE_NOTE_BYTES, voiceNoteType } from "../ai/voice-transcription";
+import { assertMayDo } from "../tenancy/permissions";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import {
   ConvertInvoiceDto,
@@ -232,6 +233,7 @@ export class InvoicesController {
   @UseGuards(CombinedAuthGuard)
   @ApiOperation({ summary: "Delete an unissued draft" })
   remove(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    assertMayDo(req.user, "invoices.cancel");
     return this.invoicesService.remove(req.tenantDb!, id);
   }
 
@@ -350,6 +352,7 @@ export class InvoicesController {
   @UseGuards(CombinedAuthGuard)
   @ApiOperation({ summary: "Issue a new secret client link for the document (the old link stops working)" })
   rotatePublicLink(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    assertMayDo(req.user, "invoices.send");
     return this.invoicesService.rotatePublicToken(req.tenantDb!, id);
   }
 
@@ -357,6 +360,7 @@ export class InvoicesController {
   @UseGuards(CombinedAuthGuard)
   @ApiOperation({ summary: "Set or clear the custom readable name in front of the client link's key (cosmetic; the key stays the secret)" })
   setPublicSlug(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: PublicSlugDto) {
+    assertMayDo(req.user, "invoices.send");
     return this.invoicesService.setPublicSlug(req.tenantDb!, id, dto.slug);
   }
 
@@ -372,6 +376,9 @@ export class InvoicesController {
   requestBuyerDetails(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() body: unknown) {
     const parsed = buyerDetailsRequestSchema.safeParse(body ?? {});
     if (!parsed.success) throw new BadRequestException("Invalid e-mail address");
+    assertMayDo(req.user, "invoices.send");
+    // The customer's submit then issues the draft with no one clicking Issue.
+    if (parsed.data.autoIssue) assertMayDo(req.user, "invoices.issue");
     return this.buyerDetails.request(req.tenantDb!, req.user!.tenantId, req.user!.id, id, {
       email: parsed.data.email || null,
       autoIssue: parsed.data.autoIssue,
@@ -384,6 +391,7 @@ export class InvoicesController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "Close the buyer-details link of a draft (it stops working at once)" })
   cancelBuyerDetails(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    assertMayDo(req.user, "invoices.send");
     return this.buyerDetails.cancel(req.tenantDb!, req.user!.tenantId, id);
   }
 
@@ -391,6 +399,7 @@ export class InvoicesController {
   @UseGuards(CombinedAuthGuard)
   @ApiOperation({ summary: "Cancel (storno) an issued document; its number stays used" })
   cancel(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    assertMayDo(req.user, "invoices.cancel");
     return this.invoicesService.cancel(req.tenantDb!, id);
   }
 
@@ -403,6 +412,7 @@ export class InvoicesController {
       "This explicit, audit-logged action re-takes them from today's company settings / contact.",
   })
   refreshParties(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: RefreshPartiesDto) {
+    assertMayDo(req.user, "invoices.issue");
     return this.invoicesService.refreshPartySnapshot(req.tenantDb!, req.user!.tenantId, id, dto.party, dto.reason);
   }
 
@@ -510,6 +520,7 @@ export class InvoicesController {
       "400 if the invoice has no contact, or the contact has no email on file.",
   })
   send(@Req() req: TenantScopedRequest, @Param("id") id: string) {
+    assertMayDo(req.user, "invoices.send");
     return this.invoicesService.sendInvoice(req.tenantDb!, id, req.user!.tenantId);
   }
 
@@ -520,6 +531,7 @@ export class InvoicesController {
     description: "Sends the overdue-payment reminder now and bumps reminder_count / last_reminder_sent_at.",
   })
   remind(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    assertMayDo(req.user, "invoices.send");
     return this.invoicesService.sendReminder(req.tenantDb!, id, req.user!.tenantId);
   }
 
@@ -537,6 +549,7 @@ export class InvoicesController {
       "on demand from the now-issued invoice's data.",
   })
   issue(@Req() req: TenantScopedRequest, @Param("id") id: string) {
+    assertMayDo(req.user, "invoices.issue");
     return this.invoicesService.issue(req.tenantDb!, req.user!.tenantId, id, req.user!.id);
   }
 

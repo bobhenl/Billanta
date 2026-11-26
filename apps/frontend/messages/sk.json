@@ -1928,7 +1928,8 @@
         "expenses": "Asistent výdavkov",
         "auditor": "Daňový poradca / audítor",
         "viewer": "Len čítanie",
-        "custom": "Vlastné oprávnenia"
+        "custom": "Vlastné oprávnenia",
+        "assistant": "Asistent (len koncepty)"
       },
       "presetHints": {
         "admin": "Plný prístup vrátane tímu, údajov firmy a predplatného.",
@@ -1937,7 +1938,8 @@
         "expenses": "Zapisuje výdavky a bločky, faktúry a kontakty len prezerá.",
         "auditor": "Vidí všetko vrátane banky a exportov, nič nemení.",
         "viewer": "Prezerá faktúry, kontakty a výdavky. Banku ani exporty nevidí.",
-        "custom": "Nastavte prístup ku každej oblasti zvlášť."
+        "custom": "Nastavte prístup ku každej oblasti zvlášť, po rozbalení aj jednotlivé akcie.",
+        "assistant": "Pripravuje koncepty faktúr a kontakty. Vystavenie, odoslanie a storno nechá na vás."
       },
       "presetsHint": "Vyberte pripravený profil, alebo pri členovi nastavte oprávnenia po oblastiach (ikona posuvníkov).",
       "areas": {
@@ -1946,7 +1948,10 @@
         "contacts": "Kontakty",
         "expenses": "Výdavky",
         "bank": "Banka",
-        "reports": "Exporty"
+        "reports": "Exporty",
+        "projects": "Projekty a výkazy",
+        "recurring": "Pravidelné faktúry",
+        "settings": "Nastavenia"
       },
       "levels": {
         "none": "Bez prístupu",
@@ -1955,7 +1960,7 @@
       },
       "editPermissions": "Upraviť oprávnenia",
       "editPermissionsFor": "Oprávnenia – {name}",
-      "permissionsHint": "Úpravy zahŕňajú aj čítanie. Tím, údaje firmy a predplatné spravujú len administrátori.",
+      "permissionsHint": "Úpravy zahŕňajú aj čítanie. Po rozbalení oblasti zapnete alebo vypnete jednotlivé akcie. Tím, moduly, zálohy a predplatné spravujú len administrátori.",
       "save": "Uložiť",
       "directory": {
         "toggle": "Nemáte účtovníka? Vyberte si z overených",
@@ -1967,7 +1972,47 @@
         "empty": "V tomto kraji zatiaľ nikoho nemáme.",
         "all": "Celý adresár účtovníkov",
         "picked": "E-mail {email} je vyplnený. Skontrolujte rolu a pošlite pozvánku."
-      }
+      },
+      "actions": {
+        "invoices": {
+          "create": "Vytvárať a upravovať koncepty",
+          "issue": "Vystavovať (prideliť číslo)",
+          "send": "Posielať klientom a upomínať",
+          "cancel": "Stornovať a mazať"
+        },
+        "expenses": {
+          "create": "Zapisovať a upravovať",
+          "approve": "Schvaľovať (zaplatené, prijaté e-faktúry)",
+          "delete": "Mazať"
+        },
+        "bank": {
+          "match": "Párovať platby a synchronizovať",
+          "connections": "Spravovať prepojenia s bankou"
+        },
+        "reports": {
+          "export": "Sťahovať exporty"
+        },
+        "settings": {
+          "company": "Firma a bankové účty",
+          "numbering": "Číslovanie dokladov",
+          "templates": "Šablóny, e-maily a premenné",
+          "paymentMethods": "Spôsoby úhrady",
+          "integrations": "Integrácie a webhooky",
+          "apiKeys": "API kľúče"
+        }
+      },
+      "actionHints": {
+        "apiKeys": "Kľúč má plný prístup k celej firme bez ohľadu na tieto oprávnenia."
+      },
+      "actionsCount": "{granted}/{total}",
+      "summaryWithout": "bez: {list}",
+      "locked": {
+        "backup": "Zálohy",
+        "billing": "Predplatné",
+        "ownerOnly": "Len vlastník",
+        "adminsOnly": "Len vlastník a administrátori"
+      },
+      "fillFromPreset": "Vyplniť podľa"
     },
     "exports": {
       "title": "Exporty pre účtovníka",

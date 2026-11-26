@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default async function TemplatesPage() {
   // Every card and menu item here makes or changes something.
-  const gate = await writeGate('invoices', '/invoices');
+  const gate = await writeGate('invoices', '/invoices', 'invoices.create');
   if (gate) return gate;
   const t = await getTranslations('templates');
   const tInv = await getTranslations('invoices');

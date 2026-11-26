@@ -7,7 +7,7 @@ import { AuditService } from "../audit/audit.service";
 import { WelcomeTrialService } from "../billing/welcome-trial.service";
 import { demoConfig } from "../demo/demo-config";
 import { NotificationsService } from "../notifications/notifications.service";
-import type { DashboardRole } from "../tenancy/tenant-context.middleware";
+import { assertMayDo, sectionsForTenantPatch, type Actor } from "../tenancy/permissions";
 import { findBankAccount, listBankAccounts } from "./bank-accounts";
 import type { BankAccountDto } from "./dto/bank-account.dto";
 import type { UpdateTenantDto } from "./dto/update-tenant.dto";
@@ -93,12 +93,17 @@ export class TenantsService {
   }
 
   /**
-   * Settings → Company. Only an owner or admin may change what is printed
-   * as the issuer on every document. Fields left out stay as they are.
+   * Settings → Company and the other settings pages that save here. Each
+   * field belongs to a settings section (`TENANT_FIELD_SECTIONS`); a member
+   * needs every section the patch touches, and fields outside the sections
+   * stay with owners and admins. Fields left out stay as they are.
    */
-  async update(db: TenantDb, id: string, role: DashboardRole | string | undefined, dto: UpdateTenantDto) {
-    if (role !== "owner" && role !== "admin") {
-      throw new ForbiddenException("Only an owner or admin can change company settings");
+  async update(db: TenantDb, id: string, actor: Actor, dto: UpdateTenantDto) {
+    const sent = Object.fromEntries(Object.entries(dto).filter(([, v]) => v !== undefined));
+    const sections = sectionsForTenantPatch(sent);
+    if (actor.role !== "owner" && actor.role !== "admin") {
+      if (!sections) throw new ForbiddenException("Only an owner or admin can change company settings");
+      for (const section of sections) assertMayDo(actor, section);
     }
     const values: Partial<TenantInsert> = {
       companyName: dto.company_name,
@@ -173,13 +178,13 @@ export class TenantsService {
 
   // --- Number formats (Settings → Číslování dokladů) -----------------------
 
-  getNumberFormats(db: TenantDb, tenantId: string, role: string | undefined) {
-    this.assertNumberingAdmin(role);
+  getNumberFormats(db: TenantDb, tenantId: string, actor: Actor) {
+    assertMayDo(actor, "settings.numbering");
     return getNumberFormats(db, tenantId);
   }
 
-  async updateNumberFormats(db: TenantDb, tenantId: string, role: string | undefined, dto: NumberFormatsInput) {
-    this.assertNumberingAdmin(role);
+  async updateNumberFormats(db: TenantDb, tenantId: string, actor: Actor, dto: NumberFormatsInput) {
+    assertMayDo(actor, "settings.numbering");
     const { before, after } = await saveNumberFormats(db, tenantId, dto);
     const changes: schema.AuditChange[] = [];
     for (const type of NUMBER_DOCUMENT_TYPES) {
@@ -193,12 +198,6 @@ export class TenantsService {
       await this.audit?.record(db, tenantId, { entityType: "tenant", entityId: tenantId, action: "number_formats_updated", changes });
     }
     return getNumberFormats(db, tenantId);
-  }
-
-  private assertNumberingAdmin(role: string | undefined) {
-    if (role !== "owner" && role !== "admin") {
-      throw new ForbiddenException("Only an owner or admin can change document numbering");
-    }
   }
 
   // --- Public profile (Settings → Veřejný profil) ---------------------------
@@ -241,8 +240,8 @@ export class TenantsService {
   }
 
   /** `file` is already size-limited by the controller; the type is checked from magic bytes, not the client's claim. */
-  async setLogo(db: TenantDb, tenantId: string, role: string | undefined, file: Buffer | null) {
-    this.assertAdmin(role);
+  async setLogo(db: TenantDb, tenantId: string, actor: Actor, file: Buffer | null) {
+    assertMayDo(actor, "settings.company");
     let mime: string | null = null;
     if (file) {
       mime = detectLogoMime(file);
@@ -262,8 +261,8 @@ export class TenantsService {
     return listBankAccounts(db, tenantId);
   }
 
-  async createBankAccount(db: TenantDb, tenantId: string, role: string | undefined, dto: BankAccountDto) {
-    this.assertAdmin(role);
+  async createBankAccount(db: TenantDb, tenantId: string, actor: Actor, dto: BankAccountDto) {
+    assertMayDo(actor, "settings.company");
     const [row] = await db
       .insert(schema.tenantBankAccounts)
       .values({ tenantId, ...this.bankValues(dto) })
@@ -280,8 +279,8 @@ export class TenantsService {
     return row;
   }
 
-  async updateBankAccount(db: TenantDb, tenantId: string, role: string | undefined, id: string, dto: BankAccountDto) {
-    this.assertAdmin(role);
+  async updateBankAccount(db: TenantDb, tenantId: string, actor: Actor, id: string, dto: BankAccountDto) {
+    assertMayDo(actor, "settings.company");
     const before = await findBankAccount(db, tenantId, id);
     if (!before) throw new NotFoundException("Bank account not found");
     const [row] = await db
@@ -301,8 +300,8 @@ export class TenantsService {
   }
 
   /** Invoices that pointed at the account fall back to automatic choice (FK on delete set null). */
-  async deleteBankAccount(db: TenantDb, tenantId: string, role: string | undefined, id: string) {
-    this.assertAdmin(role);
+  async deleteBankAccount(db: TenantDb, tenantId: string, actor: Actor, id: string) {
+    assertMayDo(actor, "settings.company");
     const deleted = await db
       .delete(schema.tenantBankAccounts)
       .where(and(eq(schema.tenantBankAccounts.tenantId, tenantId), eq(schema.tenantBankAccounts.id, id)))
@@ -330,12 +329,6 @@ export class TenantsService {
       body: `${change}. Pokud jste změnu neprovedli vy ani nikdo z týmu, zkontrolujte účet v Nastavení a změňte si heslo.`,
       link: "/settings",
     });
-  }
-
-  private assertAdmin(role: string | undefined) {
-    if (role !== "owner" && role !== "admin") {
-      throw new ForbiddenException("Only an owner or admin can change bank accounts");
-    }
   }
 
   private bankValues(dto: BankAccountDto) {

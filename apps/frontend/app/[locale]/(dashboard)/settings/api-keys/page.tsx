@@ -5,7 +5,7 @@ import { Banner } from '@/components/banner';
 import { TwoFactorNotice } from '@/components/two-factor-notice';
 import { SettingsHeader } from '@/components/settings-header';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
-import { canManage, fetchMyRole } from '@/lib/tenant';
+import { canManage, fetchMayEditSettings, fetchMyRole } from '@/lib/tenant';
 import { ApiKeysManager, type ApiKeyListItem } from './api-keys-manager';
 import { settingsGate } from '@/components/settings-gate';
 
@@ -37,16 +37,18 @@ export default async function ApiKeysSettingsPage() {
     (process.env.NODE_ENV === 'development' ? process.env.BACKEND_URL ?? 'http://localhost:3000' : process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3100')
   ).replace(/\/$/, '');
 
+  // Owners and admins, or a member with this settings section (Settings → Team).
+  const editable = canManage(role) || (role !== null && (await fetchMayEditSettings('apiKeys')));
   return (
     <div className="mx-auto max-w-4xl">
       <SettingsHeader title={t('title')} description={t('description')} />
       <TwoFactorNotice className="mt-4" />
-      {!canManage(role) && (
+      {!editable && (
         <Banner tone="info" className="mt-4">
           {t('readOnly')}
         </Banner>
       )}
-      <ApiKeysManager initialKeys={keys} apiBase={apiBase} readOnly={!canManage(role)} />
+      <ApiKeysManager initialKeys={keys} apiBase={apiBase} readOnly={!editable} />
     </div>
   );
 }

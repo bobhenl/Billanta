@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { SortHeader, useListSort } from '@/components/sort-header';
 import { toast } from '@/components/toaster';
-import { useCanWrite } from '@/components/access-provider';
+import { useCanDo, useCanWrite } from '@/components/access-provider';
 import { formatDate, formatMoney } from '@/lib/invoice-ui';
 import { EXPENSE_STATE_CLASSES, expenseState, isKnownCategory, vatOfGross, type Expense } from '@/lib/expense-ui';
 import { cn } from '@/lib/utils';
@@ -44,7 +44,11 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [pending, startTransition] = useTransition();
   // The checkboxes only feed bulk mark-paid/delete, so read-only gets a plain list.
-  const canEdit = useCanWrite('expenses');
+  const canWriteArea = useCanWrite('expenses');
+  const canCreate = useCanDo('expenses.create');
+  const canApprove = useCanDo('expenses.approve');
+  const canDelete = useCanDo('expenses.delete');
+  const canEdit = canWriteArea && (canApprove || canDelete);
   const { sort, cycle, sorted } = useListSort('billanta:expenses:sort', SORTABLE, rows, sortValue, ['amount']);
 
   const sums = useMemo(() => {
@@ -62,7 +66,7 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
     return (
       <div className="mt-6 rounded-xl border border-dashed border-border p-10 text-center text-muted-foreground">
         {filtered ? t('emptyFiltered') : t('empty')}
-        {!filtered && canEdit && (
+        {!filtered && canWriteArea && canCreate && (
           <div className="mt-3">
             <Link href="/expenses/new" className="font-semibold text-primary hover:underline">
               {t('newExpense')}
@@ -101,6 +105,7 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
       {selected.size > 0 && (
         <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2 text-sm">
           <span className="font-semibold">{t('selected', { count: selected.size })}</span>
+          {canApprove && (
           <button
             type="button"
             disabled={pending}
@@ -115,6 +120,8 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
             <CheckCircle2 className="h-3.5 w-3.5" />
             {t('detail.markPaid')}
           </button>
+          )}
+          {canDelete && (
           <button
             type="button"
             disabled={pending}
@@ -126,6 +133,7 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
             <Trash2 className="h-3.5 w-3.5" />
             {t('detail.delete')}
           </button>
+          )}
           <button type="button" className="ml-auto text-xs text-muted-foreground hover:text-primary" onClick={() => setSelected(new Set())}>
             {t('clearSelection')}
           </button>

@@ -4,7 +4,7 @@ import { redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
 import { SettingsHeader } from '@/components/settings-header';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
-import { canManage, fetchMyRole, fetchTenant, type TenantSettings } from '@/lib/tenant';
+import { canManage, fetchMayEditSettings, fetchMyRole, fetchTenant, type TenantSettings } from '@/lib/tenant';
 import { PaymentMethodsEditor } from './payment-methods-editor';
 import { CardPaymentsCard } from './card-payments-card';
 import type { CardPaymentSettings } from '../actions';
@@ -37,16 +37,18 @@ export default async function PaymentMethodsPage() {
   }
   if (!tenant) return <Banner tone="err" title={t('loadError')} className="mt-6" />;
 
+  // Owners and admins, or a member with this settings section (Settings → Team).
+  const editable = canManage(role) || (role !== null && (await fetchMayEditSettings('paymentMethods')));
   return (
     <div className="mx-auto max-w-4xl">
       <SettingsHeader title={t('title')} description={t('description')} />
-      {!canManage(role) && (
+      {!editable && (
         <Banner tone="info" className="mt-4">
           {t('readOnly')}
         </Banner>
       )}
-      <CardPaymentsCard initial={card} readOnly={!canManage(role)} />
-      <PaymentMethodsEditor initial={tenant.paymentMethods ?? []} readOnly={!canManage(role)} />
+      <CardPaymentsCard initial={card} readOnly={!editable} />
+      <PaymentMethodsEditor initial={tenant.paymentMethods ?? []} readOnly={!editable} />
     </div>
   );
 }

@@ -23,7 +23,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
-import { useCanWrite } from '@/components/access-provider';
+import { useCanDo, useCanWrite } from '@/components/access-provider';
 import { CONVERSIONS, type DocumentType, type InvoiceStatus } from '@/lib/invoice-ui';
 import {
   cancelInvoice,
@@ -105,8 +105,14 @@ export function InvoiceActions({
   const num = (v: string) => Number(v.replace(/\s/g, '').replace(',', '.')) || undefined;
   const net = { fee: num(feeValue), receivedCzk: currency === home ? undefined : num(receivedValue) };
 
-  const canEdit = useCanWrite('invoices');
-  const isDraft = canEdit && (status === 'draft' || status === 'pending_review');
+  // The area level first, then the finer actions from Settings → Team (the backend checks the same).
+  const canWriteArea = useCanWrite('invoices');
+  const canCreate = useCanDo('invoices.create');
+  const canIssue = useCanDo('invoices.issue') && canWriteArea;
+  const canSend = useCanDo('invoices.send') && canWriteArea;
+  const canCancel = useCanDo('invoices.cancel') && canWriteArea;
+  const canEdit = canWriteArea && canCreate;
+  const isDraft = status === 'draft' || status === 'pending_review';
   const canPay = canEdit && status === 'issued' && documentType !== 'quote';
   const conversions = !canEdit || status === 'cancelled' || (!numbered && documentType !== 'quote') ? [] : CONVERSIONS[documentType];
 
@@ -128,14 +134,18 @@ export function InvoiceActions({
       <div className="flex flex-wrap gap-2">
         {isDraft && (
           <>
-            <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => setDialog('issue')}>
-              <Stamp className="h-4 w-4" />
-              {documentType === 'quote' ? t('actions.issueQuote') : t('actions.issue')}
-            </button>
-            <Link href={`/invoices/${id}/edit`} className={buttonClass.secondary}>
-              <Pencil className="h-4 w-4" />
-              {t('actions.edit')}
-            </Link>
+            {canIssue && (
+              <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => setDialog('issue')}>
+                <Stamp className="h-4 w-4" />
+                {documentType === 'quote' ? t('actions.issueQuote') : t('actions.issue')}
+              </button>
+            )}
+            {canEdit && (
+              <Link href={`/invoices/${id}/edit`} className={buttonClass.secondary}>
+                <Pencil className="h-4 w-4" />
+                {t('actions.edit')}
+              </Link>
+            )}
           </>
         )}
         {/* An issued document is final by law, but people still look for
@@ -181,13 +191,13 @@ export function InvoiceActions({
             )}
           </>
         )}
-        {canEdit && numbered && status !== 'cancelled' && (
+        {canSend && numbered && status !== 'cancelled' && (
           <button type="button" className={buttonClass.secondary} disabled={pending || !hasEmail} title={hasEmail ? undefined : t('noEmail')} onClick={() => setDialog('send')}>
             <Send className="h-4 w-4" />
             {t('actions.send')}
           </button>
         )}
-        {canPay && overdue && (
+        {canSend && status === 'issued' && documentType !== 'quote' && overdue && (
           <button type="button" className={buttonClass.secondary} disabled={pending || !hasEmail} title={hasEmail ? undefined : t('noEmail')} onClick={() => setDialog('remind')}>
             <BellRing className="h-4 w-4" />
             {t('actions.remind')}
@@ -230,19 +240,19 @@ export function InvoiceActions({
             {t('actions.publicLink')}
           </a>
         )}
-        {canEdit && numbered && (
+        {canSend && numbered && (
           <button type="button" className={buttonClass.ghost} onClick={() => setDialog('rotate')}>
             <RotateCcw className="h-4 w-4" />
             {t('actions.rotateLink')}
           </button>
         )}
-        {canEdit && status === 'issued' && (
+        {canCancel && status === 'issued' && (
           <button type="button" className={buttonClass.ghost} onClick={() => setDialog('cancel')}>
             <Ban className="h-4 w-4" />
             {t('actions.cancel')}
           </button>
         )}
-        {isDraft && (
+        {canCancel && isDraft && (
           <button type="button" className={`${buttonClass.ghost} hover:text-destructive`} onClick={() => setDialog('delete')}>
             <Trash2 className="h-4 w-4" />
             {t('actions.delete')}
@@ -250,7 +260,7 @@ export function InvoiceActions({
         )}
       </div>
 
-      {canEdit && editedAfterSend && (
+      {canSend && editedAfterSend && (
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300/60 bg-amber-50 px-4 py-3 text-sm dark:border-amber-500/30 dark:bg-amber-500/10">
           <div className="min-w-0">
             <p className="font-semibold">{t('correction.title')}</p>

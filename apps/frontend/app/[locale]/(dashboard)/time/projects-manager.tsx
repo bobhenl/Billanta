@@ -27,7 +27,7 @@ export function ProjectsManager({ projects, contacts, home = 'CZK' }: { projects
   const [pending, startTransition] = useTransition();
   const [editing, setEditing] = useState<Project | 'new' | null>(null);
   const [showArchived, setShowArchived] = useState(false);
-  const canEdit = useCanWrite('invoices');
+  const canEdit = useCanWrite('projects');
   const [form, setForm] = useState<Required<Omit<ProjectInput, 'archived' | 'hourly_rate'>>>({ name: '', contact_id: null, currency: home, color: COLORS[0] ?? null });
   const [rate, setRate] = useState('');
 

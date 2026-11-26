@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   HttpCode,
   Param,
@@ -17,16 +16,10 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { TwoFactorGuard } from "../auth/two-factor.guard";
 import { RequirePlan } from "../billing/plan.guard";
+import { assertMayDo } from "../tenancy/permissions";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { BankConnectionsService } from "./bank-connections.service";
 import { CompletePsd2Dto, CreateBankConnectionDto, CreatePaypalDto, StartPsd2Dto, UpdateBankConnectionDto } from "./dto/bank-connection.dto";
-
-/** Connecting a bank account is an owner/admin action; any non-viewer may trigger a sync. */
-function requireRole(req: TenantScopedRequest, roles: string[]) {
-  if (!req.user?.role || !roles.includes(req.user.role)) {
-    throw new ForbiddenException("Your role cannot manage bank connections");
-  }
-}
 
 @ApiTags("bank-reconciliation")
 @ApiBearerAuth()
@@ -46,7 +39,7 @@ export class BankConnectionsController {
   @RequirePlan("bank_sync")
   @ApiOperation({ summary: "Connect a Fio account with a read-only API token" })
   create(@Req() req: TenantScopedRequest, @Body() dto: CreateBankConnectionDto) {
-    requireRole(req, ["owner", "admin"]);
+    assertMayDo(req.user, "bank.connections");
     return this.service.createFio(req.tenantDb!, req.user!.tenantId, dto.token, dto.label ?? null);
   }
 
@@ -55,7 +48,7 @@ export class BankConnectionsController {
   @RequirePlan("paypal_sync")
   @ApiOperation({ summary: "Connect a PayPal account with REST app credentials (Transaction Search)" })
   createPaypal(@Req() req: TenantScopedRequest, @Body() dto: CreatePaypalDto) {
-    requireRole(req, ["owner", "admin"]);
+    assertMayDo(req.user, "bank.connections");
     return this.service.createPaypal(req.tenantDb!, req.user!.tenantId, dto);
   }
 
@@ -76,7 +69,7 @@ export class BankConnectionsController {
   @RequirePlan("bank_sync")
   @ApiOperation({ summary: "Start PSD2 consent at the bank; returns the bank URL to redirect the user to" })
   psd2Start(@Req() req: TenantScopedRequest, @Body() dto: StartPsd2Dto) {
-    requireRole(req, ["owner", "admin"]);
+    assertMayDo(req.user, "bank.connections");
     return this.service.startPsd2(req.tenantDb!, req.user!.tenantId, dto);
   }
 
@@ -85,14 +78,14 @@ export class BankConnectionsController {
   @RequirePlan("bank_sync")
   @ApiOperation({ summary: "Finish PSD2 consent with the code the bank returned" })
   psd2Complete(@Req() req: TenantScopedRequest, @Body() dto: CompletePsd2Dto) {
-    requireRole(req, ["owner", "admin"]);
+    assertMayDo(req.user, "bank.connections");
     return this.service.completePsd2(req.tenantDb!, req.user!.tenantId, dto.code, dto.state);
   }
 
   @Patch(":id")
   @ApiOperation({ summary: "Pause/resume automatic sync or rename a connection" })
   update(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: UpdateBankConnectionDto) {
-    requireRole(req, ["owner", "admin"]);
+    assertMayDo(req.user, "bank.connections");
     return this.service.update(req.tenantDb!, id, dto);
   }
 
@@ -100,7 +93,7 @@ export class BankConnectionsController {
   @HttpCode(204)
   @ApiOperation({ summary: "Disconnect a bank account and forget its token" })
   async remove(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
-    requireRole(req, ["owner", "admin"]);
+    assertMayDo(req.user, "bank.connections");
     await this.service.remove(req.tenantDb!, id);
   }
 
@@ -108,7 +101,7 @@ export class BankConnectionsController {
   @RequirePlan("bank_sync")
   @ApiOperation({ summary: "Download new incoming payments now and auto-match them" })
   sync(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
-    requireRole(req, ["owner", "admin", "accountant"]);
+    assertMayDo(req.user, "bank.match");
     return this.service.syncOne(req.tenantDb!, req.user!.tenantId, id);
   }
 }

@@ -16,6 +16,7 @@ import { AuditService } from "../audit/audit.service";
 import { DbService } from "../db/db.service";
 import { EmailService } from "../email/email.service";
 import { NotificationsService } from "../notifications/notifications.service";
+import type { StoredPermissions } from "../tenancy/permissions";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
 import type { CreateInvitationDto } from "./dto/create-invitation.dto";
 
@@ -183,7 +184,7 @@ export class TeamService {
     user: AuthenticatedUser,
     membershipId: string,
     role: "admin" | "accountant" | "viewer",
-    permissions?: Record<string, string> | null,
+    permissions?: StoredPermissions | null,
   ) {
     requireManager(user);
     const member = await this.requireMember(db, membershipId);

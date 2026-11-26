@@ -26,7 +26,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { TrialBanner } from '@/components/trial-banner';
 import { UserMenu } from '@/components/user-menu';
 import { NOINDEX } from '@/lib/seo';
-import { canManage, fetchMyAccess, fetchTenant, forbiddenSettings, hiddenSections, type TenantSettings } from '@/lib/tenant';
+import { canDo, canManage, fetchMyAccess, fetchTenant, forbiddenSettings, hiddenSections, type TenantSettings } from '@/lib/tenant';
 import { apiFetch, fetchMyCompanies, isStudentCompanyOfOthers } from '@/lib/api-client';
 import { classroomEnabled, type StudentCompany } from '@/lib/classroom';
 import { PROMO_COOKIE } from '@/lib/promo';
@@ -94,11 +94,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const paletteHidden = [...hidden];
   if (access) {
     const p = access.permissions;
-    if (p.invoices !== 'write') paletteHidden.push('createInvoices');
-    if (p.expenses !== 'write' || !access.modules.expenses) paletteHidden.push('createExpenses');
+    if (!canDo(access, 'invoices.create')) paletteHidden.push('createInvoices');
+    if (!canDo(access, 'expenses.create') || !access.modules.expenses) paletteHidden.push('createExpenses');
     if (p.contacts !== 'write') paletteHidden.push('createContacts');
-    if (!access.modules.quotes || p.invoices !== 'write') paletteHidden.push('quotes');
-    if (!access.modules.reports || p.reports === 'none') paletteHidden.push('exports');
+    if (!access.modules.quotes || !canDo(access, 'invoices.create')) paletteHidden.push('quotes');
+    if (!access.modules.reports || !canDo(access, 'reports.export')) paletteHidden.push('exports');
     if (!access.modules.ai) paletteHidden.push('ai');
     if (!access.modules.ai || !canManage(access.role)) paletteHidden.push('aiSettings');
     // Settings pages the role can't save (the same list the settings hub leaves out).

@@ -94,7 +94,8 @@ export async function updateTemplateVars(vars: { key: string; value: string; lab
 export type TeamRole = 'owner' | 'admin' | 'accountant' | 'viewer';
 
 /** Per-area overrides of the role's defaults (null = role defaults); see lib/team-presets.ts. */
-export type MemberPermissions = Partial<Record<'invoices' | 'contacts' | 'expenses' | 'bank' | 'reports', 'none' | 'read' | 'write'>> | null;
+/** Levels per area plus finer actions (lib/team-presets.ts); null = the role's defaults. */
+export type MemberPermissions = import('@/lib/team-presets').StoredPerms | null;
 
 export async function inviteMember(email: string, role: Exclude<TeamRole, 'owner'>, permissions: MemberPermissions = null) {
   return run<{ id: string; email: string; role: string; acceptUrl: string; emailSent: boolean }>('/api/v1/team/invitations', 'POST', {

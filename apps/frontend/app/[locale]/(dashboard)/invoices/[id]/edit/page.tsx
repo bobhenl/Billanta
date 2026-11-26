@@ -62,7 +62,7 @@ export default async function EditInvoicePage(props: {
 }) {
   const params = await props.params;
   const searchParams = await props.searchParams;
-  const gate = await writeGate('invoices', `/invoices/${params.id}`);
+  const gate = await writeGate('invoices', `/invoices/${params.id}`, 'invoices.create');
   if (gate) return gate;
   if (!UUID.test(params.id)) notFound();
   const t = await getTranslations('invoiceForm');

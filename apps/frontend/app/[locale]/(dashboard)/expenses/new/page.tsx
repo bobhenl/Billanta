@@ -12,7 +12,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
  */
 export default async function NewExpensePage(props: { searchParams: Promise<{ from?: string; scan?: string; description?: string; amount?: string }> }) {
   const searchParams = await props.searchParams;
-  const gate = await writeGate('expenses', '/expenses');
+  const gate = await writeGate('expenses', '/expenses', 'expenses.create');
   if (gate) return gate;
   const [suppliers, source] = await Promise.all([
     apiFetch<SupplierOption[]>('/api/v1/contacts').catch(() => []),

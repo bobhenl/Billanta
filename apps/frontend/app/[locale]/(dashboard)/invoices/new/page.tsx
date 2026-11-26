@@ -104,7 +104,7 @@ export default async function NewInvoicePage(
   }
 ) {
   const searchParams = await props.searchParams;
-  const gate = await writeGate('invoices', '/invoices');
+  const gate = await writeGate('invoices', '/invoices', 'invoices.create');
   if (gate) return gate;
   const t = await getTranslations('invoiceForm');
   const [{ defaults, ai, starred }, { template: loaded, templateId }] = await Promise.all([loadFormContext(), loadTemplate(searchParams)]);

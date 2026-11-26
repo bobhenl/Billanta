@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { TwoFactorGuard } from "../auth/two-factor.guard";
 import { RequirePlan } from "../billing/plan.guard";
+import { assertMayDo } from "../tenancy/permissions";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { ApiKeysService } from "./api-keys.service";
 import { CreateApiKeyDto } from "./dto/create-api-key.dto";
@@ -33,6 +34,8 @@ export class ApiKeysController {
       "and generating a new one.",
   })
   create(@Req() req: TenantScopedRequest, @Body() dto: CreateApiKeyDto) {
+    // A key acts as the whole company (role "service"), whatever the member who made it may do.
+    assertMayDo(req.user, "settings.apiKeys");
     return this.apiKeysService.create(req.tenantDb!, req.user!.tenantId, dto);
   }
 
@@ -51,6 +54,7 @@ export class ApiKeysController {
     description: "Soft-revoke: sets revoked_at. Never hard-deletes, for audit purposes.",
   })
   revoke(@Req() req: TenantScopedRequest, @Param("id") id: string) {
+    assertMayDo(req.user, "settings.apiKeys");
     return this.apiKeysService.revoke(req.tenantDb!, id);
   }
 }

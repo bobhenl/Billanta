@@ -5,7 +5,7 @@ import { Building2, Landmark, Loader2, Plus, RefreshCw, ShieldCheck, Trash2, Wal
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
-import { useCanWrite } from '@/components/access-provider';
+import { useCanDo, useCanWrite } from '@/components/access-provider';
 import { useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import {
@@ -67,7 +67,11 @@ export function BankConnections({
   const [pending, startTransition] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
   // Read-only still sees which accounts are connected and when they last synced.
-  const canEdit = useCanWrite('bank');
+  const canWriteBank = useCanWrite('bank');
+  const canManageConnections = useCanDo('bank.connections');
+  // Syncing only fetches new transactions to match; adding, renewing, pausing and removing a connection is `bank.connections`.
+  const canSync = useCanDo('bank.match') && canWriteBank;
+  const canEdit = canWriteBank && canManageConnections;
   const [mode, setMode] = useState<null | 'choose' | 'fio' | 'psd2' | 'paypal'>(null);
   const [token, setToken] = useState('');
   const [label, setLabel] = useState('');
@@ -274,15 +278,15 @@ export function BankConnections({
                     )}
                   </div>
                 </div>
-                {canEdit && (
+                {(canEdit || canSync) && (
                 <div className="flex items-center gap-1.5">
-                  {(expired || expiringSoon) && (
+                  {canEdit && (expired || expiringSoon) && (
                     <button type="button" disabled={pending || !c.bankName} onClick={() => renew(c)} className={primaryButton}>
                       {busyId === c.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ShieldCheck className="h-3.5 w-3.5" />}
                       {t('psd2.renew')}
                     </button>
                   )}
-                  {!expired && (
+                  {canSync && !expired && (
                     <button
                       type="button"
                       disabled={pending}
@@ -293,11 +297,12 @@ export function BankConnections({
                       {t('sync')}
                     </button>
                   )}
-                  {!expired && (
+                  {canEdit && !expired && (
                     <button type="button" disabled={pending} onClick={() => toggle(c)} className={softButton}>
                       {c.enabled ? t('pause') : t('resume')}
                     </button>
                   )}
+                  {canEdit && (
                   <button
                     type="button"
                     disabled={pending}
@@ -308,6 +313,7 @@ export function BankConnections({
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
+                  )}
                 </div>
                 )}
               </li>

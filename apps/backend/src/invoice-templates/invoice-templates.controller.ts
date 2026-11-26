@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Req, 
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CombinedAuthGuard } from "../auth/combined-auth.guard";
 import { RequireActiveSubscription } from "../billing/require-active-subscription.guard";
+import { assertMayDo } from "../tenancy/permissions";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import {
   BulkInvoiceDto,
@@ -65,6 +66,8 @@ export class InvoiceTemplatesController {
     description: "Body { contact_ids[], issue_date?, issue? } – issue=true issues every draft right away.",
   })
   bulk(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: BulkInvoiceDto) {
+    assertMayDo(req.user, "invoices.create");
+    if (dto.issue) assertMayDo(req.user, "invoices.issue");
     return this.templatesService.bulk(req.tenantDb!, req.user!.tenantId, req.user!.id, id, dto);
   }
 }
