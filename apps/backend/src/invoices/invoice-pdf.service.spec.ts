@@ -414,7 +414,7 @@ describe("InvoicePdfService paid documents and foreign buyers", () => {
     expect((await qrFor("auto", makeInvoice({ status: "paid" })))[0]).toMatch(/^SID\*/);
   });
 
-  it("leaves the due date out of the payment QR when the company asks, so the bank offers to pay now", async () => {
+  it("leaves the due date out of the payment QR unless the company asks, so the bank offers to pay now", async () => {
     async function spayd(invoiceFormPrefs: Record<string, unknown>) {
       const qr = vi.spyOn(QRCode, "toBuffer");
       const lineItems = makeLineItems();
@@ -424,8 +424,8 @@ describe("InvoicePdfService paid documents and foreign buyers", () => {
       qr.mockRestore();
       return out;
     }
-    expect(await spayd({})).toMatch(/\*DT:\d{8}\*/);
-    const now = await spayd({ pdfQrDueDate: false });
+    expect(await spayd({ pdfQrDueDate: true })).toMatch(/\*DT:\d{8}\*/);
+    const now = await spayd({});
     expect(now).toMatch(/^SPD\*/);
     // Banks read the date from the QR Faktura inside the payment code too.
     expect(now).toContain("X-INV:");
@@ -433,7 +433,7 @@ describe("InvoicePdfService paid documents and foreign buyers", () => {
     // A QR Faktura on its own is for bookkeeping and keeps the due date.
     const qr = vi.spyOn(QRCode, "toBuffer");
     const lineItems = makeLineItems();
-    const tenant = makeTenant({ bankAccountIban: "CZ6508000000192000145399", invoiceFormPrefs: { pdfQrDueDate: false } } as Partial<TenantRow>);
+    const tenant = makeTenant({ bankAccountIban: "CZ6508000000192000145399", invoiceFormPrefs: {} } as Partial<TenantRow>);
     await new InvoicePdfService().generate(makeInvoice({ status: "paid" }), makeContact(), tenant, lineItems, computeVatBreakdown(lineItems));
     const sid = qr.mock.calls.map((c) => String(c[0])).find((p) => p.startsWith("SID*")) ?? "";
     qr.mockRestore();
