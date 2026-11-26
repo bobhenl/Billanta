@@ -77,6 +77,10 @@ export interface BankConnection {
   bankName: string | null;
   bankCountry: string | null;
   consentExpiresAt: string | null;
+  /** PSD2: the account's currency (Revolut's sub-accounts share one IBAN). */
+  currency?: string | null;
+  /** Words a movement must contain to be stored; null keeps everything. */
+  importFilter?: string | null;
   enabled: boolean;
   lastSyncedAt: string | null;
   lastError: string | null;
@@ -146,6 +150,14 @@ export async function setBankConnectionEnabled(id: string, enabled: boolean): Pr
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ enabled })
+  });
+}
+
+export async function editBankConnection(id: string, input: { label: string; importFilter?: string }): Promise<ActionResult> {
+  return call(`${connections}/${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ label: input.label.trim() || null, ...(input.importFilter !== undefined && { importFilter: input.importFilter.trim() || null }) })
   });
 }
 

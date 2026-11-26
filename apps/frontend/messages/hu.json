@@ -1152,7 +1152,15 @@
         "note": "A beérkezett fizetéseket a fizetés leírásában vagy metaadataiban szereplő számlaszám vagy változó szimbólum (VS), valamint az összeg alapján párosítjuk a számlákkal. A Stripe által levont díjat a számlán könyveljük. A Billanta számlalinkjéről indított kártyás fizetéseket már rögzítettük, ezek itt nem jelennek meg újra.",
         "connected": "A Stripe csatlakoztatva. Az elmúlt 30 nap fizetései a következő szinkronizáláskor érkeznek."
       },
-      "uploadStatement": "Kivonat feltöltése"
+      "uploadStatement": "Kivonat feltöltése",
+      "edit": {
+        "open": "Szerkesztés",
+        "filter": "Csak az ezeket tartalmazó tételek letöltése",
+        "filterPlaceholder": "pl. Google, Meta",
+        "filterHint": "Magánszámlához: csak azok a bejövő és kimenő fizetések kerülnek mentésre, amelyek partnere vagy közleménye tartalmazza valamelyik szót (vesszővel elválasztva). Más nem jut el a Billantába. Üres = csak bejövő fizetések, mint eddig.",
+        "filterOn": "csak {words}",
+        "save": "Mentés"
+      }
     },
     "fee": "díj {amount}",
     "netReceived": "jóváírva: {amount}",

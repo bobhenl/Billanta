@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
-import { Building2, ChevronDown, CreditCard, History, Landmark, Loader2, Plus, RefreshCw, ShieldCheck, Trash2, Wallet } from 'lucide-react';
+import { Building2, ChevronDown, CreditCard, History, Landmark, Loader2, Pencil, Plus, RefreshCw, ShieldCheck, Trash2, Wallet } from 'lucide-react';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
@@ -16,6 +16,7 @@ import {
   connectPaypal,
   connectStripe,
   disconnectBank,
+  editBankConnection,
   listPsd2Banks,
   setBankConnectionEnabled,
   startPsd2Connection,
@@ -104,6 +105,7 @@ export function BankConnections({
   const [sandbox, setSandbox] = useState(false);
   const [stripeKey, setStripeKey] = useState('');
   const [backfillId, setBackfillId] = useState<string | null>(null);
+  const [editing, setEditing] = useState<{ id: string; label: string; filter: string } | null>(null);
   const [backfillFrom, setBackfillFrom] = useState(() => `${new Date().getFullYear()}-01-01`);
   const today = new Date().toISOString().slice(0, 10);
   // History goes three years back (PayPal's Transaction Search limit); the backend clamps it the same way.
@@ -229,6 +231,17 @@ export function BankConnections({
       if (!result.ok) toast({ text: errorText(result.error), tone: 'err' });
     });
 
+  const saveEdit = (c: BankConnection) =>
+    run(c.id, async () => {
+      if (!editing) return;
+      const result = await editBankConnection(c.id, {
+        label: editing.label,
+        ...(c.provider === 'enable_banking' && { importFilter: editing.filter })
+      });
+      if (!result.ok) toast({ text: errorText(result.error), tone: 'err' });
+      else setEditing(null);
+    });
+
   const remove = (c: BankConnection) => {
     if (!window.confirm(t(c.provider === 'enable_banking' ? 'psd2.disconnectConfirm' : 'disconnectConfirm'))) return;
     run(c.id, async () => {
@@ -328,6 +341,12 @@ export function BankConnections({
                     {c.label || c.bankName || (c.provider === 'paypal' ? 'PayPal' : c.provider === 'stripe' ? 'Stripe' : 'Fio banka')}
                     {c.label && c.bankName && <span className="ml-2 text-xs font-normal text-muted-foreground">{c.bankName}</span>}
                     {c.accountNumber && <span className="ml-2 font-mono text-xs font-normal text-muted-foreground">{c.accountNumber}</span>}
+                    {c.currency && (
+                      <span className="ml-2 rounded bg-muted px-1.5 py-0.5 text-[11px] font-bold text-foreground">{c.currency}</span>
+                    )}
+                    {c.importFilter && (
+                      <span className="ml-2 text-xs font-medium text-primary">· {t('edit.filterOn', { words: c.importFilter })}</span>
+                    )}
                     {!c.enabled && <span className="ml-2 text-xs font-medium text-muted-foreground">· {t('paused')}</span>}
                     {expired && <span className="ml-2 text-xs font-semibold text-destructive">· {t('psd2.expired')}</span>}
                   </div>
@@ -395,6 +414,21 @@ export function BankConnections({
                       {c.enabled ? t('pause') : t('resume')}
                     </button>
                   )}
+                  {canManage && (
+                    <button
+                      type="button"
+                      disabled={pending}
+                      aria-label={t('edit.open')}
+                      title={t('edit.open')}
+                      aria-expanded={editing?.id === c.id}
+                      onClick={() =>
+                        setEditing(editing?.id === c.id ? null : { id: c.id, label: c.label ?? '', filter: c.importFilter ?? '' })
+                      }
+                      className="rounded-full p-1.5 text-muted-foreground hover:bg-accent hover:text-primary disabled:opacity-60"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </button>
+                  )}
                   <button
                     type="button"
                     disabled={pending}
@@ -406,6 +440,57 @@ export function BankConnections({
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
+                )}
+                {canManage && editing?.id === c.id && (
+                  <form
+                    aria-label={t('edit.open')}
+                    className="anim-fade min-w-0 basis-full rounded-lg border border-border bg-muted/40 p-4"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') setEditing(null);
+                    }}
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      saveEdit(c);
+                    }}
+                  >
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <label className="grid gap-1.5 text-xs font-semibold">
+                        {t('label')}
+                        <input
+                          autoFocus
+                          value={editing.label}
+                          maxLength={80}
+                          onChange={(e) => setEditing({ ...editing, label: e.target.value })}
+                          placeholder={c.bankName ?? ''}
+                          className={inputClass}
+                        />
+                      </label>
+                      {c.provider === 'enable_banking' && (
+                        <label className="grid gap-1.5 text-xs font-semibold">
+                          {t('edit.filter')}
+                          <input
+                            value={editing.filter}
+                            maxLength={500}
+                            onChange={(e) => setEditing({ ...editing, filter: e.target.value })}
+                            placeholder={t('edit.filterPlaceholder')}
+                            className={inputClass}
+                          />
+                        </label>
+                      )}
+                    </div>
+                    {c.provider === 'enable_banking' && (
+                      <p className="mt-2 break-words text-xs leading-relaxed text-muted-foreground">{t('edit.filterHint')}</p>
+                    )}
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button type="submit" disabled={pending} className={cn(primaryButton, 'h-10 px-4')}>
+                        {busyId === c.id && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                        {t('edit.save')}
+                      </button>
+                      <button type="button" disabled={pending} onClick={() => setEditing(null)} className={cn(softButton, 'h-10 px-4')}>
+                        {t('cancel')}
+                      </button>
+                    </div>
+                  </form>
                 )}
                 {canEdit && historyFor(c) && backfillId === c.id && (
                   <form

@@ -1152,7 +1152,15 @@
         "note": "Eingegangene Zahlungen werden Rechnungen anhand der Rechnungsnummer oder des Verwendungszwecks (VS) in der Beschreibung oder den Metadaten der Zahlung und anhand des Betrags zugeordnet. Die von Stripe einbehaltene Gebühr wird auf der Rechnung verbucht. Kartenzahlungen über einen Billanta-Rechnungslink sind bereits erfasst und erscheinen hier nicht noch einmal.",
         "connected": "Stripe verbunden. Die Zahlungen der letzten 30 Tage kommen mit der nächsten Synchronisierung."
       },
-      "uploadStatement": "Kontoauszug hochladen"
+      "uploadStatement": "Kontoauszug hochladen",
+      "edit": {
+        "open": "Bearbeiten",
+        "filter": "Nur Umsätze laden, die enthalten",
+        "filterPlaceholder": "z. B. Google, Meta",
+        "filterHint": "Für ein Privatkonto: Gespeichert werden nur Zahlungen, deren Gegenpartei oder Verwendungszweck eines dieser Wörter enthält (durch Komma getrennt), ein- und ausgehend. Alles andere erreicht Billanta nicht. Leer = nur eingehende Zahlungen wie bisher.",
+        "filterOn": "nur {words}",
+        "save": "Speichern"
+      }
     },
     "fee": "Gebühr {amount}",
     "netReceived": "gutgeschrieben {amount}",

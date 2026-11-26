@@ -1152,7 +1152,15 @@
         "note": "Plățile primite sunt potrivite cu facturile după numărul facturii sau simbolul variabil (VS) din descrierea sau metadatele plății și după sumă. Comisionul reținut de Stripe se înregistrează pe factură. Plățile cu cardul făcute dintr-un link de factură Billanta sunt deja înregistrate și nu vor mai apărea aici.",
         "connected": "Stripe conectat. Plățile din ultimele 30 de zile sosesc la următoarea sincronizare."
       },
-      "uploadStatement": "Încarcă extrasul"
+      "uploadStatement": "Încarcă extrasul",
+      "edit": {
+        "open": "Editează",
+        "filter": "Descarcă doar mișcările care conțin",
+        "filterPlaceholder": "de ex. Google, Meta",
+        "filterHint": "Pentru un cont personal: se salvează doar plățile al căror partener sau mesaj conține unul dintre aceste cuvinte (separate prin virgulă), primite și trimise. Nimic altceva nu ajunge în Billanta. Gol = doar plăți primite, ca până acum.",
+        "filterOn": "doar {words}",
+        "save": "Salvează"
+      }
     },
     "fee": "comision {amount}",
     "netReceived": "creditat {amount}",

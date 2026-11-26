@@ -63,6 +63,28 @@ describe("parseTransactions", () => {
     expect(rows[0]!.transactionDate.toISOString()).toBe("2026-09-30T00:00:00.000Z");
   });
 
+  it("takes debits as negative movements to the payee when asked", () => {
+    const out = parseTransactions(
+      "acc-1",
+      [
+        {
+          entry_reference: "D1",
+          transaction_amount: { amount: "1500", currency: "CZK" },
+          credit_debit_indicator: "DBIT",
+          status: "BOOK",
+          booking_date: "2026-11-20",
+          creditor: { name: "Google Ireland" },
+          creditor_account: { iban: "IE00GOOG0000000000000" },
+          remittance_information: ["Google Ads 123-456"],
+        },
+      ],
+      true,
+    );
+    expect(out).toEqual([
+      expect.objectContaining({ externalId: "psd2:acc-1:D1", amount: "-1500.00", counterpartyName: "Google Ireland", message: "Google Ads 123-456" }),
+    ]);
+  });
+
   it("fingerprints movements without a bank reference", () => {
     expect(rows[1]!.externalId).toBe("psd2:acc-1:2026-10-01|50.00|77|");
     expect(rows[1]!.variableSymbol).toBe("77");

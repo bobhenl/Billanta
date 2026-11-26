@@ -1153,7 +1153,15 @@
         "note": "Přijaté platby se párují s fakturami podle čísla faktury nebo VS v popisu či metadatech platby a podle částky. Poplatek, který si Stripe strhl, se zapíše k faktuře. Platby kartou z odkazu na fakturu Billanta zapisuje sama, tady se znovu neobjeví.",
         "connected": "Stripe připojen. Platby za posledních 30 dní stáhneme při nejbližší synchronizaci."
       },
-      "uploadStatement": "Nahrát výpis"
+      "uploadStatement": "Nahrát výpis",
+      "edit": {
+        "open": "Upravit",
+        "filter": "Stahovat jen pohyby obsahující",
+        "filterPlaceholder": "např. Google, Meta",
+        "filterHint": "Pro osobní účet: uloží se jen platby, jejichž protistrana nebo zpráva obsahuje některé z těchto slov (oddělte čárkou), a to příchozí i odchozí. Ostatní pohyby z banky do Billanty vůbec nedorazí. Prázdné = stahovat jen příchozí platby jako dosud.",
+        "filterOn": "jen {words}",
+        "save": "Uložit"
+      }
     },
     "fee": "poplatek {amount}",
     "netReceived": "připsáno {amount}",

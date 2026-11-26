@@ -1152,7 +1152,15 @@
         "note": "I pagamenti ricevuti vengono abbinati alle fatture in base al numero di fattura o al simbolo variabile (VS) nella descrizione o nei metadati del pagamento e in base all’importo. La commissione trattenuta da Stripe viene registrata sulla fattura. I pagamenti con carta fatti da un link di fattura Billanta sono già registrati e qui non compariranno di nuovo.",
         "connected": "Stripe collegato. I pagamenti degli ultimi 30 giorni arriveranno con la prossima sincronizzazione."
       },
-      "uploadStatement": "Carica estratto conto"
+      "uploadStatement": "Carica estratto conto",
+      "edit": {
+        "open": "Modifica",
+        "filter": "Scarica solo i movimenti che contengono",
+        "filterPlaceholder": "es. Google, Meta",
+        "filterHint": "Per un conto personale: si salvano solo i pagamenti la cui controparte o causale contiene una di queste parole (separate da virgola), in entrata e in uscita. Nient’altro arriva a Billanta. Vuoto = solo pagamenti in entrata, come prima.",
+        "filterOn": "solo {words}",
+        "save": "Salva"
+      }
     },
     "fee": "commissione {amount}",
     "netReceived": "accreditati {amount}",

@@ -1152,7 +1152,15 @@
         "note": "Los pagos recibidos se concilian con las facturas por el número de factura o el símbolo variable (VS) en la descripción o los metadatos del pago, y por el importe. La comisión que retuvo Stripe se registra en la factura. Los pagos con tarjeta hechos desde un enlace de factura de Billanta ya están registrados y no volverán a aparecer aquí.",
         "connected": "Stripe conectado. Los pagos de los últimos 30 días llegarán con la próxima sincronización."
       },
-      "uploadStatement": "Subir extracto"
+      "uploadStatement": "Subir extracto",
+      "edit": {
+        "open": "Editar",
+        "filter": "Descargar solo movimientos que contengan",
+        "filterPlaceholder": "p. ej. Google, Meta",
+        "filterHint": "Para una cuenta personal: solo se guardan los pagos cuya contraparte o mensaje contenga alguna de estas palabras (separadas por comas), entrantes y salientes. Nada más del banco llega a Billanta. Vacío = solo pagos entrantes, como hasta ahora.",
+        "filterOn": "solo {words}",
+        "save": "Guardar"
+      }
     },
     "fee": "comisión {amount}",
     "netReceived": "abonado {amount}",

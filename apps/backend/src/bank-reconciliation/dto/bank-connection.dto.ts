@@ -12,6 +12,7 @@ export class CreateBankConnectionDto extends createZodDto(createBankConnectionSc
 export const updateBankConnectionSchema = z.object({
   enabled: z.boolean().optional(),
   label: z.string().trim().max(80).nullish().transform((v) => (v === undefined ? undefined : v || null)),
+  importFilter: z.string().trim().max(500).nullish().transform((v) => (v === undefined ? undefined : v || null)),
 });
 
 export class UpdateBankConnectionDto extends createZodDto(updateBankConnectionSchema) {}

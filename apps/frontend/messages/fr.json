@@ -1152,7 +1152,15 @@
         "note": "Les paiements reçus sont rapprochés des factures d’après le numéro de facture ou le symbole variable (VS) figurant dans la description ou les métadonnées du paiement, et d’après le montant. Les frais retenus par Stripe sont comptabilisés sur la facture. Les paiements par carte effectués depuis un lien de facture Billanta sont déjà enregistrés et n’apparaîtront pas ici une seconde fois.",
         "connected": "Stripe connecté. Les paiements des 30 derniers jours arriveront lors de la prochaine synchronisation."
       },
-      "uploadStatement": "Importer un relevé"
+      "uploadStatement": "Importer un relevé",
+      "edit": {
+        "open": "Modifier",
+        "filter": "Ne télécharger que les mouvements contenant",
+        "filterPlaceholder": "p. ex. Google, Meta",
+        "filterHint": "Pour un compte personnel : seuls les paiements dont la contrepartie ou le message contient l’un de ces mots (séparés par des virgules) sont enregistrés, entrants et sortants. Rien d’autre n’arrive dans Billanta. Vide = paiements entrants seulement, comme avant.",
+        "filterOn": "seulement {words}",
+        "save": "Enregistrer"
+      }
     },
     "fee": "frais {amount}",
     "netReceived": "crédité {amount}",

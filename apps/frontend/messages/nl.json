@@ -1152,7 +1152,15 @@
         "note": "Ontvangen betalingen worden aan facturen gekoppeld op basis van het factuurnummer of het variabel symbool (VS) in de omschrijving of metadata van de betaling, en op basis van het bedrag. De kosten die Stripe heeft ingehouden, worden op de factuur geboekt. Kaartbetalingen via een Billanta-factuurlink zijn al geregistreerd en verschijnen hier niet nog eens.",
         "connected": "Stripe gekoppeld. De betalingen van de afgelopen 30 dagen komen binnen bij de volgende synchronisatie."
       },
-      "uploadStatement": "Afschrift uploaden"
+      "uploadStatement": "Afschrift uploaden",
+      "edit": {
+        "open": "Bewerken",
+        "filter": "Alleen transacties downloaden met",
+        "filterPlaceholder": "bijv. Google, Meta",
+        "filterHint": "Voor een privérekening: alleen betalingen waarvan de tegenpartij of omschrijving een van deze woorden bevat (gescheiden door komma’s) worden opgeslagen, inkomend en uitgaand. Verder komt er niets in Billanta. Leeg = alleen inkomende betalingen, zoals voorheen.",
+        "filterOn": "alleen {words}",
+        "save": "Opslaan"
+      }
     },
     "fee": "kosten {amount}",
     "netReceived": "{amount} bijgeschreven",

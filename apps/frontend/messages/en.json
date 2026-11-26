@@ -1153,7 +1153,15 @@
         "note": "Received payments are matched to invoices by the invoice number or variable symbol in the payment's description or metadata, and by amount. The fee Stripe kept is booked on the invoice. Card payments made from a Billanta invoice link are already recorded and will not show up here again.",
         "connected": "Stripe connected. The last 30 days of payments arrive with the next sync."
       },
-      "uploadStatement": "Upload a statement"
+      "uploadStatement": "Upload a statement",
+      "edit": {
+        "open": "Edit",
+        "filter": "Only download movements containing",
+        "filterPlaceholder": "e.g. Google, Meta",
+        "filterHint": "For a personal account: only payments whose counterparty or message contains one of these words (comma separated) are stored, incoming and outgoing. Nothing else from the bank reaches Billanta. Empty = incoming payments only, as before.",
+        "filterOn": "only {words}",
+        "save": "Save"
+      }
     },
     "fee": "fee {amount}",
     "netReceived": "credited {amount}",

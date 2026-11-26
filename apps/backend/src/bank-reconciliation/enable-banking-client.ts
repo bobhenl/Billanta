@@ -108,6 +108,8 @@ type RawTransaction = {
   transaction_date?: string | null;
   debtor?: { name?: string | null } | null;
   debtor_account?: { iban?: string | null; other?: { identification?: string | null } | null } | null;
+  creditor?: { name?: string | null } | null;
+  creditor_account?: { iban?: string | null; other?: { identification?: string | null } | null } | null;
   remittance_information?: string[] | null;
   reference_number?: string | null;
   end_to_end_id?: string | null;
@@ -119,32 +121,37 @@ function parseDay(raw: string | null | undefined): Date | null {
 }
 
 /**
- * Booked incoming payments only. The id prefers the bank's own entry
+ * Booked incoming payments, and with `outgoing` the debits too (negative,
+ * the payee as counterparty). The id prefers the bank's own entry
  * reference so overlapping windows don't store a payment twice; without one
  * it falls back to a fingerprint of date, amount and remittance.
  */
-export function parseTransactions(accountUid: string, raw: RawTransaction[]): Psd2SyncedRow[] {
+export function parseTransactions(accountUid: string, raw: RawTransaction[], outgoing = false): Psd2SyncedRow[] {
   const rows: Psd2SyncedRow[] = [];
   for (const tx of raw) {
-    if (tx.credit_debit_indicator !== "CRDT") continue;
+    const debit = tx.credit_debit_indicator === "DBIT";
+    if (tx.credit_debit_indicator !== "CRDT" && !(outgoing && debit)) continue;
     if (tx.status && tx.status !== "BOOK") continue;
     const amount = Number(tx.transaction_amount?.amount);
     const date = parseDay(tx.booking_date) ?? parseDay(tx.value_date) ?? parseDay(tx.transaction_date);
     if (!Number.isFinite(amount) || amount <= 0 || !date) continue;
 
     const remittance = tx.remittance_information ?? [];
+    const party = debit ? tx.creditor : tx.debtor;
+    const partyAccount = debit ? tx.creditor_account : tx.debtor_account;
     const ref =
       tx.entry_reference ||
       tx.transaction_id ||
-      `${date.toISOString().slice(0, 10)}|${amount.toFixed(2)}|${remittance.join(" ").slice(0, 120)}|${tx.debtor_account?.iban ?? ""}`;
+      `${date.toISOString().slice(0, 10)}|${debit ? "-" : ""}${amount.toFixed(2)}|${remittance.join(" ").slice(0, 120)}|${partyAccount?.iban ?? ""}`;
     rows.push({
       externalId: `psd2:${accountUid}:${ref}`.slice(0, 300),
       transactionDate: date,
-      amount: amount.toFixed(2),
+      amount: (debit ? -amount : amount).toFixed(2),
       currency: (tx.transaction_amount?.currency ?? "CZK").toUpperCase().slice(0, 3),
       variableSymbol: extractVariableSymbol([...remittance, tx.reference_number, tx.end_to_end_id]),
-      counterpartyAccount: tx.debtor_account?.iban ?? tx.debtor_account?.other?.identification ?? null,
-      counterpartyName: tx.debtor?.name ?? null,
+      counterpartyAccount: partyAccount?.iban ?? partyAccount?.other?.identification ?? null,
+      counterpartyName: party?.name ?? null,
+      message: remittance.join(" ").trim().slice(0, 500) || null,
     });
   }
   return rows;
@@ -234,8 +241,8 @@ export class EnableBankingClient {
     await this.request("DELETE", `/sessions/${encodeURIComponent(sessionId)}`).catch(() => undefined);
   }
 
-  /** Incoming booked payments since `from`, following continuation keys (capped at 20 pages). */
-  async fetchIncoming(accountUid: string, from: Date): Promise<Psd2SyncedRow[]> {
+  /** Booked payments since `from` (incoming, plus outgoing when asked), following continuation keys (capped at 20 pages). */
+  async fetchIncoming(accountUid: string, from: Date, outgoing = false): Promise<Psd2SyncedRow[]> {
     const raw: RawTransaction[] = [];
     let continuation: string | undefined;
     for (let page = 0; page < 20; page++) {
@@ -249,6 +256,12 @@ export class EnableBankingClient {
       if (!body.continuation_key) break;
       continuation = body.continuation_key;
     }
-    return parseTransactions(accountUid, raw);
+    return parseTransactions(accountUid, raw, outgoing);
+  }
+
+  /** The account's currency, for connections made before it was stored. */
+  async accountCurrency(accountUid: string): Promise<string | null> {
+    const body = await this.request<{ currency?: string | null }>("GET", `/accounts/${encodeURIComponent(accountUid)}/details`);
+    return body.currency ? body.currency.toUpperCase().slice(0, 3) : null;
   }
 }

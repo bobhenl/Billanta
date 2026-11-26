@@ -680,6 +680,13 @@
       "when": 1793508120000,
       "tag": "0097_bank_transfer_pair",
       "breakpoints": true
+    },
+    {
+      "idx": 98,
+      "version": "7",
+      "when": 1793600000000,
+      "tag": "0098_bank_connection_filter",
+      "breakpoints": true
     }
   ]
 }

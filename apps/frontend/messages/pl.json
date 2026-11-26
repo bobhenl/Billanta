@@ -1152,7 +1152,15 @@
         "note": "Otrzymane płatności są parowane z fakturami według numeru faktury lub symbolu zmiennego (VS) w opisie lub metadanych płatności oraz według kwoty. Prowizja pobrana przez Stripe jest księgowana na fakturze. Płatności kartą z linku do faktury Billanta są już zapisane i nie pojawią się tu ponownie.",
         "connected": "Stripe połączony. Płatności z ostatnich 30 dni pojawią się przy najbliższej synchronizacji."
       },
-      "uploadStatement": "Wgraj wyciąg"
+      "uploadStatement": "Wgraj wyciąg",
+      "edit": {
+        "open": "Edytuj",
+        "filter": "Pobieraj tylko operacje zawierające",
+        "filterPlaceholder": "np. Google, Meta",
+        "filterHint": "Dla konta prywatnego: zapisywane są tylko płatności, których kontrahent lub tytuł zawiera jedno z tych słów (oddzielone przecinkiem), przychodzące i wychodzące. Nic innego nie trafia do Billanty. Puste = tylko wpływy, jak dotąd.",
+        "filterOn": "tylko {words}",
+        "save": "Zapisz"
+      }
     },
     "fee": "prowizja {amount}",
     "netReceived": "zaksięgowano {amount}",

@@ -1261,6 +1261,10 @@ export const bankConnections = pgTable("bank_connections", {
    * drafts; older ones are taken as invoiced already. Migration 0089.
    */
   autoDraftFrom: timestamp("auto_draft_from", { withTimezone: true }),
+  /** Words a movement must contain to be stored (comma or newline separated); null keeps everything. Migration 0098. */
+  importFilter: text("import_filter"),
+  /** PSD2: the account's currency, which tells apart sub-accounts sharing an IBAN. Migration 0098. */
+  currency: varchar("currency", { length: 3 }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

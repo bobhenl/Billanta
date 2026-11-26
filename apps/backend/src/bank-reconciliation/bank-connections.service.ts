@@ -35,6 +35,7 @@ import {
   type FioSyncedRow,
 } from "./fio-client";
 import { missingNets } from "./dedupe";
+import { filterWords, passesImportFilter } from "./import-filter";
 import { PaypalApiError, PaypalClient, paypalBackfillRange, paypalSyncFrom, type PaypalCredentials, type PaypalSyncedRow } from "./paypal-client";
 import {
   STRIPE_BACKFILL_MAX_PAGES,
@@ -69,6 +70,8 @@ export const PSD2_COUNTRIES = [
 /** The bank list per country barely changes: one fetch a day serves every tenant. */
 const BANK_LIST_TTL_MS = DAY_MS;
 const bankListCache = new Map<string, { at: number; banks: Promise<Aspsp[]> }>();
+/** Connections whose currency the bank was already asked for in this process; one failure shouldn't slow every page load. */
+const triedCurrency = new Set<string>();
 
 function encryptionKey(): string | undefined {
   return process.env.AI_KEY_ENCRYPTION_KEY ?? process.env.BACKUP_CONFIG_ENCRYPTION_KEY;
@@ -94,6 +97,8 @@ function toPublic(row: BankConnectionRow) {
     bankName: row.bankName,
     bankCountry: row.bankCountry,
     consentExpiresAt: row.consentExpiresAt,
+    currency: row.currency,
+    importFilter: row.importFilter,
     enabled: row.enabled,
     lastSyncedAt: row.lastSyncedAt,
     lastError: row.lastError,
@@ -285,7 +290,7 @@ export class BankConnectionsService {
       session.accounts[0]!;
     await db
       .update(schema.bankConnections)
-      .set({ ...common, externalAccountId: primary.uid, accountNumber: primary.iban ?? row.accountNumber })
+      .set({ ...common, externalAccountId: primary.uid, accountNumber: primary.iban ?? row.accountNumber, currency: primary.currency ?? row.currency })
       .where(eq(schema.bankConnections.id, row.id));
 
     for (const account of session.accounts) {
@@ -296,7 +301,7 @@ export class BankConnectionsService {
       if (same) {
         await db
           .update(schema.bankConnections)
-          .set({ ...common, externalAccountId: account.uid, accountNumber: account.iban ?? same.accountNumber })
+          .set({ ...common, externalAccountId: account.uid, accountNumber: account.iban ?? same.accountNumber, currency: account.currency ?? same.currency })
           .where(eq(schema.bankConnections.id, same.id));
       } else {
         await db.insert(schema.bankConnections).values({
@@ -306,6 +311,7 @@ export class BankConnectionsService {
           label: account.name,
           externalAccountId: account.uid,
           accountNumber: account.iban,
+          currency: account.currency,
         });
       }
     }
@@ -340,7 +346,28 @@ export class BankConnectionsService {
 
   async list(db: TenantDb) {
     const rows = await db.select().from(schema.bankConnections).orderBy(asc(schema.bankConnections.createdAt));
+    await this.fillCurrencies(db, rows);
     return rows.filter((r) => r.status !== "pending").map(toPublic);
+  }
+
+  /**
+   * Connections made before the currency was stored ask the bank once. Without
+   * it, a Revolut's sub-accounts all look alike (they share the IBAN).
+   */
+  private async fillCurrencies(db: TenantDb, rows: BankConnectionRow[]) {
+    const missing = rows.filter((r) => r.provider === "enable_banking" && r.status === "active" && !r.currency && r.externalAccountId);
+    if (missing.length === 0 || !enableBankingConfig()) return;
+    const client = this.psd2Client();
+    await Promise.all(
+      missing.map(async (row) => {
+        if (triedCurrency.has(row.id)) return;
+        triedCurrency.add(row.id);
+        const currency = await client.accountCurrency(row.externalAccountId!).catch(() => null);
+        if (!currency) return;
+        row.currency = currency;
+        await db.update(schema.bankConnections).set({ currency }).where(eq(schema.bankConnections.id, row.id));
+      }),
+    );
   }
 
   async createFio(db: TenantDb, tenantId: string, token: string, label: string | null) {
@@ -504,7 +531,7 @@ export class BankConnectionsService {
     return new ServiceUnavailableException({ error: "bank_unavailable" });
   }
 
-  async update(db: TenantDb, id: string, patch: { enabled?: boolean; label?: string | null }) {
+  async update(db: TenantDb, id: string, patch: { enabled?: boolean; label?: string | null; importFilter?: string | null }) {
     const [row] = await db
       .update(schema.bankConnections)
       .set(patch)
@@ -624,7 +651,9 @@ export class BankConnectionsService {
       let rows: Psd2SyncedRow[];
       try {
         if (!row.externalAccountId) throw new EnableBankingError("Connection has no account", "consent_expired");
-        rows = await this.psd2Client().fetchIncoming(row.externalAccountId, from);
+        // A filtered account picks particular payments (ad spend from a personal card), so its debits count too.
+        const words = filterWords(row.importFilter);
+        rows = (await this.psd2Client().fetchIncoming(row.externalAccountId, from, words.length > 0)).filter((r) => passesImportFilter(r, words));
       } catch (err) {
         const code = err instanceof EnableBankingError ? err.code : err instanceof HttpException ? "not_configured" : "unavailable";
         if (code === "consent_expired") await this.markExpired(db, tenantId, row);
