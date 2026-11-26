@@ -24,6 +24,8 @@ export interface PublicInvoiceLineItem {
   /** Line discount in percent; missing from a backend older than migration 0092. */
   discountPercent?: number;
   sortOrder: number;
+  /** The description is encrypted ("Důvěrný režim"); the backend sends it empty. */
+  confidential?: true;
 }
 
 export interface PublicInvoiceSupplier {

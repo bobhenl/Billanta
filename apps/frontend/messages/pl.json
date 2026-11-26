@@ -767,7 +767,8 @@
     },
     "print": "Drukuj / PDF",
     "downloadPdf": "Pobierz PDF",
-    "downloadPdfShort": "PDF"
+    "downloadPdfShort": "PDF",
+    "confidentialItem": "Pozycja poufna"
   },
   "expenses": {
     "title": "Wydatki",
@@ -1761,6 +1762,10 @@
         "accountantProfile": {
           "title": "Profil księgowej",
           "description": "Wpis w katalogu księgowych i program partnerski dla księgowych."
+        },
+        "confidential": {
+          "title": "Tryb poufny",
+          "description": "Szyfrowanie tekstów dokumentów w przeglądarce"
         }
       },
       "managedByAdmins": "Danymi firmy, zespołem, subskrypcją i innymi ustawieniami firmy zarządza właściciel lub administrator."
@@ -14140,5 +14145,217 @@
   "updateNotice": {
     "text": "Jest nowa wersja Billanty. Odśwież stronę, żeby wszystko działało.",
     "reload": "Odśwież"
+  },
+  "vault": {
+    "settingsLink": "Ustawienia Trybu poufnego",
+    "plan": {
+      "title": "Tryb poufny jest dostępny w planach Plus i Business",
+      "body": "Po zmianie planu właściciel firmy włączy go tutaj. Jeśli później obniżysz plan, zaszyfrowane już dokumenty nadal da się odblokować i odczytać.",
+      "upgrade": "Zobacz plany",
+      "downgradedTitle": "Szyfrowanie kolejnych dokumentów wymaga planu Plus lub Business",
+      "downgradedBody": "Zaszyfrowane dokumenty nadal odblokujesz, odczytasz i edytujesz. Nowe dokumenty zapisują się jednak bez szyfrowania."
+    },
+    "unlock": {
+      "title": "Odblokuj Tryb poufny",
+      "lead": "Zaszyfrowane teksty otwierają się tylko w Twojej przeglądarce. Hasło ani kod nie trafiają na serwer.",
+      "cancel": "Wstecz",
+      "submit": "Odblokuj",
+      "passkeyButton": "Użyj klucza dostępu",
+      "methods": {
+        "password": "Hasło sejfu",
+        "recovery": "Kod odzyskiwania",
+        "passkey": "Klucz dostępu"
+      },
+      "password": "Hasło sejfu",
+      "currentPassword": "Obecne hasło sejfu",
+      "recovery": "Kod odzyskiwania",
+      "newPasswordRequired": "Nowe hasło sejfu (co najmniej 10 znaków)",
+      "newPasswordOptional": "Nowe hasło sejfu (opcjonalnie, jeśli zapomniałeś swojego)",
+      "passkeyLead": "Przeglądarka poprosi o odcisk palca, twarz lub klucz bezpieczeństwa.",
+      "settingsHint": "Hasłem, kluczami dostępu i kodem odzyskiwania zarządzasz w",
+      "errors": {
+        "passwordShort": "Nowe hasło musi mieć co najmniej 10 znaków.",
+        "passkeyFailed": "Klucz dostępu nie zadziałał. Spróbuj hasła lub kodu odzyskiwania.",
+        "saveFailed": "Nie udało się zapisać nowego hasła. Spróbuj ponownie.",
+        "recoveryMalformed": "Kod odzyskiwania ma 30 znaków (6 grup po 5). Sprawdź go.",
+        "noPassword": "Nie masz jeszcze hasła sejfu. Odblokuj kodem odzyskiwania i ustaw je.",
+        "wrongSecret": "Hasło lub kod się nie zgadza.",
+        "unlockFailed": "Odblokowanie nie powiodło się. Spróbuj ponownie."
+      }
+    },
+    "text": {
+      "locked": "Zaszyfrowane",
+      "otherKey": "Zaszyfrowane innym kluczem",
+      "unlock": "Odblokuj"
+    },
+    "seal": {
+      "button": {
+        "invoice": "Zaszyfruj",
+        "contact": "Zaszyfruj dokumenty klienta",
+        "company": "Zaszyfruj całą firmę"
+      },
+      "title": {
+        "invoice": "Zaszyfruj ten dokument",
+        "contact": "Zaszyfruj wszystkie dokumenty klienta",
+        "company": "Zaszyfruj wszystkie dokumenty firmy"
+      },
+      "cancel": "Wstecz",
+      "confirm": "Zaszyfruj",
+      "progress": "Szyfruję… {n}",
+      "lead": "Zaszyfruj – treść zobaczysz tylko Ty i członkowie z kluczem, serwer jej nie odczyta.",
+      "what": "Szyfrowane są opisy pozycji i notatki (nad pozycjami, pod pozycjami i wewnętrzne).",
+      "keeps": "Raporty i pulpity działają dalej: kwoty, daty i tytuły płatności pozostają niezaszyfrowane.",
+      "loses": "Dla zaszyfrowanych dokumentów serwer nie utworzy PDF ani ISDOC, nie dołączy ich do e-maila i nie znajdzie ich w wyszukiwaniu tekstowym.",
+      "locked": "Zablokowane dokumenty są pomijane.",
+      "done": "{n, plural, one {Zaszyfrowano # dokument} few {Zaszyfrowano # dokumenty} other {Zaszyfrowano # dokumentów}}.",
+      "nothing": "Nie było czego szyfrować.",
+      "failed": "Szyfrowanie nie powiodło się. Już zaszyfrowane dokumenty pozostają zaszyfrowane."
+    },
+    "editor": {
+      "lockedTitle": "Ten dokument jest zaszyfrowany",
+      "lockedLead": "Odblokuj go, aby edytować. Otworzy się tylko w Twojej przeglądarce.",
+      "otherKey": "Ten dokument jest zaszyfrowany kluczem, którego ta firma nie ma.",
+      "unlock": "Odblokuj",
+      "aiUnavailable": "Wypełnianie przez AI jest niedostępne w Trybie poufnym podczas szyfrowania – tekst musiałby trafić na serwer.",
+      "sealFailed": "Nie udało się zaszyfrować dokumentu. Nic nie zapisano.",
+      "sealToggle": "Zaszyfruj ten dokument",
+      "sealOnHint": "Opisy pozycji i notatki zobaczysz tylko Ty i członkowie z kluczem. PDF, ISDOC i podpowiedzi pozycji nie będą dostępne.",
+      "sealOffHint": "Dokument zapisze się bez szyfrowania, jak dotąd."
+    },
+    "actions": {
+      "blocked": "Niedostępne w Trybie poufnym: serwer nie odczyta zaszyfrowanego dokumentu. Wyłącz załącznik PDF/ISDOC w ustawieniach e-maili albo wyślij link.",
+      "pdfUnavailable": "PDF jest niedostępny w Trybie poufnym. Szczegóły możesz wydrukować z przeglądarki (Ctrl+P).",
+      "sendHint": "Ten dokument jest zaszyfrowany: e-mail wyjdzie tylko z linkiem, serwer nie może dołączyć PDF ani ISDOC."
+    },
+    "categories": {
+      "recommended": "Zalecane",
+      "planned": "Wkrótce",
+      "losesTitle": "Co przestanie działać:",
+      "texts": {
+        "title": "Opisy pozycji i notatki",
+        "description": "Co dostarczyłeś i notatki na dokumencie. Kwoty, daty i symbole pozostają czytelne.",
+        "loses": [
+          "PDF, ISDOC, UBL i Peppol tworzone przez serwer",
+          "Załącznik PDF/ISDOC w e-mailach",
+          "Wyszukiwanie po tekście pozycji i notatek, podpowiedzi pozycji",
+          "Wypełnianie dokumentu przez AI",
+          "Opisy pozycji w publicznym linku i w eksportach dla księgowej (Pohoda, Money, CSV)"
+        ]
+      },
+      "attachments": {
+        "title": "Załączniki i paragony",
+        "description": "Pliki przy dokumentach i wydatkach.",
+        "loses": [
+          "Odczytywanie paragonów przez AI",
+          "Podgląd załączników",
+          "Wysyłanie załączników e-mailem i przekazywanie księgowej"
+        ]
+      },
+      "contacts": {
+        "title": "Nazwy i adresy kontaktów",
+        "description": "Nazwy klientów, adresy, e-maile i telefony.",
+        "loses": [
+          "Uzupełnianie i odświeżanie z ARES",
+          "Dopasowanie płatności bankowych po nazwie płatnika",
+          "Wysyłanie e-maili przez serwer (nie zna adresu)",
+          "Wyszukiwanie kontaktów na serwerze"
+        ]
+      },
+      "amounts": {
+        "title": "Kwoty",
+        "description": "Ceny, VAT i sumy dokumentów.",
+        "loses": [
+          "Automatyczne dopasowanie płatności bankowych",
+          "Raporty VAT, JPK i eksporty VAT",
+          "Pulpity, dochód netto i wykresy",
+          "Przypomnienia z kwotą i płatności QR tworzone przez serwer"
+        ]
+      }
+    },
+    "enable": {
+      "offTitle": "Tryb poufny jest wyłączony",
+      "ownerOnly": "Włączyć go może tylko właściciel firmy.",
+      "introTitle": "Tryb poufny",
+      "intro": "Wybrane teksty są szyfrowane bezpośrednio w Twojej przeglądarce kluczem, który zna tylko Twoja firma. Ani serwer, ani jego kopie zapasowe, ani my ich nie odczytamy.",
+      "notE2eeNote": "Odblokowujesz go hasłem sejfu, kluczem dostępu lub kodem odzyskiwania. Logowanie ani weryfikacja dwuetapowa nie otwierają klucza – inaczej musiałby go znać serwer.",
+      "chooseTitle": "Co szyfrować",
+      "chooseLead": "Każda opcja wyłącza funkcje, które muszą czytać tekst. Reszta aplikacji działa dalej.",
+      "warningsTitle": "Zanim go włączysz",
+      "warnings": {
+        "lost": "Rozumiem, że jeśli stracimy wszystkie hasła sejfu i kod odzyskiwania, zaszyfrowanych danych nie da się odzyskać. Wsparcie też ich nie otworzy.",
+        "archive": "Rozumiem, że musimy archiwizować dokumenty przez 10 lat i sami składać deklaracje i raporty VAT. Będziemy regularnie pobierać archiwum dokumentów.",
+        "features": "Rozumiem, które funkcje przestaną działać dla zaszyfrowanych dokumentów."
+      },
+      "next": "Dalej",
+      "back": "Wstecz",
+      "passwordTitle": "Hasło sejfu",
+      "passwordLead": "Inne niż hasło logowania, co najmniej {n} znaków. Nie trafia na serwer.",
+      "password": "Hasło sejfu",
+      "passwordAgain": "Powtórz hasło",
+      "codeTitle": "Kod odzyskiwania",
+      "codeLead": "Pokazywany tylko teraz. Wydrukuj go lub przechowuj poza komputerem. Odblokuje dane, gdy zapomnisz hasła, i przekażesz go współpracownikom, którzy mają mieć dostęp.",
+      "copied": "Skopiowano",
+      "copy": "Kopiuj",
+      "download": "Pobierz jako plik",
+      "codeFileHeader": "Kod odzyskiwania Trybu poufnego ({site}). Przechowuj go w bezpiecznym miejscu.",
+      "retype": "Przepisz kod, aby go sprawdzić",
+      "retypeMismatch": "Kod jeszcze się nie zgadza.",
+      "submit": "Włącz Tryb poufny",
+      "done": "Tryb poufny jest włączony.",
+      "errors": {
+        "acks": "Potwierdź wszystkie ostrzeżenia.",
+        "passwordShort": "Hasło musi mieć co najmniej {n} znaków.",
+        "passwordMismatch": "Hasła się nie zgadzają.",
+        "failed": "Włączenie nie powiodło się. Spróbuj ponownie.",
+        "vault_already_enabled": "Tryb poufny jest już włączony.",
+        "owner_only": "Włączyć go może tylko właściciel firmy.",
+        "plan_required": "Tryb poufny jest dostępny w planach Plus i Business."
+      }
+    },
+    "settings": {
+      "title": "Tryb poufny",
+      "description": "Szyfrowanie tekstów dokumentów w przeglądarce.",
+      "loadError": "Nie udało się wczytać ustawień.",
+      "failed": "Nie udało się. Spróbuj ponownie.",
+      "onTitle": "Tryb poufny jest włączony",
+      "unlockedHere": "Odblokowany w tej przeglądarce. Po wylogowaniu klucz zostanie usunięty.",
+      "lockedHere": "Zablokowany w tej przeglądarce.",
+      "lock": "Zablokuj",
+      "unlock": "Odblokuj",
+      "archiveTitle": "Archiwum to Twoja sprawa",
+      "archiveBody": "Musisz przechowywać dokumenty przez 10 lat, a deklaracje i raporty VAT pozostają Twoim obowiązkiem. Regularnie pobieraj archiwum dokumentów i trzymaj kod odzyskiwania poza komputerem.",
+      "archiveLink": "Eksporty i archiwum",
+      "sealTitle": "Zaszyfruj istniejące dokumenty",
+      "sealLead": "Starsze dokumenty pozostają niezaszyfrowane, dopóki ich nie edytujesz lub nie zaszyfrujesz tutaj.",
+      "sealNew": "Szyfruj nowe dokumenty automatycznie",
+      "sealNewHint": "W edytorze opcja Zaszyfruj ten dokument będzie domyślnie włączona.",
+      "saved": "Zapisano",
+      "methodsTitle": "Moje sposoby odblokowania",
+      "passwordSet": "Hasło sejfu jest ustawione",
+      "passwordMissing": "Nie masz jeszcze hasła sejfu",
+      "changePassword": "Zmień",
+      "setPassword": "Ustaw",
+      "passkeyUnnamed": "Klucz dostępu",
+      "passkeyRemoved": "Usunięto klucz dostępu",
+      "removePasskey": "Usuń klucz dostępu",
+      "passkeyLead": "Odblokowanie odciskiem palca lub twarzą",
+      "addPasskey": "Dodaj klucz dostępu",
+      "newPassword": "Nowe hasło sejfu (co najmniej {n} znaków)",
+      "savePassword": "Zapisz hasło",
+      "passwordShort": "Hasło musi mieć co najmniej {n} znaków.",
+      "passwordSaved": "Zapisano hasło sejfu",
+      "passkeyHint": "Potwierdź obecnym hasłem lub kodem odzyskiwania, a przeglądarka poprosi o utworzenie klucza dostępu.",
+      "passkeyLabel": "Nazwa (np. Laptop)",
+      "passkeyNoPrf": "To urządzenie lub przeglądarka nie obsługuje kluczy dostępu do szyfrowania.",
+      "passkeyAdded": "Dodano klucz dostępu",
+      "recoveryTitle": "Kod odzyskiwania",
+      "recoveryLead": "Nowy kod od razu unieważnia stary. Współpracownicy, którzy odblokowywali starym kodem, zachowują własne hasło.",
+      "recoveryShownOnce": "Kod jest pokazywany tylko teraz. Przechowuj go w bezpiecznym miejscu.",
+      "recoveryWritten": "Zapisałem go",
+      "recoveryNew": "Utwórz nowy kod odzyskiwania",
+      "recoveryReplaced": "Nowy kod odzyskiwania obowiązuje",
+      "categoriesTitle": "Co jest szyfrowane",
+      "categoriesLead": "Kolejne opcje wkrótce. Przy każdej widać, co przestałoby działać."
+    }
   }
 }

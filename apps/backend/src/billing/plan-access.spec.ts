@@ -72,6 +72,8 @@ describe("planAllows", () => {
     expect(planAllows({ plan: "start", enforced: true }, "bank_sync")).toBe(true);
     expect(planAllows({ plan: "start", enforced: true }, "card_payments")).toBe(false);
     expect(planAllows({ plan: "plus", enforced: true }, "card_payments")).toBe(true);
+    expect(planAllows({ plan: "start", enforced: true }, "confidential_mode")).toBe(false);
+    expect(planAllows({ plan: "business", enforced: true }, "confidential_mode")).toBe(true);
   });
 });
 

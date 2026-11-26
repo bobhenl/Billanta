@@ -112,6 +112,7 @@ export const FEATURE_MIN_PLAN = {
   stripe_sync: "start",
   api_keys: "start",
   card_payments: "plus",
+  confidential_mode: "plus",
 } as const satisfies Record<string, PaidPlan>;
 export type PlanFeature = keyof typeof FEATURE_MIN_PLAN;
 

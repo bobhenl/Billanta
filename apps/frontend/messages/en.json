@@ -768,7 +768,8 @@
     },
     "print": "Print / PDF",
     "downloadPdf": "Download PDF",
-    "downloadPdfShort": "PDF"
+    "downloadPdfShort": "PDF",
+    "confidentialItem": "Confidential item"
   },
   "expenses": {
     "title": "Expenses",
@@ -1762,6 +1763,10 @@
         "accountantProfile": {
           "title": "Accountant profile",
           "description": "Directory and partner programme"
+        },
+        "confidential": {
+          "title": "Confidential mode",
+          "description": "Encrypt document texts in the browser"
         }
       },
       "managedByAdmins": "Company details, the team, the subscription and other company settings are managed by the owner or an admin."
@@ -14151,5 +14156,217 @@
   "updateNotice": {
     "text": "There is a new version of Billanta. Reload the page so everything works.",
     "reload": "Reload"
+  },
+  "vault": {
+    "settingsLink": "Confidential mode settings",
+    "unlock": {
+      "title": "Unlock Confidential mode",
+      "lead": "Encrypted texts open only in your browser. Your password and code are never sent to the server.",
+      "cancel": "Back",
+      "submit": "Unlock",
+      "passkeyButton": "Use a passkey",
+      "methods": {
+        "password": "Vault password",
+        "recovery": "Recovery code",
+        "passkey": "Passkey"
+      },
+      "password": "Vault password",
+      "currentPassword": "Current vault password",
+      "recovery": "Recovery code",
+      "newPasswordRequired": "New vault password (at least 10 characters)",
+      "newPasswordOptional": "New vault password (optional, if you forgot yours)",
+      "passkeyLead": "Your browser will ask for a fingerprint, face or security key.",
+      "settingsHint": "Manage your password, passkeys and recovery code in",
+      "errors": {
+        "passwordShort": "The new password must have at least 10 characters.",
+        "passkeyFailed": "The passkey did not work. Try your password or the recovery code.",
+        "saveFailed": "The new password could not be saved. Please try again.",
+        "recoveryMalformed": "The recovery code has 30 characters (6 groups of 5). Please check it.",
+        "noPassword": "You have no vault password yet. Unlock with the recovery code and set one.",
+        "wrongSecret": "The password or code does not match.",
+        "unlockFailed": "Unlocking failed. Please try again."
+      }
+    },
+    "text": {
+      "locked": "Encrypted",
+      "otherKey": "Encrypted with a different key",
+      "unlock": "Unlock"
+    },
+    "seal": {
+      "button": {
+        "invoice": "Encrypt",
+        "contact": "Encrypt client's documents",
+        "company": "Encrypt the whole company"
+      },
+      "title": {
+        "invoice": "Encrypt this document",
+        "contact": "Encrypt all documents of this client",
+        "company": "Encrypt all company documents"
+      },
+      "cancel": "Back",
+      "confirm": "Encrypt",
+      "progress": "Encrypting… {n}",
+      "lead": "Encrypt – only you and members with the key will see the content, the server cannot read it.",
+      "what": "Line descriptions and notes (above items, below items and internal) are encrypted.",
+      "keeps": "Reports and dashboards keep working: amounts, dates and variable symbols stay unencrypted.",
+      "loses": "For encrypted documents the server cannot create a PDF or ISDOC, attach them to an email or find them by text search.",
+      "locked": "Locked documents are skipped.",
+      "done": "{n, plural, one {# document encrypted} other {# documents encrypted}}.",
+      "nothing": "There was nothing to encrypt.",
+      "failed": "Encryption failed. Documents already encrypted stay encrypted."
+    },
+    "editor": {
+      "lockedTitle": "This document is encrypted",
+      "lockedLead": "Unlock it to edit. It opens only in your browser.",
+      "otherKey": "This document is encrypted with a key this company does not have.",
+      "unlock": "Unlock",
+      "aiUnavailable": "AI prefill is unavailable in Confidential mode while encrypting – the text would have to go to the server.",
+      "sealFailed": "The document could not be encrypted. Nothing was saved.",
+      "sealToggle": "Encrypt this document",
+      "sealOnHint": "Only you and members with the key will see line descriptions and notes. PDF, ISDOC and item suggestions will not be available.",
+      "sealOffHint": "The document is saved without encryption, as before."
+    },
+    "actions": {
+      "blocked": "Unavailable in Confidential mode: the server cannot read an encrypted document. Turn off the PDF/ISDOC attachment in email settings, or send a link.",
+      "pdfUnavailable": "PDF is unavailable in Confidential mode. You can print the detail from your browser (Ctrl+P).",
+      "sendHint": "This document is encrypted: the email goes out with a link only, the server cannot attach a PDF or ISDOC."
+    },
+    "categories": {
+      "recommended": "Recommended",
+      "planned": "Coming soon",
+      "losesTitle": "What stops working:",
+      "texts": {
+        "title": "Line descriptions and notes",
+        "description": "What you supplied and the notes on the document. Amounts, dates and symbols stay readable.",
+        "loses": [
+          "PDF, ISDOC, UBL and Peppol created by the server",
+          "PDF/ISDOC attachment in emails",
+          "Search by item and note text, item suggestions",
+          "AI document prefill",
+          "Line descriptions on the public link and in accountant exports (Pohoda, Money, CSV)"
+        ]
+      },
+      "attachments": {
+        "title": "Attachments and receipts",
+        "description": "Files attached to documents and expenses.",
+        "loses": [
+          "AI receipt extraction",
+          "Attachment previews",
+          "Sending attachments by email and handing them to your accountant"
+        ]
+      },
+      "contacts": {
+        "title": "Contact names and addresses",
+        "description": "Customer names, addresses, emails and phone numbers.",
+        "loses": [
+          "Filling in and refreshing from ARES",
+          "Bank payment matching by payer name",
+          "Emails sent by the server (it does not know the address)",
+          "Contact search on the server"
+        ]
+      },
+      "amounts": {
+        "title": "Amounts",
+        "description": "Prices, VAT and document totals.",
+        "loses": [
+          "Automatic bank payment matching",
+          "VAT reports, control statement and VAT exports",
+          "Dashboards, net income and charts",
+          "Reminders with amounts and QR payments created by the server"
+        ]
+      }
+    },
+    "enable": {
+      "offTitle": "Confidential mode is off",
+      "ownerOnly": "Only the company owner can turn it on.",
+      "introTitle": "Confidential mode",
+      "intro": "Selected texts are encrypted right in your browser with a key only your company knows. The server, its backups and we cannot read them.",
+      "notE2eeNote": "You unlock it with a vault password, a passkey or the recovery code. Signing in or two-factor authentication does not open the key – otherwise the server would have to know it.",
+      "chooseTitle": "What to encrypt",
+      "chooseLead": "Each option turns off features that need to read the text. The rest of the app keeps working.",
+      "warningsTitle": "Before you turn it on",
+      "warnings": {
+        "lost": "I understand that if we lose all vault passwords and the recovery code, encrypted data cannot be recovered. Support cannot open it either.",
+        "archive": "I understand that we must keep documents for 10 years and file VAT returns and statements ourselves. We will download the document archive regularly.",
+        "features": "I understand which features stop working for encrypted documents."
+      },
+      "next": "Continue",
+      "back": "Back",
+      "passwordTitle": "Vault password",
+      "passwordLead": "Different from your sign-in password, at least {n} characters. It is never sent to the server.",
+      "password": "Vault password",
+      "passwordAgain": "Password again",
+      "codeTitle": "Recovery code",
+      "codeLead": "Shown only now. Print it or store it off your computer. It unlocks the data if you forget your password, and you give it to colleagues who should have access.",
+      "copied": "Copied",
+      "copy": "Copy",
+      "download": "Download as a file",
+      "codeFileHeader": "Confidential mode recovery code ({site}). Keep it in a safe place.",
+      "retype": "Retype the code to check it",
+      "retypeMismatch": "The code does not match yet.",
+      "submit": "Turn on Confidential mode",
+      "done": "Confidential mode is on.",
+      "errors": {
+        "acks": "Please confirm all warnings.",
+        "passwordShort": "The password must have at least {n} characters.",
+        "passwordMismatch": "The passwords do not match.",
+        "failed": "Turning it on failed. Please try again.",
+        "vault_already_enabled": "Confidential mode is already on.",
+        "owner_only": "Only the company owner can turn it on.",
+        "plan_required": "Confidential mode is part of the Plus and Business plans."
+      }
+    },
+    "settings": {
+      "title": "Confidential mode",
+      "description": "Encrypt document texts in your browser.",
+      "loadError": "The settings could not be loaded.",
+      "failed": "That did not work. Please try again.",
+      "onTitle": "Confidential mode is on",
+      "unlockedHere": "Unlocked in this browser. The key is deleted when you sign out.",
+      "lockedHere": "Locked in this browser.",
+      "lock": "Lock",
+      "unlock": "Unlock",
+      "archiveTitle": "The archive is up to you",
+      "archiveBody": "You must keep documents for 10 years, and VAT returns and statements remain your duty. Download the document archive regularly and keep the recovery code off your computer.",
+      "archiveLink": "Exports and archive",
+      "sealTitle": "Encrypt existing documents",
+      "sealLead": "Older documents stay unencrypted until you edit them or encrypt them here.",
+      "sealNew": "Encrypt new documents automatically",
+      "sealNewHint": "The Encrypt this document option will be on by default in the editor.",
+      "saved": "Saved",
+      "methodsTitle": "My unlock methods",
+      "passwordSet": "Vault password is set",
+      "passwordMissing": "You have no vault password yet",
+      "changePassword": "Change",
+      "setPassword": "Set",
+      "passkeyUnnamed": "Passkey",
+      "passkeyRemoved": "Passkey removed",
+      "removePasskey": "Remove passkey",
+      "passkeyLead": "Unlock with a fingerprint or face",
+      "addPasskey": "Add a passkey",
+      "newPassword": "New vault password (at least {n} characters)",
+      "savePassword": "Save password",
+      "passwordShort": "The password must have at least {n} characters.",
+      "passwordSaved": "Vault password saved",
+      "passkeyHint": "Confirm with your current password or the recovery code, then your browser will ask you to create a passkey.",
+      "passkeyLabel": "Name (e.g. Laptop)",
+      "passkeyNoPrf": "This device or browser does not support passkeys for encryption.",
+      "passkeyAdded": "Passkey added",
+      "recoveryTitle": "Recovery code",
+      "recoveryLead": "A new code invalidates the old one right away. Colleagues who unlocked with the old code keep their own password.",
+      "recoveryShownOnce": "The code is shown only now. Keep it in a safe place.",
+      "recoveryWritten": "I have saved it",
+      "recoveryNew": "Create a new recovery code",
+      "recoveryReplaced": "The new recovery code is active",
+      "categoriesTitle": "What is encrypted",
+      "categoriesLead": "More options are coming. Each one shows what would stop working."
+    },
+    "plan": {
+      "title": "Confidential mode is part of the Plus and Business plans",
+      "body": "After upgrading, the company owner turns it on here. If you downgrade later, documents already encrypted can still be unlocked and read.",
+      "upgrade": "See plans",
+      "downgradedTitle": "Encrypting more documents needs the Plus or Business plan",
+      "downgradedBody": "You can still unlock, read and edit encrypted documents. New documents are saved without encryption."
+    }
   }
 }

@@ -767,7 +767,8 @@
     },
     "print": "Tipărire / PDF",
     "downloadPdf": "Descărcați PDF",
-    "downloadPdfShort": "PDF"
+    "downloadPdfShort": "PDF",
+    "confidentialItem": "Poziție confidențială"
   },
   "expenses": {
     "title": "Cheltuieli",
@@ -1761,6 +1762,10 @@
         "accountantProfile": {
           "title": "Profil de contabil",
           "description": "Listarea în directorul de contabili și programul de parteneriat pentru contabili."
+        },
+        "confidential": {
+          "title": "Modul confidențial",
+          "description": "Criptarea textelor documentelor în browser"
         }
       },
       "managedByAdmins": "Datele firmei, echipa, abonamentul și celelalte setări ale firmei sunt administrate de proprietar sau de un administrator."
@@ -14139,5 +14144,217 @@
   "updateNotice": {
     "text": "Există o versiune nouă Billanta. Reîncărcați pagina ca totul să funcționeze.",
     "reload": "Reîncarcă"
+  },
+  "vault": {
+    "settingsLink": "Setările Modului confidențial",
+    "plan": {
+      "title": "Modul confidențial este inclus în planurile Plus și Business",
+      "body": "După upgrade, proprietarul firmei îl activează aici. Dacă treceți mai târziu la un plan inferior, documentele deja criptate pot fi în continuare deblocate și citite.",
+      "upgrade": "Vezi planurile",
+      "downgradedTitle": "Criptarea altor documente necesită planul Plus sau Business",
+      "downgradedBody": "Puteți în continuare debloca, citi și edita documentele criptate. Documentele noi se salvează însă fără criptare."
+    },
+    "unlock": {
+      "title": "Deblocați Modul confidențial",
+      "lead": "Textele criptate se deschid doar în browserul dvs. Parola și codul nu sunt trimise niciodată la server.",
+      "cancel": "Înapoi",
+      "submit": "Deblocați",
+      "passkeyButton": "Folosiți o cheie de acces",
+      "methods": {
+        "password": "Parola seifului",
+        "recovery": "Cod de recuperare",
+        "passkey": "Cheie de acces"
+      },
+      "password": "Parola seifului",
+      "currentPassword": "Parola actuală a seifului",
+      "recovery": "Cod de recuperare",
+      "newPasswordRequired": "Parolă nouă pentru seif (cel puțin 10 caractere)",
+      "newPasswordOptional": "Parolă nouă pentru seif (opțional, dacă ați uitat-o pe a dvs.)",
+      "passkeyLead": "Browserul vă va cere amprenta, fața sau o cheie de securitate.",
+      "settingsHint": "Parola, cheile de acces și codul de recuperare le gestionați în",
+      "errors": {
+        "passwordShort": "Parola nouă trebuie să aibă cel puțin 10 caractere.",
+        "passkeyFailed": "Cheia de acces nu a funcționat. Încercați parola sau codul de recuperare.",
+        "saveFailed": "Parola nouă nu a putut fi salvată. Încercați din nou.",
+        "recoveryMalformed": "Codul de recuperare are 30 de caractere (6 grupe de 5). Verificați-l.",
+        "noPassword": "Încă nu aveți o parolă pentru seif. Deblocați cu codul de recuperare și setați una.",
+        "wrongSecret": "Parola sau codul nu se potrivește.",
+        "unlockFailed": "Deblocarea a eșuat. Încercați din nou."
+      }
+    },
+    "text": {
+      "locked": "Criptat",
+      "otherKey": "Criptat cu altă cheie",
+      "unlock": "Deblocați"
+    },
+    "seal": {
+      "button": {
+        "invoice": "Criptați",
+        "contact": "Criptați documentele clientului",
+        "company": "Criptați toată firma"
+      },
+      "title": {
+        "invoice": "Criptați acest document",
+        "contact": "Criptați toate documentele acestui client",
+        "company": "Criptați toate documentele firmei"
+      },
+      "cancel": "Înapoi",
+      "confirm": "Criptați",
+      "progress": "Se criptează… {n}",
+      "lead": "Criptați – conținutul îl veți vedea doar dvs. și membrii cu cheie, serverul nu îl poate citi.",
+      "what": "Se criptează descrierile pozițiilor și notele (deasupra, sub poziții și interne).",
+      "keeps": "Rapoartele și tablourile de bord funcționează în continuare: sumele, datele și referințele de plată rămân necriptate.",
+      "loses": "Pentru documentele criptate, serverul nu poate crea PDF sau ISDOC, nu le poate atașa la e-mail și nu le găsește la căutarea după text.",
+      "locked": "Documentele blocate sunt sărite.",
+      "done": "{n, plural, one {# document criptat} few {# documente criptate} other {# de documente criptate}}.",
+      "nothing": "Nu era nimic de criptat.",
+      "failed": "Criptarea a eșuat. Documentele deja criptate rămân criptate."
+    },
+    "editor": {
+      "lockedTitle": "Acest document este criptat",
+      "lockedLead": "Deblocați-l pentru a-l edita. Se deschide doar în browserul dvs.",
+      "otherKey": "Acest document este criptat cu o cheie pe care această firmă nu o are.",
+      "unlock": "Deblocați",
+      "aiUnavailable": "Completarea cu AI nu este disponibilă în Modul confidențial în timpul criptării – textul ar trebui să ajungă la server.",
+      "sealFailed": "Documentul nu a putut fi criptat. Nu s-a salvat nimic.",
+      "sealToggle": "Criptați acest document",
+      "sealOnHint": "Descrierile pozițiilor și notele le veți vedea doar dvs. și membrii cu cheie. PDF, ISDOC și sugestiile de poziții nu vor fi disponibile.",
+      "sealOffHint": "Documentul se salvează fără criptare, ca până acum."
+    },
+    "actions": {
+      "blocked": "Indisponibil în Modul confidențial: serverul nu poate citi un document criptat. Dezactivați atașamentul PDF/ISDOC în setările e-mail sau trimiteți un link.",
+      "pdfUnavailable": "PDF-ul nu este disponibil în Modul confidențial. Puteți tipări detaliul din browser (Ctrl+P).",
+      "sendHint": "Acest document este criptat: e-mailul pleacă doar cu un link, serverul nu poate atașa PDF sau ISDOC."
+    },
+    "categories": {
+      "recommended": "Recomandat",
+      "planned": "În curând",
+      "losesTitle": "Ce nu mai funcționează:",
+      "texts": {
+        "title": "Descrierile pozițiilor și notele",
+        "description": "Ce ați livrat și notele de pe document. Sumele, datele și referințele rămân lizibile.",
+        "loses": [
+          "PDF, ISDOC, UBL și Peppol create de server",
+          "Atașamentul PDF/ISDOC în e-mailuri",
+          "Căutarea după textul pozițiilor și notelor, sugestiile de poziții",
+          "Completarea documentelor cu AI",
+          "Descrierile pozițiilor pe linkul public și în exporturile pentru contabil (Pohoda, Money, CSV)"
+        ]
+      },
+      "attachments": {
+        "title": "Atașamente și bonuri",
+        "description": "Fișiere atașate documentelor și cheltuielilor.",
+        "loses": [
+          "Citirea bonurilor cu AI",
+          "Previzualizarea atașamentelor",
+          "Trimiterea atașamentelor pe e-mail și predarea către contabil"
+        ]
+      },
+      "contacts": {
+        "title": "Numele și adresele contactelor",
+        "description": "Numele clienților, adrese, e-mailuri și telefoane.",
+        "loses": [
+          "Completarea și actualizarea din ARES",
+          "Potrivirea plăților bancare după numele plătitorului",
+          "E-mailuri trimise de server (nu cunoaște adresa)",
+          "Căutarea contactelor pe server"
+        ]
+      },
+      "amounts": {
+        "title": "Sume",
+        "description": "Prețuri, TVA și totalurile documentelor.",
+        "loses": [
+          "Potrivirea automată a plăților bancare",
+          "Rapoarte TVA, declarația de control și exporturi TVA",
+          "Tablouri de bord, venitul net și grafice",
+          "Mementouri cu sumă și plăți QR create de server"
+        ]
+      }
+    },
+    "enable": {
+      "offTitle": "Modul confidențial este dezactivat",
+      "ownerOnly": "Doar proprietarul firmei îl poate activa.",
+      "introTitle": "Modul confidențial",
+      "intro": "Textele alese sunt criptate direct în browserul dvs. cu o cheie pe care o cunoaște doar firma dvs. Nici serverul, nici copiile sale de rezervă, nici noi nu le putem citi.",
+      "notE2eeNote": "Se deblochează cu parola seifului, o cheie de acces sau codul de recuperare. Autentificarea sau verificarea în doi pași nu deschid cheia – altfel serverul ar trebui să o cunoască.",
+      "chooseTitle": "Ce se criptează",
+      "chooseLead": "Fiecare opțiune dezactivează funcțiile care trebuie să citească textul. Restul aplicației funcționează în continuare.",
+      "warningsTitle": "Înainte de a-l activa",
+      "warnings": {
+        "lost": "Înțeleg că, dacă pierdem toate parolele seifului și codul de recuperare, datele criptate nu mai pot fi recuperate. Nici asistența nu le poate deschide.",
+        "archive": "Înțeleg că trebuie să păstrăm documentele 10 ani și să depunem singuri declarațiile de TVA. Vom descărca regulat arhiva documentelor.",
+        "features": "Înțeleg ce funcții nu mai merg pentru documentele criptate."
+      },
+      "next": "Continuați",
+      "back": "Înapoi",
+      "passwordTitle": "Parola seifului",
+      "passwordLead": "Diferită de parola de autentificare, cel puțin {n} caractere. Nu este trimisă niciodată la server.",
+      "password": "Parola seifului",
+      "passwordAgain": "Repetați parola",
+      "codeTitle": "Cod de recuperare",
+      "codeLead": "Se afișează doar acum. Tipăriți-l sau păstrați-l în afara calculatorului. Deblochează datele dacă uitați parola, iar îl dați colegilor care trebuie să aibă acces.",
+      "copied": "Copiat",
+      "copy": "Copiați",
+      "download": "Descărcați ca fișier",
+      "codeFileHeader": "Codul de recuperare al Modului confidențial ({site}). Păstrați-l într-un loc sigur.",
+      "retype": "Rescrieți codul pentru verificare",
+      "retypeMismatch": "Codul nu se potrivește încă.",
+      "submit": "Activați Modul confidențial",
+      "done": "Modul confidențial este activat.",
+      "errors": {
+        "acks": "Confirmați toate avertismentele.",
+        "passwordShort": "Parola trebuie să aibă cel puțin {n} caractere.",
+        "passwordMismatch": "Parolele nu se potrivesc.",
+        "failed": "Activarea a eșuat. Încercați din nou.",
+        "vault_already_enabled": "Modul confidențial este deja activat.",
+        "owner_only": "Doar proprietarul firmei îl poate activa.",
+        "plan_required": "Modul confidențial este inclus în planurile Plus și Business."
+      }
+    },
+    "settings": {
+      "title": "Modul confidențial",
+      "description": "Criptarea textelor documentelor în browserul dvs.",
+      "loadError": "Setările nu au putut fi încărcate.",
+      "failed": "Nu a mers. Încercați din nou.",
+      "onTitle": "Modul confidențial este activat",
+      "unlockedHere": "Deblocat în acest browser. La deconectare cheia se șterge.",
+      "lockedHere": "Blocat în acest browser.",
+      "lock": "Blocați",
+      "unlock": "Deblocați",
+      "archiveTitle": "Arhiva este responsabilitatea dvs.",
+      "archiveBody": "Trebuie să păstrați documentele 10 ani, iar declarațiile de TVA rămân obligația dvs. Descărcați regulat arhiva documentelor și păstrați codul de recuperare în afara calculatorului.",
+      "archiveLink": "Exporturi și arhivă",
+      "sealTitle": "Criptați documentele existente",
+      "sealLead": "Documentele mai vechi rămân necriptate până le editați sau le criptați aici.",
+      "sealNew": "Criptați automat documentele noi",
+      "sealNewHint": "În editor, opțiunea Criptați acest document va fi bifată dinainte.",
+      "saved": "Salvat",
+      "methodsTitle": "Metodele mele de deblocare",
+      "passwordSet": "Parola seifului este setată",
+      "passwordMissing": "Încă nu aveți parolă pentru seif",
+      "changePassword": "Schimbați",
+      "setPassword": "Setați",
+      "passkeyUnnamed": "Cheie de acces",
+      "passkeyRemoved": "Cheia de acces a fost eliminată",
+      "removePasskey": "Eliminați cheia de acces",
+      "passkeyLead": "Deblocare cu amprenta sau fața",
+      "addPasskey": "Adăugați o cheie de acces",
+      "newPassword": "Parolă nouă pentru seif (cel puțin {n} caractere)",
+      "savePassword": "Salvați parola",
+      "passwordShort": "Parola trebuie să aibă cel puțin {n} caractere.",
+      "passwordSaved": "Parola seifului a fost salvată",
+      "passkeyHint": "Confirmați cu parola actuală sau codul de recuperare, apoi browserul vă va cere să creați o cheie de acces.",
+      "passkeyLabel": "Nume (de ex. Laptop)",
+      "passkeyNoPrf": "Acest dispozitiv sau browser nu acceptă chei de acces pentru criptare.",
+      "passkeyAdded": "Cheia de acces a fost adăugată",
+      "recoveryTitle": "Cod de recuperare",
+      "recoveryLead": "Un cod nou îl invalidează imediat pe cel vechi. Colegii care au deblocat cu codul vechi își păstrează propria parolă.",
+      "recoveryShownOnce": "Codul se afișează doar acum. Păstrați-l într-un loc sigur.",
+      "recoveryWritten": "L-am salvat",
+      "recoveryNew": "Creați un cod de recuperare nou",
+      "recoveryReplaced": "Noul cod de recuperare este valabil",
+      "categoriesTitle": "Ce se criptează",
+      "categoriesLead": "Urmează și alte opțiuni. La fiecare vedeți ce nu ar mai funcționa."
+    }
   }
 }

@@ -1,8 +1,9 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
+import { sealableText } from "../../vault/sealed";
 
 const templateLineItemSchema = z.object({
-  description: z.string().trim().min(1).max(500),
+  description: sealableText(500).pipe(z.string().min(1)),
   quantity: z.coerce.number().refine((n) => n !== 0, "Quantity must not be zero").default(1),
   unit: z.string().trim().max(16).nullish(),
   unit_price: z.coerce.number(),
@@ -19,8 +20,8 @@ export const invoiceTemplateSchema = z.object({
   currency: z.string().length(3).default("CZK"),
   due_in_days: z.coerce.number().int().min(0).max(365).nullish(),
   payment_method: z.enum(["bank_transfer", "cash", "card", "cash_on_delivery", "other"]).default("bank_transfer"),
-  note_above: z.string().trim().max(2000).nullish(),
-  note_below: z.string().trim().max(2000).nullish(),
+  note_above: sealableText(2000).nullish(),
+  note_below: sealableText(2000).nullish(),
   line_items: z.array(templateLineItemSchema).max(200).default([]),
 });
 

@@ -8,13 +8,13 @@ const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
  * The member's own account and preferences: every role may change these.
  * `v1/demo`: switching the demo's team view, which the controller limits to demos.
  */
-const PERSONAL_PREFIXES = ["v1/me", "v1/dashboard/config", "v1/invitations", "v1/demo"];
+const PERSONAL_PREFIXES = ["v1/me", "v1/dashboard/config", "v1/invitations", "v1/demo", "v1/vault/me"];
 
 /**
  * Company administration. Accountants work with documents, the bank and exports
  * (Settings → Team promises exactly that) but never manage these.
  */
-export const ADMIN_PREFIXES = ["v1/tenants", "v1/team", "v1/api-keys", "v1/billing", "v1/backup-destinations", "v1/ai/settings", "v1/channel-links", "v1/referrals"];
+export const ADMIN_PREFIXES = ["v1/tenants", "v1/team", "v1/api-keys", "v1/billing", "v1/backup-destinations", "v1/ai/settings", "v1/channel-links", "v1/referrals", "v1/vault"];
 
 export const under = (path: string, prefix: string) => path === prefix || path.startsWith(`${prefix}/`);
 

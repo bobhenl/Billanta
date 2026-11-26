@@ -65,7 +65,8 @@ export function InvoiceActions({
   home = 'CZK',
   sentAt = null,
   editedAfterSend = false,
-  hasCustomer = true
+  hasCustomer = true,
+  confidential = false
 }: {
   id: string;
   documentType: DocumentType;
@@ -87,8 +88,11 @@ export function InvoiceActions({
   editedAfterSend?: boolean;
   /** A draft's PDF preview needs a customer to print. */
   hasCustomer?: boolean;
+  /** Printed texts are encrypted ("Důvěrný režim"): the server can't make the PDF, ISDOC or UBL. */
+  confidential?: boolean;
 }) {
   const t = useTranslations('doc');
+  const tVault = useTranslations('vault.actions');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [dialog, setDialog] = useState<Dialog>(null);
@@ -123,7 +127,7 @@ export function InvoiceActions({
       const result = await fn();
       setDialog(null);
       if (!result.ok) {
-        toast({ text: `${t('actionFailed')}: ${result.error}`, tone: 'err' });
+        toast({ text: result.error === 'confidential_content' ? tVault('blocked') : `${t('actionFailed')}: ${result.error}`, tone: 'err' });
         return;
       }
       toast({ text: okText, tone: 'ok' });
@@ -177,7 +181,13 @@ export function InvoiceActions({
           </button>
         )}
         {/* A draft opens a stamped preview: no number, no payment QR yet. */}
-        {(numbered || (isDraft && hasCustomer)) && (
+        {confidential && (numbered || (isDraft && hasCustomer)) && (
+          <span className={cn(buttonClass.secondary, 'cursor-not-allowed px-3 opacity-60')} title={tVault('pdfUnavailable')} aria-disabled="true">
+            <FileText className="h-4 w-4" />
+            PDF
+          </span>
+        )}
+        {!confidential && (numbered || (isDraft && hasCustomer)) && (
           <a
             href={`/api/files/invoices/${id}/pdf`}
             target="_blank"
@@ -219,7 +229,7 @@ export function InvoiceActions({
                 {t('actions.markUnpaid')}
               </button>
             )}
-            {numbered && (
+            {numbered && !confidential && (
               <>
                 <a href={`/api/files/invoices/${id}/isdoc`} className={menuItem}>
                   <FileCode2 className="h-4 w-4" />
@@ -410,6 +420,7 @@ export function InvoiceActions({
         }
       >
         <p className="text-muted-foreground">{editedAfterSend ? t('correction.sendBody') : t('confirm.sendBody')}</p>
+        {confidential && <p className="mt-2 text-xs text-muted-foreground">{tVault('sendHint')}</p>}
       </Modal>
 
       <Modal

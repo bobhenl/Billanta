@@ -767,7 +767,8 @@
     },
     "print": "Drucken / PDF",
     "downloadPdf": "PDF herunterladen",
-    "downloadPdfShort": "PDF"
+    "downloadPdfShort": "PDF",
+    "confidentialItem": "Vertrauliche Position"
   },
   "expenses": {
     "title": "Ausgaben",
@@ -1761,6 +1762,10 @@
         "accountantProfile": {
           "title": "Buchhaltungsprofil",
           "description": "Eintrag im Verzeichnis der Buchhaltungen und das Partnerprogramm für Buchhaltungen."
+        },
+        "confidential": {
+          "title": "Vertraulicher Modus",
+          "description": "Belegtexte im Browser verschlüsseln"
         }
       },
       "managedByAdmins": "Unternehmensdaten, Team, Abonnement und weitere Unternehmenseinstellungen verwaltet der Inhaber oder ein Administrator."
@@ -14140,5 +14145,217 @@
   "updateNotice": {
     "text": "Es gibt eine neue Version von Billanta. Laden Sie die Seite neu, damit alles funktioniert.",
     "reload": "Neu laden"
+  },
+  "vault": {
+    "settingsLink": "Einstellungen des Vertraulichen Modus",
+    "plan": {
+      "title": "Der Vertrauliche Modus ist in den Tarifen Plus und Business enthalten",
+      "body": "Nach dem Upgrade schaltet ihn der Firmeninhaber hier ein. Wenn Sie später herabstufen, lassen sich bereits verschlüsselte Belege weiter entsperren und lesen.",
+      "upgrade": "Tarife ansehen",
+      "downgradedTitle": "Weitere Belege verschlüsseln erfordert Plus oder Business",
+      "downgradedBody": "Verschlüsselte Belege können Sie weiter entsperren, lesen und bearbeiten. Neue Belege werden aber unverschlüsselt gespeichert."
+    },
+    "unlock": {
+      "title": "Vertraulichen Modus entsperren",
+      "lead": "Verschlüsselte Texte werden nur in Ihrem Browser geöffnet. Passwort und Code gehen nie an den Server.",
+      "cancel": "Zurück",
+      "submit": "Entsperren",
+      "passkeyButton": "Passkey verwenden",
+      "methods": {
+        "password": "Tresorpasswort",
+        "recovery": "Wiederherstellungscode",
+        "passkey": "Passkey"
+      },
+      "password": "Tresorpasswort",
+      "currentPassword": "Aktuelles Tresorpasswort",
+      "recovery": "Wiederherstellungscode",
+      "newPasswordRequired": "Neues Tresorpasswort (mindestens 10 Zeichen)",
+      "newPasswordOptional": "Neues Tresorpasswort (optional, falls Sie Ihres vergessen haben)",
+      "passkeyLead": "Ihr Browser fragt nach Fingerabdruck, Gesicht oder Sicherheitsschlüssel.",
+      "settingsHint": "Passwort, Passkeys und Wiederherstellungscode verwalten Sie in den",
+      "errors": {
+        "passwordShort": "Das neue Passwort muss mindestens 10 Zeichen haben.",
+        "passkeyFailed": "Der Passkey hat nicht funktioniert. Versuchen Sie Passwort oder Wiederherstellungscode.",
+        "saveFailed": "Das neue Passwort konnte nicht gespeichert werden. Bitte erneut versuchen.",
+        "recoveryMalformed": "Der Wiederherstellungscode hat 30 Zeichen (6 Gruppen zu 5). Bitte prüfen.",
+        "noPassword": "Sie haben noch kein Tresorpasswort. Entsperren Sie mit dem Wiederherstellungscode und legen Sie eines fest.",
+        "wrongSecret": "Passwort oder Code stimmt nicht.",
+        "unlockFailed": "Entsperren fehlgeschlagen. Bitte erneut versuchen."
+      }
+    },
+    "text": {
+      "locked": "Verschlüsselt",
+      "otherKey": "Mit einem anderen Schlüssel verschlüsselt",
+      "unlock": "Entsperren"
+    },
+    "seal": {
+      "button": {
+        "invoice": "Verschlüsseln",
+        "contact": "Belege des Kunden verschlüsseln",
+        "company": "Ganze Firma verschlüsseln"
+      },
+      "title": {
+        "invoice": "Diesen Beleg verschlüsseln",
+        "contact": "Alle Belege dieses Kunden verschlüsseln",
+        "company": "Alle Belege der Firma verschlüsseln"
+      },
+      "cancel": "Zurück",
+      "confirm": "Verschlüsseln",
+      "progress": "Verschlüssele… {n}",
+      "lead": "Verschlüsseln – den Inhalt sehen nur Sie und Mitglieder mit Schlüssel, der Server kann ihn nicht lesen.",
+      "what": "Verschlüsselt werden Positionsbeschreibungen und Notizen (über und unter den Positionen sowie interne).",
+      "keeps": "Berichte und Dashboards funktionieren weiter: Beträge, Daten und Verwendungszwecke bleiben unverschlüsselt.",
+      "loses": "Für verschlüsselte Belege erstellt der Server kein PDF oder ISDOC, hängt sie keiner E-Mail an und findet sie nicht über die Textsuche.",
+      "locked": "Gesperrte Belege werden übersprungen.",
+      "done": "{n, plural, one {# Beleg verschlüsselt} other {# Belege verschlüsselt}}.",
+      "nothing": "Es gab nichts zu verschlüsseln.",
+      "failed": "Verschlüsselung fehlgeschlagen. Bereits verschlüsselte Belege bleiben verschlüsselt."
+    },
+    "editor": {
+      "lockedTitle": "Dieser Beleg ist verschlüsselt",
+      "lockedLead": "Entsperren Sie ihn zum Bearbeiten. Er wird nur in Ihrem Browser geöffnet.",
+      "otherKey": "Dieser Beleg ist mit einem Schlüssel verschlüsselt, den diese Firma nicht hat.",
+      "unlock": "Entsperren",
+      "aiUnavailable": "Das KI-Vorausfüllen ist beim Verschlüsseln im Vertraulichen Modus nicht verfügbar – der Text müsste an den Server gehen.",
+      "sealFailed": "Der Beleg konnte nicht verschlüsselt werden. Nichts wurde gespeichert.",
+      "sealToggle": "Diesen Beleg verschlüsseln",
+      "sealOnHint": "Positionsbeschreibungen und Notizen sehen nur Sie und Mitglieder mit Schlüssel. PDF, ISDOC und Positionsvorschläge sind nicht verfügbar.",
+      "sealOffHint": "Der Beleg wird wie bisher unverschlüsselt gespeichert."
+    },
+    "actions": {
+      "blocked": "Im Vertraulichen Modus nicht verfügbar: Der Server kann einen verschlüsselten Beleg nicht lesen. Schalten Sie den PDF/ISDOC-Anhang in den E-Mail-Einstellungen aus oder senden Sie einen Link.",
+      "pdfUnavailable": "PDF ist im Vertraulichen Modus nicht verfügbar. Sie können die Detailseite aus dem Browser drucken (Strg+P).",
+      "sendHint": "Dieser Beleg ist verschlüsselt: Die E-Mail enthält nur einen Link, PDF oder ISDOC kann der Server nicht anhängen."
+    },
+    "categories": {
+      "recommended": "Empfohlen",
+      "planned": "Demnächst",
+      "losesTitle": "Was nicht mehr funktioniert:",
+      "texts": {
+        "title": "Positionsbeschreibungen und Notizen",
+        "description": "Was Sie geliefert haben und die Notizen auf dem Beleg. Beträge, Daten und Symbole bleiben lesbar.",
+        "loses": [
+          "Vom Server erstellte PDF-, ISDOC-, UBL- und Peppol-Dateien",
+          "PDF/ISDOC-Anhang in E-Mails",
+          "Suche im Text von Positionen und Notizen, Positionsvorschläge",
+          "KI-Vorausfüllen von Belegen",
+          "Positionsbeschreibungen im öffentlichen Link und in Exporten für die Buchhaltung (Pohoda, Money, CSV)"
+        ]
+      },
+      "attachments": {
+        "title": "Anhänge und Quittungen",
+        "description": "Dateien an Belegen und Ausgaben.",
+        "loses": [
+          "KI-Auslesen von Quittungen",
+          "Vorschau von Anhängen",
+          "Versand von Anhängen per E-Mail und Übergabe an die Buchhaltung"
+        ]
+      },
+      "contacts": {
+        "title": "Namen und Adressen von Kontakten",
+        "description": "Kundennamen, Adressen, E-Mails und Telefonnummern.",
+        "loses": [
+          "Ergänzen und Aktualisieren aus ARES",
+          "Zuordnung von Bankzahlungen nach Zahlername",
+          "E-Mail-Versand durch den Server (er kennt die Adresse nicht)",
+          "Kontaktsuche auf dem Server"
+        ]
+      },
+      "amounts": {
+        "title": "Beträge",
+        "description": "Preise, MwSt. und Belegsummen.",
+        "loses": [
+          "Automatische Zuordnung von Bankzahlungen",
+          "MwSt.-Berichte, Kontrollmeldung und MwSt.-Exporte",
+          "Dashboards, Nettoeinkommen und Diagramme",
+          "Mahnungen mit Betrag und vom Server erstellte QR-Zahlungen"
+        ]
+      }
+    },
+    "enable": {
+      "offTitle": "Der Vertrauliche Modus ist aus",
+      "ownerOnly": "Nur der Firmeninhaber kann ihn einschalten.",
+      "introTitle": "Vertraulicher Modus",
+      "intro": "Ausgewählte Texte werden direkt in Ihrem Browser mit einem Schlüssel verschlüsselt, den nur Ihre Firma kennt. Weder der Server noch seine Backups noch wir können sie lesen.",
+      "notE2eeNote": "Entsperrt wird mit Tresorpasswort, Passkey oder Wiederherstellungscode. Anmeldung oder Zwei-Faktor-Authentifizierung öffnen den Schlüssel nicht – sonst müsste der Server ihn kennen.",
+      "chooseTitle": "Was verschlüsselt wird",
+      "chooseLead": "Jede Option schaltet Funktionen ab, die den Text lesen müssen. Der Rest der App funktioniert weiter.",
+      "warningsTitle": "Bevor Sie ihn einschalten",
+      "warnings": {
+        "lost": "Mir ist klar: Wenn wir alle Tresorpasswörter und den Wiederherstellungscode verlieren, sind verschlüsselte Daten nicht wiederherstellbar. Auch der Support kann sie nicht öffnen.",
+        "archive": "Mir ist klar, dass wir Belege 10 Jahre aufbewahren und MwSt.-Erklärungen und -Meldungen selbst abgeben müssen. Wir laden das Belegarchiv regelmäßig herunter.",
+        "features": "Mir ist klar, welche Funktionen für verschlüsselte Belege nicht mehr funktionieren."
+      },
+      "next": "Weiter",
+      "back": "Zurück",
+      "passwordTitle": "Tresorpasswort",
+      "passwordLead": "Anders als Ihr Anmeldepasswort, mindestens {n} Zeichen. Es geht nie an den Server.",
+      "password": "Tresorpasswort",
+      "passwordAgain": "Passwort wiederholen",
+      "codeTitle": "Wiederherstellungscode",
+      "codeLead": "Wird nur jetzt angezeigt. Drucken Sie ihn aus oder bewahren Sie ihn außerhalb des Computers auf. Er entsperrt die Daten, wenn Sie Ihr Passwort vergessen, und Sie geben ihn Kollegen, die Zugriff haben sollen.",
+      "copied": "Kopiert",
+      "copy": "Kopieren",
+      "download": "Als Datei herunterladen",
+      "codeFileHeader": "Wiederherstellungscode des Vertraulichen Modus ({site}). Bewahren Sie ihn sicher auf.",
+      "retype": "Code zur Kontrolle abtippen",
+      "retypeMismatch": "Der Code stimmt noch nicht.",
+      "submit": "Vertraulichen Modus einschalten",
+      "done": "Der Vertrauliche Modus ist an.",
+      "errors": {
+        "acks": "Bitte bestätigen Sie alle Hinweise.",
+        "passwordShort": "Das Passwort muss mindestens {n} Zeichen haben.",
+        "passwordMismatch": "Die Passwörter stimmen nicht überein.",
+        "failed": "Einschalten fehlgeschlagen. Bitte erneut versuchen.",
+        "vault_already_enabled": "Der Vertrauliche Modus ist bereits an.",
+        "owner_only": "Nur der Firmeninhaber kann ihn einschalten.",
+        "plan_required": "Der Vertrauliche Modus ist in den Tarifen Plus und Business enthalten."
+      }
+    },
+    "settings": {
+      "title": "Vertraulicher Modus",
+      "description": "Belegtexte in Ihrem Browser verschlüsseln.",
+      "loadError": "Die Einstellungen konnten nicht geladen werden.",
+      "failed": "Das hat nicht geklappt. Bitte erneut versuchen.",
+      "onTitle": "Der Vertrauliche Modus ist an",
+      "unlockedHere": "In diesem Browser entsperrt. Beim Abmelden wird der Schlüssel gelöscht.",
+      "lockedHere": "In diesem Browser gesperrt.",
+      "lock": "Sperren",
+      "unlock": "Entsperren",
+      "archiveTitle": "Das Archiv liegt bei Ihnen",
+      "archiveBody": "Sie müssen Belege 10 Jahre aufbewahren, und MwSt.-Erklärungen und -Meldungen bleiben Ihre Pflicht. Laden Sie das Belegarchiv regelmäßig herunter und bewahren Sie den Wiederherstellungscode außerhalb des Computers auf.",
+      "archiveLink": "Exporte und Archiv",
+      "sealTitle": "Vorhandene Belege verschlüsseln",
+      "sealLead": "Ältere Belege bleiben unverschlüsselt, bis Sie sie bearbeiten oder hier verschlüsseln.",
+      "sealNew": "Neue Belege automatisch verschlüsseln",
+      "sealNewHint": "Im Editor ist die Option Diesen Beleg verschlüsseln vorab aktiviert.",
+      "saved": "Gespeichert",
+      "methodsTitle": "Meine Entsperrmethoden",
+      "passwordSet": "Tresorpasswort ist festgelegt",
+      "passwordMissing": "Sie haben noch kein Tresorpasswort",
+      "changePassword": "Ändern",
+      "setPassword": "Festlegen",
+      "passkeyUnnamed": "Passkey",
+      "passkeyRemoved": "Passkey entfernt",
+      "removePasskey": "Passkey entfernen",
+      "passkeyLead": "Entsperren mit Fingerabdruck oder Gesicht",
+      "addPasskey": "Passkey hinzufügen",
+      "newPassword": "Neues Tresorpasswort (mindestens {n} Zeichen)",
+      "savePassword": "Passwort speichern",
+      "passwordShort": "Das Passwort muss mindestens {n} Zeichen haben.",
+      "passwordSaved": "Tresorpasswort gespeichert",
+      "passkeyHint": "Bestätigen Sie mit Ihrem aktuellen Passwort oder dem Wiederherstellungscode, dann fordert Ihr Browser Sie auf, einen Passkey zu erstellen.",
+      "passkeyLabel": "Name (z. B. Laptop)",
+      "passkeyNoPrf": "Dieses Gerät oder dieser Browser unterstützt keine Passkeys zur Verschlüsselung.",
+      "passkeyAdded": "Passkey hinzugefügt",
+      "recoveryTitle": "Wiederherstellungscode",
+      "recoveryLead": "Ein neuer Code macht den alten sofort ungültig. Kollegen, die mit dem alten Code entsperrt haben, behalten ihr eigenes Passwort.",
+      "recoveryShownOnce": "Der Code wird nur jetzt angezeigt. Bewahren Sie ihn sicher auf.",
+      "recoveryWritten": "Ich habe ihn gespeichert",
+      "recoveryNew": "Neuen Wiederherstellungscode erstellen",
+      "recoveryReplaced": "Der neue Wiederherstellungscode gilt",
+      "categoriesTitle": "Was verschlüsselt wird",
+      "categoriesLead": "Weitere Optionen folgen. Bei jeder sehen Sie, was nicht mehr funktionieren würde."
+    }
   }
 }

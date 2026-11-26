@@ -768,7 +768,8 @@
     },
     "print": "Tlač / PDF",
     "downloadPdf": "Stiahnuť PDF",
-    "downloadPdfShort": "PDF"
+    "downloadPdfShort": "PDF",
+    "confidentialItem": "Dôverná položka"
   },
   "expenses": {
     "title": "Výdavky",
@@ -1762,6 +1763,10 @@
         "accountantProfile": {
           "title": "Profil účtovníka",
           "description": "Adresár a partnerský program"
+        },
+        "confidential": {
+          "title": "Dôverný režim",
+          "description": "Šifrovanie textov dokladov v prehliadači"
         }
       },
       "managedByAdmins": "Údaje firmy, tím, predplatné a ďalšie nastavenia firmy spravuje vlastník alebo administrátor."
@@ -14055,5 +14060,217 @@
   "updateNotice": {
     "text": "Billanta má novú verziu. Obnovte stránku, nech všetko funguje.",
     "reload": "Obnoviť"
+  },
+  "vault": {
+    "settingsLink": "Nastavenia Dôverného režimu",
+    "unlock": {
+      "title": "Odomknúť Dôverný režim",
+      "lead": "Zašifrované texty sa otvárajú len vo vašom prehliadači. Heslo ani kód sa na server neposielajú.",
+      "cancel": "Späť",
+      "submit": "Odomknúť",
+      "passkeyButton": "Použiť passkey",
+      "methods": {
+        "password": "Heslo trezoru",
+        "recovery": "Záchranný kód",
+        "passkey": "Passkey"
+      },
+      "password": "Heslo trezoru",
+      "currentPassword": "Súčasné heslo trezoru",
+      "recovery": "Záchranný kód",
+      "newPasswordRequired": "Nové heslo trezoru (aspoň 10 znakov)",
+      "newPasswordOptional": "Nové heslo trezoru (nepovinné, ak ste to svoje zabudli)",
+      "passkeyLead": "Prehliadač vás vyzve na overenie odtlačkom prsta, tvárou alebo bezpečnostným kľúčom.",
+      "settingsHint": "Heslo, passkey a záchranný kód spravujete v",
+      "errors": {
+        "passwordShort": "Nové heslo musí mať aspoň 10 znakov.",
+        "passkeyFailed": "Passkey sa nepodarilo použiť. Skúste heslo alebo záchranný kód.",
+        "saveFailed": "Nové heslo sa nepodarilo uložiť. Skúste to znova.",
+        "recoveryMalformed": "Záchranný kód má 30 znakov (6 skupín po 5). Skontrolujte ho.",
+        "noPassword": "Heslo trezoru zatiaľ nemáte. Odomknite záchranným kódom a nastavte si ho.",
+        "wrongSecret": "Heslo alebo kód nesedí.",
+        "unlockFailed": "Odomknutie sa nepodarilo. Skúste to znova."
+      }
+    },
+    "text": {
+      "locked": "Zašifrované",
+      "otherKey": "Zašifrované iným kľúčom",
+      "unlock": "Odomknúť"
+    },
+    "seal": {
+      "button": {
+        "invoice": "Zašifrovať",
+        "contact": "Zašifrovať doklady klienta",
+        "company": "Zašifrovať celú firmu"
+      },
+      "title": {
+        "invoice": "Zašifrovať tento doklad",
+        "contact": "Zašifrovať všetky doklady klienta",
+        "company": "Zašifrovať všetky doklady firmy"
+      },
+      "cancel": "Späť",
+      "confirm": "Zašifrovať",
+      "progress": "Šifrujem… {n}",
+      "lead": "Zašifrovať – obsah uvidíte len vy a členovia s kľúčom, server ho neprečíta.",
+      "what": "Šifrujú sa popisy položiek a poznámky (nad položkami, pod položkami a interné).",
+      "keeps": "Prehľady a dashboardy fungujú ďalej: sumy, dátumy a variabilné symboly zostávajú nezašifrované.",
+      "loses": "Pri zašifrovaných dokladoch server nevytvorí PDF ani ISDOC, nepriloží ich k e-mailu a nenájde ich pri hľadaní podľa textu.",
+      "locked": "Uzamknuté doklady sa preskočia.",
+      "done": "{n, plural, one {Zašifrovaný # doklad} few {Zašifrované # doklady} other {Zašifrovaných # dokladov}}.",
+      "nothing": "Nebolo čo šifrovať.",
+      "failed": "Šifrovanie sa nepodarilo. Už zašifrované doklady zostávajú zašifrované."
+    },
+    "editor": {
+      "lockedTitle": "Doklad je zašifrovaný",
+      "lockedLead": "Ak ho chcete upraviť, odomknite ho. Otvorí sa len vo vašom prehliadači.",
+      "otherKey": "Doklad je zašifrovaný kľúčom, ktorý táto firma nemá.",
+      "unlock": "Odomknúť",
+      "aiUnavailable": "AI predvyplnenie je pri šifrovaní dokladu nedostupné v Dôvernom režime – text by musel odísť na server.",
+      "sealFailed": "Doklad sa nepodarilo zašifrovať. Nič sa neuložilo.",
+      "sealToggle": "Zašifrovať tento doklad",
+      "sealOnHint": "Popisy položiek a poznámky uvidíte len vy a členovia s kľúčom. PDF, ISDOC a návrhy položiek nebudú dostupné.",
+      "sealOffHint": "Doklad sa uloží bez šifrovania, ako doteraz."
+    },
+    "actions": {
+      "blocked": "Nedostupné v Dôvernom režime: server zašifrovaný doklad neprečíta. Vypnite prílohu PDF/ISDOC v nastaveniach e-mailov alebo pošlite odkaz.",
+      "pdfUnavailable": "PDF je nedostupné v Dôvernom režime. Detail môžete vytlačiť z prehliadača (Ctrl+P).",
+      "sendHint": "Doklad je zašifrovaný: e-mail odíde len s odkazom, PDF ani ISDOC server priložiť nemôže."
+    },
+    "categories": {
+      "recommended": "Odporúčané",
+      "planned": "Pripravujeme",
+      "losesTitle": "Čo prestane fungovať:",
+      "texts": {
+        "title": "Popisy položiek a poznámky",
+        "description": "Čo ste dodali a poznámky na doklade. Sumy, dátumy a symboly zostávajú čitateľné.",
+        "loses": [
+          "PDF, ISDOC, UBL a Peppol vytvorené serverom",
+          "Príloha PDF/ISDOC v e-maile",
+          "Hľadanie podľa textu položiek a poznámok, návrhy položiek",
+          "AI predvyplnenie dokladu",
+          "Popisy položiek na verejnom odkaze a v exportoch pre účtovníka (Pohoda, Money, CSV)"
+        ]
+      },
+      "attachments": {
+        "title": "Prílohy a bločky",
+        "description": "Súbory pri dokladoch a nákladoch.",
+        "loses": [
+          "Vyťaženie bločkov pomocou AI",
+          "Náhľady príloh",
+          "Posielanie príloh e-mailom a odovzdávanie účtovníkovi"
+        ]
+      },
+      "contacts": {
+        "title": "Mená a adresy kontaktov",
+        "description": "Názvy odberateľov, adresy, e-maily a telefóny.",
+        "loses": [
+          "Doplnenie a aktualizácia z ARES",
+          "Párovanie bankových platieb podľa mena platiteľa",
+          "Posielanie e-mailov serverom (server nepozná adresu)",
+          "Hľadanie kontaktov na serveri"
+        ]
+      },
+      "amounts": {
+        "title": "Sumy",
+        "description": "Ceny, DPH a súčty dokladov.",
+        "loses": [
+          "Automatické párovanie bankových platieb",
+          "Prehľady DPH, kontrolný výkaz a exporty DPH",
+          "Dashboardy, čistý príjem a grafy",
+          "Upomienky so sumou a QR platba vytvorená serverom"
+        ]
+      }
+    },
+    "enable": {
+      "offTitle": "Dôverný režim je vypnutý",
+      "ownerOnly": "Zapnúť ho môže len vlastník firmy.",
+      "introTitle": "Dôverný režim",
+      "intro": "Vybrané texty sa šifrujú priamo vo vašom prehliadači kľúčom, ktorý pozná len vaša firma. Server, jeho zálohy ani my ich neprečítame.",
+      "notE2eeNote": "Odomyká sa heslom trezoru, passkey alebo záchranným kódom. Prihlásenie ani dvojfázové overenie kľúč neotvorí – inak by ho musel poznať server.",
+      "chooseTitle": "Čo šifrovať",
+      "chooseLead": "Každá voľba vypne funkcie, ktoré potrebujú text čítať. Zvyšok aplikácie funguje ďalej.",
+      "warningsTitle": "Skôr než ho zapnete",
+      "warnings": {
+        "lost": "Rozumiem, že ak stratíme všetky heslá trezoru aj záchranný kód, zašifrované dáta nebude možné obnoviť. Neotvorí ich ani podpora.",
+        "archive": "Rozumiem, že doklady musíme archivovať 10 rokov a podávať priznania a hlásenia DPH sami. Budeme pravidelne sťahovať archív dokladov.",
+        "features": "Rozumiem, ktoré funkcie pri zašifrovaných dokladoch prestanú fungovať."
+      },
+      "next": "Pokračovať",
+      "back": "Späť",
+      "passwordTitle": "Heslo trezoru",
+      "passwordLead": "Iné ako heslo na prihlásenie, aspoň {n} znakov. Neposiela sa na server.",
+      "password": "Heslo trezoru",
+      "passwordAgain": "Heslo znova",
+      "codeTitle": "Záchranný kód",
+      "codeLead": "Zobrazí sa len teraz. Vytlačte si ho alebo uložte mimo počítača. Odomkne dáta, keď heslo zabudnete, a dáte ho kolegom, ktorí majú mať prístup.",
+      "copied": "Skopírované",
+      "copy": "Kopírovať",
+      "download": "Stiahnuť ako súbor",
+      "codeFileHeader": "Záchranný kód Dôverného režimu ({site}). Uložte ho na bezpečné miesto.",
+      "retype": "Opíšte kód na kontrolu",
+      "retypeMismatch": "Kód zatiaľ nesedí.",
+      "submit": "Zapnúť Dôverný režim",
+      "done": "Dôverný režim je zapnutý.",
+      "errors": {
+        "acks": "Potvrďte, prosím, všetky upozornenia.",
+        "passwordShort": "Heslo musí mať aspoň {n} znakov.",
+        "passwordMismatch": "Heslá sa nezhodujú.",
+        "failed": "Zapnutie sa nepodarilo. Skúste to znova.",
+        "vault_already_enabled": "Dôverný režim už je zapnutý.",
+        "owner_only": "Zapnúť ho môže len vlastník firmy.",
+        "plan_required": "Dôverný režim je v tarifoch Plus a Firma."
+      }
+    },
+    "settings": {
+      "title": "Dôverný režim",
+      "description": "Šifrovanie textov dokladov vo vašom prehliadači.",
+      "loadError": "Nastavenia sa nepodarilo načítať.",
+      "failed": "Nepodarilo sa. Skúste to znova.",
+      "onTitle": "Dôverný režim je zapnutý",
+      "unlockedHere": "V tomto prehliadači je odomknutý. Pri odhlásení sa kľúč vymaže.",
+      "lockedHere": "V tomto prehliadači je uzamknutý.",
+      "lock": "Uzamknúť",
+      "unlock": "Odomknúť",
+      "archiveTitle": "Archív je na vás",
+      "archiveBody": "Doklady musíte uchovávať 10 rokov a priznania aj hlásenia DPH zostávajú vašou povinnosťou. Sťahujte si pravidelne archív dokladov a záchranný kód majte uložený mimo počítača.",
+      "archiveLink": "Exporty a archív",
+      "sealTitle": "Zašifrovať existujúce doklady",
+      "sealLead": "Staršie doklady zostávajú nezašifrované, kým ich neupravíte alebo nezašifrujete tu.",
+      "sealNew": "Šifrovať nové doklady automaticky",
+      "sealNewHint": "V editore bude voľba Zašifrovať tento doklad vopred zapnutá.",
+      "saved": "Uložené",
+      "methodsTitle": "Moje spôsoby odomknutia",
+      "passwordSet": "Heslo trezoru je nastavené",
+      "passwordMissing": "Heslo trezoru zatiaľ nemáte",
+      "changePassword": "Zmeniť",
+      "setPassword": "Nastaviť",
+      "passkeyUnnamed": "Passkey",
+      "passkeyRemoved": "Passkey odstránený",
+      "removePasskey": "Odstrániť passkey",
+      "passkeyLead": "Odomykanie odtlačkom prsta alebo tvárou",
+      "addPasskey": "Pridať passkey",
+      "newPassword": "Nové heslo trezoru (aspoň {n} znakov)",
+      "savePassword": "Uložiť heslo",
+      "passwordShort": "Heslo musí mať aspoň {n} znakov.",
+      "passwordSaved": "Heslo trezoru uložené",
+      "passkeyHint": "Potvrďte súčasným heslom alebo záchranným kódom, potom vás prehliadač vyzve na vytvorenie passkey.",
+      "passkeyLabel": "Názov (napr. Notebook)",
+      "passkeyNoPrf": "Toto zariadenie alebo prehliadač nepodporuje passkey na šifrovanie.",
+      "passkeyAdded": "Passkey pridaný",
+      "recoveryTitle": "Záchranný kód",
+      "recoveryLead": "Nový kód starý okamžite zneplatní. Kolegom, ktorí odomykali starým kódom, zostane ich vlastné heslo.",
+      "recoveryShownOnce": "Kód sa zobrazí len teraz. Uložte ho na bezpečné miesto.",
+      "recoveryWritten": "Mám ho uložený",
+      "recoveryNew": "Vytvoriť nový záchranný kód",
+      "recoveryReplaced": "Nový záchranný kód platí",
+      "categoriesTitle": "Čo sa šifruje",
+      "categoriesLead": "Ďalšie voľby pripravujeme. Pri každej vidíte, čo by prestalo fungovať."
+    },
+    "plan": {
+      "title": "Dôverný režim je v tarifoch Plus a Firma",
+      "body": "Po prechode na vyšší tarif ho vlastník firmy zapne tu. Ak by ste neskôr tarif znížili, už zašifrované doklady pôjde naďalej odomknúť a čítať.",
+      "upgrade": "Zobraziť tarify",
+      "downgradedTitle": "Šifrovanie ďalších dokladov je v tarifoch Plus a Firma",
+      "downgradedBody": "Zašifrované doklady naďalej odomknete, prečítate aj upravíte. Nové doklady sa však ukladajú bez šifrovania."
+    }
   }
 }

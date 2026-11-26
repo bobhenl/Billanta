@@ -767,7 +767,8 @@
     },
     "print": "Imprimir / PDF",
     "downloadPdf": "Descarregar PDF",
-    "downloadPdfShort": "PDF"
+    "downloadPdfShort": "PDF",
+    "confidentialItem": "Linha confidencial"
   },
   "expenses": {
     "title": "Despesas",
@@ -1761,6 +1762,10 @@
         "accountantProfile": {
           "title": "Perfil de contabilista",
           "description": "Presença no diretório de contabilistas e o programa de parceiros para contabilistas."
+        },
+        "confidential": {
+          "title": "Modo confidencial",
+          "description": "Cifrar os textos dos documentos no navegador"
         }
       },
       "managedByAdmins": "Os dados da empresa, a equipa, a subscrição e outras definições da empresa são geridos pelo proprietário ou por um administrador."
@@ -14139,5 +14144,217 @@
   "updateNotice": {
     "text": "Há uma nova versão do Billanta. Recarregue a página para que tudo funcione.",
     "reload": "Recarregar"
+  },
+  "vault": {
+    "settingsLink": "Definições do Modo confidencial",
+    "plan": {
+      "title": "O Modo confidencial está nos planos Plus e Business",
+      "body": "Depois de mudar de plano, o proprietário da empresa ativa-o aqui. Se mais tarde baixar de plano, os documentos já cifrados continuam a poder ser desbloqueados e lidos.",
+      "upgrade": "Ver planos",
+      "downgradedTitle": "Cifrar mais documentos requer o plano Plus ou Business",
+      "downgradedBody": "Continua a poder desbloquear, ler e editar documentos cifrados. Os documentos novos são guardados sem cifra."
+    },
+    "unlock": {
+      "title": "Desbloquear o Modo confidencial",
+      "lead": "Os textos cifrados só abrem no seu navegador. A palavra-passe e o código nunca são enviados ao servidor.",
+      "cancel": "Voltar",
+      "submit": "Desbloquear",
+      "passkeyButton": "Usar uma chave de acesso",
+      "methods": {
+        "password": "Palavra-passe do cofre",
+        "recovery": "Código de recuperação",
+        "passkey": "Chave de acesso"
+      },
+      "password": "Palavra-passe do cofre",
+      "currentPassword": "Palavra-passe atual do cofre",
+      "recovery": "Código de recuperação",
+      "newPasswordRequired": "Nova palavra-passe do cofre (pelo menos 10 caracteres)",
+      "newPasswordOptional": "Nova palavra-passe do cofre (opcional, se se esqueceu da sua)",
+      "passkeyLead": "O navegador vai pedir a impressão digital, o rosto ou uma chave de segurança.",
+      "settingsHint": "Gira a palavra-passe, as chaves de acesso e o código de recuperação em",
+      "errors": {
+        "passwordShort": "A nova palavra-passe deve ter pelo menos 10 caracteres.",
+        "passkeyFailed": "A chave de acesso não funcionou. Experimente a palavra-passe ou o código de recuperação.",
+        "saveFailed": "Não foi possível guardar a nova palavra-passe. Tente novamente.",
+        "recoveryMalformed": "O código de recuperação tem 30 caracteres (6 grupos de 5). Verifique-o.",
+        "noPassword": "Ainda não tem palavra-passe do cofre. Desbloqueie com o código de recuperação e defina uma.",
+        "wrongSecret": "A palavra-passe ou o código não corresponde.",
+        "unlockFailed": "Não foi possível desbloquear. Tente novamente."
+      }
+    },
+    "text": {
+      "locked": "Cifrado",
+      "otherKey": "Cifrado com outra chave",
+      "unlock": "Desbloquear"
+    },
+    "seal": {
+      "button": {
+        "invoice": "Cifrar",
+        "contact": "Cifrar documentos do cliente",
+        "company": "Cifrar toda a empresa"
+      },
+      "title": {
+        "invoice": "Cifrar este documento",
+        "contact": "Cifrar todos os documentos deste cliente",
+        "company": "Cifrar todos os documentos da empresa"
+      },
+      "cancel": "Voltar",
+      "confirm": "Cifrar",
+      "progress": "A cifrar… {n}",
+      "lead": "Cifrar – só você e os membros com a chave verão o conteúdo, o servidor não o consegue ler.",
+      "what": "São cifradas as descrições das linhas e as notas (acima, abaixo das linhas e internas).",
+      "keeps": "Relatórios e painéis continuam a funcionar: valores, datas e referências de pagamento ficam sem cifra.",
+      "loses": "Nos documentos cifrados, o servidor não pode criar PDF nem ISDOC, anexá-los a um e-mail nem encontrá-los na pesquisa por texto.",
+      "locked": "Os documentos bloqueados são ignorados.",
+      "done": "{n, plural, one {# documento cifrado} other {# documentos cifrados}}.",
+      "nothing": "Não havia nada para cifrar.",
+      "failed": "A cifra falhou. Os documentos já cifrados continuam cifrados."
+    },
+    "editor": {
+      "lockedTitle": "Este documento está cifrado",
+      "lockedLead": "Desbloqueie-o para editar. Só abre no seu navegador.",
+      "otherKey": "Este documento está cifrado com uma chave que esta empresa não tem.",
+      "unlock": "Desbloquear",
+      "aiUnavailable": "O preenchimento por IA não está disponível no Modo confidencial durante a cifra – o texto teria de ir para o servidor.",
+      "sealFailed": "Não foi possível cifrar o documento. Nada foi guardado.",
+      "sealToggle": "Cifrar este documento",
+      "sealOnHint": "Só você e os membros com a chave verão as descrições e notas. PDF, ISDOC e sugestões de linhas não estarão disponíveis.",
+      "sealOffHint": "O documento é guardado sem cifra, como até agora."
+    },
+    "actions": {
+      "blocked": "Indisponível no Modo confidencial: o servidor não consegue ler um documento cifrado. Desative o anexo PDF/ISDOC nas definições de e-mail ou envie uma ligação.",
+      "pdfUnavailable": "O PDF não está disponível no Modo confidencial. Pode imprimir o detalhe a partir do navegador (Ctrl+P).",
+      "sendHint": "Este documento está cifrado: o e-mail segue apenas com uma ligação, o servidor não pode anexar PDF nem ISDOC."
+    },
+    "categories": {
+      "recommended": "Recomendado",
+      "planned": "Em breve",
+      "losesTitle": "O que deixa de funcionar:",
+      "texts": {
+        "title": "Descrições das linhas e notas",
+        "description": "O que forneceu e as notas do documento. Valores, datas e referências continuam legíveis.",
+        "loses": [
+          "PDF, ISDOC, UBL e Peppol criados pelo servidor",
+          "Anexo PDF/ISDOC nos e-mails",
+          "Pesquisa pelo texto das linhas e notas, sugestões de linhas",
+          "Preenchimento de documentos por IA",
+          "Descrições das linhas na ligação pública e nas exportações para o contabilista (Pohoda, Money, CSV)"
+        ]
+      },
+      "attachments": {
+        "title": "Anexos e recibos",
+        "description": "Ficheiros de documentos e despesas.",
+        "loses": [
+          "Leitura de recibos por IA",
+          "Pré-visualização de anexos",
+          "Envio de anexos por e-mail e entrega ao contabilista"
+        ]
+      },
+      "contacts": {
+        "title": "Nomes e moradas dos contactos",
+        "description": "Nomes dos clientes, moradas, e-mails e telefones.",
+        "loses": [
+          "Preenchimento e atualização a partir do ARES",
+          "Correspondência de pagamentos bancários pelo nome do pagador",
+          "E-mails enviados pelo servidor (não conhece o endereço)",
+          "Pesquisa de contactos no servidor"
+        ]
+      },
+      "amounts": {
+        "title": "Valores",
+        "description": "Preços, IVA e totais dos documentos.",
+        "loses": [
+          "Correspondência automática de pagamentos bancários",
+          "Relatórios de IVA, declaração de controlo e exportações de IVA",
+          "Painéis, rendimento líquido e gráficos",
+          "Lembretes com valor e pagamentos QR criados pelo servidor"
+        ]
+      }
+    },
+    "enable": {
+      "offTitle": "O Modo confidencial está desligado",
+      "ownerOnly": "Só o proprietário da empresa o pode ativar.",
+      "introTitle": "Modo confidencial",
+      "intro": "Os textos escolhidos são cifrados diretamente no seu navegador com uma chave que só a sua empresa conhece. Nem o servidor, nem as suas cópias de segurança, nem nós os conseguimos ler.",
+      "notE2eeNote": "Desbloqueia-se com a palavra-passe do cofre, uma chave de acesso ou o código de recuperação. O início de sessão ou a autenticação de dois fatores não abrem a chave – caso contrário o servidor teria de a conhecer.",
+      "chooseTitle": "O que cifrar",
+      "chooseLead": "Cada opção desliga funções que precisam de ler o texto. O resto da aplicação continua a funcionar.",
+      "warningsTitle": "Antes de o ativar",
+      "warnings": {
+        "lost": "Compreendo que, se perdermos todas as palavras-passe do cofre e o código de recuperação, os dados cifrados não poderão ser recuperados. O suporte também não os consegue abrir.",
+        "archive": "Compreendo que temos de guardar os documentos durante 10 anos e entregar nós mesmos as declarações de IVA. Vamos descarregar o arquivo de documentos com regularidade.",
+        "features": "Compreendo que funções deixam de funcionar nos documentos cifrados."
+      },
+      "next": "Continuar",
+      "back": "Voltar",
+      "passwordTitle": "Palavra-passe do cofre",
+      "passwordLead": "Diferente da palavra-passe de início de sessão, pelo menos {n} caracteres. Nunca é enviada ao servidor.",
+      "password": "Palavra-passe do cofre",
+      "passwordAgain": "Repita a palavra-passe",
+      "codeTitle": "Código de recuperação",
+      "codeLead": "Só é mostrado agora. Imprima-o ou guarde-o fora do computador. Desbloqueia os dados se esquecer a palavra-passe, e entrega-o aos colegas que devem ter acesso.",
+      "copied": "Copiado",
+      "copy": "Copiar",
+      "download": "Descarregar como ficheiro",
+      "codeFileHeader": "Código de recuperação do Modo confidencial ({site}). Guarde-o num local seguro.",
+      "retype": "Volte a escrever o código para o verificar",
+      "retypeMismatch": "O código ainda não corresponde.",
+      "submit": "Ativar o Modo confidencial",
+      "done": "O Modo confidencial está ativo.",
+      "errors": {
+        "acks": "Confirme todos os avisos.",
+        "passwordShort": "A palavra-passe deve ter pelo menos {n} caracteres.",
+        "passwordMismatch": "As palavras-passe não coincidem.",
+        "failed": "Não foi possível ativar. Tente novamente.",
+        "vault_already_enabled": "O Modo confidencial já está ativo.",
+        "owner_only": "Só o proprietário da empresa o pode ativar.",
+        "plan_required": "O Modo confidencial está nos planos Plus e Business."
+      }
+    },
+    "settings": {
+      "title": "Modo confidencial",
+      "description": "Cifrar os textos dos documentos no seu navegador.",
+      "loadError": "Não foi possível carregar as definições.",
+      "failed": "Não funcionou. Tente novamente.",
+      "onTitle": "O Modo confidencial está ativo",
+      "unlockedHere": "Desbloqueado neste navegador. A chave é apagada ao terminar sessão.",
+      "lockedHere": "Bloqueado neste navegador.",
+      "lock": "Bloquear",
+      "unlock": "Desbloquear",
+      "archiveTitle": "O arquivo é da sua responsabilidade",
+      "archiveBody": "Tem de guardar os documentos durante 10 anos, e as declarações de IVA continuam a ser sua obrigação. Descarregue o arquivo de documentos com regularidade e guarde o código de recuperação fora do computador.",
+      "archiveLink": "Exportações e arquivo",
+      "sealTitle": "Cifrar documentos existentes",
+      "sealLead": "Os documentos antigos ficam sem cifra até os editar ou cifrar aqui.",
+      "sealNew": "Cifrar automaticamente os documentos novos",
+      "sealNewHint": "No editor, a opção Cifrar este documento virá ligada.",
+      "saved": "Guardado",
+      "methodsTitle": "Os meus métodos de desbloqueio",
+      "passwordSet": "A palavra-passe do cofre está definida",
+      "passwordMissing": "Ainda não tem palavra-passe do cofre",
+      "changePassword": "Alterar",
+      "setPassword": "Definir",
+      "passkeyUnnamed": "Chave de acesso",
+      "passkeyRemoved": "Chave de acesso removida",
+      "removePasskey": "Remover chave de acesso",
+      "passkeyLead": "Desbloquear com impressão digital ou rosto",
+      "addPasskey": "Adicionar chave de acesso",
+      "newPassword": "Nova palavra-passe do cofre (pelo menos {n} caracteres)",
+      "savePassword": "Guardar palavra-passe",
+      "passwordShort": "A palavra-passe deve ter pelo menos {n} caracteres.",
+      "passwordSaved": "Palavra-passe do cofre guardada",
+      "passkeyHint": "Confirme com a palavra-passe atual ou o código de recuperação; depois o navegador pede-lhe para criar uma chave de acesso.",
+      "passkeyLabel": "Nome (p. ex. Portátil)",
+      "passkeyNoPrf": "Este dispositivo ou navegador não suporta chaves de acesso para cifra.",
+      "passkeyAdded": "Chave de acesso adicionada",
+      "recoveryTitle": "Código de recuperação",
+      "recoveryLead": "Um novo código invalida de imediato o antigo. Os colegas que desbloquearam com o código antigo mantêm a sua palavra-passe.",
+      "recoveryShownOnce": "O código só é mostrado agora. Guarde-o num local seguro.",
+      "recoveryWritten": "Já o guardei",
+      "recoveryNew": "Criar um novo código de recuperação",
+      "recoveryReplaced": "O novo código de recuperação está ativo",
+      "categoriesTitle": "O que é cifrado",
+      "categoriesLead": "Mais opções em breve. Em cada uma vê o que deixaria de funcionar."
+    }
   }
 }

@@ -12,6 +12,7 @@ import { ABUSE_PAUSE_THRESHOLD } from "../abuse/sending-guard";
 import { resolveInvoiceToken } from "../public-links/resolve";
 import { showsBrandCredit } from "../invoices/brand-credit";
 import { computeVatBreakdown, type InvoiceVatBreakdown } from "../invoices/invoice-total.util";
+import { isSealed } from "../vault/sealed";
 
 export type AbuseReason = "fraud" | "not_ordered" | "spam" | "other";
 
@@ -74,7 +75,9 @@ type PublicQrDetailsRow = {
 };
 
 export interface PublicInvoiceLineItemView {
+  /** Empty when encrypted in Důvěrný režim (see `confidential`): the customer has no key. */
   description: string;
+  confidential?: true;
   quantity: number;
   unitPrice: number;
   vatRate: number | null;
@@ -292,7 +295,8 @@ export class PublicInvoicesService {
     const quoteRow = quoteRows[0];
 
     const lineItems: PublicInvoiceLineItemView[] = lineItemRows.map((row) => ({
-      description: row.description,
+      description: isSealed(row.description) ? "" : row.description,
+      ...(isSealed(row.description) ? { confidential: true as const } : {}),
       quantity: Number(row.quantity),
       unitPrice: Number(row.unit_price),
       vatRate: row.vat_rate != null ? Number(row.vat_rate) : null,
