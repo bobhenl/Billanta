@@ -1151,7 +1151,8 @@
         "keyHint": "În Stripe Dashboard (Developers → API keys → Create restricted key) creați o cheie restricționată cu acces doar de citire (Read) la Balance transactions, Charges și Customers. Lăsați restul pe None. Billanta o folosește doar pentru a citi plățile primite și nu trimite și nu rambursează niciodată nimic. Cheia este stocată criptat și nu mai este afișată niciodată.",
         "note": "Plățile primite sunt potrivite cu facturile după numărul facturii sau simbolul variabil (VS) din descrierea sau metadatele plății și după sumă. Comisionul reținut de Stripe se înregistrează pe factură. Plățile cu cardul făcute dintr-un link de factură Billanta sunt deja înregistrate și nu vor mai apărea aici.",
         "connected": "Stripe conectat. Plățile din ultimele 30 de zile sosesc la următoarea sincronizare."
-      }
+      },
+      "uploadStatement": "Încarcă extrasul"
     },
     "fee": "comision {amount}",
     "netReceived": "creditat {amount}",
@@ -5211,7 +5212,16 @@
       "sendBody": "Clientul primește un e-mail intitulat „Factură corectată”, care explică faptul că înlocuiește versiunea anterioară. Trimiterea este înregistrată în istoricul modificărilor.",
       "editNote": "Ați trimis deja această factură clientului ({date}). După editare, pagina de detalii vă va oferi trimiterea versiunii corectate."
     },
-    "fxLabelEcbOn": "Curs BCE la data de {date}"
+    "fxLabelEcbOn": "Curs BCE la data de {date}",
+    "received": {
+      "title": "Plată primită",
+      "date": "Primită",
+      "payer": "Plătitor",
+      "account": "Contul plătitorului",
+      "message": "Mesaj pentru beneficiar",
+      "transactionId": "ID tranzacție",
+      "open": "Deschide în bancă"
+    }
   },
   "invite": {
     "title": "Invitație în echipă",

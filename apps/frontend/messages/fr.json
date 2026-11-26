@@ -1151,7 +1151,8 @@
         "keyHint": "Dans le Stripe Dashboard (Developers → API keys → Create restricted key), créez une clé restreinte avec un accès en lecture seule (Read) à Balance transactions, Charges et Customers. Laissez tout le reste sur None. Billanta s’en sert uniquement pour lire les paiements reçus et n’envoie ni ne rembourse rien. La clé est stockée chiffrée et n’est plus jamais affichée.",
         "note": "Les paiements reçus sont rapprochés des factures d’après le numéro de facture ou le symbole variable (VS) figurant dans la description ou les métadonnées du paiement, et d’après le montant. Les frais retenus par Stripe sont comptabilisés sur la facture. Les paiements par carte effectués depuis un lien de facture Billanta sont déjà enregistrés et n’apparaîtront pas ici une seconde fois.",
         "connected": "Stripe connecté. Les paiements des 30 derniers jours arriveront lors de la prochaine synchronisation."
-      }
+      },
+      "uploadStatement": "Importer un relevé"
     },
     "fee": "frais {amount}",
     "netReceived": "crédité {amount}",
@@ -5211,7 +5212,16 @@
       "sendBody": "Le client reçoit un e-mail intitulé « Facture corrigée » expliquant qu’elle remplace la version précédente. L’envoi est consigné dans l’historique des modifications.",
       "editNote": "Vous avez déjà envoyé cette facture au client ({date}). Après modification, la page de détail vous proposera de lui envoyer la version corrigée."
     },
-    "fxLabelEcbOn": "Taux BCE au {date}"
+    "fxLabelEcbOn": "Taux BCE au {date}",
+    "received": {
+      "title": "Paiement reçu",
+      "date": "Reçu le",
+      "payer": "Payeur",
+      "account": "Compte du payeur",
+      "message": "Message pour le bénéficiaire",
+      "transactionId": "ID de transaction",
+      "open": "Ouvrir dans la banque"
+    }
   },
   "invite": {
     "title": "Invitation dans l’équipe",

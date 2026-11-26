@@ -1151,7 +1151,8 @@
         "keyHint": "A Stripe Dashboardon (Developers → API keys → Create restricted key) hozzon létre egy korlátozott kulcsot, amely csak olvasási (Read) jogot kap a Balance transactions, Charges és Customers elemekhez. Minden mást hagyjon None értéken. A Billanta ezzel csak a beérkezett fizetéseket olvassa, soha nem küld és nem térít vissza semmit. A kulcsot titkosítva tároljuk, és többé nem jelenítjük meg.",
         "note": "A beérkezett fizetéseket a fizetés leírásában vagy metaadataiban szereplő számlaszám vagy változó szimbólum (VS), valamint az összeg alapján párosítjuk a számlákkal. A Stripe által levont díjat a számlán könyveljük. A Billanta számlalinkjéről indított kártyás fizetéseket már rögzítettük, ezek itt nem jelennek meg újra.",
         "connected": "A Stripe csatlakoztatva. Az elmúlt 30 nap fizetései a következő szinkronizáláskor érkeznek."
-      }
+      },
+      "uploadStatement": "Kivonat feltöltése"
     },
     "fee": "díj {amount}",
     "netReceived": "jóváírva: {amount}",
@@ -5211,7 +5212,16 @@
       "sendBody": "A vevő „Javított számla” tárgyú e-mailt kap azzal a magyarázattal, hogy az a korábbi változatot váltja fel. A küldés bekerül a változások előzményeibe.",
       "editNote": "Ezt a számlát már elküldte a vevőnek ({date}). Szerkesztés után a részletek oldalon felajánljuk a javított változat elküldését."
     },
-    "fxLabelEcbOn": "EKB-árfolyam ({date})"
+    "fxLabelEcbOn": "EKB-árfolyam ({date})",
+    "received": {
+      "title": "Beérkezett fizetés",
+      "date": "Beérkezett",
+      "payer": "Fizető",
+      "account": "Fizető számlája",
+      "message": "Közlemény",
+      "transactionId": "Tranzakcióazonosító",
+      "open": "Megnyitás a banknál"
+    }
   },
   "invite": {
     "title": "Meghívás a csapatba",

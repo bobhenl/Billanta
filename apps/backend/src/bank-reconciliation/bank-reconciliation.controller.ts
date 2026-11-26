@@ -84,7 +84,7 @@ export class BankReconciliationController {
   @Get("transactions")
   @ApiOperation({ summary: "List bank transactions for the current tenant, optionally filtered by status" })
   list(@Req() req: TenantScopedRequest, @Query() query: ListBankTransactionsQueryDto) {
-    return this.bankReconciliationService.list(req.tenantDb!, query.status);
+    return this.bankReconciliationService.list(req.tenantDb!, query.status, query.invoiceId);
   }
 
   @Get("transactions/:id")

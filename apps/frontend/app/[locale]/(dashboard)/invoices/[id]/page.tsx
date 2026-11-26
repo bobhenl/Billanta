@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
-import { AlertTriangle, ArrowLeft, Lock, Building2, CheckCircle2, ChevronDown, FileText, History, Link2, Wallet, XCircle } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, ArrowDownLeft, Lock, Building2, CheckCircle2, ChevronDown, ExternalLink, FileText, History, Link2, Wallet, XCircle } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import { AuditLogList } from '@/components/audit-log-list';
@@ -15,12 +16,14 @@ import {
   buyerDetailsState,
   displayStatus,
   formatDate,
+  formatTime,
   fxLabelOf,
   formatMoney,
   rateQuote,
   STATUS_BADGE_CLASSES,
   type InvoiceDetail
 } from '@/lib/invoice-ui';
+import { providerPayment, type BankTransaction } from '@/lib/bank-ui';
 import { cn } from '@/lib/utils';
 import { homeCurrencyOf, lawUrl } from '@faktur/cz-compliance';
 import { AttachmentsPanel, type Attachment } from './attachments-panel';
@@ -91,6 +94,14 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   }
 
   const { invoice, contact, items, totals, parent, children } = detail;
+  // The bank or PayPal line that paid it: the payer's message and the provider's id live there.
+  // A member without access to the bank gets a 403 and simply no card.
+  const payments =
+    invoice.status === 'paid'
+      ? (
+          await apiFetch<BankTransaction[]>(`/api/v1/bank-reconciliation/transactions?invoiceId=${invoice.id}`).catch(() => [] as BankTransaction[])
+        ).filter((p) => p.matchedInvoiceId === invoice.id)
+      : [];
   // Asking the customer for their details changes the draft, so a read-only member doesn't get the box.
   const canEdit = await fetchCanWrite('invoices');
   // The buyer as printed on the document (issue-date snapshot); older backends send only `contact`.
@@ -505,6 +516,48 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               {receivedCzk == null && invoice.currency !== home && <p className="mt-2 text-xs text-muted-foreground">{t('net.noReceived', { home })}</p>}
             </details>
           )}
+
+          {payments.map((p) => {
+            const provider = providerPayment(p.externalId);
+            const rows: [string, ReactNode][] = [
+              [t('received.date'), [formatDate(p.transactionDate, locale), formatTime(p.occurredAt, locale)].filter(Boolean).join(' ')],
+              [t('received.payer'), p.counterpartyName],
+              [t('received.account'), p.counterpartyAccount],
+              [t('received.message'), p.message],
+              [
+                t('received.transactionId'),
+                provider && (
+                  <a href={provider.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-mono text-xs hover:text-primary">
+                    {provider.id}
+                    <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                  </a>
+                )
+              ]
+            ];
+            return (
+              <details key={p.id} className="group rounded-xl border border-border bg-card p-4">
+                <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-bold [&::-webkit-details-marker]:hidden">
+                  <ArrowDownLeft className="h-4 w-4 text-primary" />
+                  <span className="flex-1">{t('received.title')}</span>
+                  <span className="font-extrabold tabular-nums">{formatMoney(Number(p.amount), p.currency, locale)}</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <dl className="mt-3 space-y-1.5 text-sm">
+                  {rows
+                    .filter(([, value]) => value)
+                    .map(([label, value]) => (
+                      <div key={label} className="flex justify-between gap-3">
+                        <dt className="shrink-0 text-muted-foreground">{label}</dt>
+                        <dd className="min-w-0 break-words text-right font-medium">{value}</dd>
+                      </div>
+                    ))}
+                </dl>
+                <Link href={`/bank/${p.id}`} className="mt-3 inline-flex text-xs font-semibold text-primary hover:underline">
+                  {t('received.open')}
+                </Link>
+              </details>
+            );
+          })}
 
           <section className="rounded-xl border border-border bg-card p-4">
             <h2 className="flex items-center gap-2 text-sm font-bold">

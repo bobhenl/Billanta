@@ -1151,7 +1151,8 @@
         "keyHint": "Maak in het Stripe Dashboard (Developers → API keys → Create restricted key) een beperkte sleutel met alleen leesrechten (Read) voor Balance transactions, Charges en Customers. Laat al het andere op None staan. Billanta leest er alleen ontvangen betalingen mee en verstuurt of terugbetaalt nooit iets. De sleutel wordt versleuteld opgeslagen en nooit meer getoond.",
         "note": "Ontvangen betalingen worden aan facturen gekoppeld op basis van het factuurnummer of het variabel symbool (VS) in de omschrijving of metadata van de betaling, en op basis van het bedrag. De kosten die Stripe heeft ingehouden, worden op de factuur geboekt. Kaartbetalingen via een Billanta-factuurlink zijn al geregistreerd en verschijnen hier niet nog eens.",
         "connected": "Stripe gekoppeld. De betalingen van de afgelopen 30 dagen komen binnen bij de volgende synchronisatie."
-      }
+      },
+      "uploadStatement": "Afschrift uploaden"
     },
     "fee": "kosten {amount}",
     "netReceived": "{amount} bijgeschreven",
@@ -5211,7 +5212,16 @@
       "sendBody": "De klant krijgt een e-mail met de titel “Gecorrigeerde factuur” waarin staat dat die de eerdere versie vervangt. De verzending wordt in de wijzigingsgeschiedenis vastgelegd.",
       "editNote": "Je hebt deze factuur al naar de klant gestuurd ({date}). Na het bewerken biedt de detailpagina aan om de gecorrigeerde versie te sturen."
     },
-    "fxLabelEcbOn": "ECB-koers op {date}"
+    "fxLabelEcbOn": "ECB-koers op {date}",
+    "received": {
+      "title": "Ontvangen betaling",
+      "date": "Ontvangen",
+      "payer": "Betaler",
+      "account": "Rekening van de betaler",
+      "message": "Omschrijving",
+      "transactionId": "Transactie-ID",
+      "open": "Openen bij bank"
+    }
   },
   "invite": {
     "title": "Uitnodiging voor het team",

@@ -1151,7 +1151,8 @@
         "keyHint": "W Stripe Dashboard (Developers → API keys → Create restricted key) utwórz ograniczony klucz z dostępem tylko do odczytu (Read) do Balance transactions, Charges i Customers. Wszystko inne zostaw na None. Billanta odczytuje nim tylko otrzymane płatności i nigdy niczego nie wysyła ani nie zwraca. Klucz jest przechowywany w postaci zaszyfrowanej i nigdy więcej nie zostanie pokazany.",
         "note": "Otrzymane płatności są parowane z fakturami według numeru faktury lub symbolu zmiennego (VS) w opisie lub metadanych płatności oraz według kwoty. Prowizja pobrana przez Stripe jest księgowana na fakturze. Płatności kartą z linku do faktury Billanta są już zapisane i nie pojawią się tu ponownie.",
         "connected": "Stripe połączony. Płatności z ostatnich 30 dni pojawią się przy najbliższej synchronizacji."
-      }
+      },
+      "uploadStatement": "Wgraj wyciąg"
     },
     "fee": "prowizja {amount}",
     "netReceived": "zaksięgowano {amount}",
@@ -5211,7 +5212,16 @@
       "sendBody": "Klient otrzyma e-mail zatytułowany „Poprawiona faktura” z wyjaśnieniem, że zastępuje ona wcześniejszą wersję. Wysyłka zostanie zapisana w historii zmian.",
       "editNote": "Ta faktura została już wysłana klientowi ({date}). Po edycji strona szczegółów zaproponuje wysłanie mu poprawionej wersji."
     },
-    "fxLabelEcbOn": "Kurs EBC z dnia {date}"
+    "fxLabelEcbOn": "Kurs EBC z dnia {date}",
+    "received": {
+      "title": "Otrzymana płatność",
+      "date": "Otrzymano",
+      "payer": "Płatnik",
+      "account": "Konto płatnika",
+      "message": "Tytuł przelewu",
+      "transactionId": "ID transakcji",
+      "open": "Otwórz w banku"
+    }
   },
   "invite": {
     "title": "Zaproszenie do zespołu",

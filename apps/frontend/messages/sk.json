@@ -1152,7 +1152,8 @@
         "keyHint": "V Stripe Dashboarde (Developers → API keys → Create restricted key) vytvorte obmedzený kľúč a dajte mu len čítanie (Read) pre Balance transactions, Charges a Customers. Ostatné oprávnenia nechajte na None. Billanta s ním len číta prijaté platby, nič neodosiela ani nevracia. Kľúč ukladáme šifrovane a už ho nikdy nezobrazíme.",
         "note": "Prijaté platby sa párujú s faktúrami podľa čísla faktúry alebo VS v popise či metadátach platby a podľa sumy. Poplatok, ktorý si Stripe strhol, sa zapíše k faktúre. Platby kartou z odkazu na faktúru zapisuje Billanta sama, tu sa znova neobjavia.",
         "connected": "Stripe pripojený. Platby za posledných 30 dní stiahneme pri najbližšej synchronizácii."
-      }
+      },
+      "uploadStatement": "Nahrať výpis"
     },
     "fee": "poplatok {amount}",
     "netReceived": "pripísané {amount}",
@@ -5218,7 +5219,16 @@
       "sendBody": "Odberateľ dostane e-mail s predmetom „Opravená faktúra“ a vysvetlením, že nahrádza predchádzajúcu verziu. Odoslanie sa zapíše do histórie zmien.",
       "editNote": "Túto faktúru ste odberateľovi už poslali ({date}). Po úprave vám na detaile ponúkneme poslať mu opravenú verziu."
     },
-    "fxLabelEcbOn": "Kurz ECB k {date}"
+    "fxLabelEcbOn": "Kurz ECB k {date}",
+    "received": {
+      "title": "Prijatá platba",
+      "date": "Prijaté",
+      "payer": "Platiteľ",
+      "account": "Účet platiteľa",
+      "message": "Správa pre prijímateľa",
+      "transactionId": "ID transakcie",
+      "open": "Otvoriť v banke"
+    }
   },
   "invite": {
     "title": "Pozvánka do tímu",

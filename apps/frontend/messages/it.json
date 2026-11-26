@@ -1151,7 +1151,8 @@
         "keyHint": "Nello Stripe Dashboard (Developers → API keys → Create restricted key) crei una chiave limitata con accesso in sola lettura (Read) a Balance transactions, Charges e Customers. Lasci tutto il resto su None. Billanta la usa solo per leggere i pagamenti ricevuti e non invia né rimborsa mai nulla. La chiave viene salvata cifrata e non viene più mostrata.",
         "note": "I pagamenti ricevuti vengono abbinati alle fatture in base al numero di fattura o al simbolo variabile (VS) nella descrizione o nei metadati del pagamento e in base all’importo. La commissione trattenuta da Stripe viene registrata sulla fattura. I pagamenti con carta fatti da un link di fattura Billanta sono già registrati e qui non compariranno di nuovo.",
         "connected": "Stripe collegato. I pagamenti degli ultimi 30 giorni arriveranno con la prossima sincronizzazione."
-      }
+      },
+      "uploadStatement": "Carica estratto conto"
     },
     "fee": "commissione {amount}",
     "netReceived": "accreditati {amount}",
@@ -5211,7 +5212,16 @@
       "sendBody": "Il cliente riceve un’e-mail con oggetto “Fattura corretta” che spiega che sostituisce la versione precedente. L’invio viene registrato nella cronologia delle modifiche.",
       "editNote": "Ha già inviato questa fattura al cliente ({date}). Dopo la modifica, la pagina di dettaglio Le proporrà di inviargli la versione corretta."
     },
-    "fxLabelEcbOn": "Cambio BCE al {date}"
+    "fxLabelEcbOn": "Cambio BCE al {date}",
+    "received": {
+      "title": "Pagamento ricevuto",
+      "date": "Ricevuto",
+      "payer": "Pagatore",
+      "account": "Conto del pagatore",
+      "message": "Causale",
+      "transactionId": "ID transazione",
+      "open": "Apri in banca"
+    }
   },
   "invite": {
     "title": "Invito al team",

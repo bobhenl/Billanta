@@ -9,6 +9,7 @@ import { useCanWrite } from '@/components/access-provider';
 import { useRouter } from '@/i18n/navigation';
 import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
+import { STATEMENT_INPUT_ID } from './bank-import';
 import {
   backfillBankConnection,
   connectFio,
@@ -295,7 +296,18 @@ export function BankConnections({
               </button>
             ))}
           </div>
-          {!psd2.available && <p className="mt-2 text-[11px] text-muted-foreground">{t('otherBanks')}</p>}
+          {!psd2.available && (
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              {t('otherBanks')}{' '}
+              <button
+                type="button"
+                onClick={() => document.getElementById(STATEMENT_INPUT_ID)?.click()}
+                className="font-semibold text-primary hover:underline"
+              >
+                {t('uploadStatement')}
+              </button>
+            </p>
+          )}
           <button type="button" onClick={() => setMode(null)} className="mt-2 rounded-full bg-muted px-4 py-1.5 text-xs font-semibold hover:bg-accent">
             {t('cancel')}
           </button>

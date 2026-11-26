@@ -1152,7 +1152,8 @@
         "keyHint": "In the Stripe Dashboard (Developers → API keys → Create restricted key) create a restricted key with Read access to Balance transactions, Charges and Customers only. Leave everything else at None. Billanta only reads received payments with it and never sends or refunds anything. The key is stored encrypted and never shown again.",
         "note": "Received payments are matched to invoices by the invoice number or variable symbol in the payment's description or metadata, and by amount. The fee Stripe kept is booked on the invoice. Card payments made from a Billanta invoice link are already recorded and will not show up here again.",
         "connected": "Stripe connected. The last 30 days of payments arrive with the next sync."
-      }
+      },
+      "uploadStatement": "Upload a statement"
     },
     "fee": "fee {amount}",
     "netReceived": "credited {amount}",
@@ -5218,7 +5219,16 @@
       "sendBody": "The customer gets an email titled “Corrected invoice” explaining that it replaces the earlier version. The send is recorded in the change history.",
       "editNote": "You already sent this invoice to the customer ({date}). After editing, the detail page will offer to send them the corrected version."
     },
-    "fxLabelEcbOn": "ECB rate as of {date}"
+    "fxLabelEcbOn": "ECB rate as of {date}",
+    "received": {
+      "title": "Payment received",
+      "date": "Received",
+      "payer": "Payer",
+      "account": "Payer's account",
+      "message": "Message for the payee",
+      "transactionId": "Transaction ID",
+      "open": "Open in bank"
+    }
   },
   "invite": {
     "title": "Team invitation",

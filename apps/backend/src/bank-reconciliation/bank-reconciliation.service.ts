@@ -349,7 +349,7 @@ export class BankReconciliationService {
       .where(and(gte(t.transactionDate, new Date(Math.min(...days))), lt(t.transactionDate, new Date(Math.max(...days) + DAY_MS))));
   }
 
-  async list(db: TenantDb, status?: BankTransactionStatusFilter) {
+  async list(db: TenantDb, status?: BankTransactionStatusFilter, invoiceId?: string) {
     // RLS on `bank_transactions` already restricts this to the current
     // tenant — no manual `WHERE tenant_id = ...` needed (same pattern as
     // ContactsService.list / InvoicesService.list).
@@ -364,7 +364,12 @@ export class BankReconciliationService {
       })
       .from(schema.bankTransactions)
       .innerJoin(schema.bankStatementImports, eq(schema.bankStatementImports.id, schema.bankTransactions.importId))
-      .where(status ? eq(schema.bankTransactions.status, status) : undefined)
+      .where(
+        and(
+          status ? eq(schema.bankTransactions.status, status) : undefined,
+          invoiceId ? eq(schema.bankTransactions.matchedInvoiceId, invoiceId) : undefined,
+        ),
+      )
       .orderBy(...order);
     return rows.map((r) => ({ ...r.transaction, importSource: r.importSource, importFilename: r.importFilename }));
   }

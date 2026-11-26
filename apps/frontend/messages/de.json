@@ -1151,7 +1151,8 @@
         "keyHint": "Erstellen Sie im Stripe Dashboard (Developers → API keys → Create restricted key) einen eingeschränkten Schlüssel nur mit Lesezugriff (Read) auf Balance transactions, Charges und Customers. Alles andere bleibt auf None. Billanta liest damit nur eingegangene Zahlungen und sendet oder erstattet nie etwas. Der Schlüssel wird verschlüsselt gespeichert und nie wieder angezeigt.",
         "note": "Eingegangene Zahlungen werden Rechnungen anhand der Rechnungsnummer oder des Verwendungszwecks (VS) in der Beschreibung oder den Metadaten der Zahlung und anhand des Betrags zugeordnet. Die von Stripe einbehaltene Gebühr wird auf der Rechnung verbucht. Kartenzahlungen über einen Billanta-Rechnungslink sind bereits erfasst und erscheinen hier nicht noch einmal.",
         "connected": "Stripe verbunden. Die Zahlungen der letzten 30 Tage kommen mit der nächsten Synchronisierung."
-      }
+      },
+      "uploadStatement": "Kontoauszug hochladen"
     },
     "fee": "Gebühr {amount}",
     "netReceived": "gutgeschrieben {amount}",
@@ -5211,7 +5212,16 @@
       "sendBody": "Der Kunde erhält eine E-Mail mit dem Betreff „Korrigierte Rechnung“ und dem Hinweis, dass sie die frühere Version ersetzt. Der Versand wird im Änderungsverlauf festgehalten.",
       "editNote": "Sie haben diese Rechnung bereits an den Kunden gesendet ({date}). Nach dem Bearbeiten bietet die Detailseite an, ihm die korrigierte Version zu senden."
     },
-    "fxLabelEcbOn": "EZB-Kurs zum {date}"
+    "fxLabelEcbOn": "EZB-Kurs zum {date}",
+    "received": {
+      "title": "Erhaltene Zahlung",
+      "date": "Eingegangen",
+      "payer": "Zahler",
+      "account": "Konto des Zahlers",
+      "message": "Verwendungszweck",
+      "transactionId": "Transaktions-ID",
+      "open": "In der Bank öffnen"
+    }
   },
   "invite": {
     "title": "Einladung ins Team",
