@@ -3,7 +3,7 @@ import { PgDialect } from "drizzle-orm/pg-core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { EmailService } from "../email/email.service";
 import type { InvoicePdfService } from "./invoice-pdf.service";
-import { customerRequiredError, InvoicesService, isOverdue, proformaDeposit, rateAfterEdit, rateModeAfterEdit } from "./invoices.service";
+import { customerRequiredError, invoiceFileBase, InvoicesService, isOverdue, proformaDeposit, rateAfterEdit, rateModeAfterEdit } from "./invoices.service";
 
 // The sending guard has its own spec; here it always allows the send.
 vi.mock("../abuse/sending-guard", () => ({ assertCanSendEmail: vi.fn(async () => undefined), recordEmailSent: vi.fn(async () => undefined) }));
@@ -898,5 +898,16 @@ describe("InvoicesService.setPublicSlug", () => {
     expect((await service.setPublicSlug(db, "inv-1", "web")).link).toBe(`web-${KEY}`);
     expect(update).not.toHaveBeenCalled();
     expect(audit.record).not.toHaveBeenCalled();
+  });
+});
+
+describe("invoiceFileBase", () => {
+  it("names the file by the document's own language and kind, then its number", () => {
+    expect(invoiceFileBase({ invoiceNumber: "2/11/2026", documentType: "invoice", language: "cs" })).toBe("faktura-2_11_2026");
+    expect(invoiceFileBase({ invoiceNumber: "2026-7", documentType: "invoice", language: "en" })).toBe("invoice-2026-7");
+    expect(invoiceFileBase({ invoiceNumber: "Z1", documentType: "proforma", language: "cs" })).toBe("zalohova-faktura-Z1");
+    expect(invoiceFileBase({ invoiceNumber: "P1", documentType: "quote", language: "sk" })).toBe("cenova-ponuka-P1");
+    expect(invoiceFileBase({ invoiceNumber: "D1", documentType: "credit_note", language: "en" })).toBe("credit-note-D1");
+    expect(invoiceFileBase({ invoiceNumber: null, documentType: "invoice", language: "de" })).toBe("faktura-koncept");
   });
 });

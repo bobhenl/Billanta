@@ -323,7 +323,7 @@ export class InvoicesService {
     const prefs = emailPrefsOf(liveTenant?.emailPrefs);
     const attachments: EmailAttachment[] = [];
     if (kind === "invoice" && invoice.invoiceNumber) {
-      const base = invoiceFileBase(invoice.invoiceNumber);
+      const base = invoiceFileBase(invoice);
       if (prefs.attachPdf) {
         attachments.push({ filename: `${base}.pdf`, content: await this.generateInvoicePdf(db, tenantId, invoice.id), contentType: "application/pdf" });
       }
@@ -1900,7 +1900,7 @@ export class InvoicesService {
     );
     const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
     const content = await this.invoicePdfService.generate(invoice, contact, tenant, lineItems, totals, related);
-    return { filename: `${invoice.invoiceNumber ? invoiceFileBase(invoice.invoiceNumber) : "koncept"}.pdf`, content };
+    return { filename: `${invoiceFileBase(invoice)}.pdf`, content };
   }
 
   /**
@@ -2006,7 +2006,19 @@ export class InvoicesService {
   }
 }
 
-/** "faktura-2_11_2026": the invoice number, safe in a file name and a mail header. */
-export function invoiceFileBase(invoiceNumber: string): string {
-  return `faktura-${invoiceNumber.replace(/[^\w.-]+/g, "_")}`;
+const FILE_PREFIX: Record<"cs" | "sk" | "en", Record<"invoice" | "proforma" | "credit_note" | "quote", string>> = {
+  cs: { invoice: "faktura", proforma: "zalohova-faktura", credit_note: "dobropis", quote: "nabidka" },
+  sk: { invoice: "faktura", proforma: "zalohova-faktura", credit_note: "dobropis", quote: "cenova-ponuka" },
+  en: { invoice: "invoice", proforma: "proforma-invoice", credit_note: "credit-note", quote: "quote" },
+};
+
+/**
+ * "faktura-2_11_2026": the kind of document in the language it is written in (not the
+ * language of whoever downloads it) and its number, safe in a file name and a mail header.
+ */
+export function invoiceFileBase(invoice: { invoiceNumber: string | null; documentType: string; language: string }): string {
+  const lang = invoice.language === "sk" || invoice.language === "en" ? invoice.language : "cs";
+  const prefix = FILE_PREFIX[lang][invoice.documentType as keyof (typeof FILE_PREFIX)["cs"]] ?? FILE_PREFIX[lang].invoice;
+  const draft = { cs: "koncept", sk: "koncept", en: "draft" }[lang];
+  return `${prefix}-${invoice.invoiceNumber ? invoice.invoiceNumber.replace(/[^\w.-]+/g, "_") : draft}`;
 }
