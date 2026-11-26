@@ -1335,7 +1335,8 @@
         "failed": "Algo correu mal",
         "manage": "Editar ligação"
       },
-      "contactPerson": "Pessoa de contacto"
+      "contactPerson": "Pessoa de contacto",
+      "person": "Particular"
     },
     "csv": {
       "import": "Importar CSV",
@@ -5521,7 +5522,8 @@
     "noFlat": "sem regime forfetário",
     "hint": "Estimativa aproximada para um empresário em nome individual checo: o valor sem IVA menos o imposto sobre o rendimento (15 %) e as contribuições para a segurança social e o seguro de saúde sobre esta fatura – cerca de {burden}. Usa a taxa forfetária escolhida e ignora os adiantamentos mínimos e as deduções fiscais. Consulte Exportações para o ano completo.",
     "hintCosts": "As taxas de pagamento e a perda cambial ({costs}) também são deduzidas. Com despesas forfetárias não reduzem o imposto, porque a taxa forfetária já cobre todas as despesas.",
-    "hintLimits": "Considere-o o mínimo. Enquanto o seu ano não esgotar a dedução do contribuinte nem ultrapassar os adiantamentos mínimos (ou o limiar de uma atividade secundária), esta fatura não acrescenta impostos nem contribuições e fica-lhe mais, até {full}."
+    "hintLimits": "Considere-o o mínimo. Enquanto o seu ano não esgotar a dedução do contribuinte nem ultrapassar os adiantamentos mínimos (ou o limiar de uma atividade secundária), esta fatura não acrescenta impostos nem contribuições e fica-lhe mais, até {full}.",
+    "range": "Fica-lhe entre {low} e {high}."
   },
   "welcome": {
     "title": "Bem-vindo à Billanta",

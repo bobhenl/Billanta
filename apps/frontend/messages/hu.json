@@ -1335,7 +1335,8 @@
         "failed": "Hiba történt",
         "manage": "Link szerkesztése"
       },
-      "contactPerson": "Kapcsolattartó"
+      "contactPerson": "Kapcsolattartó",
+      "person": "Magánszemély"
     },
     "csv": {
       "import": "CSV importálása",
@@ -5521,7 +5522,8 @@
     "noFlat": "átalány nélkül",
     "hint": "Hozzávetőleges becslés cseh egyéni vállalkozóra: az ÁFA nélküli összeg mínusz a jövedelemadó (15 %), valamint a számlára eső társadalom- és egészségbiztosítási járulék – kb. {burden}. A választott átalánnyal számol, a minimális előlegeket és az adókedvezményeket nem veszi figyelembe. A teljes évet az Exportokban találja.",
     "hintCosts": "A fizetési díjakat és az átváltási veszteséget ({costs}) is levonjuk. Költségátalánynál ezek nem csökkentik az adót, mert az átalány már minden költséget lefed.",
-    "hintLimits": "Tekintse alsó határnak. Amíg az éve nem meríti ki az adózói kedvezményt és nem lépi túl a minimális előlegeket (mellékállásnál a határösszeget), ez a számla nem jár plusz adóval vagy járulékkal, és több marad, legfeljebb {full}."
+    "hintLimits": "Tekintse alsó határnak. Amíg az éve nem meríti ki az adózói kedvezményt és nem lépi túl a minimális előlegeket (mellékállásnál a határösszeget), ez a számla nem jár plusz adóval vagy járulékkal, és több marad, legfeljebb {full}.",
+    "range": "Önnél marad {low} – {high}."
   },
   "welcome": {
     "title": "Üdvözöljük a Billantában",

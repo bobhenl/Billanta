@@ -1335,7 +1335,8 @@
         "failed": "A apărut o eroare",
         "manage": "Editați linkul"
       },
-      "contactPerson": "Persoană de contact"
+      "contactPerson": "Persoană de contact",
+      "person": "Persoană fizică"
     },
     "csv": {
       "import": "Importați CSV",
@@ -5521,7 +5522,8 @@
     "noFlat": "fără cotă forfetară",
     "hint": "Estimare aproximativă pentru un liber-profesionist ceh: suma fără TVA minus impozitul pe venit (15 %) și asigurările sociale și de sănătate pentru această factură – circa {burden}. Folosește cota forfetară aleasă și ignoră avansurile minime și reducerile de impozit. Pentru întregul an, consultați Exporturi.",
     "hintCosts": "Se scad și comisioanele de plată și pierderea din conversie ({costs}). Dacă aplicați cheltuieli forfetare, aceste costuri nu reduc impozitul, deoarece procentul forfetar acoperă deja toate cheltuielile.",
-    "hintLimits": "Luați-o ca limită de jos. Cât timp anul dvs. nu epuizează reducerea contribuabilului și nu depășește avansurile minime (sau pragul unei activități secundare), factura nu adaugă impozit sau asigurări și vă rămâne mai mult, până la {full}."
+    "hintLimits": "Luați-o ca limită de jos. Cât timp anul dvs. nu epuizează reducerea contribuabilului și nu depășește avansurile minime (sau pragul unei activități secundare), factura nu adaugă impozit sau asigurări și vă rămâne mai mult, până la {full}.",
+    "range": "Vă rămân între {low} și {high}."
   },
   "welcome": {
     "title": "Bun venit în Billanta",

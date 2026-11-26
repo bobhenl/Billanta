@@ -1336,7 +1336,8 @@
         "failed": "Akce se nezdařila",
         "manage": "Upravit odkaz"
       },
-      "contactPerson": "Kontaktní osoba"
+      "contactPerson": "Kontaktní osoba",
+      "person": "Soukromá osoba"
     },
     "csv": {
       "import": "Import CSV",
@@ -5550,7 +5551,8 @@
     "noFlat": "bez paušálu",
     "hint": "Orientačně: částka bez DPH po odečtení daně z příjmů (15 %), sociálního a zdravotního pojištění OSVČ z této faktury – zhruba {burden}. Počítá s vybraným paušálem a nezohledňuje minimální zálohy ani slevy na dani. Celý rok spočítáte v Exportech.",
     "hintCosts": "Odečtené jsou i poplatky a kurzový rozdíl z platby ({costs}). Při paušálu daň nesnižují, ten už všechny výdaje zahrnuje.",
-    "hintLimits": "Ber to jako spodní hranici. Dokud za rok nevyčerpáte slevu na poplatníka a nepřesáhnete minimální zálohy (u vedlejší činnosti rozhodnou částku), daň a pojistné z této faktury nezaplatíte navíc a zůstane vám víc, až {full}."
+    "hintLimits": "Ber to jako spodní hranici. Dokud za rok nevyčerpáte slevu na poplatníka a nepřesáhnete minimální zálohy (u vedlejší činnosti rozhodnou částku), daň a pojistné z této faktury nezaplatíte navíc a zůstane vám víc, až {full}.",
+    "range": "Zůstane vám {low} až {high}."
   },
   "welcome": {
     "title": "Vítejte v Billantě",

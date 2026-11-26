@@ -1335,7 +1335,8 @@
         "failed": "Une erreur s’est produite",
         "manage": "Modifier le lien"
       },
-      "contactPerson": "Personne de contact"
+      "contactPerson": "Personne de contact",
+      "person": "Particulier"
     },
     "csv": {
       "import": "Importer un CSV",
@@ -5521,7 +5522,8 @@
     "noFlat": "sans forfait",
     "hint": "Estimation approximative pour un entrepreneur individuel tchèque : le montant HT moins l’impôt sur le revenu (15 %) et les cotisations sociales et maladie sur cette facture – environ {burden}. Utilise le forfait choisi et ne tient pas compte des acomptes minimaux ni des crédits d’impôt. Voir Exports pour l’année complète.",
     "hintCosts": "Les frais de paiement et la perte de change ({costs}) sont également déduits. Avec le forfait, ils ne réduisent pas l’impôt, car le forfait couvre déjà toutes les dépenses.",
-    "hintLimits": "Voyez-le comme un minimum. Tant que votre année n’épuise pas la réduction du contribuable et ne dépasse pas les acomptes minimaux (ou le seuil d’une activité secondaire), cette facture n’ajoute ni impôt ni cotisations et il vous reste plus, jusqu’à {full}."
+    "hintLimits": "Voyez-le comme un minimum. Tant que votre année n’épuise pas la réduction du contribuable et ne dépasse pas les acomptes minimaux (ou le seuil d’une activité secondaire), cette facture n’ajoute ni impôt ni cotisations et il vous reste plus, jusqu’à {full}.",
+    "range": "Il vous reste de {low} à {high}."
   },
   "welcome": {
     "title": "Bienvenue sur Billanta",

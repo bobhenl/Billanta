@@ -105,7 +105,7 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
             {contact.aresVerifiedAt && <BadgeCheck className="h-5 w-5 shrink-0 text-primary" aria-label={t('aresVerified')} />}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {[contact.ico && `IČO ${contact.ico}`, contact.dic && `DIČ ${contact.dic}`].filter(Boolean).join(' · ') || t('noIco')}
+            {[contact.ico && `IČO ${contact.ico}`, contact.dic && `DIČ ${contact.dic}`].filter(Boolean).join(' · ') || (contact.isPerson ? t('person') : t('noIco'))}
           </p>
           {contact.dic && !contact.isPerson && <VatStatusBadge dic={contact.dic} className="mt-2" />}
         </div>

@@ -1335,7 +1335,8 @@
         "failed": "Algo ha salido mal",
         "manage": "Editar enlace"
       },
-      "contactPerson": "Persona de contacto"
+      "contactPerson": "Persona de contacto",
+      "person": "Particular"
     },
     "csv": {
       "import": "Importar CSV",
@@ -5521,7 +5522,8 @@
     "noFlat": "sin tanto alzado",
     "hint": "Estimación aproximada para un autónomo checo: el importe sin IVA menos el impuesto sobre la renta (15 %) y las cotizaciones a la seguridad social y al seguro de salud sobre esta factura – unos {burden}. Usa el porcentaje a tanto alzado elegido y no tiene en cuenta los anticipos mínimos ni las deducciones fiscales. Consulte Exportaciones para ver el año completo.",
     "hintCosts": "También se descuentan las comisiones de pago y la pérdida por conversión ({costs}). Con gastos a tanto alzado no reducen el impuesto, porque el tanto alzado ya cubre todos los gastos.",
-    "hintLimits": "Tómelo como el mínimo. Mientras su año no agote la deducción del contribuyente ni supere los anticipos mínimos (o el umbral de una actividad secundaria), esta factura no suma impuestos ni cotizaciones y le queda más, hasta {full}."
+    "hintLimits": "Tómelo como el mínimo. Mientras su año no agote la deducción del contribuyente ni supere los anticipos mínimos (o el umbral de una actividad secundaria), esta factura no suma impuestos ni cotizaciones y le queda más, hasta {full}.",
+    "range": "Le quedan de {low} a {high}."
   },
   "welcome": {
     "title": "Bienvenido a Billanta",

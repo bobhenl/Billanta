@@ -1336,7 +1336,8 @@
         "failed": "Something went wrong",
         "manage": "Edit link"
       },
-      "contactPerson": "Contact person"
+      "contactPerson": "Contact person",
+      "person": "Private person"
     },
     "csv": {
       "import": "Import CSV",
@@ -5550,7 +5551,8 @@
     "noFlat": "no flat rate",
     "hint": "Rough Czech sole-trader estimate: the amount without VAT minus income tax (15 %), social and health insurance on this invoice – about {burden}. Uses the chosen flat rate and ignores minimum advances and tax credits. See Exports for the full year.",
     "hintCosts": "Payment fees and the conversion loss ({costs}) are taken off too. With a flat rate they don't lower the tax, since the flat rate already covers all expenses.",
-    "hintLimits": "Treat it as the low end. Until your year uses up the taxpayer credit and goes past the minimum advances (or the threshold for a side business), this invoice adds no tax or insurance and you keep more, up to {full}."
+    "hintLimits": "Treat it as the low end. Until your year uses up the taxpayer credit and goes past the minimum advances (or the threshold for a side business), this invoice adds no tax or insurance and you keep more, up to {full}.",
+    "range": "You keep {low} to {high}."
   },
   "welcome": {
     "title": "Welcome to Billanta",

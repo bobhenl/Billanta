@@ -1335,7 +1335,8 @@
         "failed": "Er ging iets mis",
         "manage": "Link bewerken"
       },
-      "contactPerson": "Contactpersoon"
+      "contactPerson": "Contactpersoon",
+      "person": "Particulier"
     },
     "csv": {
       "import": "CSV importeren",
@@ -5521,7 +5522,8 @@
     "noFlat": "geen forfait",
     "hint": "Ruwe schatting voor een Tsjechische zelfstandige: het bedrag zonder btw min inkomstenbelasting (15 %), sociale en zorgverzekering op deze factuur – ongeveer {burden}. Gaat uit van het gekozen forfait en negeert minimale voorschotten en belastingkortingen. Zie Exports voor het hele jaar.",
     "hintCosts": "Betaalkosten en het koersverlies ({costs}) worden ook afgetrokken. Met een forfait verlagen ze de belasting niet, omdat het forfait al alle kosten dekt.",
-    "hintLimits": "Zie het als de ondergrens. Zolang uw jaar de belastingkorting niet opmaakt en niet boven de minimale voorschotten uitkomt (of de drempel voor een nevenactiviteit), kost deze factuur geen extra belasting of premie en houdt u meer over, tot {full}."
+    "hintLimits": "Zie het als de ondergrens. Zolang uw jaar de belastingkorting niet opmaakt en niet boven de minimale voorschotten uitkomt (of de drempel voor een nevenactiviteit), kost deze factuur geen extra belasting of premie en houdt u meer over, tot {full}.",
+    "range": "U houdt {low} tot {high} over."
   },
   "welcome": {
     "title": "Welkom bij Billanta",

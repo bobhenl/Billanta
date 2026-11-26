@@ -33,15 +33,15 @@ export function DashboardNav({ hidden = [] }: { hidden?: string[] }) {
             )}
           >
             <Icon className="h-4 w-4" />
-            {/* Between md and xl only the active section keeps its label, so the bar still fits
+            {/* Between md and 2xl only the active section keeps its label, so the bar still fits
                 and you always see where you are; the rest show a tooltip on hover/focus. */}
-            <span aria-hidden className={isActive ? 'whitespace-nowrap' : 'hidden xl:inline'}>
+            <span aria-hidden className={isActive ? 'whitespace-nowrap' : 'hidden 2xl:inline'}>
               {t(key)}
             </span>
             {!isActive && (
               <span
                 aria-hidden
-                className="pointer-events-none absolute left-1/2 top-full z-50 mt-1.5 -translate-x-1/2 whitespace-nowrap rounded-md bg-foreground px-2 py-1 text-xs font-medium text-background opacity-0 shadow-md transition-opacity delay-150 group-hover:opacity-100 group-focus-visible:opacity-100 xl:hidden"
+                className="pointer-events-none absolute left-1/2 top-full z-50 mt-1.5 -translate-x-1/2 whitespace-nowrap rounded-md bg-foreground px-2 py-1 text-xs font-medium text-background opacity-0 shadow-md transition-opacity delay-150 group-hover:opacity-100 group-focus-visible:opacity-100 2xl:hidden"
               >
                 {t(key)}
               </span>

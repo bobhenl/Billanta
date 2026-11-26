@@ -1335,7 +1335,8 @@
         "failed": "Etwas ist schiefgelaufen",
         "manage": "Link bearbeiten"
       },
-      "contactPerson": "Ansprechpartner"
+      "contactPerson": "Ansprechpartner",
+      "person": "Privatperson"
     },
     "csv": {
       "import": "CSV importieren",
@@ -5522,7 +5523,8 @@
     "noFlat": "ohne Pauschale",
     "hint": "Grobe Schätzung für tschechische Einzelunternehmer (OSVČ): Betrag ohne USt. abzüglich Einkommensteuer (15 %), Sozial- und Krankenversicherung auf diese Rechnung – etwa {burden}. Verwendet die gewählte Pauschale und berücksichtigt keine Mindestvorauszahlungen und Steuerermäßigungen. Das ganze Jahr finden Sie unter Exporte.",
     "hintCosts": "Auch Zahlungsgebühren und der Umrechnungsverlust ({costs}) werden abgezogen. Bei einer Ausgabenpauschale senken sie die Steuer nicht, da die Pauschale bereits alle Ausgaben abdeckt.",
-    "hintLimits": "Sehen Sie es als Untergrenze. Solange Ihr Jahr den Steuerfreibetrag nicht ausschöpft und die Mindestvorauszahlungen (bei Nebentätigkeit die Entscheidungsgrenze) nicht übersteigt, kostet diese Rechnung keine zusätzliche Steuer oder Versicherung und Ihnen bleibt mehr, bis zu {full}."
+    "hintLimits": "Sehen Sie es als Untergrenze. Solange Ihr Jahr den Steuerfreibetrag nicht ausschöpft und die Mindestvorauszahlungen (bei Nebentätigkeit die Entscheidungsgrenze) nicht übersteigt, kostet diese Rechnung keine zusätzliche Steuer oder Versicherung und Ihnen bleibt mehr, bis zu {full}.",
+    "range": "Ihnen bleiben {low} bis {high}."
   },
   "welcome": {
     "title": "Willkommen bei Billanta",

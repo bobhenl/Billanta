@@ -46,6 +46,7 @@ export function NetEstimate({ base, currency, czkRate, costs = 0 }: { base: numb
     <div className="mt-1 flex flex-wrap items-center gap-x-2 sm:justify-end text-xs text-muted-foreground">
       <InfoHint
         hint={[
+          burden > 0 ? t('range', { low: both(net), high: both(Math.max(0, base - costs)) }) : null,
           t('hint', { burden: both(burden) }),
           costs > 0 ? t('hintCosts', { costs: both(costs) }) : null,
           // Marginal rates are the worst case for most: below the yearly limits this invoice costs no tax or insurance at all.

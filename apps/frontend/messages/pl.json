@@ -1335,7 +1335,8 @@
         "failed": "Coś poszło nie tak",
         "manage": "Edytuj link"
       },
-      "contactPerson": "Osoba kontaktowa"
+      "contactPerson": "Osoba kontaktowa",
+      "person": "Osoba prywatna"
     },
     "csv": {
       "import": "Importuj CSV",
@@ -5522,7 +5523,8 @@
     "noFlat": "bez ryczałtu",
     "hint": "Orientacyjny szacunek dla czeskiej jednoosobowej działalności: kwota bez VAT minus podatek dochodowy (15 %), ubezpieczenie społeczne i zdrowotne z tej faktury – około {burden}. Uwzględnia wybrany ryczałt i pomija minimalne zaliczki oraz ulgi podatkowe. Cały rok znajdziesz w Eksportach.",
     "hintCosts": "Odliczamy też opłaty za płatności i stratę na przewalutowaniu ({costs}). Przy wydatkach ryczałtowych nie obniżają one podatku, bo ryczałt obejmuje już wszystkie wydatki.",
-    "hintLimits": "Traktuj to jako dolną granicę. Dopóki w danym roku nie wyczerpiesz ulgi podatnika i nie przekroczysz minimalnych zaliczek (przy działalności dodatkowej progu), ta faktura nie dokłada podatku ani składek i zostaje Ci więcej, aż do {full}."
+    "hintLimits": "Traktuj to jako dolną granicę. Dopóki w danym roku nie wyczerpiesz ulgi podatnika i nie przekroczysz minimalnych zaliczek (przy działalności dodatkowej progu), ta faktura nie dokłada podatku ani składek i zostaje Ci więcej, aż do {full}.",
+    "range": "Zostaje Ci od {low} do {high}."
   },
   "welcome": {
     "title": "Witaj w Billanta",
