@@ -448,6 +448,25 @@ describe("InvoicePdfService paid documents and foreign buyers", () => {
     expect(paid.lines).not.toContain("QR platba se doplní po vystavení");
   });
 
+  it("prints a Czech non-payer's own DIČ only for a buyer abroad", async () => {
+    async function supplierLines(tenant: Partial<TenantRow>, contact: ContactRow = makeContact()) {
+      const text = vi.spyOn(PDFDocument.prototype, "text");
+      const items = makeLineItems().map((item) => ({ ...item, vatRate: "0" }));
+      await new InvoicePdfService().generate(makeInvoice(), contact, makeTenant(tenant), items, computeVatBreakdown(items));
+      const out = text.mock.calls.map((c) => String(c[0]));
+      text.mockRestore();
+      return out;
+    }
+    const identified = { dicVatPayer: false, vatStatus: "identified", dic: "CZ0202284379" } as Partial<TenantRow>;
+    expect(await supplierLines(identified)).not.toContain("DIČ: CZ0202284379");
+    expect(await supplierLines({ dicVatPayer: true, dic: "CZ0202284379" })).toContain("DIČ: CZ0202284379");
+    const euBuyer = makeContact({ addressCountry: "DE", dic: "DE123456789", ico: null } as Partial<ContactRow>);
+    expect(await supplierLines(identified, euBuyer)).toContain("DIČ: CZ0202284379");
+    expect(await supplierLines(identified, makeContact({ addressCountry: "US", dic: null, ico: null } as Partial<ContactRow>))).toContain("DIČ: CZ0202284379");
+    const slovak = { dicVatPayer: false, vatStatus: "non_payer", dic: "2020123456", country: "SK" } as Partial<TenantRow>;
+    expect(await supplierLines(slovak, makeContact({ addressCountry: "SK" } as Partial<ContactRow>))).toContain("DIČ: 2020123456");
+  });
+
   it("prints a Czech or Slovak PSČ with the space, whatever the register gave", async () => {
     expect((await render(makeInvoice(), makeContact({ addressPostalCode: "60200", addressCity: "Brno", addressCountry: "CZ" }))).lines).toContain("602 00 Brno");
     expect(displayPostalCode("81101", "SK")).toBe("811 01");

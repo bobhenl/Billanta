@@ -643,7 +643,11 @@ export class InvoicePdfService {
     const foreignBuyer = !!buyerCountry && buyerCountry !== sellerCountry;
     if (foreignBuyer) doc.text(countryName(sellerCountry, docLang), 50);
     if (tenant.ico) doc.text(`${t.ico}: ${tenant.ico}`, 50);
-    if (tenant.dic) doc.text(`${t.dic}: ${tenant.dic}`, 50);
+    // A Czech DIČ reads as "VAT payer" to most accountants, so a non-payer prints it only for a buyer
+    // abroad, where an EU reverse charge needs it. A Slovak DIČ is the
+    // income tax number, distinct from the IČ DPH, so it stays.
+    const ownDic = tenant.dicVatPayer || sellerCountry !== "CZ" || foreignBuyer;
+    if (tenant.dic && ownDic) doc.text(`${t.dic}: ${tenant.dic}`, 50);
     if (!tenant.dicVatPayer) doc.text(t.nonVatPayer, 50);
     if (tenant.email) doc.text(tenant.email, 50);
     if (tenant.phone) doc.text(tenant.phone, 50);
