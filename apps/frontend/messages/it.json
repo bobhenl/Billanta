@@ -5240,7 +5240,9 @@
       "net": "Ricavo netto",
       "noReceived": "Inserisca l’importo accreditato in {home} per vedere anche la differenza di cambio.",
       "rates": "Tasso reale {real} contro tasso della fattura {invoice} ({pair}).",
-      "held": "{amount} è ancora sul saldo PayPal. L’importo reale in {home} compare quando PayPal lo converte al prelievo."
+      "held": "{amount} è ancora sul saldo PayPal. L’importo reale in {home} compare quando PayPal lo converte al prelievo.",
+      "conversion": "Conversione di valuta",
+      "converted": "Convertito in {home} il {date} al tasso di PayPal."
     },
     "history": "Cronologia delle modifiche",
     "correction": {

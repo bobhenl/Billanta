@@ -477,7 +477,7 @@ export class BankReconciliationService {
     for (const c of converted) {
       const [row] = await db
         .update(t)
-        .set({ netAmount: c.netAmount, netCurrency: c.netCurrency })
+        .set({ netAmount: c.netAmount, netCurrency: c.netCurrency, netAt: c.convertedAt })
         .where(and(eq(t.id, c.id), isNull(t.netAmount)))
         .returning({ invoiceId: t.matchedInvoiceId, amount: t.amount, currency: t.currency, fee: t.fee });
       if (!row?.invoiceId) continue;

@@ -5241,7 +5241,9 @@
       "net": "Nettoerlös",
       "noReceived": "Geben Sie den in {home} gutgeschriebenen Betrag ein, um auch die Kursdifferenz zu sehen.",
       "rates": "Tatsächlicher Kurs {real} vs. Rechnungskurs {invoice} ({pair}).",
-      "held": "{amount} liegt noch auf Ihrem PayPal-Guthaben. Den echten Betrag in {home} sehen Sie, sobald PayPal ihn bei der Abbuchung umrechnet."
+      "held": "{amount} liegt noch auf Ihrem PayPal-Guthaben. Den echten Betrag in {home} sehen Sie, sobald PayPal ihn bei der Abbuchung umrechnet.",
+      "conversion": "Währungsumrechnung",
+      "converted": "Am {date} zum PayPal-Kurs in {home} umgerechnet."
     },
     "history": "Änderungsverlauf",
     "correction": {

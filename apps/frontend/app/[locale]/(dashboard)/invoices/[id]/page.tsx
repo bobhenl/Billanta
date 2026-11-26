@@ -174,6 +174,8 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   // Paid into PayPal in a foreign currency and still sitting on that balance: no home amount exists yet.
   const held = receivedCzk == null ? payments.filter((p) => p.externalId?.startsWith('paypal:') && p.currency !== home && !(p.netCurrency === home && p.netAmount)) : [];
   const heldAmount = held.reduce((sum, p) => sum + Number(p.amount) - Math.abs(Number(p.fee ?? 0)), 0);
+  // PayPal converted the held balance later (a withdrawal): the rate gap is then the cost of that conversion.
+  const convertedAt = receivedCzk == null ? null : payments.map((p) => p.netAt).filter((d): d is string => Boolean(d)).sort().at(-1) ?? null;
 
   const facts: [string, string | null][] = [
     [t('fields.issueDate'), formatDate(invoice.issueDate, locale)],
@@ -520,7 +522,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                 )}
                 {fxDiff != null && Math.abs(fxDiff) >= 0.01 && (
                   <div className="flex justify-between gap-3">
-                    <dt className="text-muted-foreground">{t('net.fx')}</dt>
+                    <dt className="text-muted-foreground">{t(convertedAt ? 'net.conversion' : 'net.fx')}</dt>
                     <dd className={cn('tabular-nums', fxDiff < 0 ? 'text-destructive' : 'text-success')}>
                       {fxDiff > 0 ? '+' : '−'}
                       {czk(Math.abs(fxDiff))}
@@ -548,6 +550,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                   })}
                 </p>
               )}
+              {convertedAt && <p className="mt-2 text-xs text-muted-foreground">{t('net.converted', { date: formatDate(convertedAt, locale) ?? '', home })}</p>}
               {held.length > 0 ? (
                 <p className="mt-2 text-xs text-muted-foreground">
                   <span className="amount">{t('net.held', { amount: formatMoney(heldAmount, held[0]!.currency, locale), home })}</span>

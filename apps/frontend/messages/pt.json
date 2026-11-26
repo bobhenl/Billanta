@@ -5240,7 +5240,9 @@
       "net": "Receita líquida",
       "noReceived": "Indique o valor creditado em {home} para ver também a diferença cambial.",
       "rates": "Taxa real {real} contra a da fatura {invoice} ({pair}).",
-      "held": "{amount} ainda está no saldo do PayPal. O valor real em {home} aparece quando o PayPal o converter no levantamento."
+      "held": "{amount} ainda está no saldo do PayPal. O valor real em {home} aparece quando o PayPal o converter no levantamento.",
+      "conversion": "Conversão de moeda",
+      "converted": "Convertido para {home} em {date} à taxa do PayPal."
     },
     "history": "Histórico de alterações",
     "correction": {

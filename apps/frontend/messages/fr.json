@@ -5240,7 +5240,9 @@
       "net": "Produit net",
       "noReceived": "Saisissez le montant crédité en {home} pour voir aussi l’écart de change.",
       "rates": "Taux réel {real} contre taux de la facture {invoice} ({pair}).",
-      "held": "{amount} est encore sur votre solde PayPal. Le montant réel en {home} s’affichera quand PayPal le convertira au retrait."
+      "held": "{amount} est encore sur votre solde PayPal. Le montant réel en {home} s’affichera quand PayPal le convertira au retrait.",
+      "conversion": "Conversion de devise",
+      "converted": "Converti en {home} le {date} au taux de PayPal."
     },
     "history": "Historique des modifications",
     "correction": {

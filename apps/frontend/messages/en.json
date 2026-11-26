@@ -5248,7 +5248,9 @@
       "net": "Net proceeds",
       "noReceived": "Enter the amount credited in {home} to see the exchange difference too.",
       "rates": "Real rate {real} vs invoice rate {invoice} ({pair}).",
-      "held": "{amount} is still on your PayPal balance. The real {home} amount shows once PayPal converts it on withdrawal."
+      "held": "{amount} is still on your PayPal balance. The real {home} amount shows once PayPal converts it on withdrawal.",
+      "conversion": "Currency conversion",
+      "converted": "Converted to {home} on {date} at PayPal's rate."
     },
     "history": "Change history",
     "correction": {

@@ -5240,7 +5240,9 @@
       "net": "Netto-opbrengst",
       "noReceived": "Vul het bijgeschreven bedrag in {home} in om ook het koersverschil te zien.",
       "rates": "Echte koers {real} vs. factuurkoers {invoice} ({pair}).",
-      "held": "{amount} staat nog op je PayPal-saldo. Het echte bedrag in {home} zie je zodra PayPal het bij opnemen omrekent."
+      "held": "{amount} staat nog op je PayPal-saldo. Het echte bedrag in {home} zie je zodra PayPal het bij opnemen omrekent.",
+      "conversion": "Valutaomrekening",
+      "converted": "Op {date} omgerekend naar {home} tegen de koers van PayPal."
     },
     "history": "Wijzigingsgeschiedenis",
     "correction": {

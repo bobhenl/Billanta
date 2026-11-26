@@ -5241,7 +5241,9 @@
       "net": "Przychód netto",
       "noReceived": "Wpisz kwotę zaksięgowaną w {home}, aby zobaczyć także różnicę kursową.",
       "rates": "Rzeczywisty kurs {real} wobec kursu faktury {invoice} ({pair}).",
-      "held": "{amount} wciąż leży na saldzie PayPal. Rzeczywistą kwotę w {home} zobaczysz, gdy PayPal przewalutuje ją przy wypłacie."
+      "held": "{amount} wciąż leży na saldzie PayPal. Rzeczywistą kwotę w {home} zobaczysz, gdy PayPal przewalutuje ją przy wypłacie.",
+      "conversion": "Przewalutowanie",
+      "converted": "Przewalutowano na {home} {date} po kursie PayPala."
     },
     "history": "Historia zmian",
     "correction": {

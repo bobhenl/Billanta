@@ -1191,6 +1191,11 @@ export const bankTransactions = pgTable("bank_transactions", {
   /** What arrived after PayPal converted the payment (fee and rate applied), in `net_currency`. Migration 0089. */
   netAmount: numeric("net_amount", { precision: 14, scale: 2 }),
   netCurrency: varchar("net_currency", { length: 3 }),
+  /**
+   * When PayPal converted a payment held on a foreign balance (usually at a
+   * withdrawal). Null when it converted on arrival or never. Migration 0106.
+   */
+  netAt: timestamp("net_at", { withTimezone: true, mode: "date" }),
   /** The payer's note ("zpráva pro příjemce"), shown for manual review. Migration 0063. */
   message: text("message"),
   /** The bank rule that ignored this payment or drafted its expense/invoice (migration 0091). */

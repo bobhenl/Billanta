@@ -24,6 +24,31 @@ describe("convertHeldPayments", () => {
     expect(rows.map((r) => [r.id, r.netAmount])).toEqual([["older", "420.00"]]);
   });
 
+  it("splits one withdrawal over several payments by their USD net, adding up to what PayPal credited", () => {
+    // 1000 CZK for 3 × 10 USD: each share rounds to 333.33, one cent short in total.
+    const rows = convertHeldPayments(
+      [{ at: at("2026-11-02T08:00:00Z"), amount: "1000.00", currency: "CZK", from: { amount: "30.00", currency: "USD" } }],
+      [payment("a", "2026-10-01T10:00:00Z", "10.00"), payment("b", "2026-10-02T10:00:00Z", "10.00"), payment("c", "2026-10-03T10:00:00Z", "10.00")],
+      "CZK",
+    );
+    expect(rows.map((r) => [r.id, r.netAmount])).toEqual([
+      ["a", "333.33"],
+      ["b", "333.33"],
+      ["c", "333.34"],
+    ]);
+    expect(rows.every((r) => r.convertedAt.getTime() === at("2026-11-02T08:00:00Z").getTime())).toBe(true);
+  });
+
+  it("keeps the plain share when the payments do not use the conversion up", () => {
+    // 1000 CZK for 31 USD, but only 30 USD of payments are known: no share absorbs anything.
+    const rows = convertHeldPayments(
+      [{ at: at("2026-11-02T08:00:00Z"), amount: "1000.00", currency: "CZK", from: { amount: "31.00", currency: "USD" } }],
+      [payment("a", "2026-10-01T10:00:00Z", "15.00"), payment("b", "2026-10-02T10:00:00Z", "15.00")],
+      "CZK",
+    );
+    expect(rows.map((r) => r.netAmount)).toEqual(["483.87", "483.87"]);
+  });
+
   it("skips payments received after the conversion and other currencies", () => {
     const rows = convertHeldPayments(
       [{ at: at("2026-11-02T08:00:00Z"), amount: "420.00", currency: "CZK", from: { amount: "20.00", currency: "USD" } }],

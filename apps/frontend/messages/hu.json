@@ -5240,7 +5240,9 @@
       "net": "Nettó bevétel",
       "noReceived": "Adja meg a {home} pénznemben jóváírt összeget, hogy az árfolyam-különbözetet is lássa.",
       "rates": "Valós árfolyam {real}, a számláé {invoice} ({pair}).",
-      "held": "{amount} még a PayPal-egyenlegeden van. A valós {home} összeg akkor látszik, amikor a PayPal kifizetéskor átváltja."
+      "held": "{amount} még a PayPal-egyenlegeden van. A valós {home} összeg akkor látszik, amikor a PayPal kifizetéskor átváltja.",
+      "conversion": "Pénznemváltás",
+      "converted": "{date} napon {home} pénznemre váltva a PayPal árfolyamán."
     },
     "history": "Változások előzményei",
     "correction": {
