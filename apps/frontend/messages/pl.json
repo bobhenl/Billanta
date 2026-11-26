@@ -2504,6 +2504,7 @@
       "pdfQrHint": "Domyślnie drukujemy kod QR do płatności, a gdy brakuje konta w CZK/EUR – QR Faktura. Link do faktury online otwiera stronę, na której klient zapłaci przelewem, kartą lub w inny sposób.",
       "pdfQrModes": {
         "auto": "Automatycznie (QR do płatności, w przeciwnym razie QR Faktura)",
+        "auto_link": "QR płatności + link do faktury online (dwa kody)",
         "link": "Link do faktury online (wszystkie formy płatności)",
         "payment_only": "Tylko QR do płatności",
         "off": "Bez kodu QR"

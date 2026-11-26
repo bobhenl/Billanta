@@ -2504,6 +2504,7 @@
       "pdfQrHint": "Standaard drukken we een betaal-QR-code af, of een QR Faktura als er geen CZK/EUR-rekening is. De link naar de online factuur opent een pagina waar de klant per bank, met een kaart of op een andere manier kan betalen.",
       "pdfQrModes": {
         "auto": "Automatisch (betaal-QR, anders QR Faktura)",
+        "auto_link": "Betaal-QR + link naar de online factuur (twee codes)",
         "link": "Link naar de online factuur (alle betaalmogelijkheden)",
         "payment_only": "Alleen betaal-QR",
         "off": "Geen QR-code"

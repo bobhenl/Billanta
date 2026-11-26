@@ -2511,6 +2511,7 @@
       "pdfQrHint": "Automaticky tlačíme QR platbu, a keď chýba účet v CZK/EUR, QR Faktúru. Odkaz na faktúru online otvorí stránku, kde zákazník zaplatí bankou, kartou alebo inak.",
       "pdfQrModes": {
         "auto": "Automaticky (QR platba, inak QR Faktúra)",
+        "auto_link": "QR platba + odkaz na faktúru online (dva kódy)",
         "link": "Odkaz na faktúru online (všetky možnosti platby)",
         "payment_only": "Iba QR platba",
         "off": "Bez QR kódu"

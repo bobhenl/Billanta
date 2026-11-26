@@ -2504,6 +2504,7 @@
       "pdfQrHint": "Standardmäßig drucken wir einen QR-Code zur Zahlung, oder eine QR Faktura, wenn kein CZK/EUR-Konto hinterlegt ist. Der Link zur Online-Rechnung öffnet eine Seite, auf der der Kunde per Überweisung, Karte oder auf andere Weise zahlen kann.",
       "pdfQrModes": {
         "auto": "Automatisch (Zahlungs-QR, sonst QR Faktura)",
+        "auto_link": "Zahlungs-QR + Link zur Online-Rechnung (zwei Codes)",
         "link": "Link zur Online-Rechnung (alle Zahlungsarten)",
         "payment_only": "Nur Zahlungs-QR",
         "off": "Kein QR-Code"

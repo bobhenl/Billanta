@@ -2504,6 +2504,7 @@
       "pdfQrHint": "Alapértelmezés szerint fizetési QR-kódot nyomtatunk, ha pedig nincs CZK/EUR számla, QR Faktura kódot. Az online számla linkje egy oldalt nyit meg, ahol a vevő átutalással, kártyával vagy más módon fizethet.",
       "pdfQrModes": {
         "auto": "Automatikus (fizetési QR, egyébként QR Faktura)",
+        "auto_link": "Fizetési QR + link az online számlához (két kód)",
         "link": "Link az online számlához (minden fizetési mód)",
         "payment_only": "Csak fizetési QR",
         "off": "Nincs QR-kód"

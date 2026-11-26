@@ -353,8 +353,11 @@ export class InvoicePdfService {
     const qrMode = pdfQrModeOf(tenant.invoiceFormPrefs);
     const qr =
       invoice.documentType !== "quote" && !tenant.isDemo && !draft && qrMode !== "off"
-        ? await this.buildQrCode(invoice, contact, tenant, totals, payable, qrMode, lang)
+        ? await this.buildQrCode(invoice, contact, tenant, totals, payable, qrMode === "auto_link" ? "auto" : qrMode, lang)
         : null;
+    // The web page as a second code: the customer opens it with a phone camera, the bank app keeps the first one.
+    const linkQr =
+      qrMode === "auto_link" && invoice.documentType !== "quote" && !tenant.isDemo && !draft ? await this.buildLinkQr(invoice, tenant, lang) : null;
     // A draft gets no code anyone could pay, but its preview keeps the code's place.
     const qrPending =
       draft && payable && invoice.documentType !== "quote" && !tenant.isDemo && qrMode !== "off" && invoice.paymentMethod === "bank_transfer";
@@ -406,7 +409,8 @@ export class InvoicePdfService {
           ? { label: t.qrInvoice.toUpperCase(), pending: t.qrInvoiceAfterIssue }
           : { label: t.qr.toUpperCase(), pending: t.qrAfterIssue }
         : null;
-    this.renderPaymentBlock(doc, this.bankRows(t, invoice, tenant, contact), qrSlot, totalsTop);
+    const linkSlot = linkQr ? { label: t.qrLink.toUpperCase(), png: linkQr } : null;
+    this.renderPaymentBlock(doc, this.bankRows(t, invoice, tenant, contact), qrSlot, linkSlot, totalsTop);
     this.renderFooterNotes(doc, t, invoice, tenant, fill, contact);
     if (credit) this.renderCredit(doc, credit);
     if (tenant.isDemo) drawDemoWatermark(doc, lang, REGULAR, tenant.classroomClassId ? "classroom" : "demo");
@@ -469,10 +473,8 @@ export class InvoicePdfService {
     lang: Lang,
   ): Promise<{ png: Buffer; kind: "spayd" | "pay_by_square" | "invoice" | "link" } | null> {
     if (mode === "link") {
-      // A draft has no working public page yet.
-      if (!invoice.invoiceNumber || !invoice.publicToken) return null;
-      const url = `${siteUrl()}/${lang}/i/${invoiceLinkOf(tenant, invoice)}`;
-      return { png: await QRCode.toBuffer(url, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" }), kind: "link" };
+      const png = await this.buildLinkQr(invoice, tenant, lang);
+      return png ? { png, kind: "link" } : null;
     }
     // Same gate as the client-portal page (apps/frontend/app/[locale]/i/[token]/page.tsx):
     // prefer the stored IBAN, otherwise derive it from the domestic
@@ -527,6 +529,13 @@ export class InvoicePdfService {
     }
     if (!sid || mode === "payment_only") return null;
     return { png: await QRCode.toBuffer(sid, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" }), kind: "invoice" };
+  }
+
+  /** A code that opens the invoice's web page; a draft has no working page yet. */
+  private async buildLinkQr(invoice: InvoiceRow, tenant: TenantRow, lang: Lang): Promise<Buffer | null> {
+    if (!invoice.invoiceNumber || !invoice.publicToken) return null;
+    const url = `${siteUrl()}/${lang}/i/${invoiceLinkOf(tenant, invoice)}`;
+    return QRCode.toBuffer(url, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" });
   }
 
   /**
@@ -879,22 +888,27 @@ export class InvoicePdfService {
     doc: PDFKit.PDFDocument,
     rows: Array<[string, string]>,
     qr: { label: string; png: Buffer } | { label: string; pending: string } | null,
+    linkQr: { label: string; png: Buffer } | null,
     top: number,
   ): void {
-    if (!rows.length && !qr) return;
+    const codes = [qr, linkQr].filter((code) => code !== null);
+    if (!rows.length && !codes.length) return;
     const size = 90;
-    if (qr) {
-      doc.font(BOLD).fontSize(8).fillColor(MUTED).text(qr.label, 50, top, { width: 240 });
-      if ("png" in qr) {
-        doc.image(qr.png, 50, top + 12, { width: size, height: size });
+    codes.forEach((code, i) => {
+      const cx = 50 + i * (size + 15);
+      doc.font(BOLD).fontSize(8).fillColor(MUTED).text(code.label, cx, top, { width: codes.length > 1 ? size + 10 : 240, lineBreak: false });
+      if ("png" in code) {
+        doc.image(code.png, cx, top + 12, { width: size, height: size });
       } else {
-        doc.save().roundedRect(50, top + 12, size, size, 4).dash(3, { space: 3 }).strokeColor(MUTED).stroke().undash().restore();
-        doc.font(REGULAR).fontSize(7.5).fillColor(MUTED).text(qr.pending, 58, top + 12 + size / 2 - 12, { width: size - 16, align: "center" });
+        doc.save().roundedRect(cx, top + 12, size, size, 4).dash(3, { space: 3 }).strokeColor(MUTED).stroke().undash().restore();
+        doc.font(REGULAR).fontSize(7.5).fillColor(MUTED).text(code.pending, cx + 8, top + 12 + size / 2 - 12, { width: size - 16, align: "center" });
       }
-    }
-    const x = qr ? 50 + size + 10 : 50;
+    });
+    // Two codes fill the width beside the totals, so the bank details go under them.
+    const below = codes.length > 1;
+    const x = codes.length === 1 ? 50 + size + 10 : 50;
     const width = 290 - x;
-    let y = qr ? top + 14 : top;
+    let y = below ? top + 12 + size + 10 : codes.length ? top + 14 : top;
     for (const [label, value] of rows) {
       doc.font(REGULAR).fontSize(7.5).fillColor(MUTED).text(label, x, y, { width });
       y += doc.heightOfString(label, { width }) + 1;
@@ -902,7 +916,7 @@ export class InvoicePdfService {
       y += doc.heightOfString(value, { width }) + 5;
     }
     doc.fillColor("black");
-    doc.y = Math.max(doc.y, y, qr ? top + 12 + size + 8 : top);
+    doc.y = Math.max(doc.y, y, codes.length ? top + 12 + size + 8 : top);
   }
 
   /**

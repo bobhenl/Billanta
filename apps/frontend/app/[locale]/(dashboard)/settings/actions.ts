@@ -59,7 +59,7 @@ export async function updateInvoiceFormPrefs(
   report_rate_mode: 'daily' | 'annual';
   annual_rates: { year: number; currency: string; rate: number }[];
   public_link_prefix: 'number' | 'company_number' | 'none';
-  pdf_qr: 'auto' | 'link' | 'payment_only' | 'off';
+  pdf_qr: 'auto' | 'auto_link' | 'link' | 'payment_only' | 'off';
   payment_draft_description: string | null;
   payment_draft_description_always: boolean;
   },

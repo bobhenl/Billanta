@@ -207,7 +207,7 @@ export interface InvoiceFormPrefs {
   paymentDraftDescriptionAlways: boolean;
 }
 
-export const PDF_QR_MODES = ['auto', 'link', 'payment_only', 'off'] as const;
+export const PDF_QR_MODES = ['auto', 'auto_link', 'link', 'payment_only', 'off'] as const;
 export type PdfQrMode = (typeof PDF_QR_MODES)[number];
 
 export const PUBLIC_LINK_PREFIXES = ['number', 'company_number', 'none'] as const;

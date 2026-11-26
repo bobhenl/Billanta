@@ -380,6 +380,15 @@ describe("InvoicePdfService paid documents and foreign buyers", () => {
     // No public token, no page to link to.
     expect(await qrFor("link", makeInvoice({ publicToken: null } as unknown as Partial<InvoiceRow>))).toEqual([]);
     expect(await qrFor("off")).toEqual([]);
+    // Both: the payment first, the page second; a paid one keeps QR Faktura next to the link.
+    const both = await qrFor("auto_link");
+    expect(both).toHaveLength(2);
+    expect(both[0]).toMatch(/^SPD\*/);
+    expect(both[1]).toMatch(/\/cs\/i\/.*22222222-2222-2222-2222-222222222222/);
+    const paidBoth = await qrFor("auto_link", makeInvoice({ status: "paid" }));
+    expect(paidBoth[0]).toMatch(/^SID\*/);
+    expect(paidBoth[1]).toMatch(/\/cs\/i\//);
+    expect(await qrFor("auto_link", makeInvoice({ invoiceNumber: null, status: "draft" }))).toEqual([]);
     // Nothing left to pay: "payment only" prints no QR Faktura instead.
     expect((await qrFor("payment_only"))[0]).toMatch(/^SPD\*/);
     expect(await qrFor("payment_only", makeInvoice({ status: "paid" }))).toEqual([]);

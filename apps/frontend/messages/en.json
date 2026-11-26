@@ -2511,6 +2511,7 @@
       "pdfQrHint": "By default we print a payment QR code, or a QR invoice when there is no CZK/EUR account. The online invoice link opens a page where the customer can pay by bank, card or another way.",
       "pdfQrModes": {
         "auto": "Automatic (payment QR, otherwise QR invoice)",
+        "auto_link": "Payment QR + link to the online invoice (two codes)",
         "link": "Link to the invoice online (all payment options)",
         "payment_only": "Payment QR only",
         "off": "No QR code"

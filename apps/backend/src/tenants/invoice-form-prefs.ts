@@ -63,12 +63,13 @@ export const PDF_ACCENTS = ["#4f46e5", "#2563eb", "#0d9488", "#16a34a", "#ea580c
  * The QR code on the PDF:
  * - auto: QR Platba (with the invoice embedded as QR Faktura) while there is
  *   something to pay by transfer, otherwise a standalone QR Faktura;
+ * - auto_link: the same, plus a second code with the invoice's web page;
  * - link: a code that opens the invoice's web page, where the customer sees
  *   every way to pay and can download it;
  * - payment_only: QR Platba while there is something to pay, otherwise none;
  * - off: no QR code.
  */
-export const PDF_QR_MODES = ["auto", "link", "payment_only", "off"] as const;
+export const PDF_QR_MODES = ["auto", "auto_link", "link", "payment_only", "off"] as const;
 export type PdfQrMode = (typeof PDF_QR_MODES)[number];
 
 /** Reminder settings for tenants that never saved them. */

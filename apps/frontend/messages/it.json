@@ -2504,6 +2504,7 @@
       "pdfQrHint": "Per impostazione predefinita stampiamo un codice QR di pagamento, oppure un QR Faktura se manca un conto in CZK/EUR. Il link alla fattura online apre una pagina in cui il cliente può pagare con bonifico, carta o in altro modo.",
       "pdfQrModes": {
         "auto": "Automatico (QR di pagamento, altrimenti QR Faktura)",
+        "auto_link": "QR di pagamento + link alla fattura online (due codici)",
         "link": "Link alla fattura online (tutti i metodi di pagamento)",
         "payment_only": "Solo QR di pagamento",
         "off": "Nessun codice QR"

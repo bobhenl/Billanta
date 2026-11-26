@@ -2504,6 +2504,7 @@
       "pdfQrHint": "Implicit tipărim un cod QR de plată, iar când lipsește un cont în CZK/EUR, un cod QR Faktura. Linkul către factura online deschide o pagină unde clientul poate plăti prin bancă, cu cardul sau în alt mod.",
       "pdfQrModes": {
         "auto": "Automat (QR de plată, altfel QR Faktura)",
+        "auto_link": "QR de plată + link către factura online (două coduri)",
         "link": "Link către factura online (toate metodele de plată)",
         "payment_only": "Doar QR de plată",
         "off": "Fără cod QR"

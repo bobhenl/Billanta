@@ -2504,6 +2504,7 @@
       "pdfQrHint": "Par défaut, nous imprimons un code QR de paiement, ou un QR Faktura s’il n’y a pas de compte en CZK/EUR. Le lien vers la facture en ligne ouvre une page où le client peut payer par virement, par carte ou autrement.",
       "pdfQrModes": {
         "auto": "Automatique (QR de paiement, sinon QR Faktura)",
+        "auto_link": "QR de paiement + lien vers la facture en ligne (deux codes)",
         "link": "Lien vers la facture en ligne (tous les moyens de paiement)",
         "payment_only": "QR de paiement uniquement",
         "off": "Pas de code QR"
