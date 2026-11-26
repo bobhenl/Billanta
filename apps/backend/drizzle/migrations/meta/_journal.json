@@ -696,9 +696,30 @@
       "breakpoints": true
     },
     {
-      "idx": 105,
+      "idx": 100,
       "version": "7",
-      "when": 1793600700000,
+      "when": 1793600200000,
+      "tag": "0100_member_contact_scope",
+      "breakpoints": true
+    },
+    {
+      "idx": 101,
+      "version": "7",
+      "when": 1793600800000,
+      "tag": "0106_bank_transaction_net_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 102,
+      "version": "7",
+      "when": 1793600900000,
+      "tag": "0101_confidential_vault",
+      "breakpoints": true
+    },
+    {
+      "idx": 103,
+      "version": "7",
+      "when": 1793601000000,
       "tag": "0105_tenant_usage",
       "breakpoints": true
     }

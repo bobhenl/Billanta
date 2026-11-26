@@ -38,7 +38,8 @@ const DASHBOARD_ONLY = [
   'promo',
   'adminPromoCodes',
   'classroom',
-  'adminClassroom'
+  'adminClassroom',
+  'vault'
 ];
 
 function omit(messages: AbstractIntlMessages, namespaces: string[]): AbstractIntlMessages {

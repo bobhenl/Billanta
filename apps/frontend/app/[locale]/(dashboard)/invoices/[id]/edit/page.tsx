@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { redirect } from '@/i18n/navigation';
 import { apiFetch } from '@/lib/api-client';
-import { InvoiceForm } from '../../new/invoice-form';
+import { ConfidentialInvoiceForm } from '../../new/confidential-invoice-form';
 import { UUID, loadFormContext } from '../../new/load';
 import type { Contact, DocLanguage, DocumentType, InvoiceTemplate, PaymentMethod } from '../../new/types';
 import { writeGate } from '@/components/write-gate';
@@ -121,7 +121,7 @@ export default async function EditInvoicePage(props: {
       {/* A draft can change freely, which goes without saying; an issued one keeps its number and logs the reason. */}
       {issuedEdit && <p className="mt-1 text-sm text-muted-foreground">{t('editIssuedLead')}</p>}
       <div className="mt-4">
-        <InvoiceForm
+        <ConfidentialInvoiceForm
           mode={{ kind: 'edit', id: invoice.id, issued: issuedEdit, reason: issuedEdit ? searchParams.reason?.slice(0, 1000) : undefined, amountPaid: Number(invoice.amountPaid ?? 0) }}
           defaults={defaults} ai={ai} starred={starred} template={template} />
       </div>

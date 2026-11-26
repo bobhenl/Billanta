@@ -16,6 +16,7 @@ import type { Contact } from '../../invoices/new/types';
 import { InvoicesTable } from '../../invoices/invoices-table';
 import { ClientPortalCard } from './client-portal-card';
 import { ContactActions } from './contact-actions';
+import { SealButton } from '@/components/vault/seal-button';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -112,7 +113,11 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
           </p>
           {contact.dic && !contact.isPerson && <VatStatusBadge dic={contact.dic} className="mt-2" />}
         </div>
-        <ContactActions contact={contact} />
+        <div className="flex flex-wrap items-start gap-2">
+          <ContactActions contact={contact} />
+          {/* "Zašifrovat" every document of this customer; shown only with Důvěrný režim on. */}
+          <SealButton scope={{ kind: 'contact', contactId: contact.id }} compact />
+        </div>
       </div>
 
       {stats.length > 0 && (

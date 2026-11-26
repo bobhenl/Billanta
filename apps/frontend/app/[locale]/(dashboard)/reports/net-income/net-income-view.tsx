@@ -8,7 +8,7 @@ import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { useRouter } from '@/i18n/navigation';
 import { formatMoney } from '@/lib/invoice-ui';
-import { formatKc, type NetIncomeLine, type NetIncomeReport, type NetIncomeTip, type PeriodKind, type Shares, type TaxPartner } from '@/lib/net-income';
+import { formatKc, type NetIncomeLine, type NetIncomeReport, type NetIncomeTip, type PeriodKind, type Shares, type TaxPartner, type PartnerMember } from '@/lib/net-income';
 import { cn } from '@/lib/utils';
 import { setInvoicePartnerShares } from './actions';
 import { partnerColors, partnerTags, SharesPicker } from './shares-picker';
@@ -28,7 +28,19 @@ const ROWS: { key: keyof NetIncomeLine; strong?: boolean; minus?: boolean }[] = 
   { key: 'net', strong: true }
 ];
 
-export function NetIncomeView({ report, kind, canEdit, canSplit }: { report: NetIncomeReport; kind: PeriodKind; canEdit: boolean; canSplit: boolean }) {
+export function NetIncomeView({
+  report,
+  kind,
+  canEdit,
+  canSplit,
+  members
+}: {
+  report: NetIncomeReport;
+  kind: PeriodKind;
+  canEdit: boolean;
+  canSplit: boolean;
+  members: PartnerMember[];
+}) {
   const t = useTranslations('netIncome');
   const locale = useLocale();
   const kc = (n: number) => formatKc(n, locale);
@@ -141,7 +153,7 @@ export function NetIncomeView({ report, kind, canEdit, canSplit }: { report: Net
 
       <IncomeList report={report} canSplit={canSplit && many} nameOf={nameOf} kind={kind} />
 
-      <TaxModelEditor initial={model} readOnly={!canEdit} year={report.period.year} />
+      <TaxModelEditor initial={model} readOnly={!canEdit} year={report.period.year} members={members} />
     </>
   );
 }
@@ -266,7 +278,7 @@ function IncomeList({
   // One partner's invoices only (tag filter); the split itself is unchanged.
   const [only, setOnly] = useState<string | null>(null);
   const belongs = (shares: Shares | null, id: string) => ((shares ?? Object.fromEntries(partners.map((p) => [p.id, p.share])))[id] ?? 0) > 0;
-  const invoices = only ? report.invoices.filter((inv) => belongs(inv.partnerShares, only)) : report.invoices;
+  const invoices = only ? report.invoices.filter((inv) => belongs(inv.partnerShares ?? inv.claimedShares, only)) : report.invoices;
   const extra = only ? report.extraIncome.filter((e) => belongs(e.shares, only)) : report.extraIncome;
   const count = invoices.length + extra.length;
 
@@ -302,7 +314,7 @@ function IncomeList({
             {canSplit && (
               <span className="flex items-center gap-1">
                 {pending && busy === inv.id && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" aria-hidden="true" />}
-                <SharesPicker partners={partners} value={inv.partnerShares} onChange={(s) => save(inv.id, s)} disabled={pending} label={t('list.splitLabel', { number: inv.number })} />
+                <SharesPicker partners={partners} value={inv.partnerShares} fallback={inv.claimedShares} onChange={(s) => save(inv.id, s)} disabled={pending} label={t('list.splitLabel', { number: inv.number })} />
               </span>
             )}
           </div>

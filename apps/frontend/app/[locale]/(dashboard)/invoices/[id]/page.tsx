@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import { isSealed } from '@faktur/cz-compliance';
+import { ConfidentialText } from '@/components/vault/confidential-text';
+import { SealButton } from '@/components/vault/seal-button';
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
 import { AlertTriangle, ArrowLeft, ArrowDownLeft, Lock, Building2, CheckCircle2, ChevronDown, ExternalLink, FileText, History, Link2, Wallet, XCircle } from 'lucide-react';
@@ -135,6 +138,11 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   const money = (n: number) => formatMoney(n, invoice.currency, locale);
   // The customer has an older copy: edited in place after the last send.
   const editedAt = lastEdit?.items[0]?.createdAt;
+  // "Důvěrný režim": the server can't print, attach or send what it can't read.
+  const texts = [invoice.noteAbove, invoice.noteBelow, invoice.internalNote, ...items.map((item) => item.description)];
+  // The internal note is never printed, so only the printed texts count here (apps/backend/src/vault/sealed.ts).
+  const confidential = [invoice.noteAbove, invoice.noteBelow, ...items.map((item) => item.description)].some(isSealed);
+  const hasPlainText = texts.some((text) => Boolean(text?.trim()) && !isSealed(text));
   const editedAfterSend = Boolean(invoice.sentAt && editedAt && invoice.status !== 'cancelled' && Date.parse(editedAt) > Date.parse(invoice.sentAt));
   // The buyer-details box below already says "waiting"/"submitted", so the status line skips it then.
   const buyerState = buyerDetailsState(invoice);
@@ -174,6 +182,8 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   // Paid into PayPal in a foreign currency and still sitting on that balance: no home amount exists yet.
   const held = receivedCzk == null ? payments.filter((p) => p.externalId?.startsWith('paypal:') && p.currency !== home && !(p.netCurrency === home && p.netAmount)) : [];
   const heldAmount = held.reduce((sum, p) => sum + Number(p.amount) - Math.abs(Number(p.fee ?? 0)), 0);
+  // PayPal converted the held balance later (a withdrawal): the rate gap is then the cost of that conversion.
+  const convertedAt = receivedCzk == null ? null : payments.map((p) => p.netAt).filter((d): d is string => Boolean(d)).sort().at(-1) ?? null;
 
   const facts: [string, string | null][] = [
     [t('fields.issueDate'), formatDate(invoice.issueDate, locale)],
@@ -280,7 +290,10 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           sentAt={invoice.sentAt}
           editedAfterSend={editedAfterSend}
           hasCustomer={Boolean(contact)}
+          confidential={confidential}
         />
+        {/* "Zašifrovat": only while some text of this document is still plain. */}
+        {hasPlainText && <SealButton scope={{ kind: 'invoice', invoiceId: invoice.id }} compact className="mt-2" />}
         {invoice.invoiceNumber && detail.links?.public && (
           <PublicLinkPanel
             id={invoice.id}
@@ -364,13 +377,13 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
 
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <section className="min-w-0 rounded-xl border border-border bg-card p-4 lg:col-span-2">
-          {invoice.noteAbove && <p className="mb-4 whitespace-pre-line text-sm text-muted-foreground">{invoice.noteAbove}</p>}
+          {invoice.noteAbove && <p className="mb-4 whitespace-pre-line text-sm text-muted-foreground"><ConfidentialText value={invoice.noteAbove} /></p>}
           {/* Phones: one block per item instead of a table that scrolls sideways. */}
           <ul className="divide-y divide-border/60 text-sm sm:hidden">
             {items.map((item) => (
               <li key={item.id} className="py-2.5 first:pt-0">
                 <div className="flex justify-between gap-3">
-                  <span className="min-w-0 break-words">{item.description}</span>
+                  <ConfidentialText value={item.description} className="min-w-0 break-words" />
                   <span className="shrink-0 font-semibold tabular-nums"><span className="amount">{money(item.lineTotalWithoutVat)}</span></span>
                 </div>
                 <div className="mt-0.5 text-xs tabular-nums text-muted-foreground">
@@ -396,7 +409,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               <tbody>
                 {items.map((item) => (
                   <tr key={item.id} className="border-b border-border/60 last:border-b-0">
-                    <td className="py-2.5 pr-2">{item.description}</td>
+                    <td className="py-2.5 pr-2"><ConfidentialText value={item.description} /></td>
                     <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums">
                       {Number(item.quantity).toLocaleString(locale)} {item.unit ?? ''}
                     </td>
@@ -465,7 +478,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
             </p>
           )}
           {invoice.reverseCharge && <p className="mt-3 text-xs text-muted-foreground">{t('reverseChargeNote')}</p>}
-          {invoice.noteBelow && <p className="mt-4 whitespace-pre-line text-sm text-muted-foreground">{invoice.noteBelow}</p>}
+          {invoice.noteBelow && <p className="mt-4 whitespace-pre-line text-sm text-muted-foreground"><ConfidentialText value={invoice.noteBelow} /></p>}
         </section>
 
         <aside className="min-w-0 space-y-4">
@@ -520,7 +533,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                 )}
                 {fxDiff != null && Math.abs(fxDiff) >= 0.01 && (
                   <div className="flex justify-between gap-3">
-                    <dt className="text-muted-foreground">{t('net.fx')}</dt>
+                    <dt className="text-muted-foreground">{t(convertedAt ? 'net.conversion' : 'net.fx')}</dt>
                     <dd className={cn('tabular-nums', fxDiff < 0 ? 'text-destructive' : 'text-success')}>
                       {fxDiff > 0 ? '+' : '−'}
                       {czk(Math.abs(fxDiff))}
@@ -548,6 +561,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                   })}
                 </p>
               )}
+              {convertedAt && <p className="mt-2 text-xs text-muted-foreground">{t('net.converted', { date: formatDate(convertedAt, locale) ?? '', home })}</p>}
               {held.length > 0 ? (
                 <p className="mt-2 text-xs text-muted-foreground">
                   <span className="amount">{t('net.held', { amount: formatMoney(heldAmount, held[0]!.currency, locale), home })}</span>
@@ -703,7 +717,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                 <AlertTriangle className="h-4 w-4 text-warning" />
                 {t('fields.internalNote')}
               </h2>
-              <p className="mt-2 whitespace-pre-line text-sm">{invoice.internalNote}</p>
+              <p className="mt-2 whitespace-pre-line text-sm"><ConfidentialText value={invoice.internalNote} /></p>
             </section>
           )}
         </aside>

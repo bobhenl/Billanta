@@ -55,16 +55,22 @@ export function transferPrice(cardPrice: number, currency: PlanCurrency): number
 export const defaultCurrency = (locale: string): PlanCurrency => (locale === 'cs' ? 'CZK' : 'EUR');
 
 /**
- * Monthly allowances per plan (null = no limit; `partners` is how many the
- * net income model may hold). Mirrors PLAN_LIMITS in
+ * Monthly allowances per plan (null = no limit). Mirrors PLAN_LIMITS in
  * apps/backend/src/billing/plans.ts; a backend spec fails when they differ.
  */
 export const PLAN_LIMITS = {
   documents: { free: 10, start: null, plus: null, business: null },
   ai_credits: { free: 5, start: 30, plus: 150, business: 500 },
-  api_requests: { free: 0, start: 1000, plus: 10000, business: 50000 },
-  partners: { free: 1, start: 2, plus: 3, business: 10 }
+  api_requests: { free: 0, start: 1000, plus: 10000, business: 50000 }
 } as const satisfies Record<string, Record<PlanKey, number | null>>;
+
+/** People the net income report splits income between. Mirrors PLAN_PARTNERS in the backend. */
+export const PLAN_PARTNERS = {
+  free: 1,
+  start: 2,
+  plus: 3,
+  business: 10
+} as const satisfies Record<PlanKey, number>;
 
 /** The cheapest plan of each gated feature. Mirrors FEATURE_MIN_PLAN in the backend. */
 export const FEATURE_MIN_PLAN = {
@@ -78,7 +84,8 @@ export const FEATURE_MIN_PLAN = {
   vat_filings: 'plus',
   client_portal: 'start',
   auto_reminders: 'start',
-  webhooks: 'start'
+  webhooks: 'start',
+  confidential_mode: 'plus'
 } as const satisfies Record<string, Exclude<PlanKey, 'free'>>;
 export type PlanFeature = keyof typeof FEATURE_MIN_PLAN;
 
@@ -155,7 +162,7 @@ export const COMPARISON: { group: string; rows: [row: string, cells: [CompareCel
       ['annual', ['onScreen', true, true, true]],
       ['vatFilings', ['oneDownload', 'oneDownload', true, true]],
       ['vatFilingsSk', ['oneDownload', 'oneDownload', true, true]],
-      ['netIncome', perPlan((p) => PLAN_LIMITS.partners[p])],
+      ['netIncome', perPlan((p) => PLAN_PARTNERS[p])],
       ['accountantExport', ['csvTaste', 'csvPlus', 'csvPlus', 'csvPlus']]
     ]
   },

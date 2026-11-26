@@ -44,3 +44,4 @@ export * from './countries/types.js';
 export * from './countries/contract.js';
 export * from './countries/index.js';
 export * from './tenant-country.js';
+export * from './confidential.js';

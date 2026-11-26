@@ -37,6 +37,8 @@ export interface BankTransaction {
   /** What PayPal credited after converting the payment, in `netCurrency`; null when it stayed in `currency`. */
   netAmount?: string | null;
   netCurrency?: string | null;
+  /** When PayPal converted the payment from the foreign balance (a withdrawal); null when it converted on arrival. */
+  netAt?: string | null;
   matchedInvoiceId: string | null;
   /** Expense a bank rule drafted from this outgoing payment. */
   matchedExpenseId?: string | null;

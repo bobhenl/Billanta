@@ -4,7 +4,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { Banner } from '@/components/banner';
 import { Link, redirect } from '@/i18n/navigation';
 import { apiFetch, ApiError, NoTenantError, NotSignedInError } from '@/lib/api-client';
-import { parsePeriod, periodQuery, shiftPeriod, switchKind, type NetIncomeReport, type Period, type PeriodKind } from '@/lib/net-income';
+import { parsePeriod, periodQuery, shiftPeriod, switchKind, type NetIncomeReport, type PartnerMember, type Period, type PeriodKind } from '@/lib/net-income';
 import { canManage, canWrite, fetchMyAccess } from '@/lib/tenant';
 import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
@@ -59,6 +59,11 @@ export default async function NetIncomePage({ searchParams }: { searchParams: Pr
     );
   }
 
+  // Partners can be linked to team members; without the list the editor just hides that choice.
+  const members: PartnerMember[] = await apiFetch<{ members: { userId: string; name: string | null; email: string }[] }>('/api/v1/team')
+    .then((team) => team.members.map((m) => ({ userId: m.userId, label: m.name || m.email })))
+    .catch(() => []);
+
   const label = periodLabel(period, locale, t('quarterLabel', { q: period.n, year: period.year }));
   const href = (p: Period) => `/reports/net-income?${periodQuery(p)}`;
   const arrow = 'flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:bg-accent hover:text-primary';
@@ -109,6 +114,7 @@ export default async function NetIncomePage({ searchParams }: { searchParams: Pr
         kind={period.kind}
         canEdit={access ? canManage(access.role) : false}
         canSplit={canWrite(access, 'invoices')}
+        members={members}
       />
     </div>
   );

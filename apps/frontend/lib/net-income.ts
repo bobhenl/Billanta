@@ -2,11 +2,21 @@
 
 export type Shares = Record<string, number>;
 
+/** A team member a partner can be linked to (from GET /api/v1/team). */
+export interface PartnerMember {
+  userId: string;
+  label: string;
+}
+
 export interface TaxPartner {
   id: string;
   name: string;
   share: number;
   tax_credits: number;
+  /** The team member this partner is (users.id). */
+  user_id?: string | null;
+  /** Invoices that member creates count as theirs unless split by hand. */
+  claim_own?: boolean;
 }
 
 export interface TaxRates {
@@ -128,6 +138,8 @@ export interface NetIncomeReport {
     income: number;
     source: 'czk' | 'received' | 'converted';
     partnerShares: Shares | null;
+    /** The creator's partner when they claim their own invoices; applies while partnerShares is null. */
+    claimedShares: Shares | null;
   }[];
   extraIncome: (TaxModel['extra_income'][number] & { index: number })[];
   missingRates: number;

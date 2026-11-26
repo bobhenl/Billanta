@@ -7,6 +7,7 @@ import type {
 import * as schema from "../../drizzle/schema";
 import type { InvoiceVatBreakdown } from "./invoice-total.util";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
+import { assertServerReadable, printedTexts } from "../vault/sealed";
 
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 type ContactRow = typeof schema.contacts.$inferSelect;
@@ -91,6 +92,8 @@ export function buildIsdocInvoiceInput(
   lineItems: LineItemRow[],
   totals: InvoiceVatBreakdown,
 ): IsdocInvoiceInput {
+  // ISDOC, UBL and Peppol carry the item texts; encrypted ones can only be exported in the browser.
+  assertServerReadable(...printedTexts(invoice, lineItems));
   if (!invoice.invoiceNumber || !invoice.issueDate || !invoice.dueDate) {
     throw new Error(
       "buildIsdocInvoiceInput: invoice is missing invoiceNumber/issueDate/dueDate – has it been issued?",

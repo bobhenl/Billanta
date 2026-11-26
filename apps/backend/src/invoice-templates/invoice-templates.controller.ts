@@ -49,7 +49,7 @@ export class InvoiceTemplatesController {
   @Patch(":id")
   @ApiOperation({ summary: "Edit a template (line_items, when sent, replaces all)" })
   update(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: UpdateInvoiceTemplateDto) {
-    return this.templatesService.update(req.tenantDb!, id, dto);
+    return this.templatesService.update(req.tenantDb!, req.user!.tenantId, id, dto);
   }
 
   @Delete(":id")

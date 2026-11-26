@@ -5,6 +5,46 @@ export type PermissionLevel = 'none' | 'read' | 'write';
 export const APP_MODULES = ['expenses', 'bank', 'recurring', 'quotes', 'reports', 'ai', 'time'] as const;
 export type AppModule = (typeof APP_MODULES)[number];
 
+const LEVELS: readonly PermissionLevel[] = ['none', 'read', 'write'];
+const ROLE_DEFAULT_LEVEL: Record<string, PermissionLevel> = { owner: 'write', admin: 'write', service: 'write', accountant: 'write', viewer: 'read' };
+
+/** One row of "what you will get access to". */
+export interface AreaAccess {
+  area: PermissionArea;
+  level: PermissionLevel;
+}
+
+/**
+ * What a role plus its stored overrides (`tenant_invitations.permissions`)
+ * gives, area by area, for the invitation page. Mirrors `accessSummary` /
+ * `effectivePermissions` in apps/backend/src/tenancy/permissions.ts (a parity
+ * test there keeps them in step): owners and admins always have everything,
+ * and overrides that do not parse are ignored as a whole. Driven by
+ * `PERMISSION_AREAS`, so finer areas only need adding there and a label.
+ */
+export function accessSummary(role: string, overrides?: unknown): { manage: boolean; areas: AreaAccess[] } {
+  const base = ROLE_DEFAULT_LEVEL[role] ?? 'none';
+  const fixed = role === 'owner' || role === 'admin' || role === 'service';
+  const parsed = fixed ? null : parseOverrides(overrides);
+  return {
+    manage: role === 'owner' || role === 'admin',
+    areas: PERMISSION_AREAS.map((area) => ({ area, level: parsed?.[area] ?? base }))
+  };
+}
+
+function parseOverrides(value: unknown): Partial<Record<PermissionArea, PermissionLevel>> | null {
+  if (value === null || value === undefined) return null;
+  if (typeof value !== 'object' || Array.isArray(value)) return null;
+  const out: Partial<Record<PermissionArea, PermissionLevel>> = {};
+  for (const [key, level] of Object.entries(value)) {
+    if (!(PERMISSION_AREAS as readonly string[]).includes(key)) return null;
+    if (level === undefined) continue;
+    if (!LEVELS.includes(level as PermissionLevel)) return null;
+    out[key as PermissionArea] = level as PermissionLevel;
+  }
+  return out;
+}
+
 /** What `canWrite` needs from `GET /api/v1/tenants/me/access` (`MyAccess` in lib/tenant.ts). */
 export interface WriteAccess {
   role: string;

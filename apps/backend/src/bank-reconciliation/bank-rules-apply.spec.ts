@@ -27,6 +27,7 @@ function tx(overrides: Partial<StoredRow> & { id: string }): StoredRow {
     fee: null,
     netAmount: null,
     netCurrency: null,
+    netAt: null,
     message: "Telefon 10/2026",
     appliedRuleId: null,
     matchedExpenseId: null,

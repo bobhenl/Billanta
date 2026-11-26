@@ -50,6 +50,8 @@ import { TeamController } from "./team/team.controller";
 import { NotificationsController } from "./notifications/notifications.controller";
 import { NotificationsModule } from "./notifications/notifications.module";
 import { AuditModule } from "./audit/audit.module";
+import { VaultModule } from "./vault/vault.module";
+import { VaultController } from "./vault/vault.controller";
 import { AuditController } from "./audit/audit.controller";
 import { IntegrationsController } from "./integrations/integrations.controller";
 import { IntegrationsModule } from "./integrations/integrations.module";
@@ -141,6 +143,8 @@ import { ReferralsModule } from "./referrals/referrals.module";
     // Bell / browser / email notifications per member and event.
     NotificationsModule,
     AuditModule,
+    // "Důvěrný režim": wrapped company keys and in-place sealing of texts.
+    VaultModule,
     IntegrationsModule,
     // Invite companies for credits; credits pay plans.
     ReferralsModule,
@@ -245,6 +249,7 @@ export class AppModule implements NestModule {
         BankReconciliationController,
         BankConnectionsController,
         BankRulesController,
+        VaultController,
         BackupDestinationsController,
         TeamController,
         DashboardController,

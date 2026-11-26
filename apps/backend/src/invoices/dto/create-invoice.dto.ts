@@ -1,9 +1,11 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 import { REVERSE_CHARGE_CODE_VALUES } from "@faktur/cz-compliance";
+import { sealableText } from "../../vault/sealed";
 
 const lineItemSchema = z.object({
-  description: z.string().trim().min(1).max(500),
+  // Plain, or sealed in the browser (Důvěrný režim, vault/sealed.ts).
+  description: sealableText(500).pipe(z.string().min(1)),
   // Negative quantities are allowed: a credit note returns items, and a
   // regular invoice may carry a "sleva" line.
   quantity: z.coerce
@@ -55,9 +57,9 @@ export const invoiceFieldsSchema = z.object({
     .regex(/^\d{1,10}$/)
     .nullish(),
   order_number: optionalText(64),
-  note_above: optionalText(2000),
-  note_below: optionalText(2000),
-  internal_note: optionalText(2000),
+  note_above: sealableText(2000).nullish(),
+  note_below: sealableText(2000).nullish(),
+  internal_note: sealableText(2000).nullish(),
   issue_place: optionalText(100),
   issued_by_name: optionalText(100),
   // Extra header lines ("Číslo smlouvy: 2024/15"); empty pairs are dropped.

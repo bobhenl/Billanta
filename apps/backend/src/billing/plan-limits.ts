@@ -3,7 +3,7 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { featureAccess, planAllows } from "./plan-access";
 import { loadPlanSummary } from "./plan.guard";
-import { FEATURE_MIN_PLAN, FEATURE_TASTE, PLAN_LIMITS, upgradeFor, type PlanFeature } from "./plans";
+import { FEATURE_MIN_PLAN, FEATURE_TASTE, PLAN_PARTNERS, upgradeFor, type PlanFeature } from "./plans";
 import { remaining, tasteCounter, usageLimit, usagePeriod, type UsageMetric } from "./usage";
 import { consumeUsage, readUsage } from "./usage.repository";
 
@@ -61,25 +61,6 @@ export async function countIssuedDocument(db: TenantDb, tenantId: string, now = 
   });
 }
 
-/**
- * Refuses a tax model with more partners than the plan allows. A model that
- * already had them (saved before limits, or on a higher plan) can still be
- * edited, as long as it doesn't grow.
- */
-export async function assertPartners(db: TenantDb, tenantId: string, count: number, stored: number): Promise<void> {
-  if (count <= stored) return;
-  const summary = await loadPlanSummary(db, tenantId);
-  const limit = usageLimit(summary, "partners");
-  if (limit === null || count <= limit) return;
-  throw new ForbiddenException({
-    error: "plan_required",
-    message: "This plan allows fewer partners",
-    feature: "partners",
-    plan: upgradeFor("partners", summary!.plan) ?? "business",
-    limit,
-  });
-}
-
 export interface UsageMeter {
   used: number;
   limit: number | null;
@@ -115,6 +96,6 @@ export async function usageOverview(db: TenantDb, tenantId: string, now = new Da
         return [f, { access, plan: FEATURE_MIN_PLAN[f], tasteLeft: counter && access !== "plan" ? Math.max(0, counter.uses - usedTaste) : null }];
       }),
     ) as Record<PlanFeature, { access: "plan" | "taste" | "locked"; plan: string; tasteLeft: number | null }>,
-    partnersLimit: summary?.enforced ? PLAN_LIMITS.partners[summary.plan] : null,
+    partnersLimit: summary?.enforced ? PLAN_PARTNERS[summary.plan] : null,
   };
 }

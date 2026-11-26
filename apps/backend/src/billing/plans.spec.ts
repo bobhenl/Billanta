@@ -7,6 +7,7 @@ import {
   FEATURE_MIN_PLAN,
   FEATURE_TASTE,
   PLAN_LIMITS,
+  PLAN_PARTNERS,
   CARD_TRIAL_DAYS,
   DEFAULT_TRIAL_DAYS,
   cardTrialEnabled,
@@ -77,6 +78,7 @@ describe("frontend price list", () => {
     expect(literal(src, "PLAN_LIMITS")).toEqual(PLAN_LIMITS);
     expect(literal(src, "FEATURE_MIN_PLAN")).toEqual(FEATURE_MIN_PLAN);
     expect(literal(src, "FEATURE_TASTE")).toEqual(FEATURE_TASTE);
+    expect(literal(src, "PLAN_PARTNERS")).toEqual(PLAN_PARTNERS);
     expect(Number(/ACCOUNTANT_SEATS\s*=\s*(\d+)/.exec(src)?.[1])).toBe(ACCOUNTANT_SEATS);
   });
 });

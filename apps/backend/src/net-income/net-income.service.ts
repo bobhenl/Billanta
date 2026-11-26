@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { and, eq, gte, inArray, isNotNull, lt } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
-import { assertPartners } from "../billing/plan-limits";
+import { loadPlanSummary } from "../billing/plan.guard";
+import { PLAN_PARTNERS, planFor } from "../billing/plans";
 import { getHomeRate } from "../exports/home-rates";
 import { ReportRates } from "../exports/uniform-rate";
 import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
@@ -10,7 +11,7 @@ import { applyBuyerSnapshot } from "../invoices/party-snapshot";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 import { computeNetIncome, type IncomeItem } from "./net-income";
 import { netIncomeTips } from "./net-income-tips";
-import { settingsFor, type Shares, sharesSchema, type TaxModel, taxModelOf } from "./tax-model";
+import { creatorShares, settingsFor, type Shares, sharesSchema, type TaxModel, taxModelOf } from "./tax-model";
 
 type Db = PostgresJsDatabase<typeof schema>;
 
@@ -33,8 +34,29 @@ export class NetIncomeService {
   }
 
   async saveModel(db: Db, tenantId: string, model: TaxModel): Promise<TaxModel> {
-    const stored = await this.model(db, tenantId);
-    await assertPartners(db, tenantId, model.partners.length, stored.partners.length);
+    // Adding partners past the plan is refused; a company already over it after a downgrade can still edit or remove them.
+    const summary = await loadPlanSummary(db, tenantId);
+    if (summary?.enforced && model.partners.length > PLAN_PARTNERS[summary.plan]) {
+      const before = await this.model(db, tenantId);
+      if (model.partners.length > before.partners.length) {
+        throw new ForbiddenException({
+          error: "plan_required",
+          message: "partner_limit",
+          feature: "partners",
+          limit: PLAN_PARTNERS[summary.plan],
+          plan: planFor(PLAN_PARTNERS, model.partners.length),
+        });
+      }
+    }
+    // A partner can only be linked to someone in this company (RLS keeps the lookup to it).
+    const linked = model.partners.map((p) => p.user_id).filter((u): u is string => !!u);
+    if (linked.length) {
+      const members = await db
+        .select({ userId: schema.tenantMemberships.userId })
+        .from(schema.tenantMemberships)
+        .where(inArray(schema.tenantMemberships.userId, linked));
+      if (members.length !== new Set(linked).size) throw new BadRequestException("partner_user_not_member");
+    }
     await db.update(schema.tenants).set({ taxModel: model, updatedAt: new Date() }).where(eq(schema.tenants.id, tenantId));
     return model;
   }
@@ -91,6 +113,8 @@ export class NetIncomeService {
       income: number;
       source: "czk" | "received" | "converted";
       partnerShares: Shares | null;
+      /** The creator's partner when they claim their own invoices; used when partnerShares is null. */
+      claimedShares: Shares | null;
     }[] = [];
     for (const { invoice, contact } of rows) {
       const totals = computeVatBreakdown(
@@ -131,6 +155,7 @@ export class NetIncomeService {
         income: round2(income),
         source,
         partnerShares: sharesOrNull(invoice.partnerShares),
+        claimedShares: creatorShares(model, invoice.createdByUserId),
       });
     }
 
@@ -141,7 +166,7 @@ export class NetIncomeService {
       .filter((e) => e.date >= fromDay && e.date < toDay);
 
     const itemsOf = (month: number | null): IncomeItem[] => [
-      ...invoices.filter((i) => month == null || i.month === month).map((i) => ({ amount: i.income, shares: i.partnerShares })),
+      ...invoices.filter((i) => month == null || i.month === month).map((i) => ({ amount: i.income, shares: i.partnerShares ?? i.claimedShares })),
       ...extraIncome.filter((e) => month == null || Number(e.date.slice(5, 7)) === month).map((e) => ({ amount: e.amount, shares: e.shares })),
     ];
 

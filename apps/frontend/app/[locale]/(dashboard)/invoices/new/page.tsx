@@ -3,7 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { Banner } from '@/components/banner';
 import { apiFetch } from '@/lib/api-client';
 import { TEMPLATE_PRESETS } from '../templates/presets';
-import { InvoiceForm } from './invoice-form';
+import { ConfidentialInvoiceForm } from './confidential-invoice-form';
 import { UUID, loadContact, loadFormContext } from './load';
 import type { DocumentType, DocLanguage, InvoiceTemplate, PaymentMethod } from './types';
 import { writeGate } from '@/components/write-gate';
@@ -140,7 +140,7 @@ export default async function NewInvoicePage(
       )}
       <div className="mt-4">
         {/* Keyed by the starting point, so "Podle faktury" on this page starts over with the copy. */}
-        <InvoiceForm
+        <ConfidentialInvoiceForm
           key={[searchParams.from, searchParams.template, searchParams.preset, searchParams.contact, searchParams.type].join('|')}
           mode={{ kind: 'create', templateId }} defaults={defaults} ai={ai} starred={starred} template={template} />
       </div>

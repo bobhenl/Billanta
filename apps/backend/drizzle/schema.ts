@@ -462,6 +462,10 @@ export const tenantMemberships = pgTable(
     // (Settings → Integrace); null = feeds off. Resolved without a session
     // through `find_feed_owner` in drizzle/rls-policies.sql.
     feedToken: uuid("feed_token"),
+    // 'all' = sees the whole company; 'own' = only contacts assigned to them
+    // and their documents (0100, enforced by RLS via app_view_mode()).
+    // Ignored for owners and admins.
+    contactScope: varchar("contact_scope", { length: 8 }).notNull().default("all"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
@@ -517,6 +521,11 @@ export const contacts = pgTable("contacts", {
   isPerson: boolean("is_person").notNull().default(false),
   // Colour label shown as a dot next to the customer everywhere (CONTACT_COLORS); null = none.
   color: varchar("color", { length: 16 }),
+  // Who the customer belongs to in the team (0100): defaults to whoever
+  // created it. is_private hides it, with its documents and payments, from
+  // everyone but that person and the company owner (RLS, app_view_mode()).
+  ownerUserId: uuid("owner_user_id").references(() => users.id, { onDelete: "set null" }),
+  isPrivate: boolean("is_private").notNull().default(false),
   // Private note about the customer (payment habits, contact person …); never printed or sent.
   internalNote: text("internal_note"),
   // Client portal link (/c/:portalToken) listing every issued document for this customer;
@@ -588,6 +597,9 @@ export const invoices = pgTable(
     // takes responsibility for the invoice content — tracked independently
     // from whenever an AI draft was originally produced.
     issuedByUserId: uuid("issued_by_user_id").references(() => users.id),
+    // Whoever created the draft (0100, column default from app.current_user_id);
+    // a member who sees only their own clients still sees what they made.
+    createdByUserId: uuid("created_by_user_id").references(() => users.id, { onDelete: "set null" }),
     issuedAt: timestamp("issued_at", { withTimezone: true }),
     aiDraftReviewedAt: timestamp("ai_draft_reviewed_at", { withTimezone: true }),
     // --- Additions beyond the §4 list, needed for §6 step 8/10 ---
@@ -1066,6 +1078,8 @@ export const expenses = pgTable("expenses", {
   expenseDate: timestamp("expense_date", { withTimezone: true, mode: "date" }).notNull(),
   category: text("category"),
   receiptFileUrl: text("receipt_file_url"),
+  // Whoever entered it (0100, column default from app.current_user_id).
+  createdByUserId: uuid("created_by_user_id").references(() => users.id, { onDelete: "set null" }),
   // The supplier's own document number and payment details as printed on
   // the received invoice (typed in, or read by AI from a photo/PDF).
   documentNumber: varchar("document_number", { length: 64 }),
@@ -1177,6 +1191,11 @@ export const bankTransactions = pgTable("bank_transactions", {
   /** What arrived after PayPal converted the payment (fee and rate applied), in `net_currency`. Migration 0089. */
   netAmount: numeric("net_amount", { precision: 14, scale: 2 }),
   netCurrency: varchar("net_currency", { length: 3 }),
+  /**
+   * When PayPal converted a payment held on a foreign balance (usually at a
+   * withdrawal). Null when it converted on arrival or never. Migration 0106.
+   */
+  netAt: timestamp("net_at", { withTimezone: true, mode: "date" }),
   /** The payer's note ("zpráva pro příjemce"), shown for manual review. Migration 0063. */
   message: text("message"),
   /** The bank rule that ignored this payment or drafted its expense/invoice (migration 0091). */
@@ -1231,6 +1250,46 @@ export const bankRules = pgTable(
     tenantPositionIdx: index("bank_rules_tenant_position_idx").on(table.tenantId, table.position),
   }),
 );
+
+// ---------------------------------------------------------------------------
+// "Důvěrný režim" (migration 0101) — tenant-scoped. The browser encrypts item
+// descriptions and invoice notes with a per-company data key; these tables
+// hold only that key wrapped per member (vault password or passkey PRF) and
+// by the recovery code. See `@faktur/cz-compliance` confidential.ts.
+// ---------------------------------------------------------------------------
+export const tenantVaults = pgTable("tenant_vaults", {
+  tenantId: uuid("tenant_id")
+    .primaryKey()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  /** A known text sealed with the data key: lets a browser check an unwrapped key. */
+  keyCheck: text("key_check").notNull(),
+  /** The invoice editor encrypts new documents by default. */
+  sealNew: boolean("seal_new").notNull().default(true),
+  /** What the company encrypts (`VaultCategory`); only "texts" is implemented so far. */
+  categories: text("categories").array().notNull().default(["texts"]),
+  enabledBy: uuid("enabled_by").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const vaultKeyWraps = pgTable("vault_key_wraps", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenantVaults.tenantId, { onDelete: "cascade" }),
+  /** Null for the company's recovery-code wrap. */
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  kind: varchar("kind", { length: 16 }).notNull().$type<"password" | "recovery" | "passkey">(),
+  kdf: varchar("kdf", { length: 16 }).notNull().$type<"pbkdf2-sha256" | "hkdf-sha256">(),
+  iterations: integer("iterations"),
+  salt: text("salt").notNull(),
+  iv: text("iv").notNull(),
+  wrappedKey: text("wrapped_key").notNull(),
+  /** Passkey wraps: the WebAuthn credential id (base64url) to ask the authenticator for. */
+  credentialId: text("credential_id"),
+  label: text("label"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
 
 // ---------------------------------------------------------------------------
 // bank_connections — tenant-scoped. Read-only bank API tokens (Fio for now)

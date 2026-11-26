@@ -85,16 +85,20 @@ type ContactRow = typeof schema.contacts.$inferSelect;
 const czDate = (d: Date | null | undefined) =>
   d ? d.toLocaleDateString("cs-CZ", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Europe/Prague" }) : "";
 
-/** The invoice's client page; `link` comes from `invoiceLinkOf` (public-links/public-link.ts). */
-export function portalUrlOf(link: string): string {
+/**
+ * The invoice's client page; `link` comes from `invoiceLinkOf` (public-links/public-link.ts).
+ * An e-mail passes its own language so the page opens in it; without one
+ * (printed links, QR codes) the frontend picks the visitor's language.
+ */
+export function portalUrlOf(link: string, locale?: string): string {
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://faktur.app").replace(/\/$/, "");
-  return `${siteUrl}/i/${link}`;
+  return `${siteUrl}${locale ? `/${locale}` : ""}/i/${link}`;
 }
 
 /** The customer's portal with all their documents, see `/c/:token`; `link` comes from `clientPortalLinkOf`. */
-export function clientPortalUrlOf(link: string): string {
+export function clientPortalUrlOf(link: string, locale?: string): string {
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://faktur.app").replace(/\/$/, "");
-  return `${siteUrl}/c/${link}`;
+  return `${siteUrl}${locale ? `/${locale}` : ""}/c/${link}`;
 }
 
 /**

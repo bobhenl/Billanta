@@ -415,7 +415,7 @@ export default async function PublicInvoicePage({
                 {invoice.lineItems.map((item, index) => (
                   <tr key={index} className="border-b border-border align-top last:border-b-0">
                     <td className="px-3 py-2.5 sm:px-4">
-                      <span className="break-words">{item.description}</span>
+                      {item.confidential ? <span className="italic text-muted-foreground">{t("confidentialItem")}</span> : <span className="break-words">{item.description}</span>}
                       {/* On a phone the quantity, unit price and VAT columns fold into one line under the name. */}
                       <span className="mt-0.5 block text-xs text-muted-foreground tabular-nums sm:hidden">
                         {item.quantity} × {currencyFormatter.format(item.unitPrice)}

@@ -38,7 +38,7 @@ import { clientIp } from '@/lib/client-ip';
 import { AUTH_LIMITS, allow } from '@/lib/rate-limit';
 import { db } from '@/lib/db';
 import { users, verificationTokens } from '@/lib/auth-schema';
-import { sendPasswordResetEmail } from '@/lib/email';
+import { emailLocaleOf, sendPasswordResetEmail } from '@/lib/email';
 import { SITE_URL } from '@/lib/site';
 
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
@@ -56,9 +56,10 @@ function genericResponse(): NextResponse {
 export async function POST(request: Request): Promise<NextResponse> {
   const body = await request.json().catch(() => null);
   const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : undefined;
-  // `locale` is optional, best-effort — only used to build a locale-prefixed
-  // reset link; falls back to the default locale if missing/invalid.
-  const locale = typeof body?.locale === 'string' && ['cs', 'sk', 'en'].includes(body.locale) ? body.locale : 'cs';
+  // `locale` is optional, best-effort: the language of the e-mail and of the
+  // reset page it links to. Czech when missing, English for a locale the
+  // e-mails are not written in.
+  const locale = emailLocaleOf(typeof body?.locale === 'string' ? body.locale : null);
 
   if (!email || !email.includes('@')) {
     // Still generic: malformed input gets the same response shape, just
@@ -101,7 +102,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       const resetUrl = `${SITE_URL}/${locale}/reset-password?token=${rawToken}`;
 
       try {
-        await sendPasswordResetEmail({ to: email, resetUrl, userId: user.id, validMinutes: RESET_TOKEN_TTL_MS / 60_000 });
+        await sendPasswordResetEmail({ to: email, resetUrl, userId: user.id, validMinutes: RESET_TOKEN_TTL_MS / 60_000, locale });
       } catch (emailError) {
         // Log and swallow: a failed enqueue must not turn into a
         // distinguishable response (and must not fail the request in a way

@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("./plan.guard", () => ({ loadPlanSummary: mocks.loadPlanSummary }));
 vi.mock("./usage.repository", () => ({ consumeUsage: mocks.consumeUsage, readUsage: mocks.readUsage }));
 
-import { assertPartners, assertPlanFeature, countIssuedDocument, spendFeature, usageOverview } from "./plan-limits";
+import { assertPlanFeature, countIssuedDocument, spendFeature, usageOverview } from "./plan-limits";
 
 const db = {} as never;
 const now = new Date("2026-03-10T12:00:00Z");
@@ -101,27 +101,5 @@ describe("usageOverview", () => {
     expect(o.features.vat_filings).toEqual({ access: "locked", plan: "plus", tasteLeft: 0 });
     expect(o.features.webhooks).toEqual({ access: "locked", plan: "start", tasteLeft: null });
     expect(o.partnersLimit).toBe(1);
-  });
-});
-
-describe("assertPartners", () => {
-  it("holds Free to one partner and Start to two", async () => {
-    mocks.loadPlanSummary.mockResolvedValue(plan("free"));
-    expect(await refusal(assertPartners(db, "t1", 2, 1))).toMatchObject({ error: "plan_required", feature: "partners", plan: "start", limit: 1 });
-    mocks.loadPlanSummary.mockResolvedValue(plan("start"));
-    await assertPartners(db, "t1", 2, 1);
-    expect(await refusal(assertPartners(db, "t1", 3, 2))).toMatchObject({ plan: "plus", limit: 2 });
-  });
-
-  it("lets a model that already has more partners be edited, but not grow", async () => {
-    mocks.loadPlanSummary.mockResolvedValue(plan("free"));
-    await assertPartners(db, "t1", 3, 3);
-    await assertPartners(db, "t1", 2, 3);
-    await refusal(assertPartners(db, "t1", 4, 3));
-  });
-
-  it("doesn't limit a company from before plan limits", async () => {
-    mocks.loadPlanSummary.mockResolvedValue(plan("free", false));
-    await assertPartners(db, "t1", 5, 1);
   });
 });

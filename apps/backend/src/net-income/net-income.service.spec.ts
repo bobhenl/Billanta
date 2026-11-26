@@ -1,43 +1,57 @@
 import { ForbiddenException } from "@nestjs/common";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const limits = vi.hoisted(() => ({ assertPartners: vi.fn() }));
-vi.mock("../billing/plan-limits", () => limits);
+const guard = vi.hoisted(() => ({ loadPlanSummary: vi.fn() }));
+vi.mock("../billing/plan.guard", () => guard);
 
 import { NetIncomeService } from "./net-income.service";
 import { DEFAULT_TAX_MODEL } from "./tax-model";
 
-function db() {
-  const where = vi.fn(async () => [{ taxModel: DEFAULT_TAX_MODEL }]);
+const partner = (i: number) => ({ id: `p${i}`, name: `Partner ${i}`, share: 1, tax_credits: 30_840 });
+const withPartners = (n: number) => ({ ...DEFAULT_TAX_MODEL, partners: Array.from({ length: n }, (_, i) => partner(i)) });
+
+/** A tenant whose stored model has `stored` partners. */
+function db(stored: number) {
+  const where = vi.fn(async () => [{ taxModel: withPartners(stored) }]);
   const update = vi.fn(() => ({ set: () => ({ where: async () => undefined }) }));
   return { select: () => ({ from: () => ({ where }) }), update };
 }
 
-const two = {
-  ...DEFAULT_TAX_MODEL,
-  partners: [
-    { id: "me", name: "Já", share: 50, tax_credits: 30_840 },
-    { id: "p2", name: "Partner", share: 50, tax_credits: 30_840 },
-  ],
-};
+async function refusal(promise: Promise<unknown>): Promise<Record<string, unknown>> {
+  const err = await promise.then(() => null, (e: unknown) => e);
+  expect(err).toBeInstanceOf(ForbiddenException);
+  return (err as ForbiddenException).getResponse() as Record<string, unknown>;
+}
+
+const save = (fake: ReturnType<typeof db>, n: number) => new NetIncomeService().saveModel(fake as never, "t1", withPartners(n) as never);
 
 beforeEach(() => {
-  limits.assertPartners.mockReset().mockResolvedValue(undefined);
+  guard.loadPlanSummary.mockReset();
 });
 
-describe("NetIncomeService.saveModel – plan", () => {
-  it("checks the new partner count against the stored one", async () => {
-    const fake = db();
-    await new NetIncomeService().saveModel(fake as never, "t1", two as never);
-    expect(limits.assertPartners).toHaveBeenCalledWith(fake, "t1", 2, 1);
-    expect(fake.update).toHaveBeenCalled();
+describe("NetIncomeService.saveModel – partner cap", () => {
+  it("holds Free to one partner and Start to two, and stores nothing when refused", async () => {
+    guard.loadPlanSummary.mockResolvedValue({ plan: "free", enforced: true });
+    const fake = db(1);
+    expect(await refusal(save(fake, 2))).toMatchObject({ error: "plan_required", message: "partner_limit", limit: 1, plan: "start" });
+    expect(fake.update).not.toHaveBeenCalled();
+
+    guard.loadPlanSummary.mockResolvedValue({ plan: "start", enforced: true });
+    await save(db(1), 2);
+    expect(await refusal(save(db(2), 3))).toMatchObject({ limit: 2, plan: "plus" });
   });
 
-  it("stores nothing when the plan refuses", async () => {
-    const refusal = new ForbiddenException({ error: "plan_required" });
-    limits.assertPartners.mockRejectedValue(refusal);
-    const fake = db();
-    await expect(new NetIncomeService().saveModel(fake as never, "t1", two as never)).rejects.toBe(refusal);
-    expect(fake.update).not.toHaveBeenCalled();
+  it("lets a model already over the cap be edited, but not grow", async () => {
+    guard.loadPlanSummary.mockResolvedValue({ plan: "free", enforced: true });
+    await save(db(3), 3);
+    await save(db(3), 2);
+    await refusal(save(db(3), 4));
+  });
+
+  it("doesn't limit a company from before plan limits", async () => {
+    guard.loadPlanSummary.mockResolvedValue({ plan: "free", enforced: false });
+    const fake = db(1);
+    await save(fake, 5);
+    expect(fake.update).toHaveBeenCalled();
   });
 });

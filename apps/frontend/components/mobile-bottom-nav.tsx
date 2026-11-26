@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { clearVaultKeys } from '@/lib/vault/session';
 import { signOut } from 'next-auth/react';
 import { LogOut } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/language-switcher';
@@ -74,7 +75,7 @@ export function PanelSettings({ logOutLabel }: { logOutLabel?: string }) {
       {logOutLabel && (
         <button
           type="button"
-          onClick={async () => (await leaveOffline()) && signOut({ callbackUrl: '/' })}
+          onClick={async () => (await leaveOffline()) && (await clearVaultKeys(), signOut({ callbackUrl: '/' }))}
           className="flex w-full items-center justify-center gap-2 rounded-full border border-border py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
         >
           <LogOut className="h-4 w-4" />

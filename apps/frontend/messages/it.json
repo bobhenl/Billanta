@@ -767,7 +767,8 @@
     },
     "print": "Stampa / PDF",
     "downloadPdf": "Scarica PDF",
-    "downloadPdfShort": "PDF"
+    "downloadPdfShort": "PDF",
+    "confidentialItem": "Riga riservata"
   },
   "expenses": {
     "title": "Spese",
@@ -1762,6 +1763,10 @@
         "accountantProfile": {
           "title": "Profilo del commercialista",
           "description": "Inserimento nell'elenco dei commercialisti e programma partner per commercialisti."
+        },
+        "confidential": {
+          "title": "Modalità riservata",
+          "description": "Cifra i testi dei documenti nel browser"
         }
       },
       "managedByAdmins": "I dati aziendali, il team, l'abbonamento e le altre impostazioni dell'azienda sono gestiti dal proprietario o da un amministratore."
@@ -2089,7 +2094,8 @@
         "all": "Elenco completo dei commercialisti",
         "picked": "{email} è stata inserita. Verifichi il ruolo e invii l'invito."
       },
-      "copyLink": "Copia link"
+      "copyLink": "Copia link",
+      "seatLimit": "Il tuo piano non ha più posti liberi. Plus ha 3 utenti, Business 10. I commercialisti non contano (fino a 2)."
     },
     "exports": {
       "title": "Esportazioni per il commercialista",
@@ -3759,6 +3765,14 @@
         "rate_limited": "Troppi tentativi. Riprovi tra qualche minuto.",
         "not_signed_in": "L'accesso è scaduto. Acceda di nuovo."
       }
+    },
+    "passwordStrength": {
+      "label": "Sicurezza della password: {level}",
+      "tooWeak": "troppo debole",
+      "weak": "debole",
+      "fair": "discreta",
+      "good": "buona",
+      "strong": "forte"
     }
   },
   "legal": {
@@ -5242,7 +5256,9 @@
       "net": "Ricavo netto",
       "noReceived": "Inserisca l’importo accreditato in {home} per vedere anche la differenza di cambio.",
       "rates": "Tasso reale {real} contro tasso della fattura {invoice} ({pair}).",
-      "held": "{amount} è ancora sul saldo PayPal. L’importo reale in {home} compare quando PayPal lo converte al prelievo."
+      "held": "{amount} è ancora sul saldo PayPal. L’importo reale in {home} compare quando PayPal lo converte al prelievo.",
+      "conversion": "Conversione di valuta",
+      "converted": "Convertito in {home} il {date} al tasso di PayPal."
     },
     "history": "Cronologia delle modifiche",
     "correction": {
@@ -5262,11 +5278,34 @@
       "transactionId": "ID transazione",
       "open": "Apri in banca"
     },
-    "partnerDefaultShares": "quote predefinite"
+    "partnerDefaultShares": "quote predefinite",
+    "lockedRow": "Dettagli nascosti",
+    "lock": {
+      "title": "I dettagli sono nascosti",
+      "intro": "Inserisci la tua password per vederli.",
+      "password": "Password",
+      "open": "Mostra",
+      "note": "Dopo la conferma, le fatture nascoste restano visibili per 15 minuti in questo browser. Continuano a contare nei totali e nelle esportazioni.",
+      "badge": "Dettagli nascosti",
+      "lock": "Nascondi dettagli – conferma con password",
+      "unlock": "Mostra senza password",
+      "lockHint": "Cliente, note e file li vede solo chi reinserisce la propria password",
+      "relock": "Nascondi di nuovo",
+      "lockedToast": "Dettagli nascosti",
+      "unlockedToast": "I dettagli si vedono senza password",
+      "teamHint": "Protegge dagli sguardi su un computer non bloccato o condiviso, non dai colleghi: ogni membro del team li mostra con la propria password. Se una fattura deve vederla solo qualcuno, imposta sul cliente chi vi ha accesso.",
+      "teamLink": "Imposta chi nel team vede cosa",
+      "errors": {
+        "wrong_current": "Password errata.",
+        "reauth_required": "Il tuo account non ha una password. Esci e accedi di nuovo, poi riprova.",
+        "too_many_attempts": "Troppi tentativi. Riprova tra qualche minuto.",
+        "generic": "Non ha funzionato. Riprova."
+      }
+    }
   },
   "invite": {
     "title": "Invito al team",
-    "heading": "Invito a {company}",
+    "heading": "{company} la invita nel suo team",
     "asRole": "Entrerà con il ruolo {role}.",
     "accept": "Accetta invito",
     "accepted": "Ora fa parte del team.",
@@ -5286,7 +5325,9 @@
       "submit": "Crea account e unisciti",
       "emailTaken": "Hai già un account con questa e-mail. Accedi per accettare l'invito.",
       "invalid": "Questo invito non è più valido. Chiedine uno nuovo."
-    }
+    },
+    "accessTitle": "A cosa avrà accesso",
+    "accessManage": "Potrà anche gestire il team e le impostazioni dell’azienda."
   },
   "templates": {
     "title": "Modelli di fattura",
@@ -13929,14 +13970,20 @@
       "partnerCreditsIn": "Detrazioni nel {year}",
       "perOnce": "una tantum",
       "from": "Da",
-      "to": "A"
+      "to": "A",
+      "partnerMember": "Membro del team",
+      "partnerMemberNone": "Fuori dal team",
+      "partnerClaimOwn": "Le fatture che crea sono sue"
     },
     "errors": {
       "duplicate_partner": "Due soci hanno lo stesso id. Ne rimuova uno e lo aggiunga di nuovo.",
       "shares_must_be_positive": "Almeno una quota deve essere maggiore di zero.",
       "generic": "Impossibile salvare le impostazioni. Controlli i numeri e riprovi.",
       "expense_date_required": "Una spesa una tantum richiede una data.",
-      "expense_range_invalid": "Una spesa finisce prima di iniziare."
+      "expense_range_invalid": "Una spesa finisce prima di iniziare.",
+      "duplicate_partner_user": "Un membro del team può essere collegato a un solo socio.",
+      "partner_user_not_member": "Questa persona non fa più parte del team.",
+      "partner_limit": "Più soci richiedono un piano superiore. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
       "title": "Solo per proprietari e amministratori",
@@ -14122,5 +14169,217 @@
     "tasteLeft": "Da provare gratis: {left}×",
     "planRequired": "È disponibile dal piano {plan}.",
     "documentsOut": "Questo mese ha già emesso tutti i {limit} documenti inclusi nel piano. Può emetterne altri con il piano {plan} o dal 1° del mese prossimo."
+  },
+  "vault": {
+    "settingsLink": "Impostazioni della Modalità riservata",
+    "plan": {
+      "title": "La Modalità riservata è inclusa nei piani Plus e Business",
+      "body": "Dopo l'upgrade il titolare dell'azienda la attiva qui. Se in seguito passi a un piano inferiore, i documenti già cifrati restano sbloccabili e leggibili.",
+      "upgrade": "Vedi i piani",
+      "downgradedTitle": "Cifrare altri documenti richiede il piano Plus o Business",
+      "downgradedBody": "Puoi ancora sbloccare, leggere e modificare i documenti cifrati. I nuovi documenti però vengono salvati senza cifratura."
+    },
+    "unlock": {
+      "title": "Sblocca la Modalità riservata",
+      "lead": "I testi cifrati si aprono solo nel tuo browser. Password e codice non vengono mai inviati al server.",
+      "cancel": "Indietro",
+      "submit": "Sblocca",
+      "passkeyButton": "Usa una passkey",
+      "methods": {
+        "password": "Password della cassaforte",
+        "recovery": "Codice di recupero",
+        "passkey": "Passkey"
+      },
+      "password": "Password della cassaforte",
+      "currentPassword": "Password attuale della cassaforte",
+      "recovery": "Codice di recupero",
+      "newPasswordRequired": "Nuova password della cassaforte (almeno 10 caratteri)",
+      "newPasswordOptional": "Nuova password della cassaforte (facoltativa, se hai dimenticato la tua)",
+      "passkeyLead": "Il browser chiederà impronta, volto o chiave di sicurezza.",
+      "settingsHint": "Gestisci password, passkey e codice di recupero in",
+      "errors": {
+        "passwordShort": "La nuova password deve avere almeno 10 caratteri.",
+        "passkeyFailed": "La passkey non ha funzionato. Prova la password o il codice di recupero.",
+        "saveFailed": "Impossibile salvare la nuova password. Riprova.",
+        "recoveryMalformed": "Il codice di recupero ha 30 caratteri (6 gruppi da 5). Controllalo.",
+        "noPassword": "Non hai ancora una password della cassaforte. Sblocca con il codice di recupero e impostane una.",
+        "wrongSecret": "La password o il codice non corrisponde.",
+        "unlockFailed": "Sblocco non riuscito. Riprova."
+      }
+    },
+    "text": {
+      "locked": "Cifrato",
+      "otherKey": "Cifrato con un'altra chiave",
+      "unlock": "Sblocca"
+    },
+    "seal": {
+      "button": {
+        "invoice": "Cifra",
+        "contact": "Cifra i documenti del cliente",
+        "company": "Cifra tutta l'azienda"
+      },
+      "title": {
+        "invoice": "Cifra questo documento",
+        "contact": "Cifra tutti i documenti del cliente",
+        "company": "Cifra tutti i documenti dell'azienda"
+      },
+      "cancel": "Indietro",
+      "confirm": "Cifra",
+      "progress": "Cifratura… {n}",
+      "lead": "Cifra – il contenuto lo vedrete solo tu e i membri con la chiave, il server non può leggerlo.",
+      "what": "Vengono cifrate le descrizioni delle righe e le note (sopra, sotto le righe e interne).",
+      "keeps": "Report e dashboard continuano a funzionare: importi, date e causali restano in chiaro.",
+      "loses": "Per i documenti cifrati il server non può creare PDF o ISDOC, allegarli a un'e-mail né trovarli nella ricerca testuale.",
+      "locked": "I documenti bloccati vengono saltati.",
+      "done": "{n, plural, one {# documento cifrato} other {# documenti cifrati}}.",
+      "nothing": "Non c'era niente da cifrare.",
+      "failed": "Cifratura non riuscita. I documenti già cifrati restano cifrati."
+    },
+    "editor": {
+      "lockedTitle": "Questo documento è cifrato",
+      "lockedLead": "Sbloccalo per modificarlo. Si apre solo nel tuo browser.",
+      "otherKey": "Questo documento è cifrato con una chiave che questa azienda non ha.",
+      "unlock": "Sblocca",
+      "aiUnavailable": "La compilazione con IA non è disponibile nella Modalità riservata durante la cifratura – il testo dovrebbe andare al server.",
+      "sealFailed": "Impossibile cifrare il documento. Non è stato salvato nulla.",
+      "sealToggle": "Cifra questo documento",
+      "sealOnHint": "Descrizioni delle righe e note le vedrete solo tu e i membri con la chiave. PDF, ISDOC e suggerimenti di righe non saranno disponibili.",
+      "sealOffHint": "Il documento viene salvato senza cifratura, come prima."
+    },
+    "actions": {
+      "blocked": "Non disponibile nella Modalità riservata: il server non può leggere un documento cifrato. Disattiva l'allegato PDF/ISDOC nelle impostazioni e-mail oppure invia un link.",
+      "pdfUnavailable": "Il PDF non è disponibile nella Modalità riservata. Puoi stampare il dettaglio dal browser (Ctrl+P).",
+      "sendHint": "Questo documento è cifrato: l'e-mail parte solo con un link, il server non può allegare PDF o ISDOC."
+    },
+    "categories": {
+      "recommended": "Consigliato",
+      "planned": "In arrivo",
+      "losesTitle": "Cosa smette di funzionare:",
+      "texts": {
+        "title": "Descrizioni delle righe e note",
+        "description": "Ciò che hai fornito e le note del documento. Importi, date e riferimenti restano leggibili.",
+        "loses": [
+          "PDF, ISDOC, UBL e Peppol creati dal server",
+          "Allegato PDF/ISDOC nelle e-mail",
+          "Ricerca nel testo di righe e note, suggerimenti di righe",
+          "Compilazione dei documenti con IA",
+          "Descrizioni delle righe nel link pubblico e negli export per il commercialista (Pohoda, Money, CSV)"
+        ]
+      },
+      "attachments": {
+        "title": "Allegati e ricevute",
+        "description": "File di documenti e spese.",
+        "loses": [
+          "Lettura delle ricevute con IA",
+          "Anteprime degli allegati",
+          "Invio degli allegati via e-mail e consegna al commercialista"
+        ]
+      },
+      "contacts": {
+        "title": "Nomi e indirizzi dei contatti",
+        "description": "Nomi dei clienti, indirizzi, e-mail e telefoni.",
+        "loses": [
+          "Completamento e aggiornamento da ARES",
+          "Abbinamento dei pagamenti bancari per nome del pagatore",
+          "E-mail inviate dal server (non conosce l'indirizzo)",
+          "Ricerca dei contatti sul server"
+        ]
+      },
+      "amounts": {
+        "title": "Importi",
+        "description": "Prezzi, IVA e totali dei documenti.",
+        "loses": [
+          "Abbinamento automatico dei pagamenti bancari",
+          "Report IVA, comunicazioni di controllo ed export IVA",
+          "Dashboard, reddito netto e grafici",
+          "Solleciti con importo e pagamenti QR creati dal server"
+        ]
+      }
+    },
+    "enable": {
+      "offTitle": "La Modalità riservata è disattivata",
+      "ownerOnly": "Solo il titolare dell'azienda può attivarla.",
+      "introTitle": "Modalità riservata",
+      "intro": "I testi scelti vengono cifrati direttamente nel tuo browser con una chiave che conosce solo la tua azienda. Né il server, né i suoi backup, né noi possiamo leggerli.",
+      "notE2eeNote": "Si sblocca con la password della cassaforte, una passkey o il codice di recupero. L'accesso o l'autenticazione a due fattori non aprono la chiave – altrimenti il server dovrebbe conoscerla.",
+      "chooseTitle": "Cosa cifrare",
+      "chooseLead": "Ogni opzione disattiva le funzioni che devono leggere il testo. Il resto dell'app continua a funzionare.",
+      "warningsTitle": "Prima di attivarla",
+      "warnings": {
+        "lost": "Capisco che se perdiamo tutte le password della cassaforte e il codice di recupero, i dati cifrati non potranno essere recuperati. Nemmeno l'assistenza potrà aprirli.",
+        "archive": "Capisco che dobbiamo conservare i documenti per 10 anni e presentare da soli le dichiarazioni IVA. Scaricheremo regolarmente l'archivio dei documenti.",
+        "features": "Capisco quali funzioni smettono di funzionare per i documenti cifrati."
+      },
+      "next": "Continua",
+      "back": "Indietro",
+      "passwordTitle": "Password della cassaforte",
+      "passwordLead": "Diversa dalla password di accesso, almeno {n} caratteri. Non viene mai inviata al server.",
+      "password": "Password della cassaforte",
+      "passwordAgain": "Ripeti la password",
+      "codeTitle": "Codice di recupero",
+      "codeLead": "Mostrato solo ora. Stampalo o conservalo fuori dal computer. Sblocca i dati se dimentichi la password, e lo dai ai colleghi che devono avere accesso.",
+      "copied": "Copiato",
+      "copy": "Copia",
+      "download": "Scarica come file",
+      "codeFileHeader": "Codice di recupero della Modalità riservata ({site}). Conservalo in un luogo sicuro.",
+      "retype": "Riscrivi il codice per verificarlo",
+      "retypeMismatch": "Il codice non corrisponde ancora.",
+      "submit": "Attiva la Modalità riservata",
+      "done": "La Modalità riservata è attiva.",
+      "errors": {
+        "acks": "Conferma tutti gli avvisi.",
+        "passwordShort": "La password deve avere almeno {n} caratteri.",
+        "passwordMismatch": "Le password non coincidono.",
+        "failed": "Attivazione non riuscita. Riprova.",
+        "vault_already_enabled": "La Modalità riservata è già attiva.",
+        "owner_only": "Solo il titolare dell'azienda può attivarla.",
+        "plan_required": "La Modalità riservata è inclusa nei piani Plus e Business."
+      }
+    },
+    "settings": {
+      "title": "Modalità riservata",
+      "description": "Cifra i testi dei documenti nel tuo browser.",
+      "loadError": "Impossibile caricare le impostazioni.",
+      "failed": "Non ha funzionato. Riprova.",
+      "onTitle": "La Modalità riservata è attiva",
+      "unlockedHere": "Sbloccata in questo browser. La chiave viene cancellata all'uscita.",
+      "lockedHere": "Bloccata in questo browser.",
+      "lock": "Blocca",
+      "unlock": "Sblocca",
+      "archiveTitle": "L'archivio spetta a te",
+      "archiveBody": "Devi conservare i documenti per 10 anni e le dichiarazioni IVA restano un tuo obbligo. Scarica regolarmente l'archivio dei documenti e tieni il codice di recupero fuori dal computer.",
+      "archiveLink": "Export e archivio",
+      "sealTitle": "Cifra i documenti esistenti",
+      "sealLead": "I documenti precedenti restano in chiaro finché non li modifichi o non li cifri qui.",
+      "sealNew": "Cifra automaticamente i nuovi documenti",
+      "sealNewHint": "Nell'editor l'opzione Cifra questo documento sarà già attiva.",
+      "saved": "Salvato",
+      "methodsTitle": "I miei metodi di sblocco",
+      "passwordSet": "La password della cassaforte è impostata",
+      "passwordMissing": "Non hai ancora una password della cassaforte",
+      "changePassword": "Cambia",
+      "setPassword": "Imposta",
+      "passkeyUnnamed": "Passkey",
+      "passkeyRemoved": "Passkey rimossa",
+      "removePasskey": "Rimuovi passkey",
+      "passkeyLead": "Sblocco con impronta o volto",
+      "addPasskey": "Aggiungi passkey",
+      "newPassword": "Nuova password della cassaforte (almeno {n} caratteri)",
+      "savePassword": "Salva password",
+      "passwordShort": "La password deve avere almeno {n} caratteri.",
+      "passwordSaved": "Password della cassaforte salvata",
+      "passkeyHint": "Conferma con la password attuale o il codice di recupero, poi il browser ti chiederà di creare una passkey.",
+      "passkeyLabel": "Nome (es. Portatile)",
+      "passkeyNoPrf": "Questo dispositivo o browser non supporta le passkey per la cifratura.",
+      "passkeyAdded": "Passkey aggiunta",
+      "recoveryTitle": "Codice di recupero",
+      "recoveryLead": "Un nuovo codice invalida subito quello vecchio. I colleghi che hanno sbloccato con il vecchio codice mantengono la propria password.",
+      "recoveryShownOnce": "Il codice è mostrato solo ora. Conservalo in un luogo sicuro.",
+      "recoveryWritten": "L'ho salvato",
+      "recoveryNew": "Crea un nuovo codice di recupero",
+      "recoveryReplaced": "Il nuovo codice di recupero è attivo",
+      "categoriesTitle": "Cosa viene cifrato",
+      "categoriesLead": "Altre opzioni in arrivo. Per ciascuna vedi cosa smetterebbe di funzionare."
+    }
   }
 }

@@ -8,7 +8,7 @@ import { Banner } from '@/components/banner';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { useRouter } from '@/i18n/navigation';
-import { RATE_KEYS, resolvedYear, type SharedExpense, type TaxModel, type TaxPartner, type TaxRates, type YearSettings, yearSource } from '@/lib/net-income';
+import { RATE_KEYS, resolvedYear, type PartnerMember, type SharedExpense, type TaxModel, type TaxPartner, type TaxRates, type YearSettings, yearSource } from '@/lib/net-income';
 import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 import { saveTaxModel } from './actions';
@@ -30,7 +30,7 @@ const DEFAULTS: TaxModel = {
 };
 
 const MAX_PARTNERS = 10;
-const ERRORS = ['duplicate_partner', 'shares_must_be_positive', 'expense_date_required', 'expense_range_invalid'];
+const ERRORS = ['duplicate_partner_user', 'partner_user_not_member', 'partner_limit', 'duplicate_partner', 'shares_must_be_positive', 'expense_date_required', 'expense_range_invalid'];
 
 const newId = () => `p${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`;
 const today = () => {
@@ -105,7 +105,17 @@ function NumField({
   );
 }
 
-export function TaxModelEditor({ initial, readOnly, year: reportYear }: { initial: TaxModel; readOnly: boolean; year: number }) {
+export function TaxModelEditor({
+  initial,
+  readOnly,
+  year: reportYear,
+  members
+}: {
+  initial: TaxModel;
+  readOnly: boolean;
+  year: number;
+  members: PartnerMember[];
+}) {
   const t = useTranslations('netIncome.config');
   const tErr = useTranslations('netIncome.errors');
   const router = useRouter();
@@ -275,6 +285,32 @@ export function TaxModelEditor({ initial, readOnly, year: reportYear }: { initia
                   disabled={locked}
                   onChange={(n) => setEntry({ partners: { ...entry!.partners, [p.id]: { tax_credits: n ?? 0 } } })}
                 />
+              )}
+              {members.length > 1 && (
+                <div className="col-span-2 flex flex-wrap items-end gap-x-4 gap-y-2 sm:col-span-full">
+                  <label className="block min-w-0 text-xs font-semibold text-muted-foreground">
+                    <span className="block">{t('partnerMember')}</span>
+                    <select
+                      className={cn(inputClass, 'mt-1 sm:w-64')}
+                      value={p.user_id ?? ''}
+                      disabled={readOnly}
+                      onChange={(e) => setPartner(i, e.target.value ? { user_id: e.target.value } : { user_id: null, claim_own: false })}
+                    >
+                      <option value="">{t('partnerMemberNone')}</option>
+                      {members.map((m) => (
+                        <option key={m.userId} value={m.userId} disabled={model.partners.some((o, j) => j !== i && o.user_id === m.userId)}>
+                          {m.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  {p.user_id && (
+                    <label className="flex min-h-10 items-center gap-2 text-sm">
+                      <input type="checkbox" className="h-4 w-4 accent-primary" checked={!!p.claim_own} disabled={readOnly} onChange={(e) => setPartner(i, { claim_own: e.target.checked })} />
+                      {t('partnerClaimOwn')}
+                    </label>
+                  )}
+                </div>
               )}
               {!readOnly && many && (
                 <button

@@ -7,7 +7,7 @@ import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
 import { planAllows } from "../billing/plan-access";
 import { loadPlanSummary } from "../billing/plan.guard";
-import { emailLocaleOf } from "../email/email-render";
+import { appUrlOf, emailLocaleOf, type EmailLocale } from "../email/email-render";
 import { EmailOutboxService } from "../email/email-outbox.service";
 import { emailTypesView, type EmailTypeInfo } from "../email/email-types";
 import { EmailService, type BillingNoticeDetail, type EmailAttachment } from "../email/email.service";
@@ -21,6 +21,11 @@ import {
 import type { EmailPrefsPatch } from "./email-prefs.schema";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
+
+async function tenantEmailLocale(db: TenantDb, tenantId: string): Promise<EmailLocale> {
+  const [t] = await db.select({ locale: schema.tenants.defaultLocale }).from(schema.tenants).where(eq(schema.tenants.id, tenantId));
+  return emailLocaleOf(t?.locale);
+}
 
 export interface NotificationPayload {
   title: string;
@@ -102,7 +107,7 @@ export class NotificationsService {
               kind,
               title: payload.title,
               body: payload.body,
-              url: payload.link ? `${siteUrl}${payload.link}` : null,
+              url: payload.link ? appUrlOf(siteUrl, emailLocaleOf(hooks?.locale), payload.link) : null,
               quietHours: prefs.quietHours,
               locale: emailLocaleOf(hooks?.locale),
             },
@@ -127,20 +132,24 @@ export class NotificationsService {
   /**
    * Security alerts (e.g. the payout bank account changed): every member gets
    * the bell entry and an email regardless of their notification preferences,
-   * and no webhooks fire. Fire-and-forget like `notify`.
+   * and no webhooks fire. Fire-and-forget like `notify`. A function payload
+   * is worded in the company's language once that is known.
    */
-  notifySecurity(tenantId: string, payload: NotificationPayload): void {
+  notifySecurity(tenantId: string, payload: NotificationPayload | ((locale: EmailLocale) => NotificationPayload)): void {
     void this.deliverSecurity(tenantId, payload).catch((err) =>
       this.logger.warn(`Security alert for tenant ${tenantId} failed: ${err instanceof Error ? err.message : err}`),
     );
   }
 
-  async deliverSecurity(tenantId: string, payload: NotificationPayload): Promise<number> {
+  async deliverSecurity(tenantId: string, message: NotificationPayload | ((locale: EmailLocale) => NotificationPayload)): Promise<number> {
     const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3100").replace(/\/$/, "");
     let members: { userId: string; email: string | null }[] = [];
+    let payload!: NotificationPayload;
     await this.dbService.sql.begin(async (tx) => {
       await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
       const db = drizzleTx(tx, schema);
+      const locale = await tenantEmailLocale(db, tenantId);
+      payload = typeof message === "function" ? message(locale) : message;
       members = await db
         .select({ userId: schema.tenantMemberships.userId, email: schema.users.email })
         .from(schema.tenantMemberships)
@@ -149,7 +158,13 @@ export class NotificationsService {
       for (const m of members) {
         if (!m.email) continue;
         await this.emailService.sendSecurityAlertEmail(
-          { to: m.email, title: payload.title, body: payload.body, url: payload.link ? `${siteUrl}${payload.link}` : null },
+          {
+            to: m.email,
+            title: payload.title,
+            body: payload.body,
+            url: payload.link ? appUrlOf(siteUrl, locale, payload.link) : null,
+            lang: locale,
+          },
           { tenantId, db, userId: m.userId },
         );
       }
@@ -184,6 +199,8 @@ export class NotificationsService {
     await this.dbService.sql.begin(async (tx) => {
       await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
       const db = drizzleTx(tx, schema);
+      // The notices are worded in the company's language by their callers; the button and link follow it.
+      const locale = email.lang ? emailLocaleOf(email.lang) : await tenantEmailLocale(db, tenantId);
       members = await db
         .select({ userId: schema.tenantMemberships.userId, email: schema.users.email })
         .from(schema.tenantMemberships)
@@ -196,8 +213,8 @@ export class NotificationsService {
             to: m.email,
             title: payload.title,
             body: payload.body,
-            url: payload.link ? `${siteUrl}${payload.link}` : null,
-            lang: email.lang,
+            url: payload.link ? appUrlOf(siteUrl, locale, payload.link) : null,
+            lang: locale,
             details: email.details,
             attachments: email.attachments,
           },

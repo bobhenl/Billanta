@@ -121,6 +121,7 @@ export const FEATURE_MIN_PLAN = {
   client_portal: "start",
   auto_reminders: "start",
   webhooks: "start",
+  confidential_mode: "plus",
 } as const satisfies Record<string, PaidPlan>;
 export type PlanFeature = keyof typeof FEATURE_MIN_PLAN;
 
@@ -133,6 +134,24 @@ export const FEATURE_TASTE: Partial<Record<PlanFeature, { uses: number; per: "mo
   accounting_export: { uses: 1, per: "month" },
   vat_filings: { uses: 1, per: "ever" },
 };
+
+/**
+ * People in the team per plan, the owner included (the pricing page's
+ * "3 uživatelé + účetní"). Accountants have their own small allowance so a
+ * company can bring its accounting firm, but can't pass the whole team off
+ * as accountants. Members over the limit after a downgrade stay; only new
+ * invitations are refused.
+ */
+export const PLAN_SEATS: Record<PlanKey, number> = { free: 1, start: 1, plus: 3, business: 10 };
+export const ACCOUNTANT_SEATS = 2;
+
+/** People the "Po zdanění" report splits income between. */
+export const PLAN_PARTNERS: Record<PlanKey, number> = { free: 1, start: 2, plus: 3, business: 10 };
+
+/** The cheapest plan that allows `n` of something, or null when none does. */
+export function planFor(limits: Record<PlanKey, number>, n: number): PaidPlan | null {
+  return PAID_PLANS.find((p) => limits[p] >= n) ?? null;
+}
 
 /** Free keeps two recurring templates; more need a paid plan. */
 export const FREE_RECURRING_TEMPLATES = 2;
@@ -150,18 +169,8 @@ export const PLAN_LIMITS = {
   ai_credits: { free: 5, start: 30, plus: 150, business: 500 },
   /** Public-API requests made with an API key. */
   api_requests: { free: 0, start: 1000, plus: 10000, business: 50000 },
-  /** Partners in the net income report (not monthly: how many the model may hold). */
-  partners: { free: 1, start: 2, plus: 3, business: 10 },
 } as const satisfies Record<string, Record<PlanKey, number | null>>;
 export type LimitedResource = keyof typeof PLAN_LIMITS;
-
-/**
- * Team size the pricing page states: users with full access, plus up to
- * ACCOUNTANT_SEATS accountants on every plan. Not enforced by the team
- * invitations yet.
- */
-export const PLAN_USERS: Record<PlanKey, number> = { free: 1, start: 1, plus: 3, business: 10 };
-export const ACCOUNTANT_SEATS = 2;
 
 /** The cheapest plan whose limit for `resource` is above `current`'s (null when none is). */
 export function upgradeFor(resource: LimitedResource, current: PlanKey): PaidPlan | null {
