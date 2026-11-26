@@ -112,7 +112,7 @@ describe("BankReconciliationService.applyRuleAction", () => {
     const row = tx({ id: "tx1", amount: "500.00" });
     const { db, updates } = fakeDb([row]);
     await service.applyRuleAction(db as never, "t1", row, storedRule("draft_invoice", {}, { contactId: "c-1" }));
-    expect(invoicesService.createPaymentDraft).toHaveBeenCalledWith(db, "t1", expect.objectContaining({ amount: 500, contactId: "c-1", provider: "Banka" }));
+    expect(invoicesService.createPaymentDraft).toHaveBeenCalledWith(db, "t1", expect.objectContaining({ amount: 500, contactId: "c-1", provider: "Banka", variableSymbol: "1234567" }));
     expect(updates).toEqual([
       { table: schema.bankTransactions, values: { matchedInvoiceId: "inv-draft", status: "matched", appliedRuleId: "rule-draft_invoice" } },
     ]);

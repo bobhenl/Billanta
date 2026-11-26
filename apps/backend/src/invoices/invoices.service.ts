@@ -1194,6 +1194,8 @@ export class InvoicesService {
       contactId?: string | null;
       /** Where the money came from; it sets the draft's payment method. */
       provider?: "PayPal" | "Stripe" | "Banka";
+      /** Kept when issued, instead of one made from the number. */
+      variableSymbol?: string | null;
     },
   ) {
     const email = payment.payerEmail?.trim().toLowerCase() || null;
@@ -1237,6 +1239,7 @@ export class InvoicesService {
         taxableSupplyDate: payment.paidAt,
         dueDate: payment.paidAt,
         ...paymentDraftMethod(payment.provider ?? "PayPal"),
+        variableSymbol: payment.variableSymbol ?? null,
         amountPaid: round2(payment.amount).toFixed(2),
         paymentFees: payment.fee && payment.fee > 0 ? round2(payment.fee).toFixed(2) : "0",
         receivedCzk:

@@ -94,6 +94,12 @@ function receivedFrom(tx: StoredRow) {
       : null,
   };
 }
+/** A bank row's variable symbol as an invoice can carry it, or null. */
+function bankVariableSymbol(raw: string | null): string | null {
+  const vs = normalizeVariableSymbol(raw);
+  return vs && /^\d{1,10}$/.test(vs) ? vs : null;
+}
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 const startOfUtcDay = (d: Date) => Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
 
@@ -467,6 +473,9 @@ export class BankReconciliationService {
       note: received.note ?? paypalPaymentNote(received, "Banka"),
       contactId: rule?.contactId ?? null,
       provider: received.provider,
+      // The symbol the payer sent ties the invoice to its payment. PayPal's
+      // "variable symbol" is the number of its own invoice, so it stays out.
+      variableSymbol: received.provider === "Banka" ? bankVariableSymbol(tx.variableSymbol) : null,
     });
     const [transaction] = await db
       .update(schema.bankTransactions)

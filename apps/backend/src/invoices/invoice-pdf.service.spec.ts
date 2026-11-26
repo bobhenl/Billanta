@@ -376,6 +376,9 @@ describe("InvoicePdfService paid documents and foreign buyers", () => {
     expect(draft.qr).toEqual([]);
     expect(draft.lines).toContain("QR platba se doplní po vystavení");
     expect((await render(makeInvoice())).lines).not.toContain("QR platba se doplní po vystavení");
+    const paid = await render(makeInvoice({ invoiceNumber: null, status: "pending_review", amountPaid: "1000000" }));
+    expect(paid.lines).toContain("QR Faktura se doplní po vystavení");
+    expect(paid.lines).not.toContain("QR platba se doplní po vystavení");
   });
 
   it("prints the country of a buyer abroad, not of a domestic one", async () => {

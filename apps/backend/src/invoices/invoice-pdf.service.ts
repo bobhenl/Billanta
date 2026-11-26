@@ -125,6 +125,7 @@ const L = {
     qrInvoice: "QR Faktura",
     qrLink: "Faktura online",
     qrAfterIssue: "QR platba se doplní po vystavení",
+    qrInvoiceAfterIssue: "QR Faktura se doplní po vystavení",
     reverseCharge: "Daň odvede zákazník (přenesená daňová povinnost dle § 92a zákona o DPH).",
     // Service to a business in another EU state (§29/2c ZDPH, art. 196 of Directive 2006/112/EC).
     reverseChargeEu: "Daň odvede zákazník.",
@@ -189,6 +190,7 @@ const L = {
     qrInvoice: "QR faktúra",
     qrLink: "Faktúra online",
     qrAfterIssue: "QR platba sa doplní po vystavení",
+    qrInvoiceAfterIssue: "QR faktúra sa doplní po vystavení",
     reverseCharge: "Prenesenie daňovej povinnosti.",
     reverseChargeEu: "Prenesenie daňovej povinnosti.",
     fxRate: "Kurz ČNB",
@@ -252,6 +254,7 @@ const L = {
     qrInvoice: "QR invoice",
     qrLink: "Invoice online",
     qrAfterIssue: "QR payment is added once issued",
+    qrInvoiceAfterIssue: "QR invoice is added once issued",
     reverseCharge: "Reverse charge – VAT to be accounted for by the customer.",
     reverseChargeEu: "Reverse charge – VAT to be accounted for by the customer.",
     fxRate: "ČNB rate",
@@ -392,7 +395,15 @@ export class InvoicePdfService {
         ? t.qrPayBySquare
         : (qr.kind === "spayd" ? t.qr : qr.kind === "link" ? t.qrLink : t.qrInvoice).toUpperCase()
       : "";
-    const qrSlot = qr ? { label: qrLabel, png: qr.png } : qrPending ? { label: t.qr.toUpperCase(), pending: t.qrAfterIssue } : null;
+    // A draft made from a payment is paid already: once issued it gets the QR invoice, not a payment code.
+    const paidDraft = Number(invoice.amountPaid ?? 0) >= totals.totalWithVat;
+    const qrSlot = qr
+      ? { label: qrLabel, png: qr.png }
+      : qrPending
+        ? paidDraft
+          ? { label: t.qrInvoice.toUpperCase(), pending: t.qrInvoiceAfterIssue }
+          : { label: t.qr.toUpperCase(), pending: t.qrAfterIssue }
+        : null;
     this.renderPaymentBlock(doc, this.bankRows(t, invoice, tenant, contact), qrSlot, totalsTop);
     this.renderFooterNotes(doc, t, invoice, tenant, fill, contact);
     if (credit) this.renderCredit(doc, credit);
