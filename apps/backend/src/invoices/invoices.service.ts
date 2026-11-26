@@ -38,6 +38,8 @@ import {
 import { computeInvoiceTotal, computeVatBreakdown, formatInvoiceAmount, lineBase, round2 } from "./invoice-total.util";
 import { enumerableCustomFields, hasCustomValue, parseCustomValue } from "./custom-field-options";
 import { documentVars } from "./custom-fields";
+import { belongsToPartner } from "./partner-filter";
+import { taxModelOf } from "../net-income/tax-model";
 import { resolveTenantForInvoice } from "../tenants/bank-accounts";
 import {
   BUYER_SNAPSHOT_KEYS,
@@ -354,7 +356,7 @@ export class InvoicesService {
    * computed totals, so the dashboard and API clients never have to fetch
    * line items row by row. RLS restricts all of it to the current tenant.
    */
-  async list(db: TenantDb, query: ListInvoicesQuery = {}) {
+  async list(db: TenantDb, query: ListInvoicesQuery = {}, tenantId?: string) {
     const conditions = [];
     if (query.type) conditions.push(eq(schema.invoices.documentType, query.type));
     if (query.contact_id) conditions.push(eq(schema.invoices.contactId, query.contact_id));
@@ -451,8 +453,15 @@ export class InvoicesService {
         (!customField || fuzzyScore(customField, (r.invoice.customFields ?? []).flatMap((f) => [f.label, f.value])) > 0) &&
         (!customValue || hasCustomValue(r.invoice.customFields, customValue)),
     );
+    // A null split means the company's default shares, so the partner filter needs the tax model.
+    const partnerId = query.partner;
+    const partners =
+      partnerId && tenantId
+        ? taxModelOf((await db.select({ taxModel: schema.tenants.taxModel }).from(schema.tenants).where(eq(schema.tenants.id, tenantId)))[0]?.taxModel).partners
+        : null;
+    const partnerRows = partnerId && partners ? rows.filter((r) => belongsToPartner(r.invoice, partners, partnerId)) : rows;
 
-    const ids = rows.map((r) => r.invoice.id);
+    const ids = partnerRows.map((r) => r.invoice.id);
     const items = ids.length
       ? await db.select().from(schema.invoiceLineItems).where(inArray(schema.invoiceLineItems.invoiceId, ids))
       : [];
@@ -467,8 +476,8 @@ export class InvoicesService {
     const item = query.item?.trim();
     const itemRows =
       query.vat_rate === undefined && !item
-        ? rows
-        : rows.filter((r) => {
+        ? partnerRows
+        : partnerRows.filter((r) => {
             const lines = itemsByInvoice.get(r.invoice.id) ?? [];
             return (
               (query.vat_rate === undefined || lines.some((l) => l.vatRate !== null && Number(l.vatRate) === query.vat_rate)) &&

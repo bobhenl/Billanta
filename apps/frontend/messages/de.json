@@ -4911,7 +4911,8 @@
       "total": "Gesamt",
       "status": "Status",
       "paidAt": "Bezahlt am",
-      "sentAt": "Gesendet"
+      "sentAt": "Gesendet",
+      "partners": "Partner"
     },
     "fields": {
       "issueDate": "Ausstellungsdatum",
@@ -5128,7 +5129,9 @@
         "origin": "Herkunft und Verknüpfungen"
       },
       "anyType": "Alle Belege",
-      "statusLabel": "Status"
+      "statusLabel": "Status",
+      "partner": "Partner",
+      "partnerHint": "Rechnungen und Gutschriften, an denen der Partner im Bericht „Nach Steuern“ beteiligt ist. Ohne eigene Aufteilung gelten die Standardanteile."
     },
     "remindersSent": "{count, plural, one {# Erinnerung gesendet} other {# Erinnerungen gesendet}}, zuletzt am {date}.",
     "attachments": {
@@ -5243,7 +5246,8 @@
       "message": "Verwendungszweck",
       "transactionId": "Transaktions-ID",
       "open": "In der Bank öffnen"
-    }
+    },
+    "partnerDefaultShares": "Standardanteile"
   },
   "invite": {
     "title": "Einladung ins Team",
@@ -13834,7 +13838,7 @@
         "converted": "zum Kurs umgerechnet"
       },
       "extra": "sonstige Einnahme",
-      "splitLabel": "Wem die Rechnung {number} gehört",
+      "splitLabel": "Aufteilung der Rechnung {number}",
       "saved": "Aufteilung gespeichert.",
       "failed": "Die Aufteilung konnte nicht gespeichert werden.",
       "filter": "Nach Kürzel filtern",
@@ -13876,7 +13880,7 @@
       "per": "Pro",
       "perMonth": "Monat",
       "perYear": "Jahr",
-      "splitOf": "Wem {label} gehört",
+      "splitOf": "Aufteilung: {label}",
       "addExpense": "Ausgabe hinzufügen",
       "extraIncome": "Sonstige Einnahmen",
       "extraIncomeHint": "Einnahmen, die keine Rechnung sind, z. B. aus Gebühren und Kursgewinnen. Sie werden wie Rechnungen besteuert.",
@@ -13884,18 +13888,52 @@
       "addExtra": "Einnahme hinzufügen",
       "save": "Einstellungen speichern",
       "saved": "Einstellungen gespeichert.",
-      "resetRates": "Standardsätze"
+      "resetRates": "Standardsätze",
+      "yearTitle": "Einstellungen für {year}",
+      "prevYear": "Vorheriges Jahr",
+      "nextYear": "Nächstes Jahr",
+      "yearInherited": "{year} hat noch keine eigenen Einstellungen, es gelten die Werte aus {from}.",
+      "yearDefault": "{year} hat noch keine eigenen Einstellungen, es gelten die allgemeinen Werte.",
+      "copyFrom": "Aus {from} übernehmen",
+      "createYear": "{year} einrichten",
+      "yearHint": "Sätze und Ermäßigungen ändern sich von Jahr zu Jahr. Eine Änderung gilt für das gewählte Jahr und für spätere Jahre, bis sie eigene Einstellungen haben.",
+      "taxScope": "Wer wird besteuert",
+      "scopePerPartner": "Jeder Partner einzeln",
+      "scopeOnePerson": "Eine steuerpflichtige Person, das Ergebnis wird geteilt",
+      "scopeOnePersonHint": "Pauschale, ihre Obergrenze, Ermäßigungen, Steuer und Versicherung werden einmal auf das gesamte Einkommen berechnet, wie bei einem Einzelunternehmer. Das Ergebnis wird dann nach den Anteilen geteilt. Eine Änderung gilt für das gewählte Jahr und spätere Jahre ohne eigene Einstellungen.",
+      "partnerCreditsIn": "Steuerermäßigungen {year}",
+      "perOnce": "einmalig",
+      "from": "Von",
+      "to": "Bis"
     },
     "errors": {
       "duplicate_partner": "Zwei Partner haben dieselbe ID. Entfernen Sie einen und fügen Sie ihn erneut hinzu.",
       "shares_must_be_positive": "Mindestens ein Anteil muss größer als null sein.",
-      "generic": "Die Einstellungen konnten nicht gespeichert werden. Prüfen Sie die Zahlen und versuchen Sie es erneut."
+      "generic": "Die Einstellungen konnten nicht gespeichert werden. Prüfen Sie die Zahlen und versuchen Sie es erneut.",
+      "expense_date_required": "Eine einmalige Ausgabe braucht ein Datum.",
+      "expense_range_invalid": "Eine Ausgabe endet, bevor sie beginnt."
     },
     "noAccess": {
       "title": "Nur für Inhaber und Administratoren",
       "body": "Der Bericht nach Steuern zeigt die Einnahmen und Steuern jedes Partners, daher sehen ihn nur der Inhaber und die Administratoren des Unternehmens."
     },
-    "split": "Gehört zu"
+    "split": "Aufteilung",
+    "onePersonNote": "Die Steuer wird einmal auf die Summe berechnet und nach den Anteilen geteilt.",
+    "tips": {
+      "title": "Tipps",
+      "dismiss": "Tipp ausblenden",
+      "open": "Bearbeiten",
+      "openYear": "Einstellungen prüfen",
+      "yearMissing": "{year} hat keine eigenen Einstellungen, daher werden die Sätze und Ermäßigungen aus {from} verwendet. Wenn sich dieses Jahr etwas geändert hat, übernehmen und anpassen.",
+      "yearMissingDefault": "{year} hat keine eigenen Einstellungen, daher werden die allgemeinen Sätze und Ermäßigungen verwendet. Richten Sie sie für dieses Jahr ein.",
+      "noCredits": "{name}: Es sind keine Steuerermäßigungen eingetragen, nicht einmal der Grundabzug.",
+      "noCreditsOne": "Für die steuerpflichtige Person sind keine Steuerermäßigungen eingetragen, nicht einmal der Grundabzug.",
+      "capReached": "{name}: Die Pauschale hat die Jahresobergrenze erreicht, Einkommen darüber wird voll besteuert.",
+      "capReachedOne": "Die Pauschale hat die Jahresobergrenze erreicht, Einkommen darüber wird voll besteuert.",
+      "highBand": "{name}: Die Bemessungsgrundlage liegt über der Grenze für 23 % Steuer ({limit} pro Jahr, anteilig für den Zeitraum). Die Schätzung rechnet nur mit dem Grundsatz, die echte Steuer ist höher.",
+      "highBandOne": "Die Bemessungsgrundlage liegt über der Grenze für 23 % Steuer ({limit} pro Jahr, anteilig für den Zeitraum). Die Schätzung rechnet nur mit dem Grundsatz, die echte Steuer ist höher.",
+      "singleEarner": "Nur {name} hat Einkommen. Wenn nur einer von Ihnen Steuern zahlt, stellen Sie dieses Jahr auf eine steuerpflichtige Person um."
+    }
   },
   "bankRules": {
     "title": "Zahlungsregeln",

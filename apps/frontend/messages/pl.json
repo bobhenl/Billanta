@@ -4911,7 +4911,8 @@
       "total": "Razem",
       "status": "Status",
       "paidAt": "Opłacono",
-      "sentAt": "Wysłano"
+      "sentAt": "Wysłano",
+      "partners": "Wspólnicy"
     },
     "fields": {
       "issueDate": "Data wystawienia",
@@ -5128,7 +5129,9 @@
         "origin": "Pochodzenie i powiązania"
       },
       "anyType": "Wszystkie dokumenty",
-      "statusLabel": "Status"
+      "statusLabel": "Status",
+      "partner": "Wspólnik",
+      "partnerHint": "Faktury i korekty, z których wspólnik ma udział w raporcie Po opodatkowaniu. Bez własnego podziału obowiązują domyślne udziały."
     },
     "remindersSent": "{count, plural, one {Wysłano # przypomnienie} few {Wysłano # przypomnienia} many {Wysłano # przypomnień} other {Wysłano # przypomnienia}}, ostatnie {date}.",
     "attachments": {
@@ -5243,7 +5246,8 @@
       "message": "Tytuł przelewu",
       "transactionId": "ID transakcji",
       "open": "Otwórz w banku"
-    }
+    },
+    "partnerDefaultShares": "domyślne udziały"
   },
   "invite": {
     "title": "Zaproszenie do zespołu",
@@ -13834,7 +13838,7 @@
         "converted": "przeliczono po kursie"
       },
       "extra": "inny przychód",
-      "splitLabel": "Do kogo należy faktura {number}",
+      "splitLabel": "Podział faktury {number}",
       "saved": "Podział zapisany.",
       "failed": "Nie udało się zapisać podziału.",
       "filter": "Filtruj według etykiety",
@@ -13876,7 +13880,7 @@
       "per": "Za",
       "perMonth": "miesiąc",
       "perYear": "rok",
-      "splitOf": "Do kogo należy {label}",
+      "splitOf": "Podział: {label}",
       "addExpense": "Dodaj wydatek",
       "extraIncome": "Inne przychody",
       "extraIncomeHint": "Przychody, które nie są fakturą, np. z opłat i zysków kursowych. Opodatkowane tak samo jak faktury.",
@@ -13884,18 +13888,52 @@
       "addExtra": "Dodaj przychód",
       "save": "Zapisz ustawienia",
       "saved": "Ustawienia zapisane.",
-      "resetRates": "Domyślne stawki"
+      "resetRates": "Domyślne stawki",
+      "yearTitle": "Ustawienia na rok {year}",
+      "prevYear": "Poprzedni rok",
+      "nextYear": "Następny rok",
+      "yearInherited": "Rok {year} nie ma jeszcze własnych ustawień, obowiązują wartości z roku {from}.",
+      "yearDefault": "Rok {year} nie ma jeszcze własnych ustawień, obowiązują wartości ogólne.",
+      "copyFrom": "Skopiuj z roku {from}",
+      "createYear": "Ustaw rok {year}",
+      "yearHint": "Stawki i ulgi zmieniają się z roku na rok. Zmiana dotyczy wybranego roku i kolejnych lat, dopóki nie mają własnych ustawień.",
+      "taxScope": "Kto jest opodatkowany",
+      "scopePerPartner": "Każdy wspólnik osobno",
+      "scopeOnePerson": "Jeden podatnik, dzieli się wynik",
+      "scopeOnePersonHint": "Koszty ryczałtowe, ich limit, ulgi, podatek i składki liczone są raz od całego przychodu, jak dla jednego przedsiębiorcy. Wynik dzieli się potem według udziałów. Zmiana dotyczy wybranego roku i kolejnych lat bez własnych ustawień.",
+      "partnerCreditsIn": "Ulgi podatkowe w roku {year}",
+      "perOnce": "jednorazowo",
+      "from": "Od",
+      "to": "Do"
     },
     "errors": {
       "duplicate_partner": "Dwóch wspólników ma ten sam identyfikator. Usuń jednego i dodaj go ponownie.",
       "shares_must_be_positive": "Co najmniej jeden udział musi być większy od zera.",
-      "generic": "Nie udało się zapisać ustawień. Sprawdź liczby i spróbuj ponownie."
+      "generic": "Nie udało się zapisać ustawień. Sprawdź liczby i spróbuj ponownie.",
+      "expense_date_required": "Wydatek jednorazowy wymaga daty.",
+      "expense_range_invalid": "Wydatek kończy się, zanim się zaczyna."
     },
     "noAccess": {
       "title": "Tylko dla właścicieli i administratorów",
       "body": "Raport po opodatkowaniu pokazuje przychody i podatki każdego wspólnika, dlatego widzą go tylko właściciel firmy i administratorzy."
     },
-    "split": "Należy do"
+    "split": "Podział",
+    "onePersonNote": "Podatek jest liczony raz od całości i dzielony według udziałów.",
+    "tips": {
+      "title": "Wskazówki",
+      "dismiss": "Ukryj wskazówkę",
+      "open": "Edytuj",
+      "openYear": "Sprawdź ustawienia",
+      "yearMissing": "Rok {year} nie ma własnych ustawień, więc używane są stawki i ulgi z roku {from}. Jeśli w tym roku coś się zmieniło, skopiuj je i popraw.",
+      "yearMissingDefault": "Rok {year} nie ma własnych ustawień, więc używane są ogólne stawki i ulgi. Ustaw je na ten rok.",
+      "noCredits": "{name}: nie ma ustawionych żadnych ulg podatkowych, nawet podstawowej.",
+      "noCreditsOne": "Podatnik nie ma ustawionych żadnych ulg podatkowych, nawet podstawowej.",
+      "capReached": "{name}: koszty ryczałtowe osiągnęły roczny limit, przychód powyżej jest opodatkowany w całości.",
+      "capReachedOne": "Koszty ryczałtowe osiągnęły roczny limit, przychód powyżej jest opodatkowany w całości.",
+      "highBand": "{name}: podstawa opodatkowania przekracza próg stawki 23 % ({limit} rocznie, proporcjonalnie do okresu). Szacunek liczy tylko stawkę podstawową, faktyczny podatek będzie wyższy.",
+      "highBandOne": "Podstawa opodatkowania przekracza próg stawki 23 % ({limit} rocznie, proporcjonalnie do okresu). Szacunek liczy tylko stawkę podstawową, faktyczny podatek będzie wyższy.",
+      "singleEarner": "Przychód ma tylko {name}. Jeśli podatki płaci tylko jedno z was, ustaw ten rok na jednego podatnika."
+    }
   },
   "bankRules": {
     "title": "Reguły płatności",

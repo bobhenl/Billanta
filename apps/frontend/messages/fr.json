@@ -4911,7 +4911,8 @@
       "total": "Total",
       "status": "Statut",
       "paidAt": "Payée le",
-      "sentAt": "Envoyée"
+      "sentAt": "Envoyée",
+      "partners": "Associés"
     },
     "fields": {
       "issueDate": "Date d’émission",
@@ -5127,7 +5128,9 @@
         "origin": "Origine et liens"
       },
       "anyType": "Tous les documents",
-      "statusLabel": "Statut"
+      "statusLabel": "Statut",
+      "partner": "Associé",
+      "partnerHint": "Factures et avoirs dont l’associé reçoit une part dans le rapport Après impôts. Sans répartition propre, les parts par défaut s’appliquent."
     },
     "remindersSent": "{count, plural, one {# relance envoyée} other {# relances envoyées}}, la dernière le {date}.",
     "attachments": {
@@ -5242,7 +5245,8 @@
       "message": "Message pour le bénéficiaire",
       "transactionId": "ID de transaction",
       "open": "Ouvrir dans la banque"
-    }
+    },
+    "partnerDefaultShares": "parts par défaut"
   },
   "invite": {
     "title": "Invitation dans l’équipe",
@@ -13833,7 +13837,7 @@
         "converted": "converti au taux"
       },
       "extra": "autre revenu",
-      "splitLabel": "À qui revient la facture {number}",
+      "splitLabel": "Répartition de la facture {number}",
       "saved": "Répartition enregistrée.",
       "failed": "Impossible d’enregistrer la répartition.",
       "filter": "Filtrer par étiquette",
@@ -13875,7 +13879,7 @@
       "per": "Par",
       "perMonth": "mois",
       "perYear": "an",
-      "splitOf": "À qui revient {label}",
+      "splitOf": "Répartition : {label}",
       "addExpense": "Ajouter une dépense",
       "extraIncome": "Autres revenus",
       "extraIncomeHint": "Revenus qui ne sont pas des factures, p. ex. des frais facturés ou des gains de change. Imposés de la même manière que les factures.",
@@ -13883,18 +13887,52 @@
       "addExtra": "Ajouter un revenu",
       "save": "Enregistrer les paramètres",
       "saved": "Paramètres enregistrés.",
-      "resetRates": "Taux par défaut"
+      "resetRates": "Taux par défaut",
+      "yearTitle": "Paramètres pour {year}",
+      "prevYear": "Année précédente",
+      "nextYear": "Année suivante",
+      "yearInherited": "{year} n’a pas encore ses propres paramètres, les valeurs de {from} s’appliquent.",
+      "yearDefault": "{year} n’a pas encore ses propres paramètres, les valeurs générales s’appliquent.",
+      "copyFrom": "Copier depuis {from}",
+      "createYear": "Paramétrer {year}",
+      "yearHint": "Les taux et les réductions changent d’une année à l’autre. Une modification vaut pour l’année choisie et les suivantes, tant qu’elles n’ont pas leurs propres paramètres.",
+      "taxScope": "Qui est imposé",
+      "scopePerPartner": "Chaque associé séparément",
+      "scopeOnePerson": "Un seul contribuable, le résultat est partagé",
+      "scopeOnePersonHint": "Les frais forfaitaires, leur plafond, les réductions, l’impôt et les cotisations sont calculés une fois sur tout le revenu, comme pour un seul entrepreneur. Le résultat est ensuite réparti selon les parts. Une modification vaut pour l’année choisie et les suivantes sans paramètres propres.",
+      "partnerCreditsIn": "Réductions d’impôt en {year}",
+      "perOnce": "une fois",
+      "from": "Du",
+      "to": "Au"
     },
     "errors": {
       "duplicate_partner": "Deux associés ont le même identifiant. Supprimez-en un et ajoutez-le à nouveau.",
       "shares_must_be_positive": "Au moins une part doit être supérieure à zéro.",
-      "generic": "Impossible d’enregistrer les paramètres. Vérifiez les chiffres et réessayez."
+      "generic": "Impossible d’enregistrer les paramètres. Vérifiez les chiffres et réessayez.",
+      "expense_date_required": "Une dépense ponctuelle a besoin d’une date.",
+      "expense_range_invalid": "Une dépense se termine avant de commencer."
     },
     "noAccess": {
       "title": "Réservé aux propriétaires et administrateurs",
       "body": "Le rapport après impôts affiche les revenus et les impôts de chaque associé : seuls le propriétaire et les administrateurs de l’entreprise peuvent le consulter."
     },
-    "split": "Appartient à"
+    "split": "Répartition",
+    "onePersonNote": "L’impôt est calculé une fois sur le total et réparti selon les parts.",
+    "tips": {
+      "title": "Conseils",
+      "dismiss": "Masquer le conseil",
+      "open": "Modifier",
+      "openYear": "Vérifier les paramètres",
+      "yearMissing": "{year} n’a pas ses propres paramètres, ce sont donc les taux et réductions de {from} qui servent. Si quelque chose a changé cette année, copiez-les et ajustez.",
+      "yearMissingDefault": "{year} n’a pas ses propres paramètres, ce sont donc les taux et réductions généraux qui servent. Paramétrez-les pour cette année.",
+      "noCredits": "{name} : aucune réduction d’impôt n’est saisie, pas même celle du contribuable.",
+      "noCreditsOne": "Le contribuable n’a aucune réduction d’impôt saisie, pas même la réduction de base.",
+      "capReached": "{name} : les frais forfaitaires ont atteint le plafond annuel, le revenu au-delà est imposé en entier.",
+      "capReachedOne": "Les frais forfaitaires ont atteint le plafond annuel, le revenu au-delà est imposé en entier.",
+      "highBand": "{name} : la base imposable dépasse le seuil de la tranche à 23 % ({limit} par an, au prorata de la période). L’estimation n’utilise que le taux de base, l’impôt réel sera plus élevé.",
+      "highBandOne": "La base imposable dépasse le seuil de la tranche à 23 % ({limit} par an, au prorata de la période). L’estimation n’utilise que le taux de base, l’impôt réel sera plus élevé.",
+      "singleEarner": "Seul(e) {name} a des revenus. Si un seul d’entre vous paie les impôts, passez cette année à un seul contribuable."
+    }
   },
   "bankRules": {
     "title": "Règles de paiement",

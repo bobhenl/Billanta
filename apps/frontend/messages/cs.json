@@ -4918,7 +4918,8 @@
       "total": "Celkem",
       "status": "Stav",
       "paidAt": "Zaplaceno",
-      "sentAt": "Odesláno"
+      "sentAt": "Odesláno",
+      "partners": "Společníci"
     },
     "fields": {
       "issueDate": "Datum vystavení",
@@ -5135,7 +5136,9 @@
         "origin": "Původ a vazby"
       },
       "anyType": "Všechny doklady",
-      "statusLabel": "Stav"
+      "statusLabel": "Stav",
+      "partner": "Společník",
+      "partnerHint": "Faktury a dobropisy, ze kterých má společník podíl v přehledu Po zdanění. Bez vlastního rozdělení platí výchozí podíly."
     },
     "remindersSent": "{count, plural, one {Odeslána # upomínka} few {Odeslány # upomínky} other {Odesláno # upomínek}}, naposledy {date}.",
     "attachments": {
@@ -5271,7 +5274,8 @@
         "too_many_attempts": "Příliš mnoho pokusů. Zkuste to za pár minut.",
         "generic": "Nepovedlo se to. Zkuste to znovu."
       }
-    }
+    },
+    "partnerDefaultShares": "výchozí podíly"
   },
   "invite": {
     "title": "Pozvánka do týmu",
@@ -13862,7 +13866,7 @@
         "converted": "přepočteno kurzem"
       },
       "extra": "ostatní příjem",
-      "splitLabel": "Komu patří faktura {number}",
+      "splitLabel": "Rozdělení faktury {number}",
       "saved": "Rozdělení uloženo.",
       "failed": "Rozdělení se nepodařilo uložit.",
       "filter": "Filtrovat podle štítku",
@@ -13904,7 +13908,7 @@
       "per": "Za",
       "perMonth": "měsíc",
       "perYear": "rok",
-      "splitOf": "Komu patří {label}",
+      "splitOf": "Rozdělení: {label}",
       "addExpense": "Přidat výdaj",
       "extraIncome": "Ostatní příjmy",
       "extraIncomeHint": "Příjmy, které nejsou fakturou, např. z poplatků a kurzových zisků. Daní se stejně jako faktury.",
@@ -13912,18 +13916,52 @@
       "addExtra": "Přidat příjem",
       "save": "Uložit nastavení",
       "saved": "Nastavení uloženo.",
-      "resetRates": "Výchozí sazby"
+      "resetRates": "Výchozí sazby",
+      "yearTitle": "Nastavení pro rok {year}",
+      "prevYear": "Předchozí rok",
+      "nextYear": "Další rok",
+      "yearInherited": "Rok {year} zatím nemá vlastní nastavení, počítá se s hodnotami z roku {from}.",
+      "yearDefault": "Rok {year} zatím nemá vlastní nastavení, počítá se s obecnými hodnotami.",
+      "copyFrom": "Zkopírovat z roku {from}",
+      "createYear": "Nastavit pro rok {year}",
+      "yearHint": "Sazby a slevy se mění rok od roku. Úprava platí pro zvolený rok a pro další roky, dokud nemají vlastní nastavení.",
+      "taxScope": "Kdo se daní",
+      "scopePerPartner": "Každý společník zvlášť",
+      "scopeOnePerson": "Jeden poplatník, dělí se výsledek",
+      "scopeOnePersonHint": "Paušál, jeho limit, slevy, daň i pojištění se spočítají jednou z celého příjmu jako u jedné OSVČ. Výsledek se pak rozdělí podle podílů. Úprava platí pro zvolený rok a další roky bez vlastního nastavení.",
+      "partnerCreditsIn": "Slevy na dani v roce {year}",
+      "perOnce": "jednorázově",
+      "from": "Od",
+      "to": "Do"
     },
     "errors": {
       "duplicate_partner": "Dva společníci mají stejné označení. Odeberte jednoho a přidejte ho znovu.",
       "shares_must_be_positive": "Aspoň jeden podíl musí být větší než nula.",
-      "generic": "Nastavení se nepodařilo uložit. Zkontrolujte čísla a zkuste to znovu."
+      "generic": "Nastavení se nepodařilo uložit. Zkontrolujte čísla a zkuste to znovu.",
+      "expense_date_required": "Jednorázový výdaj potřebuje datum.",
+      "expense_range_invalid": "U výdaje je měsíc „do“ dřív než „od“."
     },
     "noAccess": {
       "title": "Jen pro majitele a administrátory",
       "body": "Report Po zdanění ukazuje příjmy a daně jednotlivých společníků, proto ho vidí jen majitel a administrátoři firmy."
     },
-    "split": "Komu patří"
+    "split": "Rozdělení",
+    "onePersonNote": "Daň je spočítaná jednou z celku a rozdělená podle podílů.",
+    "tips": {
+      "title": "Tipy",
+      "dismiss": "Skrýt tip",
+      "open": "Upravit",
+      "openYear": "Zkontrolovat nastavení",
+      "yearMissing": "Rok {year} nemá vlastní nastavení, počítá se se sazbami a slevami z roku {from}. Pokud se letos něco změnilo, zkopírujte je a upravte.",
+      "yearMissingDefault": "Rok {year} nemá vlastní nastavení, počítá se s obecnými sazbami a slevami. Nastavte je pro tento rok.",
+      "noCredits": "{name}: nemá nastavené žádné slevy na dani, ani tu na poplatníka.",
+      "noCreditsOne": "Poplatník nemá nastavené žádné slevy na dani, ani tu na poplatníka.",
+      "capReached": "{name}: paušál narazil na roční limit, příjem nad ním se daní celý.",
+      "capReachedOne": "Paušál narazil na roční limit, příjem nad ním se daní celý.",
+      "highBand": "{name}: základ daně je nad hranicí pro 23 % daň ({limit} za rok, poměrně za období). Odhad počítá jen se základní sazbou, skutečná daň bude vyšší.",
+      "highBandOne": "Základ daně je nad hranicí pro 23 % daň ({limit} za rok, poměrně za období). Odhad počítá jen se základní sazbou, skutečná daň bude vyšší.",
+      "singleEarner": "Příjem má jen {name}. Pokud daně platí jen jeden z vás, nastavte pro tento rok jednoho poplatníka."
+    }
   },
   "bankRules": {
     "title": "Pravidla pro platby",

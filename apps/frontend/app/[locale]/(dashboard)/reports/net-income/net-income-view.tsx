@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { Loader2 } from 'lucide-react';
+import { useEffect, useState, useTransition } from 'react';
+import { Lightbulb, Loader2, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Banner } from '@/components/banner';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { useRouter } from '@/i18n/navigation';
 import { formatMoney } from '@/lib/invoice-ui';
-import { formatKc, type NetIncomeLine, type NetIncomeReport, type PeriodKind, type Shares, type TaxPartner } from '@/lib/net-income';
+import { formatKc, type NetIncomeLine, type NetIncomeReport, type NetIncomeTip, type PeriodKind, type Shares, type TaxPartner } from '@/lib/net-income';
 import { cn } from '@/lib/utils';
 import { setInvoicePartnerShares } from './actions';
 import { partnerTags, SharesPicker } from './shares-picker';
@@ -32,7 +32,7 @@ export function NetIncomeView({ report, kind, canEdit, canSplit }: { report: Net
   const t = useTranslations('netIncome');
   const locale = useLocale();
   const kc = (n: number) => formatKc(n, locale);
-  const { result, model } = report;
+  const { result, model, settings } = report;
   const many = result.partners.length > 1;
   const nameOf = (p: Pick<TaxPartner, 'name'>, i: number) => p.name || (many ? t('partnerFallback', { n: i + 1 }) : t('partnerMe'));
   const totals = result.totals;
@@ -45,6 +45,8 @@ export function NetIncomeView({ report, kind, canEdit, canSplit }: { report: Net
           {t('missingRates', { count: report.missingRates })}
         </Banner>
       )}
+
+      <Tips report={report} nameOf={nameOf} canEdit={canEdit} />
 
       <section className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Card label={t('cards.income')} value={kc(totals.income)} />
@@ -93,13 +95,14 @@ export function NetIncomeView({ report, kind, canEdit, canSplit }: { report: Net
         </div>
         <p className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
           {t('formula', {
-            flat: model.flat_expense_percent,
-            tax: model.income_tax_percent,
-            socialBase: model.social_base_percent,
-            socialRate: model.social_rate_percent,
-            healthBase: model.health_base_percent,
-            healthRate: model.health_rate_percent
+            flat: settings.flat_expense_percent,
+            tax: settings.income_tax_percent,
+            socialBase: settings.social_base_percent,
+            socialRate: settings.social_rate_percent,
+            healthBase: settings.health_base_percent,
+            healthRate: settings.health_rate_percent
           })}{' '}
+          {many && result.taxScope === 'one_person' && `${t('onePersonNote')} `}
           {t('estimateNote')}
         </p>
       </section>
@@ -138,8 +141,95 @@ export function NetIncomeView({ report, kind, canEdit, canSplit }: { report: Net
 
       <IncomeList report={report} canSplit={canSplit && many} nameOf={nameOf} kind={kind} />
 
-      <TaxModelEditor initial={model} readOnly={!canEdit} />
+      <TaxModelEditor initial={model} readOnly={!canEdit} year={report.period.year} />
     </>
+  );
+}
+
+const DISMISSED_KEY = 'billanta.netIncomeTips.dismissed';
+const tipKey = (tip: NetIncomeTip, year: number) => `${year}:${tip.code}:${'partnerId' in tip ? (tip.partnerId ?? '') : ''}`;
+
+/** Opens the settings panel and scrolls to the field the tip is about. */
+function openSettings(targetId: string) {
+  const details = document.getElementById('tax-model');
+  if (details instanceof HTMLDetailsElement) details.open = true;
+  requestAnimationFrame(() => document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+}
+
+/** Hints computed by the backend for this model and period; each one can be hidden (per browser). */
+function Tips({ report, nameOf, canEdit }: { report: NetIncomeReport; nameOf: (p: Pick<TaxPartner, 'name'>, i: number) => string; canEdit: boolean }) {
+  const t = useTranslations('netIncome.tips');
+  const locale = useLocale();
+  const year = report.period.year;
+  // Read after mount: the server render cannot see localStorage, and a mismatch would flash.
+  const [dismissed, setDismissed] = useState<string[] | null>(null);
+  useEffect(() => {
+    try {
+      setDismissed(JSON.parse(localStorage.getItem(DISMISSED_KEY) ?? '[]'));
+    } catch {
+      setDismissed([]);
+    }
+  }, []);
+  if (!dismissed) return null;
+  const tips = report.tips.filter((tip) => !dismissed.includes(tipKey(tip, year)));
+  if (!tips.length) return null;
+
+  const dismiss = (tip: NetIncomeTip) => {
+    const next = [...dismissed, tipKey(tip, year)].slice(-200);
+    setDismissed(next);
+    try {
+      localStorage.setItem(DISMISSED_KEY, JSON.stringify(next));
+    } catch {
+      // Private mode: hidden for this visit only.
+    }
+  };
+  const partnerName = (id: string | null) => {
+    const i = report.model.partners.findIndex((p) => p.id === id);
+    return i >= 0 ? nameOf(report.model.partners[i]!, i) : '';
+  };
+  const textOf = (tip: NetIncomeTip) => {
+    switch (tip.code) {
+      case 'year_settings_missing':
+        return tip.from != null ? t('yearMissing', { year, from: tip.from }) : t('yearMissingDefault', { year });
+      case 'partner_no_credits':
+        return tip.partnerId ? t('noCredits', { name: partnerName(tip.partnerId) }) : t('noCreditsOne');
+      case 'flat_cap_reached':
+        return tip.partnerId ? t('capReached', { name: partnerName(tip.partnerId) }) : t('capReachedOne');
+      case 'high_tax_band': {
+        const limit = formatKc(tip.limit, locale);
+        return tip.partnerId ? t('highBand', { name: partnerName(tip.partnerId), limit }) : t('highBandOne', { limit });
+      }
+      case 'single_earner':
+        return t('singleEarner', { name: partnerName(tip.partnerId) });
+    }
+  };
+  // A partner's credits sit in their row; everything else (rates, cap, scope, the one taxpayer's credits) in the year block.
+  const targetOf = (tip: NetIncomeTip) => (tip.code === 'partner_no_credits' && tip.partnerId ? `partner-${tip.partnerId}` : 'net-income-settings');
+
+  return (
+    <section className="mt-5 rounded-xl border border-border bg-card" aria-labelledby="net-income-tips">
+      <h2 id="net-income-tips" className="flex items-center gap-2 border-b border-border px-4 py-3 font-bold">
+        <Lightbulb className="h-4 w-4 text-primary" aria-hidden="true" />
+        {t('title')}
+      </h2>
+      <ul className="divide-y divide-border">
+        {tips.map((tip) => (
+          <li key={tipKey(tip, year)} className="flex items-start gap-2 px-4 py-2.5 text-sm">
+            <p className="min-w-0 flex-1">
+              {textOf(tip)}{' '}
+              {canEdit && tip.code !== 'high_tax_band' && (
+                <button type="button" className="font-semibold text-primary underline" onClick={() => openSettings(targetOf(tip))}>
+                  {t(tip.code === 'year_settings_missing' ? 'openYear' : 'open')}
+                </button>
+              )}
+            </p>
+            <button type="button" className="shrink-0 rounded-full p-1 text-muted-foreground hover:bg-accent hover:text-foreground" aria-label={t('dismiss')} onClick={() => dismiss(tip)}>
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

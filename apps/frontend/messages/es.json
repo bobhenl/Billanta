@@ -4911,7 +4911,8 @@
       "total": "Total",
       "status": "Estado",
       "paidAt": "Pagada el",
-      "sentAt": "Enviada"
+      "sentAt": "Enviada",
+      "partners": "Socios"
     },
     "fields": {
       "issueDate": "Fecha de emisión",
@@ -5127,7 +5128,9 @@
         "origin": "Origen y vínculos"
       },
       "anyType": "Todos los documentos",
-      "statusLabel": "Estado"
+      "statusLabel": "Estado",
+      "partner": "Socio",
+      "partnerHint": "Facturas y notas de crédito de las que el socio recibe una parte en el informe Después de impuestos. Sin reparto propio se aplican las partes por defecto."
     },
     "remindersSent": "{count, plural, one {# recordatorio enviado} other {# recordatorios enviados}}, el último el {date}.",
     "attachments": {
@@ -5242,7 +5245,8 @@
       "message": "Mensaje para el beneficiario",
       "transactionId": "ID de la transacción",
       "open": "Abrir en el banco"
-    }
+    },
+    "partnerDefaultShares": "partes por defecto"
   },
   "invite": {
     "title": "Invitación al equipo",
@@ -13833,7 +13837,7 @@
         "converted": "convertido al tipo de cambio"
       },
       "extra": "otros ingresos",
-      "splitLabel": "A quién corresponde la factura {number}",
+      "splitLabel": "Reparto de la factura {number}",
       "saved": "Reparto guardado.",
       "failed": "No se ha podido guardar el reparto.",
       "filter": "Filtrar por etiqueta",
@@ -13875,7 +13879,7 @@
       "per": "Por",
       "perMonth": "mes",
       "perYear": "año",
-      "splitOf": "A quién corresponde {label}",
+      "splitOf": "Reparto: {label}",
       "addExpense": "Añadir gasto",
       "extraIncome": "Otros ingresos",
       "extraIncomeHint": "Ingresos que no son una factura, p. ej. de comisiones y ganancias por tipo de cambio. Tributan igual que las facturas.",
@@ -13883,18 +13887,52 @@
       "addExtra": "Añadir ingreso",
       "save": "Guardar ajustes",
       "saved": "Ajustes guardados.",
-      "resetRates": "Tipos predeterminados"
+      "resetRates": "Tipos predeterminados",
+      "yearTitle": "Ajustes de {year}",
+      "prevYear": "Año anterior",
+      "nextYear": "Año siguiente",
+      "yearInherited": "{year} aún no tiene ajustes propios, se aplican los valores de {from}.",
+      "yearDefault": "{year} aún no tiene ajustes propios, se aplican los valores generales.",
+      "copyFrom": "Copiar de {from}",
+      "createYear": "Configurar {year}",
+      "yearHint": "Los tipos y las deducciones cambian de un año a otro. Un cambio vale para el año elegido y para los siguientes hasta que tengan ajustes propios.",
+      "taxScope": "Quién tributa",
+      "scopePerPartner": "Cada socio por separado",
+      "scopeOnePerson": "Un solo contribuyente, se reparte el resultado",
+      "scopeOnePersonHint": "Los gastos a tanto alzado, su límite, las deducciones, el impuesto y los seguros se calculan una vez sobre todos los ingresos, como para un solo autónomo. Luego el resultado se reparte según las participaciones. Un cambio vale para el año elegido y los siguientes sin ajustes propios.",
+      "partnerCreditsIn": "Deducciones en {year}",
+      "perOnce": "una vez",
+      "from": "Desde",
+      "to": "Hasta"
     },
     "errors": {
       "duplicate_partner": "Dos socios tienen el mismo id. Quite uno y vuelva a añadirlo.",
       "shares_must_be_positive": "Al menos una participación debe ser mayor que cero.",
-      "generic": "No se han podido guardar los ajustes. Compruebe los números y vuelva a intentarlo."
+      "generic": "No se han podido guardar los ajustes. Compruebe los números y vuelva a intentarlo.",
+      "expense_date_required": "Un gasto puntual necesita una fecha.",
+      "expense_range_invalid": "Un gasto termina antes de empezar."
     },
     "noAccess": {
       "title": "Solo para propietarios y administradores",
       "body": "El informe después de impuestos muestra los ingresos y los impuestos de cada socio, por lo que solo pueden verlo el propietario y los administradores de la empresa."
     },
-    "split": "Pertenece a"
+    "split": "Reparto",
+    "onePersonNote": "El impuesto se calcula una vez sobre el total y se reparte según las participaciones.",
+    "tips": {
+      "title": "Consejos",
+      "dismiss": "Ocultar consejo",
+      "open": "Editar",
+      "openYear": "Revisar los ajustes",
+      "yearMissing": "{year} no tiene ajustes propios, así que se usan los tipos y deducciones de {from}. Si algo cambió este año, cópielos y ajústelos.",
+      "yearMissingDefault": "{year} no tiene ajustes propios, así que se usan los tipos y deducciones generales. Configúrelos para este año.",
+      "noCredits": "{name}: no tiene deducciones fiscales, ni siquiera la básica del contribuyente.",
+      "noCreditsOne": "El contribuyente no tiene deducciones fiscales, ni siquiera la básica.",
+      "capReached": "{name}: los gastos a tanto alzado llegaron al límite anual, los ingresos por encima tributan completos.",
+      "capReachedOne": "Los gastos a tanto alzado llegaron al límite anual, los ingresos por encima tributan completos.",
+      "highBand": "{name}: la base imponible supera el tramo del 23 % ({limit} al año, proporcional al periodo). La estimación solo usa el tipo básico, el impuesto real será mayor.",
+      "highBandOne": "La base imponible supera el tramo del 23 % ({limit} al año, proporcional al periodo). La estimación solo usa el tipo básico, el impuesto real será mayor.",
+      "singleEarner": "Solo {name} tiene ingresos. Si solo uno de ustedes paga los impuestos, configure este año con un solo contribuyente."
+    }
   },
   "bankRules": {
     "title": "Reglas de pagos",

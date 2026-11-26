@@ -51,6 +51,8 @@ export interface InvoiceRow {
   /** Open "customer fills in their details" link on a draft (null when none). */
   buyerDetailsToken?: string | null;
   buyerDetailsSubmittedAt?: string | null;
+  /** Own "Po zdanění" split {partnerId: weight}; null = the tax model's default shares. */
+  partnerShares?: Record<string, number> | null;
 }
 
 export interface BuyerDetailsOutcome {

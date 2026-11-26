@@ -9,7 +9,7 @@ export interface TaxPartner {
   tax_credits: number;
 }
 
-export interface TaxModel {
+export interface TaxRates {
   flat_expense_percent: number;
   flat_expense_cap: number | null;
   income_tax_percent: number;
@@ -17,10 +17,77 @@ export interface TaxModel {
   social_base_percent: number;
   health_rate_percent: number;
   health_base_percent: number;
-  partners: TaxPartner[];
-  shared_expenses: { label: string; amount: number; per: 'month' | 'year'; shares: Shares | null }[];
-  extra_income: { date: string; label: string; amount: number; shares: Shares | null }[];
 }
+
+export const RATE_KEYS: (keyof TaxRates)[] = [
+  'flat_expense_percent',
+  'flat_expense_cap',
+  'income_tax_percent',
+  'social_rate_percent',
+  'social_base_percent',
+  'health_rate_percent',
+  'health_base_percent'
+];
+
+export type TaxScope = 'per_partner' | 'one_person';
+
+/** One calendar year's settings; partners themselves stay global. */
+export interface YearSettings extends TaxRates {
+  tax_scope: TaxScope;
+  /** The one taxpayer's yearly credits ('one_person'). */
+  tax_credits: number;
+  partners: Record<string, { tax_credits: number }>;
+}
+
+export interface SharedExpense {
+  label: string;
+  amount: number;
+  per: 'once' | 'month' | 'year';
+  /** 'once' only. */
+  date: string | null;
+  /** Recurring: first and last month (YYYY-MM-DD, by month); null = open. */
+  from: string | null;
+  to: string | null;
+  shares: Shares | null;
+}
+
+export interface TaxModel extends TaxRates {
+  partners: TaxPartner[];
+  shared_expenses: SharedExpense[];
+  extra_income: { date: string; label: string; amount: number; shares: Shares | null }[];
+  /** "2024" → that year's settings; a year without one uses the nearest earlier, else the top level. */
+  years: Record<string, YearSettings>;
+}
+
+/** Mirrors settingsFor in apps/backend/src/net-income/tax-model.ts. */
+export function yearSource(model: TaxModel, year: number): number | null {
+  return (
+    Object.keys(model.years)
+      .map(Number)
+      .filter((y) => y <= year)
+      .sort((a, b) => b - a)[0] ?? null
+  );
+}
+
+/** The settings in force in `year`, as a full entry (the top level filled in when no year applies). */
+export function resolvedYear(model: TaxModel, year: number): YearSettings {
+  const source = yearSource(model, year);
+  const entry = source == null ? null : model.years[String(source)]!;
+  const rates = entry ?? model;
+  return {
+    ...(Object.fromEntries(RATE_KEYS.map((k) => [k, rates[k]])) as unknown as TaxRates),
+    tax_scope: entry?.tax_scope ?? 'per_partner',
+    tax_credits: entry?.tax_credits ?? 0,
+    partners: Object.fromEntries(model.partners.map((p) => [p.id, { tax_credits: entry?.partners[p.id]?.tax_credits ?? p.tax_credits }]))
+  };
+}
+
+export type NetIncomeTip =
+  | { code: 'year_settings_missing'; year: number; from: number | null }
+  | { code: 'partner_no_credits'; partnerId: string | null }
+  | { code: 'flat_cap_reached'; partnerId: string | null }
+  | { code: 'high_tax_band'; partnerId: string | null; limit: number }
+  | { code: 'single_earner'; partnerId: string };
 
 export interface NetIncomeLine {
   income: number;
@@ -40,7 +107,16 @@ export interface NetIncomeReport {
   period: { year: number; month: number | null; quarter: number | null; months: number; from: string; to: string };
   vatPayer: boolean;
   model: TaxModel;
-  result: { months: number; partners: (NetIncomeLine & { id: string; name: string; sharePercent: number })[]; totals: NetIncomeLine };
+  /** The settings the period was computed with. */
+  settings: TaxRates & { source: number | null; tax_scope: TaxScope; tax_credits: number; partners: Record<string, { tax_credits: number }> };
+  result: {
+    months: number;
+    settingsYear: number | null;
+    taxScope: TaxScope;
+    partners: (NetIncomeLine & { id: string; name: string; sharePercent: number; capped: boolean })[];
+    totals: NetIncomeLine;
+  };
+  tips: NetIncomeTip[];
   byMonth: { month: number; income: number; taxes: number; sharedExpenses: number; net: number }[] | null;
   invoices: {
     id: string;

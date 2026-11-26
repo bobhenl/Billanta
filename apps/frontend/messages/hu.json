@@ -4911,7 +4911,8 @@
       "total": "Összesen",
       "status": "Állapot",
       "paidAt": "Fizetve",
-      "sentAt": "Elküldve"
+      "sentAt": "Elküldve",
+      "partners": "Partnerek"
     },
     "fields": {
       "issueDate": "Kiállítás dátuma",
@@ -5127,7 +5128,9 @@
         "origin": "Eredet és kapcsolatok"
       },
       "anyType": "Minden bizonylat",
-      "statusLabel": "Állapot"
+      "statusLabel": "Állapot",
+      "partner": "Partner",
+      "partnerHint": "Számlák és jóváírások, amelyekből a partnernek része van az Adózás után kimutatásban. Saját felosztás nélkül az alapértelmezett arányok érvényesek."
     },
     "remindersSent": "{count, plural, one {# emlékeztető elküldve} other {# emlékeztető elküldve}}, utoljára: {date}.",
     "attachments": {
@@ -5242,7 +5245,8 @@
       "message": "Közlemény",
       "transactionId": "Tranzakcióazonosító",
       "open": "Megnyitás a banknál"
-    }
+    },
+    "partnerDefaultShares": "alapértelmezett arányok"
   },
   "invite": {
     "title": "Meghívás a csapatba",
@@ -13833,7 +13837,7 @@
         "converted": "árfolyamon átszámítva"
       },
       "extra": "egyéb bevétel",
-      "splitLabel": "Kié a(z) {number} számla",
+      "splitLabel": "A(z) {number} számla megosztása",
       "saved": "A felosztás elmentve.",
       "failed": "A felosztást nem sikerült menteni.",
       "filter": "Szűrés címke szerint",
@@ -13875,7 +13879,7 @@
       "per": "Időszak",
       "perMonth": "havonta",
       "perYear": "évente",
-      "splitOf": "Kié a(z) {label}",
+      "splitOf": "Megosztás: {label}",
       "addExpense": "Költség hozzáadása",
       "extraIncome": "Egyéb bevételek",
       "extraIncomeHint": "Nem számlából származó bevétel, pl. díjakból és árfolyamnyereségből. Ugyanúgy adózik, mint a számlák.",
@@ -13883,18 +13887,52 @@
       "addExtra": "Bevétel hozzáadása",
       "save": "Beállítások mentése",
       "saved": "A beállítások elmentve.",
-      "resetRates": "Alapértelmezett kulcsok"
+      "resetRates": "Alapértelmezett kulcsok",
+      "yearTitle": "{year}. évi beállítások",
+      "prevYear": "Előző év",
+      "nextYear": "Következő év",
+      "yearInherited": "A(z) {year}. évnek még nincs saját beállítása, a(z) {from}. évi értékek érvényesek.",
+      "yearDefault": "A(z) {year}. évnek még nincs saját beállítása, az általános értékek érvényesek.",
+      "copyFrom": "Másolás innen: {from}",
+      "createYear": "{year} beállítása",
+      "yearHint": "A kulcsok és kedvezmények évről évre változnak. A módosítás a választott évre és a későbbi évekre érvényes, amíg azoknak nincs saját beállítása.",
+      "taxScope": "Ki adózik",
+      "scopePerPartner": "Minden partner külön",
+      "scopeOnePerson": "Egy adózó, az eredmény oszlik meg",
+      "scopeOnePersonHint": "Az átalányköltség, annak felső határa, a kedvezmények, az adó és a járulékok egyszer számolódnak a teljes bevételre, mint egy egyéni vállalkozónál. Az eredmény ezután a részesedések szerint oszlik meg. A módosítás a választott évre és a saját beállítás nélküli későbbi évekre érvényes.",
+      "partnerCreditsIn": "Adókedvezmények {year}",
+      "perOnce": "egyszeri",
+      "from": "Ettől",
+      "to": "Eddig"
     },
     "errors": {
       "duplicate_partner": "Két partnernek azonos az azonosítója. Távolítsa el az egyiket, és adja hozzá újra.",
       "shares_must_be_positive": "Legalább egy részesedésnek nullánál nagyobbnak kell lennie.",
-      "generic": "A beállításokat nem sikerült menteni. Ellenőrizze a számokat, és próbálja újra."
+      "generic": "A beállításokat nem sikerült menteni. Ellenőrizze a számokat, és próbálja újra.",
+      "expense_date_required": "Az egyszeri kiadáshoz dátum kell.",
+      "expense_range_invalid": "A kiadás előbb ér véget, mint ahogy kezdődik."
     },
     "noAccess": {
       "title": "Csak tulajdonosoknak és adminisztrátoroknak",
       "body": "Az adózás utáni kimutatás az egyes partnerek bevételét és adóit mutatja, ezért csak a cég tulajdonosa és adminisztrátorai láthatják."
     },
-    "split": "Kié"
+    "split": "Megosztás",
+    "onePersonNote": "Az adó egyszer számolódik az összegre, majd a részesedések szerint oszlik meg.",
+    "tips": {
+      "title": "Tippek",
+      "dismiss": "Tipp elrejtése",
+      "open": "Szerkesztés",
+      "openYear": "Beállítások ellenőrzése",
+      "yearMissing": "A(z) {year}. évnek nincs saját beállítása, ezért a(z) {from}. évi kulcsok és kedvezmények érvényesek. Ha idén valami változott, másolja át és igazítsa.",
+      "yearMissingDefault": "A(z) {year}. évnek nincs saját beállítása, ezért az általános kulcsok és kedvezmények érvényesek. Állítsa be őket erre az évre.",
+      "noCredits": "{name}: nincs megadva adókedvezmény, még az alap adózói kedvezmény sem.",
+      "noCreditsOne": "Az adózónak nincs megadva adókedvezménye, még az alap kedvezmény sem.",
+      "capReached": "{name}: az átalányköltség elérte az éves felső határt, a felette lévő bevétel teljes egészében adózik.",
+      "capReachedOne": "Az átalányköltség elérte az éves felső határt, a felette lévő bevétel teljes egészében adózik.",
+      "highBand": "{name}: az adóalap meghaladja a 23 %-os sáv határát ({limit} évente, az időszakra arányosítva). A becslés csak az alapkulccsal számol, a valódi adó magasabb lesz.",
+      "highBandOne": "Az adóalap meghaladja a 23 %-os sáv határát ({limit} évente, az időszakra arányosítva). A becslés csak az alapkulccsal számol, a valódi adó magasabb lesz.",
+      "singleEarner": "Csak {name} kapott bevételt. Ha csak egyikük fizet adót, állítsa erre az évre egy adózóra."
+    }
   },
   "bankRules": {
     "title": "Fizetési szabályok",

@@ -4911,7 +4911,8 @@
       "total": "Totaal",
       "status": "Status",
       "paidAt": "Betaald op",
-      "sentAt": "Verzonden"
+      "sentAt": "Verzonden",
+      "partners": "Vennoten"
     },
     "fields": {
       "issueDate": "Factuurdatum",
@@ -5127,7 +5128,9 @@
         "origin": "Herkomst en koppelingen"
       },
       "anyType": "Alle documenten",
-      "statusLabel": "Status"
+      "statusLabel": "Status",
+      "partner": "Vennoot",
+      "partnerHint": "Facturen en creditnota’s waarvan de vennoot een deel krijgt in het rapport Na belastingen. Zonder eigen verdeling gelden de standaardaandelen."
     },
     "remindersSent": "{count, plural, one {# herinnering verzonden} other {# herinneringen verzonden}}, laatste op {date}.",
     "attachments": {
@@ -5242,7 +5245,8 @@
       "message": "Omschrijving",
       "transactionId": "Transactie-ID",
       "open": "Openen bij bank"
-    }
+    },
+    "partnerDefaultShares": "standaardaandelen"
   },
   "invite": {
     "title": "Uitnodiging voor het team",
@@ -13833,7 +13837,7 @@
         "converted": "omgerekend tegen de koers"
       },
       "extra": "overige inkomsten",
-      "splitLabel": "Aan wie factuur {number} toekomt",
+      "splitLabel": "Verdeling van factuur {number}",
       "saved": "Verdeling opgeslagen.",
       "failed": "De verdeling kon niet worden opgeslagen.",
       "filter": "Filteren op label",
@@ -13875,7 +13879,7 @@
       "per": "Per",
       "perMonth": "maand",
       "perYear": "jaar",
-      "splitOf": "Aan wie {label} toekomt",
+      "splitOf": "Verdeling: {label}",
       "addExpense": "Kosten toevoegen",
       "extraIncome": "Overige inkomsten",
       "extraIncomeHint": "Inkomsten die geen factuur zijn, bijv. uit vergoedingen en koerswinsten. Ze worden op dezelfde manier belast als facturen.",
@@ -13883,18 +13887,52 @@
       "addExtra": "Inkomsten toevoegen",
       "save": "Instellingen opslaan",
       "saved": "Instellingen opgeslagen.",
-      "resetRates": "Standaardtarieven"
+      "resetRates": "Standaardtarieven",
+      "yearTitle": "Instellingen voor {year}",
+      "prevYear": "Vorig jaar",
+      "nextYear": "Volgend jaar",
+      "yearInherited": "{year} heeft nog geen eigen instellingen, de waarden van {from} gelden.",
+      "yearDefault": "{year} heeft nog geen eigen instellingen, de algemene waarden gelden.",
+      "copyFrom": "Kopiëren van {from}",
+      "createYear": "{year} instellen",
+      "yearHint": "Tarieven en kortingen veranderen van jaar tot jaar. Een wijziging geldt voor het gekozen jaar en latere jaren, tot die eigen instellingen hebben.",
+      "taxScope": "Wie wordt belast",
+      "scopePerPartner": "Elke partner apart",
+      "scopeOnePerson": "Eén belastingplichtige, het resultaat wordt verdeeld",
+      "scopeOnePersonHint": "De forfaitaire kosten, hun plafond, de kortingen, belasting en premies worden één keer over het hele inkomen berekend, zoals bij één zzp’er. Daarna wordt het resultaat naar de aandelen verdeeld. Een wijziging geldt voor het gekozen jaar en latere jaren zonder eigen instellingen.",
+      "partnerCreditsIn": "Heffingskortingen in {year}",
+      "perOnce": "eenmalig",
+      "from": "Van",
+      "to": "Tot"
     },
     "errors": {
       "duplicate_partner": "Twee partners hebben dezelfde id. Verwijder er een en voeg hem opnieuw toe.",
       "shares_must_be_positive": "Minstens één aandeel moet groter zijn dan nul.",
-      "generic": "De instellingen konden niet worden opgeslagen. Controleer de getallen en probeer het opnieuw."
+      "generic": "De instellingen konden niet worden opgeslagen. Controleer de getallen en probeer het opnieuw.",
+      "expense_date_required": "Een eenmalige uitgave heeft een datum nodig.",
+      "expense_range_invalid": "Een uitgave eindigt voordat ze begint."
     },
     "noAccess": {
       "title": "Alleen voor eigenaren en beheerders",
       "body": "Het rapport na belasting toont de inkomsten en belastingen van elke partner, daarom kunnen alleen de eigenaar en de beheerders van het bedrijf het zien."
     },
-    "split": "Hoort bij"
+    "split": "Verdeling",
+    "onePersonNote": "De belasting is één keer over het totaal berekend en naar de aandelen verdeeld.",
+    "tips": {
+      "title": "Tips",
+      "dismiss": "Tip verbergen",
+      "open": "Bewerken",
+      "openYear": "Instellingen controleren",
+      "yearMissing": "{year} heeft geen eigen instellingen, dus de tarieven en kortingen van {from} worden gebruikt. Is er dit jaar iets veranderd, kopieer ze dan en pas ze aan.",
+      "yearMissingDefault": "{year} heeft geen eigen instellingen, dus de algemene tarieven en kortingen worden gebruikt. Stel ze in voor dit jaar.",
+      "noCredits": "{name}: er zijn geen heffingskortingen ingesteld, zelfs de algemene niet.",
+      "noCreditsOne": "De belastingplichtige heeft geen heffingskortingen ingesteld, zelfs de algemene niet.",
+      "capReached": "{name}: de forfaitaire kosten zitten aan het jaarplafond, inkomen daarboven wordt volledig belast.",
+      "capReachedOne": "De forfaitaire kosten zitten aan het jaarplafond, inkomen daarboven wordt volledig belast.",
+      "highBand": "{name}: de grondslag ligt boven de grens van de 23 %-schijf ({limit} per jaar, naar rato van de periode). De schatting rekent alleen met het basistarief, de echte belasting wordt hoger.",
+      "highBandOne": "De grondslag ligt boven de grens van de 23 %-schijf ({limit} per jaar, naar rato van de periode). De schatting rekent alleen met het basistarief, de echte belasting wordt hoger.",
+      "singleEarner": "Alleen {name} heeft inkomen. Betaalt maar één van jullie belasting, zet dit jaar dan op één belastingplichtige."
+    }
   },
   "bankRules": {
     "title": "Betalingsregels",

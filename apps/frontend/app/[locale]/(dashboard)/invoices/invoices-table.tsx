@@ -46,6 +46,8 @@ import { COLUMNS_KEY, INLINE_KEY, readJson, SORT_KEY, VIEW_EVENT, writeJson } fr
 import { startNavProgress } from '@/components/nav-progress';
 import { cn } from '@/lib/utils';
 import { menuPosition, type MenuPosition } from '@/lib/menu-position';
+import type { TaxPartner } from '@/lib/net-income';
+import { partnerTags } from '../reports/net-income/shares-picker';
 import { AmountHover, ContactHover } from './invoice-hover-cards';
 import {
   cancelInvoice,
@@ -68,11 +70,24 @@ const COLUMNS = [
   'variableSymbol',
   'totalWithoutVat',
   'total',
-  'status'
+  'status',
+  'partners'
 ] as const;
 type Column = (typeof COLUMNS)[number];
 const DEFAULT_COLUMNS: Column[] = ['number', 'type', 'customer', 'issueDate', 'dueDate', 'total', 'status'];
 const NUMERIC: Column[] = ['totalWithoutVat', 'total'];
+/** Only what "Po zdanění" counts gets a split (as on the invoice detail). */
+const SPLIT_TYPES = new Set(['invoice', 'credit_note']);
+
+/** The partners an invoice belongs to (weight > 0) with their percentage; the defaults when it has no own split. */
+function splitOf(row: InvoiceRow, partners: TaxPartner[]): { own: boolean; parts: { partner: TaxPartner; percent: number }[] } | null {
+  if (partners.length < 2 || !SPLIT_TYPES.has(row.documentType)) return null;
+  const own = row.partnerShares && Object.values(row.partnerShares).some((w) => w > 0) ? row.partnerShares : null;
+  const weight = (p: TaxPartner) => Math.max(0, (own ? own[p.id] : p.share) ?? 0);
+  const sum = partners.reduce((s, p) => s + weight(p), 0);
+  if (sum <= 0) return null;
+  return { own: Boolean(own), parts: partners.filter((p) => weight(p) > 0).map((partner) => ({ partner, percent: Math.round((weight(partner) / sum) * 100) })) };
+}
 
 /** Sort keys beyond the columns: creation order, days overdue and the balance still due. */
 const EXTRA_SORTS = ['createdAt', 'overdue', 'amountDue', 'taxableDate'] as const;
@@ -103,13 +118,13 @@ const SORT_OPTIONS = [
   'type:asc'
 ] as const;
 
-function readColumns(): Column[] {
+function readColumns(defaults: Column[]): Column[] {
   const raw = readJson<unknown>(COLUMNS_KEY, null);
   if (Array.isArray(raw)) {
     const cols = raw.filter((c): c is Column => COLUMNS.includes(c as Column));
     if (cols.length) return cols;
   }
-  return DEFAULT_COLUMNS;
+  return defaults;
 }
 
 function readSort(): Sort {
@@ -118,8 +133,13 @@ function readSort(): Sort {
 }
 
 /** What a column sorts by; empty values always go last. */
-function sortValue(row: InvoiceRow, key: SortKey): string | number | null {
+function sortValue(row: InvoiceRow, key: SortKey, partners: TaxPartner[]): string | number | null {
   switch (key) {
+    case 'partners': {
+      const split = splitOf(row, partners);
+      const tags = partnerTags(partners);
+      return split ? split.parts.map((p) => tags[p.partner.id]).join(' ') : null;
+    }
     case 'createdAt':
       return row.createdAt;
     case 'taxableDate':
@@ -163,11 +183,14 @@ export function InvoicesTable({
   filtered,
   home = 'CZK',
   omit,
-  newHref
+  newHref,
+  partners = []
 }: {
   rows: InvoiceRow[];
   filtered: boolean;
   home?: HomeCurrency;
+  /** The tax model's partners (owners and admins only); 2+ add the M / R / D column. */
+  partners?: TaxPartner[];
   /** Where the empty state's single call to action leads; no button without it. */
   newHref?: string;
   /** Columns that say the same thing on every row here (the customer on a contact's page). */
@@ -178,9 +201,17 @@ export function InvoicesTable({
   const tStatus = useTranslations('invoices.status');
   const tGloss = useTranslations('glossary');
   const locale = useLocale();
+  const tNet = useTranslations('netIncome');
   const router = useRouter();
-  const [chosen, setColumns] = useState<Column[]>(DEFAULT_COLUMNS);
-  const columns = omit ? chosen.filter((c) => !omit.includes(c)) : chosen;
+  // Unnamed partners get the same fallback names (and so tags) as in the report and the detail picker.
+  const named = useMemo(() => partners.map((p, i) => ({ ...p, name: p.name || tNet('partnerFallback', { n: i + 1 }) })), [partners, tNet]);
+  const tags = useMemo(() => partnerTags(named), [named]);
+  const hasSplit = named.length >= 2;
+  // Without a saved choice the split column is on wherever there is a split to show.
+  const defaults = useMemo<Column[]>(() => (hasSplit ? [...DEFAULT_COLUMNS, 'partners'] : DEFAULT_COLUMNS), [hasSplit]);
+  const hidden: Column[] = [...(omit ?? []), ...(hasSplit ? [] : (['partners'] as Column[]))];
+  const [chosen, setColumns] = useState<Column[]>(defaults);
+  const columns = chosen.filter((c) => !hidden.includes(c));
   const [chooserOpen, setChooserOpen] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [sort, setSort] = useState<Sort>(null);
@@ -211,14 +242,14 @@ export function InvoicesTable({
   useEffect(() => {
     // Re-read when a saved view is applied (invoice-view-bar.tsx).
     const load = () => {
-      setColumns(readColumns());
+      setColumns(readColumns(defaults));
       setSort(readSort());
       setInline(readJson<boolean>(INLINE_KEY, false) === true);
     };
     load();
     window.addEventListener(VIEW_EVENT, load);
     return () => window.removeEventListener(VIEW_EVENT, load);
-  }, []);
+  }, [defaults]);
   useEffect(() => setSelected(new Set()), [rows]);
 
   const toggleColumn = (column: Column) => {
@@ -248,13 +279,13 @@ export function InvoicesTable({
     if (!sort) return rows;
     const factor = sort.dir === 'asc' ? 1 : -1;
     return [...rows].sort((a, b) => {
-      const x = sortValue(a, sort.key);
-      const y = sortValue(b, sort.key);
+      const x = sortValue(a, sort.key, named);
+      const y = sortValue(b, sort.key, named);
       if (x === null || y === null) return x === y ? 0 : x === null ? 1 : -1;
       if (typeof x === 'number' && typeof y === 'number') return (x - y) * factor;
       return String(x).localeCompare(String(y), locale, { numeric: true }) * factor;
     });
-  }, [rows, sort, locale]);
+  }, [rows, sort, locale, named]);
 
   const totalsByCurrency = useMemo(() => {
     const map = new Map<string, number>();
@@ -322,6 +353,8 @@ export function InvoicesTable({
             )}
           </span>
         );
+      case 'partners':
+        return <PartnerTags split={splitOf(row, named)} tags={tags} defaultLabel={t('partnerDefaultShares')} />;
       case 'status': {
         const status = displayStatus(row);
         const buyer = buyerDetailsState(row);
@@ -423,7 +456,7 @@ export function InvoicesTable({
             <>
               <div className="fixed inset-0 z-30" onClick={() => setChooserOpen(false)} />
               <div className="absolute right-0 z-40 mt-1 w-56 rounded-xl border border-border bg-card p-2 shadow-lg">
-                {COLUMNS.filter((c) => !omit?.includes(c)).map((column) => (
+                {COLUMNS.filter((c) => !hidden.includes(c)).map((column) => (
                   <label key={column} className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-accent">
                     <input type="checkbox" checked={chosen.includes(column)} onChange={() => toggleColumn(column)} className="accent-[hsl(var(--primary))]" />
                     {t(`columns.${column}`)}
@@ -484,9 +517,10 @@ export function InvoicesTable({
             >
               <div className="min-w-0 space-y-0.5 text-sm">
                 <div className="truncate">{cell(row, 'customer')}</div>
-                <div className="flex items-center gap-2 text-xs">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
                   {cell(row, 'number')}
                   {cell(row, 'dueDate')}
+                  {columns.includes('partners') && splitOf(row, named) && cell(row, 'partners')}
                 </div>
               </div>
               <div className="shrink-0 space-y-1 text-right text-sm">
@@ -645,6 +679,31 @@ export function InvoicesTable({
         }}
       />
     </div>
+  );
+}
+
+/**
+ * Read-only M / R / D pills: solid for the invoice's own split, dimmed for the
+ * default shares (as in SharesPicker). The tooltip carries the percentages.
+ */
+function PartnerTags({ split, tags, defaultLabel }: { split: ReturnType<typeof splitOf>; tags: Record<string, string>; defaultLabel: string }) {
+  if (!split) return <span className="text-muted-foreground">–</span>;
+  const title = split.parts.map((p) => `${p.partner.name} ${p.percent} %`).join(' · ') + (split.own ? '' : ` (${defaultLabel})`);
+  return (
+    <span title={title} aria-label={title} className="inline-flex flex-wrap items-center gap-1">
+      {split.parts.map(({ partner }) => (
+        <span
+          key={partner.id}
+          aria-hidden
+          className={cn(
+            'inline-flex h-5 min-w-5 items-center justify-center rounded-md px-1 text-[10px] font-bold',
+            split.own ? 'bg-primary text-primary-foreground' : 'bg-primary/15 text-primary'
+          )}
+        >
+          {tags[partner.id]}
+        </span>
+      ))}
+    </span>
   );
 }
 

@@ -6,7 +6,8 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import type { HomeCurrency } from '@faktur/cz-compliance';
 import { apiFetch, ApiError, NoTenantError, NotSignedInError } from '@/lib/api-client';
-import { fetchCanWrite, fetchHomeCurrency } from '@/lib/tenant';
+import { canManage, fetchCanWrite, fetchHomeCurrency, fetchMyRole } from '@/lib/tenant';
+import type { TaxModel, TaxPartner } from '@/lib/net-income';
 import { DOCUMENT_TYPES, type InvoiceRow } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
 import { CONTACT_COLORS, isContactColor } from '@/lib/contact-colors';
@@ -48,6 +49,7 @@ function customValueOf(raw: string | undefined): [string, string] | null {
   return null;
 }
 const COUNTRIES = ['CZ', 'SK', 'foreign'] as const;
+const PARTNER_ID = /^[a-z0-9][a-z0-9-]{0,39}$/;
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
 
 interface Filters {
@@ -90,6 +92,7 @@ interface Filters {
   net_min?: string;
   net_max?: string;
   due_min?: string;
+  partner?: string;
 }
 
 const DATE_KEYS = ['date_field', 'from', 'to'] as const;
@@ -127,7 +130,8 @@ const MODAL_KEYS = [
   'related',
   'net_min',
   'net_max',
-  'due_min'
+  'due_min',
+  'partner'
 ] as const;
 const PANEL_KEYS = [...MODAL_KEYS, ...DATE_KEYS] as const;
 const UUID = /^[0-9a-f-]{36}$/i;
@@ -188,7 +192,8 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
     related: pick(SENT, searchParams.related),
     net_min: amountParam(searchParams.net_min),
     net_max: amountParam(searchParams.net_max),
-    due_min: amountParam(searchParams.due_min)
+    due_min: amountParam(searchParams.due_min),
+    partner: PARTNER_ID.test(searchParams.partner ?? '') ? searchParams.partner : undefined
   };
   const quick = parseQuickPrefs((await cookies()).get(QUICK_COOKIE)?.value);
   // A hidden chip stays visible while it is the active filter, so it can be switched off.
@@ -228,15 +233,26 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
   let home: HomeCurrency;
   let canEdit: boolean;
   let fieldOptions: { label: string; values: string[] }[];
+  let partners: TaxPartner[];
   try {
-    [invoices, customers, bankAccounts, team, home, canEdit, fieldOptions] = await Promise.all([
+    [invoices, customers, bankAccounts, team, home, canEdit, fieldOptions, partners] = await Promise.all([
       apiFetch<InvoiceRow[]>(`/api/v1/invoices${query ? `?${query}` : ''}`),
       apiFetch<{ id: string; legalName: string; color?: string | null }[]>('/api/v1/contacts').catch(() => []),
       apiFetch<BankAccount[]>('/api/v1/tenants/me/bank-accounts').catch(() => []),
       apiFetch<{ members: { userId: string; name: string | null; email: string }[] }>('/api/v1/team').catch(() => ({ members: [] })),
       fetchHomeCurrency(),
       fetchCanWrite('invoices'),
-      apiFetch<{ label: string; values: string[] }[]>('/api/v1/invoices/custom-field-options').catch(() => [])
+      apiFetch<{ label: string; values: string[] }[]>('/api/v1/invoices/custom-field-options').catch(() => []),
+      // The partner split is owner/admin data like the "Po zdanění" report (the backend refuses others).
+      fetchMyRole()
+        .catch(() => null)
+        .then((role) =>
+          canManage(role)
+            ? apiFetch<{ model: TaxModel | null }>('/api/v1/tenants/me/tax-model')
+                .then((r) => r.model?.partners ?? [])
+                .catch(() => [])
+            : []
+        )
     ]);
   } catch (err) {
     if (err instanceof NotSignedInError) redirect({ href: '/login', locale });
@@ -260,6 +276,12 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
       'rounded-full px-3 py-1.5 text-sm font-semibold transition-colors',
       active ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-accent hover:text-primary'
     );
+
+  // Same fallback names, and so the same tags, as the report and the invoice detail.
+  const tNet = await getTranslations('netIncome');
+  const namedPartners = partners.map((p, i) => ({ ...p, name: p.name || tNet('partnerFallback', { n: i + 1 }) }));
+  // By name: partnerTags lives in a client module, which a server component can't call.
+  const partnerLabel = (id: string) => namedPartners.find((x) => x.id === id)?.name ?? id;
 
   const yesNo = (v?: string) => (v === 'yes' ? tDoc('filters.yes') : tDoc('filters.no'));
   const f = (key: string) => tDoc(`filters.${key}`);
@@ -302,7 +324,8 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
     related: () => `${f('related')}: ${yesNo(filters.related)}`,
     net_min: () => `${f('net')}: ${filters.net_min}${filters.net_max ? ` – ${filters.net_max}` : '+'}`,
     net_max: () => `${f('net')}: ≤ ${filters.net_max}`,
-    due_min: () => `${f('dueMin')}: ≥ ${filters.due_min}`
+    due_min: () => `${f('dueMin')}: ≥ ${filters.due_min}`,
+    partner: () => `${f('partner')}: ${partnerLabel(filters.partner!)}`
   };
   const pills: FilterPill[] = MODAL_KEYS.filter((k) => filters[k] && !(k === 'amount_max' && filters.amount_min) && !(k === 'net_max' && filters.net_min)).map((k) => ({
     key: k,
@@ -662,6 +685,24 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
             </select>
           </FilterField>
           <FilterField label={tDoc('filters.reverseCharge')}>{yesNoSelect('reverse_charge')}</FilterField>
+          {namedPartners.length >= 2 && (
+            <FilterField
+              label={
+                <InfoHint hint={tDoc('filters.partnerHint')}>
+                  <span>{tDoc('filters.partner')}</span>
+                </InfoHint>
+              }
+            >
+              <select name="partner" defaultValue={filters.partner ?? ''} className={field}>
+                <option value="">{tDoc('filters.any')}</option>
+                {namedPartners.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {partnerLabel(p.id)}
+                  </option>
+                ))}
+              </select>
+            </FilterField>
+          )}
         </FilterGroup>
         <FilterGroup title={tDoc('filters.groups.communication')}>
           <FilterField label={tDoc('filters.sent')}>{yesNoSelect('sent', tDoc('filters.sentYes'), tDoc('filters.sentNo'))}</FilterField>
@@ -804,7 +845,7 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
         </FilterGroup>
       </FilterPanel>
 
-      <InvoicesTable rows={invoices} filtered={Boolean(query)} home={home} newHref="/invoices/new" />
+      <InvoicesTable rows={invoices} filtered={Boolean(query)} home={home} newHref="/invoices/new" partners={partners} />
     </div>
   );
 }

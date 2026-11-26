@@ -182,6 +182,9 @@ export const listInvoicesQuerySchema = z.object({
   net_max: z.coerce.number().min(0).optional(),
   // Amount still left to pay.
   due_min: z.coerce.number().min(0).optional(),
+  // Invoices and credit notes that a tax-model partner gets a part of (own split, else the default shares).
+  // Owners and admins only, like the "Po zdanění" report; ignored for other roles.
+  partner: z.string().regex(/^[a-z0-9][a-z0-9-]{0,39}$/).optional(),
 });
 
 export type ListInvoicesQuery = z.infer<typeof listInvoicesQuerySchema>;

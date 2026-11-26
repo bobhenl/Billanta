@@ -117,6 +117,12 @@ class RefreshPartiesDto extends createZodDto(
   }),
 ) {}
 
+/** The partner split is "Po zdanění" data, which only owners and admins may see. */
+function withoutSplit<T>(row: T, user: { role: string }): T {
+  if (user.role === "owner" || user.role === "admin" || !row || typeof row !== "object" || !("partnerShares" in row)) return row;
+  return { ...row, partnerShares: null };
+}
+
 /**
  * No controller-level `@UseGuards(...)` here (deliberately, since a recent
  * pass added the public API): the two representative "call our API to
@@ -152,8 +158,11 @@ export class InvoicesController {
       "?overdue_days=, ?reminded=, ?attachments=, ?item= and more (see ListInvoicesQuery).",
   })
   async list(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>) {
-    const rows = await this.invoicesService.list(req.tenantDb!, listInvoicesQuerySchema.parse(query));
-    return rows.map((row) => maskLockedRow(row, req.user!));
+    const parsed = listInvoicesQuerySchema.parse(query);
+    // Who gets which invoice is "Po zdanění" data: other roles can't filter by it.
+    const partner = req.user!.role === "owner" || req.user!.role === "admin" ? parsed.partner : undefined;
+    const rows = await this.invoicesService.list(req.tenantDb!, { ...parsed, partner }, req.user!.tenantId);
+    return rows.map((row) => withoutSplit(maskLockedRow(row, req.user!), req.user!));
   }
 
   // Declared before `:id` so the literal path is never captured as an id.
@@ -232,7 +241,7 @@ export class InvoicesController {
   @ApiOperation({ summary: "Get an invoice by id" })
   async findOne(@Req() req: TenantScopedRequest, @Param("id") id: string) {
     await assertInvoiceOpen(req.tenantDb!, id, req.user!);
-    return this.invoicesService.findOne(req.tenantDb!, id);
+    return withoutSplit(await this.invoicesService.findOne(req.tenantDb!, id), req.user!);
   }
 
   @Patch(":id")

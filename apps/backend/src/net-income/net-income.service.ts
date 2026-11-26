@@ -8,7 +8,8 @@ import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
 import { applyBuyerSnapshot } from "../invoices/party-snapshot";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 import { computeNetIncome, type IncomeItem } from "./net-income";
-import { type Shares, sharesSchema, type TaxModel, taxModelOf } from "./tax-model";
+import { netIncomeTips } from "./net-income-tips";
+import { settingsFor, type Shares, sharesSchema, type TaxModel, taxModelOf } from "./tax-model";
 
 type Db = PostgresJsDatabase<typeof schema>;
 
@@ -141,22 +142,27 @@ export class NetIncomeService {
       ...extraIncome.filter((e) => month == null || Number(e.date.slice(5, 7)) === month).map((e) => ({ amount: e.amount, shares: e.shares })),
     ];
 
-    const result = computeNetIncome(model, itemsOf(null), months);
+    // One-off and dated shared expenses are placed by the same calendar months as the extra income above.
+    const result = computeNetIncome(model, itemsOf(null), { year: period.year, month: firstMonth + 1, months });
     // Each month on its own (credits and the paušál cap at 1/12), to compare them side by side.
     const byMonth =
       months > 1
         ? Array.from({ length: months }, (_, i) => {
             const month = firstMonth + i + 1;
-            const r = computeNetIncome(model, itemsOf(month), 1);
+            const r = computeNetIncome(model, itemsOf(month), { year: period.year, month, months: 1 });
             return { month, income: r.totals.income, taxes: r.totals.taxes, sharedExpenses: r.totals.sharedExpenses, net: r.totals.net };
           })
         : null;
 
+    const settings = settingsFor(model, period.year);
     return {
       period: { ...period, months, from: fromDay, to: toDay },
       vatPayer,
       model,
+      /** What the period was computed with (its year's settings). */
+      settings: { ...settings, partners: Object.fromEntries(settings.partners) },
       result,
+      tips: netIncomeTips(model, period.year, result),
       byMonth,
       invoices,
       extraIncome,

@@ -4918,7 +4918,8 @@
       "total": "Total",
       "status": "Status",
       "paidAt": "Paid on",
-      "sentAt": "Sent"
+      "sentAt": "Sent",
+      "partners": "Partners"
     },
     "fields": {
       "issueDate": "Issue date",
@@ -5135,7 +5136,9 @@
         "origin": "Origin and links"
       },
       "anyType": "All documents",
-      "statusLabel": "Status"
+      "statusLabel": "Status",
+      "partner": "Partner",
+      "partnerHint": "Invoices and credit notes the partner gets a share of in the After taxes report. Without an own split, the default shares apply."
     },
     "remindersSent": "{count, plural, one {# reminder sent} other {# reminders sent}}, last on {date}.",
     "attachments": {
@@ -5271,7 +5274,8 @@
         "too_many_attempts": "Too many attempts. Try again in a few minutes.",
         "generic": "That didn't work. Please try again."
       }
-    }
+    },
+    "partnerDefaultShares": "default shares"
   },
   "invite": {
     "title": "Team invitation",
@@ -13862,7 +13866,7 @@
         "converted": "converted at the rate"
       },
       "extra": "other income",
-      "splitLabel": "Who invoice {number} belongs to",
+      "splitLabel": "Split of invoice {number}",
       "saved": "Split saved.",
       "failed": "Could not save the split.",
       "filter": "Filter by tag",
@@ -13904,7 +13908,7 @@
       "per": "Per",
       "perMonth": "month",
       "perYear": "year",
-      "splitOf": "Who {label} belongs to",
+      "splitOf": "Split: {label}",
       "addExpense": "Add expense",
       "extraIncome": "Other income",
       "extraIncomeHint": "Income that is not an invoice, e.g. from fees and exchange gains. Taxed the same way as invoices.",
@@ -13912,18 +13916,52 @@
       "addExtra": "Add income",
       "save": "Save settings",
       "saved": "Settings saved.",
-      "resetRates": "Default rates"
+      "resetRates": "Default rates",
+      "yearTitle": "Settings for {year}",
+      "prevYear": "Previous year",
+      "nextYear": "Next year",
+      "yearInherited": "{year} has no settings of its own yet, so the values from {from} apply.",
+      "yearDefault": "{year} has no settings of its own yet, so the general values apply.",
+      "copyFrom": "Copy from {from}",
+      "createYear": "Set up {year}",
+      "yearHint": "Rates and credits change from year to year. A change applies to the chosen year and to later years until they have their own settings.",
+      "taxScope": "Who is taxed",
+      "scopePerPartner": "Each partner separately",
+      "scopeOnePerson": "One taxpayer, the result is shared",
+      "scopeOnePersonHint": "The flat-rate expenses, their cap, the credits, tax and insurance are worked out once on the whole income, as for one sole trader. The result is then divided by the shares. A change applies to the chosen year and to later years without their own settings.",
+      "partnerCreditsIn": "Tax credits in {year}",
+      "perOnce": "one-off",
+      "from": "From",
+      "to": "To"
     },
     "errors": {
       "duplicate_partner": "Two partners have the same id. Remove one and add it again.",
       "shares_must_be_positive": "At least one share must be above zero.",
-      "generic": "Could not save the settings. Check the numbers and try again."
+      "generic": "Could not save the settings. Check the numbers and try again.",
+      "expense_date_required": "A one-off expense needs a date.",
+      "expense_range_invalid": "An expense ends before it starts."
     },
     "noAccess": {
       "title": "For owners and admins only",
       "body": "The after-tax report shows each partner’s income and taxes, so only the company’s owner and admins can see it."
     },
-    "split": "Belongs to"
+    "split": "Split",
+    "onePersonNote": "The tax is worked out once on the total and divided by the shares.",
+    "tips": {
+      "title": "Tips",
+      "dismiss": "Hide tip",
+      "open": "Edit",
+      "openYear": "Check the settings",
+      "yearMissing": "{year} has no settings of its own, so the rates and credits from {from} are used. If anything changed this year, copy them and adjust.",
+      "yearMissingDefault": "{year} has no settings of its own, so the general rates and credits are used. Set them up for this year.",
+      "noCredits": "{name}: no tax credits are set, not even the basic taxpayer credit.",
+      "noCreditsOne": "The taxpayer has no tax credits set, not even the basic taxpayer credit.",
+      "capReached": "{name}: the flat-rate expenses hit the yearly cap, so income above it is taxed in full.",
+      "capReachedOne": "The flat-rate expenses hit the yearly cap, so income above it is taxed in full.",
+      "highBand": "{name}: the tax base is above the 23 % band ({limit} a year, prorated to the period). The estimate uses the basic rate only, so the real tax will be higher.",
+      "highBandOne": "The tax base is above the 23 % band ({limit} a year, prorated to the period). The estimate uses the basic rate only, so the real tax will be higher.",
+      "singleEarner": "Only {name} has income. If only one of you pays the taxes, set this year to one taxpayer."
+    }
   },
   "bankRules": {
     "title": "Payment rules",

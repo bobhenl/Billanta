@@ -30,13 +30,27 @@ const partnerSchema = z.object({
   tax_credits: money(0, 10_000_000),
 });
 
-const sharedExpenseSchema = z.object({
-  label: z.string().trim().min(1).max(80),
-  amount: money(0, 1_000_000_000),
-  per: z.enum(["month", "year"]),
-  /** null = the partners' default shares. */
-  shares: sharesSchema.nullable(),
-});
+/**
+ * A one-off expense counts in the period holding its `date`. A recurring one
+ * counts in every month of [from, to] (by month, both ends inclusive; null =
+ * open). The dates came later, so a stored model without them parses as
+ * before: recurring and open on both ends.
+ */
+const sharedExpenseSchema = z
+  .object({
+    label: z.string().trim().min(1).max(80),
+    amount: money(0, 1_000_000_000),
+    per: z.enum(["once", "month", "year"]),
+    date: z.string().regex(DAY).nullable().default(null),
+    from: z.string().regex(DAY).nullable().default(null),
+    to: z.string().regex(DAY).nullable().default(null),
+    /** null = the partners' default shares. */
+    shares: sharesSchema.nullable(),
+  })
+  .superRefine((e, ctx) => {
+    if (e.per === "once" && !e.date) ctx.addIssue({ code: "custom", message: "expense_date_required" });
+    if (e.from && e.to && e.from.slice(0, 7) > e.to.slice(0, 7)) ctx.addIssue({ code: "custom", message: "expense_range_invalid" });
+  });
 
 /** Income that is not an invoice (fees, FX gains…), taxed the same way. */
 const extraIncomeSchema = z.object({
@@ -46,16 +60,49 @@ const extraIncomeSchema = z.object({
   shares: sharesSchema.nullable(),
 });
 
+const rateFields = {
+  flat_expense_percent: percent(80),
+  /** Yearly cap of the flat-rate expenses per person (Kč); null = none. */
+  flat_expense_cap: money(0, 100_000_000).nullable(),
+  income_tax_percent: percent(100),
+  social_rate_percent: percent(100),
+  social_base_percent: percent(100),
+  health_rate_percent: percent(100),
+  health_base_percent: percent(100),
+};
+
+export const RATE_KEYS = Object.keys(rateFields) as (keyof typeof rateFields)[];
+
+const yearPartnerSchema = z.object({ tax_credits: money(0, 10_000_000) });
+
+/**
+ * Rates and credits change from year to year; partners and their default
+ * shares do not. `tax_scope`: "per_partner" taxes each partner as their own
+ * OSVČ on their share (what the model always did); "one_person" is one sole
+ * trader whose income is shared out: paušál, cap, credits, tax and insurance
+ * once on the total, then each line divided by the income shares.
+ */
+const yearSettingsSchema = z.object({
+  ...rateFields,
+  tax_scope: z.enum(["per_partner", "one_person"]).default("per_partner"),
+  /** The one taxpayer's yearly credits ("one_person" only). */
+  tax_credits: money(0, 10_000_000).default(0),
+  partners: z.record(z.string().regex(PARTNER_ID), yearPartnerSchema).refine((p) => Object.keys(p).length <= 20, "too_many_partners"),
+});
+
+export type YearSettings = z.infer<typeof yearSettingsSchema>;
+
 export const taxModelSchema = z
   .object({
-    flat_expense_percent: percent(80),
-    /** Yearly cap of the flat-rate expenses per person (Kč); null = none. */
-    flat_expense_cap: money(0, 100_000_000).nullable(),
-    income_tax_percent: percent(100),
-    social_rate_percent: percent(100),
-    social_base_percent: percent(100),
-    health_rate_percent: percent(100),
-    health_base_percent: percent(100),
+    ...rateFields,
+    /**
+     * Per calendar year ("2024"). A period uses its own year, else the nearest
+     * earlier one, else the top-level values above (all a model had before).
+     */
+    years: z
+      .record(z.string().regex(/^(19|20|21)\d{2}$/), yearSettingsSchema)
+      .refine((y) => Object.keys(y).length <= 50, "too_many_years")
+      .default({}),
     partners: z.array(partnerSchema).min(1).max(10),
     shared_expenses: z.array(sharedExpenseSchema).max(50),
     extra_income: z.array(extraIncomeSchema).max(500),
@@ -84,10 +131,40 @@ export const DEFAULT_TAX_MODEL: TaxModel = {
   partners: [{ id: "me", name: "", share: 100, tax_credits: 30_840 }],
   shared_expenses: [],
   extra_income: [],
+  years: {},
 };
 
 /** The stored model, or the defaults when there is none or it no longer parses. */
 export function taxModelOf(stored: unknown): TaxModel {
   const parsed = taxModelSchema.safeParse(stored);
   return parsed.success ? parsed.data : DEFAULT_TAX_MODEL;
+}
+
+export interface ResolvedYear extends Pick<TaxModel, (typeof RATE_KEYS)[number]> {
+  /** The `years` entry used, or null for the top-level values. */
+  source: number | null;
+  tax_scope: YearSettings["tax_scope"];
+  /** "one_person": the taxpayer's credits. */
+  tax_credits: number;
+  /** "per_partner": each partner's credits. */
+  partners: Map<string, { tax_credits: number }>;
+}
+
+/** The settings in force in `year`. */
+export function settingsFor(model: TaxModel, year: number): ResolvedYear {
+  const source =
+    Object.keys(model.years)
+      .map(Number)
+      .filter((y) => y <= year)
+      .sort((a, b) => b - a)[0] ?? null;
+  const entry = source == null ? null : model.years[String(source)]!;
+  const rates = entry ?? model;
+  const partners = new Map(model.partners.map((p) => [p.id, { tax_credits: entry?.partners[p.id]?.tax_credits ?? p.tax_credits }]));
+  return {
+    ...(Object.fromEntries(RATE_KEYS.map((k) => [k, rates[k]])) as Pick<TaxModel, (typeof RATE_KEYS)[number]>),
+    source,
+    tax_scope: entry?.tax_scope ?? "per_partner",
+    tax_credits: entry?.tax_credits ?? 0,
+    partners,
+  };
 }

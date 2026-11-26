@@ -4911,7 +4911,8 @@
       "total": "Total",
       "status": "Stare",
       "paidAt": "Plătită la",
-      "sentAt": "Trimisă"
+      "sentAt": "Trimisă",
+      "partners": "Asociați"
     },
     "fields": {
       "issueDate": "Data emiterii",
@@ -5127,7 +5128,9 @@
         "origin": "Proveniență și legături"
       },
       "anyType": "Toate documentele",
-      "statusLabel": "Stare"
+      "statusLabel": "Stare",
+      "partner": "Asociat",
+      "partnerHint": "Facturi și note de credit din care asociatul are o parte în raportul După impozitare. Fără o împărțire proprie se aplică cotele implicite."
     },
     "remindersSent": "{count, plural, one {# reminder trimis} few {# remindere trimise} other {# de remindere trimise}}, ultimul la {date}.",
     "attachments": {
@@ -5242,7 +5245,8 @@
       "message": "Mesaj pentru beneficiar",
       "transactionId": "ID tranzacție",
       "open": "Deschide în bancă"
-    }
+    },
+    "partnerDefaultShares": "cote implicite"
   },
   "invite": {
     "title": "Invitație în echipă",
@@ -13833,7 +13837,7 @@
         "converted": "convertit la curs"
       },
       "extra": "alt venit",
-      "splitLabel": "Cui aparține factura {number}",
+      "splitLabel": "Împărțirea facturii {number}",
       "saved": "Împărțirea a fost salvată.",
       "failed": "Împărțirea nu a putut fi salvată.",
       "filter": "Filtrează după etichetă",
@@ -13875,7 +13879,7 @@
       "per": "Pe",
       "perMonth": "lună",
       "perYear": "an",
-      "splitOf": "Cui aparține {label}",
+      "splitOf": "Împărțire: {label}",
       "addExpense": "Adăugați cheltuială",
       "extraIncome": "Alte venituri",
       "extraIncomeHint": "Venituri care nu sunt facturi, de ex. din comisioane și câștiguri de curs valutar. Se impozitează la fel ca facturile.",
@@ -13883,18 +13887,52 @@
       "addExtra": "Adăugați venit",
       "save": "Salvați setările",
       "saved": "Setările au fost salvate.",
-      "resetRates": "Cote implicite"
+      "resetRates": "Cote implicite",
+      "yearTitle": "Setări pentru {year}",
+      "prevYear": "Anul anterior",
+      "nextYear": "Anul următor",
+      "yearInherited": "{year} nu are încă setări proprii, se aplică valorile din {from}.",
+      "yearDefault": "{year} nu are încă setări proprii, se aplică valorile generale.",
+      "copyFrom": "Copiază din {from}",
+      "createYear": "Setează {year}",
+      "yearHint": "Cotele și deducerile se schimbă de la an la an. O modificare se aplică anului ales și anilor următori, până când au setări proprii.",
+      "taxScope": "Cine este impozitat",
+      "scopePerPartner": "Fiecare asociat separat",
+      "scopeOnePerson": "Un singur contribuabil, rezultatul se împarte",
+      "scopeOnePersonHint": "Cheltuielile forfetare, plafonul lor, deducerile, impozitul și contribuțiile se calculează o dată pe tot venitul, ca pentru un singur PFA. Rezultatul se împarte apoi după cote. O modificare se aplică anului ales și anilor următori fără setări proprii.",
+      "partnerCreditsIn": "Deduceri în {year}",
+      "perOnce": "o singură dată",
+      "from": "De la",
+      "to": "Până la"
     },
     "errors": {
       "duplicate_partner": "Doi parteneri au același id. Eliminați unul și adăugați-l din nou.",
       "shares_must_be_positive": "Cel puțin o cotă trebuie să fie peste zero.",
-      "generic": "Setările nu au putut fi salvate. Verificați numerele și încercați din nou."
+      "generic": "Setările nu au putut fi salvate. Verificați numerele și încercați din nou.",
+      "expense_date_required": "O cheltuială unică are nevoie de o dată.",
+      "expense_range_invalid": "O cheltuială se termină înainte să înceapă."
     },
     "noAccess": {
       "title": "Doar pentru proprietari și administratori",
       "body": "Raportul după impozite arată venitul și impozitele fiecărui partener, așa că îl pot vedea doar proprietarul firmei și administratorii."
     },
-    "split": "Aparține"
+    "split": "Împărțire",
+    "onePersonNote": "Impozitul este calculat o dată pe total și împărțit după cote.",
+    "tips": {
+      "title": "Sfaturi",
+      "dismiss": "Ascunde sfatul",
+      "open": "Editează",
+      "openYear": "Verifică setările",
+      "yearMissing": "{year} nu are setări proprii, așa că se folosesc cotele și deducerile din {from}. Dacă anul acesta s-a schimbat ceva, copiază-le și ajustează-le.",
+      "yearMissingDefault": "{year} nu are setări proprii, așa că se folosesc cotele și deducerile generale. Setează-le pentru acest an.",
+      "noCredits": "{name}: nu are setată nicio deducere fiscală, nici măcar cea de bază.",
+      "noCreditsOne": "Contribuabilul nu are setată nicio deducere fiscală, nici măcar cea de bază.",
+      "capReached": "{name}: cheltuielile forfetare au atins plafonul anual, venitul peste el se impozitează integral.",
+      "capReachedOne": "Cheltuielile forfetare au atins plafonul anual, venitul peste el se impozitează integral.",
+      "highBand": "{name}: baza impozabilă depășește pragul cotei de 23 % ({limit} pe an, proporțional cu perioada). Estimarea folosește doar cota de bază, impozitul real va fi mai mare.",
+      "highBandOne": "Baza impozabilă depășește pragul cotei de 23 % ({limit} pe an, proporțional cu perioada). Estimarea folosește doar cota de bază, impozitul real va fi mai mare.",
+      "singleEarner": "Doar {name} are venit. Dacă doar unul dintre voi plătește impozitele, setează anul acesta pe un singur contribuabil."
+    }
   },
   "bankRules": {
     "title": "Reguli pentru plăți",

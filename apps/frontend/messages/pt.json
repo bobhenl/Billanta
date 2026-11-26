@@ -4911,7 +4911,8 @@
       "total": "Total",
       "status": "Estado",
       "paidAt": "Pago em",
-      "sentAt": "Enviado"
+      "sentAt": "Enviado",
+      "partners": "Sócios"
     },
     "fields": {
       "issueDate": "Data de emissão",
@@ -5127,7 +5128,9 @@
         "origin": "Origem e associações"
       },
       "anyType": "Todos os documentos",
-      "statusLabel": "Estado"
+      "statusLabel": "Estado",
+      "partner": "Sócio",
+      "partnerHint": "Faturas e notas de crédito de que o sócio recebe uma parte no relatório Após impostos. Sem divisão própria, aplicam-se as quotas padrão."
     },
     "remindersSent": "{count, plural, one {# lembrete enviado} other {# lembretes enviados}}, o último em {date}.",
     "attachments": {
@@ -5242,7 +5245,8 @@
       "message": "Mensagem para o beneficiário",
       "transactionId": "ID da transação",
       "open": "Abrir no banco"
-    }
+    },
+    "partnerDefaultShares": "quotas padrão"
   },
   "invite": {
     "title": "Convite para a equipa",
@@ -13833,7 +13837,7 @@
         "converted": "convertido à taxa de câmbio"
       },
       "extra": "outro rendimento",
-      "splitLabel": "A quem pertence a fatura {number}",
+      "splitLabel": "Divisão da fatura {number}",
       "saved": "Repartição guardada.",
       "failed": "Não foi possível guardar a repartição.",
       "filter": "Filtrar por etiqueta",
@@ -13875,7 +13879,7 @@
       "per": "Por",
       "perMonth": "mês",
       "perYear": "ano",
-      "splitOf": "A quem pertence {label}",
+      "splitOf": "Divisão: {label}",
       "addExpense": "Adicionar despesa",
       "extraIncome": "Outros rendimentos",
       "extraIncomeHint": "Rendimentos que não são faturas, p. ex. de comissões e ganhos cambiais. Tributados da mesma forma que as faturas.",
@@ -13883,18 +13887,52 @@
       "addExtra": "Adicionar rendimento",
       "save": "Guardar definições",
       "saved": "Definições guardadas.",
-      "resetRates": "Taxas predefinidas"
+      "resetRates": "Taxas predefinidas",
+      "yearTitle": "Definições para {year}",
+      "prevYear": "Ano anterior",
+      "nextYear": "Ano seguinte",
+      "yearInherited": "{year} ainda não tem definições próprias, aplicam-se os valores de {from}.",
+      "yearDefault": "{year} ainda não tem definições próprias, aplicam-se os valores gerais.",
+      "copyFrom": "Copiar de {from}",
+      "createYear": "Definir {year}",
+      "yearHint": "As taxas e deduções mudam de ano para ano. Uma alteração vale para o ano escolhido e para os anos seguintes até terem definições próprias.",
+      "taxScope": "Quem é tributado",
+      "scopePerPartner": "Cada sócio separadamente",
+      "scopeOnePerson": "Um só contribuinte, o resultado é dividido",
+      "scopeOnePersonHint": "As despesas forfetárias, o seu limite, as deduções, o imposto e as contribuições são calculados uma vez sobre todo o rendimento, como para um só trabalhador independente. O resultado é depois dividido pelas quotas. Uma alteração vale para o ano escolhido e para os seguintes sem definições próprias.",
+      "partnerCreditsIn": "Deduções em {year}",
+      "perOnce": "uma vez",
+      "from": "De",
+      "to": "Até"
     },
     "errors": {
       "duplicate_partner": "Dois sócios têm o mesmo id. Remova um e adicione-o de novo.",
       "shares_must_be_positive": "Pelo menos uma quota tem de ser superior a zero.",
-      "generic": "Não foi possível guardar as definições. Verifique os números e tente novamente."
+      "generic": "Não foi possível guardar as definições. Verifique os números e tente novamente.",
+      "expense_date_required": "Uma despesa única precisa de uma data.",
+      "expense_range_invalid": "Uma despesa termina antes de começar."
     },
     "noAccess": {
       "title": "Apenas para proprietários e administradores",
       "body": "O relatório após impostos mostra o rendimento e os impostos de cada sócio, por isso só o proprietário e os administradores da empresa o podem ver."
     },
-    "split": "Pertence a"
+    "split": "Divisão",
+    "onePersonNote": "O imposto é calculado uma vez sobre o total e dividido pelas quotas.",
+    "tips": {
+      "title": "Dicas",
+      "dismiss": "Ocultar dica",
+      "open": "Editar",
+      "openYear": "Verificar as definições",
+      "yearMissing": "{year} não tem definições próprias, por isso usam-se as taxas e deduções de {from}. Se algo mudou este ano, copie-as e ajuste.",
+      "yearMissingDefault": "{year} não tem definições próprias, por isso usam-se as taxas e deduções gerais. Defina-as para este ano.",
+      "noCredits": "{name}: não tem deduções fiscais definidas, nem sequer a básica do contribuinte.",
+      "noCreditsOne": "O contribuinte não tem deduções fiscais definidas, nem sequer a básica.",
+      "capReached": "{name}: as despesas forfetárias atingiram o limite anual, o rendimento acima é tributado por inteiro.",
+      "capReachedOne": "As despesas forfetárias atingiram o limite anual, o rendimento acima é tributado por inteiro.",
+      "highBand": "{name}: a base tributável ultrapassa o limiar do escalão de 23 % ({limit} por ano, proporcional ao período). A estimativa usa só a taxa base, o imposto real será maior.",
+      "highBandOne": "A base tributável ultrapassa o limiar do escalão de 23 % ({limit} por ano, proporcional ao período). A estimativa usa só a taxa base, o imposto real será maior.",
+      "singleEarner": "Só {name} tem rendimento. Se só um de vocês paga os impostos, defina este ano com um só contribuinte."
+    }
   },
   "bankRules": {
     "title": "Regras de pagamentos",

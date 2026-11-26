@@ -4911,7 +4911,8 @@
       "total": "Totale",
       "status": "Stato",
       "paidAt": "Pagata il",
-      "sentAt": "Inviata"
+      "sentAt": "Inviata",
+      "partners": "Soci"
     },
     "fields": {
       "issueDate": "Data di emissione",
@@ -5127,7 +5128,9 @@
         "origin": "Origine e collegamenti"
       },
       "anyType": "Tutti i documenti",
-      "statusLabel": "Stato"
+      "statusLabel": "Stato",
+      "partner": "Socio",
+      "partnerHint": "Fatture e note di credito di cui il socio riceve una quota nel report Dopo le tasse. Senza una ripartizione propria valgono le quote predefinite."
     },
     "remindersSent": "{count, plural, one {# sollecito inviato} many {# solleciti inviati} other {# solleciti inviati}}, l’ultimo il {date}.",
     "attachments": {
@@ -5242,7 +5245,8 @@
       "message": "Causale",
       "transactionId": "ID transazione",
       "open": "Apri in banca"
-    }
+    },
+    "partnerDefaultShares": "quote predefinite"
   },
   "invite": {
     "title": "Invito al team",
@@ -13833,7 +13837,7 @@
         "converted": "convertito al tasso di cambio"
       },
       "extra": "altro reddito",
-      "splitLabel": "A chi spetta la fattura {number}",
+      "splitLabel": "Ripartizione della fattura {number}",
       "saved": "Ripartizione salvata.",
       "failed": "Impossibile salvare la ripartizione.",
       "filter": "Filtra per etichetta",
@@ -13875,7 +13879,7 @@
       "per": "Per",
       "perMonth": "mese",
       "perYear": "anno",
-      "splitOf": "A chi spetta {label}",
+      "splitOf": "Ripartizione: {label}",
       "addExpense": "Aggiungi spesa",
       "extraIncome": "Altri redditi",
       "extraIncomeHint": "Redditi che non sono fatture, ad es. da commissioni e utili su cambi. Tassati come le fatture.",
@@ -13883,18 +13887,52 @@
       "addExtra": "Aggiungi reddito",
       "save": "Salva impostazioni",
       "saved": "Impostazioni salvate.",
-      "resetRates": "Aliquote predefinite"
+      "resetRates": "Aliquote predefinite",
+      "yearTitle": "Impostazioni per il {year}",
+      "prevYear": "Anno precedente",
+      "nextYear": "Anno successivo",
+      "yearInherited": "Il {year} non ha ancora impostazioni proprie, valgono i valori del {from}.",
+      "yearDefault": "Il {year} non ha ancora impostazioni proprie, valgono i valori generali.",
+      "copyFrom": "Copia dal {from}",
+      "createYear": "Imposta il {year}",
+      "yearHint": "Aliquote e detrazioni cambiano di anno in anno. Una modifica vale per l’anno scelto e per i successivi finché non hanno impostazioni proprie.",
+      "taxScope": "Chi viene tassato",
+      "scopePerPartner": "Ogni socio separatamente",
+      "scopeOnePerson": "Un solo contribuente, si divide il risultato",
+      "scopeOnePersonHint": "Le spese forfettarie, il loro tetto, le detrazioni, l’imposta e i contributi si calcolano una volta sull’intero reddito, come per un solo lavoratore autonomo. Il risultato si divide poi secondo le quote. Una modifica vale per l’anno scelto e per i successivi senza impostazioni proprie.",
+      "partnerCreditsIn": "Detrazioni nel {year}",
+      "perOnce": "una tantum",
+      "from": "Da",
+      "to": "A"
     },
     "errors": {
       "duplicate_partner": "Due soci hanno lo stesso id. Ne rimuova uno e lo aggiunga di nuovo.",
       "shares_must_be_positive": "Almeno una quota deve essere maggiore di zero.",
-      "generic": "Impossibile salvare le impostazioni. Controlli i numeri e riprovi."
+      "generic": "Impossibile salvare le impostazioni. Controlli i numeri e riprovi.",
+      "expense_date_required": "Una spesa una tantum richiede una data.",
+      "expense_range_invalid": "Una spesa finisce prima di iniziare."
     },
     "noAccess": {
       "title": "Solo per proprietari e amministratori",
       "body": "Il report al netto delle imposte mostra il reddito e le imposte di ogni socio, quindi possono vederlo solo il proprietario e gli amministratori dell’azienda."
     },
-    "split": "Appartiene a"
+    "split": "Ripartizione",
+    "onePersonNote": "L’imposta è calcolata una volta sul totale e divisa secondo le quote.",
+    "tips": {
+      "title": "Suggerimenti",
+      "dismiss": "Nascondi suggerimento",
+      "open": "Modifica",
+      "openYear": "Controlla le impostazioni",
+      "yearMissing": "Il {year} non ha impostazioni proprie, quindi si usano aliquote e detrazioni del {from}. Se quest’anno è cambiato qualcosa, copiale e correggile.",
+      "yearMissingDefault": "Il {year} non ha impostazioni proprie, quindi si usano aliquote e detrazioni generali. Impostale per quest’anno.",
+      "noCredits": "{name}: non ha detrazioni impostate, nemmeno quella base del contribuente.",
+      "noCreditsOne": "Il contribuente non ha detrazioni impostate, nemmeno quella base.",
+      "capReached": "{name}: le spese forfettarie hanno raggiunto il tetto annuo, il reddito oltre viene tassato per intero.",
+      "capReachedOne": "Le spese forfettarie hanno raggiunto il tetto annuo, il reddito oltre viene tassato per intero.",
+      "highBand": "{name}: la base imponibile supera la soglia dell’aliquota del 23 % ({limit} l’anno, in proporzione al periodo). La stima usa solo l’aliquota base, l’imposta reale sarà più alta.",
+      "highBandOne": "La base imponibile supera la soglia dell’aliquota del 23 % ({limit} l’anno, in proporzione al periodo). La stima usa solo l’aliquota base, l’imposta reale sarà più alta.",
+      "singleEarner": "Solo {name} ha un reddito. Se solo uno di voi paga le imposte, imposta quest’anno su un solo contribuente."
+    }
   },
   "bankRules": {
     "title": "Regole per i pagamenti",
