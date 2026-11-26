@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { BIC_BY_BANK_CODE, splitAccount } from '@/lib/bank-account-input';
 import {
   Download,
   Globe2,
@@ -93,32 +94,6 @@ const inputClass = 'w-full min-h-10 rounded-md border border-input bg-background
 const isoDate = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const num = (v: string) => Number(v.replace(',', '.').replace(/\s/g, ''));
 
-/**
- * BIC of the main Czech and Slovak banks by their domestic bank code, so the
- * SWIFT field fills itself once the account is in. The two countries' codes
- * do not overlap for these banks.
- */
-const BIC_BY_BANK_CODE: Record<string, string> = {
-  '0100': 'KOMBCZPP',
-  '0300': 'CEKOCZPP',
-  '0600': 'AGBACZPP',
-  '0800': 'GIBACZPX',
-  '2010': 'FIOBCZPP',
-  '2700': 'BACXCZPP',
-  '3030': 'AIRACZPP',
-  '3500': 'INGBCZPP',
-  '5500': 'RZBCCZPP',
-  '5800': 'JTBPCZPP',
-  '6210': 'BREXCZPP',
-  '0200': 'SUBASKBX',
-  '0900': 'GIBASKBX',
-  '1100': 'TATRSKBX',
-  '1111': 'UNCRSKBX',
-  '5600': 'KOMASK2X',
-  '6500': 'POBNSKBA',
-  '7500': 'CEKOSKBX',
-  '8330': 'FIOZSKBA'
-};
 const addDays = (iso: string, days: number) => isoDate(new Date(new Date(`${iso}T12:00:00`).getTime() + days * 86_400_000));
 
 function readStorage<T>(key: string): T | null {
@@ -887,17 +862,6 @@ function fromHit(hit: CompanyHit): Party {
  * account number and the bank code. Null for anything else, which is kept
  * as typed.
  */
-function splitAccount(raw: string): { number: string; code: string; iban?: string } | null {
-  const value = raw.trim();
-  const [, typed, typedCode] = /^((?:\d{1,6}\s*-\s*)?\d{2,10})\s*\/\s*(\d{4})$/.exec(value) ?? [];
-  if (typed && typedCode) return { number: typed.replace(/\s/g, ''), code: typedCode };
-  const iban = value.replace(/\s/g, '').toUpperCase();
-  if (!/^(CZ|SK)\d{22}$/.test(iban)) return null;
-  const prefix = iban.slice(8, 14).replace(/^0+/, '');
-  const number = iban.slice(14).replace(/^0+/, '');
-  return { number: prefix ? `${prefix}-${number}` : number, code: iban.slice(4, 8), iban };
-}
-
 /** IČO input that fills the rest from the registers once 8 digits are typed (Czech and Slovak IČO alike). */
 function IcoInput({ value, required, onChange, onFound }: { value: string; required?: boolean; onChange: (v: string) => void; onFound: (hit: CompanyHit) => void }) {
   const t = useTranslations('guestInvoice');

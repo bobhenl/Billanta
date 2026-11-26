@@ -10,6 +10,8 @@ import { toast } from '@/components/toaster';
 import { cn } from '@/lib/utils';
 import { type BankAccount, bankAccountLine } from '@/lib/bank-account';
 import { deleteBankAccount, saveBankAccount } from '../actions';
+import { BankCodeOptions } from '@/components/bank-code-options';
+import { editAccount } from '@/lib/bank-account-input';
 
 const CURRENCIES = ['EUR', 'USD', 'GBP', 'CZK', 'PLN', 'CHF', 'HUF'];
 
@@ -39,7 +41,15 @@ export function BankAccounts({ accounts, readOnly }: { accounts: BankAccount[]; 
         : EMPTY
     });
 
-  const set = (key: keyof Draft, value: string) => setEditing((e) => (e ? { ...e, draft: { ...e.draft, [key]: value } } : e));
+  const set = (key: keyof Draft, value: string) =>
+    setEditing((e) => {
+      if (!e) return e;
+      const field = key === 'accountNumber' ? 'number' : key === 'bankCode' ? 'code' : key === 'iban' ? 'iban' : null;
+      if (!field) return { ...e, draft: { ...e.draft, [key]: value } };
+      const d = e.draft;
+      const a = editAccount({ number: d.accountNumber, code: d.bankCode, iban: d.iban, swift: d.swift }, field, value);
+      return { ...e, draft: { ...d, accountNumber: a.number, bankCode: a.code, iban: a.iban, swift: a.swift } };
+    });
 
   const save = () => {
     if (!editing) return;
@@ -159,7 +169,8 @@ export function BankAccounts({ accounts, readOnly }: { accounts: BankAccount[]; 
         <div className="grid gap-3 sm:grid-cols-4">
           {field('label', t('label'), { placeholder: t('labelPlaceholder'), maxLength: 100, autoFocus: true }, 'sm:col-span-4')}
           {field('accountNumber', t('accountNumber'), { placeholder: '123456789', maxLength: 17 }, 'sm:col-span-3')}
-          {field('bankCode', t('bankCode'), { placeholder: '0100', maxLength: 4, inputMode: 'numeric' }, 'sm:col-span-1')}
+          {field('bankCode', t('bankCode'), { placeholder: '0100', maxLength: 4, inputMode: 'numeric', list: 'extra-bank-codes' }, 'sm:col-span-1')}
+          <BankCodeOptions id="extra-bank-codes" />
           {field('iban', 'IBAN', { maxLength: 42 }, 'sm:col-span-3')}
           {field('swift', 'SWIFT / BIC', { maxLength: 11 }, 'sm:col-span-1')}
           <div className="block text-sm sm:col-span-4">

@@ -20,9 +20,14 @@ import type { BankAccount, TenantSettings } from '@/lib/tenant';
 import { vatStatusOf } from '@/lib/vat-status';
 const VAT_STATUS_OPTIONS: VatStatus[] = ['payer', 'identified', 'non_payer'];
 import { BankAccounts } from './bank-accounts';
+import { BankCodeOptions } from '@/components/bank-code-options';
+import { editAccount } from '@/lib/bank-account-input';
 import { LogoUpload } from './logo-upload';
 import { advancesPayload, rowsFromAdvances, rowsKey, TaxAdvancesEditor, type AdvanceRow, type RegimeAnswers } from './tax-advances-editor';
 import { updateCompany } from '../actions';
+
+/** Form fields that split and fill each other (see `editAccount`). */
+const ACCOUNT_FIELDS = { bankAccountNumber: 'number', bankAccountBankCode: 'code', bankAccountIban: 'iban' } as const;
 
 /** Form field → backend snake_case key; every value is edited as a string, except the flags below. */
 const FIELDS = {
@@ -83,7 +88,17 @@ export function CompanyForm({
   const [vatCheck, setVatCheck] = useState<VatPayerCheck | null>(null);
   const suggestion = suggestedVatStatus(vatCheck, values.vatStatus);
 
-  const set = (key: Field, value: string) => setValues((v) => ({ ...v, [key]: value }));
+  const set = (key: Field, value: string) =>
+    setValues((v) => {
+      const accountField = ACCOUNT_FIELDS[key as keyof typeof ACCOUNT_FIELDS];
+      if (!accountField) return { ...v, [key]: value };
+      const a = editAccount(
+        { number: v.bankAccountNumber, code: v.bankAccountBankCode, iban: v.bankAccountIban, swift: v.bankAccountSwift },
+        accountField,
+        value,
+      );
+      return { ...v, bankAccountNumber: a.number, bankAccountBankCode: a.code, bankAccountIban: a.iban, bankAccountSwift: a.swift };
+    });
   const dirty = (Object.keys(values) as (keyof Values)[]).filter((k) => values[k] !== initial[k]);
   const dirtyCount = dirty.length + (advancesDirty ? 1 : 0);
 
@@ -349,7 +364,8 @@ export function CompanyForm({
       <Section icon={CreditCard} title={t('sections.bank')} hint={t('sections.bankHint')}>
         <div className="grid gap-3 sm:grid-cols-4">
           {field('bankAccountNumber', t('accountNumber'), { placeholder: '123456789', maxLength: 17 }, 'sm:col-span-3')}
-          {field('bankAccountBankCode', t('bankCode'), { placeholder: '0100', maxLength: 4, inputMode: 'numeric' }, 'sm:col-span-1')}
+          {field('bankAccountBankCode', t('bankCode'), { placeholder: '0100', maxLength: 4, inputMode: 'numeric', list: 'company-bank-codes' }, 'sm:col-span-1')}
+          <BankCodeOptions id="company-bank-codes" />
           {field('bankAccountIban', 'IBAN', { placeholder: 'CZ65 0800 0000 1920 0014 5399', maxLength: 42 }, 'sm:col-span-3', t('ibanHint'))}
           {field('bankAccountSwift', 'SWIFT / BIC', { maxLength: 11 }, 'sm:col-span-1')}
         </div>
