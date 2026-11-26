@@ -13,6 +13,7 @@ function tx(overrides: Partial<StoredRow> & { id: string }): StoredRow {
     tenantId: "t1",
     importId: "imp",
     transactionDate: new Date("2026-11-20"),
+    occurredAt: null,
     amount: "-1290.00",
     currency: "CZK",
     variableSymbol: "0001234567",
@@ -242,5 +243,15 @@ describe("BankReconciliationService late descriptions", () => {
     await service.fillLateDescriptions(db as never, [{ externalId: "paypal:45E2", message: null } as never], []);
     const fixed = executed.find((q) => q.includes("paymentDraftDescriptionAlways") && q.includes("pending_review"));
     expect(fixed).toContain("paypal:45E2");
+  });
+
+  it("gives a payment stored without its time the moment the sync now sends", async () => {
+    const executed: string[] = [];
+    const db = { execute: vi.fn(async (query: { queryChunks?: unknown[] }) => { executed.push(JSON.stringify(query.queryChunks ?? query)); return []; }) };
+    const { service } = services();
+    await service.fillLateDescriptions(db as never, [{ externalId: "paypal:45E2", message: null, occurredAt: new Date("2026-08-24T20:21:05Z") } as never], []);
+    const timed = executed.find((q) => q.includes("occurred_at"));
+    expect(timed).toContain("2026-08-24T20:21:05.000Z");
+    expect(timed).toContain("paypal:45E2");
   });
 });

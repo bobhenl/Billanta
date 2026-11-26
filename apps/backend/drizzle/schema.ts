@@ -1145,6 +1145,8 @@ export const bankTransactions = pgTable("bank_transactions", {
     withTimezone: true,
     mode: "date",
   }).notNull(),
+  /** The exact moment, when the source sends one; orders payments within a day. */
+  occurredAt: timestamp("occurred_at", { withTimezone: true, mode: "date" }),
   amount: numeric("amount", { precision: 14, scale: 2 }).notNull(),
   currency: varchar("currency", { length: 3 }).notNull().default("CZK"),
   variableSymbol: text("variable_symbol"),

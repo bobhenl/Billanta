@@ -27,6 +27,8 @@ export class StripeApiError extends Error {
 export const STRIPE_RESTRICTED_KEY_PATTERN = /^rk_(live|test)_[A-Za-z0-9]{16,}$/;
 
 export interface StripeSyncedRow extends ParsedBankTransactionRow {
+  /** When Stripe recorded the payment, to the second. */
+  occurredAt: Date | null;
   /** `stripe:<charge or payment id>` (the balance transaction id when Stripe sent no source), as in the CSV import. */
   externalId: string;
   /** Fee Stripe kept, positive decimal string in `currency`, or null. */
@@ -160,6 +162,7 @@ export function parseStripeBalanceTransactions(data: unknown): StripeSyncedRow[]
     rows.push({
       externalId: `stripe:${sourceId?.trim() || bt.id}`,
       transactionDate,
+      occurredAt: new Date(bt.created! * 1000),
       amount: amount.toFixed(2),
       currency: currency.slice(0, 3),
       // Metadata is set by the merchant's own checkout, so it beats a "VS" typed into the description.

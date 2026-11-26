@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { asc, desc, eq, max } from "drizzle-orm";
+import { asc, eq, max } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
-import { BankReconciliationService, paymentForRules, type StoredRule } from "./bank-reconciliation.service";
+import { BankReconciliationService, bankTransactionOrder, paymentForRules, type StoredRule } from "./bank-reconciliation.service";
 import { ruleBodySchema, ruleHits, validateRule, type RuleBody } from "./bank-rules";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
@@ -135,6 +135,6 @@ export class BankRulesService {
       .select()
       .from(schema.bankTransactions)
       .where(eq(schema.bankTransactions.status, "unmatched"))
-      .orderBy(desc(schema.bankTransactions.transactionDate), desc(schema.bankTransactions.createdAt));
+      .orderBy(...bankTransactionOrder());
   }
 }

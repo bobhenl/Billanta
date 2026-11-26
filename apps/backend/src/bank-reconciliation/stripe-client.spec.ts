@@ -59,6 +59,7 @@ describe("parseStripeBalanceTransactions", () => {
       {
         externalId: "stripe:ch_1A",
         transactionDate: new Date(Date.UTC(2026, 8, 30)),
+        occurredAt: new Date(NOON * 1000),
         amount: "121.00",
         currency: "EUR",
         variableSymbol: "2026014",

@@ -27,9 +27,16 @@ export type BankTransactionStatusFilter = "unmatched" | "matched" | "ignored";
 
 type InvoiceLineItemRow = typeof schema.invoiceLineItems.$inferSelect;
 
+/** Newest first: the day, then the moment the provider sent (rows without one last), then when it was stored. */
+export function bankTransactionOrder() {
+  const t = schema.bankTransactions;
+  return [desc(t.transactionDate), sql`${t.occurredAt} DESC NULLS LAST`, desc(t.createdAt)];
+}
+
 export type BankImportSource = "csv" | "camt053" | "gpc" | "fio" | "psd2" | "paypal" | "stripe";
 type IncomingRow = ParsedBankTransactionRow & {
   externalId?: string | null;
+  occurredAt?: Date | null;
   fee?: string | null;
   netAmount?: string | null;
   netCurrency?: string | null;
@@ -119,6 +126,7 @@ export class BankReconciliationService {
    */
   async fillLateDescriptions(db: TenantDb, incomingRows: IncomingRow[], inserted: { externalId: string | null }[]) {
     await this.applyFixedDraftLine(db, incomingRows);
+    await this.fillLateTimes(db, incomingRows);
     const insertedIds = new Set(inserted.map((t) => t.externalId));
     const late = incomingRows
       .filter((r) => r.externalId && r.message && !insertedIds.has(r.externalId))
@@ -136,6 +144,18 @@ export class BankReconciliationService {
       WHERE li.invoice_id = i.id AND i.status = 'pending_review'
         AND li.description IN (${PAYMENT_DRAFT_PLACEHOLDER}, (SELECT btrim(tn.invoice_form_prefs->>'paymentDraftDescription') FROM tenants tn WHERE tn.id = i.tenant_id))
         AND (SELECT tn.invoice_form_prefs->>'paymentDraftDescriptionAlways' FROM tenants tn WHERE tn.id = i.tenant_id) IS DISTINCT FROM 'true'`);
+  }
+
+  /** A payment stored before Billanta kept the time gets it from the next sync. */
+  private async fillLateTimes(db: TenantDb, incomingRows: IncomingRow[]) {
+    const timed = incomingRows
+      .filter((r) => r.externalId && r.occurredAt)
+      .map((r) => ({ id: r.externalId, at: r.occurredAt!.toISOString() }));
+    if (timed.length === 0) return;
+    await db.execute(sql`
+      UPDATE bank_transactions t SET occurred_at = v.at
+      FROM jsonb_to_recordset(${JSON.stringify(timed)}::jsonb) AS v(id text, at timestamptz)
+      WHERE t.external_id = v.id AND t.occurred_at IS NULL`);
   }
 
   /**
@@ -209,6 +229,7 @@ export class BankReconciliationService {
                 tenantId,
                 importId: importRow.id,
                 transactionDate: row.transactionDate,
+                occurredAt: row.occurredAt ?? null,
                 amount: row.amount,
                 currency: row.currency,
                 // "0002026001" and "2026001" are one symbol; a non-numeric one is kept as typed.
@@ -322,7 +343,7 @@ export class BankReconciliationService {
     // ContactsService.list / InvoicesService.list).
     // The import's source and filename let /bank filter by connection (an
     // import has no connection id; the sync names it after the account).
-    const order = [desc(schema.bankTransactions.transactionDate), desc(schema.bankTransactions.createdAt)];
+    const order = bankTransactionOrder();
     const rows = await db
       .select({
         transaction: schema.bankTransactions,

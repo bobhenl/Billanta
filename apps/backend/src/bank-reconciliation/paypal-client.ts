@@ -30,6 +30,8 @@ export interface PaypalCredentials {
 export interface PaypalSyncedRow extends ParsedBankTransactionRow {
   /** `paypal:<transaction id>`, unique per PayPal account. */
   externalId: string;
+  /** When the payment was made, to the second. */
+  occurredAt: Date | null;
   /** Fee PayPal kept, positive decimal string in `currency`, or null. */
   fee: string | null;
   /**
@@ -137,6 +139,13 @@ export function parseDay(raw: string | null | undefined): Date | null {
   return new Date(Date.UTC(py, pm - 1, pd));
 }
 
+/** The exact moment of a PayPal timestamp, or null for a bare day. */
+export function parseInstant(raw: string | null | undefined): Date | null {
+  if (!raw || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(raw)) return null;
+  const instant = new Date(raw);
+  return Number.isNaN(instant.getTime()) ? null : instant;
+}
+
 /** What was paid for: the item names of a PayPal invoice or cart ("2× Logo"), when PayPal sends them. */
 function itemsOf(detail: RawDetail): string | null {
   const names = (detail.cart_info?.item_details ?? [])
@@ -182,6 +191,7 @@ export function parsePaypalTransactions(details: unknown): PaypalSyncedRow[] {
     rows.push({
       externalId: `paypal:${info.transaction_id}`,
       transactionDate,
+      occurredAt: parseInstant(info.transaction_initiation_date),
       amount: amount.toFixed(2),
       currency,
       variableSymbol: extractVariableSymbol([info.invoice_id, info.custom_field, info.transaction_subject, info.transaction_note]),

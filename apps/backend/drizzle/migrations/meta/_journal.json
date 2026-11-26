@@ -652,6 +652,13 @@
       "when": 1793248860000,
       "tag": "0093_public_line_item_discount",
       "breakpoints": true
+    },
+    {
+      "idx": 94,
+      "version": "7",
+      "when": 1793335260000,
+      "tag": "0094_bank_transaction_time",
+      "breakpoints": true
     }
   ]
 }

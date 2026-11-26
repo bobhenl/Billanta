@@ -5,7 +5,7 @@ import { EyeOff, FilePlus2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { toast } from '@/components/toaster';
-import { formatDate, formatMoney } from '@/lib/invoice-ui';
+import { formatDate, formatMoney, formatTime } from '@/lib/invoice-ui';
 import { TX_STATUS_CLASSES, type BankTransaction } from '@/lib/bank-ui';
 import { cn } from '@/lib/utils';
 import { draftInvoiceFromTransaction, ignoreTransaction } from './actions';
@@ -124,6 +124,7 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
                   <p className="truncate text-sm font-semibold">{tx.counterpartyName ?? t('unknownCounterparty')}</p>
                   <p className="truncate text-xs text-muted-foreground">
                     {formatDate(tx.transactionDate, locale)}
+                    {tx.occurredAt && ` ${formatTime(tx.occurredAt, locale)}`}
                     {tx.variableSymbol && ` · VS ${tx.variableSymbol}`}
                   </p>
                 </div>
@@ -189,7 +190,10 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
                       )}
                     </td>
                   )}
-                  <td className="whitespace-nowrap px-2 py-2.5 tabular-nums">{formatDate(tx.transactionDate, locale)}</td>
+                  <td className="whitespace-nowrap px-2 py-2.5 tabular-nums">
+                    {formatDate(tx.transactionDate, locale)}
+                    {tx.occurredAt && <span className="block text-xs text-muted-foreground">{formatTime(tx.occurredAt, locale)}</span>}
+                  </td>
                   <td className="px-2 py-2.5">
                     <Link href={`/bank/${tx.id}`} onClick={(e) => e.stopPropagation()} className="font-semibold hover:text-primary">
                       {tx.counterpartyName ?? t('unknownCounterparty')}

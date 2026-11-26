@@ -230,6 +230,13 @@ export function formatMoney(amount: number, currency: string, locale: string): s
   }
 }
 
+/** Hours and minutes in Czech time, which is where the payment's day is counted. */
+export function formatTime(value: string | null | undefined, locale: string): string | null {
+  if (!value) return null;
+  const date = new Date(value);
+  return isNaN(date.getTime()) ? null : new Intl.DateTimeFormat(locale, { timeStyle: 'short', timeZone: 'Europe/Prague' }).format(date);
+}
+
 export function formatDate(value: string | null | undefined, locale: string): string | null {
   if (!value) return null;
   const date = new Date(value);

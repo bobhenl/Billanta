@@ -10,6 +10,8 @@ export interface BankTransaction {
   id: string;
   importId: string;
   transactionDate: string;
+  /** The exact moment, when the source sent one (PayPal, Stripe). */
+  occurredAt?: string | null;
   amount: string;
   currency: string;
   variableSymbol: string | null;

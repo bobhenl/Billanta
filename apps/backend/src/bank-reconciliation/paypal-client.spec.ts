@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   PaypalApiError,
   PaypalClient,
+  parseInstant,
   parsePaypalTransactions,
   paypalBackfillRange,
   paypalBaseUrl,
@@ -37,6 +38,7 @@ describe("parsePaypalTransactions", () => {
       {
         externalId: "paypal:9AB12345CD678901E",
         transactionDate: new Date(Date.UTC(2026, 8, 30)),
+        occurredAt: new Date("2026-09-30T14:03:11Z"),
         amount: "121.00",
         currency: "EUR",
         variableSymbol: "2026014",
@@ -274,5 +276,14 @@ describe("paypalSyncFrom", () => {
     expect(paypalSyncFrom(from, new Date("2026-08-24"), now).toISOString()).toBe("2026-08-23T00:00:00.000Z");
     expect(paypalSyncFrom(from, new Date("2024-01-01"), now).toISOString()).toBe("2025-11-24T20:00:00.000Z");
     expect(paypalSyncFrom(from, new Date("2026-11-24"), now)).toBe(from);
+  });
+});
+
+describe("parseInstant", () => {
+  it("keeps the second of a payment in any PayPal offset, and nothing for a bare day", () => {
+    expect(parseInstant("2026-08-24T20:21:05+0000")).toEqual(new Date("2026-08-24T20:21:05Z"));
+    expect(parseInstant("2026-08-24T13:21:05-0700")).toEqual(new Date("2026-08-24T20:21:05Z"));
+    expect(parseInstant("2026-08-24")).toBeNull();
+    expect(parseInstant("garbage")).toBeNull();
   });
 });
