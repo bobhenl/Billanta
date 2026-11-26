@@ -23,7 +23,7 @@ export const under = (path: string, prefix: string) => path === prefix || path.s
  * partner's income and taxes, which other members must not see.
  */
 const OWNER_ADMIN_PREFIXES = ["v1/net-income", "v1/tenants/me/tax-model"];
-const ownerAdminOnly = (path: string) => OWNER_ADMIN_PREFIXES.some((p) => under(path, p)) || /^v1\/invoices\/[^/]+\/partner-shares$/.test(path);
+const ownerAdminOnly = (path: string) => OWNER_ADMIN_PREFIXES.some((p) => under(path, p)) || /^v1\/invoices\/[^/]+\/(partner-shares|lock)$/.test(path);
 
 /**
  * Whether `role` (with its per-area `permissions` overrides) may send `method`

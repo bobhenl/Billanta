@@ -10,7 +10,7 @@ import { InfoHint } from '@/components/info-hint';
 import { fetchAuditLog, type AuditPage } from '@/lib/audit';
 import { NetEstimate } from '@/components/net-estimate';
 import { displayCustomField, documentVars } from '@/lib/custom-fields';
-import { fetchCanWrite, fetchTenant, taxCountryOf, type BuyerDetailsField } from '@/lib/tenant';
+import { canManage, fetchCanWrite, fetchMyRole, fetchTenant, taxCountryOf, type BuyerDetailsField } from '@/lib/tenant';
 import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import {
   buyerDetailsState,
@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils';
 import { homeCurrencyOf, lawUrl } from '@faktur/cz-compliance';
 import { AttachmentsPanel, type Attachment } from './attachments-panel';
 import { InvoiceActions } from './invoice-actions';
+import { InvoiceLockBar, UnlockInvoice } from './invoice-lock';
 import { BuyerDetailsRequest } from './buyer-details-request';
 import { PublicLinkPanel } from './public-link-panel';
 
@@ -86,6 +87,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   } catch (error) {
     if (error instanceof NotSignedInError) redirect({ href: '/login', locale });
     if (error instanceof ApiError && error.status === 404) notFound();
+    if (error instanceof ApiError && error.status === 423) return <UnlockInvoice />;
     return (
       <Banner tone="err" title={t('loadError')} className="mt-6">
         <span className="font-mono text-xs">{String(error instanceof Error ? error.message : error)}</span>
@@ -104,6 +106,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
       : [];
   // Asking the customer for their details changes the draft, so a read-only member doesn't get the box.
   const canEdit = await fetchCanWrite('invoices');
+  const canLock = canManage(await fetchMyRole().catch(() => null));
   // The buyer as printed on the document (issue-date snapshot); older backends send only `contact`.
   const buyer = detail.buyer ?? contact;
   // Mandatory-content check (CZ/SK law; Peppol for an issued invoice to a foreign buyer).
@@ -188,7 +191,11 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
         {t('backToList')}
       </Link>
 
-      <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
+      <div className="mt-3">
+        <InvoiceLockBar id={invoice.id} locked={Boolean(invoice.lockedAt)} canLock={canLock} />
+      </div>
+
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           {/* One status line: state first, then type, the date that matters and where it came from. */}
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
@@ -230,7 +237,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           {invoice.status === 'issued' && Number(invoice.amountPaid ?? 0) > 0 && (
             <div className="mt-1 text-sm">
               <span className="font-semibold text-success"><span className="amount">{t('partial.paid', { amount: money(Number(invoice.amountPaid)) })}</span></span>
-              <span className="text-muted-foreground"> · {t('partial.remaining', { amount: money(Math.max(0, totals.totalWithVat - Number(invoice.amountPaid))) })}</span>
+              <span className="text-muted-foreground"> · <span className="amount">{t('partial.remaining', { amount: money(Math.max(0, totals.totalWithVat - Number(invoice.amountPaid))) })}</span></span>
             </div>
           )}
           {home === 'CZK' && invoice.documentType !== 'credit_note' && totals.totalWithoutVat > 0 && <NetEstimate base={totals.totalWithoutVat} currency={invoice.currency} czkRate={rate} costs={paymentCosts} />}

@@ -5229,6 +5229,27 @@
       "message": "Message for the payee",
       "transactionId": "Transaction ID",
       "open": "Open in bank"
+    },
+    "lockedRow": "Locked invoice",
+    "lock": {
+      "title": "This invoice is locked",
+      "intro": "Enter your password to view it.",
+      "password": "Password",
+      "open": "Unlock",
+      "note": "Locked invoices stay open for 15 minutes in this browser. They still count in totals and exports.",
+      "badge": "Locked",
+      "lock": "Lock",
+      "unlock": "Remove lock",
+      "lockHint": "Only someone who re-enters their password sees the customer, notes and files",
+      "relock": "Lock again",
+      "lockedToast": "Invoice locked",
+      "unlockedToast": "Lock removed",
+      "errors": {
+        "wrong_current": "Wrong password.",
+        "reauth_required": "Your account has no password. Sign out and back in, then try again.",
+        "too_many_attempts": "Too many attempts. Try again in a few minutes.",
+        "generic": "That didn't work. Please try again."
+      }
     }
   },
   "invite": {

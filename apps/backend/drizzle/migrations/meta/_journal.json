@@ -659,6 +659,13 @@
       "when": 1793335260000,
       "tag": "0094_bank_transaction_time",
       "breakpoints": true
+    },
+    {
+      "idx": 95,
+      "version": "7",
+      "when": 1793335320000,
+      "tag": "0095_invoice_lock",
+      "breakpoints": true
     }
   ]
 }

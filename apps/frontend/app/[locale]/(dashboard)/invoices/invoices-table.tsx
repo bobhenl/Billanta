@@ -15,6 +15,7 @@ import {
   Download,
   ExternalLink,
   FileText,
+  Lock,
   MoreHorizontal,
   Pencil,
   Plus,
@@ -286,6 +287,14 @@ export function InvoicesTable({
       case 'type':
         return <span title={tGloss(`type.${row.documentType}`)} className={cn('whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold', TYPE_BADGE_CLASSES[row.documentType])}>{t(`type.${row.documentType}`)}</span>;
       case 'customer':
+        // A locked invoice hides who it is for until the viewer re-enters their password.
+        if (row.locked && row.contactName == null)
+          return (
+            <span className="inline-flex items-center gap-1.5 italic text-muted-foreground">
+              <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+              {t('lockedRow')}
+            </span>
+          );
         return (
           <span className="inline-flex items-center gap-1.5 font-medium">
             <ColorDot color={row.contactColor} />

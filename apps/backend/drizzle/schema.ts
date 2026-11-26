@@ -693,6 +693,10 @@ export const invoices = pgTable(
     // Sum received so far (partial payments); the status flips to "paid" once it reaches the total.
     amountPaid: numeric("amount_paid", { precision: 14, scale: 2 }).notNull().default("0"),
     paidAt: timestamp("paid_at", { withTimezone: true }),
+    // Locked by an owner/admin: opening it needs a fresh re-auth (src/invoices/invoice-lock.ts).
+    // Lists, totals and exports still count it.
+    lockedAt: timestamp("locked_at", { withTimezone: true }),
+    lockedBy: uuid("locked_by"),
     // Kept by the payment provider (PayPal, Stripe, Wise…), in the invoice currency.
     paymentFees: numeric("payment_fees", { precision: 14, scale: 2 }).notNull().default("0"),
     // What actually landed on the account, in CZK; null = not recorded.

@@ -25,6 +25,8 @@ export interface BackendJwtPayload {
    * two-factor check. Sensitive endpoints require it (`TwoFactorGuard`).
    */
   twoFactor?: boolean;
+  /** `ul: true` when the person re-entered their password a moment ago: locked invoices open (src/invoices/invoice-lock.ts). */
+  unlocked?: boolean;
 }
 
 /**
@@ -71,5 +73,6 @@ export function verifyBearerToken(
     email: record.email,
     scope: typeof record.scope === "string" ? record.scope : undefined,
     twoFactor: record.mfa === true,
+    unlocked: record.ul === true,
   };
 }

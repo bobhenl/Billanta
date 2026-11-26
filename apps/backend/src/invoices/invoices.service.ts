@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { peppolRelevant } from "./peppol-relevance";
-import { BadRequestException, ConflictException, Injectable, NotFoundException, Optional, UnprocessableEntityException } from "@nestjs/common";
+import { BadRequestException, ConflictException, HttpException, Injectable, NotFoundException, Optional, UnprocessableEntityException } from "@nestjs/common";
 import {
   checkInvoiceRequirements,
   generateIsdocXml,
@@ -55,6 +55,8 @@ import { BRAND_CREDIT_TENANT_FIELDS, brandCreditFor, creditLangOf } from "./bran
 import { amountLeftToPay, isRemindableDocument } from "./invoice-reminders.util";
 import { appendNoteLine } from "../bank-reconciliation/payment-note";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
+import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
+import { lockBlocks } from "./invoice-lock";
 
 // TODO: once packages/cz-compliance is ready, ARES-resolve
 // counterparty_ico / counterparty_name_raw into a real `contacts` row here
@@ -812,6 +814,20 @@ export class InvoicesService {
       ]);
     }
     return updated;
+  }
+
+  /** Unlocking needs the same fresh re-auth as opening; locking does not. */
+  async setLock(db: TenantDb, id: string, locked: boolean, user: AuthenticatedUser) {
+    const invoice = await this.requireInvoice(db, id);
+    if (Boolean(invoice.lockedAt) === locked) return { id, locked };
+    if (!locked && lockBlocks(invoice.lockedAt, user)) throw new HttpException("invoice_locked", 423);
+    const [updated] = await db
+      .update(schema.invoices)
+      .set(locked ? { lockedAt: new Date(), lockedBy: user.id } : { lockedAt: null, lockedBy: null })
+      .where(eq(schema.invoices.id, id))
+      .returning();
+    await this.log(db, updated, locked ? "locked" : "unlocked");
+    return { id, locked };
   }
 
   async markUnpaid(db: TenantDb, id: string) {

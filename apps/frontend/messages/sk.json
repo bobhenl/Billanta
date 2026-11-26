@@ -5229,6 +5229,27 @@
       "message": "Správa pre prijímateľa",
       "transactionId": "ID transakcie",
       "open": "Otvoriť v banke"
+    },
+    "lockedRow": "Zamknutá faktúra",
+    "lock": {
+      "title": "Faktúra je zamknutá",
+      "intro": "Na zobrazenie zadajte svoje heslo.",
+      "password": "Heslo",
+      "open": "Odomknúť",
+      "note": "Zamknuté faktúry zostanú otvorené 15 minút v tomto prehliadači. Do súčtov a exportov sa počítajú ďalej.",
+      "badge": "Zamknuté",
+      "lock": "Zamknúť",
+      "unlock": "Zrušiť zámok",
+      "lockHint": "Zákazníka, poznámky a dokumenty uvidí len ten, kto znova zadá heslo",
+      "relock": "Znova zamknúť",
+      "lockedToast": "Faktúra je zamknutá",
+      "unlockedToast": "Zámok zrušený",
+      "errors": {
+        "wrong_current": "Heslo nesedí.",
+        "reauth_required": "Váš účet nemá heslo. Odhláste sa a znova sa prihláste, potom to skúste znova.",
+        "too_many_attempts": "Príliš veľa pokusov. Skúste to o pár minút.",
+        "generic": "Nepodarilo sa to. Skúste to znova."
+      }
     }
   },
   "invite": {

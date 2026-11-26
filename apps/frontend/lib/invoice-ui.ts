@@ -45,6 +45,9 @@ export interface InvoiceRow {
   totalVat: number;
   total: number;
   isOverdue: boolean;
+  /** Locked by an owner/admin; until the viewer re-authenticates the customer and notes come back empty. */
+  locked?: boolean;
+  lockedAt?: string | null;
   /** Open "customer fills in their details" link on a draft (null when none). */
   buyerDetailsToken?: string | null;
   buyerDetailsSubmittedAt?: string | null;

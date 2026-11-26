@@ -5229,6 +5229,27 @@
       "message": "Zpráva pro příjemce",
       "transactionId": "ID transakce",
       "open": "Otevřít v bance"
+    },
+    "lockedRow": "Zamčená faktura",
+    "lock": {
+      "title": "Faktura je zamčená",
+      "intro": "Pro zobrazení zadejte své heslo.",
+      "password": "Heslo",
+      "open": "Odemknout",
+      "note": "Zamčené faktury zůstanou otevřené 15 minut v tomto prohlížeči. Do součtů a exportů se počítají dál.",
+      "badge": "Zamčeno",
+      "lock": "Zamknout",
+      "unlock": "Zrušit zámek",
+      "lockHint": "Zákazníka, poznámky a dokumenty uvidí jen ten, kdo znovu zadá heslo",
+      "relock": "Znovu zamknout",
+      "lockedToast": "Faktura je zamčená",
+      "unlockedToast": "Zámek zrušen",
+      "errors": {
+        "wrong_current": "Heslo nesedí.",
+        "reauth_required": "Váš účet nemá heslo. Odhlaste se a znovu přihlaste, pak to zkuste znovu.",
+        "too_many_attempts": "Příliš mnoho pokusů. Zkuste to za pár minut.",
+        "generic": "Nepovedlo se to. Zkuste to znovu."
+      }
     }
   },
   "invite": {
