@@ -4280,7 +4280,7 @@
     "title": "Pricing",
     "lead": "Start free, no card needed. Move up a plan when you need it.",
     "seoTitle": "Invoicing pricing – start free",
-    "metaDescription": "Billanta pricing: Free with 10 documents a month and pay-as-you-go beyond that, Start from €4.99, Plus with AI from €9.99 and Business for teams. No card needed, prices excl. VAT.",
+    "metaDescription": "Billanta pricing: Free with 10 documents a month, Start from €4.99, Plus with AI from €9.99 and Business for teams. No card needed, prices excl. VAT.",
     "yearly": "Yearly",
     "monthly": "Monthly",
     "yearlySave": "2 months free",
@@ -4300,7 +4300,7 @@
         "cta": "Start free",
         "features": [
           "10 documents a month included",
-          "More documents at {payg} each",
+          "1 user + accountant",
           "ISDOC, QR payment, registry lookup and VIES",
           "5 AI credits a month",
           "VAT threshold tracking and tax calendar",
@@ -4318,8 +4318,10 @@
           "Recurring invoices and client portal",
           "Income tax figures",
           "Export for Pohoda and Money S3",
+          "API and webhooks (1,000 requests)",
           "30 AI credits a month",
-          "Free accountant access"
+          "Free accountant access",
+          "Invoices without the Billanta footer"
         ]
       },
       "plus": {
@@ -4329,7 +4331,7 @@
         "features": [
           "Everything in Start",
           "150 AI credits a month",
-          "VAT return, control and summary statements",
+          "VAT return, control and summary statements for CZ and SK",
           "Card payments on invoices",
           "3 users + accountant",
           "API and webhooks (10,000 requests)",
@@ -4342,7 +4344,7 @@
         "cta": "Choose Business",
         "features": [
           "Everything in Plus",
-          "Up to 10 companies under one account",
+          "Net income split between up to 10 partners",
           "10 users with roles",
           "500 AI credits a month",
           "API and webhooks (50,000 requests)",
@@ -4350,7 +4352,7 @@
         ]
       }
     },
-    "paygNote": "On Free you only pay for documents beyond 10 a month, {payg} each. From about 34 documents a month, Start works out cheaper.",
+    "limitsNote": "Free covers 10 documents a month; credit notes don't count. You can try the Pohoda or Money S3 export once a month, and the VAT files once.",
     "aiCreditNote": "One AI credit = one invoice from a voice or text message, or one receipt read from a photo.",
     "compare": {
       "title": "Compare plans",
@@ -4382,30 +4384,37 @@
         "ownKey": "Your own AI key, no limit",
         "vatLimit": "VAT threshold tracking and tax calendar",
         "annual": "Income tax figures",
-        "vatFilings": "VAT return, control and summary statements",
+        "vatFilings": "VAT return, control and summary statements (CZ)",
         "accountantExport": "Export for your accountant",
         "users": "Users",
         "companies": "Companies under one account",
-        "api": "API and webhooks (requests per month)",
+        "api": "API (requests per month)",
         "time": "Time tracking",
-        "backups": "Data backups (Google Drive, download)",
-        "support": "Support"
+        "backups": "Data backups (Google Drive, SFTP, encrypted, download)",
+        "support": "Support",
+        "invoiceLock": "Password-locked invoices",
+        "brandFooter": "No “Made with Billanta” footer",
+        "stripe": "Stripe payment sync",
+        "vatFilingsSk": "VAT return, control and summary statements (SK)",
+        "netIncome": "Net income: partners in the split",
+        "webhooks": "Webhooks"
       },
       "cell": {
-        "docsFree": "10 included, then {payg} each",
+        "docsFree": "10",
         "unlimited": "Unlimited",
         "twoTemplates": "2 templates",
         "manual": "Manual",
         "automatic": "Automatic",
-        "csv": "CSV",
         "csvPlus": "CSV, Pohoda, Money S3",
-        "oneUser": "1",
-        "userAccountant": "1 + accountant",
         "threeAccountant": "3 + accountant",
-        "tenUsers": "10 with roles",
-        "upTo10": "Up to 10",
         "email": "E-mail",
-        "priority": "Priority"
+        "priority": "Priority",
+        "onScreen": "On screen",
+        "oneDownload": "1 trial download",
+        "csvTaste": "CSV, Pohoda and Money S3 once a month",
+        "oneAccountant": "1 + accountant",
+        "tenAccountant": "10 + accountant",
+        "ownPlan": "Up to 10, each on its own plan"
       }
     },
     "compareCompetitors": "How Billanta compares with Fakturoid, iDoklad and others",
@@ -4429,7 +4438,7 @@
       "items": [
         {
           "q": "Is Billanta free?",
-          "a": "Yes. The Free plan has no time limit and needs no card. It includes 10 documents a month; each extra one costs {payg}. ISDOC, QR payments and company lookup in the ARES registry are in every plan."
+          "a": "Yes. The Free plan has no time limit and needs no card. It includes 10 documents a month. If you need more, Start has no document limit. ISDOC, QR payments and company lookup in the ARES registry are in every plan."
         },
         {
           "q": "Do the prices include VAT?",
@@ -4449,7 +4458,7 @@
         },
         {
           "q": "Does my accountant need their own plan?",
-          "a": "No. From the Start plan, one accountant gets access to your company for free, as part of your plan."
+          "a": "No. On every plan, Free included, up to 2 accountants can access your company for free."
         },
         {
           "q": "Why do invoices say “Made with Billanta”?",

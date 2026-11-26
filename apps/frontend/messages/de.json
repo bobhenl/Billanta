@@ -4273,7 +4273,7 @@
     "title": "Preise",
     "lead": "Starten Sie kostenlos, ohne Karte. Wechseln Sie in einen höheren Tarif, wenn Sie ihn brauchen.",
     "seoTitle": "Preise für Rechnungssoftware – kostenlos starten",
-    "metaDescription": "Billanta-Preise: Free mit 10 Belegen pro Monat und Abrechnung nach Verbrauch darüber hinaus, Start ab 4,99 €, Plus mit KI ab 9,99 € und Business für Teams. Keine Karte nötig, Preise zzgl. USt.",
+    "metaDescription": "Billanta-Preise: Free mit 10 Belegen pro Monat, Start ab 4,99 €, Plus mit KI ab 9,99 € und Business für Teams. Keine Karte nötig, Preise zzgl. USt.",
     "yearly": "Jährlich",
     "monthly": "Monatlich",
     "yearlySave": "2 Monate gratis",
@@ -4293,7 +4293,7 @@
         "cta": "Kostenlos starten",
         "features": [
           "10 Belege pro Monat inklusive",
-          "Weitere Belege für je {payg}",
+          "1 Nutzer + Buchhaltung",
           "ISDOC, QR-Zahlung, Registerabfrage und VIES",
           "5 KI-Credits pro Monat",
           "Überwachung der USt.-Schwelle und Steuerkalender",
@@ -4311,8 +4311,10 @@
           "Wiederkehrende Rechnungen und Kundenportal",
           "Kennzahlen für die Einkommensteuer",
           "Export für Pohoda und Money S3",
+          "API und Webhooks (1.000 Anfragen)",
           "30 KI-Credits pro Monat",
-          "Kostenloser Zugang für die Buchhaltung"
+          "Kostenloser Zugang für die Buchhaltung",
+          "Rechnungen ohne Billanta-Fußzeile"
         ]
       },
       "plus": {
@@ -4322,7 +4324,7 @@
         "features": [
           "Alles aus Start",
           "150 KI-Credits pro Monat",
-          "USt.-Erklärung, Kontrollmeldung und Zusammenfassende Meldung",
+          "USt.-Erklärung, Kontrollmeldung und Zusammenfassende Meldung für CZ und SK",
           "Kartenzahlung auf Rechnungen",
           "3 Benutzer + Buchhaltung",
           "API und Webhooks (10.000 Anfragen)",
@@ -4335,7 +4337,7 @@
         "cta": "Business wählen",
         "features": [
           "Alles aus Plus",
-          "Bis zu 10 Unternehmen in einem Konto",
+          "Nettoeinkommen auf bis zu 10 Partner aufteilen",
           "10 Benutzer mit Rollen",
           "500 KI-Credits pro Monat",
           "API und Webhooks (50.000 Anfragen)",
@@ -4343,7 +4345,7 @@
         ]
       }
     },
-    "paygNote": "Im Free-Tarif zahlen Sie nur für Belege über 10 pro Monat, je {payg}. Ab etwa 34 Belegen im Monat ist Start günstiger.",
+    "limitsNote": "Im Free-Tarif stellen Sie 10 Belege pro Monat aus, Gutschriften zählen nicht mit. Den Export für Pohoda oder Money S3 können Sie einmal im Monat testen, die USt.-Dateien einmal.",
     "aiCreditNote": "Ein KI-Credit = eine Rechnung aus einer Sprach- oder Textnachricht oder ein aus einem Foto ausgelesener Beleg.",
     "compare": {
       "title": "Tarife vergleichen",
@@ -4375,30 +4377,37 @@
         "ownKey": "Eigener KI-Schlüssel, ohne Limit",
         "vatLimit": "Überwachung der USt.-Schwelle und Steuerkalender",
         "annual": "Kennzahlen für die Einkommensteuer",
-        "vatFilings": "USt.-Erklärung, Kontrollmeldung und Zusammenfassende Meldung",
+        "vatFilings": "USt.-Erklärung, Kontrollmeldung und Zusammenfassende Meldung (CZ)",
         "accountantExport": "Export für die Buchhaltung",
         "users": "Benutzer",
         "companies": "Unternehmen in einem Konto",
-        "api": "API und Webhooks (Anfragen pro Monat)",
+        "api": "API (Anfragen pro Monat)",
         "time": "Zeiterfassung",
-        "backups": "Datensicherung (Google Drive, Download)",
-        "support": "Support"
+        "backups": "Datensicherung (Google Drive, SFTP, verschlüsselt, Download)",
+        "support": "Support",
+        "invoiceLock": "Rechnungen mit Passwortschutz",
+        "brandFooter": "Ohne Fußzeile „Erstellt mit Billanta“",
+        "stripe": "Stripe-Zahlungen synchronisieren",
+        "vatFilingsSk": "USt.-Erklärung, Kontrollmeldung und Zusammenfassende Meldung (SK)",
+        "netIncome": "Nettoeinkommen: Partner in der Aufteilung",
+        "webhooks": "Webhooks"
       },
       "cell": {
-        "docsFree": "10 inklusive, danach je {payg}",
+        "docsFree": "10",
         "unlimited": "Unbegrenzt",
         "twoTemplates": "2 Vorlagen",
         "manual": "Manuell",
         "automatic": "Automatisch",
-        "csv": "CSV",
         "csvPlus": "CSV, Pohoda, Money S3",
-        "oneUser": "1",
-        "userAccountant": "1 + Buchhaltung",
         "threeAccountant": "3 + Buchhaltung",
-        "tenUsers": "10 mit Rollen",
-        "upTo10": "Bis zu 10",
         "email": "E-Mail",
-        "priority": "Bevorzugt"
+        "priority": "Bevorzugt",
+        "onScreen": "Auf dem Bildschirm",
+        "oneDownload": "1 Test-Download",
+        "csvTaste": "CSV, Pohoda und Money S3 1× im Monat",
+        "oneAccountant": "1 + Buchhaltung",
+        "tenAccountant": "10 + Buchhaltung",
+        "ownPlan": "Bis zu 10, jedes mit eigenem Tarif"
       }
     },
     "compareCompetitors": "Wie Billanta im Vergleich zu Fakturoid, iDoklad und anderen abschneidet",
@@ -4422,7 +4431,7 @@
       "items": [
         {
           "q": "Ist Billanta kostenlos?",
-          "a": "Ja. Der Free-Tarif ist zeitlich unbegrenzt und benötigt keine Karte. Er umfasst 10 Belege pro Monat; jeder weitere kostet {payg}. ISDOC, QR-Zahlungen und die Firmensuche im ARES-Register sind in jedem Tarif enthalten."
+          "a": "Ja. Der Free-Tarif ist zeitlich unbegrenzt und benötigt keine Karte. Er umfasst 10 Belege pro Monat. Wenn Sie mehr brauchen, hat Start keine Belegbegrenzung. ISDOC, QR-Zahlungen und die Firmensuche im ARES-Register sind in jedem Tarif enthalten."
         },
         {
           "q": "Sind die Preise inklusive USt.?",
@@ -4442,7 +4451,7 @@
         },
         {
           "q": "Braucht meine Buchhaltung einen eigenen Tarif?",
-          "a": "Nein. Ab dem Start-Tarif erhält eine Buchhalterin oder ein Buchhalter kostenlos Zugang zu Ihrem Unternehmen, als Teil Ihres Tarifs."
+          "a": "Nein. In jedem Tarif, auch in Free, können bis zu 2 Personen aus der Buchhaltung kostenlos auf Ihr Unternehmen zugreifen."
         },
         {
           "q": "Warum steht auf Rechnungen „Erstellt mit Billanta“?",

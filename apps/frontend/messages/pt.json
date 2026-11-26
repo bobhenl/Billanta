@@ -4273,7 +4273,7 @@
     "title": "Preços",
     "lead": "Comece grátis, sem cartão. Mude de plano quando precisar.",
     "seoTitle": "Preços de faturação – comece grátis",
-    "metaDescription": "Preços da Billanta: Free com 10 documentos por mês e pagamento por utilização a partir daí, Start desde 4,99 €, Plus com IA desde 9,99 € e Business para equipas. Sem cartão, preços sem IVA.",
+    "metaDescription": "Preços da Billanta: Free com 10 documentos por mês, Start desde 4,99 €, Plus com IA desde 9,99 € e Business para equipas. Sem cartão, preços sem IVA.",
     "yearly": "Anual",
     "monthly": "Mensal",
     "yearlySave": "2 meses grátis",
@@ -4293,7 +4293,7 @@
         "cta": "Começar grátis",
         "features": [
           "10 documentos por mês incluídos",
-          "Documentos adicionais a {payg} cada",
+          "1 utilizador + contabilista",
           "ISDOC, pagamento por QR, consulta de registos e VIES",
           "5 créditos de IA por mês",
           "Controlo do limiar de IVA e calendário fiscal",
@@ -4311,8 +4311,10 @@
           "Faturas recorrentes e portal do cliente",
           "Valores para o imposto sobre o rendimento",
           "Exportação para Pohoda e Money S3",
+          "API e webhooks (1000 pedidos)",
           "30 créditos de IA por mês",
-          "Acesso gratuito para o contabilista"
+          "Acesso gratuito para o contabilista",
+          "Faturas sem o rodapé da Billanta"
         ]
       },
       "plus": {
@@ -4322,7 +4324,7 @@
         "features": [
           "Tudo o que o Start inclui",
           "150 créditos de IA por mês",
-          "Declaração de IVA, declaração de controlo e declaração recapitulativa",
+          "Declaração de IVA, de controlo e recapitulativa para CZ e SK",
           "Pagamentos com cartão nas faturas",
           "3 utilizadores + contabilista",
           "API e webhooks (10 000 pedidos)",
@@ -4335,7 +4337,7 @@
         "cta": "Escolher Business",
         "features": [
           "Tudo o que o Plus inclui",
-          "Até 10 empresas numa só conta",
+          "Rendimento líquido dividido por até 10 sócios",
           "10 utilizadores com funções",
           "500 créditos de IA por mês",
           "API e webhooks (50 000 pedidos)",
@@ -4343,7 +4345,7 @@
         ]
       }
     },
-    "paygNote": "No Free só paga os documentos acima de 10 por mês, a {payg} cada. A partir de cerca de 34 documentos por mês, o Start fica mais barato.",
+    "limitsNote": "No Grátis emite 10 documentos por mês; as notas de crédito não contam. Pode experimentar a exportação para Pohoda ou Money S3 uma vez por mês e os ficheiros de IVA uma vez.",
     "aiCreditNote": "Um crédito de IA = uma fatura a partir de uma mensagem de voz ou de texto, ou um recibo lido a partir de uma fotografia.",
     "compare": {
       "title": "Comparar planos",
@@ -4375,30 +4377,37 @@
         "ownKey": "A sua própria chave de IA, sem limite",
         "vatLimit": "Controlo do limiar de IVA e calendário fiscal",
         "annual": "Valores para o imposto sobre o rendimento",
-        "vatFilings": "Declaração de IVA, declaração de controlo e declaração recapitulativa",
+        "vatFilings": "Declaração de IVA, de controlo e recapitulativa (CZ)",
         "accountantExport": "Exportação para o contabilista",
         "users": "Utilizadores",
         "companies": "Empresas numa só conta",
-        "api": "API e webhooks (pedidos por mês)",
+        "api": "API (pedidos por mês)",
         "time": "Registo de horas",
-        "backups": "Cópias de segurança (Google Drive, transferência)",
-        "support": "Suporte"
+        "backups": "Cópias de segurança (Google Drive, SFTP, cifradas, transferência)",
+        "support": "Suporte",
+        "invoiceLock": "Faturas protegidas por palavra-passe",
+        "brandFooter": "Sem o rodapé «Feito com Billanta»",
+        "stripe": "Sincronização de pagamentos Stripe",
+        "vatFilingsSk": "Declaração de IVA, de controlo e recapitulativa (SK)",
+        "netIncome": "Rendimento líquido: sócios na divisão",
+        "webhooks": "Webhooks"
       },
       "cell": {
-        "docsFree": "10 incluídos, depois {payg} cada",
+        "docsFree": "10",
         "unlimited": "Ilimitado",
         "twoTemplates": "2 modelos",
         "manual": "Manual",
         "automatic": "Automático",
-        "csv": "CSV",
         "csvPlus": "CSV, Pohoda, Money S3",
-        "oneUser": "1",
-        "userAccountant": "1 + contabilista",
         "threeAccountant": "3 + contabilista",
-        "tenUsers": "10 com funções",
-        "upTo10": "Até 10",
         "email": "E-mail",
-        "priority": "Prioritário"
+        "priority": "Prioritário",
+        "onScreen": "No ecrã",
+        "oneDownload": "1 transferência de teste",
+        "csvTaste": "CSV, Pohoda e Money S3 1 vez por mês",
+        "oneAccountant": "1 + contabilista",
+        "tenAccountant": "10 + contabilista",
+        "ownPlan": "Até 10, cada uma com o seu plano"
       }
     },
     "compareCompetitors": "Como a Billanta se compara com o Fakturoid, o iDoklad e outros",
@@ -4422,7 +4431,7 @@
       "items": [
         {
           "q": "A Billanta é gratuita?",
-          "a": "Sim. O plano Free não tem limite de tempo e não precisa de cartão. Inclui 10 documentos por mês; cada documento adicional custa {payg}. ISDOC, pagamentos por QR e a consulta de empresas no registo ARES estão incluídos em todos os planos."
+          "a": "Sim. O plano Grátis não tem limite de tempo e não precisa de cartão. Inclui 10 documentos por mês. Se precisar de mais, o Start não tem limite de documentos. ISDOC, pagamentos por QR e a consulta de empresas no registo ARES estão incluídos em todos os planos."
         },
         {
           "q": "Os preços incluem IVA?",
@@ -4442,7 +4451,7 @@
         },
         {
           "q": "O meu contabilista precisa de um plano próprio?",
-          "a": "Não. A partir do plano Start, um contabilista tem acesso gratuito à sua empresa, incluído no seu plano."
+          "a": "Não. Em qualquer plano, incluindo o Grátis, até 2 contabilistas podem aceder gratuitamente à sua empresa."
         },
         {
           "q": "Porque é que as faturas dizem «Feito com Billanta»?",

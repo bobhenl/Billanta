@@ -4280,7 +4280,7 @@
     "title": "Ceník",
     "lead": "Začněte zdarma, bez platební karty. Na vyšší tarif přejdete, až ho budete potřebovat.",
     "seoTitle": "Ceník fakturace – začněte zdarma",
-    "metaDescription": "Ceník Billanty: Zdarma s 10 doklady měsíčně a platbou za další, Start od 119 Kč, Plus s AI od 239 Kč a Firma pro týmy. Bez platební karty, ceny bez DPH.",
+    "metaDescription": "Ceník Billanty: Zdarma s 10 doklady měsíčně, Start od 119 Kč, Plus s AI od 239 Kč a Firma pro týmy. Bez platební karty, ceny bez DPH.",
     "yearly": "Ročně",
     "monthly": "Měsíčně",
     "yearlySave": "2 měsíce zdarma",
@@ -4300,7 +4300,7 @@
         "cta": "Začít zdarma",
         "features": [
           "10 dokladů měsíčně v ceně",
-          "Další doklady za {payg} / ks",
+          "1 uživatel + účetní",
           "ISDOC, QR platba, ARES a VIES",
           "5 AI kreditů měsíčně",
           "Hlídání limitu DPH a daňový kalendář",
@@ -4318,8 +4318,10 @@
           "Opakované faktury a klientský portál",
           "Podklady k dani z příjmů",
           "Export pro Pohodu a Money S3",
+          "API a webhooky (1 000 požadavků)",
           "30 AI kreditů měsíčně",
-          "Přístup pro účetní zdarma"
+          "Přístup pro účetní zdarma",
+          "Faktury bez patičky Billanty"
         ]
       },
       "plus": {
@@ -4329,7 +4331,7 @@
         "features": [
           "Vše ze Startu",
           "150 AI kreditů měsíčně",
-          "Přiznání k DPH, kontrolní a souhrnné hlášení",
+          "Přiznání k DPH, kontrolní a souhrnné hlášení za CZ i SK",
           "Platby kartou na faktuře",
           "3 uživatelé + účetní",
           "API a webhooky (10 000 požadavků)",
@@ -4342,7 +4344,7 @@
         "cta": "Vybrat Firmu",
         "features": [
           "Vše z Plus",
-          "Až 10 firem pod jedním účtem",
+          "Rozdělení čistého příjmu až mezi 10 společníků",
           "10 uživatelů s rolemi",
           "500 AI kreditů měsíčně",
           "API a webhooky (50 000 požadavků)",
@@ -4350,7 +4352,7 @@
         ]
       }
     },
-    "paygNote": "Na tarifu Zdarma platíte jen za doklady nad 10 měsíčně, {payg} za kus. Při zhruba 34 a více dokladech měsíčně vyjde levněji Start.",
+    "limitsNote": "Na tarifu Zdarma vystavíte 10 dokladů měsíčně, dobropisy se nepočítají. Export pro Pohodu nebo Money S3 si vyzkoušíte jednou měsíčně a soubory pro DPH jednou za celou dobu.",
     "aiCreditNote": "AI kredit = jedna faktura z hlasové nebo textové zprávy, nebo jedna přečtená účtenka.",
     "compare": {
       "title": "Srovnání tarifů",
@@ -4382,30 +4384,37 @@
         "ownKey": "Vlastní klíč k AI bez limitu",
         "vatLimit": "Hlídání obratu pro DPH a daňový kalendář",
         "annual": "Podklady k dani z příjmů",
-        "vatFilings": "Přiznání k DPH, kontrolní a souhrnné hlášení",
+        "vatFilings": "Přiznání k DPH, kontrolní a souhrnné hlášení (CZ)",
         "accountantExport": "Export pro účetní",
         "users": "Uživatelé",
         "companies": "Firmy pod jedním účtem",
-        "api": "API a webhooky (požadavky měsíčně)",
+        "api": "API (požadavky měsíčně)",
         "time": "Evidence času",
-        "backups": "Zálohy dat (Google Drive, stažení)",
-        "support": "Podpora"
+        "backups": "Zálohy dat (Google Drive, SFTP, šifrované, stažení)",
+        "support": "Podpora",
+        "invoiceLock": "Faktury zamčené heslem",
+        "brandFooter": "Bez patičky „Vytvořeno v Billantě“",
+        "stripe": "Synchronizace plateb ze Stripe",
+        "vatFilingsSk": "Přiznání k DPH, kontrolní a souhrnný výkaz (SK)",
+        "netIncome": "Čistý příjem: společníci ve výpočtu",
+        "webhooks": "Webhooky"
       },
       "cell": {
-        "docsFree": "10 v ceně, další {payg} / ks",
+        "docsFree": "10",
         "unlimited": "Neomezeně",
         "twoTemplates": "2 šablony",
         "manual": "Ručně",
         "automatic": "Automaticky",
-        "csv": "CSV",
         "csvPlus": "CSV, Pohoda, Money S3",
-        "oneUser": "1",
-        "userAccountant": "1 + účetní",
         "threeAccountant": "3 + účetní",
-        "tenUsers": "10 s rolemi",
-        "upTo10": "Až 10",
         "email": "E-mail",
-        "priority": "Přednostní"
+        "priority": "Přednostní",
+        "onScreen": "Na obrazovce",
+        "oneDownload": "1 stažení na zkoušku",
+        "csvTaste": "CSV, Pohoda a Money S3 1× měsíčně",
+        "oneAccountant": "1 + účetní",
+        "tenAccountant": "10 + účetní",
+        "ownPlan": "Až 10, každá má svůj tarif"
       }
     },
     "compareCompetitors": "Jak si Billanta stojí proti Fakturoidu, iDokladu a dalším",
@@ -4429,7 +4438,7 @@
       "items": [
         {
           "q": "Je Billanta zdarma?",
-          "a": "Ano. Tarif Zdarma nemá časový limit a nepotřebuje platební kartu. Zahrnuje 10 dokladů měsíčně, každý další stojí {payg}. ISDOC, QR platba a načítání firem z ARES jsou ve všech tarifech."
+          "a": "Ano. Tarif Zdarma nemá časový limit a nepotřebuje platební kartu. Zahrnuje 10 dokladů měsíčně. Když jich potřebujete víc, Start má doklady bez omezení. ISDOC, QR platba a načítání firem z ARES jsou ve všech tarifech."
         },
         {
           "q": "Jsou ceny včetně DPH?",
@@ -4449,7 +4458,7 @@
         },
         {
           "q": "Potřebuje moje účetní vlastní tarif?",
-          "a": "Ne. Od tarifu Start má jedna účetní přístup do vaší firmy zdarma, v ceně vašeho tarifu."
+          "a": "Ne. Na každém tarifu, i na tarifu Zdarma, mohou mít do vaší firmy přístup až 2 účetní zdarma."
         },
         {
           "q": "Proč je na fakturách řádek „Vystaveno v aplikaci Billanta“?",

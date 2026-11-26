@@ -2,7 +2,11 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  ACCOUNTANT_SEATS,
   BANK_TRANSFER_SURCHARGE_PERCENT,
+  FEATURE_MIN_PLAN,
+  FEATURE_TASTE,
+  PLAN_LIMITS,
   CARD_TRIAL_DAYS,
   DEFAULT_TRIAL_DAYS,
   cardTrialEnabled,
@@ -59,6 +63,21 @@ describe("frontend price list", () => {
     const src = readFileSync(join(__dirname, "../../../frontend/lib/plans.ts"), "utf8");
     const m = /BANK_TRANSFER_SURCHARGE_PERCENT\s*=\s*(\d+)/.exec(src);
     expect(Number(m?.[1])).toBe(BANK_TRANSFER_SURCHARGE_PERCENT);
+  });
+
+  // The comparison table is built from these, so a limit changed on one side
+  // only would make the pricing page promise something the API refuses.
+  const literal = (src: string, name: string) => {
+    const m = new RegExp(`export const ${name}\\b[^=]*=\\s*(\\{[\\s\\S]*?\\n\\})`).exec(src);
+    if (!m) throw new Error(`${name} not found in apps/frontend/lib/plans.ts`);
+    return new Function(`return ${m[1]}`)() as unknown;
+  };
+  it("states the same limits, feature plans and tastes the backend enforces", () => {
+    const src = readFileSync(join(__dirname, "../../../frontend/lib/plans.ts"), "utf8");
+    expect(literal(src, "PLAN_LIMITS")).toEqual(PLAN_LIMITS);
+    expect(literal(src, "FEATURE_MIN_PLAN")).toEqual(FEATURE_MIN_PLAN);
+    expect(literal(src, "FEATURE_TASTE")).toEqual(FEATURE_TASTE);
+    expect(Number(/ACCOUNTANT_SEATS\s*=\s*(\d+)/.exec(src)?.[1])).toBe(ACCOUNTANT_SEATS);
   });
 });
 

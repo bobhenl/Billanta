@@ -4273,7 +4273,7 @@
     "title": "Prețuri",
     "lead": "Începeți gratuit, fără card. Treceți la un plan superior când aveți nevoie.",
     "seoTitle": "Prețuri pentru facturare – începeți gratuit",
-    "metaDescription": "Prețuri Billanta: Free cu 10 documente pe lună și plată per document peste această limită, Start de la 4,99 €, Plus cu AI de la 9,99 € și Business pentru echipe. Fără card, prețuri fără TVA.",
+    "metaDescription": "Prețuri Billanta: Free cu 10 documente pe lună, Start de la 4,99 €, Plus cu AI de la 9,99 € și Business pentru echipe. Fără card, prețuri fără TVA.",
     "yearly": "Anual",
     "monthly": "Lunar",
     "yearlySave": "2 luni gratuite",
@@ -4293,7 +4293,7 @@
         "cta": "Începeți gratuit",
         "features": [
           "10 documente pe lună incluse",
-          "Documente suplimentare la {payg} fiecare",
+          "1 utilizator + contabil",
           "ISDOC, plată QR, căutare în registru și VIES",
           "5 credite AI pe lună",
           "Urmărirea pragului de TVA și calendar fiscal",
@@ -4311,8 +4311,10 @@
           "Facturi recurente și portal pentru clienți",
           "Cifre pentru impozitul pe venit",
           "Export pentru Pohoda și Money S3",
+          "API și webhookuri (1.000 de cereri)",
           "30 de credite AI pe lună",
-          "Acces gratuit pentru contabil"
+          "Acces gratuit pentru contabil",
+          "Facturi fără subsolul Billanta"
         ]
       },
       "plus": {
@@ -4322,7 +4324,7 @@
         "features": [
           "Tot ce include Start",
           "150 de credite AI pe lună",
-          "Decont TVA, declarație de control și declarație recapitulativă",
+          "Decont TVA, declarație de control și recapitulativă pentru CZ și SK",
           "Plăți cu cardul pe facturi",
           "3 utilizatori + contabil",
           "API și webhookuri (10.000 de cereri)",
@@ -4335,7 +4337,7 @@
         "cta": "Alegeți Business",
         "features": [
           "Tot ce include Plus",
-          "Până la 10 firme într-un singur cont",
+          "Venitul net împărțit între până la 10 asociați",
           "10 utilizatori cu roluri",
           "500 de credite AI pe lună",
           "API și webhookuri (50.000 de cereri)",
@@ -4343,7 +4345,7 @@
         ]
       }
     },
-    "paygNote": "Pe planul Free plătiți doar documentele de peste 10 pe lună, {payg} fiecare. De la aproximativ 34 de documente pe lună, Start iese mai ieftin.",
+    "limitsNote": "Pe Free emiteți 10 documente pe lună, notele de credit nu se numără. Exportul pentru Pohoda sau Money S3 îl puteți încerca o dată pe lună, iar fișierele de TVA o singură dată.",
     "aiCreditNote": "Un credit AI = o factură dintr-un mesaj vocal sau text ori un bon citit dintr-o fotografie.",
     "compare": {
       "title": "Comparați planurile",
@@ -4375,30 +4377,37 @@
         "ownKey": "Cheie AI proprie, fără limită",
         "vatLimit": "Urmărirea pragului de TVA și calendar fiscal",
         "annual": "Cifre pentru impozitul pe venit",
-        "vatFilings": "Decont TVA, declarație de control și declarație recapitulativă",
+        "vatFilings": "Decont TVA, declarație de control și recapitulativă (CZ)",
         "accountantExport": "Export pentru contabil",
         "users": "Utilizatori",
         "companies": "Firme într-un singur cont",
-        "api": "API și webhookuri (cereri pe lună)",
+        "api": "API (cereri pe lună)",
         "time": "Pontaj",
-        "backups": "Copii de siguranță (Google Drive, descărcare)",
-        "support": "Asistență"
+        "backups": "Copii de siguranță (Google Drive, SFTP, criptate, descărcare)",
+        "support": "Asistență",
+        "invoiceLock": "Facturi protejate cu parolă",
+        "brandFooter": "Fără subsolul „Creat cu Billanta”",
+        "stripe": "Sincronizarea plăților din Stripe",
+        "vatFilingsSk": "Decont TVA, declarație de control și recapitulativă (SK)",
+        "netIncome": "Venit net: asociați în împărțire",
+        "webhooks": "Webhookuri"
       },
       "cell": {
-        "docsFree": "10 incluse, apoi {payg} fiecare",
+        "docsFree": "10",
         "unlimited": "Nelimitat",
         "twoTemplates": "2 șabloane",
         "manual": "Manual",
         "automatic": "Automat",
-        "csv": "CSV",
         "csvPlus": "CSV, Pohoda, Money S3",
-        "oneUser": "1",
-        "userAccountant": "1 + contabil",
         "threeAccountant": "3 + contabil",
-        "tenUsers": "10 cu roluri",
-        "upTo10": "Până la 10",
         "email": "E-mail",
-        "priority": "Prioritară"
+        "priority": "Prioritară",
+        "onScreen": "Pe ecran",
+        "oneDownload": "1 descărcare de probă",
+        "csvTaste": "CSV, Pohoda și Money S3 o dată pe lună",
+        "oneAccountant": "1 + contabil",
+        "tenAccountant": "10 + contabil",
+        "ownPlan": "Până la 10, fiecare cu planul ei"
       }
     },
     "compareCompetitors": "Cum se compară Billanta cu Fakturoid, iDoklad și alții",
@@ -4422,7 +4431,7 @@
       "items": [
         {
           "q": "Billanta este gratuită?",
-          "a": "Da. Planul Free nu are limită de timp și nu necesită card. Include 10 documente pe lună; fiecare document suplimentar costă {payg}. ISDOC, plățile QR și căutarea firmelor în registrul ARES sunt incluse în toate planurile."
+          "a": "Da. Planul Free nu are limită de timp și nu necesită card. Include 10 documente pe lună. Dacă aveți nevoie de mai multe, Start nu are limită de documente. ISDOC, plățile QR și căutarea firmelor în registrul ARES sunt incluse în toate planurile."
         },
         {
           "q": "Prețurile includ TVA?",
@@ -4442,7 +4451,7 @@
         },
         {
           "q": "Contabilul meu are nevoie de un plan propriu?",
-          "a": "Nu. Începând cu planul Start, un contabil primește gratuit acces la firma dumneavoastră, ca parte a planului."
+          "a": "Nu. Pe orice plan, inclusiv Free, până la 2 contabili pot avea acces gratuit la firma dumneavoastră."
         },
         {
           "q": "De ce apare pe facturi „Realizat cu Billanta”?",
