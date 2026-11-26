@@ -35,6 +35,15 @@ export function tasteCounter(feature: PlanFeature, now: Date = new Date()): { me
   return { metric: `taste_${feature}`, period: taste.per === "month" ? usagePeriod(now) : LIFETIME_PERIOD, uses: taste.uses };
 }
 
+/**
+ * Whether issuing a document of this type uses up one of the plan's
+ * documents. A credit note doesn't: it corrects one already counted, and a
+ * company on Free must always be able to fix a wrong invoice.
+ */
+export function countsAsDocument(documentType: string): boolean {
+  return documentType !== "credit_note";
+}
+
 /** What is left of a limit; null for unlimited. Never negative. */
 export function remaining(limit: number | null, used: number): number | null {
   return limit === null ? null : Math.max(0, limit - used);

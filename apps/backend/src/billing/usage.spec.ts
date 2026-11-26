@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { featureAccess } from "./plan-access";
 import { upgradeFor } from "./plans";
-import { LIFETIME_PERIOD, remaining, tasteCounter, usageLimit, usagePeriod } from "./usage";
+import { countsAsDocument, LIFETIME_PERIOD, remaining, tasteCounter, usageLimit, usagePeriod } from "./usage";
 
 describe("usagePeriod", () => {
   it("is the calendar month in Prague, not in UTC", () => {
@@ -37,6 +37,15 @@ describe("tasteCounter", () => {
 
   it("is null for a feature without a taste", () => {
     expect(tasteCounter("webhooks", now)).toBeNull();
+  });
+});
+
+describe("countsAsDocument", () => {
+  it("counts invoices, proformas and quotes but not credit notes", () => {
+    expect(countsAsDocument("invoice")).toBe(true);
+    expect(countsAsDocument("proforma")).toBe(true);
+    expect(countsAsDocument("quote")).toBe(true);
+    expect(countsAsDocument("credit_note")).toBe(false);
   });
 });
 
