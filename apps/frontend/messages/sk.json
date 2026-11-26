@@ -13762,11 +13762,11 @@
       "extra": "ostatný príjem",
       "splitLabel": "Komu patrí faktúra {number}",
       "saved": "Rozdelenie uložené.",
-      "failed": "Rozdelenie sa nepodarilo uložiť."
+      "failed": "Rozdelenie sa nepodarilo uložiť.",
+      "filter": "Filtrovať podľa štítku",
+      "filterAll": "Všetko"
     },
     "shares": {
-      "default": "Predvolené podiely",
-      "alone": "Len {name}",
       "custom": "Vlastný pomer…",
       "apply": "Použiť pomer"
     },

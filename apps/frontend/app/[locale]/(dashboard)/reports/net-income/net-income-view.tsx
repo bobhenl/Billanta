@@ -11,7 +11,7 @@ import { formatMoney } from '@/lib/invoice-ui';
 import { formatKc, type NetIncomeLine, type NetIncomeReport, type PeriodKind, type Shares, type TaxPartner } from '@/lib/net-income';
 import { cn } from '@/lib/utils';
 import { setInvoicePartnerShares } from './actions';
-import { SharesPicker } from './shares-picker';
+import { partnerTags, SharesPicker } from './shares-picker';
 import { TaxModelEditor } from './tax-model-editor';
 
 const ROWS: { key: keyof NetIncomeLine; strong?: boolean; minus?: boolean }[] = [
@@ -171,7 +171,13 @@ function IncomeList({
   const [busy, setBusy] = useState<string | null>(null);
   const partners = report.model.partners.map((p, i) => ({ ...p, name: nameOf(p, i) }));
   const day = (ymd: string) => new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'numeric', timeZone: 'UTC' }).format(new Date(`${ymd}T00:00:00Z`));
-  const count = report.invoices.length + report.extraIncome.length;
+  const tags = partnerTags(partners);
+  // One partner's invoices only (tag filter); the split itself is unchanged.
+  const [only, setOnly] = useState<string | null>(null);
+  const belongs = (shares: Shares | null, id: string) => ((shares ?? Object.fromEntries(partners.map((p) => [p.id, p.share])))[id] ?? 0) > 0;
+  const invoices = only ? report.invoices.filter((inv) => belongs(inv.partnerShares, only)) : report.invoices;
+  const extra = only ? report.extraIncome.filter((e) => belongs(e.shares, only)) : report.extraIncome;
+  const count = invoices.length + extra.length;
 
   const save = (id: string, shares: Shares | null) => {
     setBusy(id);
@@ -189,7 +195,7 @@ function IncomeList({
 
   const body = (
     <ul className="divide-y divide-border">
-      {report.invoices.map((inv) => (
+      {invoices.map((inv) => (
         <li key={inv.id} className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold">
@@ -211,7 +217,7 @@ function IncomeList({
           </div>
         </li>
       ))}
-      {report.extraIncome.map((e) => (
+      {extra.map((e) => (
         <li key={`extra-${e.index}`} className="flex items-center justify-between gap-3 px-4 py-3">
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold">{e.label}</p>
@@ -227,10 +233,29 @@ function IncomeList({
 
   return (
     <section className="mt-6 rounded-xl border border-border bg-card">
-      <div className="border-b border-border px-4 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-3">
         <InfoHint hint={t(report.vatPayer ? 'list.hintVat' : 'list.hint')} rowClassName="font-bold">
           {t('list.title', { count })}
         </InfoHint>
+        {partners.length > 1 && (
+          <span role="group" aria-label={t('list.filter')} className="flex items-center gap-1">
+            {[null, ...partners.map((p) => p.id)].map((id) => (
+              <button
+                key={id ?? 'all'}
+                type="button"
+                aria-pressed={only === id}
+                title={id ? partners.find((p) => p.id === id)?.name : undefined}
+                onClick={() => setOnly(id)}
+                className={cn(
+                  'h-6 min-w-6 rounded-md px-1.5 text-[11px] font-bold transition-colors',
+                  only === id ? 'bg-primary text-primary-foreground' : 'border border-border text-muted-foreground hover:bg-accent'
+                )}
+              >
+                {id ? tags[id] : t('list.filterAll')}
+              </button>
+            ))}
+          </span>
+        )}
       </div>
       {count === 0 ? (
         <p className="px-4 py-6 text-center text-sm text-muted-foreground">{t('list.empty')}</p>

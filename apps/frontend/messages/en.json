@@ -13858,11 +13858,11 @@
       "extra": "other income",
       "splitLabel": "Who invoice {number} belongs to",
       "saved": "Split saved.",
-      "failed": "Could not save the split."
+      "failed": "Could not save the split.",
+      "filter": "Filter by tag",
+      "filterAll": "All"
     },
     "shares": {
-      "default": "Default shares",
-      "alone": "Only {name}",
       "custom": "Own ratio…",
       "apply": "Apply ratio"
     },

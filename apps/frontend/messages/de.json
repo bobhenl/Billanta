@@ -13830,11 +13830,11 @@
       "extra": "sonstige Einnahme",
       "splitLabel": "Wem die Rechnung {number} gehört",
       "saved": "Aufteilung gespeichert.",
-      "failed": "Die Aufteilung konnte nicht gespeichert werden."
+      "failed": "Die Aufteilung konnte nicht gespeichert werden.",
+      "filter": "Nach Kürzel filtern",
+      "filterAll": "Alle"
     },
     "shares": {
-      "default": "Standardanteile",
-      "alone": "Nur {name}",
       "custom": "Eigenes Verhältnis…",
       "apply": "Verhältnis anwenden"
     },

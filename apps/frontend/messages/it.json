@@ -13829,11 +13829,11 @@
       "extra": "altro reddito",
       "splitLabel": "A chi spetta la fattura {number}",
       "saved": "Ripartizione salvata.",
-      "failed": "Impossibile salvare la ripartizione."
+      "failed": "Impossibile salvare la ripartizione.",
+      "filter": "Filtra per etichetta",
+      "filterAll": "Tutto"
     },
     "shares": {
-      "default": "Quote predefinite",
-      "alone": "Solo {name}",
       "custom": "Rapporto personalizzato…",
       "apply": "Applica rapporto"
     },

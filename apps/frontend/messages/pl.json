@@ -13830,11 +13830,11 @@
       "extra": "inny przychód",
       "splitLabel": "Do kogo należy faktura {number}",
       "saved": "Podział zapisany.",
-      "failed": "Nie udało się zapisać podziału."
+      "failed": "Nie udało się zapisać podziału.",
+      "filter": "Filtruj według etykiety",
+      "filterAll": "Wszystko"
     },
     "shares": {
-      "default": "Domyślne udziały",
-      "alone": "Tylko {name}",
       "custom": "Własny podział…",
       "apply": "Zastosuj podział"
     },

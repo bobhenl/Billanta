@@ -13829,11 +13829,11 @@
       "extra": "outro rendimento",
       "splitLabel": "A quem pertence a fatura {number}",
       "saved": "Repartição guardada.",
-      "failed": "Não foi possível guardar a repartição."
+      "failed": "Não foi possível guardar a repartição.",
+      "filter": "Filtrar por etiqueta",
+      "filterAll": "Tudo"
     },
     "shares": {
-      "default": "Quotas predefinidas",
-      "alone": "Só {name}",
       "custom": "Proporção própria…",
       "apply": "Aplicar proporção"
     },

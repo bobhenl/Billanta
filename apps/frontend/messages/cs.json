@@ -13858,11 +13858,11 @@
       "extra": "ostatní příjem",
       "splitLabel": "Komu patří faktura {number}",
       "saved": "Rozdělení uloženo.",
-      "failed": "Rozdělení se nepodařilo uložit."
+      "failed": "Rozdělení se nepodařilo uložit.",
+      "filter": "Filtrovat podle štítku",
+      "filterAll": "Vše"
     },
     "shares": {
-      "default": "Výchozí podíly",
-      "alone": "Jen {name}",
       "custom": "Vlastní poměr…",
       "apply": "Použít poměr"
     },

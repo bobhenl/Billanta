@@ -13829,11 +13829,11 @@
       "extra": "overige inkomsten",
       "splitLabel": "Aan wie factuur {number} toekomt",
       "saved": "Verdeling opgeslagen.",
-      "failed": "De verdeling kon niet worden opgeslagen."
+      "failed": "De verdeling kon niet worden opgeslagen.",
+      "filter": "Filteren op label",
+      "filterAll": "Alles"
     },
     "shares": {
-      "default": "Standaardaandelen",
-      "alone": "Alleen {name}",
       "custom": "Eigen verhouding…",
       "apply": "Verhouding toepassen"
     },

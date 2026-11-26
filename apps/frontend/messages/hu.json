@@ -13829,11 +13829,11 @@
       "extra": "egyéb bevétel",
       "splitLabel": "Kié a(z) {number} számla",
       "saved": "A felosztás elmentve.",
-      "failed": "A felosztást nem sikerült menteni."
+      "failed": "A felosztást nem sikerült menteni.",
+      "filter": "Szűrés címke szerint",
+      "filterAll": "Mind"
     },
     "shares": {
-      "default": "Alapértelmezett részesedések",
-      "alone": "Csak {name}",
       "custom": "Saját arány…",
       "apply": "Arány alkalmazása"
     },

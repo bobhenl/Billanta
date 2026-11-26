@@ -13829,11 +13829,11 @@
       "extra": "otros ingresos",
       "splitLabel": "A quién corresponde la factura {number}",
       "saved": "Reparto guardado.",
-      "failed": "No se ha podido guardar el reparto."
+      "failed": "No se ha podido guardar el reparto.",
+      "filter": "Filtrar por etiqueta",
+      "filterAll": "Todo"
     },
     "shares": {
-      "default": "Participaciones predeterminadas",
-      "alone": "Solo {name}",
       "custom": "Proporción propia…",
       "apply": "Aplicar proporción"
     },

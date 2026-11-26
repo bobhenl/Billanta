@@ -13829,11 +13829,11 @@
       "extra": "autre revenu",
       "splitLabel": "À qui revient la facture {number}",
       "saved": "Répartition enregistrée.",
-      "failed": "Impossible d’enregistrer la répartition."
+      "failed": "Impossible d’enregistrer la répartition.",
+      "filter": "Filtrer par étiquette",
+      "filterAll": "Tout"
     },
     "shares": {
-      "default": "Parts par défaut",
-      "alone": "Uniquement {name}",
       "custom": "Répartition personnalisée…",
       "apply": "Appliquer la répartition"
     },

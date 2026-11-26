@@ -13829,11 +13829,11 @@
       "extra": "alt venit",
       "splitLabel": "Cui aparține factura {number}",
       "saved": "Împărțirea a fost salvată.",
-      "failed": "Împărțirea nu a putut fi salvată."
+      "failed": "Împărțirea nu a putut fi salvată.",
+      "filter": "Filtrează după etichetă",
+      "filterAll": "Tot"
     },
     "shares": {
-      "default": "Cote implicite",
-      "alone": "Doar {name}",
       "custom": "Raport propriu…",
       "apply": "Aplicați raportul"
     },
