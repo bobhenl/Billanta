@@ -811,7 +811,8 @@
         "ai_key_missing": "Manca la Sua chiave API per l'AI",
         "unsupported_file_type": "Tipo di file non supportato (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "L'AI ha rifiutato di elaborare il documento",
-        "ai_unparseable": "Non è stato possibile leggere nulla dal documento"
+        "ai_unparseable": "Non è stato possibile leggere nulla dal documento",
+        "ai_credits_exhausted": "I crediti AI di questo mese sono finiti. I nuovi arrivano il 1°; un piano superiore ne ha di più, oppure usi la Sua chiave."
       },
       "supplierSection": "Fornitore e documento",
       "supplierLinked": "Collegato a un contatto",
@@ -4664,7 +4665,8 @@
       "ai_provider_unavailable": "L’IA non risponde. Riprovi tra un momento.",
       "empty_input": "Descriva cosa fatturare.",
       "symbol_invalid": "I simboli possono contenere solo cifre (VS e SS fino a 10, KS fino a 4).",
-      "reason_required": "Indichi il motivo della modifica."
+      "reason_required": "Indichi il motivo della modifica.",
+      "ai_credits_exhausted": "I crediti AI di questo mese sono finiti. I nuovi arrivano il 1°; un piano superiore ne ha di più, oppure usi la Sua chiave."
     },
     "copy": {
       "title": "Precompila da un’altra fattura",
@@ -14106,5 +14108,19 @@
   "updateNotice": {
     "text": "È disponibile una nuova versione di Billanta. Ricarichi la pagina perché tutto funzioni.",
     "reload": "Ricarica"
+  },
+  "planLimits": {
+    "from": "Dal piano {plan}",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} di {limit} documenti questo mese",
+    "aiCredits": "Restano {remaining} di {limit} crediti AI questo mese",
+    "apiRequests": "{used} di {limit} richieste API questo mese",
+    "tasteLeft": "Da provare gratis: {left}×",
+    "planRequired": "È disponibile dal piano {plan}.",
+    "documentsOut": "Questo mese ha già emesso tutti i {limit} documenti inclusi nel piano. Può emetterne altri con il piano {plan} o dal 1° del mese prossimo."
   }
 }

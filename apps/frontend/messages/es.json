@@ -811,7 +811,8 @@
         "ai_key_missing": "Falta su propia clave de API de IA",
         "unsupported_file_type": "Tipo de archivo no compatible (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "La IA ha rechazado procesar el documento",
-        "ai_unparseable": "No se ha podido leer nada del documento"
+        "ai_unparseable": "No se ha podido leer nada del documento",
+        "ai_credits_exhausted": "Los créditos de IA de este mes se han agotado. Llegan nuevos el día 1; un plan superior tiene más, o use su propia clave."
       },
       "supplierSection": "Proveedor y documento",
       "supplierLinked": "Vinculado a un contacto",
@@ -4664,7 +4665,8 @@
       "ai_provider_unavailable": "La IA no responde. Inténtelo de nuevo en un momento.",
       "empty_input": "Describa qué quiere facturar.",
       "symbol_invalid": "Los símbolos solo pueden contener dígitos (VS y SS hasta 10, KS hasta 4).",
-      "reason_required": "Indique el motivo del cambio."
+      "reason_required": "Indique el motivo del cambio.",
+      "ai_credits_exhausted": "Los créditos de IA de este mes se han agotado. Llegan nuevos el día 1; un plan superior tiene más, o use su propia clave."
     },
     "copy": {
       "title": "Rellenar a partir de otra factura",
@@ -14106,5 +14108,19 @@
   "updateNotice": {
     "text": "Hay una nueva versión de Billanta. Recargue la página para que todo funcione.",
     "reload": "Recargar"
+  },
+  "planLimits": {
+    "from": "Desde el plan {plan}",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} de {limit} documentos este mes",
+    "aiCredits": "Quedan {remaining} de {limit} créditos de IA este mes",
+    "apiRequests": "{used} de {limit} solicitudes de API este mes",
+    "tasteLeft": "Para probar gratis: {left}×",
+    "planRequired": "Esto está disponible desde el plan {plan}.",
+    "documentsOut": "Este mes ya ha emitido los {limit} documentos que incluye su plan. Podrá emitir más con el plan {plan} o a partir del día 1 del mes que viene."
   }
 }

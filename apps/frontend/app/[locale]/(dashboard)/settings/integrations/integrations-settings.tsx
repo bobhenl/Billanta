@@ -7,6 +7,8 @@ import { InfoHint } from '@/components/info-hint';
 import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
 import { Link } from '@/i18n/navigation';
+import { PlanLock } from '@/components/plan-lock';
+import type { PaidPlanKey } from '@/lib/plan';
 import { saveWebhooks, setFeed, testWebhook, type IntegrationsState, type Webhook, type WebhookKind } from '@/lib/integration-actions';
 import { NOTIFICATION_EVENTS, type NotificationEvent } from '@/lib/notifications';
 import { cn } from '@/lib/utils';
@@ -19,7 +21,8 @@ const detectKind = (url: string): WebhookKind =>
 
 const toDraft = (h: Webhook): Draft => ({ ...h, key: h.id });
 
-export function IntegrationsSettings({ initial, siteUrl }: { initial: IntegrationsState; siteUrl: string }) {
+/** `webhooksLock`: the plan that adds webhooks; existing ones stay editable but are not sent until an upgrade. */
+export function IntegrationsSettings({ initial, siteUrl, webhooksLock = null }: { initial: IntegrationsState; siteUrl: string; webhooksLock?: PaidPlanKey | null }) {
   const t = useTranslations('settings.integrations');
   const tEvents = useTranslations('settings.notifications.events');
   const [token, setToken] = useState(initial.feedToken);
@@ -274,10 +277,14 @@ export function IntegrationsSettings({ initial, siteUrl }: { initial: Integratio
               })}
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
-              <button type="button" className={buttonClass.secondary} onClick={add} disabled={hooks.length >= 10}>
-                <Plus className="h-4 w-4" />
-                {t('webhooks.add')}
-              </button>
+              {webhooksLock ? (
+                <PlanLock plan={webhooksLock} className="self-center" />
+              ) : (
+                <button type="button" className={buttonClass.secondary} onClick={add} disabled={hooks.length >= 10}>
+                  <Plus className="h-4 w-4" />
+                  {t('webhooks.add')}
+                </button>
+              )}
               <button type="button" className={buttonClass.primary} onClick={save} disabled={!dirty || pending}>
                 {t('webhooks.save')}
               </button>

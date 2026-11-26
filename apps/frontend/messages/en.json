@@ -812,7 +812,8 @@
         "ai_key_missing": "Your own AI API key is missing",
         "unsupported_file_type": "Unsupported file type (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "AI declined to process the document",
-        "ai_unparseable": "Nothing could be read from the document"
+        "ai_unparseable": "Nothing could be read from the document",
+        "ai_credits_exhausted": "This month's AI credits are used up. New ones arrive on the 1st; a higher plan has more, or use your own key."
       },
       "supplierSection": "Supplier",
       "supplierLinked": "Linked to a contact",
@@ -4671,7 +4672,8 @@
       "ai_provider_unavailable": "AI is not responding. Try again in a moment.",
       "empty_input": "Describe what to invoice.",
       "symbol_invalid": "Symbols may contain digits only (VS and SS up to 10, KS up to 4).",
-      "reason_required": "Enter a reason for the change."
+      "reason_required": "Enter a reason for the change.",
+      "ai_credits_exhausted": "This month's AI credits are used up. New ones arrive on the 1st; a higher plan has more, or use your own key."
     },
     "copy": {
       "title": "Prefill from another invoice",
@@ -14139,5 +14141,19 @@
   "updateNotice": {
     "text": "There is a new version of Billanta. Reload the page so everything works.",
     "reload": "Reload"
+  },
+  "planLimits": {
+    "from": "From the {plan} plan",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} of {limit} documents this month",
+    "aiCredits": "{remaining} of {limit} AI credits left this month",
+    "apiRequests": "{used} of {limit} API requests this month",
+    "tasteLeft": "Free to try: {left}×",
+    "planRequired": "This comes with the {plan} plan.",
+    "documentsOut": "You've issued all {limit} documents your plan includes this month. Issue more from the {plan} plan, or from the 1st of next month."
   }
 }

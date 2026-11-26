@@ -65,6 +65,8 @@ export interface AiSettings {
   platformAvailable: boolean;
   platformDailyLimit: number;
   model: string;
+  /** This month's credits on Billanta's key; limit null = not limited. */
+  credits?: { used: number; limit: number | null; remaining: number | null };
 }
 
 export type SelectedCustomer = { kind: 'contact'; id: string; contact: Contact } | { kind: 'ares'; ares: AresPrefill };

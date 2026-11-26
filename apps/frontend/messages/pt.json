@@ -811,7 +811,8 @@
         "ai_key_missing": "Falta a sua própria chave de API de IA",
         "unsupported_file_type": "Tipo de ficheiro não suportado (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "A IA recusou-se a processar o documento",
-        "ai_unparseable": "Não foi possível ler nada do documento"
+        "ai_unparseable": "Não foi possível ler nada do documento",
+        "ai_credits_exhausted": "Os créditos de IA deste mês acabaram. Chegam novos no dia 1; um plano superior tem mais, ou use a sua própria chave."
       },
       "supplierSection": "Fornecedor e documento",
       "supplierLinked": "Associado a um contacto",
@@ -4664,7 +4665,8 @@
       "ai_provider_unavailable": "A IA não está a responder. Tente novamente daqui a pouco.",
       "empty_input": "Descreva o que pretende faturar.",
       "symbol_invalid": "Os símbolos só podem conter algarismos (VS e SS até 10, KS até 4).",
-      "reason_required": "Indique o motivo da alteração."
+      "reason_required": "Indique o motivo da alteração.",
+      "ai_credits_exhausted": "Os créditos de IA deste mês acabaram. Chegam novos no dia 1; um plano superior tem mais, ou use a sua própria chave."
     },
     "copy": {
       "title": "Preencher a partir de outra fatura",
@@ -14106,5 +14108,19 @@
   "updateNotice": {
     "text": "Há uma nova versão do Billanta. Recarregue a página para que tudo funcione.",
     "reload": "Recarregar"
+  },
+  "planLimits": {
+    "from": "A partir do plano {plan}",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} de {limit} documentos este mês",
+    "aiCredits": "Restam {remaining} de {limit} créditos de IA este mês",
+    "apiRequests": "{used} de {limit} pedidos de API este mês",
+    "tasteLeft": "Para experimentar grátis: {left}×",
+    "planRequired": "Isto está disponível a partir do plano {plan}.",
+    "documentsOut": "Este mês já emitiu os {limit} documentos incluídos no seu plano. Pode emitir mais com o plano {plan} ou a partir do dia 1 do próximo mês."
   }
 }

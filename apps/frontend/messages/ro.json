@@ -811,7 +811,8 @@
         "ai_key_missing": "Lipsește cheia API proprie pentru AI",
         "unsupported_file_type": "Tip de fișier neacceptat (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "AI a refuzat să proceseze documentul",
-        "ai_unparseable": "Nu s-a putut citi nimic din document"
+        "ai_unparseable": "Nu s-a putut citi nimic din document",
+        "ai_credits_exhausted": "Creditele AI pe luna aceasta s-au terminat. Altele noi vin pe 1, un plan superior are mai multe, sau folosiți propria cheie."
       },
       "supplierSection": "Furnizor și document",
       "supplierLinked": "Asociat unui contact",
@@ -4664,7 +4665,8 @@
       "ai_provider_unavailable": "AI nu răspunde. Încercați din nou peste câteva momente.",
       "empty_input": "Descrieți ce doriți să facturați.",
       "symbol_invalid": "Simbolurile pot conține doar cifre (VS și SS până la 10, KS până la 4).",
-      "reason_required": "Introduceți motivul modificării."
+      "reason_required": "Introduceți motivul modificării.",
+      "ai_credits_exhausted": "Creditele AI pe luna aceasta s-au terminat. Altele noi vin pe 1, un plan superior are mai multe, sau folosiți propria cheie."
     },
     "copy": {
       "title": "Precompletați dintr-o altă factură",
@@ -14106,5 +14108,19 @@
   "updateNotice": {
     "text": "Există o versiune nouă Billanta. Reîncărcați pagina ca totul să funcționeze.",
     "reload": "Reîncarcă"
+  },
+  "planLimits": {
+    "from": "De la planul {plan}",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} din {limit} documente luna aceasta",
+    "aiCredits": "Mai aveți {remaining} din {limit} credite AI luna aceasta",
+    "apiRequests": "{used} din {limit} cereri API luna aceasta",
+    "tasteLeft": "De încercat gratuit: {left}×",
+    "planRequired": "Este disponibil de la planul {plan}.",
+    "documentsOut": "Luna aceasta ați emis toate cele {limit} documente incluse în plan. Puteți emite mai multe de la planul {plan} sau de la 1 luna viitoare."
   }
 }

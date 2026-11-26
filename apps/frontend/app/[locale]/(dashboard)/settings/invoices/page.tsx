@@ -7,6 +7,7 @@ import { SettingsHeader } from '@/components/settings-header';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
 import { type BankAccount, bankAccountLine, canManage, fetchBankAccounts, fetchMyAccess, fetchMyRole, fetchTenant, taxCountryOf, type TenantSettings } from '@/lib/tenant';
 import { vatStatusOf } from '@/lib/vat-status';
+import { featureLock } from '@/lib/usage';
 import { formPrefs, loadContact } from '../../invoices/new/load';
 import { RATE_CURRENCIES } from '../../invoices/new/types';
 import type { UniformYear } from './exchange-rate-settings';
@@ -52,6 +53,7 @@ export default async function InvoiceSettingsPage() {
   ]);
   // Same rule as showsBrandCredit in the backend: only an enforced free plan must keep the line.
   const canHideCredit = !plan || !plan.enforced || plan.plan !== 'free';
+  const remindersLock = featureLock(plan, 'auto_reminders');
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -77,6 +79,7 @@ export default async function InvoiceSettingsPage() {
         uniformRates={uniformRates}
         linkCompany={tenant.publicProfile?.slug || tenant.companyName}
         canHideCredit={canHideCredit}
+        remindersLock={remindersLock}
         readOnly={!canManage(role)}
       />
     </div>

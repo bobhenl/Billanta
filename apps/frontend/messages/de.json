@@ -811,7 +811,8 @@
         "ai_key_missing": "Ihr eigener KI-API-Schlüssel fehlt",
         "unsupported_file_type": "Nicht unterstützter Dateityp (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "Die KI hat die Verarbeitung des Belegs abgelehnt",
-        "ai_unparseable": "Aus dem Beleg konnte nichts ausgelesen werden"
+        "ai_unparseable": "Aus dem Beleg konnte nichts ausgelesen werden",
+        "ai_credits_exhausted": "Die KI-Credits für diesen Monat sind aufgebraucht. Neue gibt es am 1., ein höherer Tarif hat mehr, oder nutzen Sie Ihren eigenen Schlüssel."
       },
       "supplierSection": "Lieferant & Beleg",
       "supplierLinked": "Mit einem Kontakt verknüpft",
@@ -4664,7 +4665,8 @@
       "ai_provider_unavailable": "Die KI antwortet nicht. Versuchen Sie es gleich noch einmal.",
       "empty_input": "Beschreiben Sie, was Sie in Rechnung stellen möchten.",
       "symbol_invalid": "Symbole dürfen nur Ziffern enthalten (VS und SS bis 10, KS bis 4).",
-      "reason_required": "Geben Sie einen Grund für die Änderung an."
+      "reason_required": "Geben Sie einen Grund für die Änderung an.",
+      "ai_credits_exhausted": "Die KI-Credits für diesen Monat sind aufgebraucht. Neue gibt es am 1., ein höherer Tarif hat mehr, oder nutzen Sie Ihren eigenen Schlüssel."
     },
     "copy": {
       "title": "Aus einer anderen Rechnung vorausfüllen",
@@ -14107,5 +14109,19 @@
   "updateNotice": {
     "text": "Es gibt eine neue Version von Billanta. Laden Sie die Seite neu, damit alles funktioniert.",
     "reload": "Neu laden"
+  },
+  "planLimits": {
+    "from": "Ab Tarif {plan}",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} von {limit} Belegen in diesem Monat",
+    "aiCredits": "Noch {remaining} von {limit} KI-Credits in diesem Monat",
+    "apiRequests": "{used} von {limit} API-Anfragen in diesem Monat",
+    "tasteLeft": "Kostenlos testen: {left}×",
+    "planRequired": "Das gibt es ab dem Tarif {plan}.",
+    "documentsOut": "Sie haben in diesem Monat alle {limit} Belege Ihres Tarifs ausgestellt. Weitere gibt es ab dem Tarif {plan} oder ab dem 1. des nächsten Monats."
   }
 }

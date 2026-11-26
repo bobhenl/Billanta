@@ -811,7 +811,8 @@
         "ai_key_missing": "Je eigen AI-API-sleutel ontbreekt",
         "unsupported_file_type": "Niet-ondersteund bestandstype (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "AI heeft geweigerd het document te verwerken",
-        "ai_unparseable": "Er kon niets uit het document worden gelezen"
+        "ai_unparseable": "Er kon niets uit het document worden gelezen",
+        "ai_credits_exhausted": "De AI-credits van deze maand zijn op. Op de 1e komen er nieuwe; een hoger abonnement heeft er meer, of gebruik je eigen sleutel."
       },
       "supplierSection": "Leverancier & document",
       "supplierLinked": "Gekoppeld aan een contact",
@@ -4664,7 +4665,8 @@
       "ai_provider_unavailable": "AI reageert niet. Probeer het zo opnieuw.",
       "empty_input": "Beschrijf wat je wilt factureren.",
       "symbol_invalid": "Symbolen mogen alleen cijfers bevatten (VS en SS max. 10, KS max. 4).",
-      "reason_required": "Vul een reden voor de wijziging in."
+      "reason_required": "Vul een reden voor de wijziging in.",
+      "ai_credits_exhausted": "De AI-credits van deze maand zijn op. Op de 1e komen er nieuwe; een hoger abonnement heeft er meer, of gebruik je eigen sleutel."
     },
     "copy": {
       "title": "Invullen vanuit een andere factuur",
@@ -14106,5 +14108,19 @@
   "updateNotice": {
     "text": "Er is een nieuwe versie van Billanta. Laad de pagina opnieuw zodat alles werkt.",
     "reload": "Opnieuw laden"
+  },
+  "planLimits": {
+    "from": "Vanaf {plan}",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} van {limit} documenten deze maand",
+    "aiCredits": "Nog {remaining} van {limit} AI-credits deze maand",
+    "apiRequests": "{used} van {limit} API-verzoeken deze maand",
+    "tasteLeft": "Gratis te proberen: {left}×",
+    "planRequired": "Dit zit in het {plan}-abonnement.",
+    "documentsOut": "Je hebt deze maand alle {limit} documenten van je abonnement uitgegeven. Meer kan vanaf {plan}, of vanaf de 1e van volgende maand."
   }
 }

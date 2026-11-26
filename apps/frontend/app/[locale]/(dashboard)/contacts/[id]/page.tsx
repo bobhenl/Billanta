@@ -10,6 +10,8 @@ import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import { formatDate, formatMoney, type InvoiceRow } from '@/lib/invoice-ui';
 import { EXPENSE_STATE_CLASSES, expenseState, type ExpensePage } from '@/lib/expense-ui';
 import { cn } from '@/lib/utils';
+import { fetchUsage } from '@/lib/tenant';
+import { lockOf } from '@/lib/usage';
 import type { Contact } from '../../invoices/new/types';
 import { InvoicesTable } from '../../invoices/invoices-table';
 import { ClientPortalCard } from './client-portal-card';
@@ -46,9 +48,10 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
   }
   if (!contact) notFound();
 
-  const [invoices, expensePage] = await Promise.all([
+  const [invoices, expensePage, usage] = await Promise.all([
     apiFetch<InvoiceRow[]>(`/api/v1/invoices?contact_id=${contact.id}`).catch(() => [] as InvoiceRow[]),
-    apiFetch<ExpensePage>('/api/v1/expenses?limit=100&page=1').catch(() => null)
+    apiFetch<ExpensePage>('/api/v1/expenses?limit=100&page=1').catch(() => null),
+    fetchUsage()
   ]);
   const expenses = (expensePage?.data ?? []).filter((e) => e.supplierContactId === contact.id);
 
@@ -225,7 +228,7 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
               )}
             </dl>
           </section>
-          <ClientPortalCard contactId={contact.id} link={contact.portalLink ?? null} defaultLink={contact.portalLinkDefault ?? null} slug={contact.portalSlug ?? null} />
+          <ClientPortalCard contactId={contact.id} link={contact.portalLink ?? null} defaultLink={contact.portalLinkDefault ?? null} slug={contact.portalSlug ?? null} lock={lockOf(usage, 'client_portal')} />
           {/* ARES only knows Czech companies. */}
           {contact.ico && (contact.addressCountry || 'CZ') === 'CZ' && (
             <a

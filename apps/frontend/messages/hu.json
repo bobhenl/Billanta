@@ -811,7 +811,8 @@
         "ai_key_missing": "Hiányzik a saját AI API-kulcsa",
         "unsupported_file_type": "Nem támogatott fájltípus (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "Az AI elutasította a dokumentum feldolgozását",
-        "ai_unparseable": "A dokumentumból semmit sem sikerült kiolvasni"
+        "ai_unparseable": "A dokumentumból semmit sem sikerült kiolvasni",
+        "ai_credits_exhausted": "Az e havi MI-kreditek elfogytak. Újak 1-jén jönnek, egy magasabb csomagban több van, vagy használja a saját kulcsát."
       },
       "supplierSection": "Szállító és bizonylat",
       "supplierLinked": "Partnerhez kapcsolva",
@@ -4664,7 +4665,8 @@
       "ai_provider_unavailable": "Az AI nem válaszol. Próbálja újra egy kis idő múlva.",
       "empty_input": "Írja le, mit szeretne számlázni.",
       "symbol_invalid": "A szimbólumok csak számjegyeket tartalmazhatnak (VS és SS legfeljebb 10, KS legfeljebb 4).",
-      "reason_required": "Adja meg a módosítás okát."
+      "reason_required": "Adja meg a módosítás okát.",
+      "ai_credits_exhausted": "Az e havi MI-kreditek elfogytak. Újak 1-jén jönnek, egy magasabb csomagban több van, vagy használja a saját kulcsát."
     },
     "copy": {
       "title": "Előkitöltés másik számlából",
@@ -14106,5 +14108,19 @@
   "updateNotice": {
     "text": "Elérhető a Billanta új verziója. Töltse újra az oldalt, hogy minden működjön.",
     "reload": "Újratöltés"
+  },
+  "planLimits": {
+    "from": "{plan} csomagtól",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} / {limit} bizonylat ebben a hónapban",
+    "aiCredits": "Még {remaining} / {limit} MI-kredit ebben a hónapban",
+    "apiRequests": "{used} / {limit} API-kérés ebben a hónapban",
+    "tasteLeft": "Ingyen kipróbálható: {left}×",
+    "planRequired": "Ez a {plan} csomagtól érhető el.",
+    "documentsOut": "Ebben a hónapban kiállította a csomagjában lévő mind a(z) {limit} bizonylatot. Továbbiakat a {plan} csomagtól, vagy a következő hónap 1-jétől állíthat ki."
   }
 }

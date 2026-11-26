@@ -811,7 +811,8 @@
         "ai_key_missing": "Brakuje Twojego własnego klucza API do AI",
         "unsupported_file_type": "Nieobsługiwany typ pliku (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "AI odmówiło przetworzenia dokumentu",
-        "ai_unparseable": "Z dokumentu nie udało się nic odczytać"
+        "ai_unparseable": "Z dokumentu nie udało się nic odczytać",
+        "ai_credits_exhausted": "Kredyty AI na ten miesiąc się skończyły. Nowe pojawią się 1. dnia, wyższy plan ma ich więcej, możesz też użyć własnego klucza."
       },
       "supplierSection": "Dostawca i dokument",
       "supplierLinked": "Powiązano z kontaktem",
@@ -4664,7 +4665,8 @@
       "ai_provider_unavailable": "AI nie odpowiada. Spróbuj ponownie za chwilę.",
       "empty_input": "Opisz, co chcesz zafakturować.",
       "symbol_invalid": "Symbole mogą zawierać tylko cyfry (VS i SS do 10, KS do 4).",
-      "reason_required": "Podaj powód zmiany."
+      "reason_required": "Podaj powód zmiany.",
+      "ai_credits_exhausted": "Kredyty AI na ten miesiąc się skończyły. Nowe pojawią się 1. dnia, wyższy plan ma ich więcej, możesz też użyć własnego klucza."
     },
     "copy": {
       "title": "Wypełnij na podstawie innej faktury",
@@ -14107,5 +14109,19 @@
   "updateNotice": {
     "text": "Jest nowa wersja Billanty. Odśwież stronę, żeby wszystko działało.",
     "reload": "Odśwież"
+  },
+  "planLimits": {
+    "from": "Od planu {plan}",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} z {limit} dokumentów w tym miesiącu",
+    "aiCredits": "Zostało {remaining} z {limit} kredytów AI w tym miesiącu",
+    "apiRequests": "{used} z {limit} zapytań API w tym miesiącu",
+    "tasteLeft": "Za darmo na próbę: {left}×",
+    "planRequired": "To jest dostępne od planu {plan}.",
+    "documentsOut": "W tym miesiącu wystawiono już wszystkie {limit} dokumentów z Twojego planu. Kolejne wystawisz od planu {plan} albo od 1. dnia następnego miesiąca."
   }
 }

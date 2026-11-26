@@ -812,7 +812,8 @@
         "ai_key_missing": "Chybí vlastní API klíč pro AI",
         "unsupported_file_type": "Nepodporovaný typ souboru (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "AI doklad odmítla zpracovat",
-        "ai_unparseable": "Z dokladu se nepodařilo nic vyčíst"
+        "ai_unparseable": "Z dokladu se nepodařilo nic vyčíst",
+        "ai_credits_exhausted": "AI kredity na tento měsíc došly. Další přibudou prvního, víc jich má vyšší tarif, nebo použijte vlastní klíč."
       },
       "supplierSection": "Dodavatel",
       "supplierLinked": "Propojeno s kontaktem",
@@ -4671,7 +4672,8 @@
       "ai_provider_unavailable": "AI teď neodpovídá. Zkuste to znovu za chvíli.",
       "empty_input": "Napište, co se má fakturovat.",
       "symbol_invalid": "Symboly smí obsahovat jen číslice (VS a SS max. 10, KS max. 4).",
-      "reason_required": "Napište důvod úpravy."
+      "reason_required": "Napište důvod úpravy.",
+      "ai_credits_exhausted": "AI kredity na tento měsíc došly. Další přibudou prvního, víc jich má vyšší tarif, nebo použijte vlastní klíč."
     },
     "copy": {
       "title": "Předvyplnit podle jiné faktury",
@@ -14139,5 +14141,19 @@
   "updateNotice": {
     "text": "Billanta má novou verzi. Obnovte stránku, ať vše funguje.",
     "reload": "Obnovit"
+  },
+  "planLimits": {
+    "from": "Od tarifu {plan}",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Firma"
+    },
+    "documents": "{used} z {limit} dokladů tento měsíc",
+    "aiCredits": "Zbývá {remaining} z {limit} AI kreditů tento měsíc",
+    "apiRequests": "{used} z {limit} požadavků API tento měsíc",
+    "tasteLeft": "Na zkoušku zdarma: {left}×",
+    "planRequired": "Tohle je od tarifu {plan}.",
+    "documentsOut": "Tento měsíc jste vystavili všech {limit} dokladů, které tarif zahrnuje. Další vystavíte s tarifem {plan}, nebo zase od prvního dne příštího měsíce."
   }
 }

@@ -6,7 +6,8 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import type { HomeCurrency } from '@faktur/cz-compliance';
 import { apiFetch, ApiError, NoTenantError, NotSignedInError } from '@/lib/api-client';
-import { canManage, fetchCanWrite, fetchHomeCurrency, fetchMyRole } from '@/lib/tenant';
+import { canManage, fetchCanWrite, fetchHomeCurrency, fetchMyRole, fetchUsage } from '@/lib/tenant';
+import { DocumentsMeter } from '@/components/plan-lock';
 import type { TaxModel, TaxPartner } from '@/lib/net-income';
 import { DOCUMENT_TYPES, type InvoiceRow } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
@@ -234,6 +235,7 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
   let canEdit: boolean;
   let fieldOptions: { label: string; values: string[] }[];
   let partners: TaxPartner[];
+  const usageLoad = fetchUsage();
   try {
     [invoices, customers, bankAccounts, team, home, canEdit, fieldOptions, partners] = await Promise.all([
       apiFetch<InvoiceRow[]>(`/api/v1/invoices${query ? `?${query}` : ''}`),
@@ -376,12 +378,14 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
     </div>
   );
 
+  const planUsage = await usageLoad;
   return (
     <div className="mx-auto max-w-6xl">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
           <StatusLegend className="mt-2" />
+          <DocumentsMeter meter={planUsage?.documents} className="mt-2" />
         </div>
         {/* Templates, bulk and new all create documents: nothing here for a read-only member. */}
         {canEdit && (

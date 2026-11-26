@@ -811,7 +811,8 @@
         "ai_key_missing": "Votre propre clé d’API IA est manquante",
         "unsupported_file_type": "Type de fichier non pris en charge (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "L’IA a refusé de traiter le document",
-        "ai_unparseable": "Rien n’a pu être lu dans le document"
+        "ai_unparseable": "Rien n’a pu être lu dans le document",
+        "ai_credits_exhausted": "Les crédits IA de ce mois sont épuisés. Les suivants arrivent le 1er ; une formule supérieure en a plus, ou utilisez votre propre clé."
       },
       "supplierSection": "Fournisseur et document",
       "supplierLinked": "Lié à un contact",
@@ -4664,7 +4665,8 @@
       "ai_provider_unavailable": "L’IA ne répond pas. Réessayez dans un instant.",
       "empty_input": "Décrivez ce qu’il faut facturer.",
       "symbol_invalid": "Les symboles ne peuvent contenir que des chiffres (VS et SS jusqu’à 10, KS jusqu’à 4).",
-      "reason_required": "Indiquez le motif de la modification."
+      "reason_required": "Indiquez le motif de la modification.",
+      "ai_credits_exhausted": "Les crédits IA de ce mois sont épuisés. Les suivants arrivent le 1er ; une formule supérieure en a plus, ou utilisez votre propre clé."
     },
     "copy": {
       "title": "Pré-remplir à partir d’une autre facture",
@@ -14106,5 +14108,19 @@
   "updateNotice": {
     "text": "Une nouvelle version de Billanta est disponible. Rechargez la page pour que tout fonctionne.",
     "reload": "Recharger"
+  },
+  "planLimits": {
+    "from": "Dès la formule {plan}",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} sur {limit} documents ce mois-ci",
+    "aiCredits": "Encore {remaining} sur {limit} crédits IA ce mois-ci",
+    "apiRequests": "{used} sur {limit} requêtes API ce mois-ci",
+    "tasteLeft": "À essayer gratuitement : {left}×",
+    "planRequired": "C’est inclus dès la formule {plan}.",
+    "documentsOut": "Vous avez émis ce mois-ci les {limit} documents inclus dans votre formule. Pour en émettre d’autres : formule {plan}, ou le 1er du mois prochain."
   }
 }

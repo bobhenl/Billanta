@@ -5,7 +5,9 @@ import { Banner } from '@/components/banner';
 import { TwoFactorNotice } from '@/components/two-factor-notice';
 import { SettingsHeader } from '@/components/settings-header';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
-import { canManage, fetchMyRole } from '@/lib/tenant';
+import { canManage, fetchMyRole, fetchUsage } from '@/lib/tenant';
+import { lockOf } from '@/lib/usage';
+import { PlanLock } from '@/components/plan-lock';
 import { ApiKeysManager, type ApiKeyListItem } from './api-keys-manager';
 import { settingsGate } from '@/components/settings-gate';
 
@@ -20,6 +22,8 @@ export default async function ApiKeysSettingsPage() {
   if (gate) return gate;
   const locale = await getLocale();
   const t = await getTranslations('settings.apiKeys');
+  const tPlan = await getTranslations('planLimits');
+  const usageLoad = fetchUsage();
 
   let keys: ApiKeyListItem[];
   let role: string | null;
@@ -37,10 +41,19 @@ export default async function ApiKeysSettingsPage() {
     (process.env.NODE_ENV === 'development' ? process.env.BACKEND_URL ?? 'http://localhost:3000' : process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3100')
   ).replace(/\/$/, '');
 
+  const usage = await usageLoad;
+  const lock = lockOf(usage, 'api_keys');
+  const requests = usage?.apiRequests;
+
   return (
     <div className="mx-auto max-w-3xl">
       <SettingsHeader title={t('title')} description={t('description')} />
       <TwoFactorNotice className="mt-4" />
+      {(lock || requests?.limit != null) && (
+        <p className="mt-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+          {lock ? <PlanLock plan={lock} /> : requests?.limit != null && <span>{tPlan('apiRequests', { used: requests.used, limit: requests.limit })}</span>}
+        </p>
+      )}
       {!canManage(role) && (
         <Banner tone="info" className="mt-4">
           {t('readOnly')}

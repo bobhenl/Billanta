@@ -41,7 +41,7 @@ interface ReceiptResult {
   contact: SupplierOption | null;
 }
 
-const AI_ERRORS = ['ai_disabled', 'ai_key_missing', 'unsupported_file_type', 'ai_refused', 'ai_unparseable'] as const;
+const AI_ERRORS = ['ai_disabled', 'ai_key_missing', 'unsupported_file_type', 'ai_refused', 'ai_unparseable', 'ai_credits_exhausted'] as const;
 const VAT_RATE_OPTIONS = ['21', '12', '0'];
 const CURRENCY_OPTIONS = ['CZK', 'EUR', 'USD', 'GBP', 'PLN'];
 const today = () => new Date().toISOString().slice(0, 10);
