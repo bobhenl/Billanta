@@ -4938,7 +4938,8 @@
       "duplicateToFix": "Új számla a javítással",
       "rotateLink": "Új ügyfélhivatkozás",
       "editAnyway": "Szerkesztés mégis",
-      "markPaidShort": "Kifizetve"
+      "markPaidShort": "Kifizetve",
+      "viewPdf": "PDF megnyitása"
     },
     "confirm": {
       "back": "Vissza",

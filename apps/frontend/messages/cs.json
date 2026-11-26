@@ -4945,7 +4945,8 @@
       "duplicateToFix": "Nová faktura s opravou",
       "rotateLink": "Nový odkaz pro klienta",
       "editAnyway": "Přesto upravit",
-      "markPaidShort": "Uhrazeno"
+      "markPaidShort": "Uhrazeno",
+      "viewPdf": "Otevřít PDF"
     },
     "confirm": {
       "back": "Zpět",

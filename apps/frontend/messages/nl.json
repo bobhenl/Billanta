@@ -4938,7 +4938,8 @@
       "duplicateToFix": "Nieuwe factuur met de correctie",
       "rotateLink": "Nieuwe klantlink",
       "editAnyway": "Toch bewerken",
-      "markPaidShort": "Betaald"
+      "markPaidShort": "Betaald",
+      "viewPdf": "PDF openen"
     },
     "confirm": {
       "back": "Terug",

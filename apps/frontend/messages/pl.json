@@ -4938,7 +4938,8 @@
       "duplicateToFix": "Nowa faktura z poprawką",
       "rotateLink": "Nowy link dla klienta",
       "editAnyway": "Mimo to edytuj",
-      "markPaidShort": "Zapłacona"
+      "markPaidShort": "Zapłacona",
+      "viewPdf": "Otwórz PDF"
     },
     "confirm": {
       "back": "Wstecz",

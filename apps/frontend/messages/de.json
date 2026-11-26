@@ -4938,7 +4938,8 @@
       "duplicateToFix": "Neue Rechnung mit Korrektur",
       "rotateLink": "Neuer Kundenlink",
       "editAnyway": "Trotzdem bearbeiten",
-      "markPaidShort": "Bezahlt"
+      "markPaidShort": "Bezahlt",
+      "viewPdf": "PDF öffnen"
     },
     "confirm": {
       "back": "Zurück",

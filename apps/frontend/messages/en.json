@@ -4945,7 +4945,8 @@
       "duplicateToFix": "New invoice with the fix",
       "rotateLink": "New client link",
       "editAnyway": "Edit anyway",
-      "markPaidShort": "Paid"
+      "markPaidShort": "Paid",
+      "viewPdf": "Open PDF"
     },
     "confirm": {
       "back": "Back",

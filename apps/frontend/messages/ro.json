@@ -4938,7 +4938,8 @@
       "duplicateToFix": "Factură nouă cu corectura",
       "rotateLink": "Link nou pentru client",
       "editAnyway": "Editați oricum",
-      "markPaidShort": "Plătită"
+      "markPaidShort": "Plătită",
+      "viewPdf": "Deschide PDF"
     },
     "confirm": {
       "back": "Înapoi",

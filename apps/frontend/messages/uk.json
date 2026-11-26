@@ -4938,7 +4938,8 @@
       "duplicateToFix": "Новий рахунок із виправленням",
       "rotateLink": "Нове посилання для клієнта",
       "editAnyway": "Все одно редагувати",
-      "markPaidShort": "Оплачено"
+      "markPaidShort": "Оплачено",
+      "viewPdf": "Відкрити PDF"
     },
     "confirm": {
       "back": "Назад",

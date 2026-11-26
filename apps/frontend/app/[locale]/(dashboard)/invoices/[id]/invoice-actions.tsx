@@ -8,10 +8,10 @@ import {
   CheckCircle2,
   ChevronDown,
   Copy,
-  Download,
   ExternalLink,
   FileCode2,
   FilePlus2,
+  FileText,
   Pencil,
   Repeat2,
   RotateCcw,
@@ -178,11 +178,12 @@ export function InvoiceActions({
             href={`/api/files/invoices/${id}/pdf`}
             target="_blank"
             rel="noreferrer"
-            className={cn(buttonClass.secondary, 'px-2.5')}
-            title={t('actions.downloadPdf')}
-            aria-label={t('actions.downloadPdf')}
+            className={cn(buttonClass.secondary, 'px-3')}
+            title={t('actions.viewPdf')}
           >
-            <Download className="h-4 w-4" />
+            {/* Opens in a new tab, from where it can be printed or saved. */}
+            <FileText className="h-4 w-4" />
+            PDF
           </a>
         )}
         {canEdit && numbered && status !== 'cancelled' && !sendFirst && sendButton}
