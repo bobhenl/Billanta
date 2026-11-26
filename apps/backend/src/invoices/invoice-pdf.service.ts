@@ -36,6 +36,16 @@ type TenantRow = typeof schema.tenants.$inferSelect;
  * from an identified person, who charges no VAT and so never ticks it),
  * "domestic" for the §92a note, else none.
  */
+/**
+ * A Czech or Slovak PSČ as people write it, "602 00". ARES and the other
+ * registers hand it over without the space, and typed ones come both ways.
+ */
+export function displayPostalCode(code: string | null, country: string | null | undefined): string | null {
+  const digits = code?.replace(/\s+/g, "") ?? "";
+  const local = !country || ["CZ", "SK"].includes(country.toUpperCase());
+  return local && /^\d{5}$/.test(digits) ? `${digits.slice(0, 3)} ${digits.slice(3)}` : code;
+}
+
 export function reverseChargeNoteKind(
   invoice: Pick<InvoiceRow, "documentType" | "reverseCharge">,
   tenant: Pick<TenantRow, "vatStatus" | "country">,
@@ -623,7 +633,7 @@ export class InvoicePdfService {
     doc.font(BOLD).fontSize(8).fillColor(MUTED).text(t.supplier.toUpperCase(), 50, startY);
     doc.font(BOLD).fontSize(10).fillColor("black").text(tenant.legalName, 50, doc.y + 2, { width: 240 });
     doc.font(REGULAR).fontSize(9);
-    this.renderAddressLines(doc, tenant.addressStreet, tenant.addressCity, tenant.addressPostalCode, 50);
+    this.renderAddressLines(doc, tenant.addressStreet, tenant.addressCity, displayPostalCode(tenant.addressPostalCode, tenantCountry(tenant)), 50);
     // Once the buyer's country is printed, the seller's is too, so a foreign reader sees both sides.
     const buyerCountry = contact.addressCountry?.toUpperCase();
     const sellerCountry = tenantCountry(tenant);
@@ -640,7 +650,7 @@ export class InvoicePdfService {
     doc.font(BOLD).fontSize(8).fillColor(MUTED).text(t.customer.toUpperCase(), right, startY);
     doc.font(BOLD).fontSize(10).fillColor("black").text(contact.legalName, right, doc.y + 2, { width: 240 });
     doc.font(REGULAR).fontSize(9);
-    this.renderAddressLines(doc, contact.addressStreet, contact.addressCity, contact.addressPostalCode, right);
+    this.renderAddressLines(doc, contact.addressStreet, contact.addressCity, displayPostalCode(contact.addressPostalCode, contact.addressCountry), right);
     // A buyer abroad gets the country, in the document language.
     if (foreignBuyer && buyerCountry) doc.text(countryName(buyerCountry, docLang), right);
     if (contact.ico) doc.text(`${t.ico}: ${contact.ico}`, right);

@@ -3,7 +3,7 @@ import QRCode from "qrcode";
 import { describe, expect, it, vi } from "vitest";
 import * as schema from "../../drizzle/schema";
 import { computeVatBreakdown } from "./invoice-total.util";
-import { bilingualLabels, InvoicePdfService, mentionsReverseCharge } from "./invoice-pdf.service";
+import { bilingualLabels, InvoicePdfService, mentionsReverseCharge, displayPostalCode } from "./invoice-pdf.service";
 
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 type ContactRow = typeof schema.contacts.$inferSelect;
@@ -430,6 +430,14 @@ describe("InvoicePdfService paid documents and foreign buyers", () => {
     const paid = await render(makeInvoice({ invoiceNumber: null, status: "pending_review", amountPaid: "1000000" }));
     expect(paid.lines).toContain("QR Faktura se doplní po vystavení");
     expect(paid.lines).not.toContain("QR platba se doplní po vystavení");
+  });
+
+  it("prints a Czech or Slovak PSČ with the space, whatever the register gave", async () => {
+    expect((await render(makeInvoice(), makeContact({ addressPostalCode: "60200", addressCity: "Brno", addressCountry: "CZ" }))).lines).toContain("602 00 Brno");
+    expect(displayPostalCode("81101", "SK")).toBe("811 01");
+    expect(displayPostalCode("602 00", "CZ")).toBe("602 00");
+    expect(displayPostalCode("10115", "DE")).toBe("10115");
+    expect(displayPostalCode("SW1A 1AA", "GB")).toBe("SW1A 1AA");
   });
 
   it("prints the country of a buyer abroad, not of a domestic one", async () => {
