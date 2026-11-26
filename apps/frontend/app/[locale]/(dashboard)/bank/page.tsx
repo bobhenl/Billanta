@@ -25,6 +25,7 @@ import { presetRange } from '@/lib/period-presets';
 import { canManage, fetchCanWrite, fetchHomeCurrency, fetchMyRole } from '@/lib/tenant';
 import { cn } from '@/lib/utils';
 import { buttonClass } from '@/lib/ui-classes';
+import type { BankRule } from '@/lib/bank-rules';
 import type { BankConnection } from './actions';
 import { BankConnections } from './bank-connections';
 import { BankFilters } from './bank-filters';
@@ -70,7 +71,7 @@ export default async function BankReconciliationPage(props: {
   let invoices: InvoiceRow[];
   let connections: BankConnection[];
   let psd2: { available: boolean; countries: string[] };
-  let ruleNames: { id: string; name: string }[];
+  let ruleNames: Pick<BankRule, 'id' | 'name' | 'action' | 'enabled' | 'conditions' | 'connectionId'>[];
   const [home, canEdit, role] = await Promise.all([fetchHomeCurrency(), fetchCanWrite('bank'), fetchMyRole().catch(() => null)]);
   try {
     [transactions, invoices, connections, psd2, ruleNames] = await Promise.all([
@@ -81,8 +82,8 @@ export default async function BankReconciliationPage(props: {
         available: false,
         countries: []
       })),
-      // Only for the "ignored by rule X" labels; the list works without it.
-      apiFetch<{ id: string; name: string }[]>('/api/v1/bank-reconciliation/rules').catch(() => [])
+      // Only for the "ignored by rule X" labels and the accounts' "only …" tags; the list works without it.
+      apiFetch<BankRule[]>('/api/v1/bank-reconciliation/rules').catch(() => [] as BankRule[])
     ]);
   } catch (err) {
     if (err instanceof NotSignedInError) redirect({ href: '/login', locale });
@@ -193,7 +194,7 @@ export default async function BankReconciliationPage(props: {
         </Banner>
       )}
       <TwoFactorNotice className="mt-6" />
-      <BankConnections connections={connections} psd2={psd2} canManage={canManage(role)} />
+      <BankConnections connections={connections} psd2={psd2} canManage={canManage(role)} importRules={ruleNames} />
 
       <div className="mt-5 flex flex-wrap items-center gap-2">
         <form action="" className="relative w-full sm:max-w-xs">

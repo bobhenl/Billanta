@@ -1155,11 +1155,10 @@
       "uploadStatement": "Carica estratto conto",
       "edit": {
         "open": "Modifica",
-        "filter": "Scarica solo i movimenti che contengono",
-        "filterPlaceholder": "es. Google, Meta",
-        "filterHint": "Per un conto personale: si salvano solo i pagamenti la cui controparte o causale contiene una di queste parole (separate da virgola), in entrata e in uscita. Nient’altro arriva a Billanta. Vuoto = solo pagamenti in entrata, come prima.",
         "filterOn": "solo {words}",
-        "save": "Salva"
+        "save": "Salva",
+        "filterMoved": "Cosa scarica questo conto si imposta ora nelle regole bancarie.",
+        "filterRule": "Crea una regola «Scarica solo»"
       }
     },
     "fee": "commissione {amount}",
@@ -5220,9 +5219,11 @@
       "title": "Ricavo netto",
       "gross": "Ricevuto (cambio della fattura)",
       "fees": "Commissioni",
-      "fx": "Differenza di cambio",
+      "fx": "Cambio vs tasso della fattura",
       "net": "Ricavo netto",
-      "noReceived": "Inserisca l’importo accreditato in {home} per vedere anche la differenza di cambio."
+      "noReceived": "Inserisca l’importo accreditato in {home} per vedere anche la differenza di cambio.",
+      "rates": "Tasso reale {real} contro tasso della fattura {invoice} ({pair}).",
+      "held": "{amount} è ancora sul saldo PayPal. L’importo reale in {home} compare quando PayPal lo converte al prelievo."
     },
     "history": "Cronologia delle modifiche",
     "correction": {
@@ -5528,10 +5529,15 @@
     "flatRate": "Spese forfettarie",
     "rate": "forfettario {rate} %",
     "noFlat": "senza forfettario",
-    "hint": "Stima approssimativa per un lavoratore autonomo ceco: l’importo senza IVA meno imposta sul reddito (15 %), contributi previdenziali e sanitari su questa fattura – circa {burden}. Usa la percentuale forfettaria scelta e non considera gli acconti minimi né le detrazioni fiscali. Per l’intero anno veda Esportazioni.",
-    "hintCosts": "Vengono detratti anche le commissioni di pagamento e la perdita di cambio ({costs}). Con le spese forfettarie non riducono l’imposta, perché il forfait copre già tutte le spese.",
-    "hintLimits": "Lo consideri un minimo. Finché il suo anno non esaurisce la detrazione del contribuente e non supera gli acconti minimi (o la soglia di un’attività secondaria), questa fattura non aggiunge imposte né contributi e le resta di più, fino a {full}.",
-    "range": "Le restano da {low} a {high}."
+    "lines": {
+      "withoutVat": "Senza IVA",
+      "fee": "Commissione di pagamento",
+      "fxLoss": "Perdita di cambio",
+      "fxGain": "Guadagno di cambio",
+      "tax": "Imposta sul reddito 15 %",
+      "insurance": "Previdenza + sanità",
+      "caveat": "Minimo: finché l’anno non esaurisce la detrazione e gli acconti minimi, le restano fino a {full}."
+    }
   },
   "welcome": {
     "title": "Benvenuto in Billanta",
@@ -13887,7 +13893,8 @@
     "noAccess": {
       "title": "Solo per proprietari e amministratori",
       "body": "Il report al netto delle imposte mostra il reddito e le imposte di ogni socio, quindi possono vederlo solo il proprietario e gli amministratori dell’azienda."
-    }
+    },
+    "split": "Appartiene a"
   },
   "bankRules": {
     "title": "Regole per i pagamenti",
@@ -13936,12 +13943,14 @@
     "action": {
       "ignore": "Ignora",
       "draft_expense": "Crea una spesa da verificare",
-      "draft_invoice": "Crea una bozza di fattura"
+      "draft_invoice": "Crea una bozza di fattura",
+      "import_only": "Scarica solo i movimenti che contengono"
     },
     "actionHint": {
       "ignore": "Il pagamento viene contrassegnato come ignorato. Può rimetterlo tra quelli da abbinare in qualsiasi momento.",
       "draft_expense": "Solo pagamenti in uscita. Crea una spesa con l’etichetta Da verificare, collegata al pagamento.",
-      "draft_invoice": "Solo pagamenti in entrata. Crea una bozza di fattura da controllare. L’emissione spetta sempre a Lei."
+      "draft_invoice": "Solo pagamenti in entrata. Crea una bozza di fattura da controllare. L’emissione spetta sempre a Lei.",
+      "import_only": "Per un conto personale collegato via PSD2: vengono salvati solo i movimenti la cui controparte o causale contiene una delle parole, in entrata e in uscita. Nient’altro arriva in Billanta. Un conto senza questa regola scarica solo i pagamenti in entrata."
     },
     "form": {
       "titleNew": "Nuova regola",
@@ -14016,7 +14025,20 @@
       "action_needs_incoming": "Le bozze di fattura possono nascere solo da pagamenti in entrata. Imposti la direzione su In entrata.",
       "contact_not_found": "Il cliente scelto non esiste più.",
       "bank_rule_not_found": "La regola non esiste più.",
-      "forbidden": "Non ha i permessi per modificare le regole."
+      "forbidden": "Non ha i permessi per modificare le regole.",
+      "import_rule_needs_words": "Inserisci almeno una parola.",
+      "import_rule_needs_psd2": "Al download si possono filtrare solo i conti collegati via PSD2.",
+      "import_rule_not_applicable": "Questa regola decide solo cosa scarica la prossima sincronizzazione. Non si applica ai pagamenti salvati.",
+      "bank_connection_not_found": "Il conto scelto non esiste più."
+    },
+    "importOnly": {
+      "account": "Conto",
+      "allAccounts": "Tutti i conti collegati via PSD2",
+      "removedAccount": "Conto rimosso",
+      "keywords": "Parole (separate da virgola)",
+      "keywordsPlaceholder": "es. Google, Meta",
+      "hint": "Maiuscole e minuscole non contano, gli accenti sì. Una parola può trovarsi ovunque nel nome della controparte, nel numero di conto o nella causale. Vale dalla prossima sincronizzazione, mai per i pagamenti già salvati. Con più regole di questo tipo, un movimento resta se corrisponde a una qualsiasi.",
+      "summary": "{account}: solo movimenti che contengono {words}"
     }
   },
   "updateNotice": {

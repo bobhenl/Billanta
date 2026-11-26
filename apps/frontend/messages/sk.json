@@ -1156,11 +1156,10 @@
       "uploadStatement": "Nahrať výpis",
       "edit": {
         "open": "Upraviť",
-        "filter": "Sťahovať len pohyby obsahujúce",
-        "filterPlaceholder": "napr. Google, Meta",
-        "filterHint": "Pre osobný účet: uložia sa len platby, ktorých protistrana alebo správa obsahuje niektoré z týchto slov (oddeľte čiarkou), prichádzajúce aj odchádzajúce. Ostatné pohyby z banky do Billanty vôbec neprídu. Prázdne = sťahovať len prichádzajúce platby ako doteraz.",
         "filterOn": "len {words}",
-        "save": "Uložiť"
+        "save": "Uložiť",
+        "filterMoved": "Čo sa z tohto účtu sťahuje, po novom nastavíte v pravidlách pre platby.",
+        "filterRule": "Nastaviť pravidlo „Sťahovať len…“"
       }
     },
     "fee": "poplatok {amount}",
@@ -5228,9 +5227,11 @@
       "title": "Čistý výnos platby",
       "gross": "Prijaté (kurz faktúry)",
       "fees": "Poplatky",
-      "fx": "Kurzový rozdiel",
+      "fx": "Kurz oproti kurzu faktúry",
       "net": "Čistý výnos",
-      "noReceived": "Zadajte pripísanú sumu v {home}, aby sme vypočítali aj kurzový rozdiel."
+      "noReceived": "Zadajte pripísanú sumu v {home}, aby sme vypočítali aj kurzový rozdiel.",
+      "rates": "Skutočný kurz {real} oproti kurzu faktúry {invoice} ({pair}).",
+      "held": "{amount} zatiaľ ostáva na zostatku PayPalu. Skutočnú sumu v {home} uvidíte, keď ju PayPal pri výbere prevedie."
     },
     "history": "História zmien",
     "correction": {
@@ -5557,10 +5558,15 @@
     "flatRate": "Paušálne výdavky",
     "rate": "paušál {rate} %",
     "noFlat": "bez paušálu",
-    "hint": "Orientačne podľa českých pravidiel: suma bez DPH po odpočítaní dane z príjmov (15 %), sociálneho a zdravotného poistenia OSVČ – zhruba {burden}. Nezohľadňuje minimálne preddavky ani zľavy na dani.",
-    "hintCosts": "Odpočítané sú aj poplatky a kurzový rozdiel z platby ({costs}). Pri paušále daň neznižujú, ten už všetky výdavky zahŕňa.",
-    "hintLimits": "Berte to ako spodnú hranicu. Kým za rok nevyčerpáte zľavu na poplatníka a neprekročíte minimálne preddavky (pri vedľajšej činnosti rozhodnú sumu), daň a poistné z tejto faktúry nezaplatíte navyše a zostane vám viac, až {full}.",
-    "range": "Zostane vám {low} až {high}."
+    "lines": {
+      "withoutVat": "Bez DPH",
+      "fee": "Poplatok za platbu",
+      "fxLoss": "Strata na kurze",
+      "fxGain": "Zisk na kurze",
+      "tax": "Daň z príjmov 15 %",
+      "insurance": "Sociálne + zdravotné",
+      "caveat": "Spodná hranica: kým za rok nevyčerpáte zľavu na poplatníka a minimálne preddavky, zostane vám až {full}."
+    }
   },
   "welcome": {
     "title": "Vitajte v Billante",
@@ -13820,7 +13826,8 @@
     "noAccess": {
       "title": "Len pre majiteľov a administrátorov",
       "body": "Prehľad Po zdanení ukazuje príjmy a dane jednotlivých spoločníkov, preto ho vidí len majiteľ a administrátori firmy."
-    }
+    },
+    "split": "Komu patrí"
   },
   "bankRules": {
     "title": "Pravidlá pre platby",
@@ -13869,12 +13876,14 @@
     "action": {
       "ignore": "Ignorovať",
       "draft_expense": "Vytvoriť výdavok na kontrolu",
-      "draft_invoice": "Vytvoriť návrh faktúry"
+      "draft_invoice": "Vytvoriť návrh faktúry",
+      "import_only": "Sťahovať len pohyby obsahujúce"
     },
     "actionHint": {
       "ignore": "Platba sa označí ako ignorovaná. Kedykoľvek ju môžete vrátiť na spárovanie.",
       "draft_expense": "Len pre odchádzajúce platby. Vznikne výdavok so štítkom Na kontrolu, prepojený s platbou.",
-      "draft_invoice": "Len pre prichádzajúce platby. Vznikne návrh faktúry na kontrolu. Vystavíte ho vždy sami."
+      "draft_invoice": "Len pre prichádzajúce platby. Vznikne návrh faktúry na kontrolu. Vystavíte ho vždy sami.",
+      "import_only": "Pre osobný účet pripojený cez PSD2: uložia sa len pohyby, ktorých protistrana alebo správa obsahuje niektoré zo slov, prichádzajúce aj odchádzajúce. Nič iné do Billanty nepríde. Účet bez takého pravidla sťahuje len prichádzajúce platby."
     },
     "form": {
       "titleNew": "Nové pravidlo",
@@ -13949,7 +13958,20 @@
       "action_needs_incoming": "Návrh faktúry sa dá vytvoriť len z prichádzajúcich platieb. Nastavte smer na Prichádzajúce.",
       "contact_not_found": "Vybraný odberateľ už neexistuje.",
       "bank_rule_not_found": "Pravidlo už neexistuje.",
-      "forbidden": "Na úpravu pravidiel nemáte oprávnenie."
+      "forbidden": "Na úpravu pravidiel nemáte oprávnenie.",
+      "import_rule_needs_words": "Zadajte aspoň jedno slovo.",
+      "import_rule_needs_psd2": "Pri sťahovaní sa dajú filtrovať len účty pripojené cez PSD2.",
+      "import_rule_not_applicable": "Toto pravidlo len určuje, čo sa stiahne pri nasledujúcej synchronizácii. Na uložené platby sa použiť nedá.",
+      "bank_connection_not_found": "Vybraný účet už neexistuje."
+    },
+    "importOnly": {
+      "account": "Účet",
+      "allAccounts": "Všetky účty pripojené cez PSD2",
+      "removedAccount": "Odstránený účet",
+      "keywords": "Slová (oddeľte čiarkou)",
+      "keywordsPlaceholder": "napr. Google, Meta",
+      "hint": "Na veľkosti písmen nezáleží, na diakritike áno. Slovo môže byť kdekoľvek v mene protistrany, čísle účtu alebo správe. Platí od nasledujúcej synchronizácie, na už uložené platby sa nepoužije. Ak je takých pravidiel viac, pohyb sa uloží, keď zodpovedá ktorémukoľvek z nich.",
+      "summary": "{account}: len pohyby obsahujúce {words}"
     }
   },
   "amounts": {

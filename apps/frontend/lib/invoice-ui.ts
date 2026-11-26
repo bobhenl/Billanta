@@ -125,6 +125,8 @@ export interface InvoiceDetail {
     exchangeRate: string | null;
     paymentFees?: string;
     receivedCzk?: string | null;
+    /** Split between the tax model's partners ("Po zdanění"); null = the default shares. */
+    partnerShares?: Record<string, number> | null;
     bankAccountId: string | null;
     relatedInvoiceId: string | null;
     issuedAt: string | null;

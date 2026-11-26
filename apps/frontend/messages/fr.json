@@ -1155,11 +1155,10 @@
       "uploadStatement": "Importer un relevé",
       "edit": {
         "open": "Modifier",
-        "filter": "Ne télécharger que les mouvements contenant",
-        "filterPlaceholder": "p. ex. Google, Meta",
-        "filterHint": "Pour un compte personnel : seuls les paiements dont la contrepartie ou le message contient l’un de ces mots (séparés par des virgules) sont enregistrés, entrants et sortants. Rien d’autre n’arrive dans Billanta. Vide = paiements entrants seulement, comme avant.",
         "filterOn": "seulement {words}",
-        "save": "Enregistrer"
+        "save": "Enregistrer",
+        "filterMoved": "Ce que ce compte télécharge se règle désormais dans les règles bancaires.",
+        "filterRule": "Créer une règle « Télécharger seulement »"
       }
     },
     "fee": "frais {amount}",
@@ -5220,9 +5219,11 @@
       "title": "Produit net",
       "gross": "Reçu (taux de la facture)",
       "fees": "Frais",
-      "fx": "Écart de change",
+      "fx": "Change vs taux de la facture",
       "net": "Produit net",
-      "noReceived": "Saisissez le montant crédité en {home} pour voir aussi l’écart de change."
+      "noReceived": "Saisissez le montant crédité en {home} pour voir aussi l’écart de change.",
+      "rates": "Taux réel {real} contre taux de la facture {invoice} ({pair}).",
+      "held": "{amount} est encore sur votre solde PayPal. Le montant réel en {home} s’affichera quand PayPal le convertira au retrait."
     },
     "history": "Historique des modifications",
     "correction": {
@@ -5528,10 +5529,15 @@
     "flatRate": "Frais forfaitaires",
     "rate": "forfait {rate} %",
     "noFlat": "sans forfait",
-    "hint": "Estimation approximative pour un entrepreneur individuel tchèque : le montant HT moins l’impôt sur le revenu (15 %) et les cotisations sociales et maladie sur cette facture – environ {burden}. Utilise le forfait choisi et ne tient pas compte des acomptes minimaux ni des crédits d’impôt. Voir Exports pour l’année complète.",
-    "hintCosts": "Les frais de paiement et la perte de change ({costs}) sont également déduits. Avec le forfait, ils ne réduisent pas l’impôt, car le forfait couvre déjà toutes les dépenses.",
-    "hintLimits": "Voyez-le comme un minimum. Tant que votre année n’épuise pas la réduction du contribuable et ne dépasse pas les acomptes minimaux (ou le seuil d’une activité secondaire), cette facture n’ajoute ni impôt ni cotisations et il vous reste plus, jusqu’à {full}.",
-    "range": "Il vous reste de {low} à {high}."
+    "lines": {
+      "withoutVat": "Hors TVA",
+      "fee": "Frais de paiement",
+      "fxLoss": "Perte de change",
+      "fxGain": "Gain de change",
+      "tax": "Impôt sur le revenu 15 %",
+      "insurance": "Sociale + santé",
+      "caveat": "Minimum : tant que votre année n’épuise pas la réduction d’impôt et les acomptes minimaux, il vous reste jusqu’à {full}."
+    }
   },
   "welcome": {
     "title": "Bienvenue sur Billanta",
@@ -13887,7 +13893,8 @@
     "noAccess": {
       "title": "Réservé aux propriétaires et administrateurs",
       "body": "Le rapport après impôts affiche les revenus et les impôts de chaque associé : seuls le propriétaire et les administrateurs de l’entreprise peuvent le consulter."
-    }
+    },
+    "split": "Appartient à"
   },
   "bankRules": {
     "title": "Règles de paiement",
@@ -13936,12 +13943,14 @@
     "action": {
       "ignore": "Ignorer",
       "draft_expense": "Créer une dépense à vérifier",
-      "draft_invoice": "Créer un brouillon de facture"
+      "draft_invoice": "Créer un brouillon de facture",
+      "import_only": "Ne télécharger que les mouvements contenant"
     },
     "actionHint": {
       "ignore": "Le paiement est marqué comme ignoré. Vous pouvez le remettre à rapprocher à tout moment.",
       "draft_expense": "Paiements sortants uniquement. Crée une dépense avec l’étiquette À vérifier, liée au paiement.",
-      "draft_invoice": "Paiements entrants uniquement. Crée un brouillon de facture à vérifier. L’émission reste toujours votre décision."
+      "draft_invoice": "Paiements entrants uniquement. Crée un brouillon de facture à vérifier. L’émission reste toujours votre décision.",
+      "import_only": "Pour un compte personnel connecté via PSD2 : seuls les mouvements dont la contrepartie ou le libellé contient l’un des mots sont enregistrés, entrants et sortants. Rien d’autre n’arrive dans Billanta. Un compte sans une telle règle ne télécharge que les paiements reçus."
     },
     "form": {
       "titleNew": "Nouvelle règle",
@@ -14016,7 +14025,20 @@
       "action_needs_incoming": "Les brouillons de facture ne peuvent provenir que de paiements entrants. Réglez le sens sur Entrants.",
       "contact_not_found": "Le client choisi n’existe plus.",
       "bank_rule_not_found": "La règle n’existe plus.",
-      "forbidden": "Vous n’avez pas le droit de modifier les règles."
+      "forbidden": "Vous n’avez pas le droit de modifier les règles.",
+      "import_rule_needs_words": "Saisissez au moins un mot.",
+      "import_rule_needs_psd2": "Seuls les comptes connectés via PSD2 peuvent être filtrés au téléchargement.",
+      "import_rule_not_applicable": "Cette règle décide seulement de ce que télécharge la prochaine synchronisation. Elle ne s’applique pas aux paiements enregistrés.",
+      "bank_connection_not_found": "Le compte choisi n’existe plus."
+    },
+    "importOnly": {
+      "account": "Compte",
+      "allAccounts": "Tous les comptes connectés via PSD2",
+      "removedAccount": "Compte supprimé",
+      "keywords": "Mots (séparés par des virgules)",
+      "keywordsPlaceholder": "ex. Google, Meta",
+      "hint": "La casse ne compte pas, les accents si. Un mot peut se trouver n’importe où dans le nom de la contrepartie, le numéro de compte ou le libellé. S’applique dès la prochaine synchronisation, jamais aux paiements déjà enregistrés. Avec plusieurs règles de ce type, un mouvement est gardé s’il correspond à l’une d’elles.",
+      "summary": "{account} : seulement les mouvements contenant {words}"
     }
   },
   "updateNotice": {

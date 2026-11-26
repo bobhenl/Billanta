@@ -31,6 +31,8 @@ import { InvoiceActions } from './invoice-actions';
 import { InvoiceLockBar, UnlockInvoice } from './invoice-lock';
 import { BuyerDetailsRequest } from './buyer-details-request';
 import { PublicLinkPanel } from './public-link-panel';
+import { PartnerSplit } from './partner-split';
+import type { TaxModel } from '@/lib/net-income';
 
 /** A rule reference such as "§29/1c ZDPH", linked to the law text when lawUrl knows it. */
 function LawRef({ rule }: { rule?: string }) {
@@ -107,6 +109,12 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   // Asking the customer for their details changes the draft, so a read-only member doesn't get the box.
   const canEdit = await fetchCanWrite('invoices');
   const canLock = canManage(await fetchMyRole().catch(() => null));
+  // The partner split is owner/admin data like the "Po zdanění" report itself (the backend refuses others).
+  const partners = canLock
+    ? await apiFetch<{ model: TaxModel | null }>('/api/v1/tenants/me/tax-model')
+        .then((r) => r.model?.partners ?? [])
+        .catch(() => [])
+    : [];
   // The buyer as printed on the document (issue-date snapshot); older backends send only `contact`.
   const buyer = detail.buyer ?? contact;
   // Mandatory-content check (CZ/SK law; Peppol for an issued invoice to a foreign buyer).
@@ -158,8 +166,14 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   const expectedCzk = (received - fees) * rate;
   const netCzk = receivedCzk ?? expectedCzk;
   const fxDiff = receivedCzk == null ? null : receivedCzk - expectedCzk;
-  // What the payment lost to fees and conversion, back in the invoice currency for "Zůstane vám".
-  const paymentCosts = showNet && rate > 0 ? Math.max(0, (grossCzk - netCzk) / rate) : 0;
+  // What the payment lost to the provider and to the conversion, each back in the invoice currency for "Zůstane vám".
+  const netFees = showNet ? fees : 0;
+  const fxLoss = showNet && fxDiff != null ? -fxDiff / rate : 0;
+  // PayPal's own rate, once it converted the payment (what came out over what went in after the fee).
+  const realQuote = receivedCzk != null && quote && received - fees > 0 ? rateQuote(receivedCzk / (received - fees), invoice.currency, home) : null;
+  // Paid into PayPal in a foreign currency and still sitting on that balance: no home amount exists yet.
+  const held = receivedCzk == null ? payments.filter((p) => p.externalId?.startsWith('paypal:') && p.currency !== home && !(p.netCurrency === home && p.netAmount)) : [];
+  const heldAmount = held.reduce((sum, p) => sum + Number(p.amount) - Math.abs(Number(p.fee ?? 0)), 0);
 
   const facts: [string, string | null][] = [
     [t('fields.issueDate'), formatDate(invoice.issueDate, locale)],
@@ -240,7 +254,11 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               <span className="text-muted-foreground"> · <span className="amount">{t('partial.remaining', { amount: money(Math.max(0, totals.totalWithVat - Number(invoice.amountPaid))) })}</span></span>
             </div>
           )}
-          {home === 'CZK' && invoice.documentType !== 'credit_note' && totals.totalWithoutVat > 0 && <NetEstimate base={totals.totalWithoutVat} currency={invoice.currency} czkRate={rate} costs={paymentCosts} />}
+          {home === 'CZK' && invoice.documentType !== 'credit_note' && totals.totalWithoutVat > 0 && <NetEstimate base={totals.totalWithoutVat} currency={invoice.currency} czkRate={rate} fees={netFees} fxLoss={fxLoss} />}
+          {/* Only what the report counts: invoices and credit notes. */}
+          {partners.length >= 2 && (invoice.documentType === 'invoice' || invoice.documentType === 'credit_note') && (
+            <PartnerSplit id={invoice.id} number={invoice.invoiceNumber ?? title} partners={partners} initial={invoice.partnerShares ?? null} />
+          )}
         </div>
       </div>
 
@@ -521,7 +539,22 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                   </dd>
                 </div>
               </dl>
-              {receivedCzk == null && invoice.currency !== home && <p className="mt-2 text-xs text-muted-foreground">{t('net.noReceived', { home })}</p>}
+              {realQuote && quote && (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {t('net.rates', {
+                    real: realQuote.value.toLocaleString(locale, { maximumFractionDigits: 4 }),
+                    invoice: quote.value.toLocaleString(locale, { maximumFractionDigits: 4 }),
+                    pair: quote.pair
+                  })}
+                </p>
+              )}
+              {held.length > 0 ? (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  <span className="amount">{t('net.held', { amount: formatMoney(heldAmount, held[0]!.currency, locale), home })}</span>
+                </p>
+              ) : (
+                receivedCzk == null && invoice.currency !== home && <p className="mt-2 text-xs text-muted-foreground">{t('net.noReceived', { home })}</p>
+              )}
             </details>
           )}
 

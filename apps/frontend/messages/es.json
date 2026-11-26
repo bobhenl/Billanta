@@ -1155,11 +1155,10 @@
       "uploadStatement": "Subir extracto",
       "edit": {
         "open": "Editar",
-        "filter": "Descargar solo movimientos que contengan",
-        "filterPlaceholder": "p. ej. Google, Meta",
-        "filterHint": "Para una cuenta personal: solo se guardan los pagos cuya contraparte o mensaje contenga alguna de estas palabras (separadas por comas), entrantes y salientes. Nada más del banco llega a Billanta. Vacío = solo pagos entrantes, como hasta ahora.",
         "filterOn": "solo {words}",
-        "save": "Guardar"
+        "save": "Guardar",
+        "filterMoved": "Lo que descarga esta cuenta se configura ahora en las reglas bancarias.",
+        "filterRule": "Crear una regla «Descargar solo»"
       }
     },
     "fee": "comisión {amount}",
@@ -5220,9 +5219,11 @@
       "title": "Ingresos netos",
       "gross": "Recibido (tipo de la factura)",
       "fees": "Comisiones",
-      "fx": "Diferencia de cambio",
+      "fx": "Cambio vs. tipo de la factura",
       "net": "Ingresos netos",
-      "noReceived": "Introduzca el importe abonado en {home} para ver también la diferencia de cambio."
+      "noReceived": "Introduzca el importe abonado en {home} para ver también la diferencia de cambio.",
+      "rates": "Tipo real {real} frente al de la factura {invoice} ({pair}).",
+      "held": "{amount} sigue en su saldo de PayPal. El importe real en {home} aparecerá cuando PayPal lo convierta al retirarlo."
     },
     "history": "Historial de cambios",
     "correction": {
@@ -5528,10 +5529,15 @@
     "flatRate": "Gastos a tanto alzado",
     "rate": "a tanto alzado {rate} %",
     "noFlat": "sin tanto alzado",
-    "hint": "Estimación aproximada para un autónomo checo: el importe sin IVA menos el impuesto sobre la renta (15 %) y las cotizaciones a la seguridad social y al seguro de salud sobre esta factura – unos {burden}. Usa el porcentaje a tanto alzado elegido y no tiene en cuenta los anticipos mínimos ni las deducciones fiscales. Consulte Exportaciones para ver el año completo.",
-    "hintCosts": "También se descuentan las comisiones de pago y la pérdida por conversión ({costs}). Con gastos a tanto alzado no reducen el impuesto, porque el tanto alzado ya cubre todos los gastos.",
-    "hintLimits": "Tómelo como el mínimo. Mientras su año no agote la deducción del contribuyente ni supere los anticipos mínimos (o el umbral de una actividad secundaria), esta factura no suma impuestos ni cotizaciones y le queda más, hasta {full}.",
-    "range": "Le quedan de {low} a {high}."
+    "lines": {
+      "withoutVat": "Sin IVA",
+      "fee": "Comisión de pago",
+      "fxLoss": "Pérdida por cambio",
+      "fxGain": "Ganancia por cambio",
+      "tax": "Impuesto sobre la renta 15 %",
+      "insurance": "Seguridad social + salud",
+      "caveat": "Mínimo: hasta que el año agote la deducción fiscal y los anticipos mínimos, le quedan hasta {full}."
+    }
   },
   "welcome": {
     "title": "Bienvenido a Billanta",
@@ -13887,7 +13893,8 @@
     "noAccess": {
       "title": "Solo para propietarios y administradores",
       "body": "El informe después de impuestos muestra los ingresos y los impuestos de cada socio, por lo que solo pueden verlo el propietario y los administradores de la empresa."
-    }
+    },
+    "split": "Pertenece a"
   },
   "bankRules": {
     "title": "Reglas de pagos",
@@ -13936,12 +13943,14 @@
     "action": {
       "ignore": "Ignorar",
       "draft_expense": "Crear un gasto para revisar",
-      "draft_invoice": "Crear un borrador de factura"
+      "draft_invoice": "Crear un borrador de factura",
+      "import_only": "Descargar solo movimientos que contengan"
     },
     "actionHint": {
       "ignore": "El pago se marca como ignorado. Puede devolverlo a la conciliación en cualquier momento.",
       "draft_expense": "Solo pagos salientes. Crea un gasto con la etiqueta Para revisar, vinculado al pago.",
-      "draft_invoice": "Solo cobros entrantes. Crea un borrador de factura para revisar. La emisión siempre depende de usted."
+      "draft_invoice": "Solo cobros entrantes. Crea un borrador de factura para revisar. La emisión siempre depende de usted.",
+      "import_only": "Para una cuenta personal conectada por PSD2: solo se guardan los movimientos cuyo ordenante o concepto contiene una de las palabras, entrantes y salientes. Nada más llega a Billanta. Una cuenta sin esta regla descarga solo los pagos recibidos."
     },
     "form": {
       "titleNew": "Nueva regla",
@@ -14016,7 +14025,20 @@
       "action_needs_incoming": "Los borradores de factura solo pueden crearse a partir de cobros entrantes. Establezca la dirección en Entrantes.",
       "contact_not_found": "El cliente elegido ya no existe.",
       "bank_rule_not_found": "La regla ya no existe.",
-      "forbidden": "No tiene permiso para cambiar las reglas."
+      "forbidden": "No tiene permiso para cambiar las reglas.",
+      "import_rule_needs_words": "Introduzca al menos una palabra.",
+      "import_rule_needs_psd2": "Solo las cuentas conectadas por PSD2 se pueden filtrar al descargar.",
+      "import_rule_not_applicable": "Esta regla solo decide qué descarga la próxima sincronización. No se puede aplicar a pagos guardados.",
+      "bank_connection_not_found": "La cuenta elegida ya no existe."
+    },
+    "importOnly": {
+      "account": "Cuenta",
+      "allAccounts": "Todas las cuentas conectadas por PSD2",
+      "removedAccount": "Cuenta eliminada",
+      "keywords": "Palabras (separadas por comas)",
+      "keywordsPlaceholder": "p. ej. Google, Meta",
+      "hint": "Las mayúsculas no importan, las tildes sí. Una palabra puede estar en cualquier parte del nombre, número de cuenta o concepto. Se aplica desde la próxima sincronización, nunca a pagos ya guardados. Con varias reglas así, un movimiento se guarda si encaja con cualquiera.",
+      "summary": "{account}: solo movimientos que contengan {words}"
     }
   },
   "updateNotice": {

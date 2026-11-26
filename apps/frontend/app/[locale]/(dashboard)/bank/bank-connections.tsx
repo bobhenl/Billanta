@@ -6,7 +6,8 @@ import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { useCanWrite } from '@/components/access-provider';
-import { useRouter } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
+import { importWordsOf, type BankRule } from '@/lib/bank-rules';
 import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 import { STATEMENT_INPUT_ID } from './bank-import';
@@ -70,10 +71,13 @@ const EXPIRY_WARNING_MS = 14 * 24 * 60 * 60 * 1000;
 export function BankConnections({
   connections,
   psd2,
-  canManage = false
+  canManage = false,
+  importRules = []
 }: {
   connections: BankConnection[];
   psd2: { available: boolean; countries: string[] };
+  /** The "only download" bank rules, for the "only Google" tag on a PSD2 account. */
+  importRules?: Pick<BankRule, 'action' | 'enabled' | 'conditions' | 'connectionId'>[];
   /** Owner/admin: may download PayPal or Stripe history (an accountant may only sync). */
   canManage?: boolean;
 }) {
@@ -105,7 +109,7 @@ export function BankConnections({
   const [sandbox, setSandbox] = useState(false);
   const [stripeKey, setStripeKey] = useState('');
   const [backfillId, setBackfillId] = useState<string | null>(null);
-  const [editing, setEditing] = useState<{ id: string; label: string; filter: string } | null>(null);
+  const [editing, setEditing] = useState<{ id: string; label: string } | null>(null);
   const [backfillFrom, setBackfillFrom] = useState(() => `${new Date().getFullYear()}-01-01`);
   const today = new Date().toISOString().slice(0, 10);
   // History goes three years back (PayPal's Transaction Search limit); the backend clamps it the same way.
@@ -234,10 +238,7 @@ export function BankConnections({
   const saveEdit = (c: BankConnection) =>
     run(c.id, async () => {
       if (!editing) return;
-      const result = await editBankConnection(c.id, {
-        label: editing.label,
-        ...(c.provider === 'enable_banking' && { importFilter: editing.filter })
-      });
+      const result = await editBankConnection(c.id, { label: editing.label });
       if (!result.ok) toast({ text: errorText(result.error), tone: 'err' });
       else setEditing(null);
     });
@@ -344,8 +345,10 @@ export function BankConnections({
                     {c.currency && (
                       <span className="ml-2 rounded bg-muted px-1.5 py-0.5 text-[11px] font-bold text-foreground">{c.currency}</span>
                     )}
-                    {c.importFilter && (
-                      <span className="ml-2 text-xs font-medium text-primary">· {t('edit.filterOn', { words: c.importFilter })}</span>
+                    {c.provider === 'enable_banking' && importWordsOf(importRules, c.id).length > 0 && (
+                      <span className="ml-2 text-xs font-medium text-primary">
+                        · {t('edit.filterOn', { words: importWordsOf(importRules, c.id).join(', ') })}
+                      </span>
                     )}
                     {!c.enabled && <span className="ml-2 text-xs font-medium text-muted-foreground">· {t('paused')}</span>}
                     {expired && <span className="ml-2 text-xs font-semibold text-destructive">· {t('psd2.expired')}</span>}
@@ -422,7 +425,7 @@ export function BankConnections({
                       title={t('edit.open')}
                       aria-expanded={editing?.id === c.id}
                       onClick={() =>
-                        setEditing(editing?.id === c.id ? null : { id: c.id, label: c.label ?? '', filter: c.importFilter ?? '' })
+                        setEditing(editing?.id === c.id ? null : { id: c.id, label: c.label ?? '' })
                       }
                       className="rounded-full p-1.5 text-muted-foreground hover:bg-accent hover:text-primary disabled:opacity-60"
                     >
@@ -465,21 +468,14 @@ export function BankConnections({
                           className={inputClass}
                         />
                       </label>
-                      {c.provider === 'enable_banking' && (
-                        <label className="grid gap-1.5 text-xs font-semibold">
-                          {t('edit.filter')}
-                          <input
-                            value={editing.filter}
-                            maxLength={500}
-                            onChange={(e) => setEditing({ ...editing, filter: e.target.value })}
-                            placeholder={t('edit.filterPlaceholder')}
-                            className={inputClass}
-                          />
-                        </label>
-                      )}
                     </div>
                     {c.provider === 'enable_banking' && (
-                      <p className="mt-2 break-words text-xs leading-relaxed text-muted-foreground">{t('edit.filterHint')}</p>
+                      <p className="mt-2 break-words text-xs leading-relaxed text-muted-foreground">
+                        {t('edit.filterMoved')}{' '}
+                        <Link href={`/bank/rules?new=import&connection=${encodeURIComponent(c.id)}`} className="font-semibold text-primary hover:underline">
+                          {t('edit.filterRule')}
+                        </Link>
+                      </p>
                     )}
                     <div className="mt-3 flex flex-wrap gap-2">
                       <button type="submit" disabled={pending} className={cn(primaryButton, 'h-10 px-4')}>

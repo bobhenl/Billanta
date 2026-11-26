@@ -1155,11 +1155,10 @@
       "uploadStatement": "Încarcă extrasul",
       "edit": {
         "open": "Editează",
-        "filter": "Descarcă doar mișcările care conțin",
-        "filterPlaceholder": "de ex. Google, Meta",
-        "filterHint": "Pentru un cont personal: se salvează doar plățile al căror partener sau mesaj conține unul dintre aceste cuvinte (separate prin virgulă), primite și trimise. Nimic altceva nu ajunge în Billanta. Gol = doar plăți primite, ca până acum.",
         "filterOn": "doar {words}",
-        "save": "Salvează"
+        "save": "Salvează",
+        "filterMoved": "Ce descarcă acest cont se setează acum în regulile bancare.",
+        "filterRule": "Configurează o regulă „Descarcă doar”"
       }
     },
     "fee": "comision {amount}",
@@ -5220,9 +5219,11 @@
       "title": "Venit net",
       "gross": "Primit (la cursul facturii)",
       "fees": "Comisioane",
-      "fx": "Diferență de curs",
+      "fx": "Curs vs cursul facturii",
       "net": "Venit net",
-      "noReceived": "Introduceți suma încasată în {home} pentru a vedea și diferența de curs."
+      "noReceived": "Introduceți suma încasată în {home} pentru a vedea și diferența de curs.",
+      "rates": "Curs real {real} față de cursul facturii {invoice} ({pair}).",
+      "held": "{amount} este încă în soldul PayPal. Suma reală în {home} apare când PayPal o convertește la retragere."
     },
     "history": "Istoricul modificărilor",
     "correction": {
@@ -5528,10 +5529,15 @@
     "flatRate": "Cheltuieli forfetare",
     "rate": "forfetar {rate} %",
     "noFlat": "fără cotă forfetară",
-    "hint": "Estimare aproximativă pentru un liber-profesionist ceh: suma fără TVA minus impozitul pe venit (15 %) și asigurările sociale și de sănătate pentru această factură – circa {burden}. Folosește cota forfetară aleasă și ignoră avansurile minime și reducerile de impozit. Pentru întregul an, consultați Exporturi.",
-    "hintCosts": "Se scad și comisioanele de plată și pierderea din conversie ({costs}). Dacă aplicați cheltuieli forfetare, aceste costuri nu reduc impozitul, deoarece procentul forfetar acoperă deja toate cheltuielile.",
-    "hintLimits": "Luați-o ca limită de jos. Cât timp anul dvs. nu epuizează reducerea contribuabilului și nu depășește avansurile minime (sau pragul unei activități secundare), factura nu adaugă impozit sau asigurări și vă rămâne mai mult, până la {full}.",
-    "range": "Vă rămân între {low} și {high}."
+    "lines": {
+      "withoutVat": "Fără TVA",
+      "fee": "Comision de plată",
+      "fxLoss": "Pierdere din curs",
+      "fxGain": "Câștig din curs",
+      "tax": "Impozit pe venit 15 %",
+      "insurance": "Sociale + sănătate",
+      "caveat": "Limita de jos: până când anul epuizează deducerea fiscală și avansurile minime, vă rămân până la {full}."
+    }
   },
   "welcome": {
     "title": "Bun venit în Billanta",
@@ -13887,7 +13893,8 @@
     "noAccess": {
       "title": "Doar pentru proprietari și administratori",
       "body": "Raportul după impozite arată venitul și impozitele fiecărui partener, așa că îl pot vedea doar proprietarul firmei și administratorii."
-    }
+    },
+    "split": "Aparține"
   },
   "bankRules": {
     "title": "Reguli pentru plăți",
@@ -13936,12 +13943,14 @@
     "action": {
       "ignore": "Ignorați",
       "draft_expense": "Creați o cheltuială de verificat",
-      "draft_invoice": "Creați o ciornă de factură"
+      "draft_invoice": "Creați o ciornă de factură",
+      "import_only": "Descarcă doar mișcările care conțin"
     },
     "actionHint": {
       "ignore": "Plata este marcată ca ignorată. O puteți readuce oricând la potrivire.",
       "draft_expense": "Doar plăți ieșite. Creează o cheltuială cu eticheta De verificat, asociată plății.",
-      "draft_invoice": "Doar plăți primite. Creează o ciornă de factură de verificat. Emiterea rămâne mereu decizia dumneavoastră."
+      "draft_invoice": "Doar plăți primite. Creează o ciornă de factură de verificat. Emiterea rămâne mereu decizia dumneavoastră.",
+      "import_only": "Pentru un cont personal conectat prin PSD2: se salvează doar mișcările al căror partener sau mesaj conține unul dintre cuvinte, intrări și ieșiri. Nimic altceva nu ajunge în Billanta. Un cont fără o astfel de regulă descarcă doar plățile primite."
     },
     "form": {
       "titleNew": "Regulă nouă",
@@ -14016,7 +14025,20 @@
       "action_needs_incoming": "Ciornele de facturi pot proveni doar din plăți primite. Setați direcția la Primite.",
       "contact_not_found": "Clientul ales nu mai există.",
       "bank_rule_not_found": "Regula nu mai există.",
-      "forbidden": "Nu aveți permisiunea să modificați regulile."
+      "forbidden": "Nu aveți permisiunea să modificați regulile.",
+      "import_rule_needs_words": "Introduceți cel puțin un cuvânt.",
+      "import_rule_needs_psd2": "Doar conturile conectate prin PSD2 pot fi filtrate la descărcare.",
+      "import_rule_not_applicable": "Această regulă decide doar ce descarcă următoarea sincronizare. Nu se poate aplica plăților salvate.",
+      "bank_connection_not_found": "Contul ales nu mai există."
+    },
+    "importOnly": {
+      "account": "Cont",
+      "allAccounts": "Toate conturile conectate prin PSD2",
+      "removedAccount": "Cont eliminat",
+      "keywords": "Cuvinte (separate prin virgulă)",
+      "keywordsPlaceholder": "ex. Google, Meta",
+      "hint": "Majusculele nu contează, diacriticele da. Un cuvânt poate apărea oriunde în numele partenerului, numărul de cont sau mesaj. Se aplică de la următoarea sincronizare, niciodată plăților deja salvate. Cu mai multe astfel de reguli, o mișcare se păstrează dacă se potrivește cu oricare.",
+      "summary": "{account}: doar mișcări care conțin {words}"
     }
   },
   "updateNotice": {

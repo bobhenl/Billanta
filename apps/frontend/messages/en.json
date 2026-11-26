@@ -1156,11 +1156,10 @@
       "uploadStatement": "Upload a statement",
       "edit": {
         "open": "Edit",
-        "filter": "Only download movements containing",
-        "filterPlaceholder": "e.g. Google, Meta",
-        "filterHint": "For a personal account: only payments whose counterparty or message contains one of these words (comma separated) are stored, incoming and outgoing. Nothing else from the bank reaches Billanta. Empty = incoming payments only, as before.",
         "filterOn": "only {words}",
-        "save": "Save"
+        "save": "Save",
+        "filterMoved": "What this account downloads is now set in the bank rules.",
+        "filterRule": "Set up an “Only download” rule"
       }
     },
     "fee": "fee {amount}",
@@ -5228,9 +5227,11 @@
       "title": "Net proceeds",
       "gross": "Received (invoice rate)",
       "fees": "Fees",
-      "fx": "Exchange difference",
+      "fx": "Conversion vs invoice rate",
       "net": "Net proceeds",
-      "noReceived": "Enter the amount credited in {home} to see the exchange difference too."
+      "noReceived": "Enter the amount credited in {home} to see the exchange difference too.",
+      "rates": "Real rate {real} vs invoice rate {invoice} ({pair}).",
+      "held": "{amount} is still on your PayPal balance. The real {home} amount shows once PayPal converts it on withdrawal."
     },
     "history": "Change history",
     "correction": {
@@ -5557,10 +5558,15 @@
     "flatRate": "Flat-rate expenses",
     "rate": "flat {rate} %",
     "noFlat": "no flat rate",
-    "hint": "Rough Czech sole-trader estimate: the amount without VAT minus income tax (15 %), social and health insurance on this invoice – about {burden}. Uses the chosen flat rate and ignores minimum advances and tax credits. See Exports for the full year.",
-    "hintCosts": "Payment fees and the conversion loss ({costs}) are taken off too. With a flat rate they don't lower the tax, since the flat rate already covers all expenses.",
-    "hintLimits": "Treat it as the low end. Until your year uses up the taxpayer credit and goes past the minimum advances (or the threshold for a side business), this invoice adds no tax or insurance and you keep more, up to {full}.",
-    "range": "You keep {low} to {high}."
+    "lines": {
+      "withoutVat": "Without VAT",
+      "fee": "Payment fee",
+      "fxLoss": "Conversion loss",
+      "fxGain": "Conversion gain",
+      "tax": "Income tax 15 %",
+      "insurance": "Social + health",
+      "caveat": "Low end: until your year uses up the tax credit and minimum advances, you keep up to {full}."
+    }
   },
   "welcome": {
     "title": "Welcome to Billanta",
@@ -13916,7 +13922,8 @@
     "noAccess": {
       "title": "For owners and admins only",
       "body": "The after-tax report shows each partner’s income and taxes, so only the company’s owner and admins can see it."
-    }
+    },
+    "split": "Belongs to"
   },
   "bankRules": {
     "title": "Payment rules",
@@ -13965,12 +13972,14 @@
     "action": {
       "ignore": "Ignore",
       "draft_expense": "Create an expense to review",
-      "draft_invoice": "Create a draft invoice"
+      "draft_invoice": "Create a draft invoice",
+      "import_only": "Only download movements containing"
     },
     "actionHint": {
       "ignore": "The payment is marked as ignored. You can put it back for matching at any time.",
       "draft_expense": "Outgoing payments only. Creates an expense labelled To review, linked to the payment.",
-      "draft_invoice": "Incoming payments only. Creates a draft invoice to review. Issuing it is always up to you."
+      "draft_invoice": "Incoming payments only. Creates a draft invoice to review. Issuing it is always up to you.",
+      "import_only": "For a personal account connected via PSD2: only movements whose counterparty or message contains one of the words are stored, incoming and outgoing. Nothing else reaches Billanta. An account without such a rule downloads incoming payments only."
     },
     "form": {
       "titleNew": "New rule",
@@ -14045,7 +14054,20 @@
       "action_needs_incoming": "Draft invoices can only come from incoming payments. Set the direction to Incoming.",
       "contact_not_found": "The chosen customer no longer exists.",
       "bank_rule_not_found": "The rule no longer exists.",
-      "forbidden": "You don't have permission to change rules."
+      "forbidden": "You don't have permission to change rules.",
+      "import_rule_needs_words": "Enter at least one word.",
+      "import_rule_needs_psd2": "Only accounts connected via PSD2 can be filtered on download.",
+      "import_rule_not_applicable": "This rule only decides what the next sync downloads. It cannot be applied to stored payments.",
+      "bank_connection_not_found": "The chosen account no longer exists."
+    },
+    "importOnly": {
+      "account": "Account",
+      "allAccounts": "All accounts connected via PSD2",
+      "removedAccount": "Removed account",
+      "keywords": "Words (comma separated)",
+      "keywordsPlaceholder": "e.g. Google, Meta",
+      "hint": "Case does not matter, accents do. A word can be anywhere in the counterparty name, account number or message. It applies from the next sync and never to payments already stored. With several such rules, a movement is kept if it fits any of them.",
+      "summary": "{account}: only movements containing {words}"
     }
   },
   "amounts": {

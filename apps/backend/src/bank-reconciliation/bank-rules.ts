@@ -1,16 +1,22 @@
 import { normalizeVariableSymbol } from "@faktur/cz-compliance";
 import { z } from "zod";
+import { filterWords, passesImportFilter } from "./import-filter";
+import type { ParsedBankTransactionRow } from "./csv-parser";
 
 /**
  * Bank rules ("Pravidla pro platby"): what to do with a payment no invoice
  * matched. Pure logic only: the schemas, validation with stable error codes,
  * and the matcher. The service runs the actions.
+ *
+ * `import_only` is the odd one out: it never acts on a stored payment. It
+ * runs during a PSD2 sync, before anything is stored, and keeps only the
+ * movements that contain one of its `keywords` (see `importWordsFor`).
  */
 
 export const RULE_TEXT_FIELDS = ["counterparty_name", "counterparty_account", "message", "variable_symbol", "any"] as const;
 export const RULE_OPERATORS = ["contains", "equals", "regex"] as const;
 export const RULE_DIRECTIONS = ["any", "in", "out"] as const;
-export const RULE_ACTIONS = ["ignore", "draft_expense", "draft_invoice"] as const;
+export const RULE_ACTIONS = ["ignore", "draft_expense", "draft_invoice", "import_only"] as const;
 export type RuleTextField = (typeof RULE_TEXT_FIELDS)[number];
 export type RuleOperator = (typeof RULE_OPERATORS)[number];
 export type RuleDirection = (typeof RULE_DIRECTIONS)[number];
@@ -40,6 +46,8 @@ export const ruleConditionsSchema = z.object({
     .nullish(),
   minAmount: z.coerce.number().nonnegative().max(1e12).nullish(),
   maxAmount: z.coerce.number().nonnegative().max(1e12).nullish(),
+  /** import_only: the words, comma, semicolon or line separated, matched like the old connection filter. */
+  keywords: z.string().trim().max(500).nullish(),
 });
 export type RuleConditions = z.infer<typeof ruleConditionsSchema>;
 
@@ -50,6 +58,8 @@ export const ruleBodySchema = z.object({
   action: z.enum(RULE_ACTIONS),
   expenseCategory: z.string().trim().min(1).max(64).nullish(),
   contactId: z.string().uuid().nullish(),
+  /** import_only: the PSD2 connection it is for; null means every PSD2 connection. */
+  connectionId: z.string().uuid().nullish(),
 });
 export type RuleBody = z.infer<typeof ruleBodySchema>;
 
@@ -77,7 +87,8 @@ export type RuleValidationError =
   | "invalid_regex"
   | "unsafe_regex"
   | "action_needs_outgoing"
-  | "action_needs_incoming";
+  | "action_needs_incoming"
+  | "import_rule_needs_words";
 
 /**
  * Whether a user regex is safe to run on bank text. Node has no regex
@@ -181,6 +192,7 @@ export function checkRegex(pattern: string): null | "invalid_regex" | "unsafe_re
 /** Checks what zod cannot: at least one condition, the amount range, regexes, action vs direction. */
 export function validateRule(body: Pick<RuleBody, "action" | "conditions">): RuleValidationError | null {
   const c = body.conditions;
+  if (body.action === "import_only") return filterWords(c.keywords).length > 0 ? null : "import_rule_needs_words";
   const hasAmount = c.minAmount != null || c.maxAmount != null;
   if (c.text.length === 0 && !hasAmount) return "rule_needs_condition";
   if (c.minAmount != null && c.maxAmount != null && c.minAmount > c.maxAmount) return "invalid_amount_range";
@@ -250,7 +262,8 @@ export function compileRule<R extends RuleLike>(rule: R): CompiledRule<R> {
   const texts = c.text.map(compileText);
   if (texts.length) checks.push(c.textMatch === "any" ? (p) => texts.some((t) => t(p)) : (p) => texts.every((t) => t(p)));
   // A rule with nothing but a direction would hit every payment; validateRule refuses it, this keeps old rows safe.
-  const empty = c.text.length === 0 && c.minAmount == null && c.maxAmount == null;
+  // An import_only rule decides what is stored, so it never acts on a stored payment.
+  const empty = rule.action === "import_only" || (c.text.length === 0 && c.minAmount == null && c.maxAmount == null);
   return { rule, matches: (p) => !empty && checks.every((check) => check(p)) };
 }
 
@@ -296,4 +309,37 @@ export function decideAfterMatch<R extends RuleLike>(
 export function ruleHits<T extends PaymentForRules & { status: string }>(rule: RuleLike, payments: T[]): T[] {
   const compiled = compileRule({ ...rule, enabled: true });
   return payments.filter((p) => p.status === "unmatched" && compiled.matches(p));
+}
+
+/** import_only rules replaced an owner/admin setting on the connection and keep its access. */
+export function canManageImportRules(role: string | undefined): boolean {
+  return role === "owner" || role === "admin";
+}
+
+/** What `importWordsFor` needs of a rule. */
+export interface ImportRuleLike {
+  enabled?: boolean;
+  action: RuleAction | string;
+  conditions: Pick<RuleConditions, "keywords">;
+  connectionId?: string | null;
+}
+
+/**
+ * The words a PSD2 connection's movements must contain to be stored, from
+ * every enabled import_only rule for this connection or for all of them. A
+ * movement is kept when it fits any rule, so the words are simply pooled.
+ * Null when no such rule applies: the sync then keeps incoming payments
+ * only, as it always did. A rule without words is skipped rather than read
+ * as "keep everything", which would let the debits in.
+ */
+export function importWordsFor(rules: ImportRuleLike[], connectionId: string): string[] | null {
+  const words = rules
+    .filter((r) => r.enabled !== false && r.action === "import_only" && (r.connectionId == null || r.connectionId === connectionId))
+    .flatMap((r) => filterWords(r.conditions.keywords));
+  return words.length > 0 ? [...new Set(words)] : null;
+}
+
+/** Whether a fetched movement may be stored, given `importWordsFor`'s answer. */
+export function keepOnImport(row: ParsedBankTransactionRow, words: string[] | null): boolean {
+  return words === null || passesImportFilter(row, words);
 }

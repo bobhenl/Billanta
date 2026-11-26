@@ -490,6 +490,25 @@ export class BankReconciliationService {
   }
 
   /**
+   * A payment stored earlier that a later read gave its home value (PayPal
+   * converted it after the invoice was already paid): its invoice's
+   * `receivedCzk` would otherwise keep showing the estimate at the invoice rate.
+   */
+  async refreshReceivedOf(db: TenantDb, tenantId: string, transactionIds: string[]): Promise<number> {
+    if (transactionIds.length === 0) return 0;
+    const rows = await db
+      .select({ invoiceId: schema.bankTransactions.matchedInvoiceId })
+      .from(schema.bankTransactions)
+      .where(inArray(schema.bankTransactions.id, transactionIds));
+    const invoiceIds = [...new Set(rows.map((r) => r.invoiceId).filter((id): id is string => Boolean(id)))];
+    if (invoiceIds.length === 0) return 0;
+    const [tenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
+    const home = tenantHomeCurrencyOf(tenant);
+    for (const invoiceId of invoiceIds) await this.refreshReceived(db, invoiceId, home, []);
+    return invoiceIds.length;
+  }
+
+  /**
    * What reached the company in its home currency for a foreign-currency
    * invoice: the sum over its payments, once each of them has a home value.
    */
@@ -649,12 +668,12 @@ export class BankReconciliationService {
     return { transaction: transaction!, invoice };
   }
 
-  /** Enabled rules in the order they run (RLS keeps them to this tenant). */
+  /** Enabled rules in the order they run (RLS keeps them to this tenant). import_only rules ran before the store, in the sync. */
   async loadCompiledRules(db: TenantDb): Promise<CompiledRule<StoredRule>[]> {
     const rows = await db
       .select()
       .from(schema.bankRules)
-      .where(eq(schema.bankRules.enabled, true))
+      .where(and(eq(schema.bankRules.enabled, true), ne(schema.bankRules.action, "import_only")))
       .orderBy(asc(schema.bankRules.position), asc(schema.bankRules.createdAt));
     return (rows as StoredRule[]).map((rule) => compileRule(rule));
   }

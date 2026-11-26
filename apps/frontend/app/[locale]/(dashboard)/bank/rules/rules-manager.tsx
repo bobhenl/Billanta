@@ -17,6 +17,7 @@ import {
   RULE_ERROR_CODES,
   RULE_TEXT_FIELDS,
   RULE_VALUE_MAX,
+  keywordList,
   type BankRule,
   type BankRuleBody,
   type RuleAction,
@@ -34,9 +35,12 @@ export interface RulePrefill {
   name?: string;
   account?: string;
   direction: RuleDirection;
+  /** An "only download" rule for this PSD2 connection ('' = all of them), from the connection's edit form. */
+  importFor?: string;
 }
 
 type Contact = { id: string; name: string };
+type Connection = { id: string; name: string };
 
 /** The form keeps amounts as typed; they become numbers (or null) on save. */
 interface Draft {
@@ -51,6 +55,9 @@ interface Draft {
   action: RuleAction;
   expenseCategory: string;
   contactId: string;
+  keywords: string;
+  /** import_only: '' = every PSD2 connection. */
+  connectionId: string;
 }
 
 const emptyDraft = (): Draft => ({
@@ -64,7 +71,9 @@ const emptyDraft = (): Draft => ({
   maxAmount: '',
   action: 'ignore',
   expenseCategory: '',
-  contactId: ''
+  contactId: '',
+  keywords: '',
+  connectionId: ''
 });
 
 function draftOf(rule: BankRule): Draft {
@@ -79,11 +88,14 @@ function draftOf(rule: BankRule): Draft {
     maxAmount: rule.conditions.maxAmount != null ? String(rule.conditions.maxAmount) : '',
     action: rule.action,
     expenseCategory: rule.expenseCategory ?? '',
-    contactId: rule.contactId ?? ''
+    contactId: rule.contactId ?? '',
+    keywords: rule.conditions.keywords ?? '',
+    connectionId: rule.connectionId ?? ''
   };
 }
 
 function draftFromPrefill(prefill: RulePrefill): Draft {
+  if (prefill.importFor !== undefined) return { ...emptyDraft(), action: 'import_only', connectionId: prefill.importFor };
   // A PayPal payer is best told apart by the e-mail; a bank payment by the name.
   const byAccount = Boolean(prefill.account && (prefill.account.includes('@') || !prefill.name));
   const value = (byAccount ? prefill.account : prefill.name) ?? '';
@@ -102,6 +114,16 @@ const amount = (v: string) => {
 };
 
 function bodyOf(d: Draft): BankRuleBody {
+  if (d.action === 'import_only') {
+    // Only the words count; the backend drops the other conditions too.
+    return {
+      name: d.name.trim() || keywordList(d.keywords).join(', ').slice(0, 100) || '–',
+      enabled: d.enabled,
+      conditions: { text: [], direction: 'any', keywords: d.keywords.trim() },
+      action: d.action,
+      connectionId: d.connectionId || null
+    };
+  }
   return {
     name: d.name.trim() || d.text.find((c) => c.value.trim())?.value.trim().slice(0, 100) || '–',
     enabled: d.enabled,
@@ -116,19 +138,36 @@ function bodyOf(d: Draft): BankRuleBody {
     },
     action: d.action,
     expenseCategory: d.action === 'draft_expense' ? d.expenseCategory || null : null,
-    contactId: d.action === 'draft_invoice' ? d.contactId || null : null
+    contactId: d.action === 'draft_invoice' ? d.contactId || null : null,
+    connectionId: null
   };
 }
 
 /** Worth asking the backend about: at least one text or amount condition. */
 const hasCondition = (b: BankRuleBody) =>
-  b.conditions.text.length > 0 || b.conditions.minAmount != null || b.conditions.maxAmount != null;
+  b.action === 'import_only'
+    ? keywordList(b.conditions.keywords).length > 0
+    : b.conditions.text.length > 0 || b.conditions.minAmount != null || b.conditions.maxAmount != null;
 
 /** Drafts only make sense one way: expenses from outgoing payments, invoices from incoming ones. */
 const forcedDirection = (action: RuleAction): RuleDirection | null =>
   action === 'draft_expense' ? 'out' : action === 'draft_invoice' ? 'in' : null;
 
-export function RulesManager({ rules, contacts, prefill }: { rules: BankRule[]; contacts: Contact[]; prefill: RulePrefill | null }) {
+export function RulesManager({
+  rules,
+  contacts,
+  connections,
+  canManageImport,
+  prefill
+}: {
+  rules: BankRule[];
+  contacts: Contact[];
+  /** PSD2 connections, the only ones an "only download" rule filters. */
+  connections: Connection[];
+  /** Owner/admin: what an account downloads was their setting on the connection, and stays theirs. */
+  canManageImport: boolean;
+  prefill: RulePrefill | null;
+}) {
   const t = useTranslations('bankRules');
   const router = useRouter();
   const canEdit = useCanWrite('bank');
@@ -147,6 +186,9 @@ export function RulesManager({ rules, contacts, prefill }: { rules: BankRule[]; 
   const errorText = (code: string) => ((RULE_ERROR_CODES as readonly string[]).includes(code) ? t(`errors.${code}`) : `${t('errors.generic')}: ${code}`);
 
   const contactName = (id: string | null | undefined) => contacts.find((c) => c.id === id)?.name ?? null;
+  const connectionName = (id: string | null | undefined) =>
+    id ? (connections.find((c) => c.id === id)?.name ?? t('importOnly.removedAccount')) : t('importOnly.allAccounts');
+  const mayChange = (rule: BankRule) => rule.action !== 'import_only' || canManageImport;
 
   const move = (index: number, by: -1 | 1) => {
     const ids = rules.map((r) => r.id);
@@ -239,7 +281,7 @@ export function RulesManager({ rules, contacts, prefill }: { rules: BankRule[]; 
           <ul className="mt-2 divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
             {rules.map((rule, index) => (
               <li key={rule.id} className={cn('flex flex-wrap items-center gap-3 px-3 py-3 sm:px-4', !rule.enabled && 'opacity-60')}>
-                {canEdit ? (
+                {canEdit && mayChange(rule) ? (
                   <button
                     type="button"
                     role="switch"
@@ -265,14 +307,14 @@ export function RulesManager({ rules, contacts, prefill }: { rules: BankRule[]; 
                     {rule.name}
                   </p>
                   <p className="text-xs text-muted-foreground [overflow-wrap:anywhere]">
-                    <RuleSummary rule={rule} />
+                    <RuleSummary rule={rule} connectionName={connectionName} />
                   </p>
                   <p className="mt-0.5 text-xs font-semibold text-primary">
                     {t(`action.${rule.action}`)}
                     {rule.action === 'draft_invoice' && contactName(rule.contactId) && ` · ${contactName(rule.contactId)}`}
                   </p>
                 </div>
-                {canEdit && (
+                {canEdit && mayChange(rule) && (
                   <div className="flex shrink-0 items-center gap-0.5">
                     <IconButton label={t('list.moveUp')} disabled={pending || index === 0} onClick={() => move(index, -1)}>
                       <ArrowUp className="h-4 w-4" />
@@ -280,9 +322,11 @@ export function RulesManager({ rules, contacts, prefill }: { rules: BankRule[]; 
                     <IconButton label={t('list.moveDown')} disabled={pending || index === rules.length - 1} onClick={() => move(index, 1)}>
                       <ArrowDown className="h-4 w-4" />
                     </IconButton>
-                    <IconButton label={t('apply.button')} disabled={pending || !rule.enabled} onClick={() => askApply(rule)}>
-                      <Play className="h-4 w-4" />
-                    </IconButton>
+                    {rule.action !== 'import_only' && (
+                      <IconButton label={t('apply.button')} disabled={pending || !rule.enabled} onClick={() => askApply(rule)}>
+                        <Play className="h-4 w-4" />
+                      </IconButton>
+                    )}
                     <IconButton label={t('list.edit')} disabled={pending} onClick={() => setEditing({ rule, draft: draftOf(rule) })}>
                       <Pencil className="h-4 w-4" />
                     </IconButton>
@@ -303,6 +347,8 @@ export function RulesManager({ rules, contacts, prefill }: { rules: BankRule[]; 
           rule={editing.rule}
           initial={editing.draft}
           contacts={contacts}
+          connections={connections}
+          canManageImport={canManageImport}
           errorText={errorText}
           onClose={() => setEditing(null)}
           onApply={(rule) => (setEditing(null), askApply(rule))}
@@ -358,9 +404,18 @@ function IconButton({ label, disabled, onClick, children }: { label: string; dis
 }
 
 /** "Protistrana obsahuje „Vodafone“ · odchozí · 100–2 000" */
-function RuleSummary({ rule }: { rule: Pick<BankRule, 'conditions'> }) {
+function RuleSummary({
+  rule,
+  connectionName
+}: {
+  rule: Pick<BankRule, 'conditions' | 'action' | 'connectionId'>;
+  connectionName: (id: string | null | undefined) => string;
+}) {
   const t = useTranslations('bankRules');
   const c = rule.conditions;
+  if (rule.action === 'import_only') {
+    return <>{t('importOnly.summary', { account: connectionName(rule.connectionId), words: keywordList(c.keywords).join(', ') })}</>;
+  }
   const texts = c.text.map((cond) => `${t(`field.${cond.field}`)} ${t(`operator.${cond.operator}`)} „${cond.value}“`);
   const parts = texts.length ? [texts.join(c.textMatch === 'any' ? t('summary.or') : t('summary.and'))] : [];
   if (c.direction !== 'any') parts.push(t(`direction.${c.direction}`));
@@ -375,6 +430,8 @@ function RuleForm({
   rule,
   initial,
   contacts,
+  connections,
+  canManageImport,
   errorText,
   onClose,
   onApply
@@ -382,6 +439,8 @@ function RuleForm({
   rule: BankRule | null;
   initial: Draft;
   contacts: Contact[];
+  connections: Connection[];
+  canManageImport: boolean;
   errorText: (code: string) => string;
   onClose: () => void;
   onApply: (rule: BankRule) => void;
@@ -401,7 +460,9 @@ function RuleForm({
 
   const body = useMemo(() => bodyOf(draft), [draft]);
   const bodyKey = JSON.stringify({ ...body, name: '', enabled: true });
-  const ready = hasCondition(body);
+  const isImport = draft.action === 'import_only';
+  // An "only download" rule acts on the next sync, never on stored payments: nothing to preview or apply.
+  const ready = hasCondition(body) && !isImport;
 
   // Live preview: 400 ms after the last change, only the newest answer counts.
   useEffect(() => {
@@ -430,7 +491,7 @@ function RuleForm({
   const save = (thenApply: boolean) => {
     setError(null);
     if (!hasCondition(body)) {
-      setError(errorText('rule_needs_condition'));
+      setError(errorText(isImport ? 'import_rule_needs_words' : 'rule_needs_condition'));
       return;
     }
     startTransition(async () => {
@@ -447,6 +508,7 @@ function RuleForm({
   };
 
   const operators: RuleOperator[] = advanced ? ['contains', 'equals', 'regex'] : ['contains', 'equals'];
+  const actions = RULE_ACTIONS.filter((a) => a !== 'import_only' || canManageImport);
   const label = 'mb-1 block text-xs font-semibold text-muted-foreground';
 
   return (
@@ -460,10 +522,12 @@ function RuleForm({
           <button type="button" className={buttonClass.secondary} onClick={onClose}>
             {t('form.cancel')}
           </button>
-          <button type="button" className={buttonClass.secondary} disabled={pending || !draft.enabled} onClick={() => save(true)}>
-            <Play className="h-4 w-4" />
-            {t('form.saveAndApply')}
-          </button>
+          {!isImport && (
+            <button type="button" className={buttonClass.secondary} disabled={pending || !draft.enabled} onClick={() => save(true)}>
+              <Play className="h-4 w-4" />
+              {t('form.saveAndApply')}
+            </button>
+          )}
           <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => save(false)}>
             {t('form.save')}
           </button>
@@ -485,6 +549,41 @@ function RuleForm({
           />
         </div>
 
+        {isImport ? (
+          <div className="space-y-3">
+            <div>
+              <label className={label} htmlFor="rule-connection">
+                {t('importOnly.account')}
+              </label>
+              <select id="rule-connection" className={inputClass} value={draft.connectionId} onChange={(e) => set('connectionId', e.target.value)}>
+                <option value="">{t('importOnly.allAccounts')}</option>
+                {connections.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+                {draft.connectionId && !connections.some((c) => c.id === draft.connectionId) && (
+                  <option value={draft.connectionId}>{t('importOnly.removedAccount')}</option>
+                )}
+              </select>
+            </div>
+            <div>
+              <label className={label} htmlFor="rule-keywords">
+                {t('importOnly.keywords')}
+              </label>
+              <input
+                id="rule-keywords"
+                className={inputClass}
+                value={draft.keywords}
+                maxLength={500}
+                placeholder={t('importOnly.keywordsPlaceholder')}
+                onChange={(e) => set('keywords', e.target.value)}
+              />
+              <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{t('importOnly.hint')}</p>
+            </div>
+          </div>
+        ) : (
+          <>
         <fieldset>
           <legend className={label}>{t('form.conditions')}</legend>
           <p className="mb-2 text-xs text-muted-foreground">{t('form.conditionsHint')}</p>
@@ -622,11 +721,13 @@ function RuleForm({
           </div>
         </div>
         <p className="-mt-2 text-xs text-muted-foreground">{t('form.amountHint')}</p>
+          </>
+        )}
 
         <fieldset>
           <legend className={label}>{t('form.action')}</legend>
           <div className="space-y-1.5">
-            {RULE_ACTIONS.map((a) => (
+            {actions.map((a) => (
               <label
                 key={a}
                 className={cn(
@@ -680,6 +781,7 @@ function RuleForm({
           {t('form.enabled')}
         </label>
 
+        {!isImport && (
         <section className="rounded-xl border border-border bg-muted/40 p-3" aria-live="polite">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('preview.title')}</h3>
           {preview.state === 'idle' && <p className="mt-1.5 text-sm text-muted-foreground">{t('preview.incomplete')}</p>}
@@ -708,6 +810,7 @@ function RuleForm({
             </>
           )}
         </section>
+        )}
 
         {error && <p className="text-sm font-semibold text-destructive">{error}</p>}
       </div>

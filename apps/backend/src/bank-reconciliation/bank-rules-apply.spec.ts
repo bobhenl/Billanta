@@ -51,6 +51,7 @@ function storedRule(action: StoredRule["action"], conditions: Partial<RuleCondit
     },
     expenseCategory: null,
     contactId: null,
+    connectionId: null,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...extra,

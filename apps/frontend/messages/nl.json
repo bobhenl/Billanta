@@ -1155,11 +1155,10 @@
       "uploadStatement": "Afschrift uploaden",
       "edit": {
         "open": "Bewerken",
-        "filter": "Alleen transacties downloaden met",
-        "filterPlaceholder": "bijv. Google, Meta",
-        "filterHint": "Voor een privérekening: alleen betalingen waarvan de tegenpartij of omschrijving een van deze woorden bevat (gescheiden door komma’s) worden opgeslagen, inkomend en uitgaand. Verder komt er niets in Billanta. Leeg = alleen inkomende betalingen, zoals voorheen.",
         "filterOn": "alleen {words}",
-        "save": "Opslaan"
+        "save": "Opslaan",
+        "filterMoved": "Wat deze rekening downloadt, stelt u nu in bij de bankregels.",
+        "filterRule": "Regel „Alleen downloaden” instellen"
       }
     },
     "fee": "kosten {amount}",
@@ -5220,9 +5219,11 @@
       "title": "Netto-opbrengst",
       "gross": "Ontvangen (factuurkoers)",
       "fees": "Kosten",
-      "fx": "Koersverschil",
+      "fx": "Koers vs. factuurkoers",
       "net": "Netto-opbrengst",
-      "noReceived": "Vul het bijgeschreven bedrag in {home} in om ook het koersverschil te zien."
+      "noReceived": "Vul het bijgeschreven bedrag in {home} in om ook het koersverschil te zien.",
+      "rates": "Echte koers {real} vs. factuurkoers {invoice} ({pair}).",
+      "held": "{amount} staat nog op je PayPal-saldo. Het echte bedrag in {home} zie je zodra PayPal het bij opnemen omrekent."
     },
     "history": "Wijzigingsgeschiedenis",
     "correction": {
@@ -5528,10 +5529,15 @@
     "flatRate": "Forfaitaire kosten",
     "rate": "forfait {rate} %",
     "noFlat": "geen forfait",
-    "hint": "Ruwe schatting voor een Tsjechische zelfstandige: het bedrag zonder btw min inkomstenbelasting (15 %), sociale en zorgverzekering op deze factuur – ongeveer {burden}. Gaat uit van het gekozen forfait en negeert minimale voorschotten en belastingkortingen. Zie Exports voor het hele jaar.",
-    "hintCosts": "Betaalkosten en het koersverlies ({costs}) worden ook afgetrokken. Met een forfait verlagen ze de belasting niet, omdat het forfait al alle kosten dekt.",
-    "hintLimits": "Zie het als de ondergrens. Zolang uw jaar de belastingkorting niet opmaakt en niet boven de minimale voorschotten uitkomt (of de drempel voor een nevenactiviteit), kost deze factuur geen extra belasting of premie en houdt u meer over, tot {full}.",
-    "range": "U houdt {low} tot {high} over."
+    "lines": {
+      "withoutVat": "Zonder btw",
+      "fee": "Betaalkosten",
+      "fxLoss": "Koersverlies",
+      "fxGain": "Koerswinst",
+      "tax": "Inkomstenbelasting 15 %",
+      "insurance": "Sociaal + zorg",
+      "caveat": "Ondergrens: tot je jaar de heffingskorting en minimale voorschotten opgebruikt, houd je tot {full} over."
+    }
   },
   "welcome": {
     "title": "Welkom bij Billanta",
@@ -13887,7 +13893,8 @@
     "noAccess": {
       "title": "Alleen voor eigenaren en beheerders",
       "body": "Het rapport na belasting toont de inkomsten en belastingen van elke partner, daarom kunnen alleen de eigenaar en de beheerders van het bedrijf het zien."
-    }
+    },
+    "split": "Hoort bij"
   },
   "bankRules": {
     "title": "Betalingsregels",
@@ -13936,12 +13943,14 @@
     "action": {
       "ignore": "Negeren",
       "draft_expense": "Uitgave ter controle aanmaken",
-      "draft_invoice": "Conceptfactuur aanmaken"
+      "draft_invoice": "Conceptfactuur aanmaken",
+      "import_only": "Alleen transacties downloaden die bevatten"
     },
     "actionHint": {
       "ignore": "De betaling wordt als genegeerd gemarkeerd. Je kunt haar op elk moment weer laten meedoen bij het koppelen.",
       "draft_expense": "Alleen uitgaande betalingen. Maakt een uitgave met het label Te controleren aan, gekoppeld aan de betaling.",
-      "draft_invoice": "Alleen inkomende betalingen. Maakt een conceptfactuur ter controle aan. Uitgeven doe je altijd zelf."
+      "draft_invoice": "Alleen inkomende betalingen. Maakt een conceptfactuur ter controle aan. Uitgeven doe je altijd zelf.",
+      "import_only": "Voor een privérekening gekoppeld via PSD2: alleen transacties waarvan de tegenpartij of omschrijving een van de woorden bevat worden opgeslagen, inkomend en uitgaand. Niets anders bereikt Billanta. Een rekening zonder zo’n regel downloadt alleen inkomende betalingen."
     },
     "form": {
       "titleNew": "Nieuwe regel",
@@ -14016,7 +14025,20 @@
       "action_needs_incoming": "Conceptfacturen kunnen alleen uit inkomende betalingen komen. Zet de richting op Inkomend.",
       "contact_not_found": "De gekozen klant bestaat niet meer.",
       "bank_rule_not_found": "De regel bestaat niet meer.",
-      "forbidden": "Je hebt geen toestemming om regels te wijzigen."
+      "forbidden": "Je hebt geen toestemming om regels te wijzigen.",
+      "import_rule_needs_words": "Vul minstens één woord in.",
+      "import_rule_needs_psd2": "Alleen via PSD2 gekoppelde rekeningen kunnen bij het downloaden worden gefilterd.",
+      "import_rule_not_applicable": "Deze regel bepaalt alleen wat de volgende synchronisatie downloadt. Op opgeslagen betalingen is hij niet toe te passen.",
+      "bank_connection_not_found": "De gekozen rekening bestaat niet meer."
+    },
+    "importOnly": {
+      "account": "Rekening",
+      "allAccounts": "Alle via PSD2 gekoppelde rekeningen",
+      "removedAccount": "Verwijderde rekening",
+      "keywords": "Woorden (gescheiden door komma’s)",
+      "keywordsPlaceholder": "bijv. Google, Meta",
+      "hint": "Hoofdletters maken niet uit, accenten wel. Een woord mag overal in de naam, het rekeningnummer of de omschrijving staan. Geldt vanaf de volgende synchronisatie, nooit voor al opgeslagen betalingen. Bij meerdere zulke regels blijft een transactie als die bij een van de regels past.",
+      "summary": "{account}: alleen transacties met {words}"
     }
   },
   "updateNotice": {

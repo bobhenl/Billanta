@@ -35,7 +35,7 @@ import {
   type FioSyncedRow,
 } from "./fio-client";
 import { missingNets } from "./dedupe";
-import { filterWords, passesImportFilter } from "./import-filter";
+import { importWordsFor, keepOnImport } from "./bank-rules";
 import { PaypalApiError, PaypalClient, paypalBackfillRange, paypalSyncFrom, type PaypalCredentials, type PaypalSyncedRow } from "./paypal-client";
 import {
   STRIPE_BACKFILL_MAX_PAGES,
@@ -98,7 +98,6 @@ function toPublic(row: BankConnectionRow) {
     bankCountry: row.bankCountry,
     consentExpiresAt: row.consentExpiresAt,
     currency: row.currency,
-    importFilter: row.importFilter,
     enabled: row.enabled,
     lastSyncedAt: row.lastSyncedAt,
     lastError: row.lastError,
@@ -531,7 +530,7 @@ export class BankConnectionsService {
     return new ServiceUnavailableException({ error: "bank_unavailable" });
   }
 
-  async update(db: TenantDb, id: string, patch: { enabled?: boolean; label?: string | null; importFilter?: string | null }) {
+  async update(db: TenantDb, id: string, patch: { enabled?: boolean; label?: string | null }) {
     const [row] = await db
       .update(schema.bankConnections)
       .set(patch)
@@ -640,6 +639,15 @@ export class BankConnectionsService {
     return synced;
   }
 
+  /** Enabled import_only rules (RLS keeps them to this tenant); `importWordsFor` picks the ones for a connection. */
+  private importRules(db: TenantDb) {
+    return db
+      .select({ action: schema.bankRules.action, connectionId: schema.bankRules.connectionId, conditions: schema.bankRules.conditions })
+      .from(schema.bankRules)
+      .where(and(eq(schema.bankRules.enabled, true), eq(schema.bankRules.action, "import_only")))
+      .then((rules) => rules.map((r) => ({ ...r, conditions: r.conditions as { keywords?: string | null } })));
+  }
+
   private async sync(db: TenantDb, tenantId: string, row: BankConnectionRow, throwErrors: boolean): Promise<BankSyncSummary> {
     const now = new Date();
     const from = row.lastSyncedAt
@@ -651,9 +659,10 @@ export class BankConnectionsService {
       let rows: Psd2SyncedRow[];
       try {
         if (!row.externalAccountId) throw new EnableBankingError("Connection has no account", "consent_expired");
-        // A filtered account picks particular payments (ad spend from a personal card), so its debits count too.
-        const words = filterWords(row.importFilter);
-        rows = (await this.psd2Client().fetchIncoming(row.externalAccountId, from, words.length > 0)).filter((r) => passesImportFilter(r, words));
+        // "Import only" rules pick particular payments (ad spend from a personal card), so their debits count too.
+        // The decision is made here, before storeFresh: a movement no rule keeps is never stored.
+        const words = importWordsFor(await this.importRules(db), row.id);
+        rows = (await this.psd2Client().fetchIncoming(row.externalAccountId, from, words !== null)).filter((r) => keepOnImport(r, words));
       } catch (err) {
         const code = err instanceof EnableBankingError ? err.code : err instanceof HttpException ? "not_configured" : "unavailable";
         if (code === "consent_expired") await this.markExpired(db, tenantId, row);
@@ -829,6 +838,7 @@ export class BankConnectionsService {
         .set({ netAmount: net.netAmount, netCurrency: net.netCurrency })
         .where(and(eq(schema.bankTransactions.id, net.id), isNull(schema.bankTransactions.netAmount)));
     }
+    if (nets.length > 0) await this.reconciliation.refreshReceivedOf(db, tenantId, nets.map((n) => n.id));
     // Known payments skip the import below, but may now carry the item names they lacked.
     await this.reconciliation.fillLateDescriptions(db, rows.filter((r) => knownIds.has(r.externalId)), []);
 

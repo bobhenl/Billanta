@@ -1155,11 +1155,10 @@
       "uploadStatement": "Carregar extrato",
       "edit": {
         "open": "Editar",
-        "filter": "Transferir só movimentos que contenham",
-        "filterPlaceholder": "p. ex. Google, Meta",
-        "filterHint": "Para uma conta pessoal: só se guardam os pagamentos cuja contraparte ou mensagem contenha uma destas palavras (separadas por vírgula), recebidos e enviados. Mais nada chega ao Billanta. Vazio = só pagamentos recebidos, como até agora.",
         "filterOn": "só {words}",
-        "save": "Guardar"
+        "save": "Guardar",
+        "filterMoved": "O que esta conta descarrega define-se agora nas regras bancárias.",
+        "filterRule": "Criar uma regra «Descarregar apenas»"
       }
     },
     "fee": "comissão {amount}",
@@ -5220,9 +5219,11 @@
       "title": "Receita líquida",
       "gross": "Recebido (câmbio da fatura)",
       "fees": "Comissões",
-      "fx": "Diferença cambial",
+      "fx": "Câmbio vs taxa da fatura",
       "net": "Receita líquida",
-      "noReceived": "Indique o valor creditado em {home} para ver também a diferença cambial."
+      "noReceived": "Indique o valor creditado em {home} para ver também a diferença cambial.",
+      "rates": "Taxa real {real} contra a da fatura {invoice} ({pair}).",
+      "held": "{amount} ainda está no saldo do PayPal. O valor real em {home} aparece quando o PayPal o converter no levantamento."
     },
     "history": "Histórico de alterações",
     "correction": {
@@ -5528,10 +5529,15 @@
     "flatRate": "Despesas forfetárias",
     "rate": "forfetário {rate} %",
     "noFlat": "sem regime forfetário",
-    "hint": "Estimativa aproximada para um empresário em nome individual checo: o valor sem IVA menos o imposto sobre o rendimento (15 %) e as contribuições para a segurança social e o seguro de saúde sobre esta fatura – cerca de {burden}. Usa a taxa forfetária escolhida e ignora os adiantamentos mínimos e as deduções fiscais. Consulte Exportações para o ano completo.",
-    "hintCosts": "As taxas de pagamento e a perda cambial ({costs}) também são deduzidas. Com despesas forfetárias não reduzem o imposto, porque a taxa forfetária já cobre todas as despesas.",
-    "hintLimits": "Considere-o o mínimo. Enquanto o seu ano não esgotar a dedução do contribuinte nem ultrapassar os adiantamentos mínimos (ou o limiar de uma atividade secundária), esta fatura não acrescenta impostos nem contribuições e fica-lhe mais, até {full}.",
-    "range": "Fica-lhe entre {low} e {high}."
+    "lines": {
+      "withoutVat": "Sem IVA",
+      "fee": "Taxa de pagamento",
+      "fxLoss": "Perda cambial",
+      "fxGain": "Ganho cambial",
+      "tax": "Imposto sobre o rendimento 15 %",
+      "insurance": "Segurança social + saúde",
+      "caveat": "Mínimo: até o ano esgotar a dedução fiscal e os adiantamentos mínimos, fica com até {full}."
+    }
   },
   "welcome": {
     "title": "Bem-vindo à Billanta",
@@ -13887,7 +13893,8 @@
     "noAccess": {
       "title": "Apenas para proprietários e administradores",
       "body": "O relatório após impostos mostra o rendimento e os impostos de cada sócio, por isso só o proprietário e os administradores da empresa o podem ver."
-    }
+    },
+    "split": "Pertence a"
   },
   "bankRules": {
     "title": "Regras de pagamentos",
@@ -13936,12 +13943,14 @@
     "action": {
       "ignore": "Ignorar",
       "draft_expense": "Criar uma despesa para rever",
-      "draft_invoice": "Criar um rascunho de fatura"
+      "draft_invoice": "Criar um rascunho de fatura",
+      "import_only": "Descarregar apenas movimentos que contenham"
     },
     "actionHint": {
       "ignore": "O pagamento é marcado como ignorado. Pode devolvê-lo à conciliação a qualquer momento.",
       "draft_expense": "Apenas pagamentos efetuados. Cria uma despesa com a etiqueta Por rever, associada ao pagamento.",
-      "draft_invoice": "Apenas pagamentos recebidos. Cria um rascunho de fatura para rever. A emissão depende sempre de si."
+      "draft_invoice": "Apenas pagamentos recebidos. Cria um rascunho de fatura para rever. A emissão depende sempre de si.",
+      "import_only": "Para uma conta pessoal ligada por PSD2: só são guardados os movimentos cuja contraparte ou descrição contém uma das palavras, de entrada e de saída. Nada mais chega à Billanta. Uma conta sem esta regra descarrega apenas os pagamentos recebidos."
     },
     "form": {
       "titleNew": "Nova regra",
@@ -14016,7 +14025,20 @@
       "action_needs_incoming": "Os rascunhos de fatura só podem vir de pagamentos recebidos. Defina o sentido como Recebidos.",
       "contact_not_found": "O cliente escolhido já não existe.",
       "bank_rule_not_found": "A regra já não existe.",
-      "forbidden": "Não tem permissão para alterar regras."
+      "forbidden": "Não tem permissão para alterar regras.",
+      "import_rule_needs_words": "Introduza pelo menos uma palavra.",
+      "import_rule_needs_psd2": "Só as contas ligadas por PSD2 podem ser filtradas ao descarregar.",
+      "import_rule_not_applicable": "Esta regra só decide o que a próxima sincronização descarrega. Não se aplica a pagamentos guardados.",
+      "bank_connection_not_found": "A conta escolhida já não existe."
+    },
+    "importOnly": {
+      "account": "Conta",
+      "allAccounts": "Todas as contas ligadas por PSD2",
+      "removedAccount": "Conta removida",
+      "keywords": "Palavras (separadas por vírgula)",
+      "keywordsPlaceholder": "p. ex. Google, Meta",
+      "hint": "Maiúsculas não importam, acentos sim. Uma palavra pode estar em qualquer parte do nome, número de conta ou descrição. Aplica-se a partir da próxima sincronização, nunca a pagamentos já guardados. Com várias regras destas, um movimento fica se corresponder a qualquer uma.",
+      "summary": "{account}: apenas movimentos com {words}"
     }
   },
   "updateNotice": {

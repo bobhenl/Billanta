@@ -1155,11 +1155,10 @@
       "uploadStatement": "Kivonat feltöltése",
       "edit": {
         "open": "Szerkesztés",
-        "filter": "Csak az ezeket tartalmazó tételek letöltése",
-        "filterPlaceholder": "pl. Google, Meta",
-        "filterHint": "Magánszámlához: csak azok a bejövő és kimenő fizetések kerülnek mentésre, amelyek partnere vagy közleménye tartalmazza valamelyik szót (vesszővel elválasztva). Más nem jut el a Billantába. Üres = csak bejövő fizetések, mint eddig.",
         "filterOn": "csak {words}",
-        "save": "Mentés"
+        "save": "Mentés",
+        "filterMoved": "Hogy ez a számla mit tölt le, mostantól a banki szabályokban állítható be.",
+        "filterRule": "„Csak letöltés” szabály beállítása"
       }
     },
     "fee": "díj {amount}",
@@ -5220,9 +5219,11 @@
       "title": "Nettó bevétel",
       "gross": "Beérkezett (számla szerinti árfolyamon)",
       "fees": "Díjak",
-      "fx": "Árfolyam-különbözet",
+      "fx": "Árfolyam vs. számla árfolyama",
       "net": "Nettó bevétel",
-      "noReceived": "Adja meg a {home} pénznemben jóváírt összeget, hogy az árfolyam-különbözetet is lássa."
+      "noReceived": "Adja meg a {home} pénznemben jóváírt összeget, hogy az árfolyam-különbözetet is lássa.",
+      "rates": "Valós árfolyam {real}, a számláé {invoice} ({pair}).",
+      "held": "{amount} még a PayPal-egyenlegeden van. A valós {home} összeg akkor látszik, amikor a PayPal kifizetéskor átváltja."
     },
     "history": "Változások előzményei",
     "correction": {
@@ -5528,10 +5529,15 @@
     "flatRate": "Költségátalány",
     "rate": "átalány {rate} %",
     "noFlat": "átalány nélkül",
-    "hint": "Hozzávetőleges becslés cseh egyéni vállalkozóra: az ÁFA nélküli összeg mínusz a jövedelemadó (15 %), valamint a számlára eső társadalom- és egészségbiztosítási járulék – kb. {burden}. A választott átalánnyal számol, a minimális előlegeket és az adókedvezményeket nem veszi figyelembe. A teljes évet az Exportokban találja.",
-    "hintCosts": "A fizetési díjakat és az átváltási veszteséget ({costs}) is levonjuk. Költségátalánynál ezek nem csökkentik az adót, mert az átalány már minden költséget lefed.",
-    "hintLimits": "Tekintse alsó határnak. Amíg az éve nem meríti ki az adózói kedvezményt és nem lépi túl a minimális előlegeket (mellékállásnál a határösszeget), ez a számla nem jár plusz adóval vagy járulékkal, és több marad, legfeljebb {full}.",
-    "range": "Önnél marad {low} – {high}."
+    "lines": {
+      "withoutVat": "ÁFA nélkül",
+      "fee": "Fizetési díj",
+      "fxLoss": "Átváltási veszteség",
+      "fxGain": "Átváltási nyereség",
+      "tax": "Jövedelemadó 15 %",
+      "insurance": "Társadalombiztosítás + egészségügyi",
+      "caveat": "Alsó határ: amíg az éved el nem használja az adókedvezményt és a minimális előlegeket, akár {full} is nálad marad."
+    }
   },
   "welcome": {
     "title": "Üdvözöljük a Billantában",
@@ -13887,7 +13893,8 @@
     "noAccess": {
       "title": "Csak tulajdonosoknak és adminisztrátoroknak",
       "body": "Az adózás utáni kimutatás az egyes partnerek bevételét és adóit mutatja, ezért csak a cég tulajdonosa és adminisztrátorai láthatják."
-    }
+    },
+    "split": "Kié"
   },
   "bankRules": {
     "title": "Fizetési szabályok",
@@ -13936,12 +13943,14 @@
     "action": {
       "ignore": "Figyelmen kívül hagyás",
       "draft_expense": "Ellenőrizendő költség létrehozása",
-      "draft_invoice": "Számlapiszkozat létrehozása"
+      "draft_invoice": "Számlapiszkozat létrehozása",
+      "import_only": "Csak az alábbiakat tartalmazó tételek letöltése"
     },
     "actionHint": {
       "ignore": "A fizetés figyelmen kívül hagyottként lesz megjelölve. Bármikor visszateheti párosításra.",
       "draft_expense": "Csak kimenő fizetésekre. Ellenőrizendő címkéjű költséget hoz létre, a fizetéshez kapcsolva.",
-      "draft_invoice": "Csak beérkező fizetésekre. Ellenőrzésre váró számlapiszkozatot hoz létre. A kiállítás mindig az Ön döntése."
+      "draft_invoice": "Csak beérkező fizetésekre. Ellenőrzésre váró számlapiszkozatot hoz létre. A kiállítás mindig az Ön döntése.",
+      "import_only": "PSD2-vel csatolt magánszámlához: csak azok a tételek kerülnek mentésre, amelyek partnere vagy közleménye tartalmazza valamelyik szót, bejövők és kimenők egyaránt. Semmi más nem jut el a Billantába. Ilyen szabály nélkül a számla csak a bejövő fizetéseket tölti le."
     },
     "form": {
       "titleNew": "Új szabály",
@@ -14016,7 +14025,20 @@
       "action_needs_incoming": "Számlapiszkozat csak beérkező fizetésből készülhet. Állítsa az irányt Beérkezőre.",
       "contact_not_found": "A kiválasztott vevő már nem létezik.",
       "bank_rule_not_found": "A szabály már nem létezik.",
-      "forbidden": "Nincs jogosultsága a szabályok módosításához."
+      "forbidden": "Nincs jogosultsága a szabályok módosításához.",
+      "import_rule_needs_words": "Adjon meg legalább egy szót.",
+      "import_rule_needs_psd2": "Letöltéskor csak a PSD2-vel csatolt számlák szűrhetők.",
+      "import_rule_not_applicable": "Ez a szabály csak azt dönti el, mit tölt le a következő szinkronizálás. Mentett fizetésekre nem alkalmazható.",
+      "bank_connection_not_found": "A kiválasztott számla már nem létezik."
+    },
+    "importOnly": {
+      "account": "Számla",
+      "allAccounts": "Minden PSD2-vel csatolt számla",
+      "removedAccount": "Eltávolított számla",
+      "keywords": "Szavak (vesszővel elválasztva)",
+      "keywordsPlaceholder": "pl. Google, Meta",
+      "hint": "A kis- és nagybetű nem számít, az ékezet igen. A szó bárhol lehet a partner nevében, a számlaszámban vagy a közleményben. A következő szinkronizálástól érvényes, a már mentett fizetésekre soha. Több ilyen szabálynál a tétel megmarad, ha bármelyiknek megfelel.",
+      "summary": "{account}: csak a(z) {words} szavakat tartalmazó tételek"
     }
   },
   "updateNotice": {

@@ -1155,11 +1155,10 @@
       "uploadStatement": "Wgraj wyciąg",
       "edit": {
         "open": "Edytuj",
-        "filter": "Pobieraj tylko operacje zawierające",
-        "filterPlaceholder": "np. Google, Meta",
-        "filterHint": "Dla konta prywatnego: zapisywane są tylko płatności, których kontrahent lub tytuł zawiera jedno z tych słów (oddzielone przecinkiem), przychodzące i wychodzące. Nic innego nie trafia do Billanty. Puste = tylko wpływy, jak dotąd.",
         "filterOn": "tylko {words}",
-        "save": "Zapisz"
+        "save": "Zapisz",
+        "filterMoved": "To, co pobiera to konto, ustawisz teraz w regułach bankowych.",
+        "filterRule": "Ustaw regułę „Pobieraj tylko”"
       }
     },
     "fee": "prowizja {amount}",
@@ -5221,9 +5220,11 @@
       "title": "Przychód netto",
       "gross": "Otrzymano (kurs z faktury)",
       "fees": "Opłaty",
-      "fx": "Różnica kursowa",
+      "fx": "Kurs vs kurs faktury",
       "net": "Przychód netto",
-      "noReceived": "Wpisz kwotę zaksięgowaną w {home}, aby zobaczyć także różnicę kursową."
+      "noReceived": "Wpisz kwotę zaksięgowaną w {home}, aby zobaczyć także różnicę kursową.",
+      "rates": "Rzeczywisty kurs {real} wobec kursu faktury {invoice} ({pair}).",
+      "held": "{amount} wciąż leży na saldzie PayPal. Rzeczywistą kwotę w {home} zobaczysz, gdy PayPal przewalutuje ją przy wypłacie."
     },
     "history": "Historia zmian",
     "correction": {
@@ -5529,10 +5530,15 @@
     "flatRate": "Ryczałtowe koszty",
     "rate": "ryczałt {rate} %",
     "noFlat": "bez ryczałtu",
-    "hint": "Orientacyjny szacunek dla czeskiej jednoosobowej działalności: kwota bez VAT minus podatek dochodowy (15 %), ubezpieczenie społeczne i zdrowotne z tej faktury – około {burden}. Uwzględnia wybrany ryczałt i pomija minimalne zaliczki oraz ulgi podatkowe. Cały rok znajdziesz w Eksportach.",
-    "hintCosts": "Odliczamy też opłaty za płatności i stratę na przewalutowaniu ({costs}). Przy wydatkach ryczałtowych nie obniżają one podatku, bo ryczałt obejmuje już wszystkie wydatki.",
-    "hintLimits": "Traktuj to jako dolną granicę. Dopóki w danym roku nie wyczerpiesz ulgi podatnika i nie przekroczysz minimalnych zaliczek (przy działalności dodatkowej progu), ta faktura nie dokłada podatku ani składek i zostaje Ci więcej, aż do {full}.",
-    "range": "Zostaje Ci od {low} do {high}."
+    "lines": {
+      "withoutVat": "Bez VAT",
+      "fee": "Opłata za płatność",
+      "fxLoss": "Strata na kursie",
+      "fxGain": "Zysk na kursie",
+      "tax": "Podatek dochodowy 15 %",
+      "insurance": "Społeczne + zdrowotne",
+      "caveat": "Dolna granica: dopóki rok nie wyczerpie ulgi podatkowej i minimalnych zaliczek, zostaje Ci do {full}."
+    }
   },
   "welcome": {
     "title": "Witaj w Billanta",
@@ -13888,7 +13894,8 @@
     "noAccess": {
       "title": "Tylko dla właścicieli i administratorów",
       "body": "Raport po opodatkowaniu pokazuje przychody i podatki każdego wspólnika, dlatego widzą go tylko właściciel firmy i administratorzy."
-    }
+    },
+    "split": "Należy do"
   },
   "bankRules": {
     "title": "Reguły płatności",
@@ -13937,12 +13944,14 @@
     "action": {
       "ignore": "Ignoruj",
       "draft_expense": "Utwórz wydatek do sprawdzenia",
-      "draft_invoice": "Utwórz szkic faktury"
+      "draft_invoice": "Utwórz szkic faktury",
+      "import_only": "Pobieraj tylko operacje zawierające"
     },
     "actionHint": {
       "ignore": "Płatność zostanie oznaczona jako zignorowana. W każdej chwili możesz przywrócić ją do parowania.",
       "draft_expense": "Tylko płatności wychodzące. Tworzy wydatek z etykietą Do sprawdzenia, powiązany z płatnością.",
-      "draft_invoice": "Tylko płatności przychodzące. Tworzy szkic faktury do sprawdzenia. Wystawienie zawsze zależy od Ciebie."
+      "draft_invoice": "Tylko płatności przychodzące. Tworzy szkic faktury do sprawdzenia. Wystawienie zawsze zależy od Ciebie.",
+      "import_only": "Dla konta prywatnego połączonego przez PSD2: zapisywane są tylko operacje, których kontrahent lub tytuł zawiera jedno ze słów, przychodzące i wychodzące. Nic innego nie trafia do Billanty. Konto bez takiej reguły pobiera tylko wpływy."
     },
     "form": {
       "titleNew": "Nowa reguła",
@@ -14017,7 +14026,20 @@
       "action_needs_incoming": "Szkice faktur mogą powstawać tylko z płatności przychodzących. Ustaw kierunek na Przychodzące.",
       "contact_not_found": "Wybrany klient już nie istnieje.",
       "bank_rule_not_found": "Reguła już nie istnieje.",
-      "forbidden": "Nie masz uprawnień do zmiany reguł."
+      "forbidden": "Nie masz uprawnień do zmiany reguł.",
+      "import_rule_needs_words": "Wpisz co najmniej jedno słowo.",
+      "import_rule_needs_psd2": "Przy pobieraniu można filtrować tylko konta połączone przez PSD2.",
+      "import_rule_not_applicable": "Ta reguła decyduje tylko o tym, co pobierze następna synchronizacja. Nie można jej zastosować do zapisanych płatności.",
+      "bank_connection_not_found": "Wybrane konto już nie istnieje."
+    },
+    "importOnly": {
+      "account": "Konto",
+      "allAccounts": "Wszystkie konta połączone przez PSD2",
+      "removedAccount": "Usunięte konto",
+      "keywords": "Słowa (oddzielone przecinkiem)",
+      "keywordsPlaceholder": "np. Google, Meta",
+      "hint": "Wielkość liter nie ma znaczenia, znaki diakrytyczne tak. Słowo może być w dowolnym miejscu nazwy kontrahenta, numeru konta lub tytułu. Działa od następnej synchronizacji, nigdy dla już zapisanych płatności. Przy kilku takich regułach operacja zostaje, jeśli pasuje do którejkolwiek.",
+      "summary": "{account}: tylko operacje zawierające {words}"
     }
   },
   "updateNotice": {

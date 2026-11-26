@@ -26,7 +26,7 @@ export class BankRulesController {
   @Post()
   @ApiOperation({ summary: "Create a bank rule (added last)" })
   create(@Req() req: TenantScopedRequest, @Body() dto: BankRuleDto) {
-    return this.rules.create(req.tenantDb!, req.user!.tenantId, dto);
+    return this.rules.create(req.tenantDb!, req.user!.tenantId, dto, req.user!.role);
   }
 
   @Post("reorder")
@@ -44,14 +44,14 @@ export class BankRulesController {
   @Patch(":id")
   @ApiOperation({ summary: "Change a bank rule" })
   update(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: UpdateBankRuleDto) {
-    return this.rules.update(req.tenantDb!, id, dto);
+    return this.rules.update(req.tenantDb!, id, dto, req.user!.role);
   }
 
   @Delete(":id")
   @HttpCode(204)
   @ApiOperation({ summary: "Delete a bank rule; payments it acted on keep their state" })
   async remove(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
-    await this.rules.remove(req.tenantDb!, id);
+    await this.rules.remove(req.tenantDb!, id, req.user!.role);
   }
 
   @Post(":id/preview")

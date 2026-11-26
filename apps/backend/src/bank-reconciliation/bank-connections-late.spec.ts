@@ -44,4 +44,25 @@ describe("BankConnectionsService late descriptions", () => {
     expect(reconciliation.applyPaypalConversions).toHaveBeenCalledWith(db, "t1", [{ at: day, amount: "905.13", currency: "CZK", from: { amount: "42.59", currency: "USD" } }]);
     expect(reconciliation.pairPaypalTransfers).toHaveBeenCalledWith(db);
   });
+  it("refreshes the invoice of a stored payment that a later read gave its home value", async () => {
+    const reconciliation = {
+      fillLateDescriptions: vi.fn(async () => undefined),
+      persistAndMatch: vi.fn(async () => ({ summary: { total: 0, matched: 0, unmatched: 0, drafted: 0, ruled: 0, duplicates: 0 } })),
+      rematchUnmatched: vi.fn(async () => 0),
+      storeOwnMovements: vi.fn(async () => []),
+      applyPaypalConversions: vi.fn(async () => 0),
+      pairPaypalTransfers: vi.fn(async () => 0),
+      refreshReceivedOf: vi.fn(async () => 1),
+    };
+    const db = {
+      select: () => ({ from: () => ({ where: async () => [{ id: "tx-1", externalId: "paypal:P1", netAmount: null }, { id: "tx-2", externalId: "paypal:P2", netAmount: null }] }) }),
+      update: () => ({ set: () => ({ where: async () => undefined }) }),
+    };
+    const day = new Date("2026-11-11");
+    const converted = { externalId: "paypal:P1", amount: "45.00", currency: "USD", transactionDate: day, netAmount: "892.68", netCurrency: "CZK" };
+    const held = { externalId: "paypal:P2", amount: "10.00", currency: "USD", transactionDate: day, netAmount: null, netCurrency: null };
+    const service = new BankConnectionsService(reconciliation as never);
+    await (service as unknown as { storeFresh: (...args: unknown[]) => Promise<unknown> }).storeFresh(db, "t1", "PayPal", "paypal", [converted, held]);
+    expect(reconciliation.refreshReceivedOf).toHaveBeenCalledWith(db, "t1", ["tx-1"]);
+  });
 });

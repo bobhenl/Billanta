@@ -1198,6 +1198,8 @@ export const bankTransactions = pgTable("bank_transactions", {
 // invoice draft to review). Lower `position` runs first and the first rule
 // that fits wins. `conditions` has the shape `ruleConditionsSchema` in
 // src/bank-reconciliation/bank-rules.ts validates. Migration 0091.
+// `import_only` rules instead decide which PSD2 movements are stored at all
+// (migration 0099, which replaced bank_connections.import_filter).
 // ---------------------------------------------------------------------------
 export const bankRules = pgTable(
   "bank_rules",
@@ -1215,6 +1217,13 @@ export const bankRules = pgTable(
     expenseCategory: text("expense_category"),
     /** draft_invoice: bill this contact instead of looking up the payer. */
     contactId: uuid("contact_id").references(() => contacts.id, { onDelete: "set null" }),
+    /**
+     * import_only: the connection the rule is for; null means every PSD2
+     * connection. Payments do not record their connection, so the other
+     * actions cannot be scoped. Cascade: a rule about a deleted account must
+     * not start filtering the others. Migration 0099.
+     */
+    connectionId: uuid("connection_id").references((): AnyPgColumn => bankConnections.id, { onDelete: "cascade" }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -1261,7 +1270,11 @@ export const bankConnections = pgTable("bank_connections", {
    * drafts; older ones are taken as invoiced already. Migration 0089.
    */
   autoDraftFrom: timestamp("auto_draft_from", { withTimezone: true }),
-  /** Words a movement must contain to be stored (comma or newline separated); null keeps everything. Migration 0098. */
+  /**
+   * Deprecated: read by nothing since migration 0099 turned each value into an
+   * import_only bank rule scoped to this connection. Kept so the previous
+   * release still finds it on a rollback; drop it in a later migration.
+   */
   importFilter: text("import_filter"),
   /** PSD2: the account's currency, which tells apart sub-accounts sharing an IBAN. Migration 0098. */
   currency: varchar("currency", { length: 3 }),

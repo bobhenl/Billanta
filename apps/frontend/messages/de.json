@@ -1155,11 +1155,10 @@
       "uploadStatement": "Kontoauszug hochladen",
       "edit": {
         "open": "Bearbeiten",
-        "filter": "Nur Umsätze laden, die enthalten",
-        "filterPlaceholder": "z. B. Google, Meta",
-        "filterHint": "Für ein Privatkonto: Gespeichert werden nur Zahlungen, deren Gegenpartei oder Verwendungszweck eines dieser Wörter enthält (durch Komma getrennt), ein- und ausgehend. Alles andere erreicht Billanta nicht. Leer = nur eingehende Zahlungen wie bisher.",
         "filterOn": "nur {words}",
-        "save": "Speichern"
+        "save": "Speichern",
+        "filterMoved": "Was dieses Konto lädt, legen Sie jetzt in den Bankregeln fest.",
+        "filterRule": "Regel „Nur laden“ einrichten"
       }
     },
     "fee": "Gebühr {amount}",
@@ -5221,9 +5220,11 @@
       "title": "Nettoerlös",
       "gross": "Erhalten (Rechnungskurs)",
       "fees": "Gebühren",
-      "fx": "Kursdifferenz",
+      "fx": "Kurs vs. Rechnungskurs",
       "net": "Nettoerlös",
-      "noReceived": "Geben Sie den in {home} gutgeschriebenen Betrag ein, um auch die Kursdifferenz zu sehen."
+      "noReceived": "Geben Sie den in {home} gutgeschriebenen Betrag ein, um auch die Kursdifferenz zu sehen.",
+      "rates": "Tatsächlicher Kurs {real} vs. Rechnungskurs {invoice} ({pair}).",
+      "held": "{amount} liegt noch auf Ihrem PayPal-Guthaben. Den echten Betrag in {home} sehen Sie, sobald PayPal ihn bei der Abbuchung umrechnet."
     },
     "history": "Änderungsverlauf",
     "correction": {
@@ -5529,10 +5530,15 @@
     "flatRate": "Ausgabenpauschale",
     "rate": "Pauschale {rate} %",
     "noFlat": "ohne Pauschale",
-    "hint": "Grobe Schätzung für tschechische Einzelunternehmer (OSVČ): Betrag ohne USt. abzüglich Einkommensteuer (15 %), Sozial- und Krankenversicherung auf diese Rechnung – etwa {burden}. Verwendet die gewählte Pauschale und berücksichtigt keine Mindestvorauszahlungen und Steuerermäßigungen. Das ganze Jahr finden Sie unter Exporte.",
-    "hintCosts": "Auch Zahlungsgebühren und der Umrechnungsverlust ({costs}) werden abgezogen. Bei einer Ausgabenpauschale senken sie die Steuer nicht, da die Pauschale bereits alle Ausgaben abdeckt.",
-    "hintLimits": "Sehen Sie es als Untergrenze. Solange Ihr Jahr den Steuerfreibetrag nicht ausschöpft und die Mindestvorauszahlungen (bei Nebentätigkeit die Entscheidungsgrenze) nicht übersteigt, kostet diese Rechnung keine zusätzliche Steuer oder Versicherung und Ihnen bleibt mehr, bis zu {full}.",
-    "range": "Ihnen bleiben {low} bis {high}."
+    "lines": {
+      "withoutVat": "Ohne USt.",
+      "fee": "Zahlungsgebühr",
+      "fxLoss": "Umrechnungsverlust",
+      "fxGain": "Umrechnungsgewinn",
+      "tax": "Einkommensteuer 15 %",
+      "insurance": "Sozial + Kranken",
+      "caveat": "Untergrenze: Solange Ihr Jahr den Steuerfreibetrag und die Mindestvorauszahlungen nicht ausschöpft, bleiben Ihnen bis zu {full}."
+    }
   },
   "welcome": {
     "title": "Willkommen bei Billanta",
@@ -13888,7 +13894,8 @@
     "noAccess": {
       "title": "Nur für Inhaber und Administratoren",
       "body": "Der Bericht nach Steuern zeigt die Einnahmen und Steuern jedes Partners, daher sehen ihn nur der Inhaber und die Administratoren des Unternehmens."
-    }
+    },
+    "split": "Gehört zu"
   },
   "bankRules": {
     "title": "Zahlungsregeln",
@@ -13937,12 +13944,14 @@
     "action": {
       "ignore": "Ignorieren",
       "draft_expense": "Ausgabe zur Prüfung erstellen",
-      "draft_invoice": "Rechnungsentwurf erstellen"
+      "draft_invoice": "Rechnungsentwurf erstellen",
+      "import_only": "Nur Umsätze laden, die enthalten"
     },
     "actionHint": {
       "ignore": "Die Zahlung wird als ignoriert markiert. Sie können sie jederzeit wieder zur Zuordnung freigeben.",
       "draft_expense": "Nur Zahlungsausgänge. Erstellt eine mit der Zahlung verknüpfte Ausgabe mit der Markierung „Zu prüfen“.",
-      "draft_invoice": "Nur Zahlungseingänge. Erstellt einen Rechnungsentwurf zur Prüfung. Ausstellen liegt immer bei Ihnen."
+      "draft_invoice": "Nur Zahlungseingänge. Erstellt einen Rechnungsentwurf zur Prüfung. Ausstellen liegt immer bei Ihnen.",
+      "import_only": "Für ein über PSD2 verbundenes Privatkonto: Gespeichert werden nur Umsätze, deren Gegenpartei oder Verwendungszweck eines der Wörter enthält, ein- und ausgehend. Alles andere erreicht Billanta nicht. Ein Konto ohne solche Regel lädt nur Zahlungseingänge."
     },
     "form": {
       "titleNew": "Neue Regel",
@@ -14017,7 +14026,20 @@
       "action_needs_incoming": "Rechnungsentwürfe können nur aus Zahlungseingängen entstehen. Stellen Sie die Richtung auf Eingänge.",
       "contact_not_found": "Der gewählte Kunde existiert nicht mehr.",
       "bank_rule_not_found": "Die Regel existiert nicht mehr.",
-      "forbidden": "Sie haben keine Berechtigung, Regeln zu ändern."
+      "forbidden": "Sie haben keine Berechtigung, Regeln zu ändern.",
+      "import_rule_needs_words": "Geben Sie mindestens ein Wort ein.",
+      "import_rule_needs_psd2": "Nur über PSD2 verbundene Konten lassen sich beim Laden filtern.",
+      "import_rule_not_applicable": "Diese Regel bestimmt nur, was die nächste Synchronisierung lädt. Auf gespeicherte Zahlungen lässt sie sich nicht anwenden.",
+      "bank_connection_not_found": "Das gewählte Konto existiert nicht mehr."
+    },
+    "importOnly": {
+      "account": "Konto",
+      "allAccounts": "Alle über PSD2 verbundenen Konten",
+      "removedAccount": "Entferntes Konto",
+      "keywords": "Wörter (durch Komma getrennt)",
+      "keywordsPlaceholder": "z. B. Google, Meta",
+      "hint": "Groß- und Kleinschreibung spielt keine Rolle, Akzente schon. Ein Wort kann irgendwo in Name, Kontonummer oder Verwendungszweck stehen. Gilt ab der nächsten Synchronisierung, nie für bereits gespeicherte Zahlungen. Bei mehreren solchen Regeln wird ein Umsatz behalten, wenn er zu einer davon passt.",
+      "summary": "{account}: nur Umsätze mit {words}"
     }
   },
   "updateNotice": {
