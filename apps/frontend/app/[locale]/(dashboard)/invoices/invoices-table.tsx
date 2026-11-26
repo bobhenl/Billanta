@@ -500,7 +500,8 @@ export function InvoicesTable({
       </ul>
 
       <div className="relative hidden overflow-x-auto rounded-xl border border-border bg-card md:block">
-        <table className="w-full min-w-[720px] border-collapse text-sm">
+        {/* Without the wide customer column (a contact's own page) the table fits a narrower column, so the row menu is not scrolled out of view. */}
+        <table className={cn('w-full border-collapse text-sm', columns.includes('customer') ? 'min-w-[720px]' : 'min-w-[600px]')}>
           <thead>
             <tr className="border-b border-border bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
               {canEdit && (
@@ -552,9 +553,17 @@ export function InvoicesTable({
             {sortedRows.map((row) => (
               <Fragment key={row.id}>
                 <tr
-                  onClick={() => {
+                  onClick={(e) => {
+                    // A row is not a link, so Ctrl/Cmd-click and middle-click open the new tab by hand.
+                    if (e.ctrlKey || e.metaKey || e.shiftKey) {
+                      window.open(`/${locale}/invoices/${row.id}`, '_blank', 'noopener');
+                      return;
+                    }
                     startNavProgress();
                     router.push(`/invoices/${row.id}`);
+                  }}
+                  onAuxClick={(e) => {
+                    if (e.button === 1) window.open(`/${locale}/invoices/${row.id}`, '_blank', 'noopener');
                   }}
                   className={cn(
                     'cursor-pointer border-b border-border transition-colors last:border-b-0 hover:bg-accent/50',
@@ -685,9 +694,10 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
 
   // `quick` items also get an icon button right in the row when inline actions are on.
   // `write` items change the document, so a read-only member never sees them (open and PDF stay).
-  type Item = { icon: typeof Copy; label: string; onSelect: () => void; danger?: boolean; href?: string; quick?: boolean; write?: boolean };
+  // `link` is an in-app route: a real link, so it also opens in a new tab or window.
+  type Item = { icon: typeof Copy; label: string; onSelect: () => void; danger?: boolean; href?: string; link?: string; quick?: boolean; write?: boolean };
   const all: Item[] = [
-    { icon: ExternalLink, label: t('actions.open'), onSelect: () => router.push(`/invoices/${row.id}`) },
+    { icon: ExternalLink, label: t('actions.open'), link: `/invoices/${row.id}`, onSelect: () => setPos(null) },
     ...(isDraft
       ? [
           { icon: Pencil, label: t('actions.edit'), quick: true, write: true, onSelect: () => router.push(`/invoices/${row.id}/edit`) },
@@ -774,12 +784,17 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
         <>
           <div className="fixed inset-0 z-40" onClick={() => setPos(null)} />
           <div role="menu" style={pos} className="fixed z-50 overflow-y-auto w-56 rounded-xl border border-border bg-card p-1.5 text-left shadow-lg">
-            {items.map(({ icon: Icon, label, onSelect, danger, href }) => {
+            {items.map(({ icon: Icon, label, onSelect, danger, href, link }) => {
               const className = cn(
                 'flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-sm hover:bg-accent',
                 danger ? 'text-destructive' : 'hover:text-primary'
               );
-              return href ? (
+              return link ? (
+                <Link key={label} role="menuitem" href={link} onClick={onSelect} className={className}>
+                  <Icon className="h-4 w-4" />
+                  {label}
+                </Link>
+              ) : href ? (
                 <a key={label} role="menuitem" href={href} onClick={onSelect} className={className}>
                   <Icon className="h-4 w-4" />
                   {label}
