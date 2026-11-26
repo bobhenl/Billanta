@@ -11,7 +11,7 @@ import { formatMoney } from '@/lib/invoice-ui';
 import { formatKc, type NetIncomeLine, type NetIncomeReport, type NetIncomeTip, type PeriodKind, type Shares, type TaxPartner } from '@/lib/net-income';
 import { cn } from '@/lib/utils';
 import { setInvoicePartnerShares } from './actions';
-import { partnerTags, SharesPicker } from './shares-picker';
+import { partnerColors, partnerTags, SharesPicker } from './shares-picker';
 import { TaxModelEditor } from './tax-model-editor';
 
 const ROWS: { key: keyof NetIncomeLine; strong?: boolean; minus?: boolean }[] = [
@@ -262,6 +262,7 @@ function IncomeList({
   const partners = report.model.partners.map((p, i) => ({ ...p, name: nameOf(p, i) }));
   const day = (ymd: string) => new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'numeric', timeZone: 'UTC' }).format(new Date(`${ymd}T00:00:00Z`));
   const tags = partnerTags(partners);
+  const colors = partnerColors(partners);
   // One partner's invoices only (tag filter); the split itself is unchanged.
   const [only, setOnly] = useState<string | null>(null);
   const belongs = (shares: Shares | null, id: string) => ((shares ?? Object.fromEntries(partners.map((p) => [p.id, p.share])))[id] ?? 0) > 0;
@@ -338,7 +339,11 @@ function IncomeList({
                 onClick={() => setOnly(id)}
                 className={cn(
                   'h-6 min-w-6 rounded-md px-1.5 text-[11px] font-bold transition-colors',
-                  only === id ? 'bg-primary text-primary-foreground' : 'border border-border text-muted-foreground hover:bg-accent'
+                  only === id
+                    ? id
+                      ? colors[id]!.solid
+                      : 'bg-primary text-primary-foreground'
+                    : 'border border-border text-muted-foreground hover:bg-accent'
                 )}
               >
                 {id ? tags[id] : t('list.filterAll')}

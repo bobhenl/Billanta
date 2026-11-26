@@ -1242,6 +1242,49 @@ $$;
 REVOKE ALL ON FUNCTION accept_tenant_invitation(text, uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION accept_tenant_invitation(text, uuid) TO faktur_app;
 
+-- Signing up FROM an invitation (frontend /api/auth/register with an invite
+-- token): the brand-new user joins the inviting tenant instead of getting a
+-- company of their own. Same checks as accept_tenant_invitation (unexpired,
+-- unused, matching email), plus the ToS acceptance that
+-- bootstrap_tenant_for_user records for a normal signup, here against the
+-- joined tenant. Returns NULL (and records nothing) when the invitation does
+-- not fit, so the caller rolls the new user back.
+CREATE OR REPLACE FUNCTION join_tenant_by_invitation(
+  p_token_hash text,
+  p_user_id uuid,
+  p_tos_version text,
+  p_ip_address text DEFAULT NULL
+)
+RETURNS uuid
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $
+DECLARE
+  v_tenant_id uuid;
+  v_tos_version_id uuid;
+BEGIN
+  v_tenant_id := accept_tenant_invitation(p_token_hash, p_user_id);
+  IF v_tenant_id IS NULL THEN
+    RETURN NULL;
+  END IF;
+
+  INSERT INTO tos_versions (version, content_hash)
+  VALUES (p_tos_version, md5('placeholder:' || p_tos_version))
+  ON CONFLICT (version) DO NOTHING;
+
+  SELECT id INTO v_tos_version_id FROM tos_versions WHERE version = p_tos_version;
+
+  INSERT INTO tos_acceptances (user_id, tenant_id, tos_version_id, ip_address)
+  VALUES (p_user_id, v_tenant_id, v_tos_version_id, p_ip_address);
+
+  RETURN v_tenant_id;
+END;
+$;
+
+REVOKE ALL ON FUNCTION join_tenant_by_invitation(text, uuid, text, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION join_tenant_by_invitation(text, uuid, text, text) TO faktur_app;
+
 -- ---------------------------------------------------------------------------
 -- tenant_bank_accounts (migration 0007)
 -- ---------------------------------------------------------------------------

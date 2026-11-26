@@ -1080,7 +1080,8 @@
         "backfill_unsupported": "Ältere Zahlungen lassen sich vorerst nur von PayPal und Stripe abrufen.",
         "stripe_key_format": "Fügen Sie einen eingeschränkten Schlüssel ein, der mit rk_live_ oder rk_test_ beginnt. Ein vollständiger geheimer Schlüssel (sk_) wird nicht akzeptiert.",
         "stripe_key_invalid": "Stripe hat den Schlüssel abgelehnt. Prüfen Sie, ob Sie ihn vollständig kopiert haben und ob er nicht gelöscht wurde.",
-        "stripe_permissions_missing": "Dem Schlüssel fehlen Berechtigungen. Geben Sie ihm in Stripe Lesezugriff auf Balance transactions, Charges und Customers."
+        "stripe_permissions_missing": "Dem Schlüssel fehlen Berechtigungen. Geben Sie ihm in Stripe Lesezugriff auf Balance transactions, Charges und Customers.",
+        "psd2_history_refused": "Die Bank hat so alten Verlauf nicht freigegeben. Versuchen Sie einen kürzeren Zeitraum oder erneuern Sie die Zustimmung und laden Sie den Verlauf direkt danach."
       },
       "psd2": {
         "hint": "Billanta lädt neue Zahlungseingänge direkt von Ihrer Bank oder von PayPal herunter und ordnet sie anhand von variablem Symbol und Betrag den Rechnungen zu. Fio wird per API-Token verbunden, PayPal mit den Zugangsdaten Ihrer REST-App, andere Banken über PSD2: Sie melden sich bei Ihrer Bank an und gewähren reinen Lesezugriff auf das Konto (bis zu 180 Tage, bei vielen Banken 90). Banken erlauben nur wenige automatische Abrufe pro Tag, daher werden PSD2-Konten etwa alle 6 Stunden synchronisiert. Zahlungsausgänge werden nicht heruntergeladen, und über die Verbindung lässt sich nichts bezahlen.",
@@ -1105,7 +1106,9 @@
         "connected": "Bank verbunden. Die Zahlungen der letzten 30 Tage kommen mit der nächsten Synchronisierung.",
         "cancelled": "Die Verbindung wurde bei der Bank abgebrochen oder abgelehnt. Sie können es erneut versuchen.",
         "failedTitle": "Die Bank konnte nicht verbunden werden",
-        "back": "Zurück zur Bank"
+        "back": "Zurück zur Bank",
+        "bankFallback": "Bank",
+        "backfillHint": "Über PSD2 liefert {provider} meist 90 Tage Verlauf. Längeren Verlauf gibt es vor allem kurz nach einer neuen Anmeldung bei der Bank (Zustimmung erneuern). Ältere Zahlungen werden nur mit Rechnungen abgeglichen, die Importregeln gelten auch für sie. Was schon in Billanta ist, wird nicht erneut geladen."
       },
       "paypal": {
         "connect": "PayPal verbinden",
@@ -5261,7 +5264,17 @@
     "emailMismatch": "Diese Einladung gilt für {email}. Melden Sie sich mit dieser E-Mail-Adresse an.",
     "notFound": "Einladung nicht gefunden",
     "notFoundHint": "Der Link ist ungültig oder die Einladung wurde widerrufen.",
-    "toDashboard": "Zur Übersicht"
+    "toDashboard": "Zur Übersicht",
+    "toLogin": "Anmelden",
+    "signup": {
+      "intro": "Sie brauchen keine eigene Firma. Name und Passwort reichen, danach sind Sie direkt im Team.",
+      "nameLabel": "Vor- und Nachname",
+      "namePlaceholder": "Max Mustermann",
+      "tosLabel": "Ich bin mindestens 18 Jahre alt und stimme den <tos>AGB</tos> zu. Die <privacy>Datenschutzerklärung</privacy> habe ich gelesen.",
+      "submit": "Konto erstellen und beitreten",
+      "emailTaken": "Mit dieser E-Mail haben Sie bereits ein Konto. Melden Sie sich an, um die Einladung anzunehmen.",
+      "invalid": "Diese Einladung ist nicht mehr gültig. Bitten Sie um eine neue."
+    }
   },
   "templates": {
     "title": "Rechnungsvorlagen",

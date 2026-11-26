@@ -20,6 +20,7 @@ import {
   EnableBankingError,
   enableBankingConfig,
   type Aspsp,
+  psd2BackfillFrom,
   type Psd2SyncedRow,
 } from "./enable-banking-client";
 import {
@@ -57,6 +58,7 @@ const PSD2_BACKGROUND_INTERVAL_MS = 6 * 60 * 60 * 1000;
 const PSD2_MANUAL_INTERVAL_MS = 15 * 60 * 1000;
 const PSD2_MAX_CONSENT_MS = 180 * DAY_MS;
 const PAYPAL_MANUAL_INTERVAL_MS = 60_000;
+const PSD2_BACKFILL_INTERVAL_MS = 60_000;
 const STRIPE_MANUAL_INTERVAL_MS = 60_000;
 /**
  * The EEA countries Enable Banking covers, home markets first. Neobanks are
@@ -574,6 +576,7 @@ export class BankConnectionsService {
   async backfill(db: TenantDb, tenantId: string, id: string, requested: Date): Promise<BankSyncSummary & { from: Date }> {
     const [row] = await db.select().from(schema.bankConnections).where(eq(schema.bankConnections.id, id)).limit(1);
     if (!row) throw new NotFoundException("Bank connection not found");
+    if (row.provider === "enable_banking") return this.backfillPsd2(db, tenantId, row, requested);
     if (row.provider !== "paypal" && row.provider !== "stripe") throw new BadRequestException({ error: "backfill_unsupported" });
     const now = new Date();
     const range = paypalBackfillRange(requested, now);
@@ -607,6 +610,37 @@ export class BankConnectionsService {
     }
     await db.update(schema.bankConnections).set({ lastSyncedAt: now, lastError: null }).where(eq(schema.bankConnections.id, row.id));
     return { connectionId: row.id, ...summary, from: range.from };
+  }
+
+  /**
+   * PSD2 "download from a date": the same read as a sync, only from an older
+   * day, with the import rules applied the same way. Banks decide how much
+   * history they give (often 90 days, more just after a fresh consent); a
+   * refusal comes back as psd2_history_refused so the UI can say why.
+   */
+  private async backfillPsd2(db: TenantDb, tenantId: string, row: BankConnectionRow, requested: Date): Promise<BankSyncSummary & { from: Date }> {
+    const now = new Date();
+    const from = psd2BackfillFrom(requested, now);
+    if (!from) throw new BadRequestException({ error: "backfill_range" });
+    if (row.status !== "active" || !row.externalAccountId) throw new BadRequestException({ error: "consent_expired" });
+    // Each read counts against the few unattended reads a day the bank allows.
+    if (row.lastRequestAt && now.getTime() - row.lastRequestAt.getTime() < PSD2_BACKFILL_INTERVAL_MS) {
+      throw new HttpException({ error: "bank_sync_too_soon" }, HttpStatus.TOO_MANY_REQUESTS);
+    }
+    await db.update(schema.bankConnections).set({ lastRequestAt: now }).where(eq(schema.bankConnections.id, row.id));
+    let rows: Psd2SyncedRow[];
+    try {
+      const words = importWordsFor(await this.importRules(db), row.id);
+      rows = (await this.psd2Client().fetchIncoming(row.externalAccountId, from, words !== null)).filter((r) => keepOnImport(r, words));
+    } catch (err) {
+      if (err instanceof EnableBankingError && err.code === "consent_expired") await this.markExpired(db, tenantId, row);
+      if (err instanceof EnableBankingError && err.code === "rejected") throw new BadRequestException({ error: "psd2_history_refused" });
+      throw this.psd2HttpError(err);
+    }
+    const period = `${from.toISOString().slice(0, 10)} – ${now.toISOString().slice(0, 10)}`;
+    const summary = await this.storeFresh(db, tenantId, `${row.bankName ?? "Banka"} ${row.accountNumber ?? ""} ${period}`, "psd2", rows, null, false);
+    await db.update(schema.bankConnections).set({ lastSyncedAt: now, lastError: null }).where(eq(schema.bankConnections.id, row.id));
+    return { connectionId: row.id, ...summary, from };
   }
 
   /** Hourly sweep for one tenant: every enabled connection, failures recorded on the row. */

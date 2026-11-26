@@ -1080,7 +1080,8 @@
         "backfill_unsupported": "De momento, los pagos más antiguos solo se pueden descargar de PayPal y Stripe.",
         "stripe_key_format": "Pegue una clave restringida que empiece por rk_live_ o rk_test_. No se acepta una clave secreta completa (sk_).",
         "stripe_key_invalid": "Stripe rechazó la clave. Compruebe que la copió entera y que no se ha eliminado.",
-        "stripe_permissions_missing": "A la clave le faltan permisos. En Stripe, dele acceso de lectura a Balance transactions, Charges y Customers."
+        "stripe_permissions_missing": "A la clave le faltan permisos. En Stripe, dele acceso de lectura a Balance transactions, Charges y Customers.",
+        "psd2_history_refused": "El banco no ha facilitado un historial tan antiguo. Pruebe un periodo más corto, o renueve el consentimiento y descargue el historial justo después."
       },
       "psd2": {
         "hint": "Billanta descarga los nuevos cobros directamente de su banco o de PayPal y los concilia con las facturas por símbolo variable e importe. Fio se conecta con un token de API, PayPal con las credenciales de su aplicación REST y los demás bancos mediante PSD2: usted inicia sesión en su banco y concede acceso de solo lectura a la cuenta (hasta 180 días, 90 en muchos bancos). Los bancos solo permiten unas pocas consultas automáticas al día, por lo que las cuentas PSD2 se sincronizan aproximadamente cada 6 horas. Los pagos salientes no se descargan y a través de la conexión no se puede pagar nada.",
@@ -1105,7 +1106,9 @@
         "connected": "Banco conectado. Los pagos de los últimos 30 días llegarán con la próxima sincronización.",
         "cancelled": "La conexión se canceló o se rechazó en el banco. Puede intentarlo de nuevo.",
         "failedTitle": "No se ha podido conectar el banco",
-        "back": "Volver al banco"
+        "back": "Volver al banco",
+        "bankFallback": "Banco",
+        "backfillHint": "Por PSD2, {provider} suele dar 90 días de historial. Un historial más largo suele estar disponible justo después de volver a iniciar sesión en el banco (Renovar consentimiento). Los pagos más antiguos solo se concilian con facturas y también se les aplican las reglas de importación. Lo que ya está en Billanta no se vuelve a descargar."
       },
       "paypal": {
         "connect": "Conectar PayPal",
@@ -5260,7 +5263,17 @@
     "emailMismatch": "Esta invitación es para {email}. Inicie sesión con ese correo electrónico.",
     "notFound": "Invitación no encontrada",
     "notFoundHint": "El enlace no es válido o la invitación se ha revocado.",
-    "toDashboard": "Ir al panel"
+    "toDashboard": "Ir al panel",
+    "toLogin": "Iniciar sesión",
+    "signup": {
+      "intro": "No necesita crear su propia empresa. Basta con un nombre y una contraseña, y entrará directamente en el equipo.",
+      "nameLabel": "Nombre completo",
+      "namePlaceholder": "Juan García",
+      "tosLabel": "Tengo al menos 18 años y acepto los <tos>términos del servicio</tos>. He leído la <privacy>política de privacidad</privacy>.",
+      "submit": "Crear cuenta y unirse",
+      "emailTaken": "Ya tiene una cuenta con este correo. Inicie sesión para aceptar la invitación.",
+      "invalid": "Esta invitación ya no es válida. Pida una nueva."
+    }
   },
   "templates": {
     "title": "Plantillas de factura",

@@ -1080,7 +1080,8 @@
         "backfill_unsupported": "Régebbi fizetéseket egyelőre csak a PayPalból és a Stripe-ból lehet letölteni.",
         "stripe_key_format": "Illesszen be egy rk_live_ vagy rk_test_ kezdetű korlátozott kulcsot. Teljes titkos kulcsot (sk_) nem fogadunk el.",
         "stripe_key_invalid": "A Stripe elutasította a kulcsot. Ellenőrizze, hogy teljes egészében másolta-e ki, és hogy nem törölték-e.",
-        "stripe_permissions_missing": "A kulcsnak hiányoznak a jogosultságai. A Stripe-ban adjon neki olvasási jogot a Balance transactions, Charges és Customers elemekhez."
+        "stripe_permissions_missing": "A kulcsnak hiányoznak a jogosultságai. A Stripe-ban adjon neki olvasási jogot a Balance transactions, Charges és Customers elemekhez.",
+        "psd2_history_refused": "A bank nem adott ki ilyen régi előzményt. Próbáljon rövidebb időszakot, vagy újítsa meg a banki hozzájárulást, és közvetlenül utána töltse le az előzményt."
       },
       "psd2": {
         "hint": "A Billanta letölti az új beérkező befizetéseket közvetlenül a bankjából vagy a PayPalról, és változó szimbólum és összeg alapján párosítja őket a számlákkal. A Fio API-tokennel, a PayPal a REST-alkalmazása hitelesítő adataival, a többi bank PSD2-n keresztül csatlakozik: Ön bejelentkezik a bankjába, és csak olvasási hozzáférést ad a számlához (legfeljebb 180 napra, sok banknál 90-re). A bankok naponta csak néhány felügyelet nélküli lekérdezést engedélyeznek, ezért a PSD2-számlák kb. 6 óránként szinkronizálódnak. A kimenő fizetéseket nem töltjük le, és a kapcsolaton keresztül semmit sem lehet kifizetni.",
@@ -1105,7 +1106,9 @@
         "connected": "Bank csatlakoztatva. Az utolsó 30 nap befizetései a következő szinkronizáláskor érkeznek meg.",
         "cancelled": "A csatlakozást a banknál megszakították vagy elutasították. Megpróbálhatja újra.",
         "failedTitle": "A bankot nem sikerült csatlakoztatni",
-        "back": "Vissza a bankhoz"
+        "back": "Vissza a bankhoz",
+        "bankFallback": "Bank",
+        "backfillHint": "PSD2-n keresztül a(z) {provider} általában 90 napra visszamenőleg ad adatot. Hosszabb előzményt főleg közvetlenül egy új banki bejelentkezés után ad (Hozzájárulás megújítása). A régebbi fizetéseket csak a számlákkal párosítjuk, és rájuk is érvényesek az importszabályok. Ami már a Billantában van, nem töltődik le újra."
       },
       "paypal": {
         "connect": "PayPal csatlakoztatása",
@@ -5260,7 +5263,17 @@
     "emailMismatch": "Ez a meghívás ennek a címnek szól: {email}. Jelentkezzen be ezzel az e-mail-címmel.",
     "notFound": "A meghívás nem található",
     "notFoundHint": "A link érvénytelen, vagy a meghívást visszavonták.",
-    "toDashboard": "Tovább a vezérlőpultra"
+    "toDashboard": "Tovább a vezérlőpultra",
+    "toLogin": "Bejelentkezés",
+    "signup": {
+      "intro": "Nem kell saját céget létrehoznia. Elég egy név és egy jelszó, és máris a csapatban van.",
+      "nameLabel": "Teljes név",
+      "namePlaceholder": "Kovács János",
+      "tosLabel": "Elmúltam 18 éves, és elfogadom az <tos>általános szerződési feltételeket</tos>. Az <privacy>adatvédelmi tájékoztatót</privacy> elolvastam.",
+      "submit": "Fiók létrehozása és csatlakozás",
+      "emailTaken": "Ezzel az e-mail-címmel már van fiókja. Jelentkezzen be a meghívó elfogadásához.",
+      "invalid": "Ez a meghívó már nem érvényes. Kérjen újat."
+    }
   },
   "templates": {
     "title": "Számlasablonok",

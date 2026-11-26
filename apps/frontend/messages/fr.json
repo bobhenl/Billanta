@@ -1080,7 +1080,8 @@
         "backfill_unsupported": "Pour l’instant, seuls les anciens paiements PayPal et Stripe peuvent être téléchargés.",
         "stripe_key_format": "Collez une clé restreinte qui commence par rk_live_ ou rk_test_. Une clé secrète complète (sk_) n’est pas acceptée.",
         "stripe_key_invalid": "Stripe a refusé la clé. Vérifiez que vous l’avez copiée en entier et qu’elle n’a pas été supprimée.",
-        "stripe_permissions_missing": "Il manque des autorisations à la clé. Dans Stripe, donnez-lui un accès en lecture à Balance transactions, Charges et Customers."
+        "stripe_permissions_missing": "Il manque des autorisations à la clé. Dans Stripe, donnez-lui un accès en lecture à Balance transactions, Charges et Customers.",
+        "psd2_history_refused": "La banque n'a pas fourni un historique aussi ancien. Essayez une période plus courte, ou renouvelez le consentement et téléchargez l'historique juste après."
       },
       "psd2": {
         "hint": "Billanta récupère les nouveaux paiements reçus directement depuis votre banque ou PayPal et les rapproche des factures par symbole variable et montant. Fio se connecte avec un jeton API, PayPal avec les identifiants de votre application REST, les autres banques via PSD2 : vous vous connectez à votre banque et accordez un accès en lecture seule au compte (jusqu’à 180 jours, 90 dans de nombreuses banques). Les banques n’autorisent que quelques lectures automatiques par jour, les comptes PSD2 sont donc synchronisés environ toutes les 6 heures. Les paiements sortants ne sont pas récupérés et aucun paiement ne peut être effectué via la connexion.",
@@ -1105,7 +1106,9 @@
         "connected": "Banque connectée. Les paiements des 30 derniers jours arriveront à la prochaine synchronisation.",
         "cancelled": "La connexion a été annulée ou refusée auprès de la banque. Vous pouvez réessayer.",
         "failedTitle": "Impossible de connecter la banque",
-        "back": "Retour à la banque"
+        "back": "Retour à la banque",
+        "bankFallback": "Banque",
+        "backfillHint": "Via PSD2, {provider} fournit en général 90 jours d'historique. Un historique plus long est surtout disponible juste après une nouvelle connexion à la banque (Renouveler le consentement). Les paiements plus anciens sont seulement rapprochés des factures, et les règles d'import s'y appliquent. Ce qui est déjà dans Billanta n'est pas téléchargé à nouveau."
       },
       "paypal": {
         "connect": "Connecter PayPal",
@@ -5260,7 +5263,17 @@
     "emailMismatch": "Cette invitation est destinée à {email}. Connectez-vous avec cette adresse.",
     "notFound": "Invitation introuvable",
     "notFoundHint": "Le lien est invalide ou l’invitation a été révoquée.",
-    "toDashboard": "Aller au tableau de bord"
+    "toDashboard": "Aller au tableau de bord",
+    "toLogin": "Se connecter",
+    "signup": {
+      "intro": "Pas besoin de créer votre propre entreprise. Un nom et un mot de passe suffisent, et vous rejoignez directement l'équipe.",
+      "nameLabel": "Nom complet",
+      "namePlaceholder": "Jean Dupont",
+      "tosLabel": "J'ai au moins 18 ans et j'accepte les <tos>conditions d'utilisation</tos>. J'ai lu la <privacy>politique de confidentialité</privacy>.",
+      "submit": "Créer un compte et rejoindre",
+      "emailTaken": "Vous avez déjà un compte avec cet e-mail. Connectez-vous pour accepter l'invitation.",
+      "invalid": "Cette invitation n'est plus valable. Demandez-en une nouvelle."
+    }
   },
   "templates": {
     "title": "Modèles de facture",

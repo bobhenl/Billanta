@@ -84,6 +84,18 @@ export interface Psd2SyncedRow extends ParsedBankTransactionRow {
  * ("/VS/2026001", "VS: 2026001", "VS2026001/SS/KS") or as the structured
  * reference. A remittance consisting of digits only is taken as the VS too.
  */
+/** How far back a manual PSD2 download may ask; most banks give less (often 90 days) and say so with an error. */
+export const PSD2_BACKFILL_DAYS = 730;
+
+/** The UTC day a manual PSD2 download starts from, clamped to PSD2_BACKFILL_DAYS; null for a day not in the past. */
+export function psd2BackfillFrom(requested: Date, now: Date): Date | null {
+  const day = Date.UTC(requested.getUTCFullYear(), requested.getUTCMonth(), requested.getUTCDate());
+  if (Number.isNaN(day)) return null;
+  const earliest = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - PSD2_BACKFILL_DAYS);
+  const from = Math.max(day, earliest);
+  return from < now.getTime() ? new Date(from) : null;
+}
+
 export function extractVariableSymbol(parts: (string | null | undefined)[]): string | null {
   const texts = parts.filter((p): p is string => typeof p === "string" && p.trim() !== "");
   for (const text of texts) {

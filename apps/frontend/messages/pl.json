@@ -1080,7 +1080,8 @@
         "backfill_unsupported": "Starsze płatności można na razie pobrać tylko z PayPala i Stripe.",
         "stripe_key_format": "Wklej ograniczony klucz zaczynający się od rk_live_ lub rk_test_. Pełny klucz tajny (sk_) nie jest akceptowany.",
         "stripe_key_invalid": "Stripe odrzucił klucz. Sprawdź, czy skopiowano go w całości i czy nie został usunięty.",
-        "stripe_permissions_missing": "Kluczowi brakuje uprawnień. W Stripe nadaj mu dostęp do odczytu do Balance transactions, Charges i Customers."
+        "stripe_permissions_missing": "Kluczowi brakuje uprawnień. W Stripe nadaj mu dostęp do odczytu do Balance transactions, Charges i Customers.",
+        "psd2_history_refused": "Bank nie udostępnił tak starej historii. Spróbuj krótszego okresu albo odnów zgodę w banku i pobierz historię zaraz potem."
       },
       "psd2": {
         "hint": "Billanta pobiera nowe płatności przychodzące bezpośrednio z Twojego banku lub PayPala i paruje je z fakturami według symbolu zmiennego i kwoty. Fio łączy się tokenem API, PayPal danymi Twojej aplikacji REST, inne banki przez PSD2: logujesz się w swoim banku i udzielasz dostępu tylko do odczytu konta (do 180 dni, w wielu bankach 90). Banki pozwalają tylko na kilka automatycznych odczytów dziennie, dlatego konta PSD2 synchronizujemy mniej więcej co 6 godzin. Płatności wychodzące nie są pobierane i przez połączenie nie da się niczego zapłacić.",
@@ -1105,7 +1106,9 @@
         "connected": "Bank połączony. Płatności z ostatnich 30 dni pojawią się przy następnej synchronizacji.",
         "cancelled": "Łączenie zostało anulowane lub odrzucone w banku. Możesz spróbować ponownie.",
         "failedTitle": "Nie udało się połączyć z bankiem",
-        "back": "Wróć do banku"
+        "back": "Wróć do banku",
+        "bankFallback": "Bank",
+        "backfillHint": "Przez PSD2 {provider} zwykle udostępnia 90 dni historii. Dłuższa historia jest dostępna głównie zaraz po ponownym zalogowaniu w banku (Odnów zgodę). Starsze płatności tylko dopasowujemy do faktur i obowiązują dla nich reguły importu. To, co już jest w Billanta, nie zostanie pobrane ponownie."
       },
       "paypal": {
         "connect": "Połącz PayPal",
@@ -5261,7 +5264,17 @@
     "emailMismatch": "To zaproszenie jest przeznaczone dla {email}. Zaloguj się tym adresem e-mail.",
     "notFound": "Nie znaleziono zaproszenia",
     "notFoundHint": "Link jest nieprawidłowy lub zaproszenie zostało wycofane.",
-    "toDashboard": "Przejdź do pulpitu"
+    "toDashboard": "Przejdź do pulpitu",
+    "toLogin": "Zaloguj się",
+    "signup": {
+      "intro": "Nie musisz zakładać własnej firmy. Wystarczy imię i hasło, a od razu trafisz do zespołu.",
+      "nameLabel": "Imię i nazwisko",
+      "namePlaceholder": "Jan Kowalski",
+      "tosLabel": "Mam co najmniej 18 lat i akceptuję <tos>regulamin</tos>. Zapoznałem się z <privacy>polityką prywatności</privacy>.",
+      "submit": "Utwórz konto i dołącz",
+      "emailTaken": "Masz już konto z tym adresem e-mail. Zaloguj się, aby przyjąć zaproszenie.",
+      "invalid": "To zaproszenie jest już nieważne. Poproś o nowe."
+    }
   },
   "templates": {
     "title": "Szablony faktur",

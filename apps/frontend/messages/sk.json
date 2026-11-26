@@ -1081,7 +1081,8 @@
         "backfill_unsupported": "Staršie platby sa zatiaľ dajú stiahnuť len z PayPalu a Stripe.",
         "stripe_key_format": "Vložte obmedzený kľúč, ktorý začína rk_live_ alebo rk_test_. Plný tajný kľúč (sk_) neprijímame.",
         "stripe_key_invalid": "Stripe kľúč odmietol. Skontrolujte, či ste ho skopírovali celý a či nebol zmazaný.",
-        "stripe_permissions_missing": "Kľúču chýbajú oprávnenia. V Stripe mu povoľte čítanie pre Balance transactions, Charges a Customers."
+        "stripe_permissions_missing": "Kľúču chýbajú oprávnenia. V Stripe mu povoľte čítanie pre Balance transactions, Charges a Customers.",
+        "psd2_history_refused": "Banka takú starú históriu nevydala. Skúste kratšie obdobie alebo obnovte súhlas v banke a stiahnite históriu hneď potom."
       },
       "psd2": {
         "hint": "Billanta sťahuje prichádzajúce platby z banky alebo PayPalu a páruje ich s faktúrami podľa VS a sumy. Pri PSD2 udelíte banke súhlas len na čítanie (90–180 dní) a účty sa sťahujú zhruba každých 6 hodín. Zaplatiť cez napojenie nejde nič.",
@@ -1106,7 +1107,9 @@
         "connected": "Banka pripojená. Prvé platby za posledných 30 dní stiahneme pri najbližšej synchronizácii.",
         "cancelled": "Napojenie bolo v banke zrušené alebo zamietnuté. Môžete to skúsiť znova.",
         "failedTitle": "Banku sa nepodarilo pripojiť",
-        "back": "Späť na banku"
+        "back": "Späť na banku",
+        "bankFallback": "Banka",
+        "backfillHint": "{provider} cez PSD2 zvyčajne vydá 90 dní späť. Dlhšiu históriu dáva hlavne krátko po novom prihlásení do banky (Obnoviť súhlas). Staršie platby len spárujeme s faktúrami a platia pre ne pravidlá pre import. Čo už v Billante je, sa znova nestiahne."
       },
       "paypal": {
         "connect": "Pripojiť PayPal",
@@ -5289,7 +5292,17 @@
     "emailMismatch": "Pozvánka je určená pre {email}. Prihláste sa týmto e-mailom.",
     "notFound": "Pozvánka nenájdená",
     "notFoundHint": "Odkaz je neplatný alebo bola pozvánka zrušená.",
-    "toDashboard": "Prejsť na prehľad"
+    "toDashboard": "Prejsť na prehľad",
+    "toLogin": "Prihlásiť sa",
+    "signup": {
+      "intro": "Vlastnú firmu zakladať nemusíte. Stačí meno a heslo, potom sa hneď dostanete do tímu.",
+      "nameLabel": "Meno a priezvisko",
+      "namePlaceholder": "Ján Novák",
+      "tosLabel": "Mám aspoň 18 rokov a súhlasím s <tos>obchodnými podmienkami</tos>. Beriem na vedomie <privacy>zásady ochrany osobných údajov</privacy>.",
+      "submit": "Vytvoriť účet a prijať",
+      "emailTaken": "S týmto e-mailom už účet máte. Prihláste sa a pozvánku prijmite.",
+      "invalid": "Pozvánka už neplatí. Požiadajte o novú."
+    }
   },
   "templates": {
     "title": "Šablóny faktúr",

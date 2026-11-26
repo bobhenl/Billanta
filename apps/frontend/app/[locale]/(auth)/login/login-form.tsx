@@ -1,7 +1,7 @@
 'use client';
 
 import { type FormEvent, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { signIn } from 'next-auth/react';
 import { Link, useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass } from '@/lib/ui-classes';
@@ -22,8 +22,9 @@ import { PasswordInput } from '@/components/password-input';
  * wrapper in `components/session-provider.tsx`) – NOT the `signIn` exported
  * from the root `auth.ts`, which is meant for server actions/route handlers.
  */
-export function LoginForm({ providers }: { providers: OAuthProviderId[] }) {
+export function LoginForm({ providers, next }: { providers: OAuthProviderId[]; next?: string | null }) {
   const t = useTranslations('auth.login');
+  const locale = useLocale();
   const router = useRouter();
 
   const [email, setEmail] = useState('');
@@ -44,7 +45,7 @@ export function LoginForm({ providers }: { providers: OAuthProviderId[] }) {
       return;
     }
 
-    router.push('/dashboard');
+    router.push(next ?? '/dashboard');
   }
 
   return (
@@ -120,7 +121,7 @@ export function LoginForm({ providers }: { providers: OAuthProviderId[] }) {
 
           <div className="mt-4 grid gap-2">
             {providers.map((id) => (
-              <OAuthButton key={id} provider={id} label={t('continueWith', { provider: PROVIDER_NAMES[id] })} />
+              <OAuthButton key={id} provider={id} label={t('continueWith', { provider: PROVIDER_NAMES[id] })} callbackUrl={next ? `/${locale}${next}` : undefined} />
             ))}
           </div>
         </>

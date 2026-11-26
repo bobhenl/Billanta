@@ -7,11 +7,29 @@ import {
   extractVariableSymbol,
   parseTransactions,
   signAppJwt,
+  psd2BackfillFrom,
 } from "./enable-banking-client";
 
 const { privateKey, publicKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
 const pem = privateKey.export({ type: "pkcs8", format: "pem" }).toString();
 const config = { appId: "app-123", privateKey: pem, baseUrl: "https://api.example.test" };
+
+describe("psd2BackfillFrom", () => {
+  const now = new Date("2026-11-26T14:00:00Z");
+
+  it("starts at the beginning of the requested UTC day", () => {
+    expect(psd2BackfillFrom(new Date("2026-01-15T18:30:00Z"), now)).toEqual(new Date("2026-01-15T00:00:00Z"));
+  });
+
+  it("clamps an older day to two years back", () => {
+    expect(psd2BackfillFrom(new Date("2020-01-01T00:00:00Z"), now)).toEqual(new Date("2024-11-26T00:00:00Z"));
+  });
+
+  it("refuses a day that is not in the past", () => {
+    expect(psd2BackfillFrom(new Date("2026-12-01T00:00:00Z"), now)).toBeNull();
+    expect(psd2BackfillFrom(new Date("invalid"), now)).toBeNull();
+  });
+});
 
 describe("extractVariableSymbol", () => {
   it("reads common CZ/SK remittance forms", () => {

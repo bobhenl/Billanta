@@ -24,6 +24,25 @@ export function partnerTags(partners: Pick<TaxPartner, 'id' | 'name'>[]): Record
   return out;
 }
 
+/** Full class strings, so Tailwind keeps them. `soft` is the dimmed look of the default shares. */
+const PARTNER_COLORS = [
+  { solid: 'bg-indigo-600 text-white', soft: 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300' },
+  { solid: 'bg-emerald-600 text-white', soft: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300' },
+  { solid: 'bg-amber-600 text-white', soft: 'bg-amber-500/15 text-amber-700 dark:text-amber-300' },
+  { solid: 'bg-rose-600 text-white', soft: 'bg-rose-500/15 text-rose-700 dark:text-rose-300' },
+  { solid: 'bg-sky-600 text-white', soft: 'bg-sky-500/15 text-sky-700 dark:text-sky-300' },
+  { solid: 'bg-violet-600 text-white', soft: 'bg-violet-500/15 text-violet-700 dark:text-violet-300' },
+  { solid: 'bg-teal-600 text-white', soft: 'bg-teal-500/15 text-teal-700 dark:text-teal-300' },
+  { solid: 'bg-orange-600 text-white', soft: 'bg-orange-500/15 text-orange-700 dark:text-orange-300' }
+] as const;
+
+export type PartnerColor = (typeof PARTNER_COLORS)[number];
+
+/** One colour per partner, by their order in the model, so M is the same colour on every page. */
+export function partnerColors(partners: Pick<TaxPartner, 'id'>[]): Record<string, PartnerColor> {
+  return Object.fromEntries(partners.map((p, i) => [p.id, PARTNER_COLORS[i % PARTNER_COLORS.length]!]));
+}
+
 /** Partners with a positive weight; the defaults when nothing is set. */
 function activeOf(value: Shares | null, partners: TaxPartner[]): Set<string> {
   const src = value ?? Object.fromEntries(partners.map((p) => [p.id, p.share]));
@@ -58,6 +77,7 @@ export function SharesPicker({
 }) {
   const t = useTranslations('netIncome.shares');
   const tags = partnerTags(partners);
+  const colors = partnerColors(partners);
   const active = activeOf(value, partners);
   const ratio = unequal(value, partners);
   const [custom, setCustom] = useState(false);
@@ -91,8 +111,8 @@ export function SharesPicker({
               'h-6 min-w-6 rounded-md px-1.5 text-[11px] font-bold transition-colors disabled:opacity-50',
               on
                 ? value
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-primary/15 text-primary'
+                  ? colors[p.id]!.solid
+                  : colors[p.id]!.soft
                 : 'border border-border text-muted-foreground hover:bg-accent'
             )}
           >

@@ -1080,7 +1080,8 @@
         "backfill_unsupported": "Deocamdată, plățile mai vechi se pot descărca doar din PayPal și Stripe.",
         "stripe_key_format": "Lipiți o cheie restricționată care începe cu rk_live_ sau rk_test_. O cheie secretă completă (sk_) nu este acceptată.",
         "stripe_key_invalid": "Stripe a respins cheia. Verificați dacă ați copiat-o integral și dacă nu a fost ștearsă.",
-        "stripe_permissions_missing": "Cheii îi lipsesc permisiuni. În Stripe, dați-i acces de citire la Balance transactions, Charges și Customers."
+        "stripe_permissions_missing": "Cheii îi lipsesc permisiuni. În Stripe, dați-i acces de citire la Balance transactions, Charges și Customers.",
+        "psd2_history_refused": "Banca nu a oferit un istoric atât de vechi. Încercați o perioadă mai scurtă sau reînnoiți acordul la bancă și descărcați istoricul imediat după."
       },
       "psd2": {
         "hint": "Billanta descarcă plățile noi primite direct de la bancă sau din PayPal și le potrivește cu facturile după simbolul variabil și sumă. Fio se conectează cu un token API, PayPal cu datele de acces ale aplicației REST, iar celelalte bănci prin PSD2: vă autentificați la bancă și acordați acces doar pentru citire la cont (până la 180 de zile, la multe bănci 90). Băncile permit doar câteva citiri automate pe zi, de aceea conturile PSD2 se sincronizează aproximativ la fiecare 6 ore. Plățile ieșite nu se descarcă și prin conexiune nu se poate plăti nimic.",
@@ -1105,7 +1106,9 @@
         "connected": "Banca a fost conectată. Plățile din ultimele 30 de zile sosesc la următoarea sincronizare.",
         "cancelled": "Conexiunea a fost anulată sau refuzată la bancă. Puteți încerca din nou.",
         "failedTitle": "Banca nu a putut fi conectată",
-        "back": "Înapoi la bancă"
+        "back": "Înapoi la bancă",
+        "bankFallback": "Bancă",
+        "backfillHint": "Prin PSD2, {provider} oferă de obicei un istoric de 90 de zile. Un istoric mai lung este disponibil mai ales imediat după o nouă autentificare la bancă (Reînnoiește acordul). Plățile mai vechi doar le potrivim cu facturile, iar regulile de import se aplică și lor. Ce există deja în Billanta nu se descarcă din nou."
       },
       "paypal": {
         "connect": "Conectați PayPal",
@@ -5260,7 +5263,17 @@
     "emailMismatch": "Această invitație este pentru {email}. Conectați-vă cu această adresă.",
     "notFound": "Invitația nu a fost găsită",
     "notFoundHint": "Linkul este invalid sau invitația a fost revocată.",
-    "toDashboard": "Mergeți la panoul de control"
+    "toDashboard": "Mergeți la panoul de control",
+    "toLogin": "Autentificare",
+    "signup": {
+      "intro": "Nu aveți nevoie de o firmă proprie. Ajung un nume și o parolă, apoi intrați direct în echipă.",
+      "nameLabel": "Nume complet",
+      "namePlaceholder": "Ion Popescu",
+      "tosLabel": "Am cel puțin 18 ani și accept <tos>termenii și condițiile</tos>. Am citit <privacy>politica de confidențialitate</privacy>.",
+      "submit": "Creează cont și alătură-te",
+      "emailTaken": "Aveți deja un cont cu acest e-mail. Autentificați-vă pentru a accepta invitația.",
+      "invalid": "Această invitație nu mai este valabilă. Cereți una nouă."
+    }
   },
   "templates": {
     "title": "Șabloane de facturi",

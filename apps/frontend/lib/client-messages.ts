@@ -33,7 +33,6 @@ const DASHBOARD_ONLY = [
   'bulk',
   'glossary',
   'welcome',
-  'invite',
   'offline',
   'promo',
   'adminPromoCodes',

@@ -1080,7 +1080,8 @@
         "backfill_unsupported": "Oudere betalingen kunnen voorlopig alleen uit PayPal en Stripe worden gedownload.",
         "stripe_key_format": "Plak een beperkte sleutel die begint met rk_live_ of rk_test_. Een volledige geheime sleutel (sk_) wordt niet geaccepteerd.",
         "stripe_key_invalid": "Stripe heeft de sleutel geweigerd. Controleer of je hem volledig hebt gekopieerd en of hij niet is verwijderd.",
-        "stripe_permissions_missing": "De sleutel mist rechten. Geef hem in Stripe leesrechten voor Balance transactions, Charges en Customers."
+        "stripe_permissions_missing": "De sleutel mist rechten. Geef hem in Stripe leesrechten voor Balance transactions, Charges en Customers.",
+        "psd2_history_refused": "De bank heeft zo'n oude geschiedenis niet vrijgegeven. Probeer een kortere periode, of vernieuw de toestemming en download de geschiedenis direct daarna."
       },
       "psd2": {
         "hint": "Billanta haalt nieuwe binnenkomende betalingen rechtstreeks op bij je bank of PayPal en koppelt ze aan facturen op basis van betalingskenmerk en bedrag. Fio koppel je met een API-token, PayPal met de gegevens van je REST-app, andere banken via PSD2: je meldt je aan bij je bank en geeft alleen-lezentoegang tot de rekening (tot 180 dagen, bij veel banken 90). Banken staan maar een paar automatische opvragingen per dag toe, dus PSD2-rekeningen worden ongeveer elke 6 uur gesynchroniseerd. Uitgaande betalingen worden niet opgehaald en via de koppeling kan niets worden betaald.",
@@ -1105,7 +1106,9 @@
         "connected": "Bank gekoppeld. De betalingen van de laatste 30 dagen komen binnen bij de volgende synchronisatie.",
         "cancelled": "De koppeling is bij de bank geannuleerd of geweigerd. Je kunt het opnieuw proberen.",
         "failedTitle": "De bank kon niet worden gekoppeld",
-        "back": "Terug naar bank"
+        "back": "Terug naar bank",
+        "bankFallback": "Bank",
+        "backfillHint": "Via PSD2 geeft {provider} meestal 90 dagen geschiedenis. Langere geschiedenis is vooral beschikbaar vlak na een nieuwe aanmelding bij de bank (Toestemming vernieuwen). Oudere betalingen koppelen we alleen aan facturen, en de importregels gelden ook voor ze. Wat al in Billanta staat, wordt niet opnieuw gedownload."
       },
       "paypal": {
         "connect": "PayPal koppelen",
@@ -5260,7 +5263,17 @@
     "emailMismatch": "Deze uitnodiging is voor {email}. Log in met dat e-mailadres.",
     "notFound": "Uitnodiging niet gevonden",
     "notFoundHint": "De link is ongeldig of de uitnodiging is ingetrokken.",
-    "toDashboard": "Naar het dashboard"
+    "toDashboard": "Naar het dashboard",
+    "toLogin": "Inloggen",
+    "signup": {
+      "intro": "U hoeft geen eigen bedrijf aan te maken. Een naam en wachtwoord zijn genoeg, daarna zit u direct in het team.",
+      "nameLabel": "Volledige naam",
+      "namePlaceholder": "Jan de Vries",
+      "tosLabel": "Ik ben minstens 18 jaar en ga akkoord met de <tos>algemene voorwaarden</tos>. Ik heb het <privacy>privacybeleid</privacy> gelezen.",
+      "submit": "Account maken en deelnemen",
+      "emailTaken": "U hebt al een account met dit e-mailadres. Log in om de uitnodiging te accepteren.",
+      "invalid": "Deze uitnodiging is niet meer geldig. Vraag een nieuwe aan."
+    }
   },
   "templates": {
     "title": "Factuursjablonen",

@@ -1081,7 +1081,8 @@
         "backfill_unsupported": "Older payments can only be downloaded from PayPal and Stripe for now.",
         "stripe_key_format": "Paste a restricted key that starts with rk_live_ or rk_test_. A full secret key (sk_) is not accepted.",
         "stripe_key_invalid": "Stripe rejected the key. Check that you copied all of it and that it has not been deleted.",
-        "stripe_permissions_missing": "The key is missing permissions. In Stripe, give it Read access to Balance transactions, Charges and Customers."
+        "stripe_permissions_missing": "The key is missing permissions. In Stripe, give it Read access to Balance transactions, Charges and Customers.",
+        "psd2_history_refused": "The bank did not release history that old. Try a shorter period, or renew the bank consent and download the history right after."
       },
       "psd2": {
         "hint": "Billanta downloads incoming payments from your bank or PayPal and matches them to invoices by variable symbol and amount. With PSD2 you give the bank read-only consent (90–180 days) and accounts sync about every 6 hours. Nothing can be paid through the connection.",
@@ -1106,7 +1107,9 @@
         "connected": "Bank connected. The last 30 days of payments arrive with the next sync.",
         "cancelled": "The connection was cancelled or declined at the bank. You can try again.",
         "failedTitle": "The bank could not be connected",
-        "back": "Back to bank"
+        "back": "Back to bank",
+        "bankFallback": "Bank",
+        "backfillHint": "Over PSD2, {provider} usually gives 90 days of history. Longer history is mostly available right after you sign in at the bank again (Renew consent). Older payments are only matched to invoices, and the import rules apply to them. Anything already in Billanta is not downloaded again."
       },
       "paypal": {
         "connect": "Connect PayPal",
@@ -5289,7 +5292,17 @@
     "emailMismatch": "This invitation is for {email}. Sign in with that email.",
     "notFound": "Invitation not found",
     "notFoundHint": "The link is invalid or the invitation was revoked.",
-    "toDashboard": "Go to dashboard"
+    "toDashboard": "Go to dashboard",
+    "toLogin": "Log in",
+    "signup": {
+      "intro": "You don't need a company of your own. Just a name and a password, and you go straight into the team.",
+      "nameLabel": "Full name",
+      "namePlaceholder": "Jane Smith",
+      "tosLabel": "I am at least 18 and agree to the <tos>terms of service</tos>. I have read the <privacy>privacy policy</privacy>.",
+      "submit": "Create account and join",
+      "emailTaken": "You already have an account with this email. Log in to accept the invitation.",
+      "invalid": "This invitation is no longer valid. Ask for a new one."
+    }
   },
   "templates": {
     "title": "Invoice templates",

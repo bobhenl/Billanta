@@ -52,6 +52,7 @@ const KNOWN_ERRORS = [
   'paypal_reporting_disabled',
   'backfill_range',
   'backfill_unsupported',
+  'psd2_history_refused',
   'stripe_key_format',
   'stripe_key_invalid',
   'stripe_permissions_missing'
@@ -112,13 +113,16 @@ export function BankConnections({
   const [editing, setEditing] = useState<{ id: string; label: string } | null>(null);
   const [backfillFrom, setBackfillFrom] = useState(() => `${new Date().getFullYear()}-01-01`);
   const today = new Date().toISOString().slice(0, 10);
-  // History goes three years back (PayPal's Transaction Search limit); the backend clamps it the same way.
-  const oldest = (() => {
+  // History goes three years back (PayPal's Transaction Search limit), two for a PSD2 bank; the backend clamps it the same way.
+  const oldestFor = (c: BankConnection) => {
     const d = new Date();
-    d.setFullYear(d.getFullYear() - 3);
-    d.setDate(d.getDate() + 1);
+    if (c.provider === 'enable_banking') d.setDate(d.getDate() - 730);
+    else {
+      d.setFullYear(d.getFullYear() - 3);
+      d.setDate(d.getDate() + 1);
+    }
     return d.toISOString().slice(0, 10);
-  })();
+  };
 
   const errorText = (code: string) => (KNOWN_ERRORS.includes(code) ? t(`errors.${code}`) : t('errors.generic', { code }));
 
@@ -155,7 +159,8 @@ export function BankConnections({
       else toast({ text: result.total ? t('synced', { total: result.total, matched: result.matched }) : t('syncedNothing'), tone: 'ok' });
     });
 
-  const providerName = (c: BankConnection) => (c.provider === 'stripe' ? 'Stripe' : 'PayPal');
+  const providerName = (c: BankConnection) =>
+    c.provider === 'stripe' ? 'Stripe' : c.provider === 'enable_banking' ? c.bankName || t('psd2.bankFallback') : 'PayPal';
 
   const backfill = (c: BankConnection) =>
     run(c.id, async () => {
@@ -259,7 +264,7 @@ export function BankConnections({
   const syncPart = 'relative inline-flex items-center gap-1.5 py-1.5 text-xs font-bold focus-visible:z-10 disabled:opacity-60';
   const syncSolid = 'bg-primary text-primary-foreground hover:opacity-90';
   const syncSoft = 'bg-muted hover:bg-accent hover:text-primary';
-  const historyFor = (c: BankConnection) => canManage && (c.provider === 'paypal' || c.provider === 'stripe');
+  const historyFor = (c: BankConnection) => canManage && (c.provider === 'paypal' || c.provider === 'stripe' || c.provider === 'enable_banking');
   const primaryButton =
     'inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:opacity-90 disabled:opacity-60';
 
@@ -509,7 +514,7 @@ export function BankConnections({
                           type="date"
                           required
                           autoFocus
-                          min={oldest}
+                          min={oldestFor(c)}
                           max={today}
                           value={backfillFrom}
                           onChange={(e) => setBackfillFrom(e.target.value)}
@@ -526,7 +531,7 @@ export function BankConnections({
                         </button>
                       </div>
                     </div>
-                    <p className="mt-3 break-words text-xs leading-relaxed text-muted-foreground">{t('paypal.backfillHint', { provider: providerName(c) })}</p>
+                    <p className="mt-3 break-words text-xs leading-relaxed text-muted-foreground">{c.provider === 'enable_banking' ? t('psd2.backfillHint', { provider: providerName(c) }) : t('paypal.backfillHint', { provider: providerName(c) })}</p>
                   </form>
                 )}
               </li>

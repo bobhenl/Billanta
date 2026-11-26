@@ -47,7 +47,7 @@ import { startNavProgress } from '@/components/nav-progress';
 import { cn } from '@/lib/utils';
 import { menuPosition, type MenuPosition } from '@/lib/menu-position';
 import type { TaxPartner } from '@/lib/net-income';
-import { partnerTags } from '../reports/net-income/shares-picker';
+import { type PartnerColor, partnerColors, partnerTags } from '../reports/net-income/shares-picker';
 import { AmountHover, ContactHover } from './invoice-hover-cards';
 import {
   cancelInvoice,
@@ -206,6 +206,7 @@ export function InvoicesTable({
   // Unnamed partners get the same fallback names (and so tags) as in the report and the detail picker.
   const named = useMemo(() => partners.map((p, i) => ({ ...p, name: p.name || tNet('partnerFallback', { n: i + 1 }) })), [partners, tNet]);
   const tags = useMemo(() => partnerTags(named), [named]);
+  const colors = useMemo(() => partnerColors(named), [named]);
   const hasSplit = named.length >= 2;
   // Without a saved choice the split column is on wherever there is a split to show.
   const defaults = useMemo<Column[]>(() => (hasSplit ? [...DEFAULT_COLUMNS, 'partners'] : DEFAULT_COLUMNS), [hasSplit]);
@@ -354,7 +355,7 @@ export function InvoicesTable({
           </span>
         );
       case 'partners':
-        return <PartnerTags split={splitOf(row, named)} tags={tags} defaultLabel={t('partnerDefaultShares')} />;
+        return <PartnerTags split={splitOf(row, named)} tags={tags} colors={colors} defaultLabel={t('partnerDefaultShares')} />;
       case 'status': {
         const status = displayStatus(row);
         const buyer = buyerDetailsState(row);
@@ -686,7 +687,17 @@ export function InvoicesTable({
  * Read-only M / R / D pills: solid for the invoice's own split, dimmed for the
  * default shares (as in SharesPicker). The tooltip carries the percentages.
  */
-function PartnerTags({ split, tags, defaultLabel }: { split: ReturnType<typeof splitOf>; tags: Record<string, string>; defaultLabel: string }) {
+function PartnerTags({
+  split,
+  tags,
+  colors,
+  defaultLabel
+}: {
+  split: ReturnType<typeof splitOf>;
+  tags: Record<string, string>;
+  colors: Record<string, PartnerColor>;
+  defaultLabel: string;
+}) {
   if (!split) return <span className="text-muted-foreground">–</span>;
   const title = split.parts.map((p) => `${p.partner.name} ${p.percent} %`).join(' · ') + (split.own ? '' : ` (${defaultLabel})`);
   return (
@@ -697,7 +708,7 @@ function PartnerTags({ split, tags, defaultLabel }: { split: ReturnType<typeof s
           aria-hidden
           className={cn(
             'inline-flex h-5 min-w-5 items-center justify-center rounded-md px-1 text-[10px] font-bold',
-            split.own ? 'bg-primary text-primary-foreground' : 'bg-primary/15 text-primary'
+            split.own ? colors[partner.id]?.solid : colors[partner.id]?.soft
           )}
         >
           {tags[partner.id]}
