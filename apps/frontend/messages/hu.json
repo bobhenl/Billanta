@@ -2506,7 +2506,9 @@
       },
       "paymentDraftLine": "Tételleírás a fizetésekből készült piszkozatokhoz",
       "paymentDraftLineHint": "Akkor használjuk, ha a fizetés (például PayPalból) nem tartalmaz tételneveket. Például „Szoftverszolgáltatás” vagy „Tanácsadás”.",
-      "paymentDraftLinePlaceholder": "PayPal-fizetés"
+      "paymentDraftLinePlaceholder": "PayPal-fizetés",
+      "paymentDraftLineAlways": "Mindig ezt használja, akkor is, ha a fizetés tartalmaz tételneveket",
+      "paymentDraftLineAlwaysHint": "A PayPal tételnevei figyelmen kívül maradnak, minden piszkozat ezt a leírást kapja. A következő szinkronizálás a várakozó piszkozatokat is átírja, ha még a fizetés szövege áll bennük."
     },
     "modules": {
       "title": "Modulok és vállalkozástípus",

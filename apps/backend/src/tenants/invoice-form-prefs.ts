@@ -132,6 +132,8 @@ export const invoiceFormPrefsSchema = z
     pdf_qr: z.enum(PDF_QR_MODES).default("auto"),
     /** The line of a draft made from a payment that says nothing about what was paid for ("Software services"). */
     payment_draft_description: z.string().trim().max(500).nullish(),
+    /** Use that line even when the payment names its items (one wording on every invoice). */
+    payment_draft_description_always: z.boolean().default(false),
   })
   .transform((p) => ({
     show: p.show as Partial<Record<OptionalInvoiceField, boolean>>,
@@ -156,6 +158,7 @@ export const invoiceFormPrefsSchema = z
     brandCredit: p.brand_credit,
     pdfQr: p.pdf_qr,
     paymentDraftDescription: p.payment_draft_description || null,
+    paymentDraftDescriptionAlways: p.payment_draft_description_always && !!p.payment_draft_description,
   }));
 
 /** The tenant's PDF QR mode; old or unknown values mean "auto". */
@@ -168,6 +171,11 @@ export function pdfQrModeOf(prefs: unknown): PdfQrMode {
 export function paymentDraftDescriptionOf(prefs: unknown): string | null {
   const value = (prefs as { paymentDraftDescription?: unknown } | null)?.paymentDraftDescription;
   return typeof value === "string" && value.trim() ? value.trim().slice(0, 500) : null;
+}
+
+/** True when the tenant's own line beats the item names a payment brings. */
+export function paymentDraftDescriptionAlwaysOf(prefs: unknown): boolean {
+  return (prefs as { paymentDraftDescriptionAlways?: unknown } | null)?.paymentDraftDescriptionAlways === true && !!paymentDraftDescriptionOf(prefs);
 }
 
 /** The tenant's PDF accent, falling back to the default for old or unknown values. */

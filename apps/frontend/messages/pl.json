@@ -2506,7 +2506,9 @@
       },
       "paymentDraftLine": "Opis pozycji w szkicach tworzonych z płatności",
       "paymentDraftLineHint": "Używany, gdy płatność (np. z PayPala) nie zawiera nazw pozycji. Na przykład „Usługi programistyczne” albo „Konsultacje”.",
-      "paymentDraftLinePlaceholder": "Płatność PayPal"
+      "paymentDraftLinePlaceholder": "Płatność PayPal",
+      "paymentDraftLineAlways": "Używaj zawsze, nawet gdy płatność zawiera nazwy pozycji",
+      "paymentDraftLineAlwaysHint": "Nazwy pozycji z PayPala są pomijane, a każdy szkic dostaje ten opis. Następna synchronizacja zmieni też oczekujące szkice, w których nadal jest tekst z płatności."
     },
     "modules": {
       "title": "Moduły i rodzaj działalności",

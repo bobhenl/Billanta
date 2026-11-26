@@ -228,4 +228,19 @@ describe("BankReconciliationService late descriptions", () => {
     expect(result.summary.duplicates).toBe(1);
     expect(executed.join(" ")).toContain("Tebex Webstore - Rank category overhaul");
   });
+
+  it("asks to put the company's fixed line back on drafts of every synced payment", async () => {
+    const executed: string[] = [];
+    const db = {
+      execute: vi.fn(async (query: { queryChunks?: unknown[] }) => {
+        executed.push(JSON.stringify(query.queryChunks ?? query));
+        return [];
+      }),
+    };
+    const { service } = services();
+    // Already stored with its message: the late fill has nothing to do, the fixed line still runs.
+    await service.fillLateDescriptions(db as never, [{ externalId: "paypal:45E2", message: null } as never], []);
+    const fixed = executed.find((q) => q.includes("paymentDraftDescriptionAlways") && q.includes("pending_review"));
+    expect(fixed).toContain("paypal:45E2");
+  });
 });

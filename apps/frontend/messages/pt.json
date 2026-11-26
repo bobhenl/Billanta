@@ -2506,7 +2506,9 @@
       },
       "paymentDraftLine": "Descrição da linha nos rascunhos criados a partir de pagamentos",
       "paymentDraftLineHint": "Usada quando um pagamento (do PayPal, por exemplo) não indica artigos. Por exemplo, «Serviços de software» ou «Consultoria».",
-      "paymentDraftLinePlaceholder": "Pagamento PayPal"
+      "paymentDraftLinePlaceholder": "Pagamento PayPal",
+      "paymentDraftLineAlways": "Usar sempre, mesmo quando o pagamento indica artigos",
+      "paymentDraftLineAlwaysHint": "Os nomes dos artigos do PayPal são ignorados e cada rascunho recebe esta descrição. A próxima sincronização também altera os rascunhos pendentes que ainda mostram o texto do pagamento."
     },
     "modules": {
       "title": "Módulos e tipo de atividade",

@@ -2506,7 +2506,9 @@
       },
       "paymentDraftLine": "Descrierea articolului pentru ciornele create din plăți",
       "paymentDraftLineHint": "Se folosește când o plată (de exemplu din PayPal) nu conține denumiri de articole. De exemplu „Servicii software” sau „Consultanță”.",
-      "paymentDraftLinePlaceholder": "Plată PayPal"
+      "paymentDraftLinePlaceholder": "Plată PayPal",
+      "paymentDraftLineAlways": "Folosește mereu, chiar dacă plata conține denumiri de articole",
+      "paymentDraftLineAlwaysHint": "Denumirile articolelor din PayPal sunt ignorate și fiecare ciornă primește această descriere. Următoarea sincronizare modifică și ciornele în așteptare care încă arată textul plății."
     },
     "modules": {
       "title": "Module și tip de activitate",

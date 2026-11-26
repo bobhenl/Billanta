@@ -61,6 +61,7 @@ export async function updateInvoiceFormPrefs(
   public_link_prefix: 'number' | 'company_number' | 'none';
   pdf_qr: 'auto' | 'link' | 'payment_only' | 'off';
   payment_draft_description: string | null;
+  payment_draft_description_always: boolean;
   },
   company?: {
     default_locale: 'cs' | 'sk' | 'en';

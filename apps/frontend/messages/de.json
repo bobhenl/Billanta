@@ -2506,7 +2506,9 @@
       },
       "paymentDraftLine": "Positionsbeschreibung für Entwürfe aus Zahlungen",
       "paymentDraftLineHint": "Wird verwendet, wenn eine Zahlung (z. B. von PayPal) keine Positionen nennt. Zum Beispiel „Softwareleistungen“ oder „Beratung“.",
-      "paymentDraftLinePlaceholder": "PayPal-Zahlung"
+      "paymentDraftLinePlaceholder": "PayPal-Zahlung",
+      "paymentDraftLineAlways": "Immer verwenden, auch wenn die Zahlung Positionen nennt",
+      "paymentDraftLineAlwaysHint": "Positionsnamen von PayPal werden ignoriert, jeder Entwurf bekommt diese Beschreibung. Die nächste Synchronisierung ändert auch wartende Entwürfe, die noch den Text der Zahlung zeigen."
     },
     "modules": {
       "title": "Module und Geschäftsart",

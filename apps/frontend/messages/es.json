@@ -2506,7 +2506,9 @@
       },
       "paymentDraftLine": "Descripción de la línea en borradores creados a partir de pagos",
       "paymentDraftLineHint": "Se usa cuando un pago (de PayPal, por ejemplo) no indica conceptos. Por ejemplo, «Servicios de software» o «Consultoría».",
-      "paymentDraftLinePlaceholder": "Pago de PayPal"
+      "paymentDraftLinePlaceholder": "Pago de PayPal",
+      "paymentDraftLineAlways": "Usar siempre, aunque el pago indique conceptos",
+      "paymentDraftLineAlwaysHint": "Los conceptos de PayPal se ignoran y cada borrador recibe esta descripción. La próxima sincronización también cambia los borradores pendientes que aún muestran el texto del pago."
     },
     "modules": {
       "title": "Módulos y tipo de negocio",

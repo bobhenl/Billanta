@@ -203,6 +203,8 @@ export interface InvoiceFormPrefs {
   pdfQr: PdfQrMode;
   /** The line of a draft made from a payment that names nothing ("Software services"). */
   paymentDraftDescription: string | null;
+  /** That line wins even when the payment names its items. */
+  paymentDraftDescriptionAlways: boolean;
 }
 
 export const PDF_QR_MODES = ['auto', 'link', 'payment_only', 'off'] as const;

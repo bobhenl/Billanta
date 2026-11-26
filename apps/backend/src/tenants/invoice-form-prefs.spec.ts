@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { invoiceFormPrefsSchema, MAX_DEFAULT_ITEMS, PDF_ACCENTS, pdfAccentOf, paymentDraftDescriptionOf, pdfQrModeOf, tintOf } from "./invoice-form-prefs";
+import { invoiceFormPrefsSchema, MAX_DEFAULT_ITEMS, PDF_ACCENTS, pdfAccentOf, paymentDraftDescriptionAlwaysOf, paymentDraftDescriptionOf, pdfQrModeOf, tintOf } from "./invoice-form-prefs";
 
 describe("invoice form prefs", () => {
   it("defaults to net prices and the first accent", () => {
@@ -89,5 +89,14 @@ describe("PDF QR mode and payment draft line", () => {
     expect(paymentDraftDescriptionOf({ paymentDraftDescription: " Software services" })).toBe("Software services");
     expect(paymentDraftDescriptionOf({ paymentDraftDescription: "" })).toBeNull();
     expect(paymentDraftDescriptionOf(undefined)).toBeNull();
+  });
+
+  it("lets the payment draft line win over item names only when there is a line", () => {
+    expect(invoiceFormPrefsSchema.parse({ payment_draft_description: "Software services", payment_draft_description_always: true }).paymentDraftDescriptionAlways).toBe(true);
+    expect(invoiceFormPrefsSchema.parse({ payment_draft_description: " ", payment_draft_description_always: true }).paymentDraftDescriptionAlways).toBe(false);
+    expect(invoiceFormPrefsSchema.parse({ payment_draft_description: "Software services" }).paymentDraftDescriptionAlways).toBe(false);
+    expect(paymentDraftDescriptionAlwaysOf({ paymentDraftDescription: "Software services", paymentDraftDescriptionAlways: true })).toBe(true);
+    expect(paymentDraftDescriptionAlwaysOf({ paymentDraftDescription: "", paymentDraftDescriptionAlways: true })).toBe(false);
+    expect(paymentDraftDescriptionAlwaysOf({ paymentDraftDescription: "Software services" })).toBe(false);
   });
 });

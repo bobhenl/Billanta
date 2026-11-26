@@ -83,7 +83,8 @@ export function formPrefs(raw: Partial<InvoiceFormPrefs> | null | undefined): In
     publicLinkPrefix: PUBLIC_LINK_PREFIXES.find((p) => p === raw?.publicLinkPrefix) ?? 'number',
     pdfQr: PDF_QR_MODES.find((m) => m === raw?.pdfQr) ?? 'auto',
     paymentDraftDescription:
-      typeof raw?.paymentDraftDescription === 'string' && raw.paymentDraftDescription.trim() ? raw.paymentDraftDescription : null
+      typeof raw?.paymentDraftDescription === 'string' && raw.paymentDraftDescription.trim() ? raw.paymentDraftDescription : null,
+    paymentDraftDescriptionAlways: raw?.paymentDraftDescriptionAlways === true
   };
 }
 

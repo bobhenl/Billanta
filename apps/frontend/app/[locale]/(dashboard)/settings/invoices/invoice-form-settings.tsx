@@ -88,6 +88,7 @@ export function InvoiceFormSettings({
   const [brandCredit, setBrandCredit] = useState(prefs.brandCredit);
   const [pdfQr, setPdfQr] = useState<PdfQrMode>(prefs.pdfQr);
   const [paymentLine, setPaymentLine] = useState(prefs.paymentDraftDescription ?? '');
+  const [paymentLineAlways, setPaymentLineAlways] = useState(prefs.paymentDraftDescriptionAlways);
   const [reminders, setReminders] = useState(prefs.remindersEnabled);
   const [reminderInterval, setReminderInterval] = useState(prefs.reminderIntervalDays);
   const [reminderMax, setReminderMax] = useState(prefs.reminderMax);
@@ -138,6 +139,7 @@ export function InvoiceFormSettings({
         brand_credit: brandCredit,
         pdf_qr: pdfQr,
         payment_draft_description: paymentLine.trim() || null,
+        payment_draft_description_always: paymentLineAlways && !!paymentLine.trim(),
         reminders_enabled: reminders,
         reminder_interval_days: Math.min(60, Math.max(1, Math.round(reminderInterval) || 7)),
         reminder_max: Math.min(10, Math.max(1, Math.round(reminderMax) || 3)),
@@ -386,6 +388,18 @@ export function InvoiceFormSettings({
               onChange={(e) => setPaymentLine(e.target.value)}
             />
           </label>
+          <InfoHint hint={t('paymentDraftLineAlwaysHint')} className={cn('-mt-2 text-sm', (readOnly || !paymentLine.trim()) && 'opacity-70')}>
+            <label className="flex items-center gap-2.5">
+              <input
+                type="checkbox"
+                checked={paymentLineAlways && !!paymentLine.trim()}
+                disabled={readOnly || !paymentLine.trim()}
+                onChange={(e) => setPaymentLineAlways(e.target.checked)}
+                className="h-4 w-4 accent-primary"
+              />
+              <span>{t('paymentDraftLineAlways')}</span>
+            </label>
+          </InfoHint>
           <div>
             <InfoHint hint={t('brandCreditHint')} className={cn('text-sm', (readOnly || !canHideCredit) && 'opacity-70')}>
               <label className="flex items-center gap-2.5">

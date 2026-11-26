@@ -2513,7 +2513,9 @@
       },
       "paymentDraftLine": "Item description for drafts made from payments",
       "paymentDraftLineHint": "Used when a payment (from PayPal, for example) names no items. For example \"Software services\" or \"Consulting\".",
-      "paymentDraftLinePlaceholder": "PayPal payment"
+      "paymentDraftLinePlaceholder": "PayPal payment",
+      "paymentDraftLineAlways": "Always use it, even when the payment names its items",
+      "paymentDraftLineAlwaysHint": "Item names from PayPal are ignored and every draft gets this line. The next sync also rewrites waiting drafts that still show the payment's text."
     },
     "modules": {
       "title": "Modules & business type",

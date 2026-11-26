@@ -49,7 +49,7 @@ import {
 import { buildIsdocInvoiceInput, contactToIsdocParty, tenantToIsdocParty } from "./isdoc-input.builder";
 import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 import { buyerDetailsLinkOf, clientPortalLinkOf, invoiceLinkOf, newShortKey } from "../public-links/public-link";
-import { paymentDraftDescriptionOf } from "../tenants/invoice-form-prefs";
+import { paymentDraftDescriptionAlwaysOf, paymentDraftDescriptionOf } from "../tenants/invoice-form-prefs";
 import { BRAND_CREDIT_TENANT_FIELDS, brandCreditFor, creditLangOf } from "./brand-credit";
 import { amountLeftToPay, isRemindableDocument } from "./invoice-reminders.util";
 import { appendNoteLine } from "../bank-reconciliation/payment-note";
@@ -1223,7 +1223,11 @@ export class InvoicesService {
     await db.insert(schema.invoiceLineItems).values({
       tenantId,
       invoiceId: invoice.id,
-      description: (payment.description || paymentDraftDescriptionOf(tenant?.invoiceFormPrefs) || PAYMENT_DRAFT_PLACEHOLDER).slice(0, 500),
+      description: (
+        (paymentDraftDescriptionAlwaysOf(tenant?.invoiceFormPrefs) ? null : payment.description) ||
+        paymentDraftDescriptionOf(tenant?.invoiceFormPrefs) ||
+        PAYMENT_DRAFT_PLACEHOLDER
+      ).slice(0, 500),
       quantity: "1",
       unitPrice: round2(payment.amount).toFixed(2),
       vatRate: null,

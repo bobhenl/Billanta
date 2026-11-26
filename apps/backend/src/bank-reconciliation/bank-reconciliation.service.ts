@@ -118,6 +118,7 @@ export class BankReconciliationService {
    * Reads every incoming row: a stored one was split off as a duplicate before.
    */
   async fillLateDescriptions(db: TenantDb, incomingRows: IncomingRow[], inserted: { externalId: string | null }[]) {
+    await this.applyFixedDraftLine(db, incomingRows);
     const insertedIds = new Set(inserted.map((t) => t.externalId));
     const late = incomingRows
       .filter((r) => r.externalId && r.message && !insertedIds.has(r.externalId))
@@ -133,7 +134,28 @@ export class BankReconciliationService {
       UPDATE invoice_line_items li SET description = f.message
       FROM filled f JOIN invoices i ON i.id = f.matched_invoice_id
       WHERE li.invoice_id = i.id AND i.status = 'pending_review'
-        AND li.description IN (${PAYMENT_DRAFT_PLACEHOLDER}, (SELECT btrim(tn.invoice_form_prefs->>'paymentDraftDescription') FROM tenants tn WHERE tn.id = i.tenant_id))`);
+        AND li.description IN (${PAYMENT_DRAFT_PLACEHOLDER}, (SELECT btrim(tn.invoice_form_prefs->>'paymentDraftDescription') FROM tenants tn WHERE tn.id = i.tenant_id))
+        AND (SELECT tn.invoice_form_prefs->>'paymentDraftDescriptionAlways' FROM tenants tn WHERE tn.id = i.tenant_id) IS DISTINCT FROM 'true'`);
+  }
+
+  /**
+   * With "always use my line" on, a resync puts that line back on drafts that
+   * still carry the payment's own text or the placeholder. A line the owner
+   * typed stays, and only drafts waiting for review are touched.
+   */
+  private async applyFixedDraftLine(db: TenantDb, incomingRows: IncomingRow[]) {
+    const ids = incomingRows.map((r) => r.externalId).filter((id): id is string => !!id);
+    if (ids.length === 0) return;
+    await db.execute(sql`
+      UPDATE invoice_line_items li SET description = btrim(tn.invoice_form_prefs->>'paymentDraftDescription')
+      FROM bank_transactions t
+        JOIN invoices i ON i.id = t.matched_invoice_id
+        JOIN tenants tn ON tn.id = i.tenant_id
+      WHERE li.invoice_id = i.id AND i.status = 'pending_review'
+        AND t.external_id IN (SELECT jsonb_array_elements_text(${JSON.stringify(ids)}::jsonb))
+        AND tn.invoice_form_prefs->>'paymentDraftDescriptionAlways' = 'true'
+        AND coalesce(btrim(tn.invoice_form_prefs->>'paymentDraftDescription'), '') <> ''
+        AND li.description IN (${PAYMENT_DRAFT_PLACEHOLDER}, left(coalesce(t.message, ''), 500))`);
   }
 
   /**

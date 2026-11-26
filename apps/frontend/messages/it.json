@@ -2506,7 +2506,9 @@
       },
       "paymentDraftLine": "Descrizione della voce nelle bozze create dai pagamenti",
       "paymentDraftLineHint": "Si usa quando un pagamento (ad esempio da PayPal) non indica alcuna voce. Ad esempio «Servizi software» o «Consulenza».",
-      "paymentDraftLinePlaceholder": "Pagamento PayPal"
+      "paymentDraftLinePlaceholder": "Pagamento PayPal",
+      "paymentDraftLineAlways": "Usa sempre, anche se il pagamento indica le voci",
+      "paymentDraftLineAlwaysHint": "I nomi delle voci da PayPal vengono ignorati e ogni bozza riceve questa descrizione. La prossima sincronizzazione cambia anche le bozze in attesa che mostrano ancora il testo del pagamento."
     },
     "modules": {
       "title": "Moduli e tipo di attività",

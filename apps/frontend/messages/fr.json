@@ -2506,7 +2506,9 @@
       },
       "paymentDraftLine": "Description de ligne pour les brouillons créés à partir de paiements",
       "paymentDraftLineHint": "Utilisée quand un paiement (de PayPal, par exemple) ne nomme aucune ligne. Par exemple « Services logiciels » ou « Conseil ».",
-      "paymentDraftLinePlaceholder": "Paiement PayPal"
+      "paymentDraftLinePlaceholder": "Paiement PayPal",
+      "paymentDraftLineAlways": "Toujours l'utiliser, même si le paiement nomme ses lignes",
+      "paymentDraftLineAlwaysHint": "Les noms de lignes venant de PayPal sont ignorés et chaque brouillon reçoit cette description. La prochaine synchronisation modifie aussi les brouillons en attente qui affichent encore le texte du paiement."
     },
     "modules": {
       "title": "Modules et type d’activité",

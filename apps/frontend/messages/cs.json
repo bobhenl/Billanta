@@ -2513,7 +2513,9 @@
       },
       "paymentDraftLine": "Popis položky u konceptů z plateb",
       "paymentDraftLineHint": "Použije se, když platba (třeba z PayPalu) neobsahuje názvy položek. Např. „Software services“ nebo „Konzultace“.",
-      "paymentDraftLinePlaceholder": "Platba PayPal"
+      "paymentDraftLinePlaceholder": "Platba PayPal",
+      "paymentDraftLineAlways": "Použít vždy, i když platba názvy položek má",
+      "paymentDraftLineAlwaysHint": "Položky z PayPalu se ignorují a každý koncept dostane tento popis. Při další synchronizaci se přepíšou i čekající koncepty, pokud v nich ještě je text z platby."
     },
     "modules": {
       "title": "Moduly a typ podnikání",

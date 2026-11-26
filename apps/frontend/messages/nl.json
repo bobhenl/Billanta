@@ -2506,7 +2506,9 @@
       },
       "paymentDraftLine": "Omschrijving van de regel bij concepten uit betalingen",
       "paymentDraftLineHint": "Wordt gebruikt als een betaling (bijvoorbeeld van PayPal) geen regels noemt. Bijvoorbeeld ‘Softwarediensten’ of ‘Advies’.",
-      "paymentDraftLinePlaceholder": "PayPal-betaling"
+      "paymentDraftLinePlaceholder": "PayPal-betaling",
+      "paymentDraftLineAlways": "Altijd gebruiken, ook als de betaling regels noemt",
+      "paymentDraftLineAlwaysHint": "Regelnamen uit PayPal worden genegeerd en elk concept krijgt deze omschrijving. De volgende synchronisatie past ook wachtende concepten aan die nog de tekst van de betaling tonen."
     },
     "modules": {
       "title": "Modules en type onderneming",
