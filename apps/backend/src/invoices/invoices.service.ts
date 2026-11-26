@@ -323,7 +323,7 @@ export class InvoicesService {
     const prefs = emailPrefsOf(liveTenant?.emailPrefs);
     const attachments: EmailAttachment[] = [];
     if (kind === "invoice" && invoice.invoiceNumber) {
-      const base = `faktura-${invoice.invoiceNumber.replace(/[^\w.-]+/g, "_")}`;
+      const base = invoiceFileBase(invoice.invoiceNumber);
       if (prefs.attachPdf) {
         attachments.push({ filename: `${base}.pdf`, content: await this.generateInvoicePdf(db, tenantId, invoice.id), contentType: "application/pdf" });
       }
@@ -1886,6 +1886,11 @@ export class InvoicesService {
    * `issue()` above) rather than reading back a previously stored file.
    */
   async generateInvoicePdf(db: TenantDb, tenantId: string, invoiceId: string): Promise<Buffer> {
+    return (await this.generateInvoicePdfFile(db, tenantId, invoiceId)).content;
+  }
+
+  /** The PDF named by its invoice number, "faktura-2_11_2026.pdf", the same as in the email. */
+  async generateInvoicePdfFile(db: TenantDb, tenantId: string, invoiceId: string): Promise<{ filename: string; content: Buffer }> {
     // A draft renders too, as a stamped preview (see InvoicePdfService.generate).
     const { invoice, contact, tenant, lineItems, related } = await this.loadIssuedInvoiceForDocument(
       db,
@@ -1894,7 +1899,8 @@ export class InvoicesService {
       true,
     );
     const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
-    return this.invoicePdfService.generate(invoice, contact, tenant, lineItems, totals, related);
+    const content = await this.invoicePdfService.generate(invoice, contact, tenant, lineItems, totals, related);
+    return { filename: `${invoice.invoiceNumber ? invoiceFileBase(invoice.invoiceNumber) : "koncept"}.pdf`, content };
   }
 
   /**
@@ -1998,4 +2004,9 @@ export class InvoicesService {
     const { input, options } = await this.ublInput(db, tenantId, invoiceId);
     return { issues: validatePeppolInvoice(input, options) };
   }
+}
+
+/** "faktura-2_11_2026": the invoice number, safe in a file name and a mail header. */
+export function invoiceFileBase(invoiceNumber: string): string {
+  return `faktura-${invoiceNumber.replace(/[^\w.-]+/g, "_")}`;
 }

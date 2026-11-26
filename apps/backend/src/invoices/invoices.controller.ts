@@ -651,12 +651,12 @@ export class InvoicesController {
     @Res() res: Response,
   ): Promise<void> {
     await assertInvoiceOpen(req.tenantDb!, id, req.user!);
-    const pdf = await this.invoicesService.generateInvoicePdf(req.tenantDb!, req.user!.tenantId, id);
+    const pdf = await this.invoicesService.generateInvoicePdfFile(req.tenantDb!, req.user!.tenantId, id);
     res.set({
       "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="invoice-${id}.pdf"`,
+      "Content-Disposition": `inline; filename="${pdf.filename}"`,
     });
-    res.send(pdf);
+    res.send(pdf.content);
   }
 
   /**
