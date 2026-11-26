@@ -127,6 +127,7 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
                     {tx.occurredAt && ` ${formatTime(tx.occurredAt, locale)}`}
                     {tx.variableSymbol && ` · VS ${tx.variableSymbol}`}
                   </p>
+                  {tx.message && <p className="truncate text-xs text-muted-foreground">{tx.message}</p>}
                 </div>
                 <div className="shrink-0 text-right">
                   <p className={cn('text-sm font-semibold tabular-nums', amount < 0 ? 'text-destructive' : 'text-success')}>
@@ -199,6 +200,11 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
                       {tx.counterpartyName ?? t('unknownCounterparty')}
                     </Link>
                     {tx.counterpartyAccount && <div className="font-mono text-xs text-muted-foreground">{tx.counterpartyAccount}</div>}
+                    {tx.message && (
+                      <div className="max-w-xs truncate text-xs text-muted-foreground" title={tx.message}>
+                        {tx.message}
+                      </div>
+                    )}
                   </td>
                   <td className="px-2 py-2.5 font-mono text-xs text-muted-foreground">{tx.variableSymbol ?? '–'}</td>
                   <td className={cn('whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums', amount < 0 ? 'text-destructive' : 'text-success')}>

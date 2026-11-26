@@ -70,10 +70,12 @@ const COLUMN_ALIASES = {
     "nazov protiuctu",
     "nazev uctu protistrany",
     "nazov uctu protistrany",
+    "jmeno protistrany",
+    "meno protistrany",
     "protistrana",
     "counterparty name",
   ],
-  bankCode: ["kod banky", "bank code"],
+  bankCode: ["kod banky", "kod banky protiuctu", "bank code"],
   message: ["message", "zprava pro prijemce", "sprava pre prijemcu", "zprava", "sprava", "poznamka", "popis transakcie"],
 } as const;
 

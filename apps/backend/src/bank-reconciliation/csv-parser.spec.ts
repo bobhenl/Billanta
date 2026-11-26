@@ -122,6 +122,27 @@ describe("parseBankStatementCsv with bank export formats", () => {
     ]);
   });
 
+  it("reads a ČSOB CSV export: title line, counterparty name and bank code columns", () => {
+    const csv = [
+      "Pohyby na účtu 123456789/0300 dne 01.09.2026",
+      "",
+      "číslo účtu;datum zaúčtování;částka;měna;zůstatek;číslo protiúčtu;kód banky protiúčtu;jméno protistrany;adresa protistrany;konstantní symbol;variabilní symbol;specifický symbol;označení operace;název trvalého příkazu;vlastní poznámka;zpráva;kategorie;ID transakce",
+      "123456789/0300;02.09.2026;1 703,36;CZK;5 000,00;1000000001;0800;Příklad Platby s.r.o.;;0558;2610230279;;Příchozí platba;;;/ROC/1///URI/Example Store;;tx-1",
+    ].join("\r\n");
+
+    expect(parseBankStatementCsv(csv)).toEqual([
+      {
+        transactionDate: new Date("2026-09-02T00:00:00.000Z"),
+        amount: "1703.36",
+        currency: "CZK",
+        variableSymbol: "2610230279",
+        counterpartyAccount: "1000000001/0800",
+        counterpartyName: "Příklad Platby s.r.o.",
+        message: "/ROC/1///URI/Example Store",
+      },
+    ]);
+  });
+
   it("keeps an account that already has a bank code", () => {
     const csv = ["Datum;Částka;Měna;Protiúčet;Kód banky", "01.08.2026;10,00;CZK;123/0100;0800"].join("\n");
 
