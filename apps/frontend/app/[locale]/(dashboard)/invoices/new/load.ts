@@ -82,6 +82,7 @@ export function formPrefs(raw: Partial<InvoiceFormPrefs> | null | undefined): In
     annualRates: Array.isArray(raw?.annualRates) ? raw.annualRates.filter(isAnnualRate) : [],
     publicLinkPrefix: PUBLIC_LINK_PREFIXES.find((p) => p === raw?.publicLinkPrefix) ?? 'number',
     pdfQr: PDF_QR_MODES.find((m) => m === raw?.pdfQr) ?? 'auto',
+    pdfQrDueDate: raw?.pdfQrDueDate !== false,
     paymentDraftDescription:
       typeof raw?.paymentDraftDescription === 'string' && raw.paymentDraftDescription.trim() ? raw.paymentDraftDescription : null,
     paymentDraftDescriptionAlways: raw?.paymentDraftDescriptionAlways === true

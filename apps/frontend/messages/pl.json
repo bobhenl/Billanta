@@ -2509,6 +2509,8 @@
         "payment_only": "Tylko QR do płatności",
         "off": "Bez kodu QR"
       },
+      "pdfQrDueDate": "Dołączać termin płatności do kodu QR",
+      "pdfQrDueDateHint": "Niektóre banki planują wtedy zeskanowaną płatność na dzień terminu. Bez niego proponują zapłatę od razu. Na fakturze termin płatności jest zawsze.",
       "paymentDraftLine": "Opis pozycji w szkicach tworzonych z płatności",
       "paymentDraftLineHint": "Używany, gdy płatność (np. z PayPala) nie zawiera nazw pozycji. Na przykład „Usługi programistyczne” albo „Konsultacje”.",
       "paymentDraftLinePlaceholder": "Płatność PayPal",

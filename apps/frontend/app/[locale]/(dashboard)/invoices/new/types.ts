@@ -201,6 +201,8 @@ export interface InvoiceFormPrefs {
   publicLinkPrefix: PublicLinkPrefix;
   /** Which QR code the PDF prints (backend PDF_QR_MODES). */
   pdfQr: PdfQrMode;
+  /** The due date in the payment QR (backend pdf_qr_due_date). */
+  pdfQrDueDate: boolean;
   /** The line of a draft made from a payment that names nothing ("Software services"). */
   paymentDraftDescription: string | null;
   /** That line wins even when the payment names its items. */

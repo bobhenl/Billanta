@@ -2509,6 +2509,8 @@
         "payment_only": "QR de paiement uniquement",
         "off": "Pas de code QR"
       },
+      "pdfQrDueDate": "Inclure la date d’échéance dans le QR de paiement",
+      "pdfQrDueDateHint": "Certaines banques programment alors le paiement scanné à la date d’échéance. Sans elle, elles proposent de payer tout de suite. La facture indique toujours l’échéance.",
       "paymentDraftLine": "Description de ligne pour les brouillons créés à partir de paiements",
       "paymentDraftLineHint": "Utilisée quand un paiement (de PayPal, par exemple) ne nomme aucune ligne. Par exemple « Services logiciels » ou « Conseil ».",
       "paymentDraftLinePlaceholder": "Paiement PayPal",

@@ -2509,6 +2509,8 @@
         "payment_only": "Csak fizetési QR",
         "off": "Nincs QR-kód"
       },
+      "pdfQrDueDate": "Fizetési határidő a fizetési QR-kódban",
+      "pdfQrDueDateHint": "Egyes bankok ilyenkor a beolvasott fizetést a határidő napjára ütemezik. Nélküle azonnali fizetést kínálnak. A számlán a határidő mindig szerepel.",
       "paymentDraftLine": "Tételleírás a fizetésekből készült piszkozatokhoz",
       "paymentDraftLineHint": "Akkor használjuk, ha a fizetés (például PayPalból) nem tartalmaz tételneveket. Például „Szoftverszolgáltatás” vagy „Tanácsadás”.",
       "paymentDraftLinePlaceholder": "PayPal-fizetés",

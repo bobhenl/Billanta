@@ -2509,6 +2509,8 @@
         "payment_only": "Doar QR de plată",
         "off": "Fără cod QR"
       },
+      "pdfQrDueDate": "Include data scadenței în codul QR de plată",
+      "pdfQrDueDateHint": "Unele bănci programează atunci plata scanată pentru data scadenței. Fără ea, propun plata imediată. Factura arată mereu scadența.",
       "paymentDraftLine": "Descrierea articolului pentru ciornele create din plăți",
       "paymentDraftLineHint": "Se folosește când o plată (de exemplu din PayPal) nu conține denumiri de articole. De exemplu „Servicii software” sau „Consultanță”.",
       "paymentDraftLinePlaceholder": "Plată PayPal",

@@ -20,7 +20,7 @@ import { drawDemoWatermark } from "./invoice-pdf-demo";
 import QRCode from "qrcode";
 import * as schema from "../../drizzle/schema";
 import { lineBase, type InvoiceVatBreakdown } from "./invoice-total.util";
-import { pdfAccentOf, pdfQrModeOf, pdfSecondLanguageOf, tintOf, type PdfQrMode } from "../tenants/invoice-form-prefs";
+import { pdfAccentOf, pdfQrDueDateOf, pdfQrModeOf, pdfSecondLanguageOf, tintOf, type PdfQrMode } from "../tenants/invoice-form-prefs";
 import { invoiceLinkOf } from "../public-links/public-link";
 import { rateLineLabel } from "./exchange-rate-mode";
 import { BRAND_NAME, brandCreditFor, brandCreditUrl, CREDIT_LABELS, siteUrl, type BrandCredit } from "./brand-credit";
@@ -530,7 +530,9 @@ export class InvoicePdfService {
       invoice.status === "paid" ? 0 : Math.max(0, Math.round((totals.totalWithVat - Number(invoice.amountPaid ?? 0)) * 100) / 100);
     if (payable && amount > 0 && iban && invoice.paymentMethod === "bank_transfer") {
       const scheme = paymentQrScheme({ payeeIban: iban, currency: invoice.currency, buyerCountry: contact.addressCountry });
-      const bysquare = scheme === "pay_by_square" ? this.payBySquare(invoice, tenant, iban, amount) : null;
+      // Without the date the customer's bank offers to pay today instead of on the due date.
+      const dueDate = pdfQrDueDateOf(tenant.invoiceFormPrefs) ? (invoice.dueDate ?? undefined) : undefined;
+      const bysquare = scheme === "pay_by_square" ? this.payBySquare(invoice, tenant, iban, amount, dueDate) : null;
       if (bysquare) {
         return { png: await QRCode.toBuffer(bysquare, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" }), kind: "pay_by_square" };
       }
@@ -539,7 +541,7 @@ export class InvoicePdfService {
         amount,
         currency: invoice.currency,
         variableSymbol: invoice.variableSymbol ?? undefined,
-        dueDate: invoice.dueDate ?? undefined,
+        dueDate,
         message: invoice.invoiceNumber ?? undefined,
         invoice: sid ? qrInvoiceForSpayd(sid) : undefined,
       });
@@ -560,7 +562,7 @@ export class InvoicePdfService {
    * PAY by square validates the IBAN and BIC, SPAYD does not. A bad account
    * on file must not break the whole PDF, so the caller falls back to SPAYD.
    */
-  private payBySquare(invoice: InvoiceRow, tenant: TenantRow, iban: string, amount: number): string | null {
+  private payBySquare(invoice: InvoiceRow, tenant: TenantRow, iban: string, amount: number, dueDate: Date | undefined): string | null {
     try {
       return generatePayBySquareString({
         iban,
@@ -568,7 +570,7 @@ export class InvoicePdfService {
         amount,
         currency: invoice.currency,
         variableSymbol: invoice.variableSymbol ?? undefined,
-        dueDate: invoice.dueDate ?? undefined,
+        dueDate,
         message: invoice.invoiceNumber ?? undefined,
         invoiceId: invoice.invoiceNumber ?? undefined,
         beneficiaryName: tenant.legalName,

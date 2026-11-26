@@ -2516,6 +2516,8 @@
         "payment_only": "Payment QR only",
         "off": "No QR code"
       },
+      "pdfQrDueDate": "Include the due date in the payment QR",
+      "pdfQrDueDateHint": "Some banks then schedule the scanned payment for the due date. Without it they offer to pay right away. The invoice always shows the due date.",
       "paymentDraftLine": "Item description for drafts made from payments",
       "paymentDraftLineHint": "Used when a payment (from PayPal, for example) names no items. For example \"Software services\" or \"Consulting\".",
       "paymentDraftLinePlaceholder": "PayPal payment",

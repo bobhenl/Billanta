@@ -2509,6 +2509,8 @@
         "payment_only": "Solo QR di pagamento",
         "off": "Nessun codice QR"
       },
+      "pdfQrDueDate": "Includere la scadenza nel QR di pagamento",
+      "pdfQrDueDateHint": "Alcune banche programmano allora il pagamento scansionato per la data di scadenza. Senza, propongono di pagare subito. La fattura riporta sempre la scadenza.",
       "paymentDraftLine": "Descrizione della voce nelle bozze create dai pagamenti",
       "paymentDraftLineHint": "Si usa quando un pagamento (ad esempio da PayPal) non indica alcuna voce. Ad esempio «Servizi software» o «Consulenza».",
       "paymentDraftLinePlaceholder": "Pagamento PayPal",

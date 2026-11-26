@@ -2509,6 +2509,8 @@
         "payment_only": "Apenas QR de pagamento",
         "off": "Sem código QR"
       },
+      "pdfQrDueDate": "Incluir a data de vencimento no QR de pagamento",
+      "pdfQrDueDateHint": "Alguns bancos agendam então o pagamento lido para a data de vencimento. Sem ela, propõem pagar de imediato. A fatura mostra sempre o vencimento.",
       "paymentDraftLine": "Descrição da linha nos rascunhos criados a partir de pagamentos",
       "paymentDraftLineHint": "Usada quando um pagamento (do PayPal, por exemplo) não indica artigos. Por exemplo, «Serviços de software» ou «Consultoria».",
       "paymentDraftLinePlaceholder": "Pagamento PayPal",

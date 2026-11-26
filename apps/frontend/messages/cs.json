@@ -2516,6 +2516,8 @@
         "payment_only": "Jen QR platba",
         "off": "Žádný QR kód"
       },
+      "pdfQrDueDate": "Posílat v QR platbě datum splatnosti",
+      "pdfQrDueDateHint": "Některé banky pak platbu po naskenování naplánují až na den splatnosti. Bez data nabídnou zaplatit hned. Na faktuře zůstane splatnost vždy.",
       "paymentDraftLine": "Popis položky u konceptů z plateb",
       "paymentDraftLineHint": "Použije se, když platba (třeba z PayPalu) neobsahuje názvy položek. Např. „Software services“ nebo „Konzultace“.",
       "paymentDraftLinePlaceholder": "Platba PayPal",

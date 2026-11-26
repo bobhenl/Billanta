@@ -2509,6 +2509,8 @@
         "payment_only": "Alleen betaal-QR",
         "off": "Geen QR-code"
       },
+      "pdfQrDueDate": "Vervaldatum meesturen in de betaal-QR",
+      "pdfQrDueDateHint": "Sommige banken plannen de gescande betaling dan pas op de vervaldatum in. Zonder datum bieden ze aan meteen te betalen. Op de factuur staat de vervaldatum altijd.",
       "paymentDraftLine": "Omschrijving van de regel bij concepten uit betalingen",
       "paymentDraftLineHint": "Wordt gebruikt als een betaling (bijvoorbeeld van PayPal) geen regels noemt. Bijvoorbeeld ‘Softwarediensten’ of ‘Advies’.",
       "paymentDraftLinePlaceholder": "PayPal-betaling",

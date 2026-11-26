@@ -414,6 +414,22 @@ describe("InvoicePdfService paid documents and foreign buyers", () => {
     expect((await qrFor("auto", makeInvoice({ status: "paid" })))[0]).toMatch(/^SID\*/);
   });
 
+  it("leaves the due date out of the payment QR when the company asks, so the bank offers to pay now", async () => {
+    async function spayd(invoiceFormPrefs: Record<string, unknown>) {
+      const qr = vi.spyOn(QRCode, "toBuffer");
+      const lineItems = makeLineItems();
+      const tenant = makeTenant({ bankAccountIban: "CZ6508000000192000145399", invoiceFormPrefs } as Partial<TenantRow>);
+      await new InvoicePdfService().generate(makeInvoice(), makeContact(), tenant, lineItems, computeVatBreakdown(lineItems));
+      const out = qr.mock.calls.map((c) => String(c[0])).find((p) => p.startsWith("SPD*")) ?? "";
+      qr.mockRestore();
+      return out;
+    }
+    expect(await spayd({})).toMatch(/\*DT:\d{8}\*/);
+    const now = await spayd({ pdfQrDueDate: false });
+    expect(now).toMatch(/^SPD\*/);
+    expect(now).not.toMatch(/\*DT:/);
+  });
+
   it("prints IBAN only when the payer is abroad or pays in another currency", async () => {
     const home = await render(makeInvoice(), makeContact({ addressCountry: "CZ" }));
     expect(home.lines).toContain("123456/0300");

@@ -131,6 +131,8 @@ export const invoiceFormPrefsSchema = z
     brand_credit: z.boolean().default(true),
     /** Which QR code the PDF prints (PDF_QR_MODES). */
     pdf_qr: z.enum(PDF_QR_MODES).default("auto"),
+    /** The due date in the payment QR; some banks then schedule the payment for that day. */
+    pdf_qr_due_date: z.boolean().default(true),
     /** The line of a draft made from a payment that says nothing about what was paid for ("Software services"). */
     payment_draft_description: z.string().trim().max(500).nullish(),
     /** Use that line even when the payment names its items (one wording on every invoice). */
@@ -158,9 +160,15 @@ export const invoiceFormPrefsSchema = z
     publicLinkPrefix: p.public_link_prefix,
     brandCredit: p.brand_credit,
     pdfQr: p.pdf_qr,
+    pdfQrDueDate: p.pdf_qr_due_date,
     paymentDraftDescription: p.payment_draft_description || null,
     paymentDraftDescriptionAlways: p.payment_draft_description_always && !!p.payment_draft_description,
   }));
+
+/** Whether the payment QR carries the due date; on unless switched off. */
+export function pdfQrDueDateOf(prefs: unknown): boolean {
+  return (prefs as { pdfQrDueDate?: unknown } | null)?.pdfQrDueDate !== false;
+}
 
 /** The tenant's PDF QR mode; old or unknown values mean "auto". */
 export function pdfQrModeOf(prefs: unknown): PdfQrMode {

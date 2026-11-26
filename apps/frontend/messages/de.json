@@ -2509,6 +2509,8 @@
         "payment_only": "Nur Zahlungs-QR",
         "off": "Kein QR-Code"
       },
+      "pdfQrDueDate": "Fälligkeitsdatum im Zahlungs-QR mitsenden",
+      "pdfQrDueDateHint": "Manche Banken planen die gescannte Zahlung dann erst für das Fälligkeitsdatum ein. Ohne Datum bieten sie die sofortige Zahlung an. Auf der Rechnung steht die Fälligkeit immer.",
       "paymentDraftLine": "Positionsbeschreibung für Entwürfe aus Zahlungen",
       "paymentDraftLineHint": "Wird verwendet, wenn eine Zahlung (z. B. von PayPal) keine Positionen nennt. Zum Beispiel „Softwareleistungen“ oder „Beratung“.",
       "paymentDraftLinePlaceholder": "PayPal-Zahlung",

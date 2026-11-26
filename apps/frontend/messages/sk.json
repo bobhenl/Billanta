@@ -2516,6 +2516,8 @@
         "payment_only": "Iba QR platba",
         "off": "Bez QR kódu"
       },
+      "pdfQrDueDate": "Posielať v QR platbe dátum splatnosti",
+      "pdfQrDueDateHint": "Niektoré banky potom platbu po naskenovaní naplánujú až na deň splatnosti. Bez dátumu ponúknu zaplatiť hneď. Na faktúre zostane splatnosť vždy.",
       "paymentDraftLine": "Popis položky pri konceptoch z platieb",
       "paymentDraftLineHint": "Použije sa, keď platba (napríklad z PayPalu) neobsahuje názvy položiek. Napr. „Software services“ alebo „Konzultácie“.",
       "paymentDraftLinePlaceholder": "Platba PayPal",

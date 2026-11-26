@@ -87,6 +87,7 @@ export function InvoiceFormSettings({
   const [secondLanguage, setSecondLanguage] = useState<'' | 'cs' | 'sk' | 'en'>(prefs.pdfSecondLanguage ?? '');
   const [brandCredit, setBrandCredit] = useState(prefs.brandCredit);
   const [pdfQr, setPdfQr] = useState<PdfQrMode>(prefs.pdfQr);
+  const [pdfQrDueDate, setPdfQrDueDate] = useState(prefs.pdfQrDueDate);
   const [paymentLine, setPaymentLine] = useState(prefs.paymentDraftDescription ?? '');
   const [paymentLineAlways, setPaymentLineAlways] = useState(prefs.paymentDraftDescriptionAlways);
   const [reminders, setReminders] = useState(prefs.remindersEnabled);
@@ -138,6 +139,7 @@ export function InvoiceFormSettings({
         pdf_second_language: secondLanguage === '' ? null : secondLanguage,
         brand_credit: brandCredit,
         pdf_qr: pdfQr,
+        pdf_qr_due_date: pdfQrDueDate,
         payment_draft_description: paymentLine.trim() || null,
         payment_draft_description_always: paymentLineAlways && !!paymentLine.trim(),
         reminders_enabled: reminders,
@@ -375,6 +377,18 @@ export function InvoiceFormSettings({
               ))}
             </select>
           </label>
+          <InfoHint hint={t('pdfQrDueDateHint')} className={cn('-mt-2 text-sm', (readOnly || pdfQr === 'off' || pdfQr === 'link') && 'opacity-70')}>
+            <label className="flex items-center gap-2.5">
+              <input
+                type="checkbox"
+                checked={pdfQrDueDate}
+                disabled={readOnly || pdfQr === 'off' || pdfQr === 'link'}
+                onChange={(e) => setPdfQrDueDate(e.target.checked)}
+                className="h-4 w-4 accent-primary"
+              />
+              <span>{t('pdfQrDueDate')}</span>
+            </label>
+          </InfoHint>
           <label className="block max-w-md">
             <InfoHint hint={t('paymentDraftLineHint')}>
               <span className="text-sm font-medium">{t('paymentDraftLine')}</span>
