@@ -18,7 +18,12 @@ import {
   type MatchOutcome,
   type PaidLinkCandidate,
 } from "./matching";
-import { paypalPaymentNote } from "./payment-note";
+import { appendNoteLine, paypalPaymentNote } from "./payment-note";
+import { convertHeldPayments, type BalanceConversion } from "./paypal-conversions";
+import { pairTransfers } from "./transfer-pairing";
+import { tenantHomeCurrencyOf } from "../tenants/home-currency";
+
+const czNumber = (n: number) => n.toLocaleString("cs-CZ", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 import { payerName } from "./payer-name";
 import { parseUploadedStatement } from "./statement-upload";
 
@@ -124,6 +129,8 @@ export class BankReconciliationService {
   async importStatement(db: TenantDb, tenantId: string, filename: string, file: Buffer) {
     const { source, rows } = parseUploadedStatement(filename, file);
     const result = await this.persistAndMatch(db, tenantId, filename, source, rows);
+    // A credit from PayPal in the statement may be a withdrawal the PayPal sync already knows.
+    await this.pairPaypalTransfers(db);
     const { total, matched, unmatched, ruled, duplicates } = result.summary;
     this.notifications?.notify(tenantId, "bank_import", {
       title: `Výpis ${filename} naimportován`,
@@ -384,6 +391,132 @@ export class BankReconciliationService {
       .where(and(gte(t.transactionDate, new Date(Math.min(...days))), lt(t.transactionDate, new Date(Math.max(...days) + DAY_MS))));
   }
 
+  /**
+   * PayPal withdrawals and balance conversions: the company's own money
+   * moving, kept for the record and for pairing but never income, so they
+   * are stored as ignored and skip matching and rules.
+   */
+  async storeOwnMovements(db: TenantDb, tenantId: string, title: string, source: BankImportSource, rows: (IncomingRow & { externalId: string })[]) {
+    if (rows.length === 0) return [];
+    const [importRow] = await db.insert(schema.bankStatementImports).values({ tenantId, filename: title, source }).returning();
+    return db
+      .insert(schema.bankTransactions)
+      .values(
+        rows.map((row) => ({
+          tenantId,
+          importId: importRow.id,
+          transactionDate: row.transactionDate,
+          occurredAt: row.occurredAt ?? null,
+          amount: row.amount,
+          currency: row.currency,
+          externalId: row.externalId,
+          message: row.message ? row.message.slice(0, 500) : null,
+          status: "ignored" as const,
+        })),
+      )
+      .onConflictDoNothing()
+      .returning();
+  }
+
+  /**
+   * Ties each PayPal withdrawal to the bank credit it became (transfer-pairing.ts).
+   * The credit is then ignored: the payments it consists of were counted on
+   * PayPal already. A credit someone matched to an invoice by hand stays as it is.
+   */
+  async pairPaypalTransfers(db: TenantDb): Promise<number> {
+    const t = schema.bankTransactions;
+    const withdrawals = await db
+      .select({ id: t.id, transactionDate: t.transactionDate, amount: t.amount, currency: t.currency })
+      .from(t)
+      .where(and(sql`${t.externalId} LIKE 'paypal:%'`, lt(t.amount, "0"), isNull(t.transferPairId)));
+    if (withdrawals.length === 0) return 0;
+    const credits = await db
+      .select({
+        id: t.id,
+        transactionDate: t.transactionDate,
+        amount: t.amount,
+        currency: t.currency,
+        counterpartyName: t.counterpartyName,
+        counterpartyAccount: t.counterpartyAccount,
+      })
+      .from(t)
+      .where(
+        and(
+          or(isNull(t.externalId), sql`${t.externalId} NOT LIKE 'paypal:%' AND ${t.externalId} NOT LIKE 'stripe:%'`),
+          gte(t.amount, "0.01"),
+          isNull(t.transferPairId),
+          isNull(t.matchedInvoiceId),
+          isNull(t.matchedExpenseId),
+          ne(t.status, "matched"),
+        ),
+      );
+    const pairs = pairTransfers(withdrawals, credits);
+    for (const pair of pairs) {
+      await db.update(t).set({ transferPairId: pair.creditId }).where(eq(t.id, pair.withdrawalId));
+      await db.update(t).set({ transferPairId: pair.withdrawalId, status: "ignored" }).where(eq(t.id, pair.creditId));
+    }
+    return pairs.length;
+  }
+
+  /**
+   * Gives PayPal payments held in a foreign currency the value PayPal's own
+   * conversion gave them (paypal-conversions.ts), and their invoices what
+   * really arrived in the home currency, with a line in the internal note.
+   */
+  async applyPaypalConversions(db: TenantDb, tenantId: string, conversions: BalanceConversion[]): Promise<number> {
+    if (conversions.length === 0) return 0;
+    const [tenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
+    const home = tenantHomeCurrencyOf(tenant);
+    const t = schema.bankTransactions;
+    const held = await db
+      .select({ id: t.id, at: sql<Date>`coalesce(${t.occurredAt}, ${t.transactionDate})`.mapWith((v) => new Date(v)), amount: t.amount, currency: t.currency, fee: t.fee })
+      .from(t)
+      .where(and(sql`${t.externalId} LIKE 'paypal:%'`, gte(t.amount, "0.01"), ne(t.currency, home), isNull(t.netAmount), ne(t.status, "ignored")));
+    const converted = convertHeldPayments(conversions, held, home);
+    const invoices = new Map<string, string[]>();
+    for (const c of converted) {
+      const [row] = await db
+        .update(t)
+        .set({ netAmount: c.netAmount, netCurrency: c.netCurrency })
+        .where(and(eq(t.id, c.id), isNull(t.netAmount)))
+        .returning({ invoiceId: t.matchedInvoiceId, amount: t.amount, currency: t.currency, fee: t.fee });
+      if (!row?.invoiceId) continue;
+      const net = round2(Number(row.amount) - Math.abs(Number(row.fee ?? 0)));
+      const line = `PayPal převedl ${czNumber(net)} ${row.currency} na ${czNumber(Number(c.netAmount))} ${c.netCurrency} (kurz ${c.rate.toFixed(4).replace(".", ",")}) ${c.convertedAt.toLocaleDateString("cs-CZ", { timeZone: "Europe/Prague" })}`;
+      invoices.set(row.invoiceId, [...(invoices.get(row.invoiceId) ?? []), line]);
+    }
+    for (const [invoiceId, lines] of invoices) await this.refreshReceived(db, invoiceId, home, lines);
+    return converted.length;
+  }
+
+  /**
+   * What reached the company in its home currency for a foreign-currency
+   * invoice: the sum over its payments, once each of them has a home value.
+   */
+  private async refreshReceived(db: TenantDb, invoiceId: string, home: string, noteLines: string[]) {
+    const [invoice] = await db
+      .select({ currency: schema.invoices.currency, internalNote: schema.invoices.internalNote })
+      .from(schema.invoices)
+      .where(eq(schema.invoices.id, invoiceId))
+      .limit(1);
+    if (!invoice || invoice.currency === home) return;
+    const payments = await db
+      .select({ amount: schema.bankTransactions.amount, currency: schema.bankTransactions.currency, netAmount: schema.bankTransactions.netAmount, netCurrency: schema.bankTransactions.netCurrency })
+      .from(schema.bankTransactions)
+      .where(eq(schema.bankTransactions.matchedInvoiceId, invoiceId));
+    const values = payments.map((p) => (p.netAmount && p.netCurrency === home ? Number(p.netAmount) : p.currency === home ? Number(p.amount) : null));
+    const complete = values.length > 0 && values.every((v) => v !== null);
+    const note = noteLines.reduce<string | null>((acc, line) => appendNoteLine(acc, line), invoice.internalNote);
+    await db
+      .update(schema.invoices)
+      .set({
+        ...(complete ? { receivedCzk: round2(values.reduce<number>((s, v) => s + (v ?? 0), 0)).toFixed(2) } : {}),
+        internalNote: note,
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.invoices.id, invoiceId));
+  }
+
   async list(db: TenantDb, status?: BankTransactionStatusFilter, invoiceId?: string) {
     // RLS on `bank_transactions` already restricts this to the current
     // tenant — no manual `WHERE tenant_id = ...` needed (same pattern as
@@ -438,7 +571,9 @@ export class BankReconciliationService {
     }
     const [updated] = await db
       .update(schema.bankTransactions)
-      .set({ status: "unmatched", appliedRuleId: null })
+      // A restored PayPal transfer credit drops its side of the pair only: the
+      // withdrawal keeps pointing at it, so the next sync does not pair it again.
+      .set({ status: "unmatched", appliedRuleId: null, transferPairId: null })
       .where(eq(schema.bankTransactions.id, transactionId))
       .returning();
     return updated;

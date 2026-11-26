@@ -30,6 +30,7 @@ function tx(overrides: Partial<StoredRow> & { id: string }): StoredRow {
     message: "Telefon 10/2026",
     appliedRuleId: null,
     matchedExpenseId: null,
+    transferPairId: null,
     createdAt: new Date("2026-11-20"),
     ...overrides,
   };

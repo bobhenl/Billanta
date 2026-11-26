@@ -788,6 +788,10 @@ export class BankConnectionsService {
           .where(and(eq(schema.bankTransactions.tenantId, tenantId), inArray(schema.bankTransactions.externalId, ids)))
       : [];
     const knownIds = new Set(known.map((k) => k.externalId));
+    // PayPal also sends the company's own money moving: withdrawals to the bank and balance conversions.
+    const own = (r: (typeof rows)[number]): r is PaypalSyncedRow => "withdrawal" in r || "conversion" in r;
+    const freshOwn = rows.filter(own).filter((r) => !knownIds.has(r.externalId));
+    rows = rows.filter((r) => !own(r));
     const fresh = rows.filter((r) => !knownIds.has(r.externalId));
     const nets = missingNets(known, rows as { externalId: string; netAmount?: string | null; netCurrency?: string | null }[]);
     for (const net of nets) {
@@ -806,6 +810,16 @@ export class BankConnectionsService {
     });
     // Older unmatched payments get another chance against invoices issued or imported since.
     const rematch = await this.reconciliation.rematchUnmatched(db, tenantId);
+    // After the payments, so a conversion finds the ones it converted already stored.
+    await this.reconciliation.storeOwnMovements(db, tenantId, `${title.replace(/\s+/g, " ").trim()} – převody`, source, freshOwn);
+    await this.reconciliation.applyPaypalConversions(
+      db,
+      tenantId,
+      freshOwn.flatMap((r) =>
+        r.conversion ? [{ at: r.occurredAt ?? r.transactionDate, amount: r.amount, currency: r.currency, from: r.conversion }] : [],
+      ),
+    );
+    await this.reconciliation.pairPaypalTransfers(db);
 
     if (result.summary.total > 0) {
       this.notifications?.notify(tenantId, "bank_import", {

@@ -42,6 +42,13 @@ export interface PaypalSyncedRow extends ParsedBankTransactionRow {
   netCurrency: string | null;
   /** Two-letter country of the payer's PayPal account, for a new contact. */
   payerCountry: string | null;
+  /** A withdrawal to the company's bank (parsePaypalWithdrawals), not a payment. */
+  withdrawal?: boolean;
+  /**
+   * A conversion of the PayPal balance (parsePaypalConversions): `amount` in
+   * `currency` is what came out of it, `conversion` what went in. Not a payment.
+   */
+  conversion?: { amount: string; currency: string };
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -208,6 +215,42 @@ export function parsePaypalTransactions(details: unknown): PaypalSyncedRow[] {
   return rows;
 }
 
+/**
+ * Money the company moved from PayPal to its bank (event codes T04xx,
+ * negative amounts). Not income: the payments it consists of are already
+ * counted, so the bank credit it becomes is paired with it and both stay out
+ * of the totals (transfer-pairing.ts).
+ */
+export function parsePaypalWithdrawals(details: unknown): PaypalSyncedRow[] {
+  if (!Array.isArray(details)) return [];
+  const rows: PaypalSyncedRow[] = [];
+  for (const detail of details as RawDetail[]) {
+    const info = detail?.transaction_info;
+    if (!info?.transaction_id || info.transaction_status !== "S") continue;
+    if (!info.transaction_event_code?.startsWith("T04")) continue;
+    const amount = money(info.transaction_amount);
+    const transactionDate = parseDay(info.transaction_initiation_date);
+    if (amount === null || amount >= 0 || !transactionDate) continue;
+    rows.push({
+      externalId: `paypal:${info.transaction_id}`,
+      transactionDate,
+      occurredAt: parseInstant(info.transaction_initiation_date),
+      amount: amount.toFixed(2),
+      currency: (info.transaction_amount?.currency_code ?? "EUR").toUpperCase().slice(0, 3),
+      variableSymbol: null,
+      counterpartyAccount: null,
+      counterpartyName: null,
+      fee: null,
+      netAmount: null,
+      netCurrency: null,
+      message: null,
+      payerCountry: null,
+      withdrawal: true,
+    });
+  }
+  return rows;
+}
+
 const netKey = (time: string | null | undefined, currency: string, amount: number) =>
   `${time?.slice(0, 10)}|${currency}|${Math.abs(amount).toFixed(2)}`;
 
@@ -221,9 +264,9 @@ const netKey = (time: string | null | undefined, currency: string, amount: numbe
  * the fee, so a debit of exactly the payment's net on the same day is it.
  */
 function conversionCredits(details: RawDetail[]) {
-  const byReference = new Map<string, { amount: number; currency: string }>();
-  const byTime = new Map<string, { amount: number; currency: string }>();
-  const byNet = new Map<string, { amount: number; currency: string }>();
+  const byReference = new Map<string, ConversionCredit>();
+  const byTime = new Map<string, ConversionCredit>();
+  const byNet = new Map<string, ConversionCredit>();
   type Leg = { info: NonNullable<RawDetail["transaction_info"]>; amount: number; currency: string };
   const debits: Leg[] = [];
   const credits: Leg[] = [];
@@ -236,9 +279,11 @@ function conversionCredits(details: RawDetail[]) {
     if (amount < 0) debits.push({ info, amount, currency });
     else if (amount > 0) credits.push({ info, amount, currency });
   }
+  const all: ConversionCredit[] = [];
   for (const credit of credits) {
     const { info } = credit;
-    const value = { amount: credit.amount, currency: credit.currency };
+    const value: ConversionCredit = { amount: credit.amount, currency: credit.currency, info };
+    all.push(value);
     const sameTime = debits.find((d) => d.info.transaction_initiation_date === info.transaction_initiation_date);
     const linked =
       debits.find((d) => info.paypal_reference_id && d.info.transaction_id === info.paypal_reference_id) ??
@@ -249,9 +294,68 @@ function conversionCredits(details: RawDetail[]) {
     if (payment && !byReference.has(payment)) byReference.set(payment, value);
     if (sameTime) byTime.set(`${info.transaction_initiation_date}|${sameTime.currency}`, value);
     const debit = linked ?? sameTime;
-    if (debit) byNet.set(netKey(debit.info.transaction_initiation_date, debit.currency, debit.amount), value);
+    if (debit) {
+      value.from = { amount: Math.abs(debit.amount), currency: debit.currency };
+      byNet.set(netKey(debit.info.transaction_initiation_date, debit.currency, debit.amount), value);
+    }
   }
-  return { byReference, byTime, byNet };
+  return { byReference, byTime, byNet, all };
+}
+
+type ConversionCredit = {
+  amount: number;
+  currency: string;
+  info: NonNullable<RawDetail["transaction_info"]>;
+  /** The debit leg: what was converted. */
+  from?: { amount: number; currency: string };
+};
+
+/**
+ * Conversions of the balance that no single payment claims. Without
+ * auto-conversion PayPal keeps a USD payment in USD and converts the balance
+ * only when the company withdraws it, at its own rate; that rate is what the
+ * payments in it were really worth (paypal-conversions.ts spreads it).
+ */
+export function parsePaypalConversions(details: unknown): PaypalSyncedRow[] {
+  if (!Array.isArray(details)) return [];
+  const conversions = conversionCredits(details as RawDetail[]);
+  const claimed = new Set<ConversionCredit>();
+  for (const detail of details as RawDetail[]) {
+    const info = detail?.transaction_info;
+    if (!info?.transaction_id || info.transaction_status !== "S" || !info.transaction_event_code?.startsWith("T00")) continue;
+    const amount = money(info.transaction_amount);
+    if (amount === null || amount <= 0) continue;
+    const currency = (info.transaction_amount?.currency_code ?? "EUR").toUpperCase().slice(0, 3);
+    const fee = money(info.fee_amount);
+    const hit =
+      conversions.byReference.get(info.transaction_id) ??
+      conversions.byTime.get(`${info.transaction_initiation_date}|${currency}`) ??
+      conversions.byNet.get(netKey(info.transaction_initiation_date, currency, amount - Math.abs(fee ?? 0)));
+    if (hit) claimed.add(hit);
+  }
+  const rows: PaypalSyncedRow[] = [];
+  for (const c of conversions.all) {
+    const transactionDate = parseDay(c.info.transaction_initiation_date);
+    if (claimed.has(c) || !c.from || c.from.currency === c.currency || !c.info.transaction_id || !transactionDate) continue;
+    rows.push({
+      externalId: `paypal:${c.info.transaction_id}`,
+      transactionDate,
+      occurredAt: parseInstant(c.info.transaction_initiation_date),
+      amount: c.amount.toFixed(2),
+      currency: c.currency,
+      variableSymbol: null,
+      counterpartyAccount: null,
+      counterpartyName: null,
+      fee: null,
+      netAmount: null,
+      netCurrency: null,
+      // The frontend tells a conversion row by this arrow (paypalMovement in bank-ui.ts).
+      message: `${c.from.amount.toFixed(2)} ${c.from.currency} → ${c.amount.toFixed(2)} ${c.currency}`,
+      payerCountry: null,
+      conversion: { amount: c.from.amount.toFixed(2), currency: c.from.currency },
+    });
+  }
+  return rows;
 }
 
 /** PayPal wants RFC 3339 without fractions. */
@@ -295,7 +399,7 @@ export class PaypalClient {
     return body.access_token;
   }
 
-  /** Incoming payments between `from` and `to`, read in 31-day windows. */
+  /** Incoming payments, withdrawals to the bank and balance conversions between `from` and `to`, read in 31-day windows. */
   async fetchIncoming(from: Date, to: Date = new Date()): Promise<PaypalSyncedRow[]> {
     const rows: PaypalSyncedRow[] = [];
     // One window after another: PayPal rate-limits parallel reporting calls.
@@ -325,7 +429,11 @@ export class PaypalClient {
         | { transaction_details?: unknown; total_pages?: number; page?: number }
         | null;
       if (!body) throw new PaypalApiError("PayPal response is not JSON", "bad_response");
-      rows.push(...parsePaypalTransactions(body.transaction_details));
+      rows.push(
+        ...parsePaypalTransactions(body.transaction_details),
+        ...parsePaypalWithdrawals(body.transaction_details),
+        ...parsePaypalConversions(body.transaction_details),
+      );
       if (!body.total_pages || page >= body.total_pages) break;
     }
     return rows;

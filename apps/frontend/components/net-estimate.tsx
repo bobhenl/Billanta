@@ -44,7 +44,16 @@ export function NetEstimate({ base, currency, czkRate, costs = 0 }: { base: numb
 
   return (
     <div className="mt-1 flex flex-wrap items-center gap-x-2 sm:justify-end text-xs text-muted-foreground">
-      <InfoHint hint={costs > 0 ? `${t('hint', { burden: both(burden) })} ${t('hintCosts', { costs: both(costs) })}` : t('hint', { burden: both(burden) })}>
+      <InfoHint
+        hint={[
+          t('hint', { burden: both(burden) }),
+          costs > 0 ? t('hintCosts', { costs: both(costs) }) : null,
+          // Marginal rates are the worst case for most: below the yearly limits this invoice costs no tax or insurance at all.
+          burden > 0 ? t('hintLimits', { full: both(Math.max(0, base - costs)) }) : null,
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
         {t('label')} <span className="font-semibold text-foreground">≈ {fmt.format(net)}</span>
         {czk && <span className="font-semibold text-foreground"> · ≈ {czk.format(net * czkRate!)}</span>}
       </InfoHint>

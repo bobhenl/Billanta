@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { toast } from '@/components/toaster';
 import { formatDate, formatMoney, formatTime } from '@/lib/invoice-ui';
-import { TX_STATUS_CLASSES, type BankTransaction } from '@/lib/bank-ui';
+import { TX_STATUS_CLASSES, paypalMovement, type BankTransaction } from '@/lib/bank-ui';
 import { cn } from '@/lib/utils';
 import { draftInvoiceFromTransaction, ignoreTransaction } from './actions';
 import { useCanWrite } from '@/components/access-provider';
@@ -17,6 +17,8 @@ export type BankRow = BankTransaction & { invoiceNumber: string | null; invoiceC
 /** The status line of a row, naming the bank rule that acted on it. */
 function statusText(tx: BankRow, t: ReturnType<typeof useTranslations<'bank'>>): string {
   const rule = tx.ruleName;
+  const movement = paypalMovement(tx);
+  if (movement) return t(`transfer.${movement}`);
   if (tx.status === 'ignored' && rule) return t('rule.ignoredBy', { rule });
   if (tx.status === 'matched' && tx.matchedExpenseId) return rule ? t('rule.expenseBy', { rule }) : t('rule.expense');
   if (tx.status === 'matched' && tx.invoiceNumber) return t('matchedWithInvoice', { invoiceId: tx.invoiceNumber });

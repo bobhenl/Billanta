@@ -1192,6 +1192,14 @@
       "expenseBy": "Uitgave via regel {rule}",
       "draftBy": "Conceptfactuur via regel {rule}",
       "expense": "Gekoppeld aan een uitgave"
+    },
+    "transfer": {
+      "transfer": "Overboeking van PayPal",
+      "withdrawal": "PayPal-opname naar de bank",
+      "conversion": "Valutaomrekening bij PayPal",
+      "warnTitle": "Niet-gekoppelde PayPal-overboekingen",
+      "unpairedCredits": "{n, plural, one {# betaling van PayPal op de bank heeft} other {# betalingen van PayPal op de bank hebben}} geen bijpassende opname. Laad de PayPal-geschiedenis zodat ze gekoppeld worden.",
+      "lostWithdrawals": "{n, plural, one {# PayPal-opname is} other {# PayPal-opnames zijn}} binnen een week niet op de bank verschenen."
     }
   },
   "contacts": {
@@ -5512,7 +5520,8 @@
     "rate": "forfait {rate} %",
     "noFlat": "geen forfait",
     "hint": "Ruwe schatting voor een Tsjechische zelfstandige: het bedrag zonder btw min inkomstenbelasting (15 %), sociale en zorgverzekering op deze factuur – ongeveer {burden}. Gaat uit van het gekozen forfait en negeert minimale voorschotten en belastingkortingen. Zie Exports voor het hele jaar.",
-    "hintCosts": "Betaalkosten en het koersverlies ({costs}) worden ook afgetrokken. Met een forfait verlagen ze de belasting niet, omdat het forfait al alle kosten dekt."
+    "hintCosts": "Betaalkosten en het koersverlies ({costs}) worden ook afgetrokken. Met een forfait verlagen ze de belasting niet, omdat het forfait al alle kosten dekt.",
+    "hintLimits": "Zie het als de ondergrens. Zolang uw jaar de belastingkorting niet opmaakt en niet boven de minimale voorschotten uitkomt (of de drempel voor een nevenactiviteit), kost deze factuur geen extra belasting of premie en houdt u meer over, tot {full}."
   },
   "welcome": {
     "title": "Welkom bij Billanta",

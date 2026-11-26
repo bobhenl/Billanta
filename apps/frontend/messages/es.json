@@ -1192,6 +1192,14 @@
       "expenseBy": "Gasto creado por la regla {rule}",
       "draftBy": "Borrador de factura creado por la regla {rule}",
       "expense": "Conciliado con un gasto"
+    },
+    "transfer": {
+      "transfer": "Transferencia de PayPal",
+      "withdrawal": "Retiro de PayPal al banco",
+      "conversion": "Conversión de divisa en PayPal",
+      "warnTitle": "Transferencias de PayPal sin emparejar",
+      "unpairedCredits": "{n, plural, one {# pago de PayPal en el banco no tiene} other {# pagos de PayPal en el banco no tienen}} un retiro que coincida. Cargue el historial de PayPal para emparejarlos.",
+      "lostWithdrawals": "{n, plural, one {# retiro de PayPal no ha} other {# retiros de PayPal no han}} aparecido en el banco en una semana."
     }
   },
   "contacts": {
@@ -5512,7 +5520,8 @@
     "rate": "a tanto alzado {rate} %",
     "noFlat": "sin tanto alzado",
     "hint": "Estimación aproximada para un autónomo checo: el importe sin IVA menos el impuesto sobre la renta (15 %) y las cotizaciones a la seguridad social y al seguro de salud sobre esta factura – unos {burden}. Usa el porcentaje a tanto alzado elegido y no tiene en cuenta los anticipos mínimos ni las deducciones fiscales. Consulte Exportaciones para ver el año completo.",
-    "hintCosts": "También se descuentan las comisiones de pago y la pérdida por conversión ({costs}). Con gastos a tanto alzado no reducen el impuesto, porque el tanto alzado ya cubre todos los gastos."
+    "hintCosts": "También se descuentan las comisiones de pago y la pérdida por conversión ({costs}). Con gastos a tanto alzado no reducen el impuesto, porque el tanto alzado ya cubre todos los gastos.",
+    "hintLimits": "Tómelo como el mínimo. Mientras su año no agote la deducción del contribuyente ni supere los anticipos mínimos (o el umbral de una actividad secundaria), esta factura no suma impuestos ni cotizaciones y le queda más, hasta {full}."
   },
   "welcome": {
     "title": "Bienvenido a Billanta",

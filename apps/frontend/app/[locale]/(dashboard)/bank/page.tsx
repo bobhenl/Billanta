@@ -12,6 +12,8 @@ import {
   connectionLabel,
   filterTransactions,
   homeCurrencyTotals,
+  isUnpairedPaypalCredit,
+  paypalMovement,
   transactionSourceKey,
   type BankDirection,
   type BankPeriod,
@@ -122,6 +124,13 @@ export default async function BankReconciliationPage(props: {
     ...fallbacks.filter(([key]) => present.has(key)).map(([value, label]) => ({ value, label }))
   ];
 
+  // PayPal money that reached the bank without its withdrawal, or a withdrawal the bank never showed.
+  const unpairedCredits = transactions.filter(isUnpairedPaypalCredit).length;
+  const lastBankDay = transactions.reduce((max, tx) => (tx.externalId ? max : tx.transactionDate > max ? tx.transactionDate : max), '');
+  const weekBefore = lastBankDay ? new Date(new Date(lastBankDay).getTime() - 7 * 86_400_000).toISOString().slice(0, 10) : '';
+  const lostWithdrawals = transactions.filter(
+    (tx) => paypalMovement(tx) === 'withdrawal' && !tx.transferPairId && weekBefore && tx.transactionDate.slice(0, 10) < weekBefore
+  ).length;
   const unmatchedTotal = transactions.filter((tx) => tx.status === 'unmatched').length;
   const { incoming, outgoing } = homeCurrencyTotals(scoped, home);
   const unmatched = scoped.filter((tx) => tx.status === 'unmatched');
@@ -176,6 +185,13 @@ export default async function BankReconciliationPage(props: {
         })}
       </div>
 
+      {(unpairedCredits > 0 || lostWithdrawals > 0) && (
+        <Banner tone="warn" title={t('transfer.warnTitle')} className="mt-6">
+          {[unpairedCredits > 0 ? t('transfer.unpairedCredits', { n: unpairedCredits }) : null, lostWithdrawals > 0 ? t('transfer.lostWithdrawals', { n: lostWithdrawals }) : null]
+            .filter(Boolean)
+            .join(' ')}
+        </Banner>
+      )}
       <TwoFactorNotice className="mt-6" />
       <BankConnections connections={connections} psd2={psd2} canManage={canManage(role)} />
 

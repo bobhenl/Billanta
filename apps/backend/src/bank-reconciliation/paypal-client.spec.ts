@@ -3,7 +3,9 @@ import {
   PaypalApiError,
   PaypalClient,
   parseInstant,
+  parsePaypalConversions,
   parsePaypalTransactions,
+  parsePaypalWithdrawals,
   paypalBackfillRange,
   paypalBaseUrl,
   paypalSyncFrom,
@@ -285,5 +287,55 @@ describe("parseInstant", () => {
     expect(parseInstant("2026-08-24T13:21:05-0700")).toEqual(new Date("2026-08-24T20:21:05Z"));
     expect(parseInstant("2026-08-24")).toBeNull();
     expect(parseInstant("garbage")).toBeNull();
+  });
+});
+
+describe("parsePaypalWithdrawals", () => {
+  it("keeps completed withdrawals to the bank and nothing else", () => {
+    const withdrawal = detail({ transaction_id: "WD1", transaction_event_code: "T0403", transaction_amount: { currency_code: "CZK", value: "-1817.20" }, fee_amount: undefined });
+    expect(
+      parsePaypalWithdrawals([
+        withdrawal,
+        detail(),
+        detail({ transaction_event_code: "T0403", transaction_status: "P", transaction_amount: { currency_code: "CZK", value: "-10.00" } }),
+        detail({ transaction_event_code: "T0403", transaction_amount: { currency_code: "CZK", value: "10.00" } }),
+      ]),
+    ).toEqual([expect.objectContaining({ externalId: "paypal:WD1", amount: "-1817.20", currency: "CZK", withdrawal: true, fee: null })]);
+    expect(parsePaypalWithdrawals(undefined)).toEqual([]);
+  });
+});
+
+describe("parsePaypalConversions", () => {
+  const leg = (id: string, amount: string, currency: string, at: string, ref?: string) => ({
+    transaction_info: {
+      transaction_id: id,
+      transaction_event_code: "T0200",
+      transaction_initiation_date: at,
+      transaction_amount: { currency_code: currency, value: amount },
+      transaction_status: "S",
+      ...(ref ? { paypal_reference_id: ref } : {}),
+    },
+  });
+
+  it("returns a balance conversion no payment claims, with what went in", () => {
+    const at = "2026-11-02T08:00:00+0000";
+    const rows = parsePaypalConversions([
+      detail({ transaction_amount: { currency_code: "USD", value: "45.00" }, fee_amount: { currency_code: "USD", value: "-2.41" } }),
+      leg("D1", "-85.18", "USD", at, "WD1"),
+      leg("C1", "1810.21", "CZK", at, "WD1"),
+    ]);
+    expect(rows).toEqual([
+      expect.objectContaining({ externalId: "paypal:C1", amount: "1810.21", currency: "CZK", conversion: { amount: "85.18", currency: "USD" } }),
+    ]);
+  });
+
+  it("leaves out a conversion that belongs to a payment", () => {
+    expect(
+      parsePaypalConversions([
+        detail(),
+        leg("D1", "-116.52", "EUR", "2026-09-30T14:03:20+0000", "9AB12345CD678901E"),
+        leg("C1", "2803.47", "CZK", "2026-09-30T14:03:20+0000", "9AB12345CD678901E"),
+      ]),
+    ).toEqual([]);
   });
 });

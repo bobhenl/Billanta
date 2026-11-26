@@ -1183,6 +1183,12 @@ export const bankTransactions = pgTable("bank_transactions", {
   appliedRuleId: uuid("applied_rule_id").references((): AnyPgColumn => bankRules.id, { onDelete: "set null" }),
   /** An outgoing payment a bank rule turned into an expense draft (migration 0091). */
   matchedExpenseId: uuid("matched_expense_id").references(() => expenses.id, { onDelete: "set null" }),
+  /**
+   * The other leg of the company's own transfer: a PayPal withdrawal and the
+   * bank credit it became point at each other, and both stay "ignored" so
+   * neither counts as income (migration 0097).
+   */
+  transferPairId: uuid("transfer_pair_id").references((): AnyPgColumn => bankTransactions.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

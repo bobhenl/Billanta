@@ -1192,6 +1192,14 @@
       "expenseBy": "Spesa dalla regola {rule}",
       "draftBy": "Bozza di fattura dalla regola {rule}",
       "expense": "Abbinato a una spesa"
+    },
+    "transfer": {
+      "transfer": "Trasferimento da PayPal",
+      "withdrawal": "Prelievo PayPal sul conto",
+      "conversion": "Conversione di valuta PayPal",
+      "warnTitle": "Trasferimenti PayPal non abbinati",
+      "unpairedCredits": "{n, plural, one {# pagamento da PayPal in banca non ha} other {# pagamenti da PayPal in banca non hanno}} un prelievo corrispondente. Carichi la cronologia PayPal per abbinarli.",
+      "lostWithdrawals": "{n, plural, one {# prelievo PayPal non è comparso} other {# prelievi PayPal non sono comparsi}} in banca entro una settimana."
     }
   },
   "contacts": {
@@ -5512,7 +5520,8 @@
     "rate": "forfettario {rate} %",
     "noFlat": "senza forfettario",
     "hint": "Stima approssimativa per un lavoratore autonomo ceco: l’importo senza IVA meno imposta sul reddito (15 %), contributi previdenziali e sanitari su questa fattura – circa {burden}. Usa la percentuale forfettaria scelta e non considera gli acconti minimi né le detrazioni fiscali. Per l’intero anno veda Esportazioni.",
-    "hintCosts": "Vengono detratti anche le commissioni di pagamento e la perdita di cambio ({costs}). Con le spese forfettarie non riducono l’imposta, perché il forfait copre già tutte le spese."
+    "hintCosts": "Vengono detratti anche le commissioni di pagamento e la perdita di cambio ({costs}). Con le spese forfettarie non riducono l’imposta, perché il forfait copre già tutte le spese.",
+    "hintLimits": "Lo consideri un minimo. Finché il suo anno non esaurisce la detrazione del contribuente e non supera gli acconti minimi (o la soglia di un’attività secondaria), questa fattura non aggiunge imposte né contributi e le resta di più, fino a {full}."
   },
   "welcome": {
     "title": "Benvenuto in Billanta",

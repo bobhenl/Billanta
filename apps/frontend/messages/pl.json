@@ -1192,6 +1192,14 @@
       "expenseBy": "Wydatek z reguły {rule}",
       "draftBy": "Szkic faktury z reguły {rule}",
       "expense": "Sparowano z wydatkiem"
+    },
+    "transfer": {
+      "transfer": "Przelew z PayPala",
+      "withdrawal": "Wypłata z PayPala na konto",
+      "conversion": "Przewalutowanie w PayPalu",
+      "warnTitle": "Niesparowane przelewy z PayPala",
+      "unpairedCredits": "{n, plural, one {# wpłata z PayPala w banku nie ma} few {# wpłaty z PayPala w banku nie mają} many {# wpłat z PayPala w banku nie ma} other {# wpłaty z PayPala w banku nie ma}} pasującej wypłaty. Wczytaj historię PayPala, żeby się sparowały.",
+      "lostWithdrawals": "{n, plural, one {# wypłata z PayPala nie pojawiła się} few {# wypłaty z PayPala nie pojawiły się} many {# wypłat z PayPala nie pojawiło się} other {# wypłaty z PayPala nie pojawiło się}} w banku w ciągu tygodnia."
     }
   },
   "contacts": {
@@ -5513,7 +5521,8 @@
     "rate": "ryczałt {rate} %",
     "noFlat": "bez ryczałtu",
     "hint": "Orientacyjny szacunek dla czeskiej jednoosobowej działalności: kwota bez VAT minus podatek dochodowy (15 %), ubezpieczenie społeczne i zdrowotne z tej faktury – około {burden}. Uwzględnia wybrany ryczałt i pomija minimalne zaliczki oraz ulgi podatkowe. Cały rok znajdziesz w Eksportach.",
-    "hintCosts": "Odliczamy też opłaty za płatności i stratę na przewalutowaniu ({costs}). Przy wydatkach ryczałtowych nie obniżają one podatku, bo ryczałt obejmuje już wszystkie wydatki."
+    "hintCosts": "Odliczamy też opłaty za płatności i stratę na przewalutowaniu ({costs}). Przy wydatkach ryczałtowych nie obniżają one podatku, bo ryczałt obejmuje już wszystkie wydatki.",
+    "hintLimits": "Traktuj to jako dolną granicę. Dopóki w danym roku nie wyczerpiesz ulgi podatnika i nie przekroczysz minimalnych zaliczek (przy działalności dodatkowej progu), ta faktura nie dokłada podatku ani składek i zostaje Ci więcej, aż do {full}."
   },
   "welcome": {
     "title": "Witaj w Billanta",

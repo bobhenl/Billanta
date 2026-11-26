@@ -673,6 +673,13 @@
       "when": 1793421720000,
       "tag": "0096_bank_transaction_symbols",
       "breakpoints": true
+    },
+    {
+      "idx": 97,
+      "version": "7",
+      "when": 1793508120000,
+      "tag": "0097_bank_transfer_pair",
+      "breakpoints": true
     }
   ]
 }

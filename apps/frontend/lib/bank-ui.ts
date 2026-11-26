@@ -42,6 +42,8 @@ export interface BankTransaction {
   matchedExpenseId?: string | null;
   /** Bank rule that ignored the payment or drafted its document; cleared by a manual match or restore. */
   appliedRuleId?: string | null;
+  /** A PayPal withdrawal and the bank credit it became point at each other. */
+  transferPairId?: string | null;
   status: TransactionStatus;
   createdAt: string;
   /** The list endpoint adds the statement import this row came from. */
@@ -58,10 +60,30 @@ export interface BankTransactionDetail extends BankTransaction {
  * PayPal converted to the home currency counts with what was credited, so a
  * USD sale shows up in the CZK total; other foreign rows stay out.
  */
+/**
+ * The company moving its own money: a PayPal withdrawal, the bank credit it
+ * became, or a conversion of the PayPal balance. None of it is income or spending.
+ */
+export function paypalMovement(tx: BankTransaction): 'transfer' | 'withdrawal' | 'conversion' | null {
+  const paypal = tx.externalId?.startsWith('paypal:') ?? false;
+  if (paypal && Number(tx.amount) < 0) return 'withdrawal';
+  if (paypal && tx.status === 'ignored' && !tx.counterpartyName && tx.message?.includes('→')) return 'conversion';
+  if (!paypal && tx.transferPairId && Number(tx.amount) > 0) return 'transfer';
+  return null;
+}
+
+/** A bank credit from PayPal that no withdrawal explains (yet). */
+export function isUnpairedPaypalCredit(tx: BankTransaction): boolean {
+  if (tx.externalId?.startsWith('paypal:') || tx.transferPairId || tx.matchedInvoiceId || tx.matchedExpenseId) return false;
+  return Number(tx.amount) > 0 && /pay\s*pal/i.test(`${tx.counterpartyName ?? ''} ${tx.counterpartyAccount ?? ''}`);
+}
+
 export function homeCurrencyTotals(transactions: BankTransaction[], home: string): { incoming: number; outgoing: number } {
   let incoming = 0;
   let outgoing = 0;
   for (const tx of transactions) {
+    // Counted once already, as the PayPal payments the money came from.
+    if (paypalMovement(tx)) continue;
     const value =
       tx.currency === home ? Number(tx.amount) : tx.netCurrency === home && tx.netAmount ? Math.sign(Number(tx.amount)) * Number(tx.netAmount) : 0;
     if (value > 0) incoming += value;

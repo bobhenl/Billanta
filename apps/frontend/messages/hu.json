@@ -1192,6 +1192,14 @@
       "expenseBy": "Költség a(z) {rule} szabály alapján",
       "draftBy": "Számlapiszkozat a(z) {rule} szabály alapján",
       "expense": "Költséggel párosítva"
+    },
+    "transfer": {
+      "transfer": "Átutalás PayPalról",
+      "withdrawal": "PayPal-kivét a bankszámlára",
+      "conversion": "Pénznemváltás a PayPalon",
+      "warnTitle": "Párosítatlan PayPal-átutalások",
+      "unpairedCredits": "{n, plural, other {# PayPal-jóváírásnak}} nincs megfelelő kivétje. Töltse be a PayPal-előzményeket a párosításhoz.",
+      "lostWithdrawals": "{n, plural, other {# PayPal-kivét}} egy héten belül nem jelent meg a bankban."
     }
   },
   "contacts": {
@@ -5512,7 +5520,8 @@
     "rate": "átalány {rate} %",
     "noFlat": "átalány nélkül",
     "hint": "Hozzávetőleges becslés cseh egyéni vállalkozóra: az ÁFA nélküli összeg mínusz a jövedelemadó (15 %), valamint a számlára eső társadalom- és egészségbiztosítási járulék – kb. {burden}. A választott átalánnyal számol, a minimális előlegeket és az adókedvezményeket nem veszi figyelembe. A teljes évet az Exportokban találja.",
-    "hintCosts": "A fizetési díjakat és az átváltási veszteséget ({costs}) is levonjuk. Költségátalánynál ezek nem csökkentik az adót, mert az átalány már minden költséget lefed."
+    "hintCosts": "A fizetési díjakat és az átváltási veszteséget ({costs}) is levonjuk. Költségátalánynál ezek nem csökkentik az adót, mert az átalány már minden költséget lefed.",
+    "hintLimits": "Tekintse alsó határnak. Amíg az éve nem meríti ki az adózói kedvezményt és nem lépi túl a minimális előlegeket (mellékállásnál a határösszeget), ez a számla nem jár plusz adóval vagy járulékkal, és több marad, legfeljebb {full}."
   },
   "welcome": {
     "title": "Üdvözöljük a Billantában",

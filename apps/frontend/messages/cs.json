@@ -1193,6 +1193,14 @@
       "expenseBy": "Výdaj z pravidla {rule}",
       "draftBy": "Návrh faktury z pravidla {rule}",
       "expense": "Spárováno s výdajem"
+    },
+    "transfer": {
+      "transfer": "Převod z PayPalu",
+      "withdrawal": "Výběr z PayPalu na účet",
+      "conversion": "Převod měny v PayPalu",
+      "warnTitle": "Nespárované převody z PayPalu",
+      "unpairedCredits": "{n, plural, one {# platba od PayPalu v bance nemá} few {# platby od PayPalu v bance nemají} other {# plateb od PayPalu v bance nemá}} odpovídající výběr. Načtěte historii PayPalu, ať se spárují.",
+      "lostWithdrawals": "{n, plural, one {# výběr z PayPalu se} few {# výběry z PayPalu se} other {# výběrů z PayPalu se}} do týdne neobjevil v bance."
     }
   },
   "contacts": {
@@ -5541,7 +5549,8 @@
     "rate": "paušál {rate} %",
     "noFlat": "bez paušálu",
     "hint": "Orientačně: částka bez DPH po odečtení daně z příjmů (15 %), sociálního a zdravotního pojištění OSVČ z této faktury – zhruba {burden}. Počítá s vybraným paušálem a nezohledňuje minimální zálohy ani slevy na dani. Celý rok spočítáte v Exportech.",
-    "hintCosts": "Odečtené jsou i poplatky a kurzový rozdíl z platby ({costs}). Při paušálu daň nesnižují, ten už všechny výdaje zahrnuje."
+    "hintCosts": "Odečtené jsou i poplatky a kurzový rozdíl z platby ({costs}). Při paušálu daň nesnižují, ten už všechny výdaje zahrnuje.",
+    "hintLimits": "Ber to jako spodní hranici. Dokud za rok nevyčerpáte slevu na poplatníka a nepřesáhnete minimální zálohy (u vedlejší činnosti rozhodnou částku), daň a pojistné z této faktury nezaplatíte navíc a zůstane vám víc, až {full}."
   },
   "welcome": {
     "title": "Vítejte v Billantě",

@@ -1193,6 +1193,14 @@
       "expenseBy": "Expense from rule {rule}",
       "draftBy": "Draft invoice from rule {rule}",
       "expense": "Matched to an expense"
+    },
+    "transfer": {
+      "transfer": "Transfer from PayPal",
+      "withdrawal": "PayPal withdrawal to the bank",
+      "conversion": "PayPal currency conversion",
+      "warnTitle": "Unpaired PayPal transfers",
+      "unpairedCredits": "{n, plural, one {# payment from PayPal in the bank has} other {# payments from PayPal in the bank have}} no matching withdrawal. Load the PayPal history so they pair.",
+      "lostWithdrawals": "{n, plural, one {# PayPal withdrawal has} other {# PayPal withdrawals have}} not shown up in the bank within a week."
     }
   },
   "contacts": {
@@ -5541,7 +5549,8 @@
     "rate": "flat {rate} %",
     "noFlat": "no flat rate",
     "hint": "Rough Czech sole-trader estimate: the amount without VAT minus income tax (15 %), social and health insurance on this invoice – about {burden}. Uses the chosen flat rate and ignores minimum advances and tax credits. See Exports for the full year.",
-    "hintCosts": "Payment fees and the conversion loss ({costs}) are taken off too. With a flat rate they don't lower the tax, since the flat rate already covers all expenses."
+    "hintCosts": "Payment fees and the conversion loss ({costs}) are taken off too. With a flat rate they don't lower the tax, since the flat rate already covers all expenses.",
+    "hintLimits": "Treat it as the low end. Until your year uses up the taxpayer credit and goes past the minimum advances (or the threshold for a side business), this invoice adds no tax or insurance and you keep more, up to {full}."
   },
   "welcome": {
     "title": "Welcome to Billanta",

@@ -1192,6 +1192,14 @@
       "expenseBy": "Despesa da regra {rule}",
       "draftBy": "Rascunho de fatura da regra {rule}",
       "expense": "Conciliado com uma despesa"
+    },
+    "transfer": {
+      "transfer": "Transferência do PayPal",
+      "withdrawal": "Levantamento do PayPal para o banco",
+      "conversion": "Conversão de moeda no PayPal",
+      "warnTitle": "Transferências do PayPal por emparelhar",
+      "unpairedCredits": "{n, plural, one {# pagamento do PayPal no banco não tem} other {# pagamentos do PayPal no banco não têm}} levantamento correspondente. Carregue o histórico do PayPal para os emparelhar.",
+      "lostWithdrawals": "{n, plural, one {# levantamento do PayPal não apareceu} other {# levantamentos do PayPal não apareceram}} no banco numa semana."
     }
   },
   "contacts": {
@@ -5512,7 +5520,8 @@
     "rate": "forfetário {rate} %",
     "noFlat": "sem regime forfetário",
     "hint": "Estimativa aproximada para um empresário em nome individual checo: o valor sem IVA menos o imposto sobre o rendimento (15 %) e as contribuições para a segurança social e o seguro de saúde sobre esta fatura – cerca de {burden}. Usa a taxa forfetária escolhida e ignora os adiantamentos mínimos e as deduções fiscais. Consulte Exportações para o ano completo.",
-    "hintCosts": "As taxas de pagamento e a perda cambial ({costs}) também são deduzidas. Com despesas forfetárias não reduzem o imposto, porque a taxa forfetária já cobre todas as despesas."
+    "hintCosts": "As taxas de pagamento e a perda cambial ({costs}) também são deduzidas. Com despesas forfetárias não reduzem o imposto, porque a taxa forfetária já cobre todas as despesas.",
+    "hintLimits": "Considere-o o mínimo. Enquanto o seu ano não esgotar a dedução do contribuinte nem ultrapassar os adiantamentos mínimos (ou o limiar de uma atividade secundária), esta fatura não acrescenta impostos nem contribuições e fica-lhe mais, até {full}."
   },
   "welcome": {
     "title": "Bem-vindo à Billanta",
