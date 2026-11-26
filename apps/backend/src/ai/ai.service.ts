@@ -174,13 +174,13 @@ export class AiService {
    * pre-fills the dashboard form, which the person reviews and submits
    * (same human-in-the-loop rule as the voice pipeline, blueprint §6/§9).
    */
-  async suggestInvoice(db: TenantDb, tenantId: string, text: string): Promise<InvoiceSuggestionResult> {
+  async suggestInvoice(db: TenantDb, tenantId: string, text: string, options: { confidential?: boolean } = {}): Promise<InvoiceSuggestionResult> {
     const input = text.trim().slice(0, MAX_INPUT_CHARS);
     if (!input) {
       throw new BadRequestException({ error: "empty_input" });
     }
     const tenant = await this.loadTenant(db, tenantId);
-    const client = this.clientFor(tenant.id, tenant.aiMode, tenant.aiApiKeyEncrypted);
+    const client = this.clientFor(tenant.id, tenant.aiMode, tenant.aiApiKeyEncrypted, providerOptions(options.confidential));
     if (tenant.isDemo) await this.consumeDemoQuota(tenant.id);
 
     const today = new Date().toISOString().slice(0, 10);
@@ -320,19 +320,19 @@ export class AiService {
     return { contact: null, ares: null };
   }
 
-  private clientFor(tenantId: string, mode: AiMode, encrypted: string | null): Anthropic {
+  private clientFor(tenantId: string, mode: AiMode, encrypted: string | null, extra: ProviderOptions = {}): Anthropic {
     if (mode === "off") {
       throw new ForbiddenException({ error: "ai_disabled" });
     }
     if (mode === "own") {
       if (!encrypted) throw new BadRequestException({ error: "ai_key_missing" });
-      return new Anthropic({ apiKey: decryptSecret(encrypted, encryptionKey()) });
+      return new Anthropic({ ...extra, apiKey: decryptSecret(encrypted, encryptionKey()) });
     }
     if (!this.platformAvailable) {
       throw new ServiceUnavailableException({ error: "ai_platform_unavailable" });
     }
     this.countPlatformUse(tenantId);
-    return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    return new Anthropic({ ...extra, apiKey: process.env.ANTHROPIC_API_KEY });
   }
 
   /** In-memory, per process: enough for the single-VPS deployment; move to Redis if the backend scales out. */
@@ -380,6 +380,17 @@ export class AiService {
     if (!tenant) throw new ForbiddenException();
     return tenant;
   }
+}
+
+type ProviderOptions = { logLevel?: "off" };
+
+/**
+ * A text from an encrypted document ("Důvěrný režim") that the member chose
+ * to send once: nothing here stores it, and the SDK's own request logging
+ * (`ANTHROPIC_LOG=debug` prints bodies) stays off whatever the environment says.
+ */
+export function providerOptions(confidential?: boolean): ProviderOptions {
+  return confidential ? { logLevel: "off" } : {};
 }
 
 function encryptionKey(): string | undefined {
