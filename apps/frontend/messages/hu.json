@@ -1023,7 +1023,8 @@
       "draftDone": "A számlapiszkozat elkészült, és hozzá van kapcsolva a fizetéshez. Ellenőrizze, majd állítsa ki.",
       "ruleApplied": "Ezt a fizetést a(z) „{rule}” szabály kezelte. A szabályokat a Bank › Szabályok menüben módosíthatja.",
       "expenseGone": "A fizetésből készült költség már nem létezik, vagy nincs jogosultsága megtekinteni.",
-      "expenseNeedsReview": "Ellenőrzésre váró költség"
+      "expenseNeedsReview": "Ellenőrzésre váró költség",
+      "transactionId": "Tranzakcióazonosító"
     },
     "connections": {
       "title": "Bankkapcsolat",

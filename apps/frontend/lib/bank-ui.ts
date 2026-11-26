@@ -5,6 +5,17 @@ import type { InvoiceRow } from './invoice-ui';
 export type TransactionStatus = 'unmatched' | 'matched' | 'ignored';
 export const TRANSACTION_STATUSES: TransactionStatus[] = ['unmatched', 'matched', 'ignored'];
 
+/** The PayPal or Stripe payment behind a synced row, as its id and the page that shows it there. */
+export function providerPayment(externalId: string | null | undefined): { id: string; url: string } | null {
+  const [, provider, id] = externalId?.match(/^(paypal|stripe):(.+)$/) ?? [];
+  if (!id) return null;
+  const url =
+    provider === 'paypal'
+      ? `https://www.paypal.com/activity/payment/${encodeURIComponent(id)}`
+      : `https://dashboard.stripe.com/payments/${encodeURIComponent(id)}`;
+  return { id, url };
+}
+
 /** A row of `GET /api/v1/bank-reconciliation/transactions` (Drizzle camelCase; numeric as string). */
 export interface BankTransaction {
   id: string;
@@ -21,6 +32,8 @@ export interface BankTransaction {
   message?: string | null;
   /** Fee the payment provider kept (PayPal), in `currency`; null for bank rows. */
   fee?: string | null;
+  /** The source's own id with its prefix ("paypal:45E2…", "stripe:ch_…"), or null for a statement row. */
+  externalId?: string | null;
   /** What PayPal credited after converting the payment, in `netCurrency`; null when it stayed in `currency`. */
   netAmount?: string | null;
   netCurrency?: string | null;

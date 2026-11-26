@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, ArrowDownLeft, ArrowUpRight, FileText, ListFilter, Receipt } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { ArrowLeft, ArrowDownLeft, ArrowUpRight, ExternalLink, FileText, ListFilter, Receipt } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
 import { InfoHint } from '@/components/info-hint';
 import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import { formatDate, formatMoney, type InvoiceRow } from '@/lib/invoice-ui';
-import { rankCandidates, TX_STATUS_CLASSES, type BankTransaction, type BankTransactionDetail } from '@/lib/bank-ui';
+import { providerPayment, rankCandidates, TX_STATUS_CLASSES, type BankTransaction, type BankTransactionDetail } from '@/lib/bank-ui';
 import type { Expense } from '@/lib/expense-ui';
 import { cn } from '@/lib/utils';
 import { TransactionActions } from './transaction-actions';
@@ -57,12 +58,25 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
       }).slice(0, 8)
     : [];
 
-  const facts: [string, string | null][] = [
+  const payment = providerPayment(tx.externalId);
+  const facts: [string, ReactNode][] = [
     [t('columns.date'), formatDate(tx.transactionDate, locale)],
     [t('columns.variableSymbol'), tx.variableSymbol],
     [t('detail.account'), tx.counterpartyAccount],
     // Most lines carry no message; a "–" row for it is just noise.
     ...(tx.message ? ([[t('detail.message'), tx.message]] as [string, string][]) : []),
+    // Where to find the payment for a refund or a dispute.
+    ...(payment
+      ? ([
+          [
+            t('detail.transactionId'),
+            <a key="tx" href={payment.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-mono text-sm hover:text-primary">
+              {payment.id}
+              <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+            </a>
+          ]
+        ] as [string, ReactNode][])
+      : []),
     [t('detail.importFile'), tx.import.filename],
     [t('detail.importedAt'), formatDate(tx.import.importedAt, locale)]
   ];

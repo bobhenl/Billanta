@@ -1023,7 +1023,8 @@
       "draftDone": "Rascunho de fatura criado e associado ao pagamento. Reveja-o e emita-o.",
       "ruleApplied": "A regra “{rule}” tratou este pagamento. Pode alterar as regras em Banco › Regras.",
       "expenseGone": "A despesa deste pagamento já não existe ou não tem permissão para a ver.",
-      "expenseNeedsReview": "Despesa a aguardar revisão"
+      "expenseNeedsReview": "Despesa a aguardar revisão",
+      "transactionId": "ID da transação"
     },
     "connections": {
       "title": "Ligação bancária",

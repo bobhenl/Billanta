@@ -1023,7 +1023,8 @@
       "draftDone": "Bozza di fattura creata e collegata al pagamento. La controlli ed emetta.",
       "ruleApplied": "Questo pagamento è stato gestito dalla regola “{rule}”. Può modificare le regole in Banca › Regole.",
       "expenseGone": "La spesa creata da questo pagamento non esiste più oppure non ha i permessi per vederla.",
-      "expenseNeedsReview": "Spesa in attesa di verifica"
+      "expenseNeedsReview": "Spesa in attesa di verifica",
+      "transactionId": "ID transazione"
     },
     "connections": {
       "title": "Collegamento bancario",

@@ -1023,7 +1023,8 @@
       "draftDone": "Borrador de factura creado y vinculado al pago. Revíselo y emítalo.",
       "ruleApplied": "La regla “{rule}” ha procesado este pago. Puede cambiar las reglas en Banco › Reglas.",
       "expenseGone": "El gasto de este pago ya no existe o no tiene permiso para verlo.",
-      "expenseNeedsReview": "Gasto pendiente de revisión"
+      "expenseNeedsReview": "Gasto pendiente de revisión",
+      "transactionId": "ID de la transacción"
     },
     "connections": {
       "title": "Conexión bancaria",

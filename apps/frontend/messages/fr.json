@@ -1023,7 +1023,8 @@
       "draftDone": "Brouillon de facture créé et lié au paiement. Vérifiez-le, puis émettez-le.",
       "ruleApplied": "La règle « {rule} » a traité ce paiement. Vous pouvez modifier les règles dans Banque › Règles.",
       "expenseGone": "La dépense issue de ce paiement n’existe plus, ou vous n’avez pas le droit de la voir.",
-      "expenseNeedsReview": "Dépense en attente de vérification"
+      "expenseNeedsReview": "Dépense en attente de vérification",
+      "transactionId": "ID de transaction"
     },
     "connections": {
       "title": "Connexion bancaire",

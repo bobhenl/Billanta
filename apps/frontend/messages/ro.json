@@ -1023,7 +1023,8 @@
       "draftDone": "Ciorna facturii a fost creată și asociată plății. Verificați-o și emiteți-o.",
       "ruleApplied": "Regula „{rule}” a procesat această plată. Puteți modifica regulile la Bancă › Reguli.",
       "expenseGone": "Cheltuiala din această plată nu mai există sau nu aveți acces la ea.",
-      "expenseNeedsReview": "Cheltuială în așteptarea verificării"
+      "expenseNeedsReview": "Cheltuială în așteptarea verificării",
+      "transactionId": "ID tranzacție"
     },
     "connections": {
       "title": "Conexiune bancară",

@@ -1023,7 +1023,8 @@
       "draftDone": "Rechnungsentwurf erstellt und mit der Zahlung verknüpft. Prüfen Sie ihn und stellen Sie ihn aus.",
       "ruleApplied": "Die Regel „{rule}“ hat diese Zahlung verarbeitet. Regeln ändern Sie unter Bank › Regeln.",
       "expenseGone": "Die Ausgabe zu dieser Zahlung existiert nicht mehr oder Sie dürfen sie nicht sehen.",
-      "expenseNeedsReview": "Ausgabe wartet auf Prüfung"
+      "expenseNeedsReview": "Ausgabe wartet auf Prüfung",
+      "transactionId": "Transaktions-ID"
     },
     "connections": {
       "title": "Bankverbindung",

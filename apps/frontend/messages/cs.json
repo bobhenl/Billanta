@@ -1024,7 +1024,8 @@
       "draftDone": "Návrh faktury vytvořen a propojen s platbou. Zkontrolujte ho a vystavte.",
       "ruleApplied": "Platbu vyřídilo pravidlo „{rule}“. Pravidla upravíte v Bance › Pravidla.",
       "expenseGone": "Výdaj z této platby už neexistuje, nebo ho nemůžete zobrazit.",
-      "expenseNeedsReview": "Výdaj čeká na kontrolu"
+      "expenseNeedsReview": "Výdaj čeká na kontrolu",
+      "transactionId": "ID transakce"
     },
     "connections": {
       "title": "Napojení na banku",

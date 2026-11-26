@@ -1024,7 +1024,8 @@
       "draftDone": "Invoice draft created and linked to the payment. Review it and issue it.",
       "ruleApplied": "Rule “{rule}” handled this payment. You can change rules under Bank › Rules.",
       "expenseGone": "The expense from this payment no longer exists, or you can't view it.",
-      "expenseNeedsReview": "Expense waiting for review"
+      "expenseNeedsReview": "Expense waiting for review",
+      "transactionId": "Transaction ID"
     },
     "connections": {
       "title": "Bank connection",

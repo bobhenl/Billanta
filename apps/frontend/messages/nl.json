@@ -1023,7 +1023,8 @@
       "draftDone": "Conceptfactuur gemaakt en aan de betaling gekoppeld. Kijk hem na en geef hem uit.",
       "ruleApplied": "Regel “{rule}” heeft deze betaling verwerkt. Je kunt regels wijzigen onder Bank › Regels.",
       "expenseGone": "De uitgave van deze betaling bestaat niet meer, of je mag hem niet bekijken.",
-      "expenseNeedsReview": "Uitgave wacht op controle"
+      "expenseNeedsReview": "Uitgave wacht op controle",
+      "transactionId": "Transactie-ID"
     },
     "connections": {
       "title": "Bankkoppeling",
