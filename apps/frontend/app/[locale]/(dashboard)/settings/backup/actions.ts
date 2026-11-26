@@ -43,7 +43,7 @@ export async function createBackupDestination(
 /** `PATCH /api/v1/backup-destinations/:id` — schedule / pause / file encryption. */
 export async function updateBackupDestination(
   id: string,
-  patch: { schedule?: BackupSchedule; isActive?: boolean; encryption?: BackupEncryptionInput }
+  patch: { schedule?: BackupSchedule; isActive?: boolean; encryption?: BackupEncryptionInput; archiveDocuments?: boolean }
 ): Promise<Result<BackupDestinationListItem>> {
   try {
     const data = await apiFetch<BackupDestinationListItem>(`/api/v1/backup-destinations/${encodeURIComponent(id)}`, {

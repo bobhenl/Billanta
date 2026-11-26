@@ -271,6 +271,9 @@ export const tenants = pgTable("tenants", {
   trialEndsAt: timestamp("trial_ends_at", { withTimezone: true }),
   // Smallest "days left" the ending reminder already went out for (3, 1, 0 = ended).
   trialRemindedDays: integer("trial_reminded_days"),
+  // Last quarterly "download your document archive" notice (0102,
+  // backup-destinations/archive-reminder.cron.ts); null = never sent.
+  archiveRemindedAt: timestamp("archive_reminded_at", { withTimezone: true }),
   // How the trial started (0086): 'welcome' (the IČO), 'card' (extended with a
   // card); null for promo codes and older trials. trial_withheld_at: an abuse
   // signal or a used IČO kept the no-card trial back, a card clears it.
@@ -1232,6 +1235,9 @@ export const backupDestinations = pgTable("backup_destinations", {
   // company can decrypt) or a passphrase (AES-GCM encrypted like the secrets).
   encryptionRecipient: text("encryption_recipient"),
   encryptionPassphraseEncrypted: text("encryption_passphrase_encrypted"),
+  // sftp / google_drive: also mirror the documents themselves (PDF, ISDOC,
+  // attachments) as readable files, see `document_archive_files` (0102).
+  archiveDocuments: boolean("archive_documents").notNull().default(true),
   lastRunAt: timestamp("last_run_at", { withTimezone: true }),
   // e.g. "success", or an error message string when the last run failed —
   // see `backup_runs` below for the full per-run history/audit trail this
@@ -1264,6 +1270,34 @@ export const backupRuns = pgTable("backup_runs", {
   // anything.
   recordCount: integer("record_count"),
 });
+
+// ---------------------------------------------------------------------------
+// document_archive_files – tenant-scoped (0102). One row per file the
+// document archive put on a destination (`Billanta/2026/vydane/2026-0001.pdf`),
+// with the fingerprint of the data it was made from, so the next run uploads
+// only new or changed documents. `remote_id` is the Google Drive file id, so a
+// changed document replaces its file instead of adding a second one.
+// ---------------------------------------------------------------------------
+export const documentArchiveFiles = pgTable(
+  "document_archive_files",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    destinationId: uuid("destination_id")
+      .notNull()
+      .references(() => backupDestinations.id, { onDelete: "cascade" }),
+    path: text("path").notNull(),
+    fingerprint: varchar("fingerprint", { length: 64 }).notNull(),
+    remoteId: text("remote_id"),
+    sizeBytes: integer("size_bytes").notNull(),
+    uploadedAt: timestamp("uploaded_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    destinationPathUnique: uniqueIndex("document_archive_files_destination_path_unique").on(table.destinationId, table.path),
+  }),
+);
 
 // ---------------------------------------------------------------------------
 // invoice_templates — tenant-scoped reusable invoice blueprints ("Monthly

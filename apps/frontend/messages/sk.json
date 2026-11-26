@@ -1496,7 +1496,20 @@
         "badgeKey": "Šifrované kľúčom",
         "badgePassphrase": "Šifrované heslom"
       },
-      "twoFactorRequired": "Cieľ zálohy sa dá pripojiť iba s dvojfázovým overením."
+      "twoFactorRequired": "Cieľ zálohy sa dá pripojiť iba s dvojfázovým overením.",
+      "archive": {
+        "title": "Archív dokladov",
+        "description": "Všetky vydané faktúry a dobropisy ako PDF a ISDOC, prílohy, prijaté e-faktúry a zoznam nákladov v jednom ZIPe, zoradené podľa rokov.",
+        "empty": "Zatiaľ tu nie sú žiadne vystavené doklady ani náklady.",
+        "yearLabel": "Rok",
+        "allYears": "Všetky roky",
+        "download": "Stiahnuť archív",
+        "contents": "Doklady musíte uchovávať 10 rokov. Archív si stiahnite aspoň raz za štvrťrok alebo zapnite automatickú zálohu na vlastné SFTP či Google Disk.",
+        "badge": "Archív dokladov",
+        "turnOn": "Zapnúť archív",
+        "turnOff": "Vypnúť archív",
+        "toggleHint": "Okrem dátovej zálohy nahráva aj čitateľné PDF a ISDOC do priečinka Billanta/{year}/. Nahrávajú sa len nové a zmenené doklady."
+      }
     },
     "ai": {
       "title": "AI",
@@ -2520,6 +2533,10 @@
         "profile_message": {
           "label": "Správa z profilu",
           "hint": "Návštevník vám napísal cez formulár Kontaktovať na verejnom profile."
+        },
+        "archive_reminder": {
+          "label": "Pripomienka archívu",
+          "hint": "Raz za štvrťrok pripomenie majiteľovi stiahnutie archívu dokladov, ak nemá automatickú zálohu."
         }
       },
       "browserTitle": "Oznámenia v prehliadači",
@@ -9372,7 +9389,8 @@
       "buyer_details": "e-maily o údajoch, ktoré doplnili odberatelia",
       "weekly_digest": "týždenný prehľad",
       "all": "všetky nepovinné upozornenia e-mailom",
-      "newsletter": "novinky Billanty o zmenách v daniach a fakturácii"
+      "newsletter": "novinky Billanty o zmenách v daniach a fakturácii",
+      "archive_reminder": "pripomienky na stiahnutie archívu dokladov"
     },
     "errors": {
       "invalid": "Odkaz je neplatný alebo neúplný. Skúste ho z e-mailu skopírovať celý.",

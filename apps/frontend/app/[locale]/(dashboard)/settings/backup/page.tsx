@@ -9,6 +9,7 @@ import {
   BackupDestinationsManager,
   type BackupDestinationListItem
 } from './backup-destinations-manager';
+import { DocumentArchiveDownload } from './document-archive-download';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.backup');
@@ -29,9 +30,13 @@ export default async function BackupSettingsPage({ searchParams }: BackupSetting
   // Backup destinations are owner-only on the backend (OwnerOnlyGuard): a
   // 403 means "not the owner", anything else is a genuine load failure.
   let destinations: BackupDestinationListItem[] = [];
+  let archiveYears: number[] = [];
   let state: 'ok' | 'ownerOnly' | 'error' = 'ok';
   try {
-    destinations = await apiFetch<BackupDestinationListItem[]>('/api/v1/backup-destinations');
+    [destinations, archiveYears] = await Promise.all([
+      apiFetch<BackupDestinationListItem[]>('/api/v1/backup-destinations'),
+      apiFetch<number[]>('/api/v1/backup-destinations/archive/years')
+    ]);
   } catch (error) {
     if (error instanceof NotSignedInError) redirect({ href: '/login', locale });
     state = error instanceof ApiError && error.status === 403 ? 'ownerOnly' : 'error';
@@ -76,6 +81,7 @@ export default async function BackupSettingsPage({ searchParams }: BackupSetting
       {state === 'error' && <Banner tone="err" title={t('loadError')} className="mt-4" />}
 
       {state === 'ok' && <TwoFactorNotice className="mt-4" />}
+      {state === 'ok' && <DocumentArchiveDownload years={archiveYears} />}
       {state === 'ok' && <BackupDestinationsManager initialDestinations={destinations} />}
 
       <p className="mt-4 text-xs text-muted-foreground">{t('docsHint')}</p>

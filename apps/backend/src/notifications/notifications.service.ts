@@ -53,7 +53,12 @@ export class NotificationsService {
    * Writes the in-app rows and queues the e-mails (batched per member and
    * held over their quiet hours by the outbox); returns how many were made.
    */
-  async deliver(tenantId: string, kind: NotificationEvent, payload: NotificationPayload): Promise<number> {
+  async deliver(
+    tenantId: string,
+    kind: NotificationEvent,
+    payload: NotificationPayload,
+    opts: { roles?: (typeof schema.tenantMemberships.$inferSelect)["role"][] } = {},
+  ): Promise<number> {
     const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3100").replace(/\/$/, "");
     let emails = 0;
     let inApp = 0;
@@ -69,7 +74,12 @@ export class NotificationsService {
         })
         .from(schema.tenantMemberships)
         .innerJoin(schema.users, eq(schema.users.id, schema.tenantMemberships.userId))
-        .where(eq(schema.tenantMemberships.tenantId, tenantId));
+        .where(
+          and(
+            eq(schema.tenantMemberships.tenantId, tenantId),
+            ...(opts.roles ? [inArray(schema.tenantMemberships.role, opts.roles)] : []),
+          ),
+        );
       [hooks] = await db
         .select({ webhooks: schema.tenants.webhooks, company: schema.tenants.companyName, locale: schema.tenants.defaultLocale })
         .from(schema.tenants)

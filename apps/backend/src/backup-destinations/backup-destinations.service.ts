@@ -39,6 +39,7 @@ const PUBLIC_DESTINATION_COLUMNS = {
   sftpPublicKey: schema.backupDestinations.sftpPublicKey,
   sftpHostFingerprint: schema.backupDestinations.sftpHostFingerprint,
   encryptionRecipient: schema.backupDestinations.encryptionRecipient,
+  archiveDocuments: schema.backupDestinations.archiveDocuments,
   encryptionPassphrase: sql<boolean>`(${schema.backupDestinations.encryptionPassphraseEncrypted} is not null)`.as("encryption_passphrase"),
   lastRunAt: schema.backupDestinations.lastRunAt,
   lastRunStatus: schema.backupDestinations.lastRunStatus,
@@ -193,6 +194,7 @@ export class BackupDestinationsService {
       patch.webhookUrl = dto.webhookUrl;
     }
     if (dto.googleDriveFolderId !== undefined) patch.googleDriveFolderId = dto.googleDriveFolderId;
+    if (dto.archiveDocuments !== undefined) patch.archiveDocuments = dto.archiveDocuments;
     if (dto.sftp || dto.encryption) await this.patchSftpAndEncryption(tenantDb, id, dto, patch);
 
     const [row] = await tenantDb

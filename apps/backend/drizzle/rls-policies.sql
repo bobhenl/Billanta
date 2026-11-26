@@ -235,6 +235,15 @@ CREATE POLICY tenant_isolation ON backup_runs
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
 
+-- Which documents the archive already put on each destination (0102).
+ALTER TABLE document_archive_files ENABLE ROW LEVEL SECURITY;
+ALTER TABLE document_archive_files FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS tenant_isolation ON document_archive_files;
+CREATE POLICY tenant_isolation ON document_archive_files
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
 -- ---------------------------------------------------------------------------
 -- Deliberately EXCLUDED from RLS — global / catalog tables, no tenant_id:
 -- ---------------------------------------------------------------------------

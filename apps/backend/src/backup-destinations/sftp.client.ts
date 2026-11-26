@@ -39,14 +39,33 @@ export function remoteFilePath(dir: string, filename: string): string {
   return clean ? `${clean}/${filename}` : filename;
 }
 
+export interface SftpSession {
+  /** The host key seen on connect, to pin on the first run. */
+  fingerprint: string;
+  /** Writes `content` at `relativePath` under the target directory, creating folders as needed. */
+  put(relativePath: string, content: Buffer): Promise<void>;
+  end(): Promise<void>;
+}
+
 /**
- * Uploads one backup file to the company's own SFTP server. The host must be
+ * Uploads backup files to the company's own SFTP server. The host must be
  * public (same rule as backup webhooks) and its key must match the pinned
  * fingerprint; on the first run the seen fingerprint is returned for pinning.
  */
 @Injectable()
 export class SftpBackupClient {
   async upload(target: SftpTarget, filename: string, content: Buffer): Promise<{ fingerprint: string }> {
+    const session = await this.open(target);
+    try {
+      await session.put(filename, content);
+    } finally {
+      await session.end();
+    }
+    return { fingerprint: session.fingerprint };
+  }
+
+  /** One connection for many files (the document archive). */
+  async open(target: SftpTarget): Promise<SftpSession> {
     // Connect to the address that passed the public check, not the name:
     // resolving twice would let a rebinding domain point the socket inward.
     let address: string;
@@ -76,13 +95,23 @@ export class SftpBackupClient {
       }
       throw new Error(`SFTP connection failed: ${(err as Error).message}`);
     }
-    try {
-      const dir = target.path.trim().replace(/\/+$/, "");
-      if (dir && !(await client.exists(dir))) await client.mkdir(dir, true);
-      await client.put(content, remoteFilePath(dir, filename));
-    } finally {
-      await client.end().catch(() => undefined);
-    }
-    return { fingerprint: seen ?? target.fingerprint ?? "" };
+
+    const root = target.path.trim().replace(/\/+$/, "");
+    const made = new Set<string>();
+    const ensureDir = async (dir: string) => {
+      if (!dir || made.has(dir)) return;
+      if (!(await client.exists(dir))) await client.mkdir(dir, true);
+      made.add(dir);
+    };
+    return {
+      fingerprint: seen ?? target.fingerprint ?? "",
+      put: async (relativePath, content) => {
+        const full = remoteFilePath(root, relativePath);
+        const slash = full.lastIndexOf("/");
+        await ensureDir(slash > 0 ? full.slice(0, slash) : "");
+        await client.put(content, full);
+      },
+      end: () => client.end().then(() => undefined, () => undefined),
+    };
   }
 }

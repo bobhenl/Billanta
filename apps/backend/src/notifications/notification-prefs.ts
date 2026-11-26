@@ -23,6 +23,9 @@ export const NOTIFICATION_EVENTS = [
   // A visitor's message from the public profile ("Kontaktovat"). In-app only
   // unless the member opts into e-mail; nothing is ever sent to the visitor.
   "profile_message",
+  // Quarterly "download your document archive", owners only, for companies
+  // with no automatic SFTP/Drive archive (ArchiveReminderCron).
+  "archive_reminder",
 ] as const;
 export type NotificationEvent = (typeof NOTIFICATION_EVENTS)[number];
 export const NOTIFICATION_CHANNELS = ["app", "email"] as const;

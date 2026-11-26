@@ -1496,7 +1496,20 @@
         "badgeKey": "Šifrováno klíčem",
         "badgePassphrase": "Šifrováno heslem"
       },
-      "twoFactorRequired": "Cíl zálohy lze připojit jen s dvoufázovým ověřením."
+      "twoFactorRequired": "Cíl zálohy lze připojit jen s dvoufázovým ověřením.",
+      "archive": {
+        "title": "Archiv dokladů",
+        "description": "Všechny vydané faktury a dobropisy jako PDF a ISDOC, přílohy, přijaté e-faktury a seznam nákladů v jednom ZIPu, srovnané podle roků.",
+        "empty": "Zatím tu nejsou žádné vystavené doklady ani náklady.",
+        "yearLabel": "Rok",
+        "allYears": "Všechny roky",
+        "download": "Stáhnout archiv",
+        "contents": "Doklady musíte uchovávat 10 let. Archiv si stáhněte aspoň jednou za čtvrtletí, nebo zapněte automatickou zálohu na vlastní SFTP či Google Disk.",
+        "badge": "Archiv dokladů",
+        "turnOn": "Zapnout archiv",
+        "turnOff": "Vypnout archiv",
+        "toggleHint": "Kromě datové zálohy nahrává i čitelné PDF a ISDOC do složky Billanta/{year}/. Nahrávají se jen nové a změněné doklady."
+      }
     },
     "ai": {
       "title": "AI",
@@ -2520,6 +2533,10 @@
         "profile_message": {
           "label": "Zpráva z profilu",
           "hint": "Návštěvník vám napsal přes formulář Kontaktovat na veřejném profilu."
+        },
+        "archive_reminder": {
+          "label": "Připomenutí archivu",
+          "hint": "Jednou za čtvrtletí připomene majiteli stažení archivu dokladů, pokud nemá automatickou zálohu."
         }
       },
       "browserTitle": "Oznámení v prohlížeči",
@@ -9466,7 +9483,8 @@
       "buyer_details": "e-maily o údajích, které doplnili odběratelé",
       "weekly_digest": "týdenní přehled",
       "all": "všechna nepovinná upozornění e-mailem",
-      "newsletter": "novinky Billanty o změnách v daních a fakturaci"
+      "newsletter": "novinky Billanty o změnách v daních a fakturaci",
+      "archive_reminder": "připomenutí ke stažení archivu dokladů"
     },
     "errors": {
       "invalid": "Odkaz je neplatný nebo neúplný. Zkuste ho z e-mailu zkopírovat celý.",

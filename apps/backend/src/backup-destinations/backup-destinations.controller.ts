@@ -1,4 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req, Res, UseGuards } from "@nestjs/common";
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  Res,
+  UseGuards,
+} from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Response } from "express";
@@ -6,6 +20,7 @@ import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { TwoFactorGuard } from "../auth/two-factor.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { BackupDestinationsService } from "./backup-destinations.service";
+import { DocumentArchiveService } from "./document-archive.service";
 import { CreateBackupDestinationDto } from "./dto/create-backup-destination.dto";
 import { UpdateBackupDestinationDto } from "./dto/update-backup-destination.dto";
 import {
@@ -36,7 +51,10 @@ export class BackupDestinationsController {
     private readonly backupDestinationsService: BackupDestinationsService,
     private readonly googleDriveOAuthService: GoogleDriveOAuthService,
     private readonly jwtService: JwtService,
+    private readonly documentArchive: DocumentArchiveService,
   ) {}
+
+  private readonly logger = new Logger(BackupDestinationsController.name);
 
   @Post()
   @UseGuards(TwoFactorGuard)
@@ -93,11 +111,51 @@ export class BackupDestinationsController {
     res.redirect(this.googleDriveOAuthService.buildAuthorizeUrl(state));
   }
 
+  @Get("archive/years")
+  @ApiOperation({ summary: "Years that have archivable documents, newest first" })
+  archiveYears(@Req() req: TenantScopedRequest) {
+    return this.documentArchive.years(req.tenantDb!);
+  }
+
+  /**
+   * The whole document archive (PDF, ISDOC, attachments, expense list) as a
+   * ZIP, written entry by entry so a big year never sits in memory. Headers
+   * go out before the first document is rendered, so an error midway can only
+   * cut the download short; it is logged and the socket closed.
+   */
+  @Get("archive.zip")
+  @ApiOperation({ summary: "Download the document archive as a ZIP (?year=YYYY or ?year=all)" })
+  async archiveZip(
+    @Req() req: TenantScopedRequest,
+    @Query("year") yearParam: string | undefined,
+    @Res() res: Response,
+  ): Promise<void> {
+    const all = !yearParam || yearParam === "all";
+    const year = all ? undefined : Number(yearParam);
+    if (!all && !(Number.isInteger(year) && year! >= 2000 && year! <= 2100)) {
+      throw new BadRequestException("invalid_year");
+    }
+    res.set({
+      "Content-Type": "application/zip",
+      "Content-Disposition": `attachment; filename="billanta-archiv-${all ? "vse" : year}.zip"`,
+      "Cache-Control": "no-store",
+    });
+    const sink = (chunk: Buffer) =>
+      res.write(chunk) ? undefined : new Promise<void>((resolve) => res.once("drain", resolve));
+    try {
+      await this.documentArchive.writeZip(req.tenantDb!, req.user!.tenantId, year, sink);
+      res.end();
+    } catch (err) {
+      this.logger.error(`archive zip failed for tenant ${req.user!.tenantId}: ${(err as Error).message}`);
+      res.destroy();
+    }
+  }
+
   @Patch(":id")
   @UseGuards(TwoFactorGuard)
   @ApiOperation({
     summary: "Update a backup destination",
-    description: "Patchable fields: schedule, isActive, webhookUrl, googleDriveFolderId.",
+    description: "Patchable fields: schedule, isActive, webhookUrl, googleDriveFolderId, sftp, encryption, archiveDocuments.",
   })
   update(
     @Req() req: TenantScopedRequest,

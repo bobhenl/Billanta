@@ -109,6 +109,23 @@ describe("SftpBackupClient", () => {
     );
   });
 
+  it("writes many archive files into nested folders over one session", async () => {
+    const session = await new SftpBackupClient().open(target(null));
+    try {
+      await session.put("Billanta/2026/vydane/2026-0001.pdf", Buffer.from("%PDF-1"));
+      await session.put("Billanta/2026/vydane/2026-0001.isdoc", Buffer.from("<Invoice/>"));
+      await session.put("Billanta/2025/naklady/naklady-2025.csv", Buffer.from("a;b"));
+    } finally {
+      await session.end();
+    }
+    expect(session.fingerprint).toBe(sftp.fingerprint);
+    expect(sftp.dirs.has("billanta-zalohy/Billanta/2026/vydane")).toBe(true);
+    expect(sftp.dirs.has("billanta-zalohy/Billanta/2025/naklady")).toBe(true);
+    expect(sftp.files.get("billanta-zalohy/Billanta/2026/vydane/2026-0001.pdf")?.toString()).toBe("%PDF-1");
+    expect(sftp.files.get("billanta-zalohy/Billanta/2026/vydane/2026-0001.isdoc")?.toString()).toBe("<Invoice/>");
+    expect(sftp.files.get("billanta-zalohy/Billanta/2025/naklady/naklady-2025.csv")?.toString()).toBe("a;b");
+  });
+
   it("uploads age-encrypted content that is not the plaintext", async () => {
     const plain = Buffer.from("tajná data faktur");
     const out = await ageEncrypt(plain, { passphrase: "dlouhe-heslo-123" });

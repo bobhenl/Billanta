@@ -20,7 +20,8 @@ export const NOTIFICATION_EVENTS = [
   'member_joined',
   'quote_response',
   'buyer_details',
-  'profile_message'
+  'profile_message',
+  'archive_reminder'
 ] as const;
 export type NotificationEvent = (typeof NOTIFICATION_EVENTS)[number];
 
@@ -67,6 +68,7 @@ export const EVENT_TONE: Record<string, string> = {
   quote_response: 'bg-indigo-500',
   buyer_details: 'bg-cyan-500',
   profile_message: 'bg-violet-500',
+  archive_reminder: 'bg-slate-500',
   security_alert: 'bg-red-600',
   billing: 'bg-orange-500'
 };

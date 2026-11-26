@@ -1496,7 +1496,20 @@
         "badgeKey": "Encrypted with key",
         "badgePassphrase": "Encrypted with passphrase"
       },
-      "twoFactorRequired": "Backup destinations can only be connected with two-factor authentication."
+      "twoFactorRequired": "Backup destinations can only be connected with two-factor authentication.",
+      "archive": {
+        "title": "Document archive",
+        "description": "All issued invoices and credit notes as PDF and ISDOC, attachments, received e-invoices and the expense list in one ZIP, sorted by year.",
+        "empty": "There are no issued documents or expenses yet.",
+        "yearLabel": "Year",
+        "allYears": "All years",
+        "download": "Download archive",
+        "contents": "Documents have to be kept for 10 years. Download the archive at least once a quarter, or turn on an automatic backup to your own SFTP or Google Drive.",
+        "badge": "Document archive",
+        "turnOn": "Turn archive on",
+        "turnOff": "Turn archive off",
+        "toggleHint": "Besides the data backup, also uploads readable PDF and ISDOC files to the Billanta/{year}/ folder. Only new and changed documents are uploaded."
+      }
     },
     "ai": {
       "title": "AI",
@@ -2520,6 +2533,10 @@
         "profile_message": {
           "label": "Profile message",
           "hint": "A visitor wrote to you through the Contact form on your public profile."
+        },
+        "archive_reminder": {
+          "label": "Archive reminder",
+          "hint": "Once a quarter, reminds the owner to download the document archive when there is no automatic backup."
         }
       },
       "browserTitle": "Browser notifications",
@@ -9466,7 +9483,8 @@
       "buyer_details": "emails about details filled in by customers",
       "weekly_digest": "the weekly digest",
       "all": "all optional email notifications",
-      "newsletter": "Billanta updates on tax and invoicing changes"
+      "newsletter": "Billanta updates on tax and invoicing changes",
+      "archive_reminder": "reminders to download the document archive"
     },
     "errors": {
       "invalid": "This link is invalid or incomplete. Try copying the whole link from the email.",

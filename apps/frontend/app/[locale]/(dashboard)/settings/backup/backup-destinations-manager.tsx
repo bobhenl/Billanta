@@ -35,6 +35,8 @@ export interface BackupDestinationListItem {
   encryptionRecipient?: string | null;
   /** True when the files are encrypted with a passphrase (never sent back). */
   encryptionPassphrase?: boolean;
+  /** sftp / google_drive: also upload the PDF/ISDOC document archive. */
+  archiveDocuments?: boolean;
   lastRunAt: string | null;
   /** "success", or an error message string when the last run failed. */
   lastRunStatus: string | null;
@@ -267,6 +269,16 @@ export function BackupDestinationsManager({
     setDestinations((current) => current.map((d) => (d.id === destination.id ? { ...d, isActive: !d.isActive } : d)));
   }
 
+  async function handleToggleArchive(destination: BackupDestinationListItem) {
+    const next = destination.archiveDocuments === false;
+    const result = await updateBackupDestination(destination.id, { archiveDocuments: next });
+    if (!result.ok) {
+      toast({ text: result.error === 'two_factor_required' ? t('twoFactorRequired') : result.error, tone: 'err' });
+      return;
+    }
+    setDestinations((current) => current.map((d) => (d.id === destination.id ? { ...d, archiveDocuments: next } : d)));
+  }
+
   async function handleDelete(id: string) {
     if (!window.confirm(t('confirmDelete'))) return;
     setDeletingId(id);
@@ -407,6 +419,12 @@ export function BackupDestinationsManager({
                           {encryptionModeOf(destination) === 'key' ? t('encryption.badgeKey') : t('encryption.badgePassphrase')}
                         </span>
                       )}
+                    {(destination.type === 'sftp' || destination.type === 'google_drive') &&
+                      destination.archiveDocuments !== false && (
+                        <span className="ml-1 mt-1 inline-flex items-center rounded-full bg-success/15 px-2 py-0.5 text-[11px] font-medium text-success">
+                          {t('archive.badge')}
+                        </span>
+                      )}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
                     {readOnly || destination.type === 'local' ? (
@@ -456,6 +474,16 @@ export function BackupDestinationsManager({
                           className="text-xs font-medium text-muted-foreground underline underline-offset-2 hover:no-underline"
                         >
                           {t('encryption.button')}
+                        </button>
+                      )}
+                      {(destination.type === 'sftp' || destination.type === 'google_drive') && (
+                        <button
+                          type="button"
+                          onClick={() => handleToggleArchive(destination)}
+                          title={t('archive.toggleHint', { year: new Date().getFullYear() })}
+                          className="text-xs font-medium text-muted-foreground underline underline-offset-2 hover:no-underline"
+                        >
+                          {destination.archiveDocuments === false ? t('archive.turnOn') : t('archive.turnOff')}
                         </button>
                       )}
                       {destination.sftpPublicKey && (

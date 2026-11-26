@@ -5,6 +5,9 @@ import { eq, inArray } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { ageEncrypt } from "./age.util";
+import { fingerprintOf } from "./archive-layout";
+import { PLAIN, type ArchiveTransform, type ArchiveUploader } from "./archive-sync";
+import { DocumentArchiveService } from "./document-archive.service";
 import { decryptSecret } from "./encryption.util";
 import { GoogleDriveClient } from "./google-drive.client";
 import { SftpBackupClient, type SftpSecret } from "./sftp.client";
@@ -84,6 +87,7 @@ export class ExportService {
     private readonly googleDriveClient: GoogleDriveClient,
     private readonly sqliteExportService: SqliteExportService,
     private readonly sftpClient: SftpBackupClient,
+    private readonly documentArchive: DocumentArchiveService,
   ) {}
 
   /**
@@ -198,6 +202,10 @@ export class ExportService {
           Buffer.from(out.data),
           out.encrypted ? "application/octet-stream" : "application/json",
         );
+        if (destination.archiveDocuments) {
+          const session = await this.googleDriveClient.openSession(secret, destination.googleDriveFolderId);
+          await this.archiveDocuments(db, tenantId, destination, encryptionKey, session);
+        }
       } else if (destination.type === "sftp") {
         if (!secret || !destination.sftpHost || !destination.sftpUsername) {
           throw new Error("SFTP destination is missing its host, user or credentials");
@@ -206,23 +214,33 @@ export class ExportService {
         const sqlite = await this.sqliteExportService.buildSqliteFile(bundle);
         const out = await ageEncrypt(sqlite, this.encryptionOf(destination, encryptionKey));
         const stamp = startedAt.toISOString().replace(/[:.]/g, "-");
-        const { fingerprint } = await this.sftpClient.upload(
-          {
-            host: destination.sftpHost,
-            port: destination.sftpPort ?? 22,
-            username: destination.sftpUsername,
-            path: destination.sftpPath ?? "",
-            ...credentials,
-            fingerprint: destination.sftpHostFingerprint,
-          },
-          `billanta-zaloha-${stamp}.db${out.encrypted ? ".age" : ""}`,
-          Buffer.from(out.data),
-        );
-        if (fingerprint && fingerprint !== destination.sftpHostFingerprint) {
-          await db
-            .update(schema.backupDestinations)
-            .set({ sftpHostFingerprint: fingerprint })
-            .where(eq(schema.backupDestinations.id, destination.id));
+        const session = await this.sftpClient.open({
+          host: destination.sftpHost,
+          port: destination.sftpPort ?? 22,
+          username: destination.sftpUsername,
+          path: destination.sftpPath ?? "",
+          ...credentials,
+          fingerprint: destination.sftpHostFingerprint,
+        });
+        try {
+          await session.put(`billanta-zaloha-${stamp}.db${out.encrypted ? ".age" : ""}`, Buffer.from(out.data));
+          const { fingerprint } = session;
+          if (fingerprint && fingerprint !== destination.sftpHostFingerprint) {
+            await db
+              .update(schema.backupDestinations)
+              .set({ sftpHostFingerprint: fingerprint })
+              .where(eq(schema.backupDestinations.id, destination.id));
+          }
+          if (destination.archiveDocuments) {
+            await this.archiveDocuments(db, tenantId, destination, encryptionKey, {
+              put: async (path, data) => {
+                await session.put(path, data);
+                return { remoteId: null };
+              },
+            });
+          }
+        } finally {
+          await session.end();
         }
       } else {
         // `type === "local"` destinations never reach this method — see
@@ -259,6 +277,35 @@ export class ExportService {
         ? decryptSecret(destination.encryptionPassphraseEncrypted, encryptionKey)
         : null,
     };
+  }
+
+  /**
+   * Mirrors the readable PDF/ISDOC archive next to the data file. Encryption
+   * follows the destination: each file becomes `<name>.age`. The transform id
+   * hashes the key and the passphrase ciphertext (never the passphrase), so a
+   * new key re-uploads everything under the new key.
+   */
+  private async archiveDocuments(
+    db: TenantDb,
+    tenantId: string,
+    destination: BackupDestinationRow,
+    encryptionKey: string | undefined,
+    uploader: ArchiveUploader,
+  ): Promise<void> {
+    const enc = this.encryptionOf(destination, encryptionKey);
+    const transform: ArchiveTransform =
+      enc.recipient || enc.passphrase
+        ? {
+            id: fingerprintOf("age", destination.encryptionRecipient, destination.encryptionPassphraseEncrypted),
+            suffix: ".age",
+            apply: async (data) => Buffer.from((await ageEncrypt(data, enc)).data),
+          }
+        : PLAIN;
+    try {
+      await this.documentArchive.syncToDestination(db, tenantId, destination.id, uploader, transform);
+    } catch (err) {
+      throw new Error(`document archive: ${(err as Error).message}`);
+    }
   }
 
   /**

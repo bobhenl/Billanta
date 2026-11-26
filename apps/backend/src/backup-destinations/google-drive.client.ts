@@ -135,4 +135,111 @@ export class GoogleDriveClient {
       throw new Error(`Google Drive upload failed: HTTP ${response.status} – ${responseBody}`);
     }
   }
+
+  /**
+   * One access token and a folder cache for many files (the document
+   * archive): `put("Billanta/2026/vydane/2026-0001.pdf", …)` finds or creates
+   * each folder under `rootFolderId` (Drive's root when null). With the
+   * `drive.file` scope only folders this app created are visible, which is
+   * exactly the ones it looks for. A known `remoteId` replaces that file's
+   * content, so a changed document does not appear twice.
+   */
+  async openSession(refreshToken: string, rootFolderId: string | null): Promise<DriveSession> {
+    let token = await this.getAccessToken(refreshToken);
+    const folders = new Map<string, string>();
+
+    const call = async (url: string, init: RequestInit): Promise<Response> => {
+      const send = () => fetch(url, { ...init, headers: { ...(init.headers as Record<string, string>), Authorization: `Bearer ${token}` } });
+      let res = await send();
+      if (res.status === 401) {
+        token = await this.getAccessToken(refreshToken);
+        res = await send();
+      }
+      return res;
+    };
+
+    const folderId = async (segments: string[]): Promise<string | null> => {
+      let parent = rootFolderId;
+      for (let i = 0; i < segments.length; i++) {
+        const key = segments.slice(0, i + 1).join("/");
+        const cached = folders.get(key);
+        if (cached) {
+          parent = cached;
+          continue;
+        }
+        const q = [
+          `name = '${driveQueryString(segments[i])}'`,
+          `'${driveQueryString(parent ?? "root")}' in parents`,
+          "mimeType = 'application/vnd.google-apps.folder'",
+          "trashed = false",
+        ].join(" and ");
+        const found = await call(`https://www.googleapis.com/drive/v3/files?${new URLSearchParams({ q, fields: "files(id)", pageSize: "1" })}`, { method: "GET" });
+        if (!found.ok) throw new Error(`Google Drive folder lookup failed: HTTP ${found.status} – ${await found.text()}`);
+        let id = ((await found.json()) as { files?: { id: string }[] }).files?.[0]?.id;
+        if (!id) {
+          const created = await call("https://www.googleapis.com/drive/v3/files?fields=id", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: segments[i], mimeType: "application/vnd.google-apps.folder", ...(parent ? { parents: [parent] } : {}) }),
+          });
+          if (!created.ok) throw new Error(`Google Drive folder create failed: HTTP ${created.status} – ${await created.text()}`);
+          id = ((await created.json()) as { id: string }).id;
+        }
+        folders.set(key, id);
+        parent = id;
+      }
+      return parent;
+    };
+
+    return {
+      put: async (path, content, mimeType, remoteId) => {
+        if (remoteId) {
+          const res = await call(`https://www.googleapis.com/upload/drive/v3/files/${encodeURIComponent(remoteId)}?uploadType=media&fields=id`, {
+            method: "PATCH",
+            headers: { "Content-Type": mimeType },
+            body: content,
+          });
+          if (res.ok) return { remoteId };
+          // Deleted or trashed by the owner: upload it again as a new file.
+          if (res.status !== 404) throw new Error(`Google Drive update failed: HTTP ${res.status} – ${await res.text()}`);
+        }
+        const segments = path.split("/");
+        const name = segments.pop()!;
+        const parent = await folderId(segments);
+        const { body, contentType } = multipartBody({ name, mimeType, ...(parent ? { parents: [parent] } : {}) }, content, mimeType);
+        const res = await call("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id", {
+          method: "POST",
+          headers: { "Content-Type": contentType },
+          body,
+        });
+        if (!res.ok) throw new Error(`Google Drive upload failed: HTTP ${res.status} – ${await res.text()}`);
+        return { remoteId: ((await res.json()) as { id: string }).id };
+      },
+    };
+  }
+}
+
+export interface DriveSession {
+  put(path: string, content: Buffer, mimeType: string, remoteId: string | null): Promise<{ remoteId: string | null }>;
+}
+
+/** A literal inside a Drive `q` string: backslash and quote escaped. */
+export function driveQueryString(value: string): string {
+  return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+}
+
+function multipartBody(metadata: Record<string, unknown>, content: Buffer, mimeType: string) {
+  const boundary = `faktur-${randomBytes(16).toString("hex")}`;
+  const body = Buffer.concat([
+    Buffer.from(
+      `--${boundary}\r\n` +
+        `Content-Type: application/json; charset=UTF-8\r\n\r\n` +
+        `${JSON.stringify(metadata)}\r\n` +
+        `--${boundary}\r\n` +
+        `Content-Type: ${mimeType}\r\n\r\n`,
+    ),
+    content,
+    Buffer.from(`\r\n--${boundary}--`),
+  ]);
+  return { body, contentType: `multipart/related; boundary=${boundary}` };
 }

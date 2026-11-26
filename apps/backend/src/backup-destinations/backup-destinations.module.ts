@@ -1,4 +1,7 @@
 import { Module } from "@nestjs/common";
+import { InvoicesModule } from "../invoices/invoices.module";
+import { ArchiveReminderCron } from "./archive-reminder.cron";
+import { DocumentArchiveService } from "./document-archive.service";
 import { BackupDestinationsController } from "./backup-destinations.controller";
 import { BackupDestinationsService } from "./backup-destinations.service";
 import { BackupExportCron } from "./backup-export.cron";
@@ -28,10 +31,14 @@ import { SqliteExportService } from "./sqlite-export.service";
  * `TenantContextMiddleware.forRoutes(...)` in `app.module.ts`).
  */
 @Module({
+  // InvoicesModule renders the PDF and ISDOC files of the document archive.
+  imports: [InvoicesModule],
   controllers: [BackupDestinationsController, GoogleDriveCallbackController],
   providers: [
     BackupDestinationsService,
     ExportService,
+    DocumentArchiveService,
+    ArchiveReminderCron,
     GoogleDriveClient,
     SftpBackupClient,
     GoogleDriveOAuthService,

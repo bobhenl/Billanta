@@ -904,6 +904,28 @@ connection. Three destination types:
   failure) — this server never accumulates tenant export files on disk,
   not even transiently.
 
+### Document archive
+
+Besides the data file, an `sftp` or `google_drive` destination with
+`archiveDocuments` on (the default) mirrors readable documents:
+`Billanta/<year>/vydane/<number>.pdf` + `.isdoc` (tax invoices; credit notes
+get a PDF only), `zalohove/` for proformas, `vydane/prilohy/<number>/` for
+invoice attachments, and `naklady/` with a yearly `naklady-<year>.csv` plus
+the received e-invoice XML. Expenses have no uploaded receipt files yet, so
+the CSV carries the receipt link. Layout: `archive-layout.ts`.
+
+The sync is incremental (`archive-sync.ts`): each file has a fingerprint of
+its source data, and `document_archive_files` remembers what went to which
+destination (plus the Drive file id, so a changed invoice replaces its file
+instead of adding a copy). At most 500 files per run, the rest follow on the
+next run. Remote files are never deleted. With age encryption on, each file
+becomes `<name>.age`, and a new key uploads everything again.
+
+`GET /archive.zip?year=YYYY|all` streams the same files as a ZIP
+(`zip-writer.ts`, no ZIP64, so under 4 GB and 65 535 files).
+`ArchiveReminderCron` sends owners a quarterly `archive_reminder`
+notification when there is no automatic archive.
+
 ### Endpoints
 
 All under `JwtAuthGuard` + `OwnerOnlyGuard` except the OAuth callback:
@@ -913,6 +935,8 @@ All under `JwtAuthGuard` + `OwnerOnlyGuard` except the OAuth callback:
 | `POST /api/v1/backup-destinations` | Creates a `webhook` (`{ type: "webhook", webhookUrl, schedule }`), `sftp` (`{ type: "sftp", schedule, sftp: { host, port?, username, path?, password? } }`, answers with `sftpPublicKey` when no password is given) or `local` (`{ type: "local", schedule: "manual" }`) destination. Returns the plaintext signing secret for `webhook` only (a `local` row has no secret at all). `type: "google_drive"` is rejected here (400) — see the OAuth flow below. `type: "local"` with `schedule` other than `"manual"` is rejected (400) — see "What it does" above. |
 | `GET /api/v1/backup-destinations` | Lists the tenant's destinations. Never returns `configEncrypted` or a decrypted secret. |
 | `GET /api/v1/backup-destinations/google-drive/authorize` | Redirects to Google's consent screen (see above). |
+| `GET /api/v1/backup-destinations/archive/years` | Years with archivable documents, newest first. |
+| `GET /api/v1/backup-destinations/archive.zip?year=YYYY\|all` | Streams the document archive as a ZIP (see "Document archive"). |
 | `PATCH /api/v1/backup-destinations/:id` | Updates `schedule`/`isActive`/`webhookUrl`/`googleDriveFolderId`, `sftp` (partial target) and `encryption` (`{ mode: "none" }`, `{ mode: "key", recipient }` or `{ mode: "passphrase", passphrase }`, `sftp`/`google_drive` only). Rejects (400) setting `schedule` to `daily`/`weekly` on an existing `local` destination. |
 | `DELETE /api/v1/backup-destinations/:id` | Hard-deletes the destination (and, via `ON DELETE CASCADE`, its `backup_runs` history) — unlike `api_keys`' soft-revoke, there's no audit-retention requirement for a connection config. |
 | `GET /api/v1/backup-destinations/:id/runs` | Lists export run history (`backup_runs`) for one destination. |

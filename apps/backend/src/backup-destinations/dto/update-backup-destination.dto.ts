@@ -34,6 +34,8 @@ export const updateBackupDestinationSchema = z.object({
   sftp: sftpTargetSchema.partial().optional(),
   // sftp and google_drive uploads.
   encryption: backupEncryptionSchema.optional(),
+  // sftp and google_drive: also mirror the PDF/ISDOC document archive.
+  archiveDocuments: z.boolean().optional(),
 });
 
 export class UpdateBackupDestinationDto extends createZodDto(updateBackupDestinationSchema) {}
