@@ -27,6 +27,10 @@ billanta.com {
 	handle /ai-webhook/* {
 		uri replace /ai-webhook/ /webhook/ 1
 		reverse_proxy localhost:3112 {
+			# A deploy recreates the container; hold the request until the new one answers
+			# instead of failing. Only a dial that never connected is retried, so nothing runs twice.
+			lb_try_duration 30s
+			lb_try_interval 250ms
 			header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
 		}
 	}
@@ -35,6 +39,8 @@ billanta.com {
 	# the rest of /api (Auth.js, upload/download proxies) is Next.js.
 	handle /api/v1/* {
 		reverse_proxy localhost:3111 {
+			lb_try_duration 30s
+			lb_try_interval 250ms
 			# The peer is a Cloudflare edge node; pass the visitor's address instead.
 			header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
 			header_up -X-Guest-Ip
@@ -43,6 +49,8 @@ billanta.com {
 
 	handle /api/docs* {
 		reverse_proxy localhost:3111 {
+			lb_try_duration 30s
+			lb_try_interval 250ms
 			header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
 		}
 	}
@@ -57,6 +65,8 @@ billanta.com {
 	handle /api/* {
 		header ?Cache-Control "private, no-store"
 		reverse_proxy localhost:3110 {
+			lb_try_duration 30s
+			lb_try_interval 250ms
 			header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
 		}
 	}
@@ -68,6 +78,8 @@ billanta.com {
 	@crawlerFiles path /sitemap/* /robots.txt
 	handle @crawlerFiles {
 		reverse_proxy localhost:3110 {
+			lb_try_duration 30s
+			lb_try_interval 250ms
 			# The peer is a Cloudflare edge node; pass the visitor's address instead.
 			header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
 			header_down Cache-Control "^(public, max-age=0, must-revalidate|s-maxage=\d+(, stale-while-revalidate=\d+)?)$" "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400"
@@ -87,10 +99,24 @@ billanta.com {
 	# `public, max-age=31536000, immutable`.
 	handle {
 		reverse_proxy localhost:3110 {
+			lb_try_duration 30s
+			lb_try_interval 250ms
 			# The peer is a Cloudflare edge node; pass the visitor's address instead.
 			header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
 			header_down Cache-Control "^s-maxage=\d+(, stale-while-revalidate=\d+)?$" "public, max-age=0, s-maxage=300, stale-while-revalidate=600"
 		}
+	}
+
+	# Still down after the retries above: our own page instead of Cloudflare's "Bad gateway".
+	# 503 with Retry-After, which Cloudflare passes through as it is. No braces in the
+	# page: Caddy would read them as placeholders.
+	handle_errors 502 504 {
+		header Retry-After 30
+		header Content-Type "text/html; charset=utf-8"
+		respond <<HTML
+			<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="15"><title>Billanta</title></head>
+			<body style="margin:0;font-family:system-ui,sans-serif;background:#fafafa;color:#111"><main style="max-width:520px;margin:20vh auto 0;padding:0 16px;text-align:center"><h1 style="color:#4f46e5;font-size:28px">Billanta</h1><p>Právě nasazujeme novou verzi, za chvíli jsme zpět.</p><p>Práve nasadzujeme novú verziu, o chvíľu sme späť.</p><p>We are deploying an update, back in a moment.</p></main></body></html>
+			HTML 503
 	}
 }
 
@@ -109,10 +135,15 @@ www.billanta.com {
 http://:8090 {
 	handle /ai-webhook/* {
 		uri replace /ai-webhook/ /webhook/ 1
-		reverse_proxy localhost:3112
+		reverse_proxy localhost:3112 {
+			lb_try_duration 30s
+			lb_try_interval 250ms
+		}
 	}
 	handle /api/v1/* {
 		reverse_proxy localhost:3111 {
+			lb_try_duration 30s
+			lb_try_interval 250ms
 			header_up -X-Guest-Ip
 		}
 	}
