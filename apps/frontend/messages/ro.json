@@ -981,7 +981,9 @@
       "toReview": "De potrivit",
       "matched": "Potrivite",
       "incoming": "Încasări ({currency})",
-      "outgoing": "Plăți ieșite ({currency})"
+      "outgoing": "Plăți ieșite ({currency})",
+      "toReviewIn": "{n} intrări {amount}",
+      "toReviewOut": "{n} ieșiri {amount}"
     },
     "detail": {
       "title": "Tranzacție bancară",

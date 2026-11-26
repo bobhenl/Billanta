@@ -981,7 +981,9 @@
       "toReview": "Do sparowania",
       "matched": "Sparowane",
       "incoming": "Wpływy ({currency})",
-      "outgoing": "Wypływy ({currency})"
+      "outgoing": "Wypływy ({currency})",
+      "toReviewIn": "{n} przych. {amount}",
+      "toReviewOut": "{n} wych. {amount}"
     },
     "detail": {
       "title": "Transakcja bankowa",

@@ -981,7 +981,9 @@
       "toReview": "Por conciliar",
       "matched": "Conciliadas",
       "incoming": "Recebimentos ({currency})",
-      "outgoing": "Pagamentos ({currency})"
+      "outgoing": "Pagamentos ({currency})",
+      "toReviewIn": "{n} recebidos {amount}",
+      "toReviewOut": "{n} enviados {amount}"
     },
     "detail": {
       "title": "Transação bancária",

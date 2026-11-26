@@ -981,7 +981,9 @@
       "toReview": "Por conciliar",
       "matched": "Conciliados",
       "incoming": "Entradas ({currency})",
-      "outgoing": "Salidas ({currency})"
+      "outgoing": "Salidas ({currency})",
+      "toReviewIn": "{n} entrantes {amount}",
+      "toReviewOut": "{n} salientes {amount}"
     },
     "detail": {
       "title": "Movimiento bancario",

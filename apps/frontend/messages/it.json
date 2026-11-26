@@ -981,7 +981,9 @@
       "toReview": "Da abbinare",
       "matched": "Abbinati",
       "incoming": "In entrata ({currency})",
-      "outgoing": "In uscita ({currency})"
+      "outgoing": "In uscita ({currency})",
+      "toReviewIn": "{n} in entrata {amount}",
+      "toReviewOut": "{n} in uscita {amount}"
     },
     "detail": {
       "title": "Movimento bancario",

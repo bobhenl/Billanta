@@ -981,7 +981,9 @@
       "toReview": "Zuzuordnen",
       "matched": "Zugeordnet",
       "incoming": "Eingänge ({currency})",
-      "outgoing": "Ausgänge ({currency})"
+      "outgoing": "Ausgänge ({currency})",
+      "toReviewIn": "{n} ein {amount}",
+      "toReviewOut": "{n} aus {amount}"
     },
     "detail": {
       "title": "Bankumsatz",

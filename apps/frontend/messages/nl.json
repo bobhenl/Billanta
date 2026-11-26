@@ -981,7 +981,9 @@
       "toReview": "Te koppelen",
       "matched": "Gekoppeld",
       "incoming": "Inkomend ({currency})",
-      "outgoing": "Uitgaand ({currency})"
+      "outgoing": "Uitgaand ({currency})",
+      "toReviewIn": "{n} inkomend {amount}",
+      "toReviewOut": "{n} uitgaand {amount}"
     },
     "detail": {
       "title": "Banktransactie",

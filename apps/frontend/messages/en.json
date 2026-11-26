@@ -982,7 +982,9 @@
       "toReview": "To match",
       "matched": "Matched",
       "incoming": "Incoming ({currency})",
-      "outgoing": "Outgoing ({currency})"
+      "outgoing": "Outgoing ({currency})",
+      "toReviewIn": "{n} in {amount}",
+      "toReviewOut": "{n} out {amount}"
     },
     "detail": {
       "title": "Bank transaction",

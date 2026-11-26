@@ -982,7 +982,9 @@
       "toReview": "Na spárovanie",
       "matched": "Spárované",
       "incoming": "Prichádzajúce ({currency})",
-      "outgoing": "Odchádzajúce ({currency})"
+      "outgoing": "Odchádzajúce ({currency})",
+      "toReviewIn": "{n} prichádzajúce {amount}",
+      "toReviewOut": "{n} odchádzajúce {amount}"
     },
     "detail": {
       "title": "Banková transakcia",

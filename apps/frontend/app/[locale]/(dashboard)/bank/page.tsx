@@ -136,11 +136,21 @@ export default async function BankReconciliationPage(props: {
   const { incoming, outgoing } = homeCurrencyTotals(scoped, home);
   const unmatched = scoped.filter((tx) => tx.status === 'unmatched');
   const matchedCount = scoped.filter((tx) => tx.status === 'matched').length;
+  // What waits, so the count is not a mystery: how many in and out, and for how much.
+  const review = homeCurrencyTotals(unmatched, home);
+  const reviewIn = unmatched.filter((tx) => !paypalMovement(tx) && Number(tx.amount) > 0).length;
+  const reviewOut = unmatched.filter((tx) => !paypalMovement(tx) && Number(tx.amount) < 0).length;
+  const reviewNote = [
+    reviewIn ? t('kpi.toReviewIn', { n: reviewIn, amount: formatMoney(review.incoming, home, locale) }) : null,
+    reviewOut ? t('kpi.toReviewOut', { n: reviewOut, amount: formatMoney(review.outgoing, home, locale) }) : null
+  ]
+    .filter(Boolean)
+    .join(' · ');
   const cards = [
-    { key: 'unmatched', label: t('kpi.toReview'), value: String(unmatched.length), href: href('unmatched'), tone: unmatched.length ? 'text-warning' : '' },
-    { key: 'matched', label: t('kpi.matched'), value: String(matchedCount), href: href('matched'), tone: 'text-success' },
-    { key: 'in', label: t('kpi.incoming', { currency: home }), value: formatMoney(incoming, home, locale), href: null, tone: 'text-primary' },
-    { key: 'out', label: t('kpi.outgoing', { currency: home }), value: formatMoney(outgoing, home, locale), href: null, tone: '' }
+    { key: 'unmatched', label: t('kpi.toReview'), value: String(unmatched.length), href: href('unmatched'), tone: unmatched.length ? 'text-warning' : '', note: reviewNote },
+    { key: 'matched', label: t('kpi.matched'), value: String(matchedCount), href: href('matched'), tone: 'text-success', note: '' },
+    { key: 'in', label: t('kpi.incoming', { currency: home }), value: formatMoney(incoming, home, locale), href: null, tone: 'text-primary', note: '' },
+    { key: 'out', label: t('kpi.outgoing', { currency: home }), value: formatMoney(outgoing, home, locale), href: null, tone: '', note: '' }
   ];
 
   const chip = (active: boolean) =>
@@ -170,6 +180,7 @@ export default async function BankReconciliationPage(props: {
             <>
               <div className="truncate text-[11px] font-semibold text-muted-foreground sm:text-xs">{card.label}</div>
               <div title={String(card.value)} className={cn('mt-1 truncate text-base font-extrabold tabular-nums sm:text-2xl', card.tone, card.href === null && 'amount')}>{card.value}</div>
+              {card.note && <div title={card.note} className="amount mt-0.5 truncate text-[11px] text-muted-foreground sm:text-xs">{card.note}</div>}
             </>
           );
           const box = 'min-w-0 rounded-xl border border-border bg-card p-2.5 sm:p-4';

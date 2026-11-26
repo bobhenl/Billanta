@@ -981,7 +981,9 @@
       "toReview": "До зіставлення",
       "matched": "Зіставлено",
       "incoming": "Вхідні ({currency})",
-      "outgoing": "Вихідні ({currency})"
+      "outgoing": "Вихідні ({currency})",
+      "toReviewIn": "{n} вхідні {amount}",
+      "toReviewOut": "{n} вихідні {amount}"
     },
     "detail": {
       "title": "Банківська транзакція",

@@ -981,7 +981,9 @@
       "toReview": "À rapprocher",
       "matched": "Rapprochées",
       "incoming": "Entrées ({currency})",
-      "outgoing": "Sorties ({currency})"
+      "outgoing": "Sorties ({currency})",
+      "toReviewIn": "{n} entrants {amount}",
+      "toReviewOut": "{n} sortants {amount}"
     },
     "detail": {
       "title": "Opération bancaire",

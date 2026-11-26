@@ -981,7 +981,9 @@
       "toReview": "Párosítandó",
       "matched": "Párosítva",
       "incoming": "Bejövő ({currency})",
-      "outgoing": "Kimenő ({currency})"
+      "outgoing": "Kimenő ({currency})",
+      "toReviewIn": "{n} bejövő {amount}",
+      "toReviewOut": "{n} kimenő {amount}"
     },
     "detail": {
       "title": "Banki tranzakció",
