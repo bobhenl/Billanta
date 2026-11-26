@@ -51,6 +51,15 @@ describe("findPaidInvoiceLink", () => {
     expect(findPaidInvoiceLink(tx, [paid({ id: "inv-1" })])).toEqual({ type: "unmatched", reason: "no_candidate" });
   });
 
+  it("links a platform payout by an exact amount with haléře on the same day, without the payer", () => {
+    const inv = paid({ id: "inv-1", currency: "CZK", total: 21575.31, issueDate: new Date("2026-08-05"), paidAt: null, contactEmail: null, contactName: "Shop Ltd" });
+    const tx = payment({ currency: "CZK", amount: 21575.31, transactionDate: new Date("2026-08-06"), counterpartyAccount: "1000000001/0800", counterpartyName: "Bank Payouts" });
+    expect(findPaidInvoiceLink(tx, [inv])).toMatchObject({ type: "linked", invoiceId: "inv-1" });
+    expect(findPaidInvoiceLink({ ...tx, transactionDate: new Date("2026-08-07") }, [inv])).toMatchObject({ type: "unmatched" });
+    expect(findPaidInvoiceLink({ ...tx, amount: 21575 }, [{ ...inv, total: 21575 }])).toMatchObject({ type: "unmatched" });
+    expect(findPaidInvoiceLink(tx, [inv, { ...inv, id: "inv-2" }])).toEqual({ type: "unmatched", reason: "ambiguous" });
+  });
+
   it("needs the exact amount when the invoice has a total", () => {
     expect(findPaidInvoiceLink(payment({ amount: 40.5 }), [paid({ id: "inv-1" })])).toEqual({ type: "unmatched", reason: "no_candidate" });
   });

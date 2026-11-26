@@ -186,5 +186,20 @@ export function findPaidInvoiceLink(payment: PaymentForLinking, candidates: Paid
 
   if (hits.length === 1) return { type: "linked", invoiceId: hits[0].id, matchedBy: "paid_invoice" };
   if (hits.length > 1) return { type: "unmatched", reason: "ambiguous" };
+
+  // Payouts from a platform (Tebex via its Czech bank) carry the bank's name, not the
+  // buyer's. An amount down to the haléř on the invoice's own day is specific enough alone.
+  const exact = candidates.filter((c) => {
+    if (c.alreadyLinked || c.currency !== payment.currency) return false;
+    if (!hasFraction(c.total) || !amountsEqual(c.total, payment.amount)) return false;
+    return [c.paidAt, c.issueDate].some((d) => d !== null && dayDistance(d, payment.transactionDate) <= PAID_LINK_ZERO_TOTAL_WINDOW_DAYS);
+  });
+  if (exact.length === 1) return { type: "linked", invoiceId: exact[0].id, matchedBy: "paid_invoice" };
+  if (exact.length > 1) return { type: "unmatched", reason: "ambiguous" };
   return { type: "unmatched", reason: "no_candidate" };
+}
+
+/** 1703.36 yes, 1700.00 no: round amounts repeat too often to identify a payment. */
+function hasFraction(amount: number): boolean {
+  return Math.round(Math.abs(amount) * 100) % 100 !== 0;
 }
