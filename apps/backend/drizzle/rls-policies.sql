@@ -1259,7 +1259,7 @@ RETURNS uuid
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
-AS $
+AS $$
 DECLARE
   v_tenant_id uuid;
   v_tos_version_id uuid;
@@ -1280,7 +1280,7 @@ BEGIN
 
   RETURN v_tenant_id;
 END;
-$;
+$$;
 
 REVOKE ALL ON FUNCTION join_tenant_by_invitation(text, uuid, text, text) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION join_tenant_by_invitation(text, uuid, text, text) TO faktur_app;
