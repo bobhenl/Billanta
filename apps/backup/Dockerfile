@@ -12,7 +12,11 @@
 # psql can't fully replay).
 FROM alpine:3.19
 
+# age encrypts each dump for BACKUP_AGE_RECIPIENTS before it leaves the
+# server (see backup.sh). Held to 1.1.x from Alpine's signed community repo,
+# so a rebuild can't silently pick up a new major version.
 RUN apk add --no-cache \
+      'age~1.1' \
       bash \
       postgresql16-client \
       rclone \

@@ -12,7 +12,7 @@ before editing there.
 | `apps/frontend` | Next.js 15 App Router, next-intl, NextAuth v5, Tailwind | [AGENTS.md](apps/frontend/AGENTS.md) |
 | `apps/backend` | NestJS 11 REST API, Drizzle, Postgres with RLS | [AGENTS.md](apps/backend/AGENTS.md) |
 | `apps/ai-service` | FastAPI voice-to-invoice (Telegram/WhatsApp) | [AGENTS.md](apps/ai-service/AGENTS.md) |
-| `apps/backup` | Nightly `pg_dump` sidecar to Google Drive | README only |
+| `apps/backup` | Nightly `pg_dump` sidecar to Google Drive, age-encrypted | README only |
 | `packages/cz-compliance` | Shared TS: ARES, ISDOC, UBL, SPAYD QR, bank validation, tax dates | [AGENTS.md](packages/cz-compliance/AGENTS.md) |
 | `deploy` | Single-VPS Docker Compose behind the host's Caddy | [AGENTS.md](deploy/AGENTS.md) |
 

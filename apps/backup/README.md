@@ -68,9 +68,13 @@ read-only file.
    BACKUP_RCLONE_REMOTE=gdrive:faktur-backups
    BACKUP_RETENTION_DAYS=30
    BACKUP_INTERVAL_HOURS=24
+   BACKUP_AGE_RECIPIENTS=age1...
    ```
    The path after the colon (`faktur-backups`) is a folder name/path inside
-   your Drive — rclone creates it on first upload if it doesn't exist.
+   your Drive – rclone creates it on first upload if it doesn't exist.
+   `BACKUP_AGE_RECIPIENTS` is the public half of the encryption key, see
+   "Encryption key" below. Don't skip it: without it the dump goes to Drive
+   in plaintext.
 7. Start the stack as usual (`docker compose up -d`); the `backup` service
    picks up `rclone.conf` via the read-only volume mount in
    `docker-compose.yml`.
@@ -84,6 +88,41 @@ own convention for where to look, and `backup.sh` also passes
 `--config /config/rclone/rclone.conf` explicitly, so it works even if that
 env var were ever removed. The config is never baked into the image and
 never committed to git.
+
+### Encryption key (age)
+
+Each dump is encrypted with [age](https://age-encryption.org) before it is
+written to disk, so whoever gets the Drive account, the `rclone.conf` token
+or the VPS itself still can't read a backup. Only the public key goes on the
+server; the private key stays offline with you.
+
+1. On your own machine (not the VPS), install age
+   (`winget install FiloSottile.age`, `brew install age` or
+   `apt install age`) and run:
+   ```
+   age-keygen -o billanta-backup.key
+   ```
+   It prints `Public key: age1...` and writes the private key
+   (`AGE-SECRET-KEY-1...`) into `billanta-backup.key`.
+2. Store `billanta-backup.key` offline: a password manager entry plus a
+   printed or USB copy in a safe place. **Lose it and every backup is
+   unreadable.** Never copy it to the VPS, into the repo or into Drive.
+3. Put the public key in the server `.env`:
+   ```
+   BACKUP_AGE_RECIPIENTS=age1...
+   ```
+   Several keys (e.g. a second one held by a co-founder) go space- or
+   comma-separated; any one of the private keys can then decrypt. If
+   `BACKUP_AGE_RECIPIENTS` is empty, `BACKUP_AGE_RECIPIENT` (the key
+   `deploy/maintenance.sh` reads) is used instead.
+4. Restart the service (`docker compose up -d backup`) and run a one-off
+   backup (section 2). The file name now ends in `.sql.gz.age` and the start
+   line says `encryption=age`.
+
+Without a key the backup still runs, but uploads a plaintext `.sql.gz` and
+logs `WARNING: BACKUP_AGE_RECIPIENTS is not set` every run. A value that is
+not a valid `age1...` key fails the run instead, so a typo can't quietly
+turn encryption off.
 
 ---
 
@@ -100,7 +139,7 @@ forever), so you can watch it succeed or fail in your terminal. Check for a
 line like:
 
 ```
-... [backup] SUCCESS: faktur-backup-20260101-030000.sql.gz uploaded to gdrive:faktur-backups
+... [backup] SUCCESS: faktur-backup-20260101-030000.sql.gz.age uploaded to gdrive:faktur-backups
 ```
 
 If it fails, the log line starts with `FAILURE:` and says why (missing
@@ -117,17 +156,29 @@ docker compose exec backup /app/backup.sh --once
 
 ## 3. Restore procedure (test this quarterly — blueprint §8)
 
+Do this on your own machine, where the private key is. The key never goes
+to the VPS, not even for a restore.
+
 1. Get a backup file, either from Google Drive directly (download the
-   `.sql.gz` file from the `faktur-backups` folder) or from the local
+   `.sql.gz.age` file from the `faktur-backups` folder) or from the local
    staging volume:
    ```
-   docker compose cp backup:/backups/faktur-backup-<timestamp>.sql.gz .
+   docker compose cp backup:/backups/faktur-backup-<timestamp>.sql.gz.age .
    ```
 2. **Restore into a scratch database first** — never restore directly over
    the running production database without a very good reason. Spin up a
    throwaway Postgres (or a separate database on the same server) and point
    `DATABASE_URL` at that instead.
-3. Restore:
+3. Restore. For an encrypted backup (`.sql.gz.age`):
+   ```
+   age -d -i billanta-backup.key faktur-backup-<timestamp>.sql.gz.age | gunzip | psql "$DATABASE_URL"
+   ```
+   This streams straight into `psql`, so no decrypted copy lands on disk.
+   To only check the key and the file without a database:
+   ```
+   age -d -i billanta-backup.key faktur-backup-<timestamp>.sql.gz.age | gunzip | head -n 20
+   ```
+   For an old plaintext backup (`.sql.gz`, made before the key was set):
    ```
    gunzip -c faktur-backup-<timestamp>.sql.gz | psql "$DATABASE_URL"
    ```
@@ -151,12 +202,20 @@ drill is for — better to find out here than during a real incident.
 Runs in a loop (`BACKUP_INTERVAL_HOURS`, default 24h) inside the container.
 Each cycle:
 
-1. `pg_dump $DATABASE_URL | gzip` -> `faktur-backup-<UTC timestamp>.sql.gz`
-   in the local `/backups` volume.
-2. Verifies the dump is non-empty and passes `gzip -t` before trusting it.
+1. `pg_dump $DATABASE_URL | gzip | age -r <key>...` ->
+   `faktur-backup-<UTC timestamp>.sql.gz.age` in the local `/backups`
+   volume, written as a hidden `.part` file and renamed once complete.
+   Without `BACKUP_AGE_RECIPIENTS` the `age` step is skipped, the file is
+   `.sql.gz` and a `WARNING:` line is logged.
+2. Verifies the dump is non-empty, then checks the age header (encrypted)
+   or runs `gzip -t` (plaintext) before trusting it. The gzip stream inside
+   an `.age` file can only be checked with the private key, which is one
+   more reason for the quarterly restore drill.
 3. `rclone copy` uploads it to `BACKUP_RCLONE_REMOTE`.
 4. Prunes backups older than `BACKUP_RETENTION_DAYS` (default 30), both
    locally (`find -mtime`) and on the remote (`rclone delete --min-age`).
+   Both `.sql.gz` and `.sql.gz.age` names are matched, so plaintext copies
+   from before encryption was switched on age out too.
 5. Logs a `SUCCESS:` or `FAILURE:` line either way — this log is the only
    visibility into whether backups are working absent real monitoring
    (Sentry/uptime alerting on this service's logs is a good fast-follow;
@@ -184,6 +243,13 @@ Dockerfile changes needed.
 - `FAILURE: no rclone config found at /config/rclone/rclone.conf` — the
   `./rclone.conf` file doesn't exist at the repo root yet, or the volume
   mount isn't in effect. Redo step 1.
+- `WARNING: BACKUP_AGE_RECIPIENTS is not set` – backups work but are
+  uploaded in plaintext. Add the public key, see "Encryption key".
+- `FAILURE: BACKUP_AGE_RECIPIENTS contains a value that is not an age
+  public key` – the value must be the full `age1...` line printed by
+  `age-keygen` (62 characters), never the `AGE-SECRET-KEY-1...` private key.
+- `age: error: no identity matched any of the recipients` on restore – the
+  file was encrypted for a different key than the one you passed with `-i`.
 - `FAILURE: pg_dump/gzip pipeline failed` — check `DATABASE_URL` is
   reachable from inside the container (`docker compose exec backup sh -c
   'pg_dump --version'` and check Postgres is up/healthy).
