@@ -2371,3 +2371,27 @@ export const einvoiceStatusEvents = pgTable("einvoice_status_events", {
   occurredAt: timestamp("occurred_at", { withTimezone: true }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// ---------------------------------------------------------------------------
+// tenant_usage – tenant-scoped counters for plan limits (0105): issued
+// documents, AI credits, API requests and the "taste" uses of a paid feature.
+// `period` is `YYYY-MM` (Prague calendar month) or `all` for a lifetime
+// allowance. Written only through src/billing/usage.repository.ts with an
+// upsert that checks the limit in the same statement; the app may not delete
+// rows, so a counter cannot be reset from code.
+// ---------------------------------------------------------------------------
+export const tenantUsage = pgTable(
+  "tenant_usage",
+  {
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    metric: varchar("metric", { length: 48 }).notNull(),
+    period: varchar("period", { length: 7 }).notNull(),
+    count: integer("count").notNull().default(0),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.tenantId, table.metric, table.period] }),
+  }),
+);

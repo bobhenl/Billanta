@@ -26,6 +26,8 @@ import { updateInvoiceFormPrefs } from '../actions';
 import { InvoiceDefaultsFields, parseNumber, type DefaultsDraft } from './invoice-defaults';
 import { annualRatesOf, ExchangeRateSettings, type AnnualRateDraft, type UniformYear } from './exchange-rate-settings';
 import type { HomeCurrency, VatStatus } from '@faktur/cz-compliance';
+import { PlanLock } from '@/components/plan-lock';
+import type { PaidPlanKey } from '@/lib/plan';
 
 /** Toggles grouped the way the invoice form lays them out. */
 const GROUPS: { key: string; fields: OptionalField[] }[] = [
@@ -56,6 +58,7 @@ export function InvoiceFormSettings({
   uniformRates,
   linkCompany,
   canHideCredit,
+  remindersLock = null,
   readOnly
 }: {
   prefs: InvoiceFormPrefs;
@@ -73,6 +76,8 @@ export function InvoiceFormSettings({
   linkCompany: string;
   /** A paid plan or a trial: the free plan always shows the "made with" line. */
   canHideCredit: boolean;
+  /** The plan that sends reminders, when this one doesn't; the saved setting is kept for an upgrade. */
+  remindersLock?: PaidPlanKey | null;
   readOnly: boolean;
 }) {
   const t = useTranslations('settings.invoices');
@@ -444,17 +449,20 @@ export function InvoiceFormSettings({
           <h2 className="font-bold">{t('remindersTitle')}</h2>
         </InfoHint>
         <div className="mt-3 space-y-3">
-          <label className={cn('flex items-center gap-2.5 text-sm', readOnly && 'opacity-70')}>
+          <div className="flex flex-wrap items-center gap-2">
+          <label className={cn('flex items-center gap-2.5 text-sm', (readOnly || remindersLock) && 'opacity-70')}>
             <input
               type="checkbox"
-              checked={reminders}
-              disabled={readOnly}
+              checked={reminders && !remindersLock}
+              disabled={readOnly || !!remindersLock}
               onChange={(e) => setReminders(e.target.checked)}
               className="h-4 w-4 accent-primary"
             />
             <span className="font-medium">{t('remindersEnabled')}</span>
           </label>
-          {reminders && (
+          {remindersLock && <PlanLock plan={remindersLock} />}
+          </div>
+          {reminders && !remindersLock && (
             <div className="flex flex-wrap items-center gap-x-2 gap-y-2 text-sm">
               {t.rich('remindersRule', {
                 interval: () => (

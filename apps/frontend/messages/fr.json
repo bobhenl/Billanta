@@ -812,7 +812,8 @@
         "ai_key_missing": "Votre propre clé d’API IA est manquante",
         "unsupported_file_type": "Type de fichier non pris en charge (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "L’IA a refusé de traiter le document",
-        "ai_unparseable": "Rien n’a pu être lu dans le document"
+        "ai_unparseable": "Rien n’a pu être lu dans le document",
+        "ai_credits_exhausted": "Les crédits IA de ce mois sont épuisés. Les suivants arrivent le 1er ; une formule supérieure en a plus, ou utilisez votre propre clé."
       },
       "supplierSection": "Fournisseur et document",
       "supplierLinked": "Lié à un contact",
@@ -4332,7 +4333,7 @@
     "title": "Tarifs",
     "lead": "Commencez gratuitement, sans carte bancaire. Passez à une formule supérieure quand vous en avez besoin.",
     "seoTitle": "Tarifs du logiciel de facturation – commencez gratuitement",
-    "metaDescription": "Tarifs Billanta : Free avec 10 documents par mois puis paiement à l’usage, Start dès 4,99 €, Plus avec IA dès 9,99 € et Business pour les équipes. Sans carte bancaire, prix HT.",
+    "metaDescription": "Tarifs Billanta : Free avec 10 documents par mois, Start dès 4,99 €, Plus avec IA dès 9,99 € et Business pour les équipes. Sans carte bancaire, prix HT.",
     "yearly": "Annuel",
     "monthly": "Mensuel",
     "yearlySave": "2 mois offerts",
@@ -4352,7 +4353,7 @@
         "cta": "Commencer gratuitement",
         "features": [
           "10 documents par mois inclus",
-          "Documents supplémentaires à {payg} l’unité",
+          "1 utilisateur + comptable",
           "ISDOC, paiement par QR code, recherche au registre et VIES",
           "5 crédits IA par mois",
           "Suivi du seuil de TVA et calendrier fiscal",
@@ -4370,8 +4371,10 @@
           "Factures récurrentes et portail client",
           "Données pour l’impôt sur le revenu",
           "Export vers Pohoda et Money S3",
+          "API et webhooks (1 000 requêtes)",
           "30 crédits IA par mois",
-          "Accès gratuit pour votre comptable"
+          "Accès gratuit pour votre comptable",
+          "Factures sans le pied de page Billanta"
         ]
       },
       "plus": {
@@ -4381,7 +4384,7 @@
         "features": [
           "Tout ce qu’inclut Start",
           "150 crédits IA par mois",
-          "Déclaration de TVA, relevé de contrôle et état récapitulatif",
+          "Déclaration de TVA, relevé de contrôle et état récapitulatif pour CZ et SK",
           "Paiement par carte sur les factures",
           "3 utilisateurs + comptable",
           "API et webhooks (10 000 requêtes)",
@@ -4394,7 +4397,7 @@
         "cta": "Choisir Business",
         "features": [
           "Tout ce qu’inclut Plus",
-          "Jusqu’à 10 entreprises sur un seul compte",
+          "Revenu net réparti entre 10 associés au plus",
           "10 utilisateurs avec rôles",
           "500 crédits IA par mois",
           "API et webhooks (50 000 requêtes)",
@@ -4402,7 +4405,7 @@
         ]
       }
     },
-    "paygNote": "Avec Free, vous ne payez que les documents au-delà de 10 par mois, {payg} l’unité. À partir d’environ 34 documents par mois, Start revient moins cher.",
+    "limitsNote": "La formule Free couvre 10 documents par mois, les avoirs ne comptent pas. Vous pouvez essayer l’export Pohoda ou Money S3 une fois par mois, et les fichiers de TVA une fois.",
     "aiCreditNote": "Un crédit IA = une facture créée à partir d’un message vocal ou texte, ou un justificatif lu depuis une photo.",
     "compare": {
       "title": "Comparer les formules",
@@ -4434,30 +4437,37 @@
         "ownKey": "Votre propre clé IA, sans limite",
         "vatLimit": "Suivi du seuil de TVA et calendrier fiscal",
         "annual": "Données pour l’impôt sur le revenu",
-        "vatFilings": "Déclaration de TVA, relevé de contrôle et état récapitulatif",
+        "vatFilings": "Déclaration de TVA, relevé de contrôle et état récapitulatif (CZ)",
         "accountantExport": "Export pour votre comptable",
         "users": "Utilisateurs",
         "companies": "Entreprises sur un seul compte",
-        "api": "API et webhooks (requêtes par mois)",
+        "api": "API (requêtes par mois)",
         "time": "Suivi du temps",
-        "backups": "Sauvegardes des données (Google Drive, téléchargement)",
-        "support": "Support"
+        "backups": "Sauvegardes (Google Drive, SFTP, chiffrées, téléchargement)",
+        "support": "Support",
+        "invoiceLock": "Factures protégées par mot de passe",
+        "brandFooter": "Sans le pied de page « Créé avec Billanta »",
+        "stripe": "Synchronisation des paiements Stripe",
+        "vatFilingsSk": "Déclaration de TVA, relevé de contrôle et état récapitulatif (SK)",
+        "netIncome": "Revenu net : associés dans la répartition",
+        "webhooks": "Webhooks"
       },
       "cell": {
-        "docsFree": "10 inclus, puis {payg} l’unité",
+        "docsFree": "10",
         "unlimited": "Illimité",
         "twoTemplates": "2 modèles",
         "manual": "Manuel",
         "automatic": "Automatique",
-        "csv": "CSV",
         "csvPlus": "CSV, Pohoda, Money S3",
-        "oneUser": "1",
-        "userAccountant": "1 + comptable",
         "threeAccountant": "3 + comptable",
-        "tenUsers": "10 avec rôles",
-        "upTo10": "Jusqu’à 10",
         "email": "E-mail",
-        "priority": "Prioritaire"
+        "priority": "Prioritaire",
+        "onScreen": "À l’écran",
+        "oneDownload": "1 téléchargement d’essai",
+        "csvTaste": "CSV, Pohoda et Money S3 1× par mois",
+        "oneAccountant": "1 + comptable",
+        "tenAccountant": "10 + comptable",
+        "ownPlan": "Jusqu’à 10, chacune avec sa formule"
       }
     },
     "compareCompetitors": "Billanta face à Fakturoid, iDoklad et les autres",
@@ -4481,7 +4491,7 @@
       "items": [
         {
           "q": "Billanta est-il gratuit ?",
-          "a": "Oui. La formule Free n’a pas de limite de durée et ne demande aucune carte bancaire. Elle inclut 10 documents par mois ; chaque document supplémentaire coûte {payg}. ISDOC, paiements par QR code et recherche d’entreprises dans le registre ARES sont inclus dans toutes les formules."
+          "a": "Oui. La formule Free n’a pas de limite de durée et ne demande aucune carte bancaire. Elle inclut 10 documents par mois. S’il vous en faut plus, Start n’a pas de limite de documents. ISDOC, paiements par QR code et recherche d’entreprises dans le registre ARES sont inclus dans toutes les formules."
         },
         {
           "q": "Les prix incluent-ils la TVA ?",
@@ -4501,7 +4511,7 @@
         },
         {
           "q": "Mon comptable a-t-il besoin de sa propre formule ?",
-          "a": "Non. À partir de la formule Start, un comptable accède gratuitement à votre entreprise, dans le cadre de votre formule."
+          "a": "Non. Avec chaque formule, Free compris, jusqu’à 2 comptables peuvent accéder gratuitement à votre entreprise."
         },
         {
           "q": "Pourquoi les factures portent-elles la mention « Made with Billanta » ?",
@@ -4714,7 +4724,8 @@
       "ai_provider_unavailable": "L’IA ne répond pas. Réessayez dans un instant.",
       "empty_input": "Décrivez ce qu’il faut facturer.",
       "symbol_invalid": "Les symboles ne peuvent contenir que des chiffres (VS et SS jusqu’à 10, KS jusqu’à 4).",
-      "reason_required": "Indiquez le motif de la modification."
+      "reason_required": "Indiquez le motif de la modification.",
+      "ai_credits_exhausted": "Les crédits IA de ce mois sont épuisés. Les suivants arrivent le 1er ; une formule supérieure en a plus, ou utilisez votre propre clé."
     },
     "copy": {
       "title": "Pré-remplir à partir d’une autre facture",
@@ -14189,6 +14200,20 @@
   "updateNotice": {
     "text": "Une nouvelle version de Billanta est disponible. Rechargez la page pour que tout fonctionne.",
     "reload": "Recharger"
+  },
+  "planLimits": {
+    "from": "Dès la formule {plan}",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} sur {limit} documents ce mois-ci",
+    "aiCredits": "Encore {remaining} sur {limit} crédits IA ce mois-ci",
+    "apiRequests": "{used} sur {limit} requêtes API ce mois-ci",
+    "tasteLeft": "À essayer gratuitement : {left}×",
+    "planRequired": "C’est inclus dès la formule {plan}.",
+    "documentsOut": "Vous avez émis ce mois-ci les {limit} documents inclus dans votre formule. Pour en émettre d’autres : formule {plan}, ou le 1er du mois prochain."
   },
   "vault": {
     "settingsLink": "Réglages du Mode confidentiel",

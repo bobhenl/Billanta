@@ -112,7 +112,7 @@ export class ContactsController {
   @Post(":id/portal")
   @ApiOperation({ summary: "Turn on the customer's client portal, or issue a new link (the old one stops working)" })
   enablePortal(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
-    return this.contactsService.setPortal(req.tenantDb!, id, true);
+    return this.contactsService.setPortal(req.tenantDb!, req.user!.tenantId, id, true);
   }
 
   @Patch(":id/portal")
@@ -124,7 +124,7 @@ export class ContactsController {
   @Delete(":id/portal")
   @ApiOperation({ summary: "Turn off the customer's client portal" })
   disablePortal(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
-    return this.contactsService.setPortal(req.tenantDb!, id, false);
+    return this.contactsService.setPortal(req.tenantDb!, req.user!.tenantId, id, false);
   }
 
   @Post()

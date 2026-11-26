@@ -812,7 +812,8 @@
         "ai_key_missing": "Hiányzik a saját AI API-kulcsa",
         "unsupported_file_type": "Nem támogatott fájltípus (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "Az AI elutasította a dokumentum feldolgozását",
-        "ai_unparseable": "A dokumentumból semmit sem sikerült kiolvasni"
+        "ai_unparseable": "A dokumentumból semmit sem sikerült kiolvasni",
+        "ai_credits_exhausted": "Az e havi MI-kreditek elfogytak. Újak 1-jén jönnek, egy magasabb csomagban több van, vagy használja a saját kulcsát."
       },
       "supplierSection": "Szállító és bizonylat",
       "supplierLinked": "Partnerhez kapcsolva",
@@ -4332,7 +4333,7 @@
     "title": "Árak",
     "lead": "Kezdje ingyen, bankkártya nélkül. Váltson nagyobb csomagra, amikor szüksége van rá.",
     "seoTitle": "Számlázó program árak – kezdje ingyen",
-    "metaDescription": "Billanta árak: Free havi 10 bizonylattal, azon felül csak a tényleges felhasználás után fizet; Start 4,99 €-tól, Plus MI-vel 9,99 €-tól és Business csapatoknak. Bankkártya nem kell, az árak ÁFA nélkül értendők.",
+    "metaDescription": "Billanta árak: Free havi 10 bizonylattal, Start 4,99 €-tól, Plus MI-vel 9,99 €-tól és Business csapatoknak. Bankkártya nem kell, az árak ÁFA nélkül értendők.",
     "yearly": "Éves",
     "monthly": "Havi",
     "yearlySave": "2 hónap ingyen",
@@ -4352,7 +4353,7 @@
         "cta": "Kezdés ingyen",
         "features": [
           "Havi 10 bizonylat a csomagban",
-          "További bizonylatok darabonként {payg}",
+          "1 felhasználó + könyvelő",
           "ISDOC, QR-fizetés, cégadatok lekérése és VIES",
           "Havi 5 MI-kredit",
           "ÁFA-értékhatár figyelése és adónaptár",
@@ -4370,8 +4371,10 @@
           "Ismétlődő számlák és ügyfélportál",
           "Jövedelemadó-adatok",
           "Exportálás Pohoda és Money S3 programba",
+          "API és webhookok (1000 kérés)",
           "Havi 30 MI-kredit",
-          "Ingyenes könyvelői hozzáférés"
+          "Ingyenes könyvelői hozzáférés",
+          "Számlák Billanta lábléc nélkül"
         ]
       },
       "plus": {
@@ -4381,7 +4384,7 @@
         "features": [
           "Minden, ami a Start csomagban",
           "Havi 150 MI-kredit",
-          "ÁFA-bevallás, ellenőrző és összesítő nyilatkozat",
+          "ÁFA-bevallás, ellenőrző és összesítő nyilatkozat CZ és SK szerint",
           "Bankkártyás fizetés a számlákon",
           "3 felhasználó + könyvelő",
           "API és webhookok (10 000 kérés)",
@@ -4394,7 +4397,7 @@
         "cta": "Business választása",
         "features": [
           "Minden, ami a Plus csomagban",
-          "Akár 10 cég egyetlen fiókban",
+          "Nettó jövedelem felosztása akár 10 társ között",
           "10 felhasználó szerepkörökkel",
           "Havi 500 MI-kredit",
           "API és webhookok (50 000 kérés)",
@@ -4402,7 +4405,7 @@
         ]
       }
     },
-    "paygNote": "A Free csomagban csak a havi 10 feletti bizonylatokért fizet, darabonként {payg}. Havi kb. 34 bizonylattól már a Start csomag a kedvezőbb.",
+    "limitsNote": "A Free csomagban havi 10 bizonylatot állíthat ki, a jóváírások nem számítanak bele. A Pohoda vagy Money S3 exportot havonta egyszer, az ÁFA-fájlokat egyszer próbálhatja ki.",
     "aiCreditNote": "Egy MI-kredit = egy számla hang- vagy szöveges üzenetből, vagy egy fotóról beolvasott nyugta.",
     "compare": {
       "title": "Csomagok összehasonlítása",
@@ -4434,30 +4437,37 @@
         "ownKey": "Saját MI-kulcs, korlátok nélkül",
         "vatLimit": "ÁFA-értékhatár figyelése és adónaptár",
         "annual": "Jövedelemadó-adatok",
-        "vatFilings": "ÁFA-bevallás, ellenőrző és összesítő nyilatkozat",
+        "vatFilings": "ÁFA-bevallás, ellenőrző és összesítő nyilatkozat (CZ)",
         "accountantExport": "Exportálás a könyvelőnek",
         "users": "Felhasználók",
         "companies": "Cégek egy fiókban",
-        "api": "API és webhookok (kérés havonta)",
+        "api": "API (kérés havonta)",
         "time": "Időkövetés",
-        "backups": "Adatmentés (Google Drive, letöltés)",
-        "support": "Ügyfélszolgálat"
+        "backups": "Adatmentés (Google Drive, SFTP, titkosított, letöltés)",
+        "support": "Ügyfélszolgálat",
+        "invoiceLock": "Jelszóval zárt számlák",
+        "brandFooter": "„Billantával készült” lábléc nélkül",
+        "stripe": "Stripe-fizetések szinkronizálása",
+        "vatFilingsSk": "ÁFA-bevallás, ellenőrző és összesítő nyilatkozat (SK)",
+        "netIncome": "Nettó jövedelem: társak a felosztásban",
+        "webhooks": "Webhookok"
       },
       "cell": {
-        "docsFree": "10 a csomagban, utána darabonként {payg}",
+        "docsFree": "10",
         "unlimited": "Korlátlan",
         "twoTemplates": "2 sablon",
         "manual": "Kézi",
         "automatic": "Automatikus",
-        "csv": "CSV",
         "csvPlus": "CSV, Pohoda, Money S3",
-        "oneUser": "1",
-        "userAccountant": "1 + könyvelő",
         "threeAccountant": "3 + könyvelő",
-        "tenUsers": "10 szerepkörökkel",
-        "upTo10": "Legfeljebb 10",
         "email": "E-mail",
-        "priority": "Elsőbbségi"
+        "priority": "Elsőbbségi",
+        "onScreen": "Képernyőn",
+        "oneDownload": "1 próbaletöltés",
+        "csvTaste": "CSV, Pohoda és Money S3 havonta 1×",
+        "oneAccountant": "1 + könyvelő",
+        "tenAccountant": "10 + könyvelő",
+        "ownPlan": "Legfeljebb 10, mindegyik saját csomaggal"
       }
     },
     "compareCompetitors": "Így teljesít a Billanta a Fakturoiddal, az iDokladdal és a többiekkel szemben",
@@ -4481,7 +4491,7 @@
       "items": [
         {
           "q": "Ingyenes a Billanta?",
-          "a": "Igen. A Free csomag nem jár le, és nem kell hozzá bankkártya. Havi 10 bizonylatot tartalmaz, minden további {payg}. Az ISDOC, a QR-fizetés és a cégadatok lekérése az ARES nyilvántartásból minden csomagban benne van."
+          "a": "Igen. A Free csomag nem jár le, és nem kell hozzá bankkártya. Havi 10 bizonylatot tartalmaz. Ha ennél több kell, a Start csomagban nincs bizonylatkorlát. Az ISDOC, a QR-fizetés és a cégadatok lekérése az ARES nyilvántartásból minden csomagban benne van."
         },
         {
           "q": "Az árak tartalmazzák az ÁFÁ-t?",
@@ -4501,7 +4511,7 @@
         },
         {
           "q": "Kell a könyvelőmnek saját csomag?",
-          "a": "Nem. A Start csomagtól egy könyvelő ingyen hozzáfér a cégéhez, az Ön csomagja részeként."
+          "a": "Nem. Minden csomagban, a Free-ben is, legfeljebb 2 könyvelő férhet hozzá ingyen a cégéhez."
         },
         {
           "q": "Miért szerepel a számlákon, hogy „Made with Billanta”?",
@@ -4714,7 +4724,8 @@
       "ai_provider_unavailable": "Az AI nem válaszol. Próbálja újra egy kis idő múlva.",
       "empty_input": "Írja le, mit szeretne számlázni.",
       "symbol_invalid": "A szimbólumok csak számjegyeket tartalmazhatnak (VS és SS legfeljebb 10, KS legfeljebb 4).",
-      "reason_required": "Adja meg a módosítás okát."
+      "reason_required": "Adja meg a módosítás okát.",
+      "ai_credits_exhausted": "Az e havi MI-kreditek elfogytak. Újak 1-jén jönnek, egy magasabb csomagban több van, vagy használja a saját kulcsát."
     },
     "copy": {
       "title": "Előkitöltés másik számlából",
@@ -14189,6 +14200,20 @@
   "updateNotice": {
     "text": "Elérhető a Billanta új verziója. Töltse újra az oldalt, hogy minden működjön.",
     "reload": "Újratöltés"
+  },
+  "planLimits": {
+    "from": "{plan} csomagtól",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} / {limit} bizonylat ebben a hónapban",
+    "aiCredits": "Még {remaining} / {limit} MI-kredit ebben a hónapban",
+    "apiRequests": "{used} / {limit} API-kérés ebben a hónapban",
+    "tasteLeft": "Ingyen kipróbálható: {left}×",
+    "planRequired": "Ez a {plan} csomagtól érhető el.",
+    "documentsOut": "Ebben a hónapban kiállította a csomagjában lévő mind a(z) {limit} bizonylatot. Továbbiakat a {plan} csomagtól, vagy a következő hónap 1-jétől állíthat ki."
   },
   "vault": {
     "settingsLink": "Bizalmas mód beállításai",

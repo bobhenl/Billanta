@@ -812,7 +812,8 @@
         "ai_key_missing": "Je eigen AI-API-sleutel ontbreekt",
         "unsupported_file_type": "Niet-ondersteund bestandstype (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "AI heeft geweigerd het document te verwerken",
-        "ai_unparseable": "Er kon niets uit het document worden gelezen"
+        "ai_unparseable": "Er kon niets uit het document worden gelezen",
+        "ai_credits_exhausted": "De AI-credits van deze maand zijn op. Op de 1e komen er nieuwe; een hoger abonnement heeft er meer, of gebruik je eigen sleutel."
       },
       "supplierSection": "Leverancier & document",
       "supplierLinked": "Gekoppeld aan een contact",
@@ -4332,7 +4333,7 @@
     "title": "Prijzen",
     "lead": "Begin gratis, zonder creditcard. Stap over naar een hoger abonnement wanneer je dat nodig hebt.",
     "seoTitle": "Prijzen voor facturatie – begin gratis",
-    "metaDescription": "Prijzen van Billanta: Free met 10 documenten per maand en daarboven betalen per document, Start vanaf €4,99, Plus met AI vanaf €9,99 en Business voor teams. Geen creditcard nodig, prijzen excl. btw.",
+    "metaDescription": "Prijzen van Billanta: Free met 10 documenten per maand, Start vanaf €4,99, Plus met AI vanaf €9,99 en Business voor teams. Geen creditcard nodig, prijzen excl. btw.",
     "yearly": "Jaarlijks",
     "monthly": "Maandelijks",
     "yearlySave": "2 maanden gratis",
@@ -4352,7 +4353,7 @@
         "cta": "Begin gratis",
         "features": [
           "10 documenten per maand inbegrepen",
-          "Extra documenten voor {payg} per stuk",
+          "1 gebruiker + boekhouder",
           "ISDOC, QR-betaling, opzoeken in het handelsregister en VIES",
           "5 AI-credits per maand",
           "Bewaking van de btw-drempel en belastingkalender",
@@ -4370,8 +4371,10 @@
           "Terugkerende facturen en klantenportaal",
           "Cijfers voor de inkomstenbelasting",
           "Export naar Pohoda en Money S3",
+          "API en webhooks (1.000 verzoeken)",
           "30 AI-credits per maand",
-          "Gratis toegang voor je boekhouder"
+          "Gratis toegang voor je boekhouder",
+          "Facturen zonder Billanta-voettekst"
         ]
       },
       "plus": {
@@ -4381,7 +4384,7 @@
         "features": [
           "Alles uit Start",
           "150 AI-credits per maand",
-          "Btw-aangifte, controleaangifte en intracommunautaire opgave",
+          "Btw-aangifte, controleaangifte en intracommunautaire opgave voor CZ en SK",
           "Kaartbetalingen op facturen",
           "3 gebruikers + boekhouder",
           "API en webhooks (10.000 verzoeken)",
@@ -4394,7 +4397,7 @@
         "cta": "Kies Business",
         "features": [
           "Alles uit Plus",
-          "Tot 10 bedrijven onder één account",
+          "Netto-inkomen verdeeld over maximaal 10 vennoten",
           "10 gebruikers met rollen",
           "500 AI-credits per maand",
           "API en webhooks (50.000 verzoeken)",
@@ -4402,7 +4405,7 @@
         ]
       }
     },
-    "paygNote": "Op Free betaal je alleen voor documenten boven de 10 per maand, {payg} per stuk. Vanaf ongeveer 34 documenten per maand is Start voordeliger.",
+    "limitsNote": "Met Free maak je 10 documenten per maand, creditnota's tellen niet mee. De export voor Pohoda of Money S3 probeer je één keer per maand, de btw-bestanden één keer.",
     "aiCreditNote": "Eén AI-credit = één factuur uit een spraak- of tekstbericht, of één bonnetje uitgelezen van een foto.",
     "compare": {
       "title": "Abonnementen vergelijken",
@@ -4434,30 +4437,37 @@
         "ownKey": "Eigen AI-sleutel, zonder limiet",
         "vatLimit": "Bewaking van de btw-drempel en belastingkalender",
         "annual": "Cijfers voor de inkomstenbelasting",
-        "vatFilings": "Btw-aangifte, controleaangifte en intracommunautaire opgave",
+        "vatFilings": "Btw-aangifte, controleaangifte en intracommunautaire opgave (CZ)",
         "accountantExport": "Export voor je boekhouder",
         "users": "Gebruikers",
         "companies": "Bedrijven onder één account",
-        "api": "API en webhooks (verzoeken per maand)",
+        "api": "API (verzoeken per maand)",
         "time": "Urenregistratie",
-        "backups": "Back-ups van gegevens (Google Drive, downloaden)",
-        "support": "Support"
+        "backups": "Back-ups (Google Drive, SFTP, versleuteld, downloaden)",
+        "support": "Support",
+        "invoiceLock": "Facturen met wachtwoord",
+        "brandFooter": "Zonder voettekst ‘Gemaakt met Billanta’",
+        "stripe": "Stripe-betalingen synchroniseren",
+        "vatFilingsSk": "Btw-aangifte, controleaangifte en intracommunautaire opgave (SK)",
+        "netIncome": "Netto-inkomen: vennoten in de verdeling",
+        "webhooks": "Webhooks"
       },
       "cell": {
-        "docsFree": "10 inbegrepen, daarna {payg} per stuk",
+        "docsFree": "10",
         "unlimited": "Onbeperkt",
         "twoTemplates": "2 sjablonen",
         "manual": "Handmatig",
         "automatic": "Automatisch",
-        "csv": "CSV",
         "csvPlus": "CSV, Pohoda, Money S3",
-        "oneUser": "1",
-        "userAccountant": "1 + boekhouder",
         "threeAccountant": "3 + boekhouder",
-        "tenUsers": "10 met rollen",
-        "upTo10": "Tot 10",
         "email": "E-mail",
-        "priority": "Voorrang"
+        "priority": "Voorrang",
+        "onScreen": "Op het scherm",
+        "oneDownload": "1 proefdownload",
+        "csvTaste": "CSV, Pohoda en Money S3 1× per maand",
+        "oneAccountant": "1 + boekhouder",
+        "tenAccountant": "10 + boekhouder",
+        "ownPlan": "Tot 10, elk met een eigen abonnement"
       }
     },
     "compareCompetitors": "Hoe Billanta zich verhoudt tot Fakturoid, iDoklad en andere",
@@ -4481,7 +4491,7 @@
       "items": [
         {
           "q": "Is Billanta gratis?",
-          "a": "Ja. Het Free-abonnement heeft geen tijdslimiet en vraagt geen creditcard. Je krijgt 10 documenten per maand; elk extra document kost {payg}. ISDOC, QR-betalingen en bedrijven opzoeken in het ARES-register zitten in elk abonnement."
+          "a": "Ja. Het Free-abonnement heeft geen tijdslimiet en vraagt geen creditcard. Je krijgt 10 documenten per maand. Heb je er meer nodig, dan heeft Start geen documentlimiet. ISDOC, QR-betalingen en bedrijven opzoeken in het ARES-register zitten in elk abonnement."
         },
         {
           "q": "Zijn de prijzen inclusief btw?",
@@ -4501,7 +4511,7 @@
         },
         {
           "q": "Heeft mijn boekhouder een eigen abonnement nodig?",
-          "a": "Nee. Vanaf het Start-abonnement krijgt één boekhouder gratis toegang tot je bedrijf, als onderdeel van jouw abonnement."
+          "a": "Nee. Bij elk abonnement, ook Free, kunnen maximaal 2 boekhouders gratis bij je bedrijf."
         },
         {
           "q": "Waarom staat er ‘Gemaakt met Billanta’ op facturen?",
@@ -4714,7 +4724,8 @@
       "ai_provider_unavailable": "AI reageert niet. Probeer het zo opnieuw.",
       "empty_input": "Beschrijf wat je wilt factureren.",
       "symbol_invalid": "Symbolen mogen alleen cijfers bevatten (VS en SS max. 10, KS max. 4).",
-      "reason_required": "Vul een reden voor de wijziging in."
+      "reason_required": "Vul een reden voor de wijziging in.",
+      "ai_credits_exhausted": "De AI-credits van deze maand zijn op. Op de 1e komen er nieuwe; een hoger abonnement heeft er meer, of gebruik je eigen sleutel."
     },
     "copy": {
       "title": "Invullen vanuit een andere factuur",
@@ -14189,6 +14200,20 @@
   "updateNotice": {
     "text": "Er is een nieuwe versie van Billanta. Laad de pagina opnieuw zodat alles werkt.",
     "reload": "Opnieuw laden"
+  },
+  "planLimits": {
+    "from": "Vanaf {plan}",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} van {limit} documenten deze maand",
+    "aiCredits": "Nog {remaining} van {limit} AI-credits deze maand",
+    "apiRequests": "{used} van {limit} API-verzoeken deze maand",
+    "tasteLeft": "Gratis te proberen: {left}×",
+    "planRequired": "Dit zit in het {plan}-abonnement.",
+    "documentsOut": "Je hebt deze maand alle {limit} documenten van je abonnement uitgegeven. Meer kan vanaf {plan}, of vanaf de 1e van volgende maand."
   },
   "vault": {
     "settingsLink": "Instellingen van de Vertrouwelijke modus",

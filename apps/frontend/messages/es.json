@@ -812,7 +812,8 @@
         "ai_key_missing": "Falta su propia clave de API de IA",
         "unsupported_file_type": "Tipo de archivo no compatible (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "La IA ha rechazado procesar el documento",
-        "ai_unparseable": "No se ha podido leer nada del documento"
+        "ai_unparseable": "No se ha podido leer nada del documento",
+        "ai_credits_exhausted": "Los créditos de IA de este mes se han agotado. Llegan nuevos el día 1; un plan superior tiene más, o use su propia clave."
       },
       "supplierSection": "Proveedor y documento",
       "supplierLinked": "Vinculado a un contacto",
@@ -4332,7 +4333,7 @@
     "title": "Precios",
     "lead": "Empiece gratis, sin tarjeta. Cambie a un plan superior cuando lo necesite.",
     "seoTitle": "Precios de facturación – empiece gratis",
-    "metaDescription": "Precios de Billanta: Free con 10 documentos al mes y pago por uso a partir de ahí, Start desde 4,99 €, Plus con IA desde 9,99 € y Business para equipos. Sin tarjeta, precios sin IVA.",
+    "metaDescription": "Precios de Billanta: Free con 10 documentos al mes, Start desde 4,99 €, Plus con IA desde 9,99 € y Business para equipos. Sin tarjeta, precios sin IVA.",
     "yearly": "Anual",
     "monthly": "Mensual",
     "yearlySave": "2 meses gratis",
@@ -4352,7 +4353,7 @@
         "cta": "Empezar gratis",
         "features": [
           "10 documentos al mes incluidos",
-          "Más documentos a {payg} cada uno",
+          "1 usuario + contable",
           "ISDOC, pago por QR, consulta del registro y VIES",
           "5 créditos de IA al mes",
           "Control del umbral de IVA y calendario fiscal",
@@ -4370,8 +4371,10 @@
           "Facturas recurrentes y portal del cliente",
           "Datos para el impuesto sobre la renta",
           "Exportación para Pohoda y Money S3",
+          "API y webhooks (1000 solicitudes)",
           "30 créditos de IA al mes",
-          "Acceso gratuito para su contable"
+          "Acceso gratuito para su contable",
+          "Facturas sin el pie de Billanta"
         ]
       },
       "plus": {
@@ -4381,7 +4384,7 @@
         "features": [
           "Todo lo de Start",
           "150 créditos de IA al mes",
-          "Declaración de IVA, declaración de control y declaración recapitulativa",
+          "Declaración de IVA, de control y recapitulativa para CZ y SK",
           "Pagos con tarjeta en las facturas",
           "3 usuarios + contable",
           "API y webhooks (10 000 solicitudes)",
@@ -4394,7 +4397,7 @@
         "cta": "Elegir Business",
         "features": [
           "Todo lo de Plus",
-          "Hasta 10 empresas en una sola cuenta",
+          "Ingreso neto repartido hasta entre 10 socios",
           "10 usuarios con roles",
           "500 créditos de IA al mes",
           "API y webhooks (50 000 solicitudes)",
@@ -4402,7 +4405,7 @@
         ]
       }
     },
-    "paygNote": "En Free solo paga por los documentos que superen los 10 al mes, a {payg} cada uno. A partir de unos 34 documentos al mes, Start sale más barato.",
+    "limitsNote": "Free incluye 10 documentos al mes; las facturas rectificativas no cuentan. Puede probar la exportación a Pohoda o Money S3 una vez al mes y los archivos de IVA una vez.",
     "aiCreditNote": "Un crédito de IA = una factura a partir de un mensaje de voz o de texto, o un recibo leído desde una foto.",
     "compare": {
       "title": "Comparar planes",
@@ -4434,30 +4437,37 @@
         "ownKey": "Su propia clave de IA, sin límite",
         "vatLimit": "Control del umbral de IVA y calendario fiscal",
         "annual": "Datos para el impuesto sobre la renta",
-        "vatFilings": "Declaración de IVA, declaración de control y declaración recapitulativa",
+        "vatFilings": "Declaración de IVA, de control y recapitulativa (CZ)",
         "accountantExport": "Exportación para su contable",
         "users": "Usuarios",
         "companies": "Empresas en una sola cuenta",
-        "api": "API y webhooks (solicitudes al mes)",
+        "api": "API (solicitudes al mes)",
         "time": "Registro de horas",
-        "backups": "Copias de seguridad (Google Drive, descarga)",
-        "support": "Soporte"
+        "backups": "Copias de seguridad (Google Drive, SFTP, cifradas, descarga)",
+        "support": "Soporte",
+        "invoiceLock": "Facturas protegidas con contraseña",
+        "brandFooter": "Sin el pie «Hecho con Billanta»",
+        "stripe": "Sincronización de pagos de Stripe",
+        "vatFilingsSk": "Declaración de IVA, de control y recapitulativa (SK)",
+        "netIncome": "Ingreso neto: socios en el reparto",
+        "webhooks": "Webhooks"
       },
       "cell": {
-        "docsFree": "10 incluidos, después {payg} cada uno",
+        "docsFree": "10",
         "unlimited": "Ilimitado",
         "twoTemplates": "2 plantillas",
         "manual": "Manual",
         "automatic": "Automático",
-        "csv": "CSV",
         "csvPlus": "CSV, Pohoda, Money S3",
-        "oneUser": "1",
-        "userAccountant": "1 + contable",
         "threeAccountant": "3 + contable",
-        "tenUsers": "10 con roles",
-        "upTo10": "Hasta 10",
         "email": "E-mail",
-        "priority": "Prioritario"
+        "priority": "Prioritario",
+        "onScreen": "En pantalla",
+        "oneDownload": "1 descarga de prueba",
+        "csvTaste": "CSV, Pohoda y Money S3 1 vez al mes",
+        "oneAccountant": "1 + contable",
+        "tenAccountant": "10 + contable",
+        "ownPlan": "Hasta 10, cada una con su plan"
       }
     },
     "compareCompetitors": "Cómo se compara Billanta con Fakturoid, iDoklad y otros",
@@ -4481,7 +4491,7 @@
       "items": [
         {
           "q": "¿Billanta es gratis?",
-          "a": "Sí. El plan Free no tiene límite de tiempo y no necesita tarjeta. Incluye 10 documentos al mes; cada uno adicional cuesta {payg}. ISDOC, los pagos por QR y la consulta de empresas en el registro ARES están en todos los planes."
+          "a": "Sí. El plan Free no tiene límite de tiempo y no necesita tarjeta. Incluye 10 documentos al mes. Si necesita más, Start no tiene límite de documentos. ISDOC, los pagos por QR y la consulta de empresas en el registro ARES están en todos los planes."
         },
         {
           "q": "¿Los precios incluyen IVA?",
@@ -4501,7 +4511,7 @@
         },
         {
           "q": "¿Mi contable necesita su propio plan?",
-          "a": "No. Desde el plan Start, un contable obtiene acceso gratuito a su empresa como parte de su plan."
+          "a": "No. En cualquier plan, también en Free, hasta 2 contables pueden acceder gratis a su empresa."
         },
         {
           "q": "¿Por qué las facturas dicen «Made with Billanta»?",
@@ -4714,7 +4724,8 @@
       "ai_provider_unavailable": "La IA no responde. Inténtelo de nuevo en un momento.",
       "empty_input": "Describa qué quiere facturar.",
       "symbol_invalid": "Los símbolos solo pueden contener dígitos (VS y SS hasta 10, KS hasta 4).",
-      "reason_required": "Indique el motivo del cambio."
+      "reason_required": "Indique el motivo del cambio.",
+      "ai_credits_exhausted": "Los créditos de IA de este mes se han agotado. Llegan nuevos el día 1; un plan superior tiene más, o use su propia clave."
     },
     "copy": {
       "title": "Rellenar a partir de otra factura",
@@ -14189,6 +14200,20 @@
   "updateNotice": {
     "text": "Hay una nueva versión de Billanta. Recargue la página para que todo funcione.",
     "reload": "Recargar"
+  },
+  "planLimits": {
+    "from": "Desde el plan {plan}",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} de {limit} documentos este mes",
+    "aiCredits": "Quedan {remaining} de {limit} créditos de IA este mes",
+    "apiRequests": "{used} de {limit} solicitudes de API este mes",
+    "tasteLeft": "Para probar gratis: {left}×",
+    "planRequired": "Esto está disponible desde el plan {plan}.",
+    "documentsOut": "Este mes ya ha emitido los {limit} documentos que incluye su plan. Podrá emitir más con el plan {plan} o a partir del día 1 del mes que viene."
   },
   "vault": {
     "settingsLink": "Ajustes del Modo confidencial",

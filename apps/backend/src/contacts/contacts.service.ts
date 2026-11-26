@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { BadRequestException, ConflictException, Injectable, NotFoundException, Optional } from "@nestjs/common";
 import { clientPortalLinkOf, newShortKey } from "../public-links/public-link";
+import { assertPlanFeature } from "../billing/plan-limits";
 import {
   checkVatPayer,
   isEuCountry,
@@ -275,7 +276,16 @@ export class ContactsService {
   }
 
   /** Turns the customer's portal link on (or issues a new one, revoking the old), or off with `enabled: false`. */
-  async setPortal(db: TenantDb, id: string, enabled: boolean) {
+  /**
+   * Turning a portal on needs Start; issuing a new link for one that is
+   * already on (a leaked link) and turning it off work on every plan.
+   */
+  async setPortal(db: TenantDb, tenantId: string, id: string, enabled: boolean) {
+    if (enabled) {
+      const [current] = await db.select({ portalToken: schema.contacts.portalToken }).from(schema.contacts).where(eq(schema.contacts.id, id)).limit(1);
+      if (!current) throw new NotFoundException("Contact not found");
+      if (!current.portalToken) await assertPlanFeature(db, tenantId, "client_portal");
+    }
     const [row] = await db
       .update(schema.contacts)
       // A new key with every new token, so renewing revokes the short link too.

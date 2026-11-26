@@ -1,4 +1,4 @@
-import { NotFoundException } from "@nestjs/common";
+import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DbService } from "../db/db.service";
 import { ContactsService, hasSlowPart } from "./contacts.service";
@@ -21,6 +21,9 @@ vi.mock("@faktur/cz-compliance", async (importOriginal) => ({
   searchRpoSubjects: searchRpoSubjectsMock,
   searchSubjectsTypeahead: searchSubjectsTypeaheadMock,
 }));
+
+const planLimits = vi.hoisted(() => ({ assertPlanFeature: vi.fn(async () => undefined) }));
+vi.mock("../billing/plan-limits", () => planLimits);
 
 const SUBJECT = {
   ico: "27604977",
@@ -320,5 +323,39 @@ describe("hasSlowPart", () => {
     expect(hasSlowPart("27604977", "auto")).toBe(false);
     expect(hasSlowPart("DE811569869", "auto")).toBe(false);
     expect(hasSlowPart("CZ27604977", "EU")).toBe(false);
+  });
+});
+
+describe("ContactsService.setPortal – plan", () => {
+  const row = { id: "c1", tenantId: "t1", portalToken: "tok", portalKey: "k", portalSlug: null, legalName: "Novák" };
+  function db(current: { portalToken: string | null }) {
+    const select = vi.fn().mockReturnValueOnce(makeSelectChain([current])).mockReturnValue(makeSelectChain([{ invoiceFormPrefs: null }]));
+    const returning = vi.fn(async () => [row]);
+    const update = vi.fn(() => ({ set: () => ({ where: () => ({ returning }) }) }));
+    return { select, update };
+  }
+  beforeEach(() => {
+    planLimits.assertPlanFeature.mockReset().mockResolvedValue(undefined);
+  });
+
+  it("needs the client_portal plan to turn a portal on", async () => {
+    const fake = db({ portalToken: null });
+    await new ContactsService({} as DbService).setPortal(fake as never, "t1", "c1", true);
+    expect(planLimits.assertPlanFeature).toHaveBeenCalledWith(fake, "t1", "client_portal");
+  });
+
+  it("changes nothing when the plan refuses", async () => {
+    const refusal = new ForbiddenException({ error: "plan_required" });
+    planLimits.assertPlanFeature.mockRejectedValue(refusal);
+    const fake = db({ portalToken: null });
+    await expect(new ContactsService({} as DbService).setPortal(fake as never, "t1", "c1", true)).rejects.toBe(refusal);
+    expect(fake.update).not.toHaveBeenCalled();
+  });
+
+  it("still issues a new link for a portal that is on, and turns one off, on any plan", async () => {
+    const service = new ContactsService({} as DbService);
+    await service.setPortal(db({ portalToken: "old" }) as never, "t1", "c1", true);
+    await service.setPortal(db({ portalToken: "old" }) as never, "t1", "c1", false);
+    expect(planLimits.assertPlanFeature).not.toHaveBeenCalled();
   });
 });

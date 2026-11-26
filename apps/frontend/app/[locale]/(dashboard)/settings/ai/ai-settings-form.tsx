@@ -17,12 +17,13 @@ const API_EXAMPLE = (text: string) =>
 /**
  * Choose how AI pre-fill is powered: the company's own Anthropic key (first,
  * since it is always available and has no daily cap), Billanta's key (when
- * the deployment has one, within a daily fair-use limit), or off. The key is
+ * the deployment has one, within the plan's monthly credits and a daily fair-use cap), or off. The key is
  * write-only from here: the backend verifies it, stores it encrypted and only
  * ever shows its last four characters back.
  */
 export function AiSettingsForm({ initial }: { initial: AiSettings }) {
   const t = useTranslations('settings.ai');
+  const tPlan = useTranslations('planLimits');
   const [settings, setSettings] = useState(initial);
   const [key, setKey] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +52,11 @@ export function AiSettingsForm({ initial }: { initial: AiSettings }) {
     {
       mode: 'platform' as const,
       disabled: !settings.platformAvailable,
-      note: settings.platformAvailable ? t('platform.limit', { limit: settings.platformDailyLimit }) : t('platform.unavailable')
+      note: !settings.platformAvailable
+        ? t('platform.unavailable')
+        : settings.credits?.limit != null
+          ? `${tPlan('aiCredits', { remaining: settings.credits.remaining ?? 0, limit: settings.credits.limit })}. ${t('platform.limit', { limit: settings.platformDailyLimit })}`
+          : t('platform.limit', { limit: settings.platformDailyLimit })
     },
     { mode: 'off' as const, disabled: false, note: t('off.note') }
   ];
