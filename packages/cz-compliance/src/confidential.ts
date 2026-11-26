@@ -64,7 +64,7 @@ export function fromBase64(text: string): Uint8Array {
 }
 
 /** Whether a stored value is ciphertext. Servers use this to refuse rendering it. */
-export function isSealed(value: unknown): value is string {
+export function isSealed(value: unknown): value is `enc:v1:${string}` {
   return typeof value === 'string' && value.startsWith(PREFIX) && SEALED_RE.test(value);
 }
 

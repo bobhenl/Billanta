@@ -1,7 +1,10 @@
-import { ConflictException } from "@nestjs/common";
+import { ConflictException, ForbiddenException } from "@nestjs/common";
 import { sealedMaxLength } from "@faktur/cz-compliance";
-import { describe, expect, it } from "vitest";
-import { assertServerReadable, plainOrNull, redactSealedInvoice, redactSealedItem, sealableText, SEALED_PLACEHOLDER } from "./sealed";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { loadPlanSummary } from "../billing/plan.guard";
+import { assertSealingAllowed, sealingAllowed, assertServerReadable, plainOrNull, redactSealedInvoice, redactSealedItem, sealableText, SEALED_PLACEHOLDER } from "./sealed";
+
+vi.mock("../billing/plan.guard", () => ({ loadPlanSummary: vi.fn() }));
 
 // A well-formed envelope: 16 base64 chars of IV, then ciphertext.
 const envelope = (ctLength: number) => `enc:v1:AAAAAAAAAAAAAAAA:${"Q".repeat(ctLength)}`;
@@ -45,5 +48,57 @@ describe("redaction", () => {
   it("hides envelopes from search", () => {
     expect(plainOrNull(envelope(24))).toBeNull();
     expect(plainOrNull("Práce")).toBe("Práce");
+  });
+});
+
+describe("sealing on a plan without confidential mode", () => {
+  const start = { plan: "start" as const, enforced: true };
+  const sealed = envelope(24);
+  const other = envelope(28);
+
+  it("lets plain saves through on any plan", () => {
+    expect(sealingAllowed(start, ["Konzultace", null], [])).toBe(true);
+  });
+
+  it("refuses new ciphertext in a plain document", () => {
+    expect(sealingAllowed(start, ["Konzultace", sealed], ["Konzultace"])).toBe(false);
+  });
+
+  it("keeps a document sealed after a downgrade, even with freshly sealed text", () => {
+    expect(sealingAllowed(start, [other], [sealed])).toBe(true);
+  });
+
+  it("allows sealing on Plus, and when plans are not enforced", () => {
+    expect(sealingAllowed({ plan: "plus", enforced: true }, [sealed], [])).toBe(true);
+    expect(sealingAllowed({ plan: "start", enforced: false }, [sealed], [])).toBe(true);
+    expect(sealingAllowed(null, [sealed], [])).toBe(true);
+  });
+});
+
+describe("assertSealingAllowed", () => {
+  const db = {} as never;
+  const plan = vi.mocked(loadPlanSummary);
+  beforeEach(() => plan.mockReset());
+
+  it("answers 403 plan_required with the feature and the plan to buy", async () => {
+    plan.mockResolvedValue({ plan: "start", enforced: true } as never);
+    const error = await assertSealingAllowed(db, "t1", [envelope(24)]).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(ForbiddenException);
+    expect((error as ForbiddenException).getResponse()).toMatchObject({ error: "plan_required", feature: "confidential_mode", plan: "plus" });
+  });
+
+  it("reads the stored texts only when the plan would refuse", async () => {
+    const stored = vi.fn(() => [envelope(24)]);
+    plan.mockResolvedValue({ plan: "business", enforced: true } as never);
+    await assertSealingAllowed(db, "t1", [envelope(28)], stored);
+    expect(stored).not.toHaveBeenCalled();
+    plan.mockResolvedValue({ plan: "start", enforced: true } as never);
+    await expect(assertSealingAllowed(db, "t1", [envelope(28)], stored)).resolves.toBeUndefined();
+    expect(stored).toHaveBeenCalledOnce();
+  });
+
+  it("skips the plan lookup for a plain save", async () => {
+    await assertSealingAllowed(db, "t1", ["Konzultace"]);
+    expect(plan).not.toHaveBeenCalled();
   });
 });

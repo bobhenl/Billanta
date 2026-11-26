@@ -60,7 +60,7 @@ import { appendNoteLine } from "../bank-reconciliation/payment-note";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
 import { lockBlocks } from "./invoice-lock";
-import { plainOrNull } from "../vault/sealed";
+import { assertSealingAllowed, plainOrNull, printedTexts } from "../vault/sealed";
 
 // TODO: once packages/cz-compliance is ready, ARES-resolve
 // counterparty_ico / counterparty_name_raw into a real `contacts` row here
@@ -68,6 +68,11 @@ import { plainOrNull } from "../vault/sealed";
 // import { lookupIco } from "@faktur/cz-compliance";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
+
+/** The fields the browser may send as ciphertext (Důvěrný režim). */
+function sealableValues(dto: Pick<UpdateInvoiceDto, "note_above" | "note_below" | "internal_note" | "line_items">): unknown[] {
+  return [dto.note_above, dto.note_below, dto.internal_note, ...(dto.line_items ?? []).map((i) => i.description)];
+}
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
@@ -571,6 +576,7 @@ export class InvoicesService {
     if (missing) throw new BadRequestException(missing);
     const contact = dto.contact_id ? await this.requireContact(db, dto.contact_id) : null;
     await this.checkRelated(db, dto.document_type, dto.related_invoice_id);
+    await assertSealingAllowed(db, tenantId, sealableValues(dto));
 
     // No db.transaction here: `db` is the request's own transaction (tenant
     // context is SET LOCAL inside it), so the inserts are already atomic.
@@ -631,6 +637,11 @@ export class InvoicesService {
     const documentType = dto.document_type ?? invoice.documentType;
     const relatedId = dto.related_invoice_id !== undefined ? dto.related_invoice_id : invoice.relatedInvoiceId;
     await this.checkRelated(db, documentType, relatedId);
+    await assertSealingAllowed(db, tenantId, sealableValues(dto), async () => [
+      ...printedTexts(invoice, []),
+      invoice.internalNote,
+      ...(await db.select({ description: schema.invoiceLineItems.description }).from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, id))).map((i) => i.description),
+    ]);
 
     const values = invoiceFieldValues(dto);
     // Another customer picked without a contact person in the request: the

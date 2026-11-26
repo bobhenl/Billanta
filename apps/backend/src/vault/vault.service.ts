@@ -100,7 +100,7 @@ export class VaultService {
   }
 
   /** The caller's own vault password (replaces the old one) or a new passkey. */
-  async addWrap(db: TenantDb, tenantId: string, userId: string, dto: MemberWrapDto) {
+  async addWrap(db: TenantDb, tenantId: string, userId: string, dto: MemberWrapDto["wrap"]) {
     await this.requireVault(db, tenantId);
     if (dto.kind === "password") {
       await db

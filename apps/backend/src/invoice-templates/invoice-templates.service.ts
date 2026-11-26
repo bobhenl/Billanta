@@ -3,7 +3,7 @@ import { asc, desc, eq, inArray } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { InvoicesService } from "../invoices/invoices.service";
-import { isSealed } from "../vault/sealed";
+import { assertSealingAllowed, isSealed } from "../vault/sealed";
 import type {
   BulkInvoiceDto,
   CreateInvoiceTemplateDto,
@@ -11,6 +11,10 @@ import type {
 } from "./dto/invoice-template.dto";
 
 type Db = PostgresJsDatabase<typeof schema>;
+
+function templateTexts(t: { note_above?: string | null; note_below?: string | null; line_items?: { description: string }[] | null }): unknown[] {
+  return [t.note_above, t.note_below, ...(t.line_items ?? []).map((i) => i.description)];
+}
 type TemplateRow = typeof schema.invoiceTemplates.$inferSelect;
 
 /** How line items are stored in `invoice_templates.line_items` (jsonb). */
@@ -83,6 +87,7 @@ export class InvoiceTemplatesService {
   }
 
   async create(db: Db, tenantId: string, dto: CreateInvoiceTemplateDto) {
+    await assertSealingAllowed(db, tenantId, templateTexts(dto));
     const [template] = await db
       .insert(schema.invoiceTemplates)
       .values({ ...templateValues(dto), name: dto.name, tenantId })
@@ -131,8 +136,9 @@ export class InvoiceTemplatesService {
     return template;
   }
 
-  async update(db: Db, id: string, dto: UpdateInvoiceTemplateDto) {
-    await this.findOne(db, id);
+  async update(db: Db, tenantId: string, id: string, dto: UpdateInvoiceTemplateDto) {
+    const existing = await this.findOne(db, id);
+    await assertSealingAllowed(db, tenantId, templateTexts(dto), () => templateTexts({ note_above: existing.noteAbove, note_below: existing.noteBelow, line_items: existing.lineItems as { description: string }[] | null }));
     const [template] = await db
       .update(schema.invoiceTemplates)
       .set({ ...templateValues(dto), updatedAt: new Date() })

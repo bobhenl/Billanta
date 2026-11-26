@@ -1,11 +1,11 @@
-import { Body, Controller, Delete, ForbiddenException, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query, Req, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { planAllows } from "../billing/plan-access";
 import { loadPlanSummary, RequirePlan } from "../billing/plan.guard";
-import { FEATURE_MIN_PLAN } from "../billing/plans";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { EnableVaultDto, MemberWrapDto, PlainInvoicesQueryDto, RecoveryWrapDto, SealInvoicesDto, VaultSettingsDto } from "./dto/vault.dto";
+import { confidentialPlanRequired } from "./sealed";
 import { VaultService } from "./vault.service";
 
 /**
@@ -29,7 +29,7 @@ export class VaultController {
   @Post("me/wraps")
   @ApiOperation({ summary: "Set the caller's vault password or add a passkey (the key wrapped in the browser)" })
   addWrap(@Req() req: TenantScopedRequest, @Body() dto: MemberWrapDto) {
-    return this.vault.addWrap(req.tenantDb!, req.user!.tenantId, req.user!.id, dto);
+    return this.vault.addWrap(req.tenantDb!, req.user!.tenantId, req.user!.id, dto.wrap);
   }
 
   @Delete("me/wraps/:id")
@@ -75,7 +75,7 @@ export class VaultController {
   private async requirePlan(req: TenantScopedRequest) {
     const plan = await loadPlanSummary(req.tenantDb!, req.user!.tenantId);
     if (plan && !planAllows(plan, "confidential_mode")) {
-      throw new ForbiddenException({ error: "plan_required", message: "This needs a higher plan", feature: "confidential_mode", plan: FEATURE_MIN_PLAN.confidential_mode });
+      throw confidentialPlanRequired();
     }
   }
 }

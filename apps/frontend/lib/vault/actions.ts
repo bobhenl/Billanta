@@ -30,7 +30,7 @@ export async function enableVault(input: { keyCheck: string; password: VaultWrap
 }
 
 export async function addVaultWrap(wrap: VaultWrap & { credentialId?: string; label?: string | null }) {
-  const result = await call<VaultStatus>('/api/v1/vault/me/wraps', json('POST', wrap));
+  const result = await call<VaultStatus>('/api/v1/vault/me/wraps', json('POST', { wrap }));
   if (result.ok) revalidatePath('/', 'layout');
   return result;
 }

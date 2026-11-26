@@ -56,11 +56,14 @@ export function ConfidentialInvoiceForm(props: ComponentProps<typeof InvoiceForm
     );
   }
 
+  // After a downgrade the server keeps an encrypted document sealed but refuses
+  // new ciphertext, so a copy of one is saved as plain text.
+  const mayKeepSealed = vault.planAllowed !== false || props.mode?.kind === 'edit';
   return (
     <InvoiceForm
       {...props}
       template={opened === 'failed' ? null : opened}
-      confidential={{ sealByDefault: sealed || (vault.sealNew && vault.planAllowed !== false), getKey: requestUnlock }}
+      confidential={{ sealByDefault: (sealed && mayKeepSealed) || (vault.sealNew && vault.planAllowed !== false), getKey: requestUnlock }}
     />
   );
 }

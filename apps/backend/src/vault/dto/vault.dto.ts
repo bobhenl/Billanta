@@ -43,7 +43,8 @@ export const enableVaultSchema = z.object({
 });
 export class EnableVaultDto extends createZodDto(enableVaultSchema) {}
 
-export const memberWrapSchema = z.discriminatedUnion("kind", [passwordWrap, passkeyWrap]);
+// Wrapped in an object: a DTO class cannot extend a bare union.
+export const memberWrapSchema = z.object({ wrap: z.discriminatedUnion("kind", [passwordWrap, passkeyWrap]) });
 export class MemberWrapDto extends createZodDto(memberWrapSchema) {}
 
 export const recoveryWrapSchema = z.object({ recovery: recoveryWrap });
