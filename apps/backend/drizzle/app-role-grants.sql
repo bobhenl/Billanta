@@ -69,6 +69,10 @@ REVOKE DELETE ON promo_codes FROM faktur_app;
 REVOKE DELETE ON einvoice_participants, outgoing_einvoices, incoming_einvoices FROM faktur_app;
 REVOKE UPDATE, DELETE ON einvoice_status_events FROM faktur_app;
 
+-- Plan-limit counters (migration 0105) only go up or get a failed AI call
+-- refunded; deleting a row would hand the month's allowance back.
+REVOKE DELETE ON tenant_usage FROM faktur_app;
+
 -- Global catalogs the app only reads; plans and terms change via migrations.
 REVOKE INSERT, UPDATE, DELETE ON subscription_plans, tos_versions FROM faktur_app;
 

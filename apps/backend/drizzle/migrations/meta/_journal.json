@@ -694,6 +694,13 @@
       "when": 1793600100000,
       "tag": "0099_bank_import_rules",
       "breakpoints": true
+    },
+    {
+      "idx": 105,
+      "version": "7",
+      "when": 1793600700000,
+      "tag": "0105_tenant_usage",
+      "breakpoints": true
     }
   ]
 }

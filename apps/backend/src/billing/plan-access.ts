@@ -1,4 +1,4 @@
-import { FEATURE_MIN_PLAN, isPaidPlan, planRank, type PlanFeature, type PlanKey } from "./plans";
+import { FEATURE_MIN_PLAN, FEATURE_TASTE, isPaidPlan, planRank, type PlanFeature, type PlanKey } from "./plans";
 
 /** The `tenants` columns the plan is worked out from. */
 export interface TenantPlanFields {
@@ -84,6 +84,21 @@ export function planSummary(t: TenantPlanFields, now: Date = new Date()): PlanSu
 export function planAllows(summary: Pick<PlanSummary, "plan" | "enforced">, feature: PlanFeature): boolean {
   if (!summary.enforced) return true;
   return planRank(summary.plan) >= planRank(FEATURE_MIN_PLAN[feature]);
+}
+
+/**
+ * Whether a company may use `feature` once more: on its plan, as one of the
+ * taste uses a lower plan gets (FEATURE_TASTE, `tasteUsed` so far), or not
+ * at all.
+ */
+export function featureAccess(
+  summary: Pick<PlanSummary, "plan" | "enforced">,
+  feature: PlanFeature,
+  tasteUsed: number,
+): "plan" | "taste" | "locked" {
+  if (planAllows(summary, feature)) return "plan";
+  const taste = FEATURE_TASTE[feature];
+  return taste && tasteUsed < taste.uses ? "taste" : "locked";
 }
 
 /** Days before a prepaid period's last day that the renewal e-mail goes out. */
