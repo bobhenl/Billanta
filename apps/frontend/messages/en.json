@@ -3766,6 +3766,14 @@
         "rate_limited": "Too many attempts. Try again in a few minutes.",
         "not_signed_in": "Your sign-in expired. Please sign in again."
       }
+    },
+    "passwordStrength": {
+      "label": "Password strength: {level}",
+      "tooWeak": "too weak",
+      "weak": "weak",
+      "fair": "fair",
+      "good": "good",
+      "strong": "strong"
     }
   },
   "legal": {
@@ -5287,7 +5295,7 @@
   },
   "invite": {
     "title": "Team invitation",
-    "heading": "Invitation to {company}",
+    "heading": "{company} invited you to their team",
     "asRole": "You will join as {role}.",
     "accept": "Accept invitation",
     "accepted": "You are now a team member.",
@@ -5307,7 +5315,9 @@
       "submit": "Create account and join",
       "emailTaken": "You already have an account with this email. Log in to accept the invitation.",
       "invalid": "This invitation is no longer valid. Ask for a new one."
-    }
+    },
+    "accessTitle": "What you will have access to",
+    "accessManage": "You will also be able to manage the team and the company settings."
   },
   "templates": {
     "title": "Invoice templates",

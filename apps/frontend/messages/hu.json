@@ -3759,6 +3759,14 @@
         "rate_limited": "Túl sok próbálkozás. Próbálja újra néhány perc múlva.",
         "not_signed_in": "A bejelentkezés lejárt. Kérjük, jelentkezzen be újra."
       }
+    },
+    "passwordStrength": {
+      "label": "Jelszó erőssége: {level}",
+      "tooWeak": "túl gyenge",
+      "weak": "gyenge",
+      "fair": "közepes",
+      "good": "jó",
+      "strong": "erős"
     }
   },
   "legal": {
@@ -5279,7 +5287,7 @@
   },
   "invite": {
     "title": "Meghívás a csapatba",
-    "heading": "Meghívás: {company}",
+    "heading": "{company} meghívta Önt a csapatába",
     "asRole": "Ebben a szerepkörben csatlakozik: {role}.",
     "accept": "Meghívás elfogadása",
     "accepted": "Ön mostantól a csapat tagja.",
@@ -5299,7 +5307,9 @@
       "submit": "Fiók létrehozása és csatlakozás",
       "emailTaken": "Ezzel az e-mail-címmel már van fiókja. Jelentkezzen be a meghívó elfogadásához.",
       "invalid": "Ez a meghívó már nem érvényes. Kérjen újat."
-    }
+    },
+    "accessTitle": "Amihez hozzáférése lesz",
+    "accessManage": "A csapatot és a cég beállításait is kezelheti."
   },
   "templates": {
     "title": "Számlasablonok",

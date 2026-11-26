@@ -3759,6 +3759,14 @@
         "rate_limited": "Prea multe încercări. Încercați din nou peste câteva minute.",
         "not_signed_in": "Sesiunea a expirat. Vă rugăm să vă conectați din nou."
       }
+    },
+    "passwordStrength": {
+      "label": "Puterea parolei: {level}",
+      "tooWeak": "prea slabă",
+      "weak": "slabă",
+      "fair": "acceptabilă",
+      "good": "bună",
+      "strong": "puternică"
     }
   },
   "legal": {
@@ -5279,7 +5287,7 @@
   },
   "invite": {
     "title": "Invitație în echipă",
-    "heading": "Invitație la {company}",
+    "heading": "{company} vă invită în echipă",
     "asRole": "Vă veți alătura ca {role}.",
     "accept": "Acceptați invitația",
     "accepted": "Acum sunteți membru al echipei.",
@@ -5299,7 +5307,9 @@
       "submit": "Creează cont și alătură-te",
       "emailTaken": "Aveți deja un cont cu acest e-mail. Autentificați-vă pentru a accepta invitația.",
       "invalid": "Această invitație nu mai este valabilă. Cereți una nouă."
-    }
+    },
+    "accessTitle": "La ce veți avea acces",
+    "accessManage": "Veți putea gestiona și echipa, și setările firmei."
   },
   "templates": {
     "title": "Șabloane de facturi",

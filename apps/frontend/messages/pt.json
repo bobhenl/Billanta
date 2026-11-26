@@ -3759,6 +3759,14 @@
         "rate_limited": "Demasiadas tentativas. Tente novamente dentro de alguns minutos.",
         "not_signed_in": "A sua sessão expirou. Inicie sessão novamente."
       }
+    },
+    "passwordStrength": {
+      "label": "Força da palavra-passe: {level}",
+      "tooWeak": "demasiado fraca",
+      "weak": "fraca",
+      "fair": "razoável",
+      "good": "boa",
+      "strong": "forte"
     }
   },
   "legal": {
@@ -5279,7 +5287,7 @@
   },
   "invite": {
     "title": "Convite para a equipa",
-    "heading": "Convite para {company}",
+    "heading": "{company} convida-o para a equipa",
     "asRole": "Vai juntar-se como {role}.",
     "accept": "Aceitar convite",
     "accepted": "Já é membro da equipa.",
@@ -5299,7 +5307,9 @@
       "submit": "Criar conta e aderir",
       "emailTaken": "Já tem uma conta com este e-mail. Inicie sessão para aceitar o convite.",
       "invalid": "Este convite já não é válido. Peça um novo."
-    }
+    },
+    "accessTitle": "A que vai ter acesso",
+    "accessManage": "Também poderá gerir a equipa e as definições da empresa."
   },
   "templates": {
     "title": "Modelos de fatura",

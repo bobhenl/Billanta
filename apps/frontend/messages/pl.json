@@ -3759,6 +3759,14 @@
         "rate_limited": "Zbyt wiele prób. Spróbuj ponownie za kilka minut.",
         "not_signed_in": "Sesja logowania wygasła. Zaloguj się ponownie."
       }
+    },
+    "passwordStrength": {
+      "label": "Siła hasła: {level}",
+      "tooWeak": "zbyt słabe",
+      "weak": "słabe",
+      "fair": "średnie",
+      "good": "dobre",
+      "strong": "silne"
     }
   },
   "legal": {
@@ -5280,7 +5288,7 @@
   },
   "invite": {
     "title": "Zaproszenie do zespołu",
-    "heading": "Zaproszenie do {company}",
+    "heading": "{company} zaprasza Cię do zespołu",
     "asRole": "Dołączysz jako {role}.",
     "accept": "Przyjmij zaproszenie",
     "accepted": "Jesteś teraz członkiem zespołu.",
@@ -5300,7 +5308,9 @@
       "submit": "Utwórz konto i dołącz",
       "emailTaken": "Masz już konto z tym adresem e-mail. Zaloguj się, aby przyjąć zaproszenie.",
       "invalid": "To zaproszenie jest już nieważne. Poproś o nowe."
-    }
+    },
+    "accessTitle": "Do czego będziesz mieć dostęp",
+    "accessManage": "Możesz też zarządzać zespołem i ustawieniami firmy."
   },
   "templates": {
     "title": "Szablony faktur",

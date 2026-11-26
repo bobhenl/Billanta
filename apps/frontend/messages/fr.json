@@ -3759,6 +3759,14 @@
         "rate_limited": "Trop de tentatives. Réessayez dans quelques minutes.",
         "not_signed_in": "Votre session a expiré. Veuillez vous reconnecter."
       }
+    },
+    "passwordStrength": {
+      "label": "Robustesse du mot de passe : {level}",
+      "tooWeak": "trop faible",
+      "weak": "faible",
+      "fair": "moyenne",
+      "good": "bonne",
+      "strong": "forte"
     }
   },
   "legal": {
@@ -5279,7 +5287,7 @@
   },
   "invite": {
     "title": "Invitation dans l’équipe",
-    "heading": "Invitation à rejoindre {company}",
+    "heading": "{company} vous invite à rejoindre son équipe",
     "asRole": "Vous rejoindrez l’équipe en tant que {role}.",
     "accept": "Accepter l’invitation",
     "accepted": "Vous faites désormais partie de l’équipe.",
@@ -5299,7 +5307,9 @@
       "submit": "Créer un compte et rejoindre",
       "emailTaken": "Vous avez déjà un compte avec cet e-mail. Connectez-vous pour accepter l'invitation.",
       "invalid": "Cette invitation n'est plus valable. Demandez-en une nouvelle."
-    }
+    },
+    "accessTitle": "Ce à quoi vous aurez accès",
+    "accessManage": "Vous pourrez aussi gérer l’équipe et les paramètres de l’entreprise."
   },
   "templates": {
     "title": "Modèles de facture",

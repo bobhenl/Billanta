@@ -3759,6 +3759,14 @@
         "rate_limited": "Te veel pogingen. Probeer het over een paar minuten opnieuw.",
         "not_signed_in": "Je sessie is verlopen. Log opnieuw in."
       }
+    },
+    "passwordStrength": {
+      "label": "Wachtwoordsterkte: {level}",
+      "tooWeak": "te zwak",
+      "weak": "zwak",
+      "fair": "redelijk",
+      "good": "goed",
+      "strong": "sterk"
     }
   },
   "legal": {
@@ -5279,7 +5287,7 @@
   },
   "invite": {
     "title": "Uitnodiging voor het team",
-    "heading": "Uitnodiging voor {company}",
+    "heading": "{company} nodigt je uit voor het team",
     "asRole": "Je wordt lid als {role}.",
     "accept": "Uitnodiging accepteren",
     "accepted": "Je bent nu lid van het team.",
@@ -5299,7 +5307,9 @@
       "submit": "Account maken en deelnemen",
       "emailTaken": "U hebt al een account met dit e-mailadres. Log in om de uitnodiging te accepteren.",
       "invalid": "Deze uitnodiging is niet meer geldig. Vraag een nieuwe aan."
-    }
+    },
+    "accessTitle": "Waar je toegang toe krijgt",
+    "accessManage": "Je kunt ook het team en de bedrijfsinstellingen beheren."
   },
   "templates": {
     "title": "Factuursjablonen",

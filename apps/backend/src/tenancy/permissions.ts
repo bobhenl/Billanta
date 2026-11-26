@@ -39,6 +39,27 @@ export function effectivePermissions(role: string, overrides?: unknown): Permiss
   return result;
 }
 
+/** One line of "what you will get access to": an area and its level. */
+export interface AreaAccess {
+  area: PermissionArea;
+  level: PermissionLevel;
+}
+
+/**
+ * What a role plus overrides gives, as display rows (the invitation e-mail
+ * and page). Driven by `PERMISSION_AREAS`, so a new or finer area shows up
+ * here without touching the callers; `manage` marks the roles that also run
+ * the team and company settings. Mirrored by `accessSummary` in
+ * apps/frontend/lib/access.ts (parity test: frontend-access-summary.spec.ts).
+ */
+export function accessSummary(role: string, overrides?: unknown): { manage: boolean; areas: AreaAccess[] } {
+  const effective = effectivePermissions(role, overrides);
+  return {
+    manage: role === "owner" || role === "admin",
+    areas: PERMISSION_AREAS.map((area) => ({ area, level: effective[area] })),
+  };
+}
+
 /** Route prefixes (no `/api/`) and the area they belong to. */
 const AREA_PREFIXES: [string, PermissionArea][] = [
   ["v1/invoices", "invoices"],

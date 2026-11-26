@@ -48,6 +48,34 @@ describe("EmailService invoice e-mail language", () => {
   });
 });
 
+describe("EmailService links and other e-mails", () => {
+  it("opens the invoice link in the invoice's language", async () => {
+    const { service, sent } = setup();
+    await service.sendInvoiceEmail({ ...base, language: "sk" }, queue);
+    expect(sent().html).toMatch(/href="[^"]*\/sk\/i\/2026-0001-aZ09bY18cX27"/);
+  });
+
+  it("asks for buyer details in the invoice's language", async () => {
+    const params = { to: "client@example.com", companyName: "Tom Vejmelka", amount: "1815.00 CZK", url: "https://x.cz/en/d/t" };
+    const cs = setup();
+    await cs.service.sendBuyerDetailsRequestEmail({ ...params, language: null }, queue);
+    expect(cs.sent().subject).toBe("Tom Vejmelka: doplňte prosím své fakturační údaje");
+    const en = setup();
+    await en.service.sendBuyerDetailsRequestEmail({ ...params, language: "en" }, queue);
+    expect(en.sent().html).toContain('lang="en"');
+    expect(en.sent().html).not.toContain("fakturační");
+  });
+
+  it("sends the invitation in the company's language", async () => {
+    const { service, sent } = setup();
+    await service.sendInvitationEmail(
+      { to: "a@b.cz", companyName: "Novák", role: "viewer", acceptUrl: "https://x.cz/sk/invite/t", locale: "sk" },
+      queue,
+    );
+    expect(sent().subject).toBe("Novák vás pozýva do tímu v Billante");
+  });
+});
+
 describe("EmailService credit note e-mail", () => {
   it("presents a credit note as a correction, not as something to pay", async () => {
     const { service, sent } = setup();

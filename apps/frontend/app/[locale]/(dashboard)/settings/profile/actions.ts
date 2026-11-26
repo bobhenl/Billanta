@@ -11,7 +11,7 @@ import { passwordProblem } from '@/lib/password';
 import { signedInRecently, verifyPassword } from '@/lib/reauth';
 import { db } from '@/lib/db';
 import { sessions, users, verificationTokens } from '@/lib/auth-schema';
-import { sendEmailChangeEmail } from '@/lib/email';
+import { emailLocaleOf, sendEmailChangeEmail } from '@/lib/email';
 import { SITE_URL } from '@/lib/site';
 
 export type ProfileResult = { ok: true } | { ok: false; error: string; company?: string };
@@ -109,10 +109,10 @@ export async function requestEmailChange(password: string, newEmailRaw: string, 
     expires: new Date(Date.now() + EMAIL_CHANGE_TTL_MS)
   });
 
-  const lang = ['cs', 'sk', 'en'].includes(locale) ? locale : 'cs';
+  const lang = emailLocaleOf(locale);
   const confirmUrl = `${SITE_URL}/api/auth/confirm-email?token=${rawToken}&locale=${lang}`;
   try {
-    await sendEmailChangeEmail({ to: newEmail, confirmUrl, userId, validMinutes: EMAIL_CHANGE_TTL_MS / 60_000 });
+    await sendEmailChangeEmail({ to: newEmail, confirmUrl, userId, validMinutes: EMAIL_CHANGE_TTL_MS / 60_000, locale: lang });
   } catch (error) {
     console.error('Failed to queue email change confirmation', error);
     await db.delete(verificationTokens).where(like(verificationTokens.identifier, `${EMAIL_CHANGE_PREFIX}${userId}:%`));

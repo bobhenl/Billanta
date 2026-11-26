@@ -3759,6 +3759,14 @@
         "rate_limited": "Demasiados intentos. Vuelva a intentarlo en unos minutos.",
         "not_signed_in": "Su sesión ha caducado. Vuelva a iniciar sesión."
       }
+    },
+    "passwordStrength": {
+      "label": "Seguridad de la contraseña: {level}",
+      "tooWeak": "demasiado débil",
+      "weak": "débil",
+      "fair": "aceptable",
+      "good": "buena",
+      "strong": "fuerte"
     }
   },
   "legal": {
@@ -5279,7 +5287,7 @@
   },
   "invite": {
     "title": "Invitación al equipo",
-    "heading": "Invitación a {company}",
+    "heading": "{company} le invita a su equipo",
     "asRole": "Se unirá como {role}.",
     "accept": "Aceptar la invitación",
     "accepted": "Ya es miembro del equipo.",
@@ -5299,7 +5307,9 @@
       "submit": "Crear cuenta y unirse",
       "emailTaken": "Ya tiene una cuenta con este correo. Inicie sesión para aceptar la invitación.",
       "invalid": "Esta invitación ya no es válida. Pida una nueva."
-    }
+    },
+    "accessTitle": "A qué tendrá acceso",
+    "accessManage": "También podrá gestionar el equipo y los ajustes de la empresa."
   },
   "templates": {
     "title": "Plantillas de factura",

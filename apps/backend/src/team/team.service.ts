@@ -15,7 +15,9 @@ import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 import { AuditService } from "../audit/audit.service";
 import { loadPlanSummary } from "../billing/plan.guard";
 import { DbService } from "../db/db.service";
+import { appUrlOf, emailLocaleOf } from "../email/email-render";
 import { EmailService } from "../email/email.service";
+import { accessSummary } from "../tenancy/permissions";
 import { NotificationsService } from "../notifications/notifications.service";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
 import type { CreateInvitationDto } from "./dto/create-invitation.dto";
@@ -24,13 +26,6 @@ import { seatRefusal } from "./seats";
 type Db = PostgresJsDatabase<typeof schema>;
 
 const INVITATION_TTL_DAYS = 7;
-
-export const ROLE_LABEL_CS: Record<string, string> = {
-  owner: "Vlastník",
-  admin: "Administrátor",
-  accountant: "Účetní",
-  viewer: "Pouze čtení",
-};
 
 export function hashInvitationToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
@@ -42,7 +37,7 @@ function requireManager(user: AuthenticatedUser) {
   }
 }
 
-type PreviewRow = { company_name: string; role: string; email: string; expired: boolean; accepted: boolean };
+type PreviewRow = { company_name: string; role: string; email: string; expired: boolean; accepted: boolean; permissions: unknown };
 
 /**
  * Tenant team: who has access, pending invitations, and the pre-tenant
@@ -139,12 +134,15 @@ export class TeamService {
     });
 
     const [tenant] = await db
-      .select({ companyName: schema.tenants.companyName })
+      .select({ companyName: schema.tenants.companyName, locale: schema.tenants.defaultLocale })
       .from(schema.tenants)
       .where(eq(schema.tenants.id, user.tenantId));
 
-    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3100").replace(/\/$/, "");
-    const acceptUrl = `${siteUrl}/invite/${token}`;
+    // The invitee has no account and so no language of their own yet: they
+    // get the inviting company's, in the e-mail and on the page it opens.
+    const locale = emailLocaleOf(tenant?.locale);
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3100";
+    const acceptUrl = appUrlOf(siteUrl, locale, `/invite/${token}`);
 
     // Without a mail provider the invitation only waits in the outbox, so
     // the inviter is told to pass the link on themselves.
@@ -154,8 +152,10 @@ export class TeamService {
         {
           to: dto.email,
           companyName: tenant?.companyName ?? "",
-          role: ROLE_LABEL_CS[dto.role] ?? dto.role,
+          role: dto.role,
+          permissions: invitation!.permissions,
           acceptUrl,
+          locale,
         },
         { tenantId: user.tenantId, db },
       );
@@ -276,6 +276,7 @@ export class TeamService {
       email: row.email,
       expired: row.expired,
       accepted: row.accepted,
+      access: accessSummary(row.role, row.permissions),
     };
   }
 

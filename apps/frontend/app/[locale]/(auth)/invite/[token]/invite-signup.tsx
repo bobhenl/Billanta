@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { OAuthButton } from '@/components/oauth-button';
 import { PasswordInput } from '@/components/password-input';
+import { PasswordStrengthMeter } from '@/components/password-strength-meter';
 import { PROVIDER_NAMES, type OAuthProviderId } from '@/lib/oauth-providers';
 import { TOS_VERSION } from '@/lib/tos';
 import { buttonClass, inputClass } from '@/lib/ui-classes';
@@ -23,18 +24,22 @@ export function InviteSignup({ token, email, providers }: { token: string; email
   const t = useTranslations('invite.signup');
   const tSignup = useTranslations('auth.signup');
   const tLogin = useTranslations('auth.login');
+  const tReset = useTranslations('auth.resetPassword');
   const locale = useLocale();
   const router = useRouter();
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [tosAccepted, setTosAccepted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<'taken' | 'invalid' | 'limited' | 'generic' | null>(null);
   const back = `/invite/${encodeURIComponent(token)}`;
   const loginHref = `/login?next=${encodeURIComponent(back)}`;
+  const mismatch = confirmPassword.length > 0 && password !== confirmPassword;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (password !== confirmPassword) return;
     setSubmitting(true);
     setError(null);
     try {
@@ -103,8 +108,33 @@ export function InviteSignup({ token, email, providers }: { token: string; email
             placeholder={tSignup('passwordPlaceholder')}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            aria-describedby="password-strength"
             className={`min-h-10 ${inputClass}`}
           />
+          <PasswordStrengthMeter id="password-strength" password={password} />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="confirmPassword" className="text-sm font-medium">
+            {tReset('confirmPasswordLabel')}
+          </label>
+          <PasswordInput
+            id="confirmPassword"
+            name="confirmPassword"
+            required
+            minLength={8}
+            maxLength={72}
+            autoComplete="new-password"
+            placeholder={tReset('confirmPasswordPlaceholder')}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            aria-invalid={mismatch}
+            className={`min-h-10 ${inputClass}`}
+          />
+          {mismatch && (
+            <p role="alert" className="text-sm text-destructive">
+              {tReset('mismatchError')}
+            </p>
+          )}
         </div>
         <label htmlFor="tosAccepted" className="flex items-start gap-2 text-sm text-muted-foreground">
           <input
@@ -150,7 +180,7 @@ export function InviteSignup({ token, email, providers }: { token: string; email
           </p>
         )}
 
-        <button type="submit" disabled={submitting || !tosAccepted || password.length < 8} className={cn(buttonClass.primary, 'mt-1 py-2.5')}>
+        <button type="submit" disabled={submitting || !tosAccepted || password.length < 8 || password !== confirmPassword} className={cn(buttonClass.primary, 'mt-1 py-2.5')}>
           {t('submit')}
         </button>
       </form>

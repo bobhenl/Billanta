@@ -3759,6 +3759,14 @@
         "rate_limited": "Zu viele Versuche. Versuchen Sie es in einigen Minuten erneut.",
         "not_signed_in": "Ihre Anmeldung ist abgelaufen. Bitte melden Sie sich erneut an."
       }
+    },
+    "passwordStrength": {
+      "label": "Passwortstärke: {level}",
+      "tooWeak": "zu schwach",
+      "weak": "schwach",
+      "fair": "mittel",
+      "good": "gut",
+      "strong": "stark"
     }
   },
   "legal": {
@@ -5280,7 +5288,7 @@
   },
   "invite": {
     "title": "Einladung ins Team",
-    "heading": "Einladung zu {company}",
+    "heading": "{company} lädt Sie in das Team ein",
     "asRole": "Sie treten als {role} bei.",
     "accept": "Einladung annehmen",
     "accepted": "Sie sind jetzt Mitglied des Teams.",
@@ -5300,7 +5308,9 @@
       "submit": "Konto erstellen und beitreten",
       "emailTaken": "Mit dieser E-Mail haben Sie bereits ein Konto. Melden Sie sich an, um die Einladung anzunehmen.",
       "invalid": "Diese Einladung ist nicht mehr gültig. Bitten Sie um eine neue."
-    }
+    },
+    "accessTitle": "Worauf Sie Zugriff haben werden",
+    "accessManage": "Sie können außerdem das Team und die Firmeneinstellungen verwalten."
   },
   "templates": {
     "title": "Rechnungsvorlagen",
