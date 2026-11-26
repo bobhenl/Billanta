@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { and, eq, gte, inArray, isNotNull, lt } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
+import { assertPartners } from "../billing/plan-limits";
 import { getHomeRate } from "../exports/home-rates";
 import { ReportRates } from "../exports/uniform-rate";
 import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
@@ -32,6 +33,8 @@ export class NetIncomeService {
   }
 
   async saveModel(db: Db, tenantId: string, model: TaxModel): Promise<TaxModel> {
+    const stored = await this.model(db, tenantId);
+    await assertPartners(db, tenantId, model.partners.length, stored.partners.length);
     await db.update(schema.tenants).set({ taxModel: model, updatedAt: new Date() }).where(eq(schema.tenants.id, tenantId));
     return model;
   }
