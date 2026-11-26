@@ -1179,7 +1179,7 @@ export const bankTransactions = pgTable("bank_transactions", {
   netCurrency: varchar("net_currency", { length: 3 }),
   /**
    * When PayPal converted a payment held on a foreign balance (usually at a
-   * withdrawal). Null when it converted on arrival or never. Migration 0100.
+   * withdrawal). Null when it converted on arrival or never. Migration 0106.
    */
   netAt: timestamp("net_at", { withTimezone: true, mode: "date" }),
   /** The payer's note ("zpráva pro příjemce"), shown for manual review. Migration 0063. */

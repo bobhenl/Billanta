@@ -696,10 +696,10 @@
       "breakpoints": true
     },
     {
-      "idx": 100,
+      "idx": 106,
       "version": "7",
-      "when": 1793600200000,
-      "tag": "0100_bank_transaction_net_at",
+      "when": 1793600800000,
+      "tag": "0106_bank_transaction_net_at",
       "breakpoints": true
     }
   ]
