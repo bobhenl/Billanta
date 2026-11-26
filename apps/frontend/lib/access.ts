@@ -31,6 +31,62 @@ export type PermissionAction = keyof typeof PERMISSION_ACTIONS;
 export const ACTION_KEYS = Object.keys(PERMISSION_ACTIONS) as PermissionAction[];
 export const areaOfAction = (action: PermissionAction) => action.slice(0, action.indexOf('.')) as PermissionArea;
 
+const LEVELS: readonly PermissionLevel[] = ['none', 'read', 'write'];
+const ROLE_DEFAULT_LEVEL: Record<string, PermissionLevel> = { owner: 'write', admin: 'write', service: 'write', accountant: 'write', viewer: 'read' };
+/** Areas that used to be part of invoices: without their own stored level they follow it. */
+const FOLLOWS_INVOICES: readonly PermissionArea[] = ['projects', 'recurring'];
+
+/** One row of "what you will get access to". */
+export interface AreaAccess {
+  area: PermissionArea;
+  level: PermissionLevel;
+}
+
+/**
+ * What a role plus its stored overrides (`tenant_invitations.permissions`)
+ * gives, area by area, for the invitation page. Mirrors `accessSummary` /
+ * `effectivePermissions` in apps/backend/src/tenancy/permissions.ts (a parity
+ * test there keeps them in step): owners and admins always have everything,
+ * and overrides that do not parse are ignored as a whole. Driven by
+ * `PERMISSION_AREAS`, so finer areas only need adding there and a label.
+ */
+export function accessSummary(role: string, overrides?: unknown): { manage: boolean; areas: AreaAccess[] } {
+  const base = ROLE_DEFAULT_LEVEL[role] ?? 'none';
+  const fixed = role === 'owner' || role === 'admin' || role === 'service';
+  const parsed = fixed ? null : parseOverrides(overrides);
+  // Company settings stay with owners and admins unless a section is granted.
+  const roleLevel = (area: PermissionArea): PermissionLevel => (area === 'settings' && role === 'accountant' ? 'read' : base);
+  const levels = Object.fromEntries(PERMISSION_AREAS.map((area) => [area, parsed?.[area] ?? roleLevel(area)])) as Record<PermissionArea, PermissionLevel>;
+  if (parsed) for (const area of FOLLOWS_INVOICES) if (!parsed[area]) levels[area] = levels.invoices;
+  return {
+    manage: role === 'owner' || role === 'admin',
+    areas: PERMISSION_AREAS.map((area) => ({ area, level: levels[area] }))
+  };
+}
+
+function parseOverrides(value: unknown): Partial<Record<PermissionArea, PermissionLevel>> | null {
+  if (value === null || value === undefined) return {};
+  if (typeof value !== 'object' || Array.isArray(value)) return null;
+  const out: Partial<Record<PermissionArea, PermissionLevel>> = {};
+  for (const [key, level] of Object.entries(value)) {
+    if (level === undefined) continue;
+    if (key === 'actions') {
+      if (!actionsParse(level)) return null;
+      continue;
+    }
+    if (!(PERMISSION_AREAS as readonly string[]).includes(key)) return null;
+    if (!LEVELS.includes(level as PermissionLevel)) return null;
+    out[key as PermissionArea] = level as PermissionLevel;
+  }
+  return out;
+}
+
+const actionsParse = (value: unknown) =>
+  typeof value === 'object' &&
+  value !== null &&
+  !Array.isArray(value) &&
+  Object.entries(value).every(([k, v]) => (ACTION_KEYS as string[]).includes(k) && (v === undefined || typeof v === 'boolean'));
+
 /** What `canWrite` / `canDo` need from `GET /api/v1/tenants/me/access` (`MyAccess` in lib/tenant.ts). */
 export interface WriteAccess {
   role: string;

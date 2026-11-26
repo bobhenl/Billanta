@@ -8,6 +8,7 @@ import { Link } from '@/i18n/navigation';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
 import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 const PATH = '/invoicing-for-advanced';
 
@@ -39,7 +40,7 @@ export default async function AdvancedPage({ params }: { params: Promise<{ local
   const faq = t.raw('faq') as { q: string; a: string }[];
 
   return (
-    <section className="container max-w-5xl py-10 sm:py-14">
+    <section className="container max-w-5xl py-12 sm:py-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd([
@@ -51,14 +52,14 @@ export default async function AdvancedPage({ params }: { params: Promise<{ local
         ])}
       />
       <PageIntro eyebrow={t('eyebrow')} title={t('title')} lead={t('lead')}>
-        <Link href="/signup" className={buttonClass.primary}>
+        <Link href="/signup" className={cn(buttonClass.primary, 'px-6 py-3')}>
           {tc('signup')}
         </Link>
-        <Link href={{ pathname: '/demo', query: { for: 'advanced' } }} className={buttonClass.secondary}>
+        <Link href={{ pathname: '/demo', query: { for: 'advanced' } }} className={cn(buttonClass.secondary, 'px-6 py-3')}>
           <PlayCircle className="h-4 w-4" aria-hidden="true" />
           {tc('demo')}
         </Link>
-        <ShareQr />
+        <ShareQr className="py-3" />
       </PageIntro>
 
       <h2 className="mt-12 text-xl font-bold tracking-tight">{t('topicsTitle')}</h2>
@@ -68,10 +69,10 @@ export default async function AdvancedPage({ params }: { params: Promise<{ local
         <h2 className="text-xl font-bold tracking-tight">{t('switch.title')}</h2>
         <p className="mt-2 max-w-3xl text-sm text-muted-foreground sm:text-base">{t('switch.body')}</p>
         <div className="mt-4 flex flex-wrap gap-2">
-          <Link href="/features/switch-from-another-app" className={buttonClass.primary}>
+          <Link href="/features/switch-from-another-app" className={buttonClass.secondary}>
             {t('switch.cta')}
           </Link>
-          <Link href="/compare" className={buttonClass.secondary}>
+          <Link href="/compare" className={buttonClass.ghost}>
             {t('switch.compare')}
           </Link>
         </div>

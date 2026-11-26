@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 
 /**
@@ -24,6 +26,7 @@ export function Modal({
   className?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const tCommon = useTranslations('common');
 
   useEffect(() => {
     const dialog = ref.current;
@@ -40,7 +43,7 @@ export function Modal({
         if (e.target === ref.current) onClose();
       }}
       className={cn(
-        'w-[min(32rem,calc(100vw-2rem))] rounded-2xl border border-border bg-card p-0 text-foreground shadow-xl backdrop:bg-black/40',
+        'anim-dialog w-[min(32rem,calc(100vw-2rem))] rounded-2xl border border-border bg-card p-0 text-foreground shadow-xl backdrop:bg-black/40',
         className
       )}
     >
@@ -51,8 +54,8 @@ export function Modal({
             <button
               type="button"
               onClick={onClose}
-              className="-mr-1 -mt-1 rounded-full p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
-              aria-label="Zavřít"
+              className="-mr-2 -mt-2 rounded-full p-2.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              aria-label={tCommon('close')}
             >
               <X className="h-4 w-4" />
             </button>
@@ -62,6 +65,56 @@ export function Modal({
         </div>
       )}
     </dialog>
+  );
+}
+
+/**
+ * "Are you sure?" in the app's own dialog instead of `window.confirm`:
+ * the way back first as a secondary button, then the confirm, red when
+ * `danger` (the same order as every other dialog).
+ */
+export function ConfirmModal({
+  open,
+  onClose,
+  onConfirm,
+  title,
+  body,
+  confirmLabel,
+  backLabel,
+  pending = false,
+  danger = false,
+  icon
+}: {
+  open: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: React.ReactNode;
+  body?: React.ReactNode;
+  confirmLabel: React.ReactNode;
+  backLabel: React.ReactNode;
+  pending?: boolean;
+  danger?: boolean;
+  icon?: React.ReactNode;
+}) {
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={title}
+      footer={
+        <>
+          <button type="button" className={buttonClass.secondary} onClick={onClose}>
+            {backLabel}
+          </button>
+          <button type="button" className={danger ? buttonClass.danger : buttonClass.primary} disabled={pending} onClick={onConfirm}>
+            {icon}
+            {confirmLabel}
+          </button>
+        </>
+      }
+    >
+      {body && <p className="text-muted-foreground">{body}</p>}
+    </Modal>
   );
 }
 

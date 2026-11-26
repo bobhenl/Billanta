@@ -273,4 +273,18 @@ describe('validatePeppolInvoice', () => {
     expect(issues.map((i) => i.rule)).toEqual(expect.arrayContaining(['BR-07', 'BR-11', 'BR-16', 'BR-61']));
     expect(issues.find((i) => i.rule === 'BR-61')?.severity).toBe('warning');
   });
+
+  it('asks for a bank account only when the buyer pays by transfer', () => {
+    const noAccount = invoice({ bankAccount: undefined });
+    expect(rules(noAccount)).toContain('BR-49');
+    const paypal = { paymentMethod: 'other', paymentMethodLabel: 'PayPal' };
+    expect(validatePeppolInvoice(noAccount, paypal).map((i) => i.rule)).not.toContain('BR-49');
+    expect(validatePeppolInvoice(invoice({ bankAccount: { accountNumber: '1/0800' } }), { paymentMethod: 'card' }).map((i) => i.rule)).not.toContain('BR-61');
+
+    const doc = parser.parse(generateUblInvoiceXml(invoice(), paypal))['Invoice'];
+    expect(doc['cac:PaymentMeans']['cbc:PaymentMeansCode']).toBe('68');
+    expect(doc['cac:PaymentMeans']['cac:PayeeFinancialAccount']).toBeUndefined();
+    const other = parser.parse(generateUblInvoiceXml(invoice(), { paymentMethod: 'other', paymentMethodLabel: 'Zápočet' }))['Invoice'];
+    expect(other['cac:PaymentMeans']['cbc:PaymentMeansCode']).toBe('ZZZ');
+  });
 });

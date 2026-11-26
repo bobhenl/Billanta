@@ -13,7 +13,6 @@ import {
   readJson,
   SORT_KEY,
   STATUS_CHIPS,
-  TYPE_CHIPS,
   VIEW_EVENT,
   VIEWS_KEY,
   writeJson,
@@ -73,7 +72,7 @@ export function InvoiceViewBar({ query, quick }: { query: string; quick: QuickPr
     try {
       document.cookie = `${QUICK_COOKIE}=${encodeURIComponent(JSON.stringify(next))}; path=/; max-age=31536000; samesite=lax`;
     } catch {
-      // cookies blocked — the chips just stay as they are
+      // cookies blocked – the chips just stay as they are
     }
     router.refresh();
   };
@@ -167,18 +166,6 @@ export function InvoiceViewBar({ query, quick }: { query: string; quick: QuickPr
                       className="accent-[hsl(var(--primary))]"
                     />
                     {t(`presets.${p}`)}
-                  </label>
-                ))}
-                <p className={groupTitle}>{t('typeChips')}</p>
-                {TYPE_CHIPS.map((type) => (
-                  <label key={type} className={option}>
-                    <input
-                      type="checkbox"
-                      checked={!quick.hiddenTypes.includes(type)}
-                      onChange={() => writeQuick({ ...quick, hiddenTypes: flip(quick.hiddenTypes, type) })}
-                      className="accent-[hsl(var(--primary))]"
-                    />
-                    {tDoc(`typePlural.${type}`)}
                   </label>
                 ))}
                 <p className={groupTitle}>{t('statusChips')}</p>

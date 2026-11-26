@@ -23,8 +23,9 @@ import {
   HEALTH_INSURERS,
 } from "./annual-filings";
 import { submitterFromTenant } from "./vat-returns";
-import { computeTaxReturnBasis, homeCurrencyOf, isLegalEntityName, normalizeTaxAdvances } from "@faktur/cz-compliance";
+import { computeTaxReturnBasis, isLegalEntityName, normalizeTaxAdvances } from "@faktur/cz-compliance";
 import { taxReturnCsv, taxReturnFileName, taxReturnPdf, type TaxReturnReport } from "./tax-return-basis";
+import { tenantCountry, tenantHomeCurrencyOf } from "../tenants/home-currency";
 
 const vatPeriodSchema = z.object({
   year: z.coerce.number().int().min(2000).max(2100),
@@ -240,7 +241,7 @@ export class ExportsController {
     const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
     // Without a typed amount, the paid advances come from Settings → Měsíční zálohy (per month, as they applied then).
     const paid = paidAdvances(normalizeTaxAdvances(tenant?.taxAdvances), year, { paidSocial, paidHealth });
-    const country = tenant?.addressCountry === "SK" ? ("SK" as const) : ("CZ" as const);
+    const country = tenantCountry(tenant);
     try {
       const summary = await this.exportsService.annualSummary(req.tenantDb!, year, {
         vatPayer: tenant?.dicVatPayer ?? false,
@@ -248,8 +249,8 @@ export class ExportsController {
         paidSocial: paid.paidSocial,
         paidHealth: paid.paidHealth,
         basis,
-        rates: ReportRates.fromPrefs(tenant?.invoiceFormPrefs, new Date(), homeCurrencyOf(tenant?.addressCountry)),
-        homeCurrency: homeCurrencyOf(tenant?.addressCountry),
+        rates: ReportRates.fromPrefs(tenant?.invoiceFormPrefs, new Date(), tenantHomeCurrencyOf(tenant)),
+        homeCurrency: tenantHomeCurrencyOf(tenant),
       });
       // The dashboard card recomputes the figures from income, expenses and
       // the paid advances with the same @faktur/cz-compliance functions, under
@@ -297,7 +298,7 @@ export class ExportsController {
     if (!parsed.success) throw new BadRequestException("invalid_tax_return_query");
     const { year, rate } = parsed.data;
     const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
-    const country = tenant?.addressCountry === "SK" ? ("SK" as const) : ("CZ" as const);
+    const country = tenantCountry(tenant);
     const legalEntity = isLegalEntityName(tenant?.legalName);
     const basis = legalEntity ? ("accrual" as const) : ("cash" as const);
     const vatPayer = tenant?.dicVatPayer ?? false;
@@ -307,8 +308,8 @@ export class ExportsController {
         vatPayer,
         flatRate: null,
         basis,
-        rates: ReportRates.fromPrefs(tenant?.invoiceFormPrefs, new Date(), homeCurrencyOf(tenant?.addressCountry)),
-        homeCurrency: homeCurrencyOf(tenant?.addressCountry),
+        rates: ReportRates.fromPrefs(tenant?.invoiceFormPrefs, new Date(), tenantHomeCurrencyOf(tenant)),
+        homeCurrency: tenantHomeCurrencyOf(tenant),
       });
       const b = computeTaxReturnBasis({
         country,
@@ -481,6 +482,12 @@ export class ExportsController {
   ) {
     const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
     if (!tenant?.dic) throw new BadRequestException("Company has no DIČ – VAT filings need it");
+    if (tenant.vatStatus === "identified") {
+      // Only payers file kontrolní hlášení (§ 101c ZDPH); an identified
+      // person's tax period is always the calendar month (§ 99a needs a payer).
+      if (kind === "kh1") throw new BadRequestException("identified_no_control_statement");
+      if (kind === "dp3" && !("month" in period.vat)) throw new BadRequestException("identified_monthly_only");
+    }
     let body: string | null;
     let warnings: VatExportWarning[];
     try {
@@ -489,7 +496,9 @@ export class ExportsController {
       if (err instanceof VatRateUnavailableError) throw new ServiceUnavailableException(err.message);
       throw err;
     }
-    if (body == null) throw new NotFoundException("No EU supplies to report in this period");
+    if (body == null) {
+      throw new NotFoundException(kind === "dp3" ? "No VAT due for an identified person in this month" : "No EU supplies to report in this period");
+    }
     const name = { dp3: "dphdp3", kh1: "dphkh1", shv: "dphshv" }[kind];
     // The file still downloads; the export box reads this header and names
     // the documents to fix (e.g. a reverse-charge invoice without kód

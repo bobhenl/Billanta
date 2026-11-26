@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * Contacts CSV import/export buttons — adapted from faktorio's contact list
+ * Contacts CSV import/export buttons – adapted from faktorio's contact list
  * (https://github.com/capaj/faktorio, MIT © 2024-now Jiri Spac).
  */
 import { useRef, useState } from 'react';
@@ -11,20 +11,32 @@ import { Banner } from '@/components/banner';
 import { toast } from '@/components/toaster';
 import { useCanWrite } from '@/components/access-provider';
 import { useRouter } from '@/i18n/navigation';
+import { cn } from '@/lib/utils';
 
 export type Skip = { line: number; reason: string; name: string };
 type ImportResult = { created: number; updated: number; skipped: Skip[] };
 
-const iconButton =
-  'inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-border bg-card px-3 text-sm font-semibold hover:bg-secondary disabled:opacity-60';
+const button =
+  'inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-full border border-border bg-card text-sm font-semibold hover:bg-secondary disabled:opacity-60';
 
-export function ContactsCsvButtons({ showExport, onSkipped }: { showExport: boolean; onSkipped: (rows: Skip[]) => void }) {
+/** `compact`: icon-only on phones, where the list toolbar has no room for the labels. */
+export function ContactsCsvButtons({
+  showExport,
+  onSkipped,
+  compact = true
+}: {
+  showExport: boolean;
+  onSkipped: (rows: Skip[]) => void;
+  compact?: boolean;
+}) {
   const t = useTranslations('contacts.csv');
   const router = useRouter();
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   // Export is a read; import creates and updates contacts.
   const canImport = useCanWrite('contacts');
+  const iconButton = cn(button, compact ? 'w-10 sm:w-auto sm:px-3' : 'px-3');
+  const label = compact ? 'hidden sm:inline' : undefined;
 
   const upload = async (file: File) => {
     setBusy(true);
@@ -64,16 +76,16 @@ export function ContactsCsvButtons({ showExport, onSkipped }: { showExport: bool
           if (file) void upload(file);
         }}
       />
-      <button type="button" className={iconButton} disabled={busy} onClick={() => input.current?.click()} title={t('importHint')}>
+      <button type="button" className={iconButton} disabled={busy} onClick={() => input.current?.click()} title={t('importHint')} aria-label={t('import')}>
         {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-        {t('import')}
+        <span className={label}>{t('import')}</span>
       </button>
       </>
       )}
       {showExport && (
-        <a href="/api/files/contacts/export.csv" className={iconButton} download>
+        <a href="/api/files/contacts/export.csv" className={iconButton} download title={t('export')} aria-label={t('export')}>
           <Download className="h-4 w-4" />
-          {t('export')}
+          <span className={label}>{t('export')}</span>
         </a>
       )}
     </>

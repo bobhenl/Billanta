@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
-import { Copy, ExternalLink, Globe, RefreshCw } from 'lucide-react';
+import { ChevronDown, Copy, ExternalLink, Globe, RefreshCw } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { InfoHint } from '@/components/info-hint';
@@ -10,6 +10,8 @@ import { useCanWrite } from '@/components/access-provider';
 import { LinkNameField } from '@/components/link-name-field';
 import { setContactPortal, setContactPortalName } from '../actions';
 import { copyText } from '@/lib/clipboard';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 /** The customer's portal link (all their documents on one page): turn on, copy, rename, renew, turn off. */
 export function ClientPortalCard({
@@ -55,8 +57,7 @@ export function ClientPortalCard({
     }
   };
 
-  const small =
-    'inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-1 text-xs font-semibold transition-colors hover:bg-accent hover:text-primary disabled:opacity-50';
+  const small = cn(buttonClass.secondary, 'h-10');
 
   return (
     <section className="rounded-xl border border-border bg-card p-4 text-sm">
@@ -73,43 +74,48 @@ export function ClientPortalCard({
             value={url}
             onFocus={(e) => e.currentTarget.select()}
             aria-label={t('title')}
-            className="mt-3 h-9 w-full rounded-lg border border-input bg-background px-2.5 font-mono text-xs"
+            className={cn(inputClass, 'mt-3 h-10 font-mono text-xs')}
           />
-          <div className="mt-2 flex flex-wrap gap-1.5">
+          <div className="mt-2 flex flex-wrap gap-2">
             <button type="button" onClick={copy} className={small}>
-              <Copy className="h-3.5 w-3.5" />
+              <Copy className="h-4 w-4" />
               {t('copy')}
             </button>
             <a href={url} target="_blank" rel="noreferrer" className={small}>
-              <ExternalLink className="h-3.5 w-3.5" />
+              <ExternalLink className="h-4 w-4" />
               {t('open')}
             </a>
-            {canEdit && (
-            <>
-            <button type="button" disabled={pending} onClick={() => window.confirm(t('renewConfirm')) && set(true, t('renewed'))} className={small}>
-              <RefreshCw className="h-3.5 w-3.5" />
-              {t('renew')}
-            </button>
-            <button
-              type="button"
-              disabled={pending}
-              onClick={() => set(false, t('disabled'))}
-              className="rounded-full px-2.5 py-1 text-xs font-semibold text-muted-foreground hover:text-destructive disabled:opacity-50"
-            >
-              {t('disable')}
-            </button>
-            </>
-            )}
           </div>
+          {/* Renaming, renewing and switching off happen once in a while; copy and open are the daily use. */}
           {canEdit && (
-          <LinkNameField
-            className="mt-3"
-            base={base}
-            link={link}
-            defaultLink={defaultLink ?? link}
-            slug={slug}
-            onSave={(s) => setContactPortalName(contactId, s)}
-          />
+            <details className="group mt-3 border-t border-border pt-3">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-2 font-semibold [&::-webkit-details-marker]:hidden">
+                {t('manage')}
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden="true" />
+              </summary>
+              <LinkNameField
+                className="mt-3"
+                base={base}
+                link={link}
+                defaultLink={defaultLink ?? link}
+                slug={slug}
+                onSave={(s) => setContactPortalName(contactId, s)}
+              />
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button type="button" disabled={pending} onClick={() => window.confirm(t('renewConfirm')) && set(true, t('renewed'))} className={small}>
+                  <RefreshCw className="h-4 w-4" />
+                  {t('renew')}
+                </button>
+                <button
+                  type="button"
+                  disabled={pending}
+                  onClick={() => set(false, t('disabled'))}
+                  className={cn(buttonClass.ghost, 'h-10 hover:text-destructive')}
+                >
+                  {t('disable')}
+                </button>
+              </div>
+            </details>
           )}
         </>
       ) : (
@@ -120,7 +126,7 @@ export function ClientPortalCard({
             type="button"
             disabled={pending}
             onClick={() => set(true, t('enabled'))}
-            className="mt-3 rounded-full bg-primary px-3.5 py-1.5 text-sm font-bold text-primary-foreground disabled:opacity-50"
+            className={cn(buttonClass.secondary, 'mt-3 h-10')}
           >
             {t('enable')}
           </button>

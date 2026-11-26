@@ -19,7 +19,8 @@ export interface ToastInput {
 
 const TOAST_EVENT = 'billanta:toast';
 const SHOW_MS = 3200;
-const FADE_MS = 200;
+/** The exit fade; quicker than the 200ms entry. */
+const FADE_MS = 150;
 
 /**
  * Fire a toast from anywhere on the client (event handler, server-action
@@ -97,8 +98,10 @@ export function Toaster() {
       {current && (
         <div
           className={cn(
-            'flex items-center gap-2.5 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-semibold shadow-lg transition-all duration-200',
-            shown ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-1.5 opacity-0'
+            'flex items-center gap-2.5 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-semibold shadow-lg transition-[opacity,transform] motion-reduce:translate-y-0 motion-reduce:transition-none',
+            shown
+              ? 'translate-y-0 opacity-100 duration-200 ease-out'
+              : 'pointer-events-none translate-y-1.5 opacity-0 duration-150 ease-in'
           )}
         >
           <Icon className={cn('h-4 w-4 shrink-0', ICON_CLASS[tone])} aria-hidden="true" />

@@ -1,3 +1,4 @@
+import { LOCALE_PATTERN } from '@/i18n/locales';
 import { REGION_PATH, REGION_STORAGE_KEY, REGION_TTL_MS } from './consent-region';
 
 /**
@@ -156,7 +157,7 @@ export function parseConsent(raw: string | null | undefined): ConsentState | nul
  * asks for it, whatever the browser has stored. `pathname` may carry the
  * locale prefix or not.
  */
-const NO_ANALYTICS = /^(?:\/(?:cs|sk|en))?\/(?:for-schools|join)(?:\/|$)/;
+const NO_ANALYTICS = new RegExp(`^(?:/(?:${LOCALE_PATTERN}))?/(?:for-schools|join)(?:/|$)`);
 
 export function isNoAnalyticsPath(pathname: string): boolean {
   return NO_ANALYTICS.test(pathname);

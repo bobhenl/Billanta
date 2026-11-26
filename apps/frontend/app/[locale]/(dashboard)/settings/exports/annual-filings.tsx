@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Download, FileText, Printer } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
-import { inputClass } from '@/components/modal';
+import { inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 
 interface Filings {
@@ -204,7 +204,7 @@ export function AnnualFilings({ prefill }: { prefill: AnnualFilingsPrefill }) {
   const insurerName = data?.insurers.find((i) => i.code === insurer)?.name;
 
   return (
-    <section className="rounded-xl border border-border bg-card p-5 print:border-0 print:p-0">
+    <section className="rounded-xl border border-border bg-card p-4 sm:p-5 print:border-0 print:p-0">
       <div className="flex items-start gap-3">
         <FileText className="mt-0.5 h-6 w-6 shrink-0 text-primary print:hidden" />
         <div>

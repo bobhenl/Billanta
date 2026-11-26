@@ -72,7 +72,7 @@ export function CopyFromInvoicePanel() {
                     {row.contactName && <span className="text-muted-foreground"> · {row.contactName}</span>}
                   </span>
                   <span className="shrink-0 text-xs text-muted-foreground">
-                    {row.issueDate ? new Date(row.issueDate).toLocaleDateString(locale) : ''} {money(row)}
+                    {row.issueDate ? new Date(row.issueDate).toLocaleDateString(locale) : ''} <span className="amount">{money(row)}</span>
                   </span>
                 </span>
               )}

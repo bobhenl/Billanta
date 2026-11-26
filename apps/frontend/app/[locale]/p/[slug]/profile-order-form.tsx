@@ -3,8 +3,12 @@
 import { useEffect, useState, useTransition } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { CheckCircle2, Loader2, Plus, ShoppingCart, Trash2 } from 'lucide-react';
+import { PaymentDetails, type PaymentDetailRow } from '@/app/[locale]/i/[token]/payment-details';
 import { BuyerFields, buyerForSubmit, buyerInputClass, emptyBuyer, type BuyerFieldsValue } from '@/components/buyer-fields';
+import { InfoHint } from '@/components/info-hint';
 import { submitProfileOrder, type OrderPayment } from '@/lib/public-profile-actions';
+import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 const MAX_CUSTOM_ITEMS = 5;
 
@@ -80,46 +84,36 @@ export function ProfileOrderForm({
 
   if (done) {
     const p = done.payment;
+    const payRows: PaymentDetailRow[] = p
+      ? [
+          { label: t('payAmount'), value: money(p.amount, p.currency), copy: String(p.amount), strong: true },
+          ...(p.accountNumber ? [{ label: t('payAccount'), value: p.accountNumber }] : []),
+          ...(p.iban ? [{ label: 'IBAN', value: p.iban.replace(/\s+/g, '').replace(/(.{4})(?=.)/g, '$1 '), copy: p.iban.replace(/\s+/g, '') }] : []),
+          { label: t('payVs'), value: p.variableSymbol, strong: true },
+          { label: t('payRecipient'), value: p.recipient, copy: null }
+        ]
+      : [];
     return (
-      <div className="rounded-2xl border border-success/40 bg-card p-6" role="status">
+      <div className="rounded-2xl border border-success/40 bg-card p-5 sm:p-6" role="status">
         <h2 className="flex items-center gap-2 text-lg font-bold">
           <CheckCircle2 className="h-5 w-5 text-success" />
           {t('doneTitle')}
         </h2>
         <p className="mt-2 text-sm text-muted-foreground">{t('doneText', { company: companyName })}</p>
         {p && (
-          <div className="mt-5 rounded-xl border border-border bg-muted/30 p-4">
+          <div className="mt-5 rounded-xl border border-border bg-muted/30 p-4 sm:p-5">
             <h3 className="font-semibold">{t('payTitle')}</h3>
             <p className="mt-1 text-sm text-muted-foreground">{t('payHint', { company: companyName })}</p>
             <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start">
               {done.qrSvg && (
                 <div
-                  className="h-44 w-44 shrink-0 rounded-lg bg-white p-1 [&_svg]:h-full [&_svg]:w-full"
+                  className="mx-auto h-44 w-44 shrink-0 rounded-lg bg-white p-1 sm:mx-0 [&_svg]:h-full [&_svg]:w-full"
                   // Built by our own server action with the `qrcode` library from a SPAYD
                   // string of the backend's payment details; no visitor input in it.
                   dangerouslySetInnerHTML={{ __html: done.qrSvg }}
                 />
               )}
-              <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
-                <dt className="text-muted-foreground">{t('payAmount')}</dt>
-                <dd className="font-semibold tabular-nums">{money(p.amount, p.currency)}</dd>
-                {p.accountNumber && (
-                  <>
-                    <dt className="text-muted-foreground">{t('payAccount')}</dt>
-                    <dd className="tabular-nums">{p.accountNumber}</dd>
-                  </>
-                )}
-                {p.iban && (
-                  <>
-                    <dt className="text-muted-foreground">IBAN</dt>
-                    <dd className="break-all tabular-nums">{p.iban}</dd>
-                  </>
-                )}
-                <dt className="text-muted-foreground">{t('payVs')}</dt>
-                <dd className="font-semibold tabular-nums">{p.variableSymbol}</dd>
-                <dt className="text-muted-foreground">{t('payRecipient')}</dt>
-                <dd>{p.recipient}</dd>
-              </dl>
+              <PaymentDetails rows={payRows} className="min-w-0 flex-1" />
             </div>
             <p className="mt-4 text-xs text-muted-foreground">{t('payNote')}</p>
           </div>
@@ -129,7 +123,7 @@ export function ProfileOrderForm({
   }
 
   return (
-    <form onSubmit={submit} className="rounded-2xl border border-border bg-card p-6">
+    <form onSubmit={submit} className="rounded-2xl border border-border bg-card p-5 sm:p-6">
       <h2 className="flex items-center gap-2 text-lg font-bold">
         <ShoppingCart className="h-5 w-5 text-primary" />
         {t('title')}
@@ -137,7 +131,7 @@ export function ProfileOrderForm({
       <p className="mt-1 text-sm text-muted-foreground">{t('hint', { company: companyName })}</p>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_120px]">
-        <label className="text-sm">
+        <label className="min-w-0 text-sm">
           <span className="mb-1 block font-medium">{t('service')}</span>
           <select className={buyerInputClass} value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
             {customItemsAllowed && <option value="">{t('noService')}</option>}
@@ -175,8 +169,9 @@ export function ProfileOrderForm({
 
       {customItemsAllowed && (
         <div className="mt-4">
-          <p className="text-sm font-medium">{t('customItems')}</p>
-          <p className="text-xs text-muted-foreground">{t('customItemsHint')}</p>
+          <InfoHint hint={t('customItemsHint')} rowClassName="text-sm font-medium">
+            {t('customItems')}
+          </InfoHint>
           <ul className="mt-2 space-y-2">
             {items.map((item, i) => (
               <li key={i} className="grid grid-cols-[minmax(0,1fr)_80px_auto] gap-2">
@@ -201,7 +196,7 @@ export function ProfileOrderForm({
                 <button
                   type="button"
                   onClick={() => setItems((cur) => cur.filter((_, j) => j !== i))}
-                  className="rounded-md p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                   title={t('removeItem')}
                   aria-label={t('removeItem')}
                 >
@@ -214,7 +209,7 @@ export function ProfileOrderForm({
             <button
               type="button"
               onClick={() => setItems((cur) => [...cur, { description: '', quantity: '1' }])}
-              className="mt-2 inline-flex h-9 items-center gap-1.5 rounded-md border border-input bg-background px-3 text-sm font-medium hover:bg-muted"
+              className={cn(buttonClass.secondary, 'mt-2')}
             >
               <Plus className="h-4 w-4" />
               {t('addItem')}
@@ -244,7 +239,7 @@ export function ProfileOrderForm({
       <button
         type="submit"
         disabled={pending || (!serviceId && items.length === 0)}
-        className="mt-4 inline-flex h-10 items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+        className={cn(buttonClass.primary, 'mt-5 h-10 w-full gap-2 px-5 sm:w-auto')}
       >
         {pending && <Loader2 className="h-4 w-4 animate-spin" />}
         {t('submit')}

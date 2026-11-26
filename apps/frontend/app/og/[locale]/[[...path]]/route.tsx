@@ -1,11 +1,11 @@
 import { ImageResponse } from 'next/og';
 import { createTranslator } from 'next-intl';
-import cs from '@/messages/cs.json';
-import en from '@/messages/en.json';
-import sk from '@/messages/sk.json';
+import { routing, type AppLocale } from '@/i18n/routing';
+import { loadMessages } from '@/i18n/messages';
 import { resolveOgCard, type OgCard } from '@/lib/og-card';
 import { getPublicProfile } from '@/lib/public-profiles';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
+import { BRAND_MARK_PNG } from '@/lib/brand-mark-data';
 
 /**
  * The Open Graph card of a public page, 1200x630, one per page and locale:
@@ -26,7 +26,6 @@ export const runtime = 'edge';
 
 const BACKEND_URL = (process.env.BACKEND_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 const SLUG = /^[a-z0-9](?:[a-z0-9-]{1,38}[a-z0-9])$/;
-const MESSAGES = { cs, sk, en } as const;
 
 // Literal URLs, so the bundler can see and include the files.
 const fontFile = (url: URL) => fetch(url).then((r) => r.arrayBuffer());
@@ -39,12 +38,6 @@ function loadFonts() {
   return fonts;
 }
 
-// The app icon (app/icon.svg), white-on-gradient so it reads on the card.
-const LOGO =
-  'data:image/svg+xml,' +
-  encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#ffffff" fill-opacity="0.16"/><path d="M10.5 7.5h6.3a4.25 4.25 0 0 1 0 8.5H10.5zM10.5 16h7.4a4.5 4.5 0 0 1 0 9h-7.4z" fill="none" stroke="#fff" stroke-width="2.8" stroke-linejoin="round"/><circle cx="24.6" cy="8.4" r="2.6" fill="#4ade80"/></svg>'
-  );
 
 /** Cuts at a word boundary and adds an ellipsis; satori has no line clamp. */
 function clip(text: string, max: number): string {
@@ -90,10 +83,10 @@ interface Card extends OgCard {
 
 async function resolveProfileCard(locale: string, rawSlug: string): Promise<Card | null> {
   const slug = rawSlug.toLowerCase();
-  if (!(locale in MESSAGES) || !SLUG.test(slug)) return null;
+  if (!(routing.locales as readonly string[]).includes(locale) || !SLUG.test(slug)) return null;
   const profile = await getPublicProfile(slug).catch(() => null);
   if (!profile) return null;
-  const t = createTranslator({ locale: locale as keyof typeof MESSAGES, messages: MESSAGES[locale as keyof typeof MESSAGES], namespace: 'og' });
+  const t = createTranslator({ locale: locale as AppLocale, messages: await loadMessages(locale as AppLocale), namespace: 'og' }) as unknown as (key: string, values?: Record<string, number>) => string;
   const logo = profile.hasLogo ? await profileLogo(slug) : undefined;
   return {
     title: profile.companyName,
@@ -104,14 +97,19 @@ async function resolveProfileCard(locale: string, rawSlug: string): Promise<Card
   };
 }
 
-export async function GET(
-  _req: Request,
-  props: { params: Promise<{ locale: string; path?: string[] }> }
-) {
-  const params = await props.params;
-  const path = params.path ?? [];
+/**
+ * On the edge runtime Next hands `/og/cs` (the home page card, no path) an
+ * empty params object, so the segments are read from the URL instead.
+ */
+function ogSegments(url: string): { locale: string; path: string[] } {
+  const [, locale = '', ...path] = new URL(url).pathname.split('/').filter(Boolean);
+  return { locale: decodeURIComponent(locale), path: path.map(decodeURIComponent) };
+}
+
+export async function GET(req: Request) {
+  const { locale, path } = ogSegments(req.url);
   const card: Card | null =
-    path[0] === 'p' && path.length === 2 ? await resolveProfileCard(params.locale, path[1]!) : resolveOgCard(params.locale, path);
+    path[0] === 'p' && path.length === 2 ? await resolveProfileCard(locale, path[1]!) : await resolveOgCard(locale, path);
   if (!card) return new Response('Not found', { status: 404 });
   const [regular, bold] = await loadFonts();
   const title = clip(card.title, 90);
@@ -134,8 +132,11 @@ export async function GET(
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={LOGO} width={64} height={64} alt="" />
+          {/* The coloured mark on a white tile, so it reads on the gradient. */}
+          <div style={{ display: 'flex', padding: 6, borderRadius: 16, backgroundColor: '#fff' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={BRAND_MARK_PNG} width={56} height={56} alt="" />
+          </div>
           <div style={{ fontSize: 36, fontWeight: 700 }}>{SITE_NAME}</div>
           {card.section ? (
             <div

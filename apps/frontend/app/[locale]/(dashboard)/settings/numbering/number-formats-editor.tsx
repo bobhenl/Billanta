@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Hash, Loader2, Save } from 'lucide-react';
+import { ChevronDown, Hash, Loader2, Save } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import {
   findNumberPatternClash,
@@ -80,7 +80,7 @@ export function NumberFormatsEditor({ view }: { view: NumberFormatsView }) {
           const prefix = PRESET_PREFIX[r.type];
           const presets = NUMBER_PATTERN_PRESETS.map((p) => (prefix && p.startsWith('FV') ? prefix + p.slice(2) : prefix + p));
           return (
-            <section key={r.type} className="rounded-xl border border-border bg-card p-5">
+            <section key={r.type} className="rounded-xl border border-border bg-card p-4 sm:p-5">
               <h2 className="flex items-center gap-2 font-bold">
                 <Hash className="h-4 w-4 text-primary" />
                 {tDoc(`type.${r.type}`)}
@@ -88,7 +88,7 @@ export function NumberFormatsEditor({ view }: { view: NumberFormatsView }) {
 
               <div className="mt-3 grid gap-3 sm:grid-cols-[minmax(0,1fr)_160px]">
                 <label className="block space-y-1">
-                  <InfoHint hint={t('patternHint')} className="text-xs text-muted-foreground">
+                  <InfoHint hint={t('patternHint')} className="text-sm font-medium">
                     {t('pattern')}
                   </InfoHint>
                   <input
@@ -101,7 +101,7 @@ export function NumberFormatsEditor({ view }: { view: NumberFormatsView }) {
                   />
                 </label>
                 <label className="block space-y-1">
-                  <InfoHint hint={t('nextNumberHint')} className="text-xs text-muted-foreground">
+                  <InfoHint hint={t('nextNumberHint')} className="text-sm font-medium">
                     {t('nextNumber')}
                   </InfoHint>
                   <input
@@ -142,7 +142,7 @@ export function NumberFormatsEditor({ view }: { view: NumberFormatsView }) {
                 ) : (
                   <>
                     <p>
-                      {t('preview')} <span className="font-mono font-bold">{preview}</span>
+                      {t('preview')} <span className="break-all font-mono font-bold">{preview}</span>
                       <span className="text-muted-foreground">
                         {' '}
                         {t('then', { number: sample(sequence + 1) })}
@@ -151,7 +151,7 @@ export function NumberFormatsEditor({ view }: { view: NumberFormatsView }) {
                     <p className="mt-0.5 text-xs text-muted-foreground">
                       {t(reset === 'monthly' ? 'resetMonthly' : 'resetYearly')} {t('lastUsed', { number: last })}
                     </p>
-                    {next !== null && !Number.isNaN(next) && next <= last && <p className="mt-0.5 text-xs text-amber-600 dark:text-amber-400">{t('lowerWarning')}</p>}
+                    {next !== null && !Number.isNaN(next) && next <= last && <p className="mt-0.5 text-xs text-warning">{t('lowerWarning')}</p>}
                   </>
                 )}
               </div>
@@ -167,8 +167,12 @@ export function NumberFormatsEditor({ view }: { view: NumberFormatsView }) {
         </button>
       </div>
 
-      <section className="mt-6 rounded-xl border border-border bg-card p-5">
-        <h2 className="font-bold">{t('tokensTitle')}</h2>
+      {/* Reference for writing a custom pattern; the presets cover most companies, so it starts folded. */}
+      <details className="group mt-6 rounded-xl border border-border bg-card p-4 sm:p-5">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-bold [&::-webkit-details-marker]:hidden">
+          {t('tokensTitle')}
+          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden="true" />
+        </summary>
         <ul className="mt-2 grid gap-1 text-sm text-muted-foreground sm:grid-cols-2">
           {(['YYYY', 'YY', 'MM', 'N', 'NNNN'] as const).map((token) => (
             <li key={token}>
@@ -182,7 +186,7 @@ export function NumberFormatsEditor({ view }: { view: NumberFormatsView }) {
           <li>{t('how.issued')}</li>
           <li>{t('how.separate')}</li>
         </ul>
-      </section>
+      </details>
     </>
   );
 }

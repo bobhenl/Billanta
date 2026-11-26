@@ -19,7 +19,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ fil
       'Cache-Control': 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
       'Cross-Origin-Resource-Policy': 'cross-origin',
       // Opened on its own, an SVG is a document: nothing in it may run.
-      'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'"
+      'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; img-src data:"
     }
   });
 }

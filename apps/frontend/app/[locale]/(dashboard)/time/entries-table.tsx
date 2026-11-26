@@ -1,15 +1,17 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
-import { FileText, Pencil, Trash2 } from 'lucide-react';
+import { FileText, Pencil, Timer, Trash2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { ColorDot } from '@/components/color-dot';
+import { EmptyState } from '@/components/empty-state';
 import { InfoHint } from '@/components/info-hint';
 import { SortHeader, useListSort } from '@/components/sort-header';
 import { toast } from '@/components/toaster';
 import { useCanDo, useCanWrite } from '@/components/access-provider';
 import { formatDate, formatMoney } from '@/lib/invoice-ui';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { ENTRY_STATE_CLASSES, entryState, formatMinutes, type Project, type TimeEntry } from '@/lib/time-ui';
 import { cn } from '@/lib/utils';
 import { deleteEntry, invoiceEntries } from './actions';
@@ -77,9 +79,7 @@ export function EntriesTable({
 
   if (rows.length === 0) {
     return (
-      <div className="mt-6 rounded-xl border border-dashed border-border p-10 text-center text-muted-foreground">
-        {filtered ? t('emptyFiltered') : t('empty')}
-      </div>
+      <EmptyState className="mt-6" icon={Timer} title={filtered ? t('emptyFiltered') : t('empty')} />
     );
   }
 
@@ -141,10 +141,10 @@ export function EntriesTable({
   const rowActions = (e: TimeEntry) =>
     canEdit && !e.invoiceId && (
       <div className="flex justify-end gap-0.5">
-        <button type="button" onClick={() => setEditing(e)} className="rounded-full p-1.5 text-muted-foreground hover:bg-accent hover:text-primary" aria-label={t('editEntry')}>
+        <button type="button" onClick={() => setEditing(e)} className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-primary" aria-label={t('editEntry')}>
           <Pencil className="h-3.5 w-3.5" />
         </button>
-        <button type="button" onClick={() => remove(e)} className="rounded-full p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" aria-label={t('delete')}>
+        <button type="button" onClick={() => remove(e)} className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive" aria-label={t('delete')}>
           <Trash2 className="h-3.5 w-3.5" />
         </button>
       </div>
@@ -165,7 +165,7 @@ export function EntriesTable({
               value={groupBy}
               onChange={(e) => setGroupBy(e.target.value as (typeof GROUPS)[number])}
               aria-label={t('invoice.groupBy')}
-              className="h-8 rounded-lg border border-input bg-background px-2 text-xs"
+              className={cn(inputClass, 'h-10 w-auto')}
             >
               {GROUPS.map((g) => (
                 <option key={g} value={g}>
@@ -179,7 +179,7 @@ export function EntriesTable({
               value={contactId}
               onChange={(e) => setContactId(e.target.value)}
               aria-label={t('columns.contact')}
-              className="h-8 max-w-[12rem] rounded-lg border border-input bg-background px-2 text-xs"
+              className={cn(inputClass, 'h-10 w-auto max-w-[12rem]')}
             >
               <option value="">{t('invoice.pickContact')}</option>
               {contacts.map((c) => (
@@ -194,13 +194,13 @@ export function EntriesTable({
             disabled={pending || !!conflict || (needsContact && !contactId)}
             title={conflict ?? undefined}
             onClick={invoice}
-            className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-bold text-primary-foreground disabled:opacity-50"
+            className={cn(buttonClass.primary, 'h-10')}
           >
-            <FileText className="h-3.5 w-3.5" />
+            <FileText className="h-4 w-4" />
             {t('invoice.action')}
           </button>
           {conflict && <span className="text-xs text-destructive">{conflict}</span>}
-          <button type="button" className="ml-auto text-xs text-muted-foreground hover:text-primary" onClick={() => setSelected(new Set())}>
+          <button type="button" className={cn(buttonClass.ghost, 'ml-auto h-10')} onClick={() => setSelected(new Set())}>
             {t('clearSelection')}
           </button>
         </div>
@@ -236,7 +236,7 @@ export function EntriesTable({
                 </div>
                 <div className="text-right">
                   <div className="font-mono font-bold tabular-nums">{formatMinutes(e.minutes)}</div>
-                  <div className="text-xs tabular-nums text-muted-foreground">{money(e)}</div>
+                  <div className="text-xs tabular-nums text-muted-foreground"><span className="amount">{money(e)}</span></div>
                   {rowActions(e)}
                 </div>
               </div>
@@ -298,11 +298,12 @@ export function EntriesTable({
                   )}
                   <td className="whitespace-nowrap px-2 py-2.5 tabular-nums">{formatDate(e.startedAt, locale)}</td>
                   <td className="max-w-[260px] truncate px-2 py-2.5 font-semibold">{e.description || <span className="font-normal text-muted-foreground">{t('noDescription')}</span>}</td>
-                  <td className="px-2 py-2.5">
+                  <td className="max-w-[200px] px-2 py-2.5">
                     {e.projectName ? (
-                      <span className="inline-flex items-center gap-1.5">
+                      // One line like the other columns; a long name wrapped into a tall, ragged row.
+                      <span title={e.projectName} className="flex min-w-0 items-center gap-1.5">
                         <ColorDot color={e.projectColor} />
-                        {e.projectName}
+                        <span className="truncate">{e.projectName}</span>
                       </span>
                     ) : (
                       <span className="text-muted-foreground">–</span>
@@ -311,8 +312,8 @@ export function EntriesTable({
                   <td className="max-w-[180px] truncate px-2 py-2.5 text-muted-foreground">{e.contactName ?? '–'}</td>
                   <td className="whitespace-nowrap px-2 py-2.5 text-right font-mono font-semibold tabular-nums">{formatMinutes(e.minutes)}</td>
                   <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums">
-                    {money(e)}
-                    {e.rate != null && <div className="text-xs text-muted-foreground">{formatMoney(e.rate, e.currency ?? 'CZK', locale)}/h</div>}
+                    <span className="amount">{money(e)}</span>
+                    {e.rate != null && <div className="text-xs text-muted-foreground"><span className="amount">{formatMoney(e.rate, e.currency ?? 'CZK', locale)}</span>/h</div>}
                   </td>
                   <td className="px-2 py-2.5">{stateBadge(e)}</td>
                   <td className="px-2 py-2.5" onClick={(ev) => ev.stopPropagation()}>
@@ -330,7 +331,7 @@ export function EntriesTable({
               <td className="whitespace-nowrap px-2 py-2 text-right font-mono font-extrabold tabular-nums">{formatMinutes(sums.minutes)}</td>
               <td className="whitespace-nowrap px-2 py-2 text-right font-extrabold tabular-nums">
                 {sums.amounts.map(([c, a]) => (
-                  <div key={c}>{formatMoney(a, c, locale)}</div>
+                  <div key={c}><span className="amount">{formatMoney(a, c, locale)}</span></div>
                 ))}
               </td>
               <td colSpan={2} />

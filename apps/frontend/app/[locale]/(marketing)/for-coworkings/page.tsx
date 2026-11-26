@@ -36,7 +36,7 @@ export default async function ForCoworkingsPage({ params }: { params: Promise<{ 
           <h2 className="text-xl font-bold tracking-tight">{t('ctaTitle')}</h2>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t('ctaBody')}</p>
         </div>
-        <Link href="/for-coworkings/poster" className={`${buttonClass.primary} shrink-0`}>
+        <Link href="/for-coworkings/poster" className={`${buttonClass.secondary} shrink-0`}>
           <Download className="h-4 w-4" aria-hidden="true" />
           {t('ctaButton')}
         </Link>

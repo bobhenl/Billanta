@@ -1,8 +1,10 @@
-import { ArrowRight, ExternalLink, Info, type LucideIcon } from 'lucide-react';
+import { ArrowRight, ChevronDown, ExternalLink, Info, type LucideIcon } from 'lucide-react';
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { CreateInvoiceLink } from '@/components/marketing-account-links';
 import { CALCULATORS, GUIDES, isPublishedIn } from '@/lib/public-tools';
+import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 /**
  * Building blocks shared by the public calculators (/calculators/…) and
@@ -33,20 +35,21 @@ export function ToolHeader({
 }) {
   return (
     <>
-      <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
+      <nav aria-label="Breadcrumb" className="truncate text-sm text-muted-foreground">
         <Link href={hubHref} className="hover:text-foreground">
           {hubLabel}
         </Link>
         <span className="mx-2">/</span>
         <span className="text-foreground">{name}</span>
       </nav>
-      <div className="mt-4 flex items-start gap-4">
+      {/* Compact on a phone: the tool under it should start above the fold. */}
+      <div className="mt-3 flex items-start gap-4 sm:mt-4">
         <span className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary sm:flex">
           <Icon className="h-6 w-6" aria-hidden="true" />
         </span>
-        <div>
-          <h1 className="max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h1>
-          <p className="mt-4 max-w-2xl text-lg text-muted-foreground">{lead}</p>
+        <div className="min-w-0">
+          <h1 className="max-w-3xl text-2xl font-extrabold tracking-tight sm:text-4xl">{title}</h1>
+          <p className="mt-2 max-w-2xl text-muted-foreground sm:mt-3 sm:text-lg">{lead}</p>
         </div>
       </div>
     </>
@@ -57,16 +60,20 @@ export function ToolHeader({
 export async function ToolDisclaimer({ validity, text }: { validity?: string; text?: string }) {
   const t = await getTranslations('tools.common');
   return (
-    <aside className="flex gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm">
-      <Info className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden="true" />
-      <div>
-        <p className="font-semibold">{t('disclaimerTitle')}</p>
-        {validity && <p className="mt-1 font-medium">{validity}</p>}
-        <p className="mt-1 leading-relaxed text-muted-foreground">
-          {text ?? t('disclaimer')} {t('noLiability')}
-        </p>
-      </div>
-    </aside>
+    // The caveat stays in the DOM but folded: the title and the year are what a reader needs at a glance.
+    <details className="group rounded-xl border border-warning/30 bg-warning/10 text-sm">
+      <summary className="flex cursor-pointer list-none items-start gap-3 p-4 [&::-webkit-details-marker]:hidden">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
+        <span className="flex-1">
+          <span className="font-semibold">{t('disclaimerTitle')}</span>
+          {validity && <span className="mt-0.5 block font-medium text-muted-foreground">{validity}</span>}
+        </span>
+        <ChevronDown className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
+      </summary>
+      <p className="px-4 pb-4 pl-11 leading-relaxed text-muted-foreground">
+        {text ?? t('disclaimer')} {t('noLiability')}
+      </p>
+    </details>
   );
 }
 
@@ -100,8 +107,8 @@ export async function GuideSources({
   const format = await getFormatter();
   const date = format.dateTime(new Date(`${checked}T12:00:00Z`), { dateStyle: 'long', timeZone: 'Europe/Prague' });
   return (
-    <aside className="flex gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm">
-      <Info className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+    <aside className="flex gap-3 rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm">
+      <Info className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
       <div className="space-y-1">
         <p className="font-semibold">{t('lastChecked', { date })}</p>
         {extra && <p className="text-muted-foreground">{extra}</p>}
@@ -121,13 +128,10 @@ export async function GuideSources({
 export async function SignupCta({ title, text }: { title?: string; text?: string } = {}) {
   const t = await getTranslations('tools.common');
   return (
-    <div className="rounded-2xl border border-primary/30 bg-primary/5 p-6">
+    <div className="rounded-2xl border border-primary/30 bg-primary/5 p-5 sm:p-6">
       <h2 className="text-lg font-semibold">{title ?? t('ctaTitle')}</h2>
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{text ?? t('ctaText')}</p>
-      <Link
-        href="/signup"
-        className="mt-4 inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90"
-      >
+      <Link href="/signup" className={cn(buttonClass.primary, 'mt-4 px-5 py-2.5')}>
         {t('ctaButton')}
         <ArrowRight className="h-4 w-4" aria-hidden="true" />
       </Link>
@@ -137,32 +141,31 @@ export async function SignupCta({ title, text }: { title?: string; text?: string
 }
 
 /**
- * CTA of the invoice tools: the guest invoice, then the account as the
- * second step. `templates` adds the filled-in samples as a middle option,
- * for tools that answer "what goes on an invoice".
+ * CTA of the invoice tools: the guest invoice is the one button, the
+ * account (or, with `templates`, the filled-in samples for tools that
+ * answer "what goes on an invoice") a plain link next to it, so nothing
+ * competes with the main step.
  */
 export async function InvoiceCta({ title, text, templates = false }: { title?: string; text?: string; templates?: boolean } = {}) {
   const t = await getTranslations('tools.common');
   return (
-    <div className="rounded-2xl border border-primary/30 bg-primary/5 p-6">
+    <div className="rounded-2xl border border-primary/30 bg-primary/5 p-5 sm:p-6">
       <h2 className="text-lg font-semibold">{title ?? t('invoiceCtaTitle')}</h2>
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{text ?? t('invoiceCtaText')}</p>
-      <div className="mt-4 flex flex-wrap items-center gap-3">
-        <CreateInvoiceLink className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90">
+      <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
+        <CreateInvoiceLink className={cn(buttonClass.primary, 'px-5 py-2.5')}>
           {t('invoiceCtaButton')}
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </CreateInvoiceLink>
-        {templates && (
-          <Link
-            href="/invoice-templates"
-            className="inline-flex items-center justify-center rounded-md border border-border bg-card px-5 py-3 text-sm font-semibold transition-colors hover:border-primary/40 hover:text-primary"
-          >
+        {templates ? (
+          <Link href="/invoice-templates" className="text-sm font-semibold text-primary hover:underline">
             {t('invoiceCtaTemplates')}
           </Link>
+        ) : (
+          <Link href="/signup" className="text-sm font-semibold text-primary hover:underline">
+            {t('ctaButton')}
+          </Link>
         )}
-        <Link href="/signup" className="text-sm font-semibold text-primary hover:underline">
-          {t('ctaButton')}
-        </Link>
       </div>
     </div>
   );
@@ -174,11 +177,11 @@ export async function RelatedTools({ current }: { current: string }) {
   const locale = await getLocale();
   const calculators = CALCULATORS.filter((c) => c.slug !== current && isPublishedIn(c, locale));
   const guides = GUIDES.filter((g) => g.slug !== current && isPublishedIn(g, locale));
-  const pill = 'inline-flex rounded-full border border-border bg-card px-4 py-2 text-sm font-medium hover:border-primary/40 hover:text-primary';
+  const pill = 'text-sm font-medium hover:text-primary hover:underline';
   return (
     <nav aria-label={t('common.related')} className="border-t border-border pt-8">
       <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('common.related')}</h2>
-      <ul className="mt-4 flex flex-wrap gap-2">
+      <ul className="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
         {calculators.map((c) => (
           <li key={c.slug}>
             <Link href={`/calculators/${c.slug}`} className={pill}>
@@ -187,7 +190,7 @@ export async function RelatedTools({ current }: { current: string }) {
           </li>
         ))}
         <li>
-          <Link href="/calculators" className="inline-flex px-4 py-2 text-sm font-medium text-primary hover:underline">
+          <Link href="/calculators" className="text-sm font-semibold text-primary hover:underline">
             {t('common.allCalculators')} →
           </Link>
         </li>
@@ -195,7 +198,7 @@ export async function RelatedTools({ current }: { current: string }) {
       {guides.length > 0 && (
         <>
           <h2 className="mt-6 text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('common.relatedGuides')}</h2>
-          <ul className="mt-4 flex flex-wrap gap-2">
+          <ul className="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
             {guides.map((g) => (
               <li key={g.slug}>
                 <Link href={`/guides/${g.slug}`} className={pill}>
@@ -240,21 +243,21 @@ export async function CzOnlyNotice({ name, path, skAlternative }: { name: string
   return (
     <section className="container max-w-2xl py-16">
       <div className="rounded-2xl border border-border bg-card p-6">
-        <h1 className="text-2xl font-semibold tracking-tight">{t('czOnlyTitle')}</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight">{t('czOnlyTitle')}</h1>
         <p className="mt-3 text-muted-foreground">{t(skAlternative ? 'czOnlyTextAlt' : 'czOnlyText', { name })}</p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href={path}
             locale="cs"
             hrefLang="cs"
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90"
+            className={buttonClass.primary}
           >
             {t('czOnlyCs')}
           </Link>
           {skAlternative && (
             <Link
               href={skAlternative.href}
-              className="inline-flex items-center gap-2 rounded-md border border-border px-5 py-2.5 text-sm font-semibold hover:border-primary/40 hover:text-primary"
+              className={buttonClass.secondary}
             >
               {skAlternative.name}
               <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
@@ -264,7 +267,7 @@ export async function CzOnlyNotice({ name, path, skAlternative }: { name: string
             href="https://www.financnasprava.sk/"
             target="_blank"
             rel="noopener"
-            className="inline-flex items-center gap-1.5 rounded-md border border-border px-5 py-2.5 text-sm font-semibold hover:border-primary/40 hover:text-primary"
+            className={buttonClass.secondary}
           >
             {t('czOnlySk')}
             <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />

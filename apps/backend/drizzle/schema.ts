@@ -131,6 +131,7 @@ export const bankStatementSourceEnum = pgEnum("bank_statement_source", [
   "paypal",
   "camt053",
   "gpc",
+  "stripe",
 ]);
 
 export const bankTransactionStatusEnum = pgEnum("bank_transaction_status", [
@@ -176,8 +177,17 @@ export const tenants = pgTable("tenants", {
   id: uuid("id").primaryKey().defaultRandom(),
   companyName: text("company_name").notNull(),
   legalName: text("legal_name").notNull(),
-  ico: varchar("ico", { length: 8 }),
-  dic: varchar("dic", { length: 14 }),
+  ico: varchar("ico", { length: 20 }),
+  dic: varchar("dic", { length: 20 }),
+  // Tax country (0087): VAT rules, deadlines and exports follow it, not addressCountry.
+  // Chosen at onboarding, locked after the first issued invoice (TenantsService).
+  // No DB default: the tenants_fill_country trigger derives it from addressCountry
+  // when an insert leaves it out, so the default here only makes it optional.
+  country: char("country", { length: 2 }).notNull().default(sql`NULL`),
+  // Currency of the books (0087), filled by the same trigger: CZK, EUR for SK.
+  homeCurrency: char("home_currency", { length: 3 }).notNull().default(sql`NULL`),
+  // Further company ids keyed by kind (SK IČ DPH, Steuernummer …), see 0087.
+  taxIds: jsonb("tax_ids").$type<Record<string, string>>().notNull().default({}),
   // Legacy flag, kept equal to vatStatus === "payer" (CHECK in 0041); new code reads vatStatus.
   dicVatPayer: boolean("dic_vat_payer").notNull().default(false),
   // Plátce / identifikovaná osoba (§6g–6l ZDPH, SK §7a) / neplátce, see VAT_STATUSES in @faktur/cz-compliance.
@@ -251,6 +261,9 @@ export const tenants = pgTable("tenants", {
   // Own number pattern per document type ({"invoice": "{N}/{MM}/{YYYY}"});
   // null or a missing type = built-in `{series}{YYYY}-{NNNN}` (`tenants/number-formats.ts`).
   numberFormats: jsonb("number_formats"),
+  // Report "Po zdanění": flat-rate expenses, tax and insurance rates, partners
+  // and their shares; null = single-OSVČ defaults (`net-income/tax-model.ts`).
+  taxModel: jsonb("tax_model"),
   // Abuse protection (`abuse/sending-guard.ts`): a suspended company can't send
   // and its share links show a notice; paused only blocks outgoing e-mail
   // (set automatically after repeated recipient reports, cleared by the operator).
@@ -449,6 +462,10 @@ export const tenantMemberships = pgTable(
     // (Settings → Integrace); null = feeds off. Resolved without a session
     // through `find_feed_owner` in drizzle/rls-policies.sql.
     feedToken: uuid("feed_token"),
+    // 'all' = sees the whole company; 'own' = only contacts assigned to them
+    // and their documents (0100, enforced by RLS via app_view_mode()).
+    // Ignored for owners and admins.
+    contactScope: varchar("contact_scope", { length: 8 }).notNull().default("all"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
@@ -468,8 +485,9 @@ export const contacts = pgTable("contacts", {
   tenantId: uuid("tenant_id")
     .notNull()
     .references(() => tenants.id, { onDelete: "cascade" }),
-  ico: varchar("ico", { length: 8 }),
-  dic: varchar("dic", { length: 14 }),
+  ico: varchar("ico", { length: 20 }),
+  dic: varchar("dic", { length: 20 }),
+  taxIds: jsonb("tax_ids").$type<Record<string, string>>().notNull().default({}),
   legalName: text("legal_name").notNull(),
   // Added for the invoice-emailing / overdue-payment-reminder feature: both
   // `EmailService.sendInvoiceEmail`/`sendPaymentReminderEmail` need a real
@@ -503,6 +521,11 @@ export const contacts = pgTable("contacts", {
   isPerson: boolean("is_person").notNull().default(false),
   // Colour label shown as a dot next to the customer everywhere (CONTACT_COLORS); null = none.
   color: varchar("color", { length: 16 }),
+  // Who the customer belongs to in the team (0100): defaults to whoever
+  // created it. is_private hides it, with its documents and payments, from
+  // everyone but that person and the company owner (RLS, app_view_mode()).
+  ownerUserId: uuid("owner_user_id").references(() => users.id, { onDelete: "set null" }),
+  isPrivate: boolean("is_private").notNull().default(false),
   // Private note about the customer (payment habits, contact person …); never printed or sent.
   internalNote: text("internal_note"),
   // Client portal link (/c/:portalToken) listing every issued document for this customer;
@@ -574,6 +597,9 @@ export const invoices = pgTable(
     // takes responsibility for the invoice content — tracked independently
     // from whenever an AI draft was originally produced.
     issuedByUserId: uuid("issued_by_user_id").references(() => users.id),
+    // Whoever created the draft (0100, column default from app.current_user_id);
+    // a member who sees only their own clients still sees what they made.
+    createdByUserId: uuid("created_by_user_id").references(() => users.id, { onDelete: "set null" }),
     issuedAt: timestamp("issued_at", { withTimezone: true }),
     aiDraftReviewedAt: timestamp("ai_draft_reviewed_at", { withTimezone: true }),
     // --- Additions beyond the §4 list, needed for §6 step 8/10 ---
@@ -679,10 +705,17 @@ export const invoices = pgTable(
     // Sum received so far (partial payments); the status flips to "paid" once it reaches the total.
     amountPaid: numeric("amount_paid", { precision: 14, scale: 2 }).notNull().default("0"),
     paidAt: timestamp("paid_at", { withTimezone: true }),
+    // Locked by an owner/admin: opening it needs a fresh re-auth (src/invoices/invoice-lock.ts).
+    // Lists, totals and exports still count it.
+    lockedAt: timestamp("locked_at", { withTimezone: true }),
+    lockedBy: uuid("locked_by"),
     // Kept by the payment provider (PayPal, Stripe, Wise…), in the invoice currency.
     paymentFees: numeric("payment_fees", { precision: 14, scale: 2 }).notNull().default("0"),
     // What actually landed on the account, in CZK; null = not recorded.
     receivedCzk: numeric("received_czk", { precision: 14, scale: 2 }),
+    // Who this income belongs to in the "Po zdanění" report ({partnerId: weight});
+    // null = the tax model's default shares. Internal, never printed.
+    partnerShares: jsonb("partner_shares").$type<Record<string, number>>(),
     cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
     // Supplier / buyer as printed on the document on its issue date (§29, §34–35
     // ZDPH): captured when the document leaves the draft stage, or taken from
@@ -902,7 +935,7 @@ export const channelLinks = pgTable(
 // rate limit (blueprint §1 known gap, §6 step 7).
 // ---------------------------------------------------------------------------
 export const aresCache = pgTable("ares_cache", {
-  ico: varchar("ico", { length: 8 }).primaryKey(),
+  ico: varchar("ico", { length: 20 }).primaryKey(),
   responsePayload: jsonb("response_payload").notNull(),
   fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -1045,13 +1078,15 @@ export const expenses = pgTable("expenses", {
   expenseDate: timestamp("expense_date", { withTimezone: true, mode: "date" }).notNull(),
   category: text("category"),
   receiptFileUrl: text("receipt_file_url"),
+  // Whoever entered it (0100, column default from app.current_user_id).
+  createdByUserId: uuid("created_by_user_id").references(() => users.id, { onDelete: "set null" }),
   // The supplier's own document number and payment details as printed on
   // the received invoice (typed in, or read by AI from a photo/PDF).
   documentNumber: varchar("document_number", { length: 64 }),
   variableSymbol: varchar("variable_symbol", { length: 10 }),
-  supplierIco: varchar("supplier_ico", { length: 8 }),
+  supplierIco: varchar("supplier_ico", { length: 20 }),
   /** Supplier's DIČ — the VAT control statement (KH, B.2) lists received documents by it. */
-  supplierDic: varchar("supplier_dic", { length: 14 }),
+  supplierDic: varchar("supplier_dic", { length: 20 }),
   /** Home currency (CZK, EUR for SK companies) per 1 unit of `currency`; null for the home currency (looked up when missing). */
   exchangeRate: numeric("exchange_rate", { precision: 20, scale: 10 }),
   // Received in domestic reverse charge (§92a ZDPH): the supplier charged no
@@ -1063,6 +1098,8 @@ export const expenses = pgTable("expenses", {
   dueDate: timestamp("due_date", { withTimezone: true, mode: "date" }),
   paidAt: timestamp("paid_at", { withTimezone: true }),
   note: text("note"),
+  /** Created by a bank rule from a payment and not checked by a person yet (migration 0091). */
+  needsReview: boolean("needs_review").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -1126,9 +1163,14 @@ export const bankTransactions = pgTable("bank_transactions", {
     withTimezone: true,
     mode: "date",
   }).notNull(),
+  /** The exact moment, when the source sends one; orders payments within a day. */
+  occurredAt: timestamp("occurred_at", { withTimezone: true, mode: "date" }),
   amount: numeric("amount", { precision: 14, scale: 2 }).notNull(),
   currency: varchar("currency", { length: 3 }).notNull().default("CZK"),
   variableSymbol: text("variable_symbol"),
+  /** KS and SS as the bank sent them (migration 0096); a draft made from the payment takes them over. */
+  constantSymbol: text("constant_symbol"),
+  specificSymbol: text("specific_symbol"),
   counterpartyAccount: text("counterparty_account"),
   counterpartyName: text("counterparty_name"),
   // Nullable + "set null": an invoice being deleted/renumbered shouldn't
@@ -1146,10 +1188,68 @@ export const bankTransactions = pgTable("bank_transactions", {
   externalId: text("external_id"),
   /** Fee kept by the payment provider (PayPal), in `currency`. Null for bank rows. */
   fee: numeric("fee", { precision: 14, scale: 2 }),
+  /** What arrived after PayPal converted the payment (fee and rate applied), in `net_currency`. Migration 0089. */
+  netAmount: numeric("net_amount", { precision: 14, scale: 2 }),
+  netCurrency: varchar("net_currency", { length: 3 }),
+  /**
+   * When PayPal converted a payment held on a foreign balance (usually at a
+   * withdrawal). Null when it converted on arrival or never. Migration 0106.
+   */
+  netAt: timestamp("net_at", { withTimezone: true, mode: "date" }),
   /** The payer's note ("zpráva pro příjemce"), shown for manual review. Migration 0063. */
   message: text("message"),
+  /** The bank rule that ignored this payment or drafted its expense/invoice (migration 0091). */
+  appliedRuleId: uuid("applied_rule_id").references((): AnyPgColumn => bankRules.id, { onDelete: "set null" }),
+  /** An outgoing payment a bank rule turned into an expense draft (migration 0091). */
+  matchedExpenseId: uuid("matched_expense_id").references(() => expenses.id, { onDelete: "set null" }),
+  /**
+   * The other leg of the company's own transfer: a PayPal withdrawal and the
+   * bank credit it became point at each other, and both stay "ignored" so
+   * neither counts as income (migration 0097).
+   */
+  transferPairId: uuid("transfer_pair_id").references((): AnyPgColumn => bankTransactions.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// ---------------------------------------------------------------------------
+// bank_rules – tenant-scoped. "Pravidla pro platby": what to do with a bank
+// payment no invoice matched (ignore it, or turn it into an expense or
+// invoice draft to review). Lower `position` runs first and the first rule
+// that fits wins. `conditions` has the shape `ruleConditionsSchema` in
+// src/bank-reconciliation/bank-rules.ts validates. Migration 0091.
+// `import_only` rules instead decide which PSD2 movements are stored at all
+// (migration 0099, which replaced bank_connections.import_filter).
+// ---------------------------------------------------------------------------
+export const bankRules = pgTable(
+  "bank_rules",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    enabled: boolean("enabled").notNull().default(true),
+    position: integer("position").notNull().default(0),
+    conditions: jsonb("conditions").notNull(),
+    action: varchar("action", { length: 32 }).notNull(),
+    /** draft_expense: category of the new expense. */
+    expenseCategory: text("expense_category"),
+    /** draft_invoice: bill this contact instead of looking up the payer. */
+    contactId: uuid("contact_id").references(() => contacts.id, { onDelete: "set null" }),
+    /**
+     * import_only: the connection the rule is for; null means every PSD2
+     * connection. Payments do not record their connection, so the other
+     * actions cannot be scoped. Cascade: a rule about a deleted account must
+     * not start filtering the others. Migration 0099.
+     */
+    connectionId: uuid("connection_id").references((): AnyPgColumn => bankConnections.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    tenantPositionIdx: index("bank_rules_tenant_position_idx").on(table.tenantId, table.position),
+  }),
+);
 
 // ---------------------------------------------------------------------------
 // bank_connections — tenant-scoped. Read-only bank API tokens (Fio for now)
@@ -1161,9 +1261,9 @@ export const bankConnections = pgTable("bank_connections", {
   tenantId: uuid("tenant_id")
     .notNull()
     .references(() => tenants.id, { onDelete: "cascade" }),
-  provider: text("provider").$type<"fio" | "enable_banking" | "paypal">().notNull().default("fio"),
+  provider: text("provider").$type<"fio" | "enable_banking" | "paypal" | "stripe">().notNull().default("fio"),
   label: text("label"),
-  /** Fio API token, or PayPal `{clientId, secret, sandbox}` JSON (encrypted). Null for PSD2 connections. */
+  /** Fio API token, PayPal `{clientId, secret, sandbox}` JSON or a Stripe restricted key (encrypted). Null for PSD2 connections. */
   tokenEncrypted: text("token_encrypted"),
   /** PSD2: `pending` until the bank redirects back, `expired` once consent runs out. */
   status: text("status").$type<"pending" | "active" | "expired">().notNull().default("active"),
@@ -1184,6 +1284,19 @@ export const bankConnections = pgTable("bank_connections", {
   fioCursorReady: boolean("fio_cursor_ready").notNull().default(false),
   /** Last call to the provider with this token; Fio refuses a second one within 30 s. */
   lastRequestAt: timestamp("last_request_at", { withTimezone: true }),
+  /**
+   * PayPal only: unmatched payments from this moment on become invoice
+   * drafts; older ones are taken as invoiced already. Migration 0089.
+   */
+  autoDraftFrom: timestamp("auto_draft_from", { withTimezone: true }),
+  /**
+   * Deprecated: read by nothing since migration 0099 turned each value into an
+   * import_only bank rule scoped to this connection. Kept so the previous
+   * release still finds it on a rollback; drop it in a later migration.
+   */
+  importFilter: text("import_filter"),
+  /** PSD2: the account's currency, which tells apart sub-accounts sharing an IBAN. Migration 0098. */
+  currency: varchar("currency", { length: 3 }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

@@ -46,6 +46,8 @@ describe("statementToRows", () => {
         counterpartyAccount: "19-123457/0800",
         counterpartyName: "Odběratel s.r.o.",
         message: "Faktura 2026001",
+        constantSymbol: null,
+        specificSymbol: null,
         externalId: "gpc:19-2000145399/0800:REF-1",
       },
     ]);
@@ -74,7 +76,29 @@ describe("parseUploadedStatement", () => {
     const csv = "datum;castka;mena;vs;protiucet;nazev protiuctu\n30.09.2026;1210,00;CZK;2026001;19-123457/0800;Odběratel\n";
     const { source, rows } = parseUploadedStatement("vypis.csv", Buffer.from(csv, "utf8"));
     expect(source).toBe("csv");
-    expect(rows[0]).toMatchObject({ amount: "1210.00", externalId: null });
+    expect(rows[0]).toMatchObject({ amount: "1210.00", externalId: null, fee: null });
+  });
+
+  it("passes the id and fee of a Revolut export on to the import", () => {
+    const csv = [
+      "Type,Product,Started Date,Completed Date,Description,Amount,Fee,Currency,State,Balance",
+      "TOPUP,Current,2026-09-30 10:00:00,2026-09-30 10:00:01,Payment from Odběratel,1210.00,1.50,EUR,COMPLETED,1210.00",
+    ].join("\n");
+    const business = [
+      '"Date started (UTC)","Date completed (UTC)","ID","Type","State","Description","Reference","Payment currency","Amount","Fee"',
+      '"2026-09-30","2026-09-30","abc-1","TRANSFER","COMPLETED","Payment from Odběratel","2026001","EUR","1210.00","0.00"',
+    ].join("\n");
+
+    expect(parseUploadedStatement("revolut.csv", Buffer.from(csv, "utf8")).rows[0]).toMatchObject({
+      amount: "1210.00",
+      fee: "1.50",
+      externalId: null,
+    });
+    expect(parseUploadedStatement("revolut.csv", Buffer.from(business, "utf8")).rows[0]).toMatchObject({
+      variableSymbol: "2026001",
+      fee: null,
+      externalId: "revolut:abc-1:EUR",
+    });
   });
 
   it("answers 400 with stable codes for an unknown or broken file", () => {

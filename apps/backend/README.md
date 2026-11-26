@@ -221,7 +221,7 @@ migration `0051_trial_billing.sql`.
   `TrialRemindersCron` (08:00 Prague) sends the 3-day, 1-day and "ended"
   notices to owners and admins in the bell, and by e-mail only when Resend
   is configured.
-- **Limits** (`@RequirePlan`, `FEATURE_MIN_PLAN`): bank and PayPal sync, new
+- **Limits** (`@RequirePlan`, `FEATURE_MIN_PLAN`): bank, PayPal and Stripe sync, new
   API keys need Start, card payments need Plus, and free keeps 2 active
   recurring templates. Only companies created after 0051 are limited
   (`plan_enforced`). Nothing is deleted when a plan lapses: existing data
@@ -544,6 +544,25 @@ without any editing:
   (`99,90 EUR`) are all accepted.
 - Windows-1250 files are decoded when the upload is not valid UTF-8.
 
+The CSV exports of Wise, Revolut and Stripe are recognised by their header
+row and read by their own rules (`src/bank-reconciliation/fintech-csv.ts`):
+Wise transaction history (Direction IN/OUT) and balance statement, Revolut
+Business, personal and the older "Paid Out (EUR) / Paid In (EUR)"
+statement, Stripe's itemised balance report, the Dashboard balance export
+and the Payments export. For these:
+
+- the amount is the gross and the provider's fee goes into `fee` (only when
+  it is in the row's currency);
+- timestamps in UTC become the calendar day in Europe/Prague;
+- cancelled, declined, reverted, failed and pending rows, fully refunded or
+  uncaptured Stripe payments and conversions between the user's own
+  balances (Wise NEUTRAL / CONVERSION, Revolut EXCHANGE) are skipped;
+  outgoing payments are kept, as for any CSV;
+- the export's transaction id becomes `external_id` (`wise:<id>:<currency>`,
+  `revolut:<id>:<currency>`, `stripe:<charge or balance transaction id>`),
+  so uploading the same movements again is recognised;
+- a variable symbol is taken from the reference (`VS 2026001` or digits only).
+
 A sample in the plain format is served at
 `/samples/bank-statement-sample.csv` (linked from the import screen).
 
@@ -694,8 +713,51 @@ encrypted as JSON in `token_encrypted`.
   matched (automatically or by hand) and the fee is in the invoice currency,
   it is added to `invoices.payment_fees`, the same column the manual "net
   received" entry and Stripe card payments use.
+- With auto-conversion on, PayPal books a currency conversion (`T0200`)
+  after the payment. Its credit leg, found by `paypal_reference_id` or by
+  the payment's timestamp, is stored as `net_amount`/`net_currency`: what
+  really arrived after the fee and PayPal's rate. In the home currency it
+  becomes the invoice's `received_czk`. Every matched PayPal payment adds a
+  line to the invoice's internal note (`payment-note.ts`).
+- An unmatched PayPal payment dated on or after the connection's
+  `auto_draft_from` (the day after the newest invoice when it was connected)
+  becomes a `pending_review` draft: the payer as the contact (found by
+  e-mail or created), one line for the amount, the payment already recorded.
+  Issuing it makes it paid at once. Older payments are taken as invoiced.
 - `PAYPAL_API_BASE_URL` overrides the endpoint (local mock). Otherwise the
   `sandbox` flag picks `api-m.sandbox.paypal.com` or `api-m.paypal.com`.
+
+## Stripe sync (balance transactions)
+
+`POST .../connections/stripe` with `{secretKey, label}` connects a Stripe
+account (`stripe-client.ts`, migration 0092). Only restricted keys
+(`rk_live_…` / `rk_test_…`, 400 `stripe_key_format` otherwise) with Read on
+Balance transactions, Charges and Customers. The key is checked with one
+call (400 `stripe_key_invalid` or `stripe_permissions_missing`), then stored
+encrypted in `token_encrypted`. Plan feature `stripe_sync` (Start).
+
+- Every sync reads `GET /v1/balance_transactions` once for `type=charge` and
+  once for `type=payment`, `created[gte]` = the usual window, 100 rows a
+  page with `starting_after`, expanded with `data.source` and
+  `data.source.customer`. Manual sync is limited to one a minute.
+- Kept: status `available` or `pending`, positive amount, a charge that is
+  paid and not fully refunded. Payouts, refunds, fees and adjustments are
+  skipped. So are charges with Billanta's own `metadata.invoice_id` (a UUID):
+  card payments from the invoice link already marked those invoices paid.
+- `external_id` is `stripe:<charge or payment id>` (the balance transaction
+  id when there is no source), the same key as the Stripe CSV import, so an
+  uploaded export and the sync never store one payment twice. The day is `created`
+  in Europe/Prague. Amount and currency are the charge's (minor units,
+  zero-decimal currencies as whole units); the fee is the balance
+  transaction's, divided by `exchange_rate` when Stripe settled into another
+  currency. When it did, `net_amount`/`net_currency` keep what was credited
+  (`net`, in the balance currency), as for PayPal. The variable symbol comes
+  from metadata (`variable_symbol`, `vs`, `invoice_number`, …) or the
+  description; the billing address country goes to a new contact.
+- As with PayPal, an unmatched payment from `auto_draft_from` on becomes a
+  `pending_review` draft, and `POST .../connections/:id/backfill` reads up
+  to three years of history (at most 100 pages per type, no drafts).
+- `STRIPE_API_BASE_URL` overrides the endpoint (local mock).
 
 ## Card payments from the invoice link (Stripe Checkout)
 

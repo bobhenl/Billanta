@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import { CalendarDays, Copy, ExternalLink, KeyRound, Loader2, Plus, RefreshCw, Rss, Send, Trash2, Webhook as WebhookIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
-import { buttonClass, inputClass } from '@/components/modal';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
 import { Link } from '@/i18n/navigation';
 import { saveWebhooks, setFeed, testWebhook, type IntegrationsState, type Webhook, type WebhookKind } from '@/lib/integration-actions';
@@ -84,7 +84,7 @@ export function IntegrationsSettings({ initial, siteUrl }: { initial: Integratio
     else toast({ text: t('webhooks.testFailed', { status: r.ok ? r.data.status : r.error }), tone: 'err' });
   };
 
-  const card = 'mt-6 rounded-xl border border-border bg-card p-5';
+  const card = 'mt-6 rounded-xl border border-border bg-card p-4 sm:p-5';
 
   return (
     <>
@@ -118,8 +118,8 @@ export function IntegrationsSettings({ initial, siteUrl }: { initial: Integratio
                   </span>
                 </InfoHint>
                 <div className="mt-1.5 flex gap-2">
-                  <input readOnly value={url} onFocus={(e) => e.currentTarget.select()} className={cn(inputClass, 'font-mono text-xs')} />
-                  <button type="button" className={buttonClass.secondary} onClick={() => copy(url)} title={t('copy')}>
+                  <input readOnly value={url} onFocus={(e) => e.currentTarget.select()} className={cn(inputClass, 'min-w-0 flex-1 font-mono text-xs')} />
+                  <button type="button" className={cn(buttonClass.secondary, 'shrink-0')} onClick={() => copy(url)} title={t('copy')} aria-label={t('copy')}>
                     <Copy className="h-4 w-4" />
                   </button>
                 </div>
@@ -176,7 +176,7 @@ export function IntegrationsSettings({ initial, siteUrl }: { initial: Integratio
               {hooks.map((h) => {
                 const kind = h.kind && h.url === initial.webhooks.find((w) => w.id === h.id)?.url ? h.kind : detectKind(h.url);
                 return (
-                  <div key={h.key} className={cn('rounded-lg border border-border p-4', !h.enabled && 'opacity-70')}>
+                  <div key={h.key} className={cn('rounded-lg border border-border p-3 sm:p-4', !h.enabled && 'opacity-70')}>
                     <div className="grid gap-3 sm:grid-cols-[1fr_2fr]">
                       <label className="text-xs font-semibold text-muted-foreground">
                         {t('webhooks.name')}
@@ -191,7 +191,7 @@ export function IntegrationsSettings({ initial, siteUrl }: { initial: Integratio
                       <label className="text-xs font-semibold text-muted-foreground">
                         <span className="flex items-center justify-between">
                           URL
-                          {h.url && <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase text-primary">{t(`webhooks.kinds.${kind}`)}</span>}
+                          {h.url && <span className="font-semibold text-primary">{t(`webhooks.kinds.${kind}`)}</span>}
                         </span>
                         <input
                           value={h.url}
@@ -233,15 +233,15 @@ export function IntegrationsSettings({ initial, siteUrl }: { initial: Integratio
                           </span>
                         </InfoHint>
                         <div className="mt-1 flex gap-2">
-                          <input readOnly value={h.secret} className={cn(inputClass, 'font-mono text-xs')} onFocus={(e) => e.currentTarget.select()} />
-                          <button type="button" className={buttonClass.secondary} onClick={() => copy(h.secret!)} title={t('copy')}>
+                          <input readOnly value={h.secret} className={cn(inputClass, 'min-w-0 flex-1 font-mono text-xs')} onFocus={(e) => e.currentTarget.select()} />
+                          <button type="button" className={cn(buttonClass.secondary, 'shrink-0')} onClick={() => copy(h.secret!)} title={t('copy')} aria-label={t('copy')}>
                             <Copy className="h-4 w-4" />
                           </button>
                         </div>
                       </div>
                     )}
                     <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <label className="mr-auto flex items-center gap-2 text-sm">
+                      <label className="mr-auto flex min-w-0 items-center gap-2 text-sm">
                         <input type="checkbox" checked={h.enabled} onChange={(e) => update(h.key, { enabled: e.target.checked })} className="h-4 w-4 accent-primary" />
                         {t('webhooks.enabled')}
                       </label>
@@ -250,16 +250,23 @@ export function IntegrationsSettings({ initial, siteUrl }: { initial: Integratio
                           type="button"
                           className={buttonClass.secondary}
                           disabled={dirty || testing === h.id}
-                          title={dirty ? t('webhooks.saveFirst') : undefined}
+                          title={dirty ? t('webhooks.saveFirst') : t('webhooks.test')}
+                          aria-label={t('webhooks.test')}
                           onClick={() => test(h.id!)}
                         >
                           {testing === h.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                          {t('webhooks.test')}
+                          <span className="hidden sm:inline">{t('webhooks.test')}</span>
                         </button>
                       )}
-                      <button type="button" className={buttonClass.ghost} onClick={() => setHooks((list) => list.filter((x) => x.key !== h.key))}>
+                      <button
+                        type="button"
+                        className={buttonClass.ghost}
+                        title={t('webhooks.remove')}
+                        aria-label={t('webhooks.remove')}
+                        onClick={() => setHooks((list) => list.filter((x) => x.key !== h.key))}
+                      >
                         <Trash2 className="h-4 w-4" />
-                        {t('webhooks.remove')}
+                        <span className="hidden sm:inline">{t('webhooks.remove')}</span>
                       </button>
                     </div>
                   </div>
@@ -287,7 +294,6 @@ export function IntegrationsSettings({ initial, siteUrl }: { initial: Integratio
             {t('api.title')}
           </h2>
         </InfoHint>
-        <p className="mt-2 text-sm text-muted-foreground">{t('api.description')}</p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Link href="/settings/api-keys" className={buttonClass.secondary}>
             {t('api.keys')}

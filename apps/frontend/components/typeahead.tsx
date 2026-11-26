@@ -50,7 +50,8 @@ export function Typeahead<T>({
   className,
   inputClassName,
   ariaLabel,
-  emptyHint
+  emptyHint,
+  required
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -69,6 +70,7 @@ export function Typeahead<T>({
   inputClassName?: string;
   ariaLabel?: string;
   emptyHint?: ReactNode;
+  required?: boolean;
 }) {
   const listId = useId();
   const [fastGroups, setFastGroups] = useState<TypeaheadGroup<T>[]>([]);
@@ -154,6 +156,7 @@ export function Typeahead<T>({
         aria-label={ariaLabel}
         aria-activedescendant={showList && flat[active] ? `${listId}-${active}` : undefined}
         autoComplete="off"
+        required={required}
         value={value}
         placeholder={placeholder}
         onChange={(event) => {
@@ -189,7 +192,7 @@ export function Typeahead<T>({
         <div
           id={listId}
           role="listbox"
-          className="absolute inset-x-0 top-full z-40 mt-1 max-h-80 overflow-y-auto overflow-x-hidden rounded-lg border border-border bg-card p-1 shadow-xl"
+          className="anim-pop absolute inset-x-0 top-full z-40 mt-1 max-h-80 overflow-y-auto overflow-x-hidden rounded-lg border border-border bg-card p-1 shadow-xl"
         >
           {flat.length === 0 && !busy
             ? <div className="px-3 py-2 text-xs text-muted-foreground">{emptyHint}</div>

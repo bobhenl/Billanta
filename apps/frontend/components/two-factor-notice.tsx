@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { auth } from '@/auth';
 import { Link } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
-import { buttonClass } from '@/components/modal';
+import { buttonClass } from '@/lib/ui-classes';
 
 /**
  * Shown on pages whose connect/create actions the backend's `TwoFactorGuard`

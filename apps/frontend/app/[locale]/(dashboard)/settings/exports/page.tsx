@@ -4,9 +4,9 @@ import { getTranslations } from 'next-intl/server';
 import { homeCurrencyOf, lookupCzOffices, type CzOfficeTable } from '@faktur/cz-compliance';
 import czOffices from '@/data/cz-offices.json';
 import { Link } from '@/i18n/navigation';
-import { buttonClass } from '@/components/modal';
+import { buttonClass } from '@/lib/ui-classes';
 import { checkedDate } from '@/lib/legislation-checked';
-import { fetchTenant } from '@/lib/tenant';
+import { fetchTenant, taxCountryOf, vatStatusOf } from '@/lib/tenant';
 import { SettingsHeader } from '@/components/settings-header';
 import { AnnualFilings } from './annual-filings';
 import { AnnualSummary } from './annual-summary';
@@ -27,7 +27,7 @@ export default async function ExportsPage() {
   const tDir = await getTranslations('accountantDirectory.promo');
   // The page works without it (CZ, nothing prefilled); the cards load their own figures.
   const tenant = await fetchTenant().catch(() => null);
-  const country = tenant?.addressCountry;
+  const country = tenant ? taxCountryOf(tenant) : undefined;
   // Slovak companies file in eDane, so they get the SK forms and no EPO guide.
   const sk = country === 'SK';
   // Office codes from the address, looked up here so the 60 kB table never reaches the browser.
@@ -37,7 +37,7 @@ export default async function ExportsPage() {
       <SettingsHeader title={t('title')} description={t('description')} />
       <ExportPicker home={homeCurrencyOf(country)} />
       <div className="mt-5">
-        <VatFilings country={sk ? 'SK' : 'CZ'} checked={await checkedDate('vat_forms')} />
+        <VatFilings country={sk ? 'SK' : 'CZ'} identified={!sk && vatStatusOf(tenant) === 'identified'} checked={await checkedDate('vat_forms')} />
       </div>
       {!sk && (
         <div className="mt-5">

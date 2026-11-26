@@ -1,7 +1,6 @@
 import { createTranslator } from 'next-intl';
-import cs from '@/messages/cs.json';
-import en from '@/messages/en.json';
-import sk from '@/messages/sk.json';
+import { contentLocale, type AppLocale, type FullLocale } from '@/i18n/locales';
+import { loadMessages } from '@/i18n/messages';
 import { routing } from '@/i18n/routing';
 import { getFeaturePage } from '@/lib/feature-pages';
 import { getMunicipalityBySlug } from '@/lib/municipalities';
@@ -20,10 +19,7 @@ export interface OgCard {
   section?: string;
 }
 
-const MESSAGES = { cs, sk, en } as const;
-type Locale = keyof typeof MESSAGES;
-
-const SECTIONS: Record<Locale, Record<'features' | 'pricing' | 'legal' | 'about' | 'places' | 'tool' | 'calculators' | 'guides' | 'templates' | 'reminders' | 'blog', string>> = {
+const SECTIONS: Record<FullLocale, Record<'features' | 'pricing' | 'legal' | 'about' | 'places' | 'tool' | 'calculators' | 'guides' | 'templates' | 'reminders' | 'blog', string>> = {
   cs: { features: 'Funkce', pricing: 'Ceník', legal: 'Právní informace', about: 'O nás', places: 'Fakturace podle obcí', tool: 'Zdarma bez registrace', calculators: 'Kalkulačky', guides: 'Návody', templates: 'Vzory faktur', reminders: 'Vzory upomínek', blog: 'Blog' },
   sk: { features: 'Funkcie', pricing: 'Cenník', legal: 'Právne informácie', about: 'O nás', places: 'Fakturácia podľa obcí', tool: 'Zadarmo bez registrácie', calculators: 'Kalkulačky', guides: 'Návody', templates: 'Vzory faktúr', reminders: 'Vzory upomienok', blog: 'Blog' },
   en: { features: 'Features', pricing: 'Pricing', legal: 'Legal', about: 'About', places: 'Invoicing by municipality', tool: 'Free, no sign-up', calculators: 'Calculators', guides: 'Guides', templates: 'Invoice templates', reminders: 'Payment reminders', blog: 'Blog' }
@@ -31,11 +27,11 @@ const SECTIONS: Record<Locale, Record<'features' | 'pricing' | 'legal' | 'about'
 
 const LEGAL: Record<string, string> = { terms: 'legal.terms', privacy: 'legal.privacy', dpa: 'legal.dpa', cookies: 'cookies.page' };
 
-export function resolveOgCard(locale: string, path: string[]): OgCard | null {
+export async function resolveOgCard(locale: string, path: string[]): Promise<OgCard | null> {
   if (!(routing.locales as readonly string[]).includes(locale)) return null;
-  const l = locale as Locale;
-  const t = createTranslator({ locale: l, messages: MESSAGES[l] }) as unknown as (key: string, values?: Record<string, string>) => string;
-  const s = SECTIONS[l];
+  const l = locale as AppLocale;
+  const t = createTranslator({ locale: l, messages: await loadMessages(l) }) as unknown as (key: string, values?: Record<string, string>) => string;
+  const s = SECTIONS[contentLocale(l)];
   const [first, second, ...rest] = path;
   if (rest.length) return null;
 

@@ -122,7 +122,7 @@ export function BulkForm({
         </div>
         <div className="relative mt-3">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input className={cn(inputClass, 'pl-9')} value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('search')} aria-label={t('search')} />
+          <input type="search" className={cn(inputClass, 'h-10 pl-9')} value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('search')} aria-label={t('search')} />
         </div>
         {contacts.length === 0 ? (
           <p className="mt-3 text-sm text-muted-foreground">{t('noContacts')}</p>
@@ -154,15 +154,12 @@ export function BulkForm({
         <h2 className={label}>{t('step3')}</h2>
         <div className="mt-3 flex flex-wrap items-end gap-4">
           <label className="block text-sm">
-            <span className="mb-1 block font-medium">{t('issueDate')}</span>
-            <input type="date" className={cn(inputClass, 'w-44')} value={issueDate} onChange={(e) => setIssueDate(e.target.value)} />
+            <span className="mb-1 block text-xs font-semibold text-muted-foreground">{t('issueDate')}</span>
+            <input type="date" className={cn(inputClass, 'h-10 w-44 max-w-full')} value={issueDate} onChange={(e) => setIssueDate(e.target.value)} />
           </label>
-          <label className="flex items-start gap-2.5 text-sm">
-            <input type="checkbox" checked={issue} onChange={(e) => setIssue(e.target.checked)} className="mt-0.5 h-4 w-4 accent-primary" />
-            <span>
-              <span className="font-medium">{t('issueNow')}</span>
-              <span className="block text-xs text-muted-foreground">{t('issueNowHint')}</span>
-            </span>
+          <label className="flex h-10 items-center gap-2.5 text-sm font-medium">
+            <input type="checkbox" checked={issue} onChange={(e) => setIssue(e.target.checked)} className="h-4 w-4 accent-primary" />
+            {t('issueNow')}
           </label>
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
@@ -173,13 +170,13 @@ export function BulkForm({
               b: (chunks) => <strong>{chunks}</strong>
             })}
           </p>
-          <button type="button" className={buttonClass.primary} disabled={busy || selected.size === 0 || !template} onClick={submit}>
+          <button type="button" className={cn(buttonClass.primary, 'w-full sm:w-auto')} disabled={busy || selected.size === 0 || !template} onClick={submit}>
             {busy && <Loader2 className="h-4 w-4 animate-spin" />}
             {issue ? t('submitIssue', { count: selected.size }) : t('submitDrafts', { count: selected.size })}
           </button>
         </div>
         {error && (
-          <Banner tone="err" className="mt-3">
+          <Banner tone="err" className="anim-fade mt-3">
             {error}
           </Banner>
         )}

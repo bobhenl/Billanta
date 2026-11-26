@@ -25,6 +25,7 @@ import { NextResponse } from "next/server";
 import { ATTRIBUTION_COOKIE, signupAttributionColumns } from "@/lib/attribution";
 import { clientIp } from "@/lib/client-ip";
 import { db } from "@/lib/db";
+import { hashInviteToken, invitationPreview } from "@/lib/invitation";
 import { passwordProblem } from "@/lib/password";
 import { AUTH_LIMITS, allow } from "@/lib/rate-limit";
 import { TOS_VERSION } from "@/lib/tos";
@@ -49,13 +50,17 @@ export async function POST(request: Request): Promise<NextResponse> {
   // Optional "about you" boxes (migration 0079); anything but a true is no.
   const managesClients = body?.managesClients === true;
   const isTeacher = body?.isTeacher === true;
+  // Signing up from a team invitation: the new user joins that company
+  // instead of founding one, so no company name and no business statement.
+  const inviteToken = typeof body?.inviteToken === "string" ? body.inviteToken : undefined;
+  const name = typeof body?.name === "string" ? body.name.trim().slice(0, 120) || null : null;
 
   if (
     !email ||
     !email.includes("@") ||
     !password ||
     passwordProblem(password) !== null ||
-    !companyName ||
+    (!companyName && !inviteToken) ||
     // Only the current text: bootstrap_tenant_for_user creates the tos_versions
     // row for an unknown version, so any other string would log acceptance of
     // terms that were never published.
@@ -63,6 +68,14 @@ export async function POST(request: Request): Promise<NextResponse> {
     !adultConfirmed
   ) {
     return NextResponse.json({ error: "invalid_input" }, { status: 400 });
+  }
+
+  if (inviteToken) {
+    const invitation = await invitationPreview(inviteToken);
+    // Only the invited address may use the link to sign up.
+    if (!invitation || invitation.expired || invitation.accepted || invitation.email.toLowerCase() !== email) {
+      return NextResponse.json({ error: "invite_invalid" }, { status: 400 });
+    }
   }
 
   const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
@@ -84,16 +97,20 @@ export async function POST(request: Request): Promise<NextResponse> {
     const { tenantId, userId } = await db.transaction(async (tx) => {
       const [created] = await tx
         .insert(users)
-        .values({ email, passwordHash, managesClients, isTeacher, ...attribution })
+        .values({ email, passwordHash, name, managesClients, isTeacher, ...attribution })
         .returning({ id: users.id, email: users.email });
 
       if (!created) {
         throw new Error("user insert returned no row");
       }
 
-      const [bootstrapped] = await tx.execute<{ tenant_id: string }>(
-        sql`SELECT bootstrap_tenant_for_user(${created.id}, ${companyName}, ${tosVersionAccepted}, ${ipAddress}) AS tenant_id`,
-      );
+      const [bootstrapped] = inviteToken
+        ? await tx.execute<{ tenant_id: string | null }>(
+            sql`SELECT join_tenant_by_invitation(${hashInviteToken(inviteToken)}, ${created.id}, ${tosVersionAccepted}, ${ipAddress}) AS tenant_id`,
+          )
+        : await tx.execute<{ tenant_id: string | null }>(
+            sql`SELECT bootstrap_tenant_for_user(${created.id}, ${companyName}, ${tosVersionAccepted}, ${ipAddress}) AS tenant_id`,
+          );
 
       if (!bootstrapped?.tenant_id) {
         throw new Error("bootstrap_tenant_for_user returned no tenant id");

@@ -1,8 +1,15 @@
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { fetchHomeCurrency } from '@/lib/tenant';
 import { apiFetch } from '@/lib/api-client';
 import type { Expense } from '@/lib/expense-ui';
 import { ExpenseForm, type SupplierOption } from '../expense-form';
 import { writeGate } from '@/components/write-gate';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('expenses.form');
+  return { title: t('title') };
+}
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

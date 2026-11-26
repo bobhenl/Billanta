@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ArrowLeftRight, FileCheck2, Globe2, Languages, Laptop, Repeat } from 'lucide-react';
+import { ArrowLeftRight, ArrowRight, FileCheck2, Globe2, Languages, Laptop, Repeat } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { PartnerChecklist, PartnerSegmentPage } from '@/components/partner-segment';
 import { Link } from '@/i18n/navigation';
@@ -54,9 +54,10 @@ export default async function ForExpatsPage({ params }: { params: Promise<{ loca
               <Link
                 href={href}
                 locale={locales && !(locales as readonly string[]).includes(locale) ? 'en' : undefined}
-                className="font-medium text-primary hover:underline"
+                className="inline-flex items-center gap-1 font-semibold text-primary hover:underline"
               >
-                {t(`musts.links.${key}`)} →
+                {t(`musts.links.${key}`)}
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
             </li>
           ))}

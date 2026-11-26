@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
+import { ChipRow, chipClass } from '@/components/chip-row';
 import { SignupCta } from '@/components/public-tools/parts';
 import { glossaryTermsFor, type GlossaryMarket } from '@/lib/glossary';
 import { glossaryText } from '@/lib/glossary-content';
@@ -63,21 +64,35 @@ export default async function GlossaryHub({ params }: { params: Promise<Params> 
   return (
     <section className="container py-12 sm:py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(structuredData)} />
-      <h1 className="max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl">{t('indexTitle')}</h1>
-      <p className="mt-4 max-w-2xl text-lg text-muted-foreground">{t('indexLead')}</p>
+      <h1 className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl">{t('indexTitle')}</h1>
+      <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{t('indexLead')}</p>
+
+      {/* With more than one group the page is long: jump straight to the market you invoice in. */}
+      {groups.length > 1 ? (
+        <ChipRow label={t('indexTitle')} className="mt-6">
+          {groups.map((g) => (
+            <li key={g.market}>
+              <a href={`#${g.market}`} className={chipClass}>
+                {t(g.key)}
+                <span className="text-xs text-muted-foreground">{g.items.length}</span>
+              </a>
+            </li>
+          ))}
+        </ChipRow>
+      ) : null}
 
       {groups.map((g) => (
-        <div key={g.market} className="mt-10">
-          {groups.length > 1 ? <h2 className="text-xl font-semibold">{t(g.key)}</h2> : null}
-          <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div key={g.market} id={g.market} className="mt-10 scroll-mt-24">
+          {groups.length > 1 ? <h2 className="text-xl font-bold tracking-tight">{t(g.key)}</h2> : null}
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {g.items.map(({ term, text }) => (
               <li key={term.slug}>
                 <Link
                   href={`/glossary/${term.slug}`}
                   className="group flex h-full flex-col rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/40"
                 >
-                  <span className="font-semibold group-hover:text-primary">{text.term}</span>
-                  <span className="mt-1 line-clamp-3 text-sm text-muted-foreground">{text.definition}</span>
+                  <span className="font-bold group-hover:text-primary">{text.term}</span>
+                  <span className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted-foreground">{text.definition}</span>
                 </Link>
               </li>
             ))}

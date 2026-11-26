@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
-import { ArrowRight, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { DemoCta } from '@/components/demo/demo-cta';
+import { ClosingCta } from '@/components/audience-page';
+import { ChipRow, chipClass } from '@/components/chip-row';
 import { Link } from '@/i18n/navigation';
 import { brandsFor, comparedAtLabel, rowsFor } from '@/lib/competitors';
 import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
@@ -43,22 +44,18 @@ export default async function ComparePage({ params }: { params: Promise<{ locale
       />
       <div className="max-w-2xl">
         <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t('title')}</h1>
-        <p className="mt-3 text-muted-foreground">{t('lead')}</p>
+        <p className="mt-3 text-muted-foreground sm:text-lg">{t('lead')}</p>
       </div>
-      <nav aria-label={t('brand.othersTitle')} className="mt-5">
-        <ul className="flex flex-wrap gap-2">
-          {COMPARED_BRANDS.map((b) => (
-            <li key={b.key}>
-              <Link
-                href={`/compare/${b.key}`}
-                className="inline-flex rounded-full border border-border bg-card px-3.5 py-1.5 text-sm font-medium hover:border-primary/40 hover:text-primary"
-              >
-                {t('brand.versus', { brand: b.name })}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      {/* One swipe line on a phone, so the table starts right under the lead. */}
+      <ChipRow label={t('brand.othersTitle')} className="mt-5">
+        {COMPARED_BRANDS.map((b) => (
+          <li key={b.key} className="shrink-0">
+            <Link href={`/compare/${b.key}`} className={chipClass}>
+              {t('brand.versus', { brand: b.name })}
+            </Link>
+          </li>
+        ))}
+      </ChipRow>
 
       {/* Phones: one card per feature instead of a table that scrolls sideways. */}
       <div className="mt-8 space-y-3 sm:hidden">
@@ -72,7 +69,7 @@ export default async function ComparePage({ params }: { params: Promise<{ locale
                   <div key={b.key} className={`flex justify-between gap-3 rounded px-1.5 py-0.5 ${b.key === 'billanta' ? 'bg-primary/5' : ''}`}>
                     <dt className={b.key === 'billanta' ? 'font-bold text-primary' : 'text-muted-foreground'}>{b.name}</dt>
                     <dd className={`flex items-center gap-1 text-right ${good ? 'font-medium' : 'text-muted-foreground'}`}>
-                      {good && <Check className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />}
+                      {good && <Check className="h-3.5 w-3.5 shrink-0 text-success" aria-hidden="true" />}
                       {t(`rows.${row.key}.${b.key}`)}
                     </dd>
                   </div>
@@ -113,7 +110,7 @@ export default async function ComparePage({ params }: { params: Promise<{ locale
                   return (
                     <td key={b.key} className={`px-3 py-2.5 ${b.key === 'billanta' ? 'bg-primary/5' : ''} ${good ? '' : 'text-muted-foreground'}`}>
                       <span className="flex gap-1.5">
-                        {good && <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />}
+                        {good && <Check className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden="true" />}
                         <span className={good ? 'font-medium text-foreground' : ''}>{t(`rows.${row.key}.${b.key}`)}</span>
                       </span>
                     </td>
@@ -128,16 +125,6 @@ export default async function ComparePage({ params }: { params: Promise<{ locale
       <p className="mt-1 max-w-3xl text-xs text-muted-foreground">
         {t('notStated')}. {t('disclaimer', { date: comparedAt })}
       </p>
-      <p className="mt-1 max-w-3xl text-xs text-muted-foreground">
-        {t('sourcesTitle')}:{' '}
-        {BRANDS.map((b) =>
-          b.pricingUrl ? (
-            <a key={b.key} href={b.pricingUrl} target="_blank" rel="noopener noreferrer nofollow" className="mr-2 underline hover:text-foreground">
-              {b.name}
-            </a>
-          ) : null
-        )}
-      </p>
 
       <h2 className="mt-12 text-2xl font-extrabold tracking-tight">{t('reasonsTitle')}</h2>
       <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -149,22 +136,12 @@ export default async function ComparePage({ params }: { params: Promise<{ locale
         ))}
       </div>
 
-      <div className="mt-12 flex flex-col items-start gap-4 rounded-2xl border border-primary/20 bg-primary/5 p-6 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-lg font-bold">{t('switchTitle')}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{t('switchBody')}</p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/pricing" className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold transition-colors hover:border-primary hover:text-primary">
-            {t('pricingCta')}
-          </Link>
-          <Link href="/signup" className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
-            {t('signupCta')}
-            <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </Link>
-        </div>
-      </div>
-      <DemoCta className="mt-6" />
+      <ClosingCta
+        title={t('switchTitle')}
+        body={t('switchBody')}
+        primary={{ href: '/signup', label: t('signupCta') }}
+        secondary={{ href: '/pricing', label: t('pricingCta') }}
+      />
     </section>
   );
 }

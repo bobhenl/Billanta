@@ -1,5 +1,16 @@
 import { describe, expect, it, vi } from "vitest";
-import { PaypalApiError, PaypalClient, parsePaypalTransactions, paypalBaseUrl } from "./paypal-client";
+import {
+  PaypalApiError,
+  PaypalClient,
+  parseInstant,
+  parsePaypalConversions,
+  parsePaypalTransactions,
+  parsePaypalWithdrawals,
+  paypalBackfillRange,
+  paypalBaseUrl,
+  paypalSyncFrom,
+  paypalWindows,
+} from "./paypal-client";
 
 const credentials = { clientId: "client-id-123", secret: "secret-value-123", sandbox: true };
 
@@ -29,14 +40,123 @@ describe("parsePaypalTransactions", () => {
       {
         externalId: "paypal:9AB12345CD678901E",
         transactionDate: new Date(Date.UTC(2026, 8, 30)),
+        occurredAt: new Date("2026-09-30T14:03:11Z"),
         amount: "121.00",
         currency: "EUR",
         variableSymbol: "2026014",
         counterpartyAccount: "buyer@example.test",
         counterpartyName: "Jana Nováková",
         fee: "4.48",
+        netAmount: null,
+        netCurrency: null,
+        message: null,
+        payerCountry: null,
       },
     ]);
+  });
+
+  function conversion(amount: string, currency: string, overrides: Record<string, unknown> = {}) {
+    return {
+      transaction_info: {
+        transaction_id: `CONV${currency}${amount}`,
+        transaction_event_code: "T0200",
+        transaction_initiation_date: "2026-09-30T14:03:11+0000",
+        transaction_amount: { currency_code: currency, value: amount },
+        transaction_status: "S",
+        ...overrides,
+      },
+    };
+  }
+
+  it("takes the converted amount from the conversion that references the payment", () => {
+    const [row] = parsePaypalTransactions([
+      detail({ transaction_initiation_date: "2026-09-30T10:00:00+0000" }),
+      // An unrelated conversion at the payment's second must lose to the reference.
+      conversion("-10.00", "EUR", { transaction_initiation_date: "2026-09-30T10:00:00+0000" }),
+      conversion("240.00", "CZK", { transaction_initiation_date: "2026-09-30T10:00:00+0000" }),
+      conversion("-116.52", "EUR", { paypal_reference_id: "9AB12345CD678901E", transaction_initiation_date: "2026-09-30T10:00:05+0000" }),
+      conversion("2803.47", "CZK", { paypal_reference_id: "9AB12345CD678901E", transaction_initiation_date: "2026-09-30T10:00:05+0000" }),
+    ]);
+    expect(row).toMatchObject({ amount: "121.00", currency: "EUR", netAmount: "2803.47", netCurrency: "CZK" });
+  });
+
+  it("pairs a conversion without a reference by its timestamp and source currency", () => {
+    const [row] = parsePaypalTransactions([
+      detail(),
+      conversion("-116.52", "EUR"),
+      conversion("2803.47", "CZK"),
+    ]);
+    expect(row).toMatchObject({ netAmount: "2803.47", netCurrency: "CZK" });
+  });
+
+  it("follows a credit that references the debit leg, which references the payment", () => {
+    const [row] = parsePaypalTransactions([
+      detail(),
+      // Not the payment minus its fee, so only the reference chain can pair it.
+      conversion("-116.00", "EUR", { transaction_id: "DEBIT1", paypal_reference_id: "9AB12345CD678901E", transaction_initiation_date: "2026-09-30T14:03:40+0000" }),
+      conversion("2803.47", "CZK", { paypal_reference_id: "DEBIT1", transaction_initiation_date: "2026-09-30T14:03:41+0000" }),
+    ]);
+    expect(row).toMatchObject({ netAmount: "2803.47", netCurrency: "CZK" });
+  });
+
+  it("falls back to a same-day conversion of exactly the payment minus its fee", () => {
+    const payment = detail({ transaction_amount: { currency_code: "USD", value: "45.00" }, fee_amount: { currency_code: "USD", value: "-2.41" } });
+    const later = { transaction_initiation_date: "2026-09-30T14:05:00+0000" };
+    const [row] = parsePaypalTransactions([
+      payment,
+      conversion("-10.00", "USD", { transaction_initiation_date: "2026-09-30T09:00:00+0000" }),
+      conversion("230.00", "CZK", { transaction_initiation_date: "2026-09-30T09:00:00+0000" }),
+      conversion("-42.59", "USD", later),
+      conversion("1017.23", "CZK", later),
+    ]);
+    expect(row).toMatchObject({ amount: "45.00", currency: "USD", netAmount: "1017.23", netCurrency: "CZK" });
+    // Another day, or another amount, is not this payment's conversion.
+    const nextDay = { transaction_initiation_date: "2026-10-01T14:05:00+0000" };
+    expect(
+      parsePaypalTransactions([payment, conversion("-42.59", "USD", nextDay), conversion("1017.23", "CZK", nextDay), conversion("-45.00", "USD", later), conversion("1074.80", "CZK", later)])[0],
+    ).toMatchObject({ netAmount: null });
+  });
+
+  it("leaves the net empty when nothing was converted or a conversion at that time came from another currency", () => {
+    expect(parsePaypalTransactions([detail()])[0]).toMatchObject({ netAmount: null, netCurrency: null });
+    expect(parsePaypalTransactions([detail(), conversion("-30.00", "USD"), conversion("690.00", "CZK")])[0]).toMatchObject({
+      netAmount: null,
+    });
+  });
+
+  it("keeps the subject as the message and the payer's country", () => {
+    const [row] = parsePaypalTransactions([
+      detail(
+        { transaction_subject: "VIP rank", transaction_note: "Díky" },
+        { email_address: "buyer@example.test", country_code: "sk", payer_name: { alternate_full_name: "Ján Kováč" } },
+      ),
+    ]);
+    expect(row).toMatchObject({ message: "VIP rank – Díky", payerCountry: "SK", counterpartyName: "Ján Kováč" });
+  });
+
+  it("prefers the invoice's item names over the subject", () => {
+    const [row] = parsePaypalTransactions([
+      {
+        ...detail({ transaction_subject: "Invoice 0012" }),
+        cart_info: {
+          item_details: [
+            { item_name: "Tebex Webstore - Rank category overhaul", item_quantity: "1" },
+            { item_name: "Logo", item_quantity: "2" },
+            { item_name: "  " },
+          ],
+        },
+      },
+    ]);
+    expect(row!.message).toBe("Tebex Webstore - Rank category overhaul; 2× Logo");
+  });
+
+  it("dates a payment by the Prague calendar day, not the UTC one", () => {
+    const [late] = parsePaypalTransactions([detail({ transaction_initiation_date: "2026-08-21T22:30:00+0000" })]);
+    expect(late!.transactionDate.toISOString()).toBe("2026-08-22T00:00:00.000Z");
+    const [winter] = parsePaypalTransactions([detail({ transaction_initiation_date: "2026-01-15T23:10:00Z" })]);
+    expect(winter!.transactionDate.toISOString()).toBe("2026-01-16T00:00:00.000Z");
+    const [day] = parsePaypalTransactions([detail({ transaction_initiation_date: "2026-08-21T21:30:00+0000" })]);
+    expect(day!.transactionDate.toISOString()).toBe("2026-08-21T00:00:00.000Z");
   });
 
   it("reads the variable symbol from the note when there is no invoice id", () => {
@@ -60,6 +180,37 @@ describe("parsePaypalTransactions", () => {
   it("leaves the fee empty when PayPal kept none", () => {
     const [row] = parsePaypalTransactions([detail({ fee_amount: undefined })]);
     expect(row!.fee).toBeNull();
+  });
+});
+
+describe("paypalWindows", () => {
+  it("covers the period in back-to-back windows of at most 31 days", () => {
+    const from = new Date("2026-01-01T00:00:00Z");
+    const to = new Date("2026-03-15T12:00:00Z");
+    const windows = paypalWindows(from, to);
+    expect(windows.map((w) => [w.from.toISOString(), w.to.toISOString()])).toEqual([
+      ["2026-01-01T00:00:00.000Z", "2026-01-31T23:59:59.000Z"],
+      ["2026-02-01T00:00:00.000Z", "2026-03-03T23:59:59.000Z"],
+      ["2026-03-04T00:00:00.000Z", "2026-03-15T12:00:00.000Z"],
+    ]);
+    expect(paypalWindows(to, to)).toEqual([]);
+  });
+});
+
+describe("paypalBackfillRange", () => {
+  const now = new Date("2026-11-25T10:00:00Z");
+
+  it("reads from the start of the requested day up to now", () => {
+    expect(paypalBackfillRange(new Date("2026-01-01T15:30:00Z"), now)).toEqual({ from: new Date("2026-01-01T00:00:00Z"), to: now });
+  });
+
+  it("stops three years back, with a day of margin", () => {
+    expect(paypalBackfillRange(new Date("2020-05-01T00:00:00Z"), now)!.from).toEqual(new Date("2023-11-26T00:00:00Z"));
+  });
+
+  it("refuses a day that is not in the past", () => {
+    expect(paypalBackfillRange(new Date("2026-12-01T00:00:00Z"), now)).toBeNull();
+    expect(paypalBackfillRange(new Date("2026-11-25T00:00:00Z"), now)).not.toBeNull();
   });
 });
 
@@ -116,5 +267,87 @@ describe("PaypalClient", () => {
 
     const offline = new PaypalClient(credentials, vi.fn().mockRejectedValue(new Error("ECONNREFUSED")) as never, "https://pp.test");
     await expect(offline.token()).rejects.toBeInstanceOf(PaypalApiError);
+  });
+});
+
+describe("paypalSyncFrom", () => {
+  const now = new Date("2026-11-25T20:00:00Z");
+  const from = new Date("2026-11-22T20:00:00Z");
+  it("reaches back to a draft still waiting for its item names, a year at most", () => {
+    expect(paypalSyncFrom(from, null, now)).toBe(from);
+    expect(paypalSyncFrom(from, new Date("2026-08-24"), now).toISOString()).toBe("2026-08-23T00:00:00.000Z");
+    expect(paypalSyncFrom(from, new Date("2024-01-01"), now).toISOString()).toBe("2025-11-24T20:00:00.000Z");
+    expect(paypalSyncFrom(from, new Date("2026-11-24"), now)).toBe(from);
+  });
+});
+
+describe("parseInstant", () => {
+  it("keeps the second of a payment in any PayPal offset, and nothing for a bare day", () => {
+    expect(parseInstant("2026-08-24T20:21:05+0000")).toEqual(new Date("2026-08-24T20:21:05Z"));
+    expect(parseInstant("2026-08-24T13:21:05-0700")).toEqual(new Date("2026-08-24T20:21:05Z"));
+    expect(parseInstant("2026-08-24")).toBeNull();
+    expect(parseInstant("garbage")).toBeNull();
+  });
+});
+
+describe("parsePaypalWithdrawals", () => {
+  it("keeps completed withdrawals to the bank and nothing else", () => {
+    const withdrawal = detail({ transaction_id: "WD1", transaction_event_code: "T0403", transaction_amount: { currency_code: "CZK", value: "-1817.20" }, fee_amount: undefined });
+    expect(
+      parsePaypalWithdrawals([
+        withdrawal,
+        detail(),
+        detail({ transaction_event_code: "T0403", transaction_status: "P", transaction_amount: { currency_code: "CZK", value: "-10.00" } }),
+        detail({ transaction_event_code: "T0403", transaction_amount: { currency_code: "CZK", value: "10.00" } }),
+      ]),
+    ).toEqual([expect.objectContaining({ externalId: "paypal:WD1", amount: "-1817.20", currency: "CZK", withdrawal: true, fee: null })]);
+    expect(parsePaypalWithdrawals(undefined)).toEqual([]);
+  });
+});
+
+describe("parsePaypalConversions", () => {
+  const leg = (id: string, amount: string, currency: string, at: string, ref?: string, code = "T0200") => ({
+    transaction_info: {
+      transaction_id: id,
+      transaction_event_code: code,
+      transaction_initiation_date: at,
+      transaction_amount: { currency_code: currency, value: amount },
+      transaction_status: "S",
+      ...(ref ? { paypal_reference_id: ref } : {}),
+    },
+  });
+
+  it("returns a balance conversion no payment claims, with what went in", () => {
+    const at = "2026-11-02T08:00:00+0000";
+    const rows = parsePaypalConversions([
+      detail({ transaction_amount: { currency_code: "USD", value: "45.00" }, fee_amount: { currency_code: "USD", value: "-2.41" } }),
+      leg("D1", "-85.18", "USD", at, "WD1"),
+      leg("C1", "1810.21", "CZK", at, "WD1"),
+    ]);
+    expect(rows).toEqual([
+      expect.objectContaining({ externalId: "paypal:C1", amount: "1810.21", currency: "CZK", conversion: { amount: "85.18", currency: "USD" } }),
+    ]);
+  });
+
+  it("reads the T0201 legs PayPal books when a withdrawal converts the balance", () => {
+    // The legs point at each other; the payment came the evening before.
+    const rows = parsePaypalConversions([
+      detail({ transaction_amount: { currency_code: "USD", value: "45.00" }, fee_amount: { currency_code: "USD", value: "-2.41" } }),
+      leg("D1", "-42.59", "USD", "2026-11-11T01:14:01Z", "C1", "T0201"),
+      leg("C1", "892.68", "CZK", "2026-11-11T01:14:01Z", "D1", "T0201"),
+    ]);
+    expect(rows).toEqual([
+      expect.objectContaining({ externalId: "paypal:C1", amount: "892.68", currency: "CZK", conversion: { amount: "42.59", currency: "USD" } }),
+    ]);
+  });
+
+  it("leaves out a conversion that belongs to a payment", () => {
+    expect(
+      parsePaypalConversions([
+        detail(),
+        leg("D1", "-116.52", "EUR", "2026-09-30T14:03:20+0000", "9AB12345CD678901E"),
+        leg("C1", "2803.47", "CZK", "2026-09-30T14:03:20+0000", "9AB12345CD678901E"),
+      ]),
+    ).toEqual([]);
   });
 });

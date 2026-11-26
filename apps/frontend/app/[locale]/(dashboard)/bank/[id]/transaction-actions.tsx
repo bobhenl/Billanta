@@ -1,20 +1,38 @@
 'use client';
 
 import { useTransition } from 'react';
-import { EyeOff, Link2, Loader2, RotateCcw } from 'lucide-react';
+import { EyeOff, FilePlus2, Link2, Loader2, RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { buttonClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { useCanWrite } from '@/components/access-provider';
 import type { TransactionStatus } from '@/lib/bank-ui';
-import { ignoreTransaction, matchTransaction, restoreTransaction, type ActionResult } from '../actions';
+import { draftInvoiceFromTransaction, ignoreTransaction, matchTransaction, restoreTransaction, type ActionResult } from '../actions';
 
 /**
  * Header actions (ignore / restore) or, with `matchInvoiceId`, the
- * "Spárovat" button of one suggested invoice.
+ * "Spárovat" button of one suggested invoice (`matchPaid`: it is already
+ * paid and only gets linked), or with `createDraft` the "Vytvořit fakturu
+ * z platby" button. `primary` / `secondary` pick which of them leads.
  */
-export function TransactionActions({ id, status, matchInvoiceId }: { id: string; status: TransactionStatus; matchInvoiceId?: string }) {
+export function TransactionActions({
+  id,
+  status,
+  matchInvoiceId,
+  matchPaid,
+  createDraft,
+  primary,
+  secondary
+}: {
+  id: string;
+  status: TransactionStatus;
+  matchInvoiceId?: string;
+  matchPaid?: boolean;
+  createDraft?: boolean;
+  primary?: boolean;
+  secondary?: boolean;
+}) {
   const t = useTranslations('bank.detail');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -23,7 +41,8 @@ export function TransactionActions({ id, status, matchInvoiceId }: { id: string;
   const run = (fn: () => Promise<ActionResult>, done: string) =>
     startTransition(async () => {
       const result = await fn();
-      toast(result.ok ? { text: done, tone: 'ok' } : { text: `${t('actionFailed')}: ${result.error}`, tone: 'err' });
+      const failure = !result.ok && result.error === 'invoice_already_linked' ? t('alreadyLinked') : `${t('actionFailed')}: ${result.ok ? '' : result.error}`;
+      toast(result.ok ? { text: done, tone: 'ok' } : { text: failure, tone: 'err' });
       router.refresh();
     });
 
@@ -32,9 +51,38 @@ export function TransactionActions({ id, status, matchInvoiceId }: { id: string;
 
   const spin = pending && <Loader2 className="h-4 w-4 animate-spin" />;
 
+  if (createDraft) {
+    return (
+      <button
+        type="button"
+        className={primary ? buttonClass.primary : buttonClass.secondary}
+        disabled={pending}
+        onClick={() =>
+          startTransition(async () => {
+            const result = await draftInvoiceFromTransaction(id);
+            if (!result.ok) {
+              toast({ text: `${t('actionFailed')}: ${result.error}`, tone: 'err' });
+              return;
+            }
+            // A draft to review, never issued: open it so the member checks and issues it.
+            toast({ text: t('draftDone'), tone: 'ok' });
+            router.push(`/invoices/${result.invoiceId}`);
+          })
+        }
+      >
+        {spin || <FilePlus2 className="h-4 w-4" />}
+        {t('createDraft')}
+      </button>
+    );
+  }
   if (matchInvoiceId) {
     return (
-      <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => run(() => matchTransaction(id, matchInvoiceId), t('matchedDone'))}>
+      <button
+        type="button"
+        className={secondary ? buttonClass.secondary : buttonClass.primary}
+        disabled={pending}
+        onClick={() => run(() => matchTransaction(id, matchInvoiceId), t(matchPaid ? 'linkedDone' : 'matchedDone'))}
+      >
         {spin || <Link2 className="h-4 w-4" />}
         {t('match')}
       </button>

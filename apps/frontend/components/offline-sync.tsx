@@ -205,7 +205,7 @@ export function OfflineIndicator() {
 
       {open && scope && (
         // On phones the pill sits next to the logo, so the panel spans the screen instead of hanging off its left edge.
-        <div className="fixed inset-x-4 top-14 z-50 overflow-hidden sm:absolute sm:inset-x-auto sm:right-0 sm:top-10 sm:w-[22rem] rounded-xl border border-border bg-card shadow-xl">
+        <div className="anim-pop fixed inset-x-4 top-14 z-50 overflow-hidden sm:absolute sm:inset-x-auto sm:right-0 sm:top-10 sm:w-[22rem] rounded-xl border border-border bg-card shadow-xl">
           <div className="border-b border-border px-3 py-2">
             <p className="text-sm font-bold">{t('title')}</p>
             <p className="text-xs text-muted-foreground">{online ? t('onlineNote') : t('offlineNote')}</p>

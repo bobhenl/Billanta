@@ -41,6 +41,8 @@ export interface BackendTokenSubject {
   email: string;
   /** The session passed two-factor sign-in; becomes the `mfa` claim the backend's `TwoFactorGuard` checks. */
   twoFactor?: boolean;
+  /** Re-authenticated a moment ago (`lib/invoice-unlock.ts`); becomes the `ul` claim that opens locked invoices. */
+  unlocked?: boolean;
 }
 
 /**
@@ -51,7 +53,7 @@ export interface BackendTokenSubject {
  * to matter if leaked.
  */
 export async function mintBackendToken(user: BackendTokenSubject): Promise<string> {
-  return new SignJWT(user.twoFactor ? { email: user.email, mfa: true } : { email: user.email })
+  return new SignJWT({ email: user.email, ...(user.twoFactor ? { mfa: true } : {}), ...(user.unlocked ? { ul: true } : {}) })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(user.id)
     .setIssuedAt()

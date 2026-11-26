@@ -43,6 +43,7 @@ import { InvoiceImportService } from "./invoice-import.service";
 import { guestInvoiceSchema } from "../guest-invoices/guest-invoices.service";
 import { IMPORT_FIELDS } from "./invoice-import.util";
 import { InvoicesService } from "./invoices.service";
+import { assertInvoiceOpen, maskLockedRow } from "./invoice-lock";
 import { BUYER_DETAILS_FIELDS } from "./buyer-details.util";
 import { BuyerDetailsService } from "./buyer-details.service";
 import { customSlugSchema } from "../public-links/public-link";
@@ -94,6 +95,8 @@ class BitfakturaImportDto extends createZodDto(
 
 class PublicSlugDto extends createZodDto(z.object({ slug: customSlugSchema })) {}
 
+class SetInvoiceLockDto extends createZodDto(z.object({ locked: z.boolean() })) {}
+
 class FakturoidImportDto extends createZodDto(
   z.object({
     clientId: z.string().trim().min(8).max(200),
@@ -114,6 +117,12 @@ class RefreshPartiesDto extends createZodDto(
     reason: z.string().trim().max(500).optional(),
   }),
 ) {}
+
+/** The partner split is "Po zdanění" data, which only owners and admins may see. */
+function withoutSplit<T>(row: T, user: { role: string }): T {
+  if (user.role === "owner" || user.role === "admin" || !row || typeof row !== "object" || !("partnerShares" in row)) return row;
+  return { ...row, partnerShares: null };
+}
 
 /**
  * No controller-level `@UseGuards(...)` here (deliberately, since a recent
@@ -149,11 +158,22 @@ export class InvoicesController {
       "?date_field=issue|due|paid|taxable|sent|created &from= &to=, ?source=, ?language=, ?vat_rate=, ?paid_state=, " +
       "?overdue_days=, ?reminded=, ?attachments=, ?item= and more (see ListInvoicesQuery).",
   })
-  list(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>) {
-    return this.invoicesService.list(req.tenantDb!, listInvoicesQuerySchema.parse(query));
+  async list(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>) {
+    const parsed = listInvoicesQuerySchema.parse(query);
+    // Who gets which invoice is "Po zdanění" data: other roles can't filter by it.
+    const partner = req.user!.role === "owner" || req.user!.role === "admin" ? parsed.partner : undefined;
+    const rows = await this.invoicesService.list(req.tenantDb!, { ...parsed, partner }, req.user!.tenantId);
+    return rows.map((row) => withoutSplit(maskLockedRow(row, req.user!), req.user!));
   }
 
   // Declared before `:id` so the literal path is never captured as an id.
+  @Get("custom-field-options")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Custom fields with a short list of values, for the list filter" })
+  customFieldOptions(@Req() req: TenantScopedRequest) {
+    return this.invoicesService.customFieldOptions(req.tenantDb!);
+  }
+
   @Get("item-suggestions")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "Line-item typeahead from this tenant's previous invoices" })
@@ -204,28 +224,32 @@ export class InvoicesController {
   @Get(":id/duplicate")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "An invoice's customer, currency, term and items as a template for a new draft" })
-  duplicateTemplate(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+  async duplicateTemplate(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
     return this.invoicesService.duplicateTemplate(req.tenantDb!, id);
   }
 
   @Get(":id/detail")
   @UseGuards(CombinedAuthGuard)
   @ApiOperation({ summary: "Invoice with customer, line items, VAT recapitulation and linked documents" })
-  detail(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+  async detail(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
     return this.invoicesService.detail(req.tenantDb!, id);
   }
 
   @Get(":id")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "Get an invoice by id" })
-  findOne(@Req() req: TenantScopedRequest, @Param("id") id: string) {
-    return this.invoicesService.findOne(req.tenantDb!, id);
+  async findOne(@Req() req: TenantScopedRequest, @Param("id") id: string) {
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
+    return withoutSplit(await this.invoicesService.findOne(req.tenantDb!, id), req.user!);
   }
 
   @Patch(":id")
   @UseGuards(CombinedAuthGuard)
   @ApiOperation({ summary: "Edit a draft (line_items, when sent, replaces all items)" })
-  update(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: UpdateInvoiceDto) {
+  async update(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: UpdateInvoiceDto) {
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
     return this.invoicesService.update(req.tenantDb!, req.user!.tenantId, id, dto);
   }
 
@@ -318,6 +342,18 @@ export class InvoicesController {
   importGuest(@Req() req: TenantScopedRequest, @Body() dto: GuestImportDto) {
     if (req.user!.role !== "owner" && req.user!.role !== "admin") throw new ForbiddenException({ error: "forbidden" });
     return this.importService.importFromGuest(req.tenantDb!, req.user!.tenantId, dto.invoices);
+  }
+
+  @Patch(":id/lock")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "Lock or unlock an invoice (owner/admin)",
+    description:
+      "A locked invoice still counts in lists, totals and exports, but its detail and documents need a fresh " +
+      "re-auth. Unlocking needs one too (423 invoice_locked otherwise).",
+  })
+  setLock(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: SetInvoiceLockDto) {
+    return this.invoicesService.setLock(req.tenantDb!, id, dto.locked, req.user!);
   }
 
   @Post(":id/mark-paid")
@@ -519,8 +555,9 @@ export class InvoicesController {
       "sends the invoice email via Resend (EmailService), and sets sent_at. Fails with " +
       "400 if the invoice has no contact, or the contact has no email on file.",
   })
-  send(@Req() req: TenantScopedRequest, @Param("id") id: string) {
+  async send(@Req() req: TenantScopedRequest, @Param("id") id: string) {
     assertMayDo(req.user, "invoices.send");
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
     return this.invoicesService.sendInvoice(req.tenantDb!, id, req.user!.tenantId);
   }
 
@@ -564,7 +601,8 @@ export class InvoicesController {
   @Get(":id/attachments")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "List an invoice's attachments (without file contents)" })
-  listAttachments(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+  async listAttachments(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
     return this.attachmentsService.list(req.tenantDb!, id);
   }
 
@@ -618,6 +656,7 @@ export class InvoicesController {
     @Param("attachmentId", ParseUUIDPipe) attachmentId: string,
     @Res() res: Response,
   ): Promise<void> {
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
     const file = await this.attachmentsService.download(req.tenantDb!, id, attachmentId);
     res.set({
       "Content-Type": file.mime,
@@ -640,12 +679,13 @@ export class InvoicesController {
     @Param("id") id: string,
     @Res() res: Response,
   ): Promise<void> {
-    const pdf = await this.invoicesService.generateInvoicePdf(req.tenantDb!, req.user!.tenantId, id);
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
+    const pdf = await this.invoicesService.generateInvoicePdfFile(req.tenantDb!, req.user!.tenantId, id);
     res.set({
       "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="invoice-${id}.pdf"`,
+      "Content-Disposition": `inline; filename="${pdf.filename}"`,
     });
-    res.send(pdf);
+    res.send(pdf.content);
   }
 
   /**
@@ -666,6 +706,7 @@ export class InvoicesController {
     @Param("id") id: string,
     @Res() res: Response,
   ): Promise<void> {
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
     const xml = await this.invoicesService.generateInvoiceIsdoc(req.tenantDb!, req.user!.tenantId, id);
     res.set({
       "Content-Type": "application/xml",
@@ -682,7 +723,8 @@ export class InvoicesController {
       "CZ §29 ZDPH / §435 OZ (SK §74 ZoDPH) fields with `scheme: \"law\"`, plus Peppol BIS 3.0 rules " +
       "(`scheme: \"peppol\"`) for an issued invoice to a foreign buyer.",
   })
-  check(@Req() req: TenantScopedRequest, @Param("id") id: string) {
+  async check(@Req() req: TenantScopedRequest, @Param("id") id: string) {
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
     return this.invoicesService.checkInvoice(req.tenantDb!, req.user!.tenantId, id);
   }
 
@@ -692,7 +734,8 @@ export class InvoicesController {
     summary: "Check an issued invoice against the data-dependent Peppol BIS 3.0 rules before sending it",
     description: "Returns `{ issues: [{ rule, field, code, severity }] }`; an empty list means nothing was found.",
   })
-  checkUbl(@Req() req: TenantScopedRequest, @Param("id") id: string) {
+  async checkUbl(@Req() req: TenantScopedRequest, @Param("id") id: string) {
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
     return this.invoicesService.checkInvoiceUbl(req.tenantDb!, req.user!.tenantId, id);
   }
 
@@ -711,6 +754,7 @@ export class InvoicesController {
     @Param("id") id: string,
     @Res() res: Response,
   ): Promise<void> {
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
     const xml = await this.invoicesService.generateInvoiceUbl(req.tenantDb!, req.user!.tenantId, id);
     res.set({
       "Content-Type": "application/xml",

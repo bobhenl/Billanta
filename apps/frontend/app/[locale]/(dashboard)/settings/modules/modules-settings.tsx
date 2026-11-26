@@ -4,7 +4,8 @@ import { useState, useTransition } from 'react';
 import { Bot, Check, FileQuestion, Landmark, Loader2, Receipt, Download, Timer, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
-import { buttonClass } from '@/components/modal';
+import { InfoHint } from '@/components/info-hint';
+import { buttonClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
 import { BUSINESS_PRESETS, presetForModules, sameModules, TOGGLEABLE_MODULES, type ModuleSet, type ToggleableModule } from '@/lib/business-presets';
 import { cn } from '@/lib/utils';
@@ -42,9 +43,10 @@ export function ModulesSettings({ initial, readOnly }: { initial: ModuleSet; rea
 
   return (
     <div className="mt-6 space-y-5">
-      <section className="rounded-xl border border-border bg-card p-4">
-        <h2 className="font-bold">{t('presetsTitle')}</h2>
-        <p className="mt-0.5 text-xs text-muted-foreground">{t('presetsHint')}</p>
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
+        <InfoHint hint={t('presetsHint')}>
+          <h2 className="font-bold">{t('presetsTitle')}</h2>
+        </InfoHint>
         <div className="mt-3 grid gap-2 sm:grid-cols-2">
           {BUSINESS_PRESETS.map((p) => (
             <button

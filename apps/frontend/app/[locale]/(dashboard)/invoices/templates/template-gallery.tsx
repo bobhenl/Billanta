@@ -3,6 +3,8 @@
 import { useState, useTransition } from 'react';
 import { Clock, FileText, Home, LayoutTemplate, MoreHorizontal, Package, Pencil, Plus, Repeat, Trash2, Users, Wallet, type LucideIcon } from 'lucide-react';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
+import { EmptyState } from '@/components/empty-state';
+import { InfoHint } from '@/components/info-hint';
 import { Modal, buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { Link, useRouter } from '@/i18n/navigation';
@@ -90,7 +92,7 @@ export function TemplateGallery({ saved, presets }: { saved: SavedTemplateRow[];
     });
   };
 
-  const card = 'group relative flex flex-col rounded-xl border border-border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-md';
+  const card = 'group relative flex flex-col rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary';
   const menuItem = 'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-secondary';
 
   return (
@@ -98,11 +100,7 @@ export function TemplateGallery({ saved, presets }: { saved: SavedTemplateRow[];
       <section className="mt-8">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('saved', { count: saved.length })}</h2>
         {saved.length === 0 ? (
-          <div className="mt-3 rounded-xl border border-dashed border-border p-8 text-center">
-            <LayoutTemplate className="mx-auto h-8 w-8 text-muted-foreground" />
-            <p className="mt-2 font-semibold">{t('emptyTitle')}</p>
-            <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">{t('emptyHint')}</p>
-          </div>
+          <EmptyState className="mt-3" icon={LayoutTemplate} title={t('emptyTitle')} hint={t('emptyHint')} />
         ) : (
           <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {saved.map((row) => {
@@ -130,7 +128,7 @@ export function TemplateGallery({ saved, presets }: { saved: SavedTemplateRow[];
                         <MoreHorizontal className="h-4 w-4" />
                       </button>
                       {menu === row.id && (
-                        <div className="absolute right-0 top-9 z-20 w-52 rounded-xl border border-border bg-popover p-1 text-sm shadow-lg" onMouseLeave={() => setMenu(null)}>
+                        <div className="anim-pop absolute right-0 top-9 z-20 w-52 rounded-xl border border-border bg-popover p-1 text-sm shadow-lg" onMouseLeave={() => setMenu(null)}>
                           <Link href={`/invoices/new?template=${row.id}`} className={menuItem}>
                             <Plus className="h-4 w-4" /> {t('use')}
                           </Link>
@@ -164,7 +162,11 @@ export function TemplateGallery({ saved, presets }: { saved: SavedTemplateRow[];
                     {row.lineItems.length > 3 && <li>{t('moreItems', { count: row.lineItems.length - 3 })}</li>}
                   </ul>
                   <div className="mt-auto flex items-end justify-between gap-2 pt-4">
-                    <span className={cn('rounded-full px-2 py-0.5 text-[11px] font-bold', TYPE_TONE[row.documentType])}>{tDoc(`type.${row.documentType}`)}</span>
+                    {row.documentType === 'invoice' ? (
+                      <span />
+                    ) : (
+                      <span className={cn('rounded-full px-2 py-0.5 text-[11px] font-bold', TYPE_TONE[row.documentType])}>{tDoc(`type.${row.documentType}`)}</span>
+                    )}
                     <span className="text-right">
                       <span className="block font-extrabold tabular-nums">{money.format(templateNet(row.lineItems))}</span>
                       <span className="block text-[11px] text-muted-foreground">
@@ -182,8 +184,9 @@ export function TemplateGallery({ saved, presets }: { saved: SavedTemplateRow[];
       </section>
 
       <section className="mt-10">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('starters')}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{t('startersHint')}</p>
+        <InfoHint hint={t('startersHint')}>
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('starters')}</h2>
+        </InfoHint>
         <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {presets.map((preset) => {
             const Icon = PRESET_ICONS[preset.icon];
@@ -198,9 +201,11 @@ export function TemplateGallery({ saved, presets }: { saved: SavedTemplateRow[];
                     <p className="mt-0.5 text-sm text-muted-foreground">{t(`presets.${preset.key}.description`)}</p>
                   </div>
                 </div>
-                <div className="mt-auto pt-4">
-                  <span className={cn('rounded-full px-2 py-0.5 text-[11px] font-bold', TYPE_TONE[preset.documentType])}>{tDoc(`type.${preset.documentType}`)}</span>
-                </div>
+                {preset.documentType !== 'invoice' && (
+                  <div className="mt-auto pt-4">
+                    <span className={cn('rounded-full px-2 py-0.5 text-[11px] font-bold', TYPE_TONE[preset.documentType])}>{tDoc(`type.${preset.documentType}`)}</span>
+                  </div>
+                )}
               </Link>
             );
           })}

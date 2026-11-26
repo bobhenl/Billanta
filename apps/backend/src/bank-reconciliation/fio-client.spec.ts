@@ -23,6 +23,8 @@ const body = {
           column3: { value: "0100", name: "Kód banky", id: 3 },
           column10: { value: "Firma s.r.o.", name: "Název protiúčtu", id: 10 },
           column5: { value: "2026001", name: "VS", id: 5 },
+          column4: { value: "0308", name: "KS", id: 4 },
+          column6: { value: "77", name: "SS", id: 6 },
           column16: { value: "Faktura 2026001", name: "Zpráva pro příjemce", id: 16 },
         },
         {
@@ -57,6 +59,8 @@ describe("parseFioStatement", () => {
       counterpartyAccount: "123456789/0100",
       counterpartyName: "Firma s.r.o.",
       message: "Faktura 2026001",
+      constantSymbol: "0308",
+      specificSymbol: "77",
     });
     expect(result.rows[1]).toMatchObject({ amount: "99.00", variableSymbol: null, counterpartyName: "Jan Novák", message: null });
   });

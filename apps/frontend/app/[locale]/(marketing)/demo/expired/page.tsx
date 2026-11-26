@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { NOINDEX } from '@/lib/seo';
 import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -17,14 +18,14 @@ export default async function DemoExpiredPage({ params }: { params: Promise<{ lo
   const t = await getTranslations('demo');
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-16 text-center">
-      <h1 className="text-2xl font-semibold tracking-tight">{t('expired.title')}</h1>
+    <div className="container max-w-xl py-12 text-center sm:py-16">
+      <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t('expired.title')}</h1>
       <p className="mt-3 text-muted-foreground">{t('expired.lead')}</p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <Link href="/demo" className={buttonClass.primary}>
+        <Link href="/demo" className={cn(buttonClass.primary, 'px-6 py-3')}>
           {t('expired.again')}
         </Link>
-        <Link href="/signup" className={buttonClass.secondary}>
+        <Link href="/signup" className={cn(buttonClass.secondary, 'px-6 py-3')}>
           {t('expired.register')}
         </Link>
       </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Loader2, Ticket } from 'lucide-react';
+import { ChevronDown, Loader2, Ticket } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { buttonClass, inputClass } from '@/components/modal';
 import { usePromoText } from '@/components/promo-text';
@@ -21,7 +21,7 @@ export function PromoCodeCard({ redemption, readOnly }: { redemption: PromoRedem
 
   if (redemption) {
     return (
-      <section className="mt-6 rounded-xl border border-border bg-card p-4">
+      <section className="mt-6 rounded-xl border border-border bg-card p-4 sm:p-5">
         <p className="flex items-center gap-2 text-sm font-semibold">
           <Ticket className="h-4 w-4 text-primary" aria-hidden="true" />
           {t('card.title')}
@@ -50,13 +50,15 @@ export function PromoCodeCard({ redemption, readOnly }: { redemption: PromoRedem
   };
 
   return (
-    <section className="mt-6 rounded-xl border border-border bg-card p-4">
-      <p className="flex items-center gap-2 text-sm font-semibold">
+    // Few companies have a code, so the form stays folded until asked for.
+    <details className="group mt-6 rounded-xl border border-border bg-card p-4 sm:px-5">
+      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold [&::-webkit-details-marker]:hidden">
         <Ticket className="h-4 w-4 text-primary" aria-hidden="true" />
         {t('card.title')}
-      </p>
-      <p className="mt-1 text-sm text-muted-foreground">{t('card.hint')}</p>
-      <form onSubmit={submit} className="mt-3 flex flex-col gap-2 sm:flex-row">
+        <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden="true" />
+      </summary>
+      <p className="anim-fade mt-2 text-xs text-muted-foreground">{t('card.hint')}</p>
+      <form onSubmit={submit} className="anim-fade mt-3 flex flex-col gap-2 sm:flex-row">
         <label htmlFor="promo-code" className="sr-only">
           {t('card.label')}
         </label>
@@ -69,13 +71,13 @@ export function PromoCodeCard({ redemption, readOnly }: { redemption: PromoRedem
           autoCapitalize="characters"
           spellCheck={false}
           placeholder={t('card.placeholder')}
-          className={`${inputClass} font-mono uppercase sm:max-w-xs`}
+          className={`${inputClass} h-10 font-mono uppercase sm:max-w-xs`}
         />
-        <button type="submit" disabled={pending || !code.trim()} className={buttonClass.secondary}>
+        <button type="submit" disabled={pending || !code.trim()} className={`${buttonClass.secondary} h-10`}>
           {pending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
           {t('card.submit')}
         </button>
       </form>
-    </section>
+    </details>
   );
 }

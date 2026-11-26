@@ -5,8 +5,8 @@ import { useTranslations } from 'next-intl';
 import QRCode from 'qrcode';
 import { Download } from 'lucide-react';
 import { czechAccountToIban, generateSpaydString, isValidCzechBankAccount, isValidIban, normalizeIban } from '@faktur/cz-compliance';
-import { AmountField, parseAmount, Segmented, TextField } from '@/components/public-tools/fields';
-import { buttonClass } from '@/components/modal';
+import { AmountField, parseAmount, Segmented, TextField, toolCard } from '@/components/public-tools/fields';
+import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 
 /** Domestic "19-2000145399/0800" or an IBAN → IBAN, or an error key. */
@@ -64,16 +64,16 @@ export function QrPaymentGenerator() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-      <form className="space-y-4 rounded-xl border border-border bg-card p-5" onSubmit={(e) => e.preventDefault()}>
+      <form className={cn(toolCard, 'space-y-4')} onSubmit={(e) => e.preventDefault()}>
         <div>
-          <TextField label={t('fields.account')} value={account} onChange={setAccount} placeholder="123456789/0800" hint={t('fields.accountHint')} />
+          <TextField label={t('fields.account')} value={account} onChange={setAccount} placeholder="123456789/0800" info={t('fields.accountHint')} />
           {error && (
             <p role="alert" className="mt-1 text-xs font-medium text-destructive">
               {error}
             </p>
           )}
         </div>
-        <div className="grid gap-4 sm:grid-cols-[1fr_auto]">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3">
           <AmountField label={t('fields.amount')} value={amount} onChange={setAmount} />
           <Segmented
             label={t('fields.currency')}
@@ -85,10 +85,10 @@ export function QrPaymentGenerator() {
             ]}
           />
         </div>
-        <TextField label={t('fields.vs')} value={vs} onChange={setVs} inputMode="numeric" maxLength={10} hint={t('fields.vsHint')} />
+        <TextField label={t('fields.vs')} value={vs} onChange={setVs} inputMode="numeric" maxLength={10} info={t('fields.vsHint')} />
         <TextField label={t('fields.message')} value={message} onChange={setMessage} maxLength={60} />
       </form>
-      <section aria-live="polite" className="flex flex-col items-center justify-center rounded-xl border border-border bg-card p-5 text-center">
+      <section aria-live="polite" className={cn(toolCard, 'flex flex-col items-center justify-center text-center')}>
         {png && spayd && 'iban' in resolved ? (
           <>
             {/* White plate: banking apps read dark-on-light codes most reliably, also in dark mode. */}

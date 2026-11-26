@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { BrandMark } from '@/components/brand-mark';
 import { getBuyerDetailsView } from '@/lib/public-buyer-details';
 import { privateLinkMetadata } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
@@ -31,6 +30,7 @@ export default async function BuyerDetailsPage({ params }: { params: Promise<{ l
   if (!view) notFound();
 
   const t = await getTranslations('buyerDetails');
+  const tInvoice = await getTranslations('publicInvoice');
   const locale = await getLocale();
   const money = new Intl.NumberFormat(locale, { style: 'currency', currency: view.currency });
   const date = new Intl.DateTimeFormat(locale, { dateStyle: 'long' });
@@ -38,13 +38,11 @@ export default async function BuyerDetailsPage({ params }: { params: Promise<{ l
   const docKey = view.documentType === 'quote' ? 'quote' : view.documentType === 'proforma' ? 'proforma' : 'invoice';
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
-      <div className="mb-8 flex items-center justify-center gap-2">
-        <BrandMark className="h-6 w-6" />
-        <span className="text-sm font-semibold tracking-tight">{SITE_NAME}</span>
-      </div>
-      <div className="rounded-lg border border-border bg-card p-6 sm:p-8">
-        <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">{t('title')}</h1>
+    <div className="mx-auto max-w-3xl px-4 py-6 sm:py-14">
+      {/* The supplier leads; the app name only signs off in the footer. */}
+      <div className="rounded-2xl border border-border bg-card p-5 sm:p-8">
+        <p className="break-words text-sm font-semibold text-primary">{s.name}</p>
+        <h1 className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">{t('title')}</h1>
         <p className="mt-2 text-sm text-muted-foreground">{t('intro', { supplier: s.name, document: t(`documentType.${docKey}`) })}</p>
         <ul className="mt-4 flex flex-col gap-1.5 text-xs text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-x-5">
           {view.supplierVerified && (
@@ -62,8 +60,8 @@ export default async function BuyerDetailsPage({ params }: { params: Promise<{ l
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
           <section>
             <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('supplier')}</h2>
-            <p className="mt-2 text-sm font-medium">{s.name}</p>
-            <p className="text-sm text-muted-foreground">
+            <p className="mt-2 break-words text-sm font-medium">{s.name}</p>
+            <p className="break-words text-sm text-muted-foreground">
               {[s.street, [s.postalCode, s.city].filter(Boolean).join(' '), s.country].filter(Boolean).join(', ')}
             </p>
             {(s.ico || s.dic) && (
@@ -72,11 +70,11 @@ export default async function BuyerDetailsPage({ params }: { params: Promise<{ l
           </section>
           <section>
             <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('amount')}</h2>
-            <p className="mt-2 text-2xl font-semibold">{money.format(view.totals.total)}</p>
+            <p className="mt-2 text-2xl font-bold tabular-nums">{money.format(view.totals.total)}</p>
             {view.totals.vat > 0 && (
               <p className="text-sm text-muted-foreground">{t('withoutVat', { amount: money.format(view.totals.withoutVat) })}</p>
             )}
-            {view.dueDate && <p className="text-sm text-muted-foreground">{t('dueDate', { date: date.format(new Date(view.dueDate)) })}</p>}
+            {view.dueDate && <p className="text-sm font-semibold">{t('dueDate', { date: date.format(new Date(view.dueDate)) })}</p>}
           </section>
         </div>
 
@@ -93,11 +91,11 @@ export default async function BuyerDetailsPage({ params }: { params: Promise<{ l
               <tbody>
                 {view.items.map((item, i) => (
                   <tr key={i} className="border-b border-border/60 last:border-0">
-                    <td className="py-2 pr-3">{item.description}</td>
-                    <td className="whitespace-nowrap py-2 pr-3 text-right text-muted-foreground">
+                    <td className="break-words py-2 pr-3">{item.description}</td>
+                    <td className="whitespace-nowrap py-2 pr-3 text-right tabular-nums text-muted-foreground">
                       {item.quantity} {item.unit ?? ''}
                     </td>
-                    <td className="whitespace-nowrap py-2 text-right">{money.format(item.total)}</td>
+                    <td className="whitespace-nowrap py-2 text-right tabular-nums">{money.format(item.total)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -106,7 +104,7 @@ export default async function BuyerDetailsPage({ params }: { params: Promise<{ l
         )}
 
         {view.submitted ? (
-          <div className="mt-8 flex items-start gap-3 rounded-lg border border-success/40 bg-success/5 p-5">
+          <div className="mt-6 flex items-start gap-3 rounded-lg border border-success/40 bg-success/5 p-4">
             <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
             <div className="text-sm">
               <p className="font-semibold">{t('doneTitle')}</p>
@@ -117,7 +115,7 @@ export default async function BuyerDetailsPage({ params }: { params: Promise<{ l
           <BuyerDetailsForm token={token} supplierName={s.name} prefill={view.prefill} required={view.required ?? ['email', 'ico']} />
         )}
       </div>
-      <p className="mt-6 text-center text-xs text-muted-foreground">{t('privacy', { supplier: s.name })}</p>
+      <p className="mt-6 text-center text-xs text-muted-foreground">{tInvoice('madeWith', { name: SITE_NAME })}</p>
     </div>
   );
 }

@@ -3,15 +3,17 @@
 import { type FormEvent, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 /**
- * "Forgot password?" form — mirrors `(auth)/login/login-form.tsx`'s visual
+ * "Forgot password?" form – mirrors `(auth)/login/login-form.tsx`'s visual
  * conventions exactly (same card/input/button classes) so the auth pages
  * read as one consistent flow.
  *
  * Submits `{ email, locale }` to `POST /api/auth/forgot-password`, which
  * ALWAYS responds with the same generic success shape regardless of whether
- * the email is registered (anti-enumeration — see that route's doc
+ * the email is registered (anti-enumeration – see that route's doc
  * comment). This form mirrors that on the UI side: once submitted, it
  * always shows the same confirmation message and does not go back to a
  * re-submittable form, so a user can't tell from the UI whether their email
@@ -43,7 +45,7 @@ export function ForgotPasswordForm() {
       // point of view).
     }
 
-    // Always shows the confirmation, even on a network error — see above.
+    // Always shows the confirmation, even on a network error – see above.
     setSubmitted(true);
     setSubmitting(false);
   }
@@ -67,7 +69,8 @@ export function ForgotPasswordForm() {
       <h1 className="text-2xl font-semibold tracking-tight text-card-foreground">{t('title')}</h1>
       <p className="mt-1 text-sm text-muted-foreground">{t('subtitle')}</p>
 
-      <form className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
+      {/* POST so a submit before hydration never puts the fields in the URL. */}
+      <form method="post" className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-1.5">
           <label htmlFor="email" className="text-sm font-medium">
             {t('emailLabel')}
@@ -81,14 +84,14 @@ export function ForgotPasswordForm() {
             placeholder={t('emailPlaceholder')}
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
+            className={`min-h-10 ${inputClass}`}
           />
         </div>
 
         <button
           type="submit"
           disabled={submitting}
-          className="mt-2 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          className={cn(buttonClass.primary, 'mt-2 py-2.5')}
         >
           {t('submit')}
         </button>

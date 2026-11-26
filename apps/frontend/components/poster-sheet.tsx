@@ -31,25 +31,6 @@ interface SheetProps {
   tabs: boolean;
 }
 
-/**
- * The Billanta mark without its gradient and "paid" dot: a flat indigo tile
- * survives a black-and-white printer and keeps the poster to one accent.
- */
-function FlatMark() {
-  return (
-    <svg viewBox="0 0 32 32" aria-hidden="true" className={s.mark}>
-      <rect width="32" height="32" rx="7" fill="#4f46e5" />
-      <path
-        d="M10.5 7.5h6.3a4.25 4.25 0 0 1 0 8.5H10.5zM10.5 16h7.4a4.5 4.5 0 0 1 0 9h-7.4z"
-        fill="none"
-        stroke="#fff"
-        strokeWidth="2.8"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 function Qr({ svg, className }: { svg: string; className?: string }) {
   return <div className={className} dangerouslySetInnerHTML={{ __html: svg }} />;
 }
@@ -74,7 +55,8 @@ function Sheet({ copy, size, qrSvg, url, host, promo, tabs }: SheetProps) {
       <div className={s.body}>
         <header className={s.top}>
           <span className={s.brand}>
-            <FlatMark />
+            {/* eslint-disable-next-line @next/next/no-img-element -- printed sheet, a fixed-size file */}
+            <img src="/brand/mark.png" alt="" aria-hidden="true" className={s.mark} />
             {copy.brand}
           </span>
           <span className={s.eyebrow}>{copy.eyebrow}</span>

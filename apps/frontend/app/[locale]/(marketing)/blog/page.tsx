@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { NewsletterSignup } from '@/components/newsletter-signup';
+import { normalizeDashes } from '@/components/blog-markdown';
 import { fetchBlogPosts, formatBlogDate } from '@/lib/blog';
 import { breadcrumbLd, jsonLd, NOINDEX, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
@@ -26,7 +27,7 @@ export default async function BlogIndexPage({ params }: { params: Promise<{ loca
   const posts = await fetchBlogPosts(locale);
 
   return (
-    <section className="container max-w-3xl py-10 sm:py-14">
+    <section className="container max-w-3xl py-12 sm:py-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd(
@@ -37,24 +38,23 @@ export default async function BlogIndexPage({ params }: { params: Promise<{ loca
         )}
       />
       <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t('title')}</h1>
-      <p className="mt-3 text-base text-muted-foreground sm:text-lg">{t('lead')}</p>
+      <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{t('lead')}</p>
 
       {posts.length === 0 ? (
         <p className="mt-8 rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">{t('empty')}</p>
       ) : (
-        <ul className="mt-8 space-y-4">
+        <ul className="mt-8 space-y-3">
           {posts.map((p) => (
             <li key={p.slug}>
-              <Link href={`/blog/${p.slug}`} className="group block rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary">
+              <Link href={`/blog/${p.slug}`} className="group block rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/40">
                 <time dateTime={p.publishedAt} className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {formatBlogDate(locale, p.publishedAt)}
                 </time>
-                <h2 className="mt-1 text-lg font-bold group-hover:text-primary">{p.title}</h2>
-                <p className="mt-2 text-sm text-muted-foreground">{p.description}</p>
-                <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary">
-                  {t('read')}
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-                </span>
+                <h2 className="mt-1 flex items-start justify-between gap-2 text-lg font-bold leading-snug group-hover:text-primary">
+                  {normalizeDashes(p.title)}
+                  <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" aria-hidden="true" />
+                </h2>
+                <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted-foreground">{normalizeDashes(p.description)}</p>
               </Link>
             </li>
           ))}

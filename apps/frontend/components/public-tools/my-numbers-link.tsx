@@ -4,6 +4,8 @@ import { ArrowRight } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 /**
  * "Otevřít s mými čísly" on a public calculator: for a signed-in visitor, a
@@ -20,7 +22,7 @@ export function MyNumbersLink({ href }: { href: string }) {
       <p className="text-sm text-muted-foreground">{t('hint')}</p>
       <Link
         href={href}
-        className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90"
+        className={cn(buttonClass.primary, 'shrink-0')}
       >
         {t('cta')}
         <ArrowRight className="h-4 w-4" aria-hidden="true" />

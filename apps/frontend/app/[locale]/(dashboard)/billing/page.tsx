@@ -3,6 +3,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { auth } from '@/auth';
 import { redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
+import { InfoHint } from '@/components/info-hint';
 import { backendMessage } from '@/lib/action-error';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
 import { CARD_TRIAL_DAYS } from '@/lib/plan';
@@ -69,8 +70,9 @@ export default async function BillingPage({ searchParams }: { searchParams: Prom
 
   return (
     <div className="mx-auto max-w-3xl">
-      <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
-      <p className="mt-1 text-sm text-muted-foreground">{t('description')}</p>
+      <InfoHint hint={t('description')}>
+        <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
+      </InfoHint>
       {checkout === 'success' && <Banner tone="ok" title={t('checkoutSuccess')} className="mt-4" />}
       {checkout === 'canceled' && <Banner tone="info" title={t('checkoutCanceled')} className="mt-4" />}
       {trialCard?.ok && <Banner tone="ok" title={t('trialCard.extended', { days: CARD_TRIAL_DAYS })} className="mt-4" />}

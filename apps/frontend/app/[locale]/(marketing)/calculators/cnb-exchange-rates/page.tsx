@@ -85,7 +85,7 @@ export default async function FxPage({ params, searchParams }: Props) {
       validity={listDate ? t('listDate', { date: listDate }) : undefined}
       after={
         data && (
-          <div className="max-w-xl overflow-x-auto rounded-xl border border-border bg-card p-5">
+          <div className="max-w-xl overflow-x-auto rounded-xl border border-border bg-card p-4 sm:p-5">
             <h2 className="font-semibold">
               {t('tableTitle')}
               {listDate && <span className="font-normal text-muted-foreground"> · {listDate}</span>}
@@ -128,7 +128,7 @@ export default async function FxPage({ params, searchParams }: Props) {
       {data ? (
         <FxConverter rates={data.rates} />
       ) : (
-        <p className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">{t('unavailable')}</p>
+        <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground sm:p-5">{t('unavailable')}</p>
       )}
     </CalculatorPage>
   );

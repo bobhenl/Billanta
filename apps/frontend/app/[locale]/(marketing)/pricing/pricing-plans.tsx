@@ -1,10 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Gift, Minus } from 'lucide-react';
+import { Check, ChevronDown, Gift, Minus } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
+import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 import { PAYG_PRICE, transferPrice, type Plan, type PlanCurrency } from '@/lib/plans';
+
+/** The card names the five things that decide a plan; the table below has the rest. */
+const CARD_FEATURES = 5;
 
 export type PlanCopy = { name: string; tagline: string; cta: string; features: string[] };
 
@@ -32,6 +36,8 @@ type Labels = {
   /** Contains `{payg}`, replaced with the per-document price. */
   paygNote: string;
   aiCreditNote: string;
+  /** Further one-line notes under the cards (trial terms, VAT). */
+  notes: string[];
   /** Contains `{price}`, replaced with the per-month bank-transfer price. */
   transferPrice: string;
 };
@@ -74,7 +80,8 @@ export function PricingPlans({
 
   return (
     <>
-      <div className="mt-6 flex flex-wrap items-center gap-3">
+      {/* Tighter on a phone so both switches stay on one row instead of stacking. */}
+      <div className="mt-6 flex flex-wrap items-center gap-2 sm:gap-3">
         <Segmented
           label={labels.period}
           value={yearly ? 'y' : 'm'}
@@ -130,7 +137,7 @@ export function PricingPlans({
                 {free || currency !== 'CZK' ? '' : labels.transferPrice.replace('{price}', money(transferPrice(shown, currency)))}
               </p>
               <ul className="mt-4 flex-1 space-y-1.5 text-sm">
-                {text.features.map((feature) => (
+                {text.features.slice(0, CARD_FEATURES).map((feature) => (
                   <li key={feature} className="flex items-start gap-2">
                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
                     <span>{payg(feature)}</span>
@@ -139,10 +146,7 @@ export function PricingPlans({
               </ul>
               <Link
                 href={free ? '/signup' : `/signup?plan=${plan.key}`}
-                className={cn(
-                  'mt-5 inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-bold transition-opacity hover:opacity-90',
-                  plan.popular ? 'bg-primary text-primary-foreground' : 'border border-border text-foreground hover:border-primary/40'
-                )}
+                className={cn(plan.popular ? buttonClass.primary : buttonClass.secondary, 'mt-5 px-5 py-2.5')}
               >
                 {text.cta}
               </Link>
@@ -157,64 +161,72 @@ export function PricingPlans({
         })}
       </div>
 
-      <div className="mt-4 space-y-1 text-sm text-muted-foreground">
-        <p>{payg(labels.paygNote)}</p>
-        <p>{labels.aiCreditNote}</p>
-      </div>
+      <ul className="mt-4 max-w-3xl space-y-1 text-sm text-muted-foreground">
+        {[payg(labels.paygNote), labels.aiCreditNote, ...labels.notes].map((note) => (
+          <li key={note}>{note}</li>
+        ))}
+      </ul>
 
-      <h2 className="mt-12 text-xl font-bold tracking-tight">{comparison.title}</h2>
-      {/* Scrolls sideways on its own on a phone; the feature column stays put. */}
-      <div className="mt-4 overflow-x-auto rounded-2xl border border-border bg-card">
-        <table className="w-full min-w-[640px] text-sm">
-          <thead>
-            <tr className="border-b border-border">
-              <th scope="col" className="sticky left-0 bg-card px-4 py-3 text-left font-semibold">
-                {comparison.feature}
-              </th>
-              {plans.map((plan) => (
-                <th
-                  key={plan.key}
-                  scope="col"
-                  className={cn('px-3 py-3 text-center font-bold', plan.popular && 'text-primary')}
-                >
-                  {copy[plan.key]?.name}
+      {/* Closed by default: most visitors decide from the cards. The table stays
+          in the DOM, so it is still crawlable and one tap away. */}
+      <details className="group mt-10">
+        <summary className="inline-flex cursor-pointer list-none items-center gap-2 text-xl font-bold tracking-tight [&::-webkit-details-marker]:hidden">
+          {comparison.title}
+          <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
+        </summary>
+        {/* Scrolls sideways on its own on a phone; the feature column stays put. */}
+        <div className="mt-4 overflow-x-auto rounded-2xl border border-border bg-card">
+          <table className="w-full min-w-[640px] text-sm">
+            <thead>
+              <tr className="border-b border-border">
+                <th scope="col" className="sticky left-0 bg-card px-4 py-3 text-left font-semibold">
+                  {comparison.feature}
                 </th>
-              ))}
-            </tr>
-          </thead>
-          {comparison.groups.map((group) => (
-            <tbody key={group.label}>
-              <tr className="bg-muted/50">
-                <th
-                  scope="colgroup"
-                  colSpan={plans.length + 1}
-                  className="sticky left-0 px-4 py-2 text-left text-xs font-bold uppercase tracking-wide text-muted-foreground"
-                >
-                  {group.label}
-                </th>
-              </tr>
-              {group.rows.map((row) => (
-                <tr key={row.label} className="border-t border-border/60">
-                  <th scope="row" className="sticky left-0 bg-card px-4 py-2.5 text-left font-normal">
-                    {row.label}
+                {plans.map((plan) => (
+                  <th
+                    key={plan.key}
+                    scope="col"
+                    className={cn('px-3 py-3 text-center font-bold', plan.popular && 'text-primary')}
+                  >
+                    {copy[plan.key]?.name}
                   </th>
-                  {row.cells.map((cell, i) => (
-                    <td key={i} className={cn('px-3 py-2.5 text-center', plans[i]?.popular && 'bg-primary/[0.04]')}>
-                      {cell === true ? (
-                        <Check className="mx-auto h-4 w-4 text-primary" aria-label={comparison.yes} />
-                      ) : cell === false ? (
-                        <Minus className="mx-auto h-4 w-4 text-muted-foreground/50" aria-label={comparison.no} />
-                      ) : (
-                        <span className="text-xs font-medium sm:text-sm">{payg(cell)}</span>
-                      )}
-                    </td>
-                  ))}
+                ))}
+              </tr>
+            </thead>
+            {comparison.groups.map((group) => (
+              <tbody key={group.label}>
+                <tr className="bg-muted/50">
+                  <th
+                    scope="colgroup"
+                    colSpan={plans.length + 1}
+                    className="sticky left-0 px-4 py-2 text-left text-xs font-bold uppercase tracking-wide text-muted-foreground"
+                  >
+                    {group.label}
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          ))}
-        </table>
-      </div>
+                {group.rows.map((row) => (
+                  <tr key={row.label} className="border-t border-border/60">
+                    <th scope="row" className="sticky left-0 bg-card px-4 py-2.5 text-left font-normal">
+                      {row.label}
+                    </th>
+                    {row.cells.map((cell, i) => (
+                      <td key={i} className={cn('px-3 py-2.5 text-center', plans[i]?.popular && 'bg-primary/[0.04]')}>
+                        {cell === true ? (
+                          <Check className="mx-auto h-4 w-4 text-primary" aria-label={comparison.yes} />
+                        ) : cell === false ? (
+                          <Minus className="mx-auto h-4 w-4 text-muted-foreground/50" aria-label={comparison.no} />
+                        ) : (
+                          <span className="text-xs font-medium sm:text-sm">{payg(cell)}</span>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            ))}
+          </table>
+        </div>
+      </details>
     </>
   );
 }
@@ -240,7 +252,7 @@ function Segmented({
           aria-checked={value === option.value}
           onClick={() => onChange(option.value)}
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-semibold transition-colors',
+            'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 font-semibold transition-colors sm:px-3',
             value === option.value ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
           )}
         >

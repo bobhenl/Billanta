@@ -36,5 +36,5 @@ export function DismissableDetails(props: ComponentProps<'details'>) {
     };
   }, []);
 
-  return <details ref={ref} {...props} />;
+  return <details ref={ref} data-menu {...props} />;
 }

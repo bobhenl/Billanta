@@ -3,9 +3,11 @@ import { parseCnbRates } from "./cnb-rates";
 import {
   classifyIssued,
   generateDphDp3,
+  generateDphDp3Identified,
   generateDphKh1,
   generateDphShv,
   submitterFromTenant,
+  supplierOrigin,
   type VatIssuedDoc,
   type VatReceivedDoc,
 } from "./vat-returns";
@@ -257,5 +259,67 @@ describe("parseCnbRates", () => {
     const rates = parseCnbRates("01.10.2026 #190\nzemě|měna|množství|kód|kurz\nEMU|euro|1|EUR|24,330\nJaponsko|jen|100|JPY|15,512\n");
     expect(rates.get("EUR")).toBe(24.33);
     expect(rates.get("JPY")).toBeCloseTo(0.15512);
+  });
+});
+
+describe("generateDphDp3Identified", () => {
+  // Google Ireland ads (EU, 21 %), an EU e-book licence (12 %), a US tool (outside the EU),
+  // a Czech supplier (nothing to report) and an Irish invoice entered without reverse charge.
+  const google = received({ number: "IE-55", supplierDic: "IE6388047V", reverseCharge: true, parts: [{ ratePercent: 21, base: 1000, vat: 210 }], totalCzk: 1210 });
+  const ebook = received({ number: "DE-7", supplierDic: null, supplierCountry: "DE", reverseCharge: true, parts: [{ ratePercent: 12, base: 500, vat: 60 }], totalCzk: 560 });
+  const us = received({ number: "US-1", supplierDic: null, supplierCountry: "US", reverseCharge: true, parts: [{ ratePercent: 21, base: 300, vat: 63 }], totalCzk: 363 });
+  const czech = received({});
+  const unmarked = received({ number: "IE-56", supplierDic: "IE6388047V", parts: [], totalCzk: 0 });
+  const euSale = issued({ number: "2026-010", customerDic: "DE123456789", customerCountry: "DE", parts: [{ ratePercent: 0, base: 5000, vat: 0 }], totalCzk: 5000 });
+  const domesticSale = issued({ number: "2026-011", customerDic: null, parts: [{ ratePercent: 0, base: 7000, vat: 0 }], totalCzk: 7000 });
+
+  const run = (r: VatReceivedDoc[], i: VatIssuedDoc[] = []) => generateDphDp3Identified({ issued: i, received: r, submitter, period, today });
+
+  it("files as typ_platce I with the self-assessed EU services on ř. 5/6 and third-country ones on ř. 12/13", () => {
+    const { xml, warnings } = run([google, ebook, us, czech], [euSale, domesticSale]);
+    expect(xml).toMatch(DISCLAIMED);
+    expect(xml).toContain('typ_platce="I"');
+    expect(xml).not.toContain('typ_platce="P"');
+    expect(xml).toContain('<Veta1 p_sl23_e="1000" dan_psl23_e="210" p_sl5_e="500" dan_psl5_e="60" p_sl23_z="300" dan_psl23_z="63" />');
+    // Services to an EU business on ř. 21; the domestic non-VAT sale is not in the return.
+    expect(xml).toContain('<Veta2 pln_sluzby="5000" />');
+    expect(xml).not.toContain("7000");
+    // The Czech supplier's invoice is neither tax nor a deduction.
+    expect(xml).not.toContain("obrat23");
+    expect(xml).not.toContain("10000");
+    expect(warnings).toEqual([]);
+  });
+
+  it("claims no deduction: no Veta4 and the whole tax is due", () => {
+    const { xml } = run([google, ebook, us]);
+    expect(xml).not.toContain("<Veta4");
+    expect(xml).not.toContain("odp_tuz");
+    expect(xml).not.toContain("nar_zdp");
+    expect(xml).toContain('<Veta6 dan_zocelk="333" odp_zocelk="0" dano_da="333" dano_no="0" />');
+  });
+
+  it("returns nothing for a month without a foreign purchase or EU sale", () => {
+    expect(run([czech], [domesticSale]).xml).toBeNull();
+  });
+
+  it("files an EU-sales-only month with ř. 21 and no tax", () => {
+    const { xml } = run([], [euSale]);
+    expect(xml).not.toContain("<Veta1");
+    expect(xml).toContain('<Veta6 dan_zocelk="0" odp_zocelk="0" dano_da="0" dano_no="0" />');
+  });
+
+  it("warns about a foreign purchase not marked as reverse charge with a rate", () => {
+    const { xml, warnings } = run([google, unmarked]);
+    expect(warnings).toEqual([{ code: "foreign_purchase_unmarked", document: "IE-56" }]);
+    expect(xml).toContain('p_sl23_e="1000"');
+  });
+});
+
+describe("supplierOrigin", () => {
+  it("prefers the DIČ prefix over the contact country", () => {
+    expect(supplierOrigin({ supplierDic: "IE6388047V", supplierCountry: "CZ" })).toBe("eu");
+    expect(supplierOrigin({ supplierDic: "CZ12345678", supplierCountry: "IE" })).toBe("domestic");
+    expect(supplierOrigin({ supplierDic: null, supplierCountry: "us" })).toBe("third_country");
+    expect(supplierOrigin({ supplierDic: null, supplierCountry: null })).toBe("domestic");
   });
 });

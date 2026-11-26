@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Banner } from '@/components/banner';
 import { FilterField, filterFieldClass as field, FilterPanel } from '@/components/filter-panel';
@@ -6,6 +7,11 @@ import { apiFetch } from '@/lib/api-client';
 import type { InvoiceRow } from '@/lib/invoice-ui';
 import { fetchHomeCurrency } from '@/lib/tenant';
 import { ContactsList, type ContactRow } from './contacts-list';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('contacts');
+  return { title: t('title') };
+}
 
 const KINDS = ['company', 'person'] as const;
 const YES_NO = ['yes', 'no'] as const;

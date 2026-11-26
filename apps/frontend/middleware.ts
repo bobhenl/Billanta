@@ -1,5 +1,6 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextResponse, type NextRequest } from 'next/server';
+import { LOCALE_PATTERN, unindexedLocaleOfPath } from './i18n/locales';
 import { routing } from './i18n/routing';
 import { ATTRIBUTION_COOKIE } from './lib/attribution';
 import { CONSENT_COOKIE, parseConsent } from './lib/consent';
@@ -22,6 +23,7 @@ const intl = createMiddleware(routing);
 const intlNoCookie = createMiddleware({ ...routing, localeCookie: false });
 const SLUG = /^[a-z0-9](?:[a-z0-9-]{1,38}[a-z0-9])$/;
 const NOT_PROFILES = new Set(['www', 'app', 'api']);
+const PROFILE_ROOT = new RegExp(`^/(?:(${LOCALE_PATTERN})/?)?$`);
 
 /**
  * `<slug>.<NEXT_PUBLIC_PROFILE_DOMAIN>` → the public company profile
@@ -35,7 +37,7 @@ function profileRewrite(request: NextRequest) {
   if (!host.endsWith(`.${PROFILE_DOMAIN}`)) return null;
   const slug = host.slice(0, -PROFILE_DOMAIN.length - 1);
   if (!SLUG.test(slug) || NOT_PROFILES.has(slug)) return null;
-  const match = request.nextUrl.pathname.match(/^\/(?:(cs|sk|en)\/?)?$/);
+  const match = request.nextUrl.pathname.match(PROFILE_ROOT);
   if (!match) return NextResponse.redirect(new URL(request.nextUrl.pathname + request.nextUrl.search, SITE_URL), 308);
   const url = request.nextUrl.clone();
   url.pathname = `/${match[1] ?? routing.defaultLocale}/p/${slug}`;
@@ -51,7 +53,7 @@ function profileRewrite(request: NextRequest) {
  * functional. 30 days is the longest a signup reasonably follows the link.
  */
 const LINK_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
-const SIGNUP_PATH = /^\/(?:(?:cs|sk|en)\/)?signup\/?$/;
+const SIGNUP_PATH = new RegExp(`^/(?:(?:${LOCALE_PATTERN})/)?signup/?$`);
 
 function setLinkCookie(request: NextRequest, response: NextResponse, name: string, value: string) {
   response.cookies.set(name, value, {
@@ -143,9 +145,19 @@ function privateIfSettingCookies(response: NextResponse) {
   return response;
 }
 
+/**
+ * A locale still being translated (`indexed: false` in i18n/locales.ts) is
+ * half English, so none of its pages may be indexed. The header covers
+ * every page, also those whose metadata sets no `robots` of its own.
+ */
+function noindexUnfinishedLocale(request: NextRequest, response: NextResponse) {
+  if (unindexedLocaleOfPath(request.nextUrl.pathname)) response.headers.set('X-Robots-Tag', 'noindex, follow');
+  return response;
+}
+
 export default function middleware(request: NextRequest) {
   const locale = request.headers.get('cookie')?.trim() ? intl : intlNoCookie;
-  const response = profileRewrite(request) ?? markJoinLocale(request, locale(request));
+  const response = noindexUnfinishedLocale(request, profileRewrite(request) ?? markJoinLocale(request, locale(request)));
   return privateIfSettingCookies(rememberSwitchSource(request, forgetRefusedAttribution(request, rememberPromo(request, rememberReferral(request, response)))));
 }
 

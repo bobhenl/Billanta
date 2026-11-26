@@ -1,5 +1,30 @@
 import { describe, expect, it } from "vitest";
-import { htmlToText, renderNotificationEmail } from "./email-render";
+import { appUrlOf, emailLocaleOf, htmlToText, renderNotificationEmail } from "./email-render";
+
+describe("emailLocaleOf", () => {
+  it("keeps cs, sk and en, reads other app locales as English and a missing one as Czech", () => {
+    expect(emailLocaleOf("cs")).toBe("cs");
+    expect(emailLocaleOf("sk")).toBe("sk");
+    expect(emailLocaleOf("en")).toBe("en");
+    expect(emailLocaleOf("SK-sk")).toBe("sk");
+    expect(emailLocaleOf("de")).toBe("en");
+    expect(emailLocaleOf("pl")).toBe("en");
+    expect(emailLocaleOf(null)).toBe("cs");
+    expect(emailLocaleOf(undefined)).toBe("cs");
+    expect(emailLocaleOf(" ")).toBe("cs");
+  });
+});
+
+describe("appUrlOf", () => {
+  it("prefixes app links with the e-mail's locale once", () => {
+    expect(appUrlOf("https://x.cz/", "sk", "/invite/t")).toBe("https://x.cz/sk/invite/t");
+    expect(appUrlOf("https://x.cz", "en", "invoices/1")).toBe("https://x.cz/en/invoices/1");
+    expect(appUrlOf("https://x.cz", "en", "/cs/invoices/1")).toBe("https://x.cz/cs/invoices/1");
+    expect(appUrlOf("https://x.cz", "sk", "/cs?x=1")).toBe("https://x.cz/cs?x=1");
+    // "/csv-export" only starts with the letters of a locale.
+    expect(appUrlOf("https://x.cz", "sk", "/csv-export")).toBe("https://x.cz/sk/csv-export");
+  });
+});
 
 const item = (title: string, extra: Partial<{ kind: string; body: string; url: string }> = {}) => ({
   kind: extra.kind ?? "invoice_paid",

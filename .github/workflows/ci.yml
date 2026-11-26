@@ -33,7 +33,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, security-audit-fixes]
   pull_request:
 
 jobs:
@@ -71,6 +71,9 @@ jobs:
         env:
           DATABASE_URL: postgres://build:build@127.0.0.1:1/build
           NEXT_TELEMETRY_DISABLED: '1'
+
+      - name: Test backend (vitest)
+        run: pnpm --filter @faktur/backend test
 
       - name: Test cz-compliance (vitest)
         run: pnpm --filter @faktur/cz-compliance test

@@ -1,7 +1,7 @@
 'use client';
 
 import { type FormEvent, useState, useTransition } from 'react';
-import { Building2, Check, Plus } from 'lucide-react';
+import { Check, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
@@ -9,6 +9,8 @@ import { useLeaveOffline } from '@/components/offline-sync';
 import { InfoHint } from '@/components/info-hint';
 import type { CurrentTenant } from '@/lib/api-client';
 import { createTenant, switchTenant } from '@/lib/tenant-actions';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 // Mirrors MAX_OWNED_TENANTS in apps/backend/src/me/me.service.ts.
 const MAX_OWNED = 10;
@@ -60,18 +62,17 @@ export function CompaniesManager({ companies, activeId }: { companies: CurrentTe
           {companies.map((company) => {
             const active = company.id === activeId;
             return (
-              <li key={company.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Building2 className="h-4 w-4" />
-                </span>
+              <li key={company.id} className="flex items-center gap-3 px-4 py-3 sm:px-5">
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold">{company.companyName}</p>
+                  <p className="truncate font-semibold" title={company.companyName}>
+                    {company.companyName}
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     {t(`roles.${ROLES.includes(company.role) ? company.role : 'viewer'}` as 'roles.owner')}
                   </p>
                 </div>
                 {active ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                  <span className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-primary">
                     <Check className="h-3.5 w-3.5" />
                     {t('active')}
                   </span>
@@ -80,7 +81,7 @@ export function CompaniesManager({ companies, activeId }: { companies: CurrentTe
                     type="button"
                     disabled={pending}
                     onClick={() => handleSwitch(company.id)}
-                    className="rounded-md border border-border px-3 py-1.5 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-50"
+                    className={cn(buttonClass.secondary, 'shrink-0 py-1.5')}
                   >
                     {t('switch')}
                   </button>
@@ -91,7 +92,7 @@ export function CompaniesManager({ companies, activeId }: { companies: CurrentTe
         </ul>
       </section>
 
-      <section id="new" className="rounded-xl border border-border bg-card p-4">
+      <section id="new" className="rounded-xl border border-border bg-card p-4 sm:p-5">
         <InfoHint hint={t('add.hint', { max: MAX_OWNED })}>
           <h2 className="font-bold">{t('add.title')}</h2>
         </InfoHint>
@@ -114,7 +115,7 @@ export function CompaniesManager({ companies, activeId }: { companies: CurrentTe
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 placeholder={t('add.namePlaceholder')}
-                className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
+                className={inputClass}
               />
               <p id="companyNameHint" className="text-xs text-muted-foreground">{t('add.nameHint')}</p>
             </div>
@@ -144,7 +145,7 @@ export function CompaniesManager({ companies, activeId }: { companies: CurrentTe
             <button
               type="submit"
               disabled={pending || !tos || !name.trim()}
-              className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+              className={buttonClass.primary}
             >
               <Plus className="h-4 w-4" />
               {pending ? t('add.creating') : t('add.submit')}

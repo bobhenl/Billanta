@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ExternalLink, Trash2, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { InfoHint } from '@/components/info-hint';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import type { ClassDetail } from '@/lib/classroom';
@@ -95,8 +96,9 @@ export function ClassGroups({
   return (
     <>
       <section className="rounded-xl border border-border bg-card p-4">
-        <h2 className="font-bold">{t('teams.title')}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{t('teams.body')}</p>
+        <InfoHint hint={t('teams.body')}>
+          <h2 className="font-bold">{t('teams.title')}</h2>
+        </InfoHint>
         {detail.teams.length === 0 ? (
           <p className="mt-2 text-sm text-muted-foreground">{t('teams.empty')}</p>
         ) : (
@@ -167,8 +169,9 @@ export function ClassGroups({
       </section>
 
       <section className="rounded-xl border border-border bg-card p-4">
-        <h2 className="font-bold">{t('companies.title')}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{t('companies.body')}</p>
+        <InfoHint hint={t('companies.body')}>
+          <h2 className="font-bold">{t('companies.title')}</h2>
+        </InfoHint>
         {detail.companies.length === 0 ? (
           <p className="mt-2 text-sm text-muted-foreground">{t('companies.empty')}</p>
         ) : (
@@ -231,8 +234,9 @@ export function ClassGroups({
           </button>
         </div>
 
-        <h3 className="mt-5 text-sm font-bold">{t('partners.title')}</h3>
-        <p className="mt-1 text-sm text-muted-foreground">{t('partners.body')}</p>
+        <InfoHint hint={t('partners.body')} className="mt-5">
+          <h3 className="text-sm font-bold">{t('partners.title')}</h3>
+        </InfoHint>
         <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           {companySelect(partnerA, setPartnerA, t('partners.a'))}
           {companySelect(partnerB, setPartnerB, t('partners.b'))}
@@ -248,8 +252,9 @@ export function ClassGroups({
       </section>
 
       <section className="rounded-xl border border-border bg-card p-4">
-        <h2 className="font-bold">{t('accountants.title')}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{t('accountants.body')}</p>
+        <InfoHint hint={t('accountants.body')}>
+          <h2 className="font-bold">{t('accountants.title')}</h2>
+        </InfoHint>
         {detail.accountants.length === 0 ? (
           <p className="mt-2 text-sm text-muted-foreground">{t('accountants.empty')}</p>
         ) : (

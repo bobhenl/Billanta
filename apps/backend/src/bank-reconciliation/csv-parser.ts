@@ -1,4 +1,6 @@
 import { BadRequestException } from "@nestjs/common";
+import { CURRENCY_PATTERN, normalizeHeader, nullIfEmpty, parseAmount, parseDate } from "./csv-values";
+import { detectFintechFormat, type FintechFormat } from "./fintech-csv";
 
 /**
  * The bank-statement CSV formats this module accepts – see
@@ -8,8 +10,9 @@ import { BadRequestException } from "@nestjs/common";
  * on top of that the usual CZ/SK bank exports are recognised by their
  * column names (Fio, ČSOB, KB, Raiffeisen, Tatra banka…), with `;` or tab
  * delimiters, DD.MM.YYYY dates, decimal commas and a few preamble lines
- * before the header. Anything else needs a small conversion to the plain
- * format.
+ * before the header. The CSV exports of Wise, Revolut and Stripe have their
+ * own rules (`fintech-csv.ts`). Anything else needs a small conversion to
+ * the plain format.
  */
 export interface ParsedBankTransactionRow {
   transactionDate: Date;
@@ -22,6 +25,17 @@ export interface ParsedBankTransactionRow {
   counterpartyName: string | null;
   /** The payer's note, when the source has one. */
   message?: string | null;
+  /** Constant and specific symbol, digits only, when the source has them. */
+  constantSymbol?: string | null;
+  specificSymbol?: string | null;
+}
+
+/** A CSV row; the Wise / Revolut / Stripe exports also carry an id and a fee. */
+export interface ParsedCsvRow extends ParsedBankTransactionRow {
+  /** Provider-prefixed transaction id from the export, e.g. "revolut:<id>:EUR". */
+  externalId?: string | null;
+  /** Fee the provider kept, positive decimal string in `currency`. */
+  fee?: string | null;
 }
 
 /**
@@ -44,6 +58,8 @@ const COLUMN_ALIASES = {
   amount: ["amount", "objem", "castka", "suma", "zauctovana castka", "castka v mene uctu", "objem transakcie"],
   currency: ["currency", "mena"],
   variableSymbol: ["variable_symbol", "vs", "variabilni symbol", "variabilny symbol", "variable symbol"],
+  constantSymbol: ["constant_symbol", "ks", "konstantni symbol", "konstantny symbol", "constant symbol"],
+  specificSymbol: ["specific_symbol", "ss", "specificky symbol", "specific symbol"],
   counterpartyAccount: [
     "counterparty_account",
     "protiucet",
@@ -59,10 +75,12 @@ const COLUMN_ALIASES = {
     "nazov protiuctu",
     "nazev uctu protistrany",
     "nazov uctu protistrany",
+    "jmeno protistrany",
+    "meno protistrany",
     "protistrana",
     "counterparty name",
   ],
-  bankCode: ["kod banky", "bank code"],
+  bankCode: ["kod banky", "kod banky protiuctu", "bank code"],
   message: ["message", "zprava pro prijemce", "sprava pre prijemcu", "zprava", "sprava", "poznamka", "popis transakcie"],
 } as const;
 
@@ -76,9 +94,6 @@ const REQUIRED_COLUMNS: Column[] = ["date", "amount", "currency"];
  * exports (Fio especially) start with a few lines of account details. */
 const MAX_PREAMBLE_LINES = 30;
 
-const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})/;
-const DOTTED_DATE = /^(\d{1,2})\.\s?(\d{1,2})\.\s?(\d{4})/;
-const CURRENCY_PATTERN = /^[A-Z]{3}$/;
 /** Matches `invoices.variableSymbol`'s `varchar(10)` column — validated here
  * so a too-long value fails with a clear CSV-row error instead of a raw
  * Postgres string-truncation error deep in the insert. */
@@ -103,7 +118,7 @@ export function decodeBankStatement(buffer: Buffer): string {
  * transaction (see `TenantContextMiddleware`) would roll back anyway if it
  * didn't).
  */
-export function parseBankStatementCsv(content: string): ParsedBankTransactionRow[] {
+export function parseBankStatementCsv(content: string): ParsedCsvRow[] {
   // Bank-exported CSVs are commonly saved with a UTF-8 BOM (especially from
   // Windows-based banking software) — strip it rather than let it corrupt
   // the first header cell's name.
@@ -119,7 +134,11 @@ export function parseBankStatementCsv(content: string): ParsedBankTransactionRow
   let columns = mapColumns(splitCsvLine(lines[0], delimiter));
   for (let i = 0; i < Math.min(lines.length, MAX_PREAMBLE_LINES); i++) {
     const d = detectDelimiter(lines[i]);
-    const candidate = mapColumns(splitCsvLine(lines[i], d));
+    const headerCells = splitCsvLine(lines[i], d);
+    const headers = headerCells.map(normalizeHeader);
+    const fintech = detectFintechFormat(headers);
+    if (fintech) return parseFintechRows(fintech, headers, lines, i, d);
+    const candidate = mapColumns(headerCells);
     if (candidate.date !== undefined && candidate.amount !== undefined) {
       headerLine = i;
       delimiter = d;
@@ -202,9 +221,21 @@ export function parseBankStatementCsv(content: string): ParsedBankTransactionRow
       counterpartyAccount,
       counterpartyName: nullIfEmpty(cell("counterpartyName")),
       message: nullIfEmpty(cell("message")),
+      constantSymbol: paymentSymbol(cell("constantSymbol"), 4),
+      specificSymbol: paymentSymbol(cell("specificSymbol"), 10),
     });
   }
 
+  return finish(rows, errors);
+}
+
+/** KS (4 digits) or SS (10) as an invoice can carry it; anything else is dropped, not an error. */
+export function paymentSymbol(raw: string | null | undefined, maxDigits: number): string | null {
+  const value = raw?.trim() ?? "";
+  return /^\d+$/.test(value) && value.length <= maxDigits && !/^0+$/.test(value) ? value : null;
+}
+
+function finish(rows: ParsedCsvRow[], errors: string[], skipped = 0): ParsedCsvRow[] {
   if (errors.length > 0) {
     throw new BadRequestException({
       message: "CSV contains invalid rows – no rows were imported",
@@ -213,24 +244,44 @@ export function parseBankStatementCsv(content: string): ParsedBankTransactionRow
   }
 
   if (rows.length === 0) {
-    throw new BadRequestException("CSV has a valid header but no data rows");
+    throw new BadRequestException(
+      skipped > 0
+        ? "CSV has no completed payments (only cancelled, pending or internal conversion rows)"
+        : "CSV has a valid header but no data rows",
+    );
   }
 
   return rows;
 }
 
-function nullIfEmpty(value: string | undefined): string | null {
-  const trimmed = (value ?? "").trim();
-  return trimmed.length > 0 ? trimmed : null;
-}
-
-function normalizeHeader(cell: string): string {
-  return cell
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .trim();
+/** Rows of a Wise / Revolut / Stripe export, read by the provider's own rules. */
+function parseFintechRows(
+  format: FintechFormat,
+  headers: string[],
+  lines: string[],
+  headerLine: number,
+  delimiter: string,
+): ParsedCsvRow[] {
+  const rows: ParsedCsvRow[] = [];
+  const errors: string[] = [];
+  let skipped = 0;
+  for (let i = headerLine + 1; i < lines.length; i++) {
+    const cells = splitCsvLine(lines[i], delimiter);
+    if (cells.every((value) => value.trim() === "")) continue;
+    const cell = (...names: string[]) => {
+      for (const name of names) {
+        const idx = headers.indexOf(name);
+        const value = idx >= 0 ? (cells[idx] ?? "").trim() : "";
+        if (value) return value;
+      }
+      return "";
+    };
+    const result = format.parseRow(cell, headers);
+    if ("error" in result) errors.push(`Line ${i + 1}: ${result.error}`);
+    else if ("skip" in result) skipped++;
+    else rows.push(result.row);
+  }
+  return finish(rows, errors, skipped);
 }
 
 function mapColumns(headerCells: string[]): Partial<Record<Column, number>> {
@@ -254,43 +305,6 @@ function detectDelimiter(line: string): string {
   }
   const [best, count] = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
   return count > 0 ? best : ",";
-}
-
-function parseDate(raw: string): Date | null {
-  let year: number;
-  let month: number;
-  let day: number;
-  const iso = ISO_DATE.exec(raw);
-  const dotted = DOTTED_DATE.exec(raw);
-  if (iso) {
-    [year, month, day] = [Number(iso[1]), Number(iso[2]), Number(iso[3])];
-  } else if (dotted) {
-    [day, month, year] = [Number(dotted[1]), Number(dotted[2]), Number(dotted[3])];
-  } else {
-    return null;
-  }
-  const date = new Date(Date.UTC(year, month - 1, day));
-  // Rejects 31.02. and similar, which Date would silently roll over.
-  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) return null;
-  return date;
-}
-
-/**
- * Accepts "1500.00", "-450,50", "1 500,00", "1.500,00" and "1,500.00"; a
- * trailing currency code ("1500,00 CZK") is ignored.
- */
-function parseAmount(raw: string): string | null {
-  let value = raw.replace(/[\s  ]/g, "").replace(/[A-Za-z]{3}$/, "");
-  if (value === "") return null;
-  const lastComma = value.lastIndexOf(",");
-  const lastDot = value.lastIndexOf(".");
-  if (lastComma > lastDot) {
-    value = value.replace(/\./g, "").replace(",", ".");
-  } else if (lastComma >= 0) {
-    value = value.replace(/,/g, "");
-  }
-  if (!/^[+-]?\d+(\.\d+)?$/.test(value)) return null;
-  return Number(value).toFixed(2);
 }
 
 /**

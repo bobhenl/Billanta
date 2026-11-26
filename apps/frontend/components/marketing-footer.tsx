@@ -22,7 +22,7 @@ const COLUMN = 'footer-column';
 
 /**
  * Public-site footer: a compact link grid that doubles as secondary
- * navigation and as internal linking — every entry is a real, crawlable
+ * navigation and as internal linking – every entry is a real, crawlable
  * `<a>`. One block, as on VoxelRank: the cookie settings and "install app"
  * entries sit in the columns rather than in a second strip underneath, and
  * there is no "© … All rights reserved" line (copyright needs no notice).
@@ -42,13 +42,16 @@ export async function MarketingFooter() {
   const tTemplates = await getTranslations('invoiceTemplates');
   const [locale, partners] = await Promise.all([getLocale(), fetchPartners({ footer: true })]);
 
-  const linkClass = 'text-left text-foreground/80 transition-colors hover:text-primary';
-  const hubClass = 'font-semibold text-primary hover:underline';
+  // One style for every entry, and none coloured like a call to action:
+  // only real links and buttons react on hover. Headings, the tagline and
+  // the partner label stay plain muted text, so nothing looks clickable
+  // that isn't.
+  const linkClass = 'text-left text-foreground/80 underline-offset-4 transition-colors hover:text-foreground hover:underline';
   const featured = FOOTER_CALCULATORS.map((slug) => CALCULATORS.find((c) => c.slug === slug))
     .filter((c): c is Calculator => c != null && isPublishedIn(c, locale))
     .slice(0, FOOTER_CALCULATOR_COUNT);
 
-  const columns: { title: string; links: { href: string; label: string; hub?: boolean }[]; extra?: React.ReactNode }[] = [
+  const columns: { title: string; links: { href: string; label: string }[]; extra?: React.ReactNode }[] = [
     {
       title: t('product.title'),
       links: [
@@ -69,11 +72,11 @@ export async function MarketingFooter() {
         ...featured.map((c) => ({ href: `/calculators/${c.slug}`, label: tTools(`calculators.items.${c.key}.name`) })),
         { href: '/accountants', label: tTools('menu.findAccountant') },
         { href: '/directory', label: tTools('menu.businessDirectory') },
-        { href: '/invoice-templates', label: tTemplates('menu'), hub: true },
-        { href: '/payment-reminder-templates', label: tTools('menu.reminders'), hub: true },
-        { href: '/calculators', label: tTools('common.allCalculators'), hub: true },
-        ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ href: '/guides', label: tTools('common.allGuides'), hub: true }] : []),
-        { href: '/glossary', label: tTools('menu.glossary'), hub: true }
+        { href: '/invoice-templates', label: tTemplates('menu') },
+        { href: '/payment-reminder-templates', label: tTools('menu.reminders') },
+        { href: '/calculators', label: tTools('common.allCalculators') },
+        ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ href: '/guides', label: tTools('common.allGuides') }] : []),
+        { href: '/glossary', label: tTools('menu.glossary') }
       ]
     },
     {
@@ -141,7 +144,7 @@ export async function MarketingFooter() {
                 <ul className="space-y-2 pb-4 text-sm sm:mt-3 sm:pb-0">
                   {column.links.map((link) => (
                     <li key={link.href}>
-                      <Link href={link.href} className={link.hub ? hubClass : linkClass}>
+                      <Link href={link.href} className={linkClass}>
                         {link.label}
                       </Link>
                     </li>
@@ -163,7 +166,7 @@ export async function MarketingFooter() {
                   {p.name}
                 </a>
               ))}
-              <Link href="/partners" className="font-semibold text-primary hover:underline">
+              <Link href="/partners" className={linkClass}>
                 {t('partners.all')}
               </Link>
             </div>

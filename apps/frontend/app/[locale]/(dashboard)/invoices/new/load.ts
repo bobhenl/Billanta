@@ -1,6 +1,6 @@
 import { apiFetch } from '@/lib/api-client';
-import { type BankAccount, bankAccountLine, fetchBankAccounts, fetchTenant } from '@/lib/tenant';
-import { DEFAULT_SHOWN, OPTIONAL_FIELDS, PDF_ACCENTS, PUBLIC_LINK_PREFIXES, type AiSettings, type AnnualRate, type Contact, type DefaultItem, type DocLanguage, type FormDefaults, type InvoiceFormPrefs, type PaymentMethod } from './types';
+import { type BankAccount, bankAccountLine, fetchBankAccounts, fetchTenant, taxCountryOf } from '@/lib/tenant';
+import { DEFAULT_SHOWN, OPTIONAL_FIELDS, PDF_ACCENTS, PDF_QR_MODES, PUBLIC_LINK_PREFIXES, type AiSettings, type AnnualRate, type Contact, type DefaultItem, type DocLanguage, type FormDefaults, type InvoiceFormPrefs, type PaymentMethod } from './types';
 
 const PAYMENT_METHODS: PaymentMethod[] = ['bank_transfer', 'cash', 'card', 'cash_on_delivery', 'other'];
 const LANGUAGES: DocLanguage[] = ['cs', 'sk', 'en'];
@@ -33,7 +33,7 @@ export async function loadFormContext(): Promise<{ defaults: FormDefaults; ai: A
       companyVars: (tenant?.templateVars ?? []).map((v) => ({ key: v.key, value: v.value })),
       vatPayer: Boolean(tenant?.dicVatPayer),
       quotesEnabled: tenant?.enabledModules?.quotes !== false,
-      sellerCountry: tenant?.addressCountry || 'CZ',
+      sellerCountry: taxCountryOf(tenant),
       dueDays: tenant?.defaultDueDays ?? 14,
       paymentMethod,
       customPaymentMethods: (tenant?.paymentMethods ?? []).map((m) => ({ id: m.id, label: m.label, base: m.base, instructions: m.instructions })),
@@ -80,7 +80,12 @@ export function formPrefs(raw: Partial<InvoiceFormPrefs> | null | undefined): In
           ? 'annual'
           : 'daily',
     annualRates: Array.isArray(raw?.annualRates) ? raw.annualRates.filter(isAnnualRate) : [],
-    publicLinkPrefix: PUBLIC_LINK_PREFIXES.find((p) => p === raw?.publicLinkPrefix) ?? 'number'
+    publicLinkPrefix: PUBLIC_LINK_PREFIXES.find((p) => p === raw?.publicLinkPrefix) ?? 'number',
+    pdfQr: PDF_QR_MODES.find((m) => m === raw?.pdfQr) ?? 'auto',
+    pdfQrDueDate: raw?.pdfQrDueDate === true,
+    paymentDraftDescription:
+      typeof raw?.paymentDraftDescription === 'string' && raw.paymentDraftDescription.trim() ? raw.paymentDraftDescription : null,
+    paymentDraftDescriptionAlways: raw?.paymentDraftDescriptionAlways === true
   };
 }
 

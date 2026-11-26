@@ -608,7 +608,105 @@
       "idx": 87,
       "version": "7",
       "when": 1793248500000,
-      "tag": "0087_session_created_at",
+      "tag": "0087_tenant_country",
+      "breakpoints": true
+    },
+    {
+      "idx": 88,
+      "version": "7",
+      "when": 1793248560000,
+      "tag": "0088_session_created_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 89,
+      "version": "7",
+      "when": 1793248620000,
+      "tag": "0089_paypal_net_and_drafts",
+      "breakpoints": true
+    },
+    {
+      "idx": 90,
+      "version": "7",
+      "when": 1793248680000,
+      "tag": "0090_net_income",
+      "breakpoints": true
+    },
+    {
+      "idx": 91,
+      "version": "7",
+      "when": 1793248740000,
+      "tag": "0091_bank_rules",
+      "breakpoints": true
+    },
+    {
+      "idx": 92,
+      "version": "7",
+      "when": 1793248800000,
+      "tag": "0092_stripe_sync",
+      "breakpoints": true
+    },
+    {
+      "idx": 93,
+      "version": "7",
+      "when": 1793248860000,
+      "tag": "0093_public_line_item_discount",
+      "breakpoints": true
+    },
+    {
+      "idx": 94,
+      "version": "7",
+      "when": 1793335260000,
+      "tag": "0094_bank_transaction_time",
+      "breakpoints": true
+    },
+    {
+      "idx": 95,
+      "version": "7",
+      "when": 1793335320000,
+      "tag": "0095_invoice_lock",
+      "breakpoints": true
+    },
+    {
+      "idx": 96,
+      "version": "7",
+      "when": 1793421720000,
+      "tag": "0096_bank_transaction_symbols",
+      "breakpoints": true
+    },
+    {
+      "idx": 97,
+      "version": "7",
+      "when": 1793508120000,
+      "tag": "0097_bank_transfer_pair",
+      "breakpoints": true
+    },
+    {
+      "idx": 98,
+      "version": "7",
+      "when": 1793600000000,
+      "tag": "0098_bank_connection_filter",
+      "breakpoints": true
+    },
+    {
+      "idx": 99,
+      "version": "7",
+      "when": 1793600100000,
+      "tag": "0099_bank_import_rules",
+      "breakpoints": true
+    },
+    {
+      "idx": 100,
+      "version": "7",
+      "when": 1793600200000,
+      "tag": "0100_member_contact_scope",
+      "breakpoints": true
+    },
+    {
+      "idx": 101,
+      "version": "7",
+      "when": 1793600800000,
+      "tag": "0106_bank_transaction_net_at",
       "breakpoints": true
     }
   ]

@@ -16,7 +16,7 @@ export interface InvoiceUsageRow {
   language: string;
   reverseCharge: boolean;
   recent: boolean;
-  /** Issued, not a quote, due before today (same rule as `isOverdue`). */
+  /** Issued invoice or proforma, due before today (same rule as `isOverdue`). */
   overdue: boolean;
   n: number;
 }

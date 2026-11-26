@@ -14,6 +14,7 @@ import {
 } from '@faktur/cz-compliance';
 import { AmountField, parseAmount, SelectField } from '@/components/public-tools/fields';
 import { InfoHint } from '@/components/info-hint';
+import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 
 export type EstimateCountry = 'CZ' | 'SK';
@@ -221,7 +222,7 @@ export function AnnualEstimate({
 
   return (
     <div>
-      <form className="grid gap-4 text-sm sm:grid-cols-2" onSubmit={(e) => e.preventDefault()}>
+      <form className="grid items-start gap-4 text-sm sm:grid-cols-2" onSubmit={(e) => e.preventDefault()}>
         <SelectField
           label={t('year')}
           value={year}
@@ -231,24 +232,6 @@ export function AnnualEstimate({
           }}
           options={years.map((v) => ({ value: String(v), label: String(v) }))}
         />
-        <AmountField label={t(sk ? 'incomeEur' : 'incomeCzk')} value={income} onChange={setIncome} hint={incomeHint} />
-        <div>
-          <SelectField
-            label={t('expenses')}
-            value={mode}
-            onChange={setMode}
-            options={modes.map((m) => ({
-              value: m,
-              label:
-                m === 'actual'
-                  ? t('actualMode')
-                  : sk
-                    ? t('sk.flatMode', { cap: whole.format(SK_FLAT_EXPENSE_CAP) })
-                    : t(`cz.modes.${m}`, { cap: new Intl.NumberFormat(locale).format(OSVC_FLAT_EXPENSE_CAPS[Number(m) as OsvcFlatRate]) })
-            }))}
-          />
-        </div>
-        {mode === 'actual' ? <AmountField label={t('actualExpenses')} value={expenses} onChange={setExpenses} hint={sk ? t('sk.actualHint') : undefined} /> : <div className="hidden sm:block" />}
         <div>
           <SelectField
             label={t('start')}
@@ -258,8 +241,23 @@ export function AnnualEstimate({
           />
           <p className="mt-1 text-xs text-muted-foreground">{t(sk ? 'sk.startHint' : 'cz.startHint')}</p>
         </div>
-        <div className="hidden sm:block" />
-        <div>
+        <AmountField label={t(sk ? 'incomeEur' : 'incomeCzk')} value={income} onChange={setIncome} hint={incomeHint} />
+        <SelectField
+          label={t('expenses')}
+          value={mode}
+          onChange={setMode}
+          options={modes.map((m) => ({
+            value: m,
+            label:
+              m === 'actual'
+                ? t('actualMode')
+                : sk
+                  ? t('sk.flatMode', { cap: whole.format(SK_FLAT_EXPENSE_CAP) })
+                  : t(`cz.modes.${m}`, { cap: new Intl.NumberFormat(locale).format(OSVC_FLAT_EXPENSE_CAPS[Number(m) as OsvcFlatRate]) })
+          }))}
+        />
+        {mode === 'actual' && <AmountField label={t('actualExpenses')} value={expenses} onChange={setExpenses} hint={sk ? t('sk.actualHint') : undefined} />}
+        <div className={mode === 'actual' ? 'sm:col-start-1' : undefined}>
           <AmountField label={t('paidSocial')} value={paidSocial} onChange={setPaidSocial} hint={t(sk ? 'sk.paidSocialHint' : 'paidHint')} />
           {note(paidSocial, initial.paidSocial)}
         </div>
@@ -297,7 +295,7 @@ export function AnnualEstimate({
           <button
             type="button"
             onClick={downloadCsv}
-            className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-semibold hover:border-primary hover:text-primary"
+            className={buttonClass.secondary}
           >
             <Download className="h-4 w-4" aria-hidden="true" />
             {t('downloadCsv')}

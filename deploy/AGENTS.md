@@ -10,6 +10,12 @@ VoxelRank and TicketSmith production sites** behind the host's Caddy.
 - `deploy.sh` builds the images locally, streams them over SSH and runs
   migrate (migrations, then RLS policies, then grants). Then it restarts and
   removes the migrate image. Use `SKIP_BUILD=1` or `WITH_AI=1`.
+- The usual deploy now builds nothing on any machine you control:
+  `.github/workflows/images.yml` builds the frontend, backend and migrate
+  images on every push and pushes them to `ghcr.io/bobhenl/billanta-*:<sha>`.
+  On the VPS, unpack the commit into `/opt/billanta/src` and run
+  `./src/deploy/deploy-pull.sh <full sha>`. It waits for the images, pulls,
+  migrates and restarts (about 5 minutes after the push).
 - `init-env.sh` writes the server `.env` once with random secrets.
   `maintenance.sh` runs daily from cron: `pg_dump` rotation, log cleanup
   and Docker prune.

@@ -1,26 +1,39 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { EyeOff } from 'lucide-react';
+import { EyeOff, FilePlus2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { toast } from '@/components/toaster';
-import { formatDate, formatMoney } from '@/lib/invoice-ui';
-import { TX_STATUS_CLASSES, type BankTransaction } from '@/lib/bank-ui';
+import { formatDate, formatMoney, formatTime } from '@/lib/invoice-ui';
+import { TX_STATUS_CLASSES, paypalMovement, type BankTransaction } from '@/lib/bank-ui';
 import { cn } from '@/lib/utils';
-import { ignoreTransaction } from './actions';
+import { draftInvoiceFromTransaction, ignoreTransaction } from './actions';
 import { useCanWrite } from '@/components/access-provider';
+import { BankRowMenu, openInNewTab } from './bank-row-menu';
 
-export type BankRow = BankTransaction & { invoiceNumber: string | null; invoiceContact: string | null };
+export type BankRow = BankTransaction & { invoiceNumber: string | null; invoiceContact: string | null; ruleName?: string | null };
 
-/** Statement lines: rows open the detail; unmatched ones can be bulk-ignored. */
+/** The status line of a row, naming the bank rule that acted on it. */
+function statusText(tx: BankRow, t: ReturnType<typeof useTranslations<'bank'>>): string {
+  const rule = tx.ruleName;
+  const movement = paypalMovement(tx);
+  if (movement) return t(`transfer.${movement}`);
+  if (tx.status === 'ignored' && rule) return t('rule.ignoredBy', { rule });
+  if (tx.status === 'matched' && tx.matchedExpenseId) return rule ? t('rule.expenseBy', { rule }) : t('rule.expense');
+  if (tx.status === 'matched' && tx.invoiceNumber) return t('matchedWithInvoice', { invoiceId: tx.invoiceNumber });
+  if (tx.status === 'matched' && rule) return t('rule.draftBy', { rule });
+  return t(`status.${tx.status}`);
+}
+
+/** Statement lines: rows open the detail; unmatched ones can be bulk-ignored or turned into draft invoices. */
 export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) {
   const t = useTranslations('bank');
   const locale = useLocale();
   const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [pending, startTransition] = useTransition();
-  // Selection only feeds bulk ignore, so read-only gets the plain list.
+  // Selection only feeds the bulk actions, so read-only gets the plain list.
   const canEdit = useCanWrite('bank');
 
   if (rows.length === 0) {
@@ -50,10 +63,22 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
       router.refresh();
     });
 
+  // Only incoming payments can become an invoice; outgoing ones in the selection are skipped.
+  const draftable = rows.filter((r) => selected.has(r.id) && Number(r.amount) > 0).map((r) => r.id);
+  const bulkDraft = () =>
+    startTransition(async () => {
+      let ok = 0;
+      // One at a time: each draft is its own request and transaction, and the selection is short.
+      for (const id of draftable) if ((await draftInvoiceFromTransaction(id)).ok) ok++;
+      toast({ text: t('bulkDraftDone', { ok, total: draftable.length }), tone: ok === draftable.length ? 'ok' : 'err' });
+      setSelected(new Set());
+      router.refresh();
+    });
+
   return (
     <div className="mt-5">
       {canEdit && selected.size > 0 && (
-        <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2 text-sm">
+        <div className="anim-fade mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2 text-sm">
           <span className="font-semibold">{t('selected', { count: selected.size })}</span>
           <button
             type="button"
@@ -64,12 +89,69 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
             <EyeOff className="h-3.5 w-3.5" />
             {t('ignoreAction')}
           </button>
+          {draftable.length > 0 && (
+            <button
+              type="button"
+              disabled={pending}
+              onClick={bulkDraft}
+              title={t('bulkDraftHint')}
+              className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-bold text-primary-foreground disabled:opacity-50"
+            >
+              <FilePlus2 className="h-3.5 w-3.5" />
+              {t('bulkDraft', { count: draftable.length })}
+            </button>
+          )}
           <button type="button" className="ml-auto text-xs text-muted-foreground hover:text-primary" onClick={() => setSelected(new Set())}>
             {t('clearSelection')}
           </button>
         </div>
       )}
-      <div className="overflow-x-auto rounded-xl border border-border bg-card">
+      {/* Narrow screens get one two-line row per transaction instead of a sideways-scrolling table. */}
+      <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card md:hidden">
+        {rows.map((tx) => {
+          const amount = Number(tx.amount);
+          return (
+            <li key={tx.id} className={cn('flex items-center gap-3 px-3 py-3', selected.has(tx.id) && 'bg-primary/5')}>
+              {canEdit && tx.status === 'unmatched' && (
+                <input
+                  type="checkbox"
+                  aria-label={tx.counterpartyName ?? t('unknownCounterparty')}
+                  className="h-5 w-5 shrink-0 accent-primary"
+                  checked={selected.has(tx.id)}
+                  onChange={() => toggle(tx.id)}
+                />
+              )}
+              <Link href={`/bank/${tx.id}`} className="flex min-w-0 flex-1 items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold">{tx.counterpartyName ?? t('unknownCounterparty')}</p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {formatDate(tx.transactionDate, locale)}
+                    {tx.occurredAt && ` ${formatTime(tx.occurredAt, locale)}`}
+                    {tx.variableSymbol && ` · VS ${tx.variableSymbol}`}
+                  </p>
+                  {tx.message && <p className="truncate text-xs text-muted-foreground">{tx.message}</p>}
+                </div>
+                <div className="shrink-0 text-right">
+                  <p className={cn('text-sm font-semibold tabular-nums', amount < 0 ? 'text-destructive' : 'text-success')}>
+                    {amount > 0 && '+'}
+                    <span className="amount">{formatMoney(amount, tx.currency, locale)}</span>
+                  </p>
+                  {tx.netAmount && tx.netCurrency && (
+                    <p className="text-[11px] text-muted-foreground">
+                      <span className="amount">{t('netReceived', { amount: formatMoney(Number(tx.netAmount), tx.netCurrency, locale) })}</span>
+                    </p>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    {statusText(tx, t)}
+                  </p>
+                </div>
+              </Link>
+              <BankRowMenu tx={tx} />
+            </li>
+          );
+        })}
+      </ul>
+      <div className="hidden overflow-x-auto rounded-xl border border-border bg-card md:block">
         <table className="w-full min-w-[760px] text-sm">
           <thead>
             <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
@@ -90,6 +172,7 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
               <th className="px-2 py-2.5 font-medium">{t('columns.variableSymbol')}</th>
               <th className="px-2 py-2.5 text-right font-medium">{t('columns.amount')}</th>
               <th className="px-3 py-2.5 font-medium">{t('columns.status')}</th>
+              <th className="w-10 px-2 py-2.5" />
             </tr>
           </thead>
           <tbody>
@@ -98,7 +181,9 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
               return (
                 <tr
                   key={tx.id}
-                  onClick={() => router.push(`/bank/${tx.id}`)}
+                  // Ctrl/Cmd-click and middle-click open the payment in a new tab, like a link would.
+                  onClick={(e) => (e.ctrlKey || e.metaKey ? openInNewTab(locale, `/bank/${tx.id}`) : router.push(`/bank/${tx.id}`))}
+                  onAuxClick={(e) => e.button === 1 && openInNewTab(locale, `/bank/${tx.id}`)}
                   className={cn('cursor-pointer border-b border-border/60 last:border-b-0 hover:bg-accent/60', selected.has(tx.id) && 'bg-primary/5')}
                 >
                   {canEdit && (
@@ -108,27 +193,43 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
                       )}
                     </td>
                   )}
-                  <td className="whitespace-nowrap px-2 py-2.5 tabular-nums">{formatDate(tx.transactionDate, locale)}</td>
+                  <td className="whitespace-nowrap px-2 py-2.5 tabular-nums">
+                    {formatDate(tx.transactionDate, locale)}
+                    {tx.occurredAt && <span className="block text-xs text-muted-foreground">{formatTime(tx.occurredAt, locale)}</span>}
+                  </td>
                   <td className="px-2 py-2.5">
                     <Link href={`/bank/${tx.id}`} onClick={(e) => e.stopPropagation()} className="font-semibold hover:text-primary">
                       {tx.counterpartyName ?? t('unknownCounterparty')}
                     </Link>
                     {tx.counterpartyAccount && <div className="font-mono text-xs text-muted-foreground">{tx.counterpartyAccount}</div>}
+                    {tx.message && (
+                      <div className="max-w-xs truncate text-xs text-muted-foreground" title={tx.message}>
+                        {tx.message}
+                      </div>
+                    )}
                   </td>
                   <td className="px-2 py-2.5 font-mono text-xs text-muted-foreground">{tx.variableSymbol ?? '–'}</td>
                   <td className={cn('whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums', amount < 0 ? 'text-destructive' : 'text-success')}>
                     {amount > 0 && '+'}
-                    {formatMoney(amount, tx.currency, locale)}
+                    <span className="amount">{formatMoney(amount, tx.currency, locale)}</span>
                     {tx.fee && Number(tx.fee) > 0 && (
                       <div className="text-[11px] font-normal text-muted-foreground">
-                        {t('fee', { amount: formatMoney(Number(tx.fee), tx.currency, locale) })}
+                        <span className="amount">{t('fee', { amount: formatMoney(Number(tx.fee), tx.currency, locale) })}</span>
+                      </div>
+                    )}
+                    {tx.netAmount && tx.netCurrency && (
+                      <div className="text-[11px] font-normal text-muted-foreground">
+                        <span className="amount">{t('netReceived', { amount: formatMoney(Number(tx.netAmount), tx.netCurrency, locale) })}</span>
                       </div>
                     )}
                   </td>
                   <td className="px-3 py-2.5">
                     <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', TX_STATUS_CLASSES[tx.status])}>
-                      {tx.status === 'matched' && tx.invoiceNumber ? t('matchedWithInvoice', { invoiceId: tx.invoiceNumber }) : t(`status.${tx.status}`)}
+                      {statusText(tx, t)}
                     </span>
+                  </td>
+                  <td className="px-2 py-2.5 text-right">
+                    <BankRowMenu tx={tx} />
                   </td>
                 </tr>
               );

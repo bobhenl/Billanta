@@ -1,14 +1,15 @@
 'use client';
 
 import { type FormEvent, useState, useTransition } from 'react';
-import { Copy, ShieldCheck, ShieldOff } from 'lucide-react';
+import { Copy, Download, ShieldCheck, ShieldOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
+import { InfoHint } from '@/components/info-hint';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { confirmTwoFactorSetup, disableTwoFactor, regenerateRecoveryCodes, startTwoFactorSetup } from './actions';
-import { copyText } from '@/lib/clipboard';
+import { copyText, downloadText } from '@/lib/clipboard';
 
 type Setup = { secret: string; qr: string };
 
@@ -84,29 +85,32 @@ export function SecurityManager({ enabled, recoveryCodesLeft }: { enabled: boole
         className={`${inputClass} font-mono tracking-[0.2em]`}
       />
       <div className="flex flex-wrap gap-2">
+        <button type="button" onClick={onCancel} disabled={pending} className={buttonClass.secondary}>
+          {t('cancel')}
+        </button>
         <button type="submit" disabled={pending || code.trim().length < 6} className={danger ? buttonClass.danger : buttonClass.primary}>
           {submitLabel}
-        </button>
-        <button type="button" onClick={onCancel} disabled={pending} className={buttonClass.ghost}>
-          {t('cancel')}
         </button>
       </div>
     </form>
   );
 
   return (
-    <section className="mt-6 rounded-xl border border-border bg-card p-5">
+    <section className="mt-6 rounded-xl border border-border bg-card p-4 sm:p-5">
       <div className="flex items-start gap-3">
         <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${enabled ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary'}`}>
           {enabled ? <ShieldCheck className="h-5 w-5" /> : <ShieldOff className="h-5 w-5" />}
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="font-bold">{t('twoFactorTitle')}</h2>
+          <InfoHint hint={t('why')}>
+            <h2 className="font-bold">{t('twoFactorTitle')}</h2>
+          </InfoHint>
           <p className="mt-0.5 text-sm text-muted-foreground">{enabled ? t('statusOn', { n: recoveryCodesLeft }) : t('statusOff')}</p>
         </div>
       </div>
 
-      <p className="mt-4 text-sm text-muted-foreground">{t('why')}</p>
+      {/* The reason stays visible while 2FA is off: it is what talks people into turning it on. */}
+      {!enabled && <p className="mt-4 text-sm text-muted-foreground">{t('why')}</p>}
 
       {error && (
         <Banner tone="err" className="mt-4">
@@ -133,6 +137,10 @@ export function SecurityManager({ enabled, recoveryCodesLeft }: { enabled: boole
             >
               <Copy className="h-4 w-4" />
               {t('copy')}
+            </button>
+            <button type="button" className={buttonClass.secondary} onClick={() => downloadText('2fa-recovery-codes.txt', codes.join('\n'))}>
+              <Download className="h-4 w-4" />
+              {t('download')}
             </button>
             <button type="button" className={buttonClass.ghost} onClick={() => setCodes(null)}>
               {t('codesSaved')}

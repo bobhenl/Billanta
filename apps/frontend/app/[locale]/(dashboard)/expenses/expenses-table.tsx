@@ -1,15 +1,18 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
-import { CheckCircle2, Trash2 } from 'lucide-react';
+import { CheckCircle2, Plus, Receipt, Trash2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { SortHeader, useListSort } from '@/components/sort-header';
 import { toast } from '@/components/toaster';
 import { useCanDo, useCanWrite } from '@/components/access-provider';
+import { EmptyState } from '@/components/empty-state';
+import { ConfirmModal } from '@/components/modal';
 import { formatDate, formatMoney } from '@/lib/invoice-ui';
 import { EXPENSE_STATE_CLASSES, expenseState, isKnownCategory, vatOfGross, type Expense } from '@/lib/expense-ui';
 import { cn } from '@/lib/utils';
+import { buttonClass } from '@/lib/ui-classes';
 import { deleteExpense, setExpensePaid } from './actions';
 
 const SORTABLE = ['date', 'supplier', 'description', 'category', 'dueDate', 'amount', 'state'] as const;
@@ -42,6 +45,7 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
   const locale = useLocale();
   const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [pending, startTransition] = useTransition();
   // The checkboxes only feed bulk mark-paid/delete, so read-only gets a plain list.
   const canWriteArea = useCanWrite('expenses');
@@ -56,7 +60,8 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
     for (const e of rows) {
       const s = by.get(e.currency) ?? { total: 0, vat: 0 };
       s.total += Number(e.amount);
-      s.vat += vatOfGross(Number(e.amount), Number(e.vatRate));
+      // Reverse-charge VAT is self-assessed on top of the amount, so none of it is "included".
+      if (!e.reverseCharge) s.vat += vatOfGross(Number(e.amount), Number(e.vatRate));
       by.set(e.currency, s);
     }
     return [...by.entries()];
@@ -64,16 +69,21 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
 
   if (rows.length === 0) {
     return (
-      <div className="mt-6 rounded-xl border border-dashed border-border p-10 text-center text-muted-foreground">
-        {filtered ? t('emptyFiltered') : t('empty')}
-        {!filtered && canWriteArea && canCreate && (
-          <div className="mt-3">
-            <Link href="/expenses/new" className="font-semibold text-primary hover:underline">
+      <EmptyState
+        className="mt-6"
+        icon={Receipt}
+        title={filtered ? t('emptyFiltered') : t('empty')}
+        action={
+          !filtered &&
+          canWriteArea &&
+          canCreate && (
+            <Link href="/expenses/new" className={buttonClass.primary}>
+              <Plus className="h-4 w-4" aria-hidden />
               {t('newExpense')}
             </Link>
-          </div>
-        )}
-      </div>
+          )
+        }
+      />
     );
   }
 
@@ -109,7 +119,7 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
           <button
             type="button"
             disabled={pending}
-            className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-bold text-primary-foreground disabled:opacity-50"
+            className="inline-flex h-9 items-center gap-1 rounded-full bg-primary px-3 text-xs font-bold text-primary-foreground disabled:opacity-50"
             onClick={() =>
               bulk(
                 (id) => setExpensePaid(id, today),
@@ -125,22 +135,62 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
           <button
             type="button"
             disabled={pending}
-            className="inline-flex items-center gap-1 rounded-full border border-destructive/40 px-3 py-1 text-xs font-bold text-destructive disabled:opacity-50"
-            onClick={() => {
-              if (window.confirm(t('bulkDeleteConfirm', { count: selected.size }))) bulk(deleteExpense, [...selected]);
-            }}
+            className="ml-2 inline-flex h-9 items-center gap-1 rounded-full border border-destructive/40 px-3 text-xs font-bold text-destructive disabled:opacity-50"
+            onClick={() => setConfirmDelete(true)}
           >
             <Trash2 className="h-3.5 w-3.5" />
             {t('detail.delete')}
           </button>
           )}
-          <button type="button" className="ml-auto text-xs text-muted-foreground hover:text-primary" onClick={() => setSelected(new Set())}>
+          <button type="button" className="ml-auto h-9 px-2 text-xs text-muted-foreground hover:text-primary" onClick={() => setSelected(new Set())}>
             {t('clearSelection')}
           </button>
         </div>
       )}
 
-      <div className="overflow-x-auto rounded-xl border border-border bg-card">
+      {/* Below md the eight columns cannot fit, so each expense becomes a two-line row. */}
+      <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card md:hidden">
+        {sorted.map((e) => {
+          const state = expenseState(e);
+          return (
+            <li key={e.id} className={cn('flex items-center gap-3 px-3 py-3', selected.has(e.id) && 'bg-primary/5')}>
+              {canEdit && (
+                <input
+                  type="checkbox"
+                  aria-label={e.supplierNameRaw ?? e.description}
+                  className="h-5 w-5 shrink-0 accent-primary"
+                  checked={selected.has(e.id)}
+                  onChange={() => toggle(e.id)}
+                />
+              )}
+              <Link href={`/expenses/${e.id}`} className="flex min-w-0 flex-1 items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold">{e.supplierNameRaw ?? e.description}</p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {formatDate(e.expenseDate, locale)}
+                    {e.category && ` · ${isKnownCategory(e.category) ? t(`category.${e.category}`) : e.category}`}
+                  </p>
+                </div>
+                <div className="shrink-0 text-right">
+                  <p className="text-sm font-semibold tabular-nums"><span className="amount">{formatMoney(Number(e.amount), e.currency, locale)}</span></p>
+                  <p className={cn('text-xs font-semibold', state === 'paid' ? 'text-muted-foreground' : state === 'overdue' ? 'text-destructive' : 'text-warning')}>
+                    {t(`state.${state}`)}
+                  </p>
+                  {e.needsReview && <p className="text-xs font-semibold text-primary">{t('needsReview')}</p>}
+                </div>
+              </Link>
+            </li>
+          );
+        })}
+        {sums.map(([currency, s]) => (
+          <li key={currency} className="flex items-center justify-between gap-3 bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+            <span><span className="amount">{t('vatIncluded', { vat: formatMoney(s.vat, currency, locale) })}</span></span>
+            <span className="text-sm font-extrabold tabular-nums text-foreground"><span className="amount">{formatMoney(s.total, currency, locale)}</span></span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="hidden overflow-x-auto rounded-xl border border-border bg-card md:block">
         <table className="w-full min-w-[760px] text-sm">
           <thead>
             <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
@@ -195,9 +245,12 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
                     {e.category ? (isKnownCategory(e.category) ? t(`category.${e.category}`) : e.category) : t('uncategorized')}
                   </td>
                   <td className="whitespace-nowrap px-2 py-2.5 tabular-nums text-muted-foreground">{formatDate(e.dueDate, locale) ?? '–'}</td>
-                  <td className="whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums">{formatMoney(Number(e.amount), e.currency, locale)}</td>
+                  <td className="whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums"><span className="amount">{formatMoney(Number(e.amount), e.currency, locale)}</span></td>
                   <td className="px-3 py-2.5">
                     <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', EXPENSE_STATE_CLASSES[state])}>{t(`state.${state}`)}</span>
+                    {e.needsReview && (
+                      <span className="ml-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">{t('needsReview')}</span>
+                    )}
                   </td>
                 </tr>
               );
@@ -211,17 +264,33 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
                     count: rows.filter((r) => r.currency === currency).length
                   })}{' '}
                   ·{' '}
-                  {t('vatIncluded', {
+                  <span className="amount">{t('vatIncluded', {
                     vat: formatMoney(s.vat, currency, locale)
-                  })}
+                  })}</span>
                 </td>
-                <td className="whitespace-nowrap px-2 py-2 text-right font-extrabold tabular-nums">{formatMoney(s.total, currency, locale)}</td>
+                <td className="whitespace-nowrap px-2 py-2 text-right font-extrabold tabular-nums"><span className="amount">{formatMoney(s.total, currency, locale)}</span></td>
                 <td />
               </tr>
             ))}
           </tfoot>
         </table>
       </div>
+
+      <ConfirmModal
+        open={confirmDelete}
+        onClose={() => setConfirmDelete(false)}
+        title={t('bulkDeleteTitle', { count: selected.size })}
+        body={t('bulkDeleteBody')}
+        backLabel={t('detail.back')}
+        confirmLabel={t('detail.delete')}
+        icon={<Trash2 className="h-4 w-4" />}
+        danger
+        pending={pending}
+        onConfirm={() => {
+          setConfirmDelete(false);
+          bulk(deleteExpense, [...selected]);
+        }}
+      />
     </div>
   );
 }

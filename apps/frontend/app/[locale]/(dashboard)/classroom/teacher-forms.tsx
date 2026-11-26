@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
+import { InfoHint } from '@/components/info-hint';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { CLASSROOM_TRACKS, type ClassroomTrack } from '@/lib/classroom';
@@ -86,7 +87,11 @@ export function CreateClassForm({ suggestedTrack, defaultLanguage, country }: { 
       </fieldset>
 
       <fieldset>
-        <legend className="text-sm font-medium">{t('kinds')}</legend>
+        <legend className="text-sm font-medium">
+          <InfoHint hint={t('kindsHint')}>
+            <span>{t('kinds')}</span>
+          </InfoHint>
+        </legend>
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
           {DEMO_KINDS.map((k) => (
             <label key={k} className="flex items-center gap-2 text-sm">
@@ -99,7 +104,6 @@ export function CreateClassForm({ suggestedTrack, defaultLanguage, country }: { 
             </label>
           ))}
         </div>
-        <p className="mt-1 text-xs text-muted-foreground">{t('kindsHint')}</p>
       </fieldset>
 
       <div className="grid gap-3 sm:grid-cols-2">
@@ -112,17 +116,17 @@ export function CreateClassForm({ suggestedTrack, defaultLanguage, country }: { 
           </select>
         </label>
         <label className="block text-sm font-medium">
-          {t('endsAt')}
+          <InfoHint hint={t('endsAtHint')} bodyClassName="font-normal">
+            <span>{t('endsAt')}</span>
+          </InfoHint>
           <input name="endsAt" type="date" className={`${inputClass} mt-1`} />
-          <span className="mt-1 block text-xs font-normal text-muted-foreground">{t('endsAtHint')}</span>
         </label>
       </div>
       <label className="flex items-start gap-2 text-sm">
         <input type="checkbox" name="seeded" defaultChecked className="mt-1" />
-        <span>
-          {t('seeded')}
-          <span className="block text-xs text-muted-foreground">{t('seededHint')}</span>
-        </span>
+        <InfoHint hint={t('seededHint')}>
+          <span>{t('seeded')}</span>
+        </InfoHint>
       </label>
       {error && <Banner tone="err" title={error} />}
       <button type="submit" disabled={pending || kinds.length === 0} className={buttonClass.primary}>

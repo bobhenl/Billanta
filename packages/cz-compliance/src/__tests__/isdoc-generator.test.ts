@@ -1,6 +1,8 @@
 import { XMLParser, XMLValidator } from 'fast-xml-parser';
 import { describe, expect, it } from 'vitest';
+import { checkIsdoc } from '../isdoc-check.js';
 import { escapeXml, generateIsdocXml, type IsdocInvoiceInput } from '../isdoc-generator.js';
+import { parseIsdoc } from '../isdoc-parser.js';
 
 const ISDOC_NAMESPACE = 'http://isdoc.cz/namespace/2013';
 
@@ -323,6 +325,23 @@ describe('generateIsdocXml', () => {
     // No IČO given, but a DIČ is -> falls back to the DIČ rather than a bare literal.
     expect(String(parsed.AccountingCustomerParty.Party.PartyIdentification.ID)).toBe('DE123456789');
     expect(String(parsed.AccountingCustomerParty.Party.PostalAddress.Country.IdentificationCode)).toBe('DE');
+  });
+});
+
+describe('generateIsdocXml paid deposits', () => {
+  it('reports a proforma payment as PaidDepositsAmount and lowers PayableAmount by it', () => {
+    const base = buildRealisticInvoice();
+    const xml = generateIsdocXml({ ...base, totals: { ...base.totals, paidDepositsAmount: 4015 } });
+    expect(firstTag(xml, 'PaidDepositsAmount')).toBe('4015.00');
+    expect(firstTag(xml, 'PayableAmount')).toBe('0.00');
+    // The package's own import check agrees with the arithmetic.
+    expect(checkIsdoc(parseIsdoc(xml)).findings.map((f) => f.code)).not.toContain('payableMismatch');
+  });
+
+  it('keeps both at their plain values without a deposit', () => {
+    const xml = generateIsdocXml(buildRealisticInvoice());
+    expect(firstTag(xml, 'PaidDepositsAmount')).toBe('0.00');
+    expect(firstTag(xml, 'PayableAmount')).toBe('4015.00');
   });
 });
 

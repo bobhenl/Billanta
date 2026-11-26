@@ -136,6 +136,27 @@ export function assertMayDo(actor: Actor | undefined, action: PermissionAction) 
   if (!mayDo(actor, action)) throw new ForbiddenException({ error: "permission_denied", permission: action });
 }
 
+/** One line of "what you will get access to": an area and its level. */
+export interface AreaAccess {
+  area: PermissionArea;
+  level: PermissionLevel;
+}
+
+/**
+ * What a role plus overrides gives, as display rows (the invitation e-mail
+ * and page). Driven by `PERMISSION_AREAS`, so a new or finer area shows up
+ * here without touching the callers; `manage` marks the roles that also run
+ * the team and company settings. Mirrored by `accessSummary` in
+ * apps/frontend/lib/access.ts (parity test: frontend-access-summary.spec.ts).
+ */
+export function accessSummary(role: string, overrides?: unknown): { manage: boolean; areas: AreaAccess[] } {
+  const effective = effectivePermissions(role, overrides);
+  return {
+    manage: role === "owner" || role === "admin",
+    areas: PERMISSION_AREAS.map((area) => ({ area, level: effective[area] })),
+  };
+}
+
 /** Route prefixes (no `/api/`) and the area they belong to. */
 const AREA_PREFIXES: [string, PermissionArea][] = [
   ["v1/invoices", "invoices"],
@@ -266,7 +287,10 @@ export function requirementFor(method: string, path: string, body?: unknown): Re
     else if (method.toUpperCase() === "DELETE" && /^v1\/expenses\/[^/]+$/.test(path)) req.actions.push("expenses.delete");
     else req.actions.push("expenses.create");
   } else if (area === "bank" && write) {
-    const connections = under(path, "v1/bank-reconciliation/connections") && !/\/[^/]+\/sync$/.test(path);
+    // Rules count as setup, like connections; previewing or applying one only matches payments.
+    const connections =
+      (under(path, "v1/bank-reconciliation/connections") && !/\/[^/]+\/sync$/.test(path)) ||
+      (under(path, "v1/bank-reconciliation/rules") && !/\/(preview|apply)$/.test(path));
     req.actions.push(connections ? "bank.connections" : "bank.match");
   } else if (area === "reports" && (EXPORT_FILE.test(path) || write)) {
     req.actions.push("reports.export");

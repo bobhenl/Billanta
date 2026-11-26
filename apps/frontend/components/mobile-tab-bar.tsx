@@ -23,6 +23,10 @@ export interface PanelLink {
   href: string;
   label: string;
   icon: Icon;
+  /** Links with a different group from the one before start after a hairline. */
+  group?: string;
+  /** Heading shown above the first link of its group. */
+  groupLabel?: string;
 }
 
 /**
@@ -97,7 +101,7 @@ export function MobileTabBar({
       {hasActions && panel === 'actions' && (
         <div
           id="bottom-nav-actions"
-          className="fixed inset-x-3 z-50 max-h-[70vh] overflow-y-auto rounded-xl border border-border bg-card p-3 shadow-xl animate-in fade-in-0 slide-in-from-bottom-2 duration-150"
+          className="fixed inset-x-3 z-50 max-h-[70vh] overflow-y-auto rounded-xl border border-border bg-card p-3 shadow-xl anim-rise"
           style={{ bottom: 'calc(var(--tabbar-h) + 12px + env(safe-area-inset-bottom, 0px))' }}
         >
           <p className="mb-2 px-2 text-sm font-bold">{actionsLabel}</p>
@@ -120,26 +124,30 @@ export function MobileTabBar({
       {hasPanel && open && (
         <div
           id="bottom-nav-panel"
-          className="fixed inset-x-3 z-50 max-h-[70vh] overflow-y-auto rounded-xl border border-border bg-card p-3 shadow-xl animate-in fade-in-0 slide-in-from-bottom-2 duration-150"
+          className="fixed inset-x-3 z-50 max-h-[70vh] overflow-y-auto rounded-xl border border-border bg-card p-3 shadow-xl anim-rise"
           style={{ bottom: 'calc(var(--tabbar-h) + 12px + env(safe-area-inset-bottom, 0px))' }}
         >
           {panelTitle && <p className="mb-2 px-2 text-sm font-bold">{panelTitle}</p>}
           {links && links.length > 0 && (
             <ul className="flex flex-col gap-0.5">
-              {links.map(({ key, href, label: linkLabel, icon: LinkIcon }) => {
+              {links.map(({ key, href, label: linkLabel, icon: LinkIcon, group, groupLabel }, index) => {
                 const active = isActive(href);
+                const groupStart = index === 0 || group !== links[index - 1]!.group;
                 return (
-                  <li key={key}>
+                  <li key={key} className={cn(groupStart && index > 0 && 'mt-1.5 border-t border-border pt-1.5')}>
+                    {groupStart && groupLabel && (
+                      <p className="px-2 pb-1 pt-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{groupLabel}</p>
+                    )}
                     <Link
                       href={href}
                       aria-current={active ? 'page' : undefined}
                       onClick={() => setOpen(false)}
                       className={cn(
                         'flex items-center gap-3 rounded-md px-2 py-2.5 text-sm font-medium transition-colors',
-                        active ? 'bg-secondary text-primary' : 'text-foreground hover:bg-secondary'
+                        active ? 'bg-secondary font-semibold text-primary' : 'text-foreground hover:bg-secondary'
                       )}
                     >
-                      <LinkIcon className="h-[18px] w-[18px] text-muted-foreground" />
+                      <LinkIcon className={cn('h-[18px] w-[18px]', active ? 'text-primary' : 'text-muted-foreground')} />
                       {linkLabel}
                     </Link>
                   </li>

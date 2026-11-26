@@ -7,6 +7,8 @@ import { DemoCta } from '@/components/demo/demo-cta';
 import { FEATURE_PAGES, featureDemo, getFeaturePage, relatedFeaturePages } from '@/lib/feature-pages';
 import { jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
+import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 /**
  * One landing page per real feature (see `lib/feature-pages.ts`). Unlike
@@ -47,7 +49,6 @@ export default async function FeaturePage({ params }: { params: Promise<Params> 
   const points = t.raw(`${k}.points`) as string[];
   const steps = t.raw(`${k}.steps`) as string[];
   const faq = t.raw(`${k}.faq`) as Faq[];
-  const Icon = feature.icon;
   const url = `${SITE_URL}/${locale}/features/${slug}`;
   const demo = featureDemo(feature.key);
 
@@ -79,14 +80,9 @@ export default async function FeaturePage({ params }: { params: Promise<Params> 
         <span className="text-foreground">{t(`${k}.name`)}</span>
       </nav>
 
-      <div className="mt-4 flex items-start gap-4">
-        <span className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary sm:flex">
-          <Icon className="h-6 w-6" />
-        </span>
-        <div>
-          <h1 className="max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl">{t(`${k}.title`)}</h1>
-          <p className="mt-4 max-w-2xl text-lg text-muted-foreground">{t(`${k}.lead`)}</p>
-        </div>
+      <div className="mt-4">
+        <h1 className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl">{t(`${k}.title`)}</h1>
+        <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{t(`${k}.lead`)}</p>
       </div>
 
       <div className="mt-10 grid gap-8 lg:grid-cols-2">
@@ -117,10 +113,7 @@ export default async function FeaturePage({ params }: { params: Promise<Params> 
       </div>
 
       <div className="mt-10">
-        <Link
-          href="/signup"
-          className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90"
-        >
+        <Link href="/signup" className={cn(buttonClass.primary, 'w-full px-6 py-3 sm:w-auto')}>
           {t('cta')}
         </Link>
         <p className="mt-2 text-sm text-muted-foreground">{t('ctaNote')}</p>
@@ -128,7 +121,7 @@ export default async function FeaturePage({ params }: { params: Promise<Params> 
       {demo && <DemoCta view={demo.view} feature={t(`${k}.name`)} className="mt-6 max-w-3xl" />}
 
       <div className="mt-14 max-w-3xl border-t border-border pt-8">
-        <h2 className="text-xl font-semibold">{t('faqTitle')}</h2>
+        <h2 className="text-xl font-bold tracking-tight">{t('faqTitle')}</h2>
         <dl className="mt-4 divide-y divide-border">
           {faq.map(({ q, a }) => (
             <div key={q} className="py-4">
@@ -141,19 +134,16 @@ export default async function FeaturePage({ params }: { params: Promise<Params> 
 
       <nav aria-label={t('relatedTitle')} className="mt-12 border-t border-border pt-8">
         <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('relatedTitle')}</h2>
-        <ul className="mt-4 flex flex-wrap gap-2">
+        <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
           {relatedFeaturePages(slug).map((r) => (
             <li key={r.slug}>
-              <Link
-                href={`/features/${r.slug}`}
-                className="inline-flex rounded-full border border-border bg-card px-4 py-2 text-sm font-medium hover:border-primary/40 hover:text-primary"
-              >
+              <Link href={`/features/${r.slug}`} className="text-sm font-medium underline-offset-4 hover:text-primary hover:underline">
                 {t(`items.${r.key}.name`)}
               </Link>
             </li>
           ))}
           <li>
-            <Link href="/features" className="inline-flex px-4 py-2 text-sm font-medium text-primary hover:underline">
+            <Link href="/features" className="text-sm font-medium text-primary hover:underline">
               {t('allFeatures')} →
             </Link>
           </li>

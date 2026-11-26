@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { InfoHint } from '@/components/info-hint';
-import { Modal } from '@/components/modal';
+import { buttonClass, Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { formatMinutes, parseDuration, type Project, type TimeEntry } from '@/lib/time-ui';
 import { createEntry, updateEntry } from './actions';
@@ -73,14 +73,14 @@ export function EntryModal({ open, onClose, projects, entry }: { open: boolean; 
       title={entry ? t('editEntry') : t('addManual')}
       footer={
         <>
-          <button type="button" onClick={onClose} className="rounded-full px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-accent">
+          <button type="button" onClick={onClose} className={buttonClass.secondary}>
             {t('cancel')}
           </button>
           <button
             type="button"
             disabled={pending || invalid}
             onClick={save}
-            className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-50"
+            className={buttonClass.primary}
           >
             {t('save')}
           </button>

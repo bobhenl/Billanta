@@ -120,11 +120,15 @@ export function NewsletterAdmin({ stats, issues }: { stats: NewsletterStats; iss
     <>
       <section className={card}>
         <h2 className="font-bold">{t('stats')}</h2>
-        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+        <div className="mt-3 grid grid-cols-3 gap-2 sm:gap-3">
           {(['confirmed', 'pending', 'unsubscribed'] as const).map((status) => (
-            <div key={status} className="rounded-lg border border-border/60 p-3">
-              <p className="text-xs text-muted-foreground">{t(`statuses.${status}`)}</p>
-              <p className="text-2xl font-bold">{total(status)}</p>
+            <div key={status} className="min-w-0 rounded-lg border border-border/60 p-2.5 sm:p-3">
+              <p className="truncate text-xs text-muted-foreground" title={t(`statuses.${status}`)}>
+                {t(`statuses.${status}`)}
+              </p>
+              <p className="truncate text-lg font-bold tabular-nums sm:text-2xl" title={String(total(status))}>
+                {total(status)}
+              </p>
               <p className="text-xs text-muted-foreground">
                 CZ {byCountry(status, 'CZ')} · SK {byCountry(status, 'SK')}
               </p>
@@ -176,7 +180,7 @@ export function NewsletterAdmin({ stats, issues }: { stats: NewsletterStats; iss
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="text-sm">
                 <span className="mb-1 block text-xs font-semibold text-muted-foreground">{t('locale')}</span>
-                <select className={inputClass} value={editing.locale} onChange={(e) => setEditing({ ...editing, locale: e.target.value as IssueInput['locale'] })}>
+                <select className={cn(inputClass, 'h-10')} value={editing.locale} onChange={(e) => setEditing({ ...editing, locale: e.target.value as IssueInput['locale'] })}>
                   {LOCALES.map((l) => (
                     <option key={l} value={l}>
                       {l.toUpperCase()}
@@ -187,7 +191,7 @@ export function NewsletterAdmin({ stats, issues }: { stats: NewsletterStats; iss
               <label className="text-sm">
                 <span className="mb-1 block text-xs font-semibold text-muted-foreground">{t('country')}</span>
                 <select
-                  className={inputClass}
+                  className={cn(inputClass, 'h-10')}
                   value={editing.country ?? ''}
                   onChange={(e) => setEditing({ ...editing, country: (e.target.value || null) as NewsletterCountry | null })}
                 >
@@ -210,7 +214,7 @@ export function NewsletterAdmin({ stats, issues }: { stats: NewsletterStats; iss
             </fieldset>
             <label className="block text-sm">
               <span className="mb-1 block text-xs font-semibold text-muted-foreground">{t('subject')}</span>
-              <input className={inputClass} maxLength={200} value={editing.subject} onChange={(e) => setEditing({ ...editing, subject: e.target.value })} />
+              <input className={cn(inputClass, 'h-10')} maxLength={200} value={editing.subject} onChange={(e) => setEditing({ ...editing, subject: e.target.value })} />
             </label>
             <label className="block text-sm">
               <span className="mb-1 block text-xs font-semibold text-muted-foreground">{t('body')}</span>
@@ -277,7 +281,7 @@ export function NewsletterAdmin({ stats, issues }: { stats: NewsletterStats; iss
                     {issue.status !== 'draft' && ` · ${t('queued', { count: issue.queuedCount })}`}
                   </p>
                 </div>
-                <button type="button" className={buttonClass.ghost} disabled={pending} onClick={() => open(issue.id)}>
+                <button type="button" className={cn(buttonClass.ghost, 'shrink-0')} disabled={pending} onClick={() => open(issue.id)}>
                   {issue.status === 'draft' ? t('edit') : t('preview')}
                 </button>
               </li>

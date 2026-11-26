@@ -120,6 +120,11 @@ describe("requirementFor", () => {
     ["POST", "v1/bank-reconciliation/connections/1/sync", ["bank.match"]],
     ["POST", "v1/bank-reconciliation/connections", ["bank.connections"]],
     ["DELETE", "v1/bank-reconciliation/connections/1", ["bank.connections"]],
+    ["POST", "v1/bank-reconciliation/rules", ["bank.connections"]],
+    ["PATCH", "v1/bank-reconciliation/rules/1", ["bank.connections"]],
+    ["POST", "v1/bank-reconciliation/rules/reorder", ["bank.connections"]],
+    ["POST", "v1/bank-reconciliation/rules/preview", ["bank.match"]],
+    ["POST", "v1/bank-reconciliation/rules/1/apply", ["bank.match"]],
     ["GET", "v1/exports/pohoda.xml", ["reports.export"]],
     ["GET", "v1/exports/tax-return-basis.pdf", ["reports.export"]],
     ["POST", "v1/exports/annual-filings/dpfdp.xml", ["reports.export"]],
@@ -177,7 +182,8 @@ describe("requirementFor", () => {
 
   it("names a section for every company-settings field except the admin-only ones", () => {
     const fields = Object.keys(updateTenantSchema.shape).filter((f) => !Object.prototype.hasOwnProperty.call(TENANT_FIELD_SECTIONS, f));
-    expect(fields).toEqual(["enabled_modules"]);
+    // The tax country is chosen once at onboarding and then locked, so it stays with admins.
+    expect(fields).toEqual(["country", "enabled_modules"]);
   });
 });
 

@@ -6,7 +6,7 @@
 set -euo pipefail
 HOST=${DEPLOY_HOST:-voxelrank}
 DIR=/opt/billanta
-SITE_URL=${SITE_URL:-http://149.56.99.247:8090}
+SITE_URL=${SITE_URL:-https://billanta.com}
 cd "$(dirname "$0")/.."
 
 if [ -z "${SKIP_BUILD:-}" ]; then

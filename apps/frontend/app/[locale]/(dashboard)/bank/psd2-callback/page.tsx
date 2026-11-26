@@ -7,7 +7,7 @@ export async function generateMetadata() {
 }
 
 /**
- * `GET /bank/psd2-callback?code=…&state=…` — where the bank sends the user
+ * `GET /bank/psd2-callback?code=…&state=…` – where the bank sends the user
  * after the PSD2 consent (or `?error=…` when they cancelled). The exchange
  * runs once from the client so a reload can't replay a used code.
  */

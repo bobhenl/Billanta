@@ -45,9 +45,14 @@ export interface InvoiceRow {
   totalVat: number;
   total: number;
   isOverdue: boolean;
+  /** Locked by an owner/admin; until the viewer re-authenticates the customer and notes come back empty. */
+  locked?: boolean;
+  lockedAt?: string | null;
   /** Open "customer fills in their details" link on a draft (null when none). */
   buyerDetailsToken?: string | null;
   buyerDetailsSubmittedAt?: string | null;
+  /** Own "Po zdanění" split {partnerId: weight}; null = the tax model's default shares. */
+  partnerShares?: Record<string, number> | null;
 }
 
 export interface BuyerDetailsOutcome {
@@ -122,6 +127,8 @@ export interface InvoiceDetail {
     exchangeRate: string | null;
     paymentFees?: string;
     receivedCzk?: string | null;
+    /** Split between the tax model's partners ("Po zdanění"); null = the default shares. */
+    partnerShares?: Record<string, number> | null;
     bankAccountId: string | null;
     relatedInvoiceId: string | null;
     issuedAt: string | null;
@@ -228,6 +235,13 @@ export function formatMoney(amount: number, currency: string, locale: string): s
   } catch {
     return `${amount.toFixed(2)} ${currency}`;
   }
+}
+
+/** Hours and minutes in Czech time, which is where the payment's day is counted. */
+export function formatTime(value: string | null | undefined, locale: string): string | null {
+  if (!value) return null;
+  const date = new Date(value);
+  return isNaN(date.getTime()) ? null : new Intl.DateTimeFormat(locale, { timeStyle: 'short', timeZone: 'Europe/Prague' }).format(date);
 }
 
 export function formatDate(value: string | null | undefined, locale: string): string | null {

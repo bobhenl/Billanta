@@ -1,19 +1,20 @@
 'use client';
 
 import { type FormEvent, useState } from 'react';
-import { Check, Copy, ExternalLink, KeyRound, Loader2, Plus } from 'lucide-react';
+import { Check, Copy, Download, ExternalLink, KeyRound, Loader2, Plus } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
+import { EmptyState } from '@/components/empty-state';
 import { InfoHint } from '@/components/info-hint';
-import { buttonClass, inputClass } from '@/components/modal';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
 import { cn } from '@/lib/utils';
 import { createApiKey, revokeApiKey } from './actions';
-import { copyText } from '@/lib/clipboard';
+import { copyText, downloadText } from '@/lib/clipboard';
 
 export interface ApiKeyListItem {
   id: string;
   name: string;
-  /** e.g. "sk_live_ab12" — first 12 chars of the full key, never the full key itself. */
+  /** e.g. "sk_live_ab12" – first 12 chars of the full key, never the full key itself. */
   keyPrefix: string;
   lastUsedAt: string | null;
   createdAt: string;
@@ -91,14 +92,24 @@ export function ApiKeysManager({ initialKeys, apiBase, readOnly }: { initialKeys
   return (
     <div className="mt-6 space-y-5">
       {revealedKey && (
-        <div className="rounded-2xl border border-warning/40 bg-warning/10 p-4">
+        <div className="rounded-xl border border-warning/40 bg-warning/10 p-4">
           <p className="text-sm font-semibold">{t('reveal.title')}</p>
           <p className="mt-1 text-sm text-muted-foreground">{t('reveal.warning')}</p>
           <div className="mt-3 flex items-center gap-2">
             <code className="min-w-0 flex-1 overflow-x-auto rounded-lg border border-border bg-background px-3 py-2 font-mono text-sm">{revealedKey}</code>
-            <button type="button" onClick={() => copy(revealedKey, 'key')} className={buttonClass.secondary}>
+            <button
+              type="button"
+              onClick={() => copy(revealedKey, 'key')}
+              className={cn(buttonClass.secondary, 'shrink-0')}
+              title={t('reveal.copy')}
+              aria-label={t('reveal.copy')}
+            >
               {copied === 'key' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-              {copied === 'key' ? t('reveal.copied') : t('reveal.copy')}
+              <span className="hidden sm:inline">{copied === 'key' ? t('reveal.copied') : t('reveal.copy')}</span>
+            </button>
+            <button type="button" onClick={() => downloadText('api-key.txt', revealedKey)} className={cn(buttonClass.secondary, 'shrink-0')} title={t('reveal.download')} aria-label={t('reveal.download')}>
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">{t('reveal.download')}</span>
             </button>
           </div>
           <button type="button" onClick={() => setRevealedKey(null)} className={cn(buttonClass.primary, 'mt-3')}>
@@ -107,10 +118,10 @@ export function ApiKeysManager({ initialKeys, apiBase, readOnly }: { initialKeys
         </div>
       )}
 
-      <section className="rounded-2xl border border-border bg-card">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
+      <section className="rounded-xl border border-border bg-card">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3 sm:px-5">
           <InfoHint hint={t('listHint')} rowClassName="font-semibold">
-            <h2 className="flex items-center gap-2 text-sm font-bold">
+            <h2 className="flex items-center gap-2 font-bold">
               <KeyRound className="h-4 w-4 text-primary" />
               {t('listTitle')}
             </h2>
@@ -123,13 +134,13 @@ export function ApiKeysManager({ initialKeys, apiBase, readOnly }: { initialKeys
           )}
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] border-collapse text-sm">
+          <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="border-b border-border text-left text-xs text-muted-foreground">
                 <th className="px-4 py-2.5 font-medium">{t('columns.name')}</th>
-                <th className="px-4 py-2.5 font-medium">{t('columns.prefix')}</th>
-                <th className="px-4 py-2.5 font-medium">{t('columns.lastUsed')}</th>
-                <th className="px-4 py-2.5 font-medium">{t('columns.created')}</th>
+                <th className="hidden px-4 py-2.5 font-medium sm:table-cell">{t('columns.prefix')}</th>
+                <th className="hidden px-4 py-2.5 font-medium md:table-cell">{t('columns.lastUsed')}</th>
+                <th className="hidden px-4 py-2.5 font-medium md:table-cell">{t('columns.created')}</th>
                 <th className="px-4 py-2.5 font-medium">{t('columns.status')}</th>
                 <th className="px-4 py-2.5" />
               </tr>
@@ -137,8 +148,8 @@ export function ApiKeysManager({ initialKeys, apiBase, readOnly }: { initialKeys
             <tbody>
               {visible.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
-                    {t('empty')}
+                  <td colSpan={6} className="p-0">
+                    <EmptyState framed={false} icon={KeyRound} title={t('empty')} />
                   </td>
                 </tr>
               )}
@@ -147,15 +158,15 @@ export function ApiKeysManager({ initialKeys, apiBase, readOnly }: { initialKeys
                 return (
                   <tr key={key.id} className={cn('border-b border-border last:border-b-0', revoked && 'opacity-60')}>
                     <td className="px-4 py-3 font-medium">{key.name}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{key.keyPrefix}••••</td>
-                    <td className="px-4 py-3 tabular-nums text-muted-foreground">{key.lastUsedAt ? dateFormatter.format(new Date(key.lastUsedAt)) : t('neverUsed')}</td>
-                    <td className="px-4 py-3 tabular-nums text-muted-foreground">{dateFormatter.format(new Date(key.createdAt))}</td>
+                    <td className="hidden px-4 py-3 font-mono text-xs text-muted-foreground sm:table-cell">{key.keyPrefix}••••</td>
+                    <td className="hidden px-4 py-3 tabular-nums text-muted-foreground md:table-cell">{key.lastUsedAt ? dateFormatter.format(new Date(key.lastUsedAt)) : t('neverUsed')}</td>
+                    <td className="hidden px-4 py-3 tabular-nums text-muted-foreground md:table-cell">{dateFormatter.format(new Date(key.createdAt))}</td>
                     <td className="px-4 py-3">
-                      <span className={cn('inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium', revoked ? 'bg-muted text-muted-foreground' : 'bg-success/15 text-success')}>
+                      <span className={cn('text-xs font-semibold', revoked ? 'text-muted-foreground' : 'text-success')}>
                         {revoked ? t('statusRevoked') : t('statusActive')}
                       </span>
                       {isReadOnlyKey(key) && (
-                        <span className="ml-1.5 inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">{t('readOnlyBadge')}</span>
+                        <span className="text-xs text-muted-foreground"> · {t('readOnlyBadge')}</span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -206,12 +217,12 @@ export function ApiKeysManager({ initialKeys, apiBase, readOnly }: { initialKeys
                   </InfoHint>
                 </div>
                 <div className="flex gap-2">
+                  <button type="button" onClick={() => setFormOpen(false)} disabled={generating} className={buttonClass.secondary}>
+                    {t('generate.cancel')}
+                  </button>
                   <button type="submit" disabled={generating || name.trim().length === 0} className={buttonClass.primary}>
                     {generating && <Loader2 className="h-4 w-4 animate-spin" />}
                     {generating ? t('generate.generating') : t('generate.submit')}
-                  </button>
-                  <button type="button" onClick={() => setFormOpen(false)} disabled={generating} className={buttonClass.ghost}>
-                    {t('generate.cancel')}
                   </button>
                 </div>
               </form>
@@ -225,9 +236,9 @@ export function ApiKeysManager({ initialKeys, apiBase, readOnly }: { initialKeys
         )}
       </section>
 
-      <section className="rounded-2xl border border-border bg-card p-4">
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
         <InfoHint hint={t('usage.hint')} rowClassName="font-semibold">
-          <h2 className="text-sm font-bold">{t('usage.title')}</h2>
+          <h2 className="font-bold">{t('usage.title')}</h2>
         </InfoHint>
         <p className="mt-1 text-sm text-muted-foreground">{t('usage.description')}</p>
         <div className="relative mt-3">

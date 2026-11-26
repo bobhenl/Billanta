@@ -4,6 +4,7 @@ import { EmailService } from "../email/email.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import { InvoiceRemindersRepository } from "./invoice-reminders.repository";
 import { computeInvoiceTotal, formatInvoiceAmount } from "./invoice-total.util";
+import { amountLeftToPay, isRemindableDocument } from "./invoice-reminders.util";
 
 /**
  * Daily overdue-payment-reminder digest, built on `invoices.public_token` /
@@ -45,7 +46,11 @@ export class InvoiceRemindersCron {
           continue;
         }
 
-        const total = computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge });
+        // The query already filters these; a reminder for a credit note or quote would ask for money that is not owed.
+        if (!isRemindableDocument(invoice.documentType)) continue;
+        // After a partial payment the reminder asks only for what is left.
+        const left = amountLeftToPay(computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge }), invoice.amountPaid);
+        if (left <= 0) continue;
 
         try {
           // Suspended/paused companies and ones over today's cap get nothing sent; retried tomorrow.
@@ -54,11 +59,13 @@ export class InvoiceRemindersCron {
             {
               to: contactEmail,
               invoiceNumber: invoice.invoiceNumber ?? invoice.id,
-              amount: formatInvoiceAmount(total, invoice.currency),
+              amount: formatInvoiceAmount(left, invoice.currency),
               dueDate: invoice.dueDate,
               publicLink,
               clientPortalLink,
               reminderCount: invoice.reminderCount + 1,
+              language: invoice.language,
+              documentType: invoice.documentType,
               credit,
               ...(custom ? { custom } : {}),
             },

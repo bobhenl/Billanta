@@ -38,7 +38,7 @@ export function MarketingNavMenu({ label, items }: { label: string; items: { hre
   }, []);
 
   return (
-    <details ref={ref} className="group relative">
+    <details ref={ref} data-menu className="group relative">
       <summary className="flex cursor-pointer list-none items-center gap-1 rounded-full px-3 py-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground group-open:text-foreground [&::-webkit-details-marker]:hidden">
         {label}
         <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" aria-hidden="true" />

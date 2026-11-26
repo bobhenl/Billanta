@@ -1,12 +1,17 @@
 import { ConflictException, Injectable, Logger, NotFoundException, Optional } from "@nestjs/common";
 import { sql } from "drizzle-orm";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import * as schema from "../../drizzle/schema";
 import { czechAccountToIban, generateQrInvoiceString } from "@faktur/cz-compliance";
 import { DbService } from "../db/db.service";
+import { drizzleTx } from "../db/drizzle-tx";
+import { InvoicesService } from "../invoices/invoices.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import { EmailService } from "../email/email.service";
 import { ABUSE_PAUSE_THRESHOLD } from "../abuse/sending-guard";
 import { resolveInvoiceToken } from "../public-links/resolve";
 import { showsBrandCredit } from "../invoices/brand-credit";
+import { computeVatBreakdown, type InvoiceVatBreakdown } from "../invoices/invoice-total.util";
 
 export type AbuseReason = "fraud" | "not_ordered" | "spam" | "other";
 
@@ -38,12 +43,13 @@ type PublicInvoiceHeaderRow = {
   payment_instructions: string | null;
 };
 
-type PublicInvoiceLineItemRow = {
+export type PublicInvoiceLineItemRow = {
   description: string;
   quantity: string;
   unit_price: string;
   vat_rate: string | null;
   sort_order: number;
+  discount_percent?: string | null;
 };
 
 type PublicInvoiceSupplierRow = {
@@ -72,6 +78,7 @@ export interface PublicInvoiceLineItemView {
   quantity: number;
   unitPrice: number;
   vatRate: number | null;
+  discountPercent: number;
   sortOrder: number;
 }
 
@@ -168,6 +175,7 @@ export class PublicInvoicesService {
     private readonly dbService: DbService,
     @Optional() private readonly notifications?: NotificationsService,
     @Optional() private readonly email?: EmailService,
+    @Optional() private readonly invoices?: InvoicesService,
   ) {}
 
   /**
@@ -288,28 +296,16 @@ export class PublicInvoicesService {
       quantity: Number(row.quantity),
       unitPrice: Number(row.unit_price),
       vatRate: row.vat_rate != null ? Number(row.vat_rate) : null,
+      discountPercent: Number(row.discount_percent ?? 0),
       sortOrder: row.sort_order,
     }));
 
-    const subtotal = lineItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
-    const vatTotal = lineItems.reduce(
-      (sum, item) => sum + (item.quantity * item.unitPrice * (item.vatRate ?? 0)) / 100,
-      0,
-    );
-
     const supplierRow = supplierRows[0];
     const qr = qrRows[0];
-    const total = roundMinor(subtotal + vatTotal);
+    const breakdown = publicInvoiceBreakdown(lineItemRows, qr?.reverse_charge === true);
+    const total = breakdown.totalWithVat;
     let qrInvoice: string | null = null;
     if (header.invoice_number && header.issue_date && qr) {
-      const byRate = new Map<number, { base: number; vat: number }>();
-      for (const item of lineItems) {
-        const rate = item.vatRate ?? 0;
-        const line = byRate.get(rate) ?? { base: 0, vat: 0 };
-        line.base += item.quantity * item.unitPrice;
-        line.vat += (item.quantity * item.unitPrice * rate) / 100;
-        byRate.set(rate, line);
-      }
       qrInvoice = generateQrInvoiceString({
         invoiceNumber: header.invoice_number,
         issueDate: new Date(header.issue_date),
@@ -324,7 +320,7 @@ export class PublicInvoicesService {
         customerIco: qr.customer_ico ?? undefined,
         customerDic: qr.customer_dic ?? undefined,
         vatLines: qr.supplier_vat_payer
-          ? [...byRate].map(([rate, v]) => ({ rate, base: roundMinor(v.base), vat: roundMinor(v.vat) }))
+          ? breakdown.byRate.map((r) => ({ rate: r.vatRatePercent, base: r.totalWithoutVat, vat: r.vatAmount }))
           : [],
         documentType: qr.document_type === "proforma" ? 0 : qr.document_type === "credit_note" ? 1 : undefined,
         advance: qr.document_type === "proforma",
@@ -347,8 +343,8 @@ export class PublicInvoicesService {
       currency: header.currency,
       status: header.status,
       lineItems,
-      subtotal: roundMinor(subtotal),
-      vatTotal: roundMinor(vatTotal),
+      subtotal: breakdown.totalWithoutVat,
+      vatTotal: breakdown.totalVat,
       total,
       amountPaid: Number(header.amount_paid ?? 0),
       paymentMethod: header.payment_method,
@@ -383,6 +379,29 @@ export class PublicInvoicesService {
     };
   }
 
+  /**
+   * The invoice PDF for the /i/ page, the same document the dashboard renders.
+   * The token passes exactly the view's checks (link resolution, suspended
+   * company, `get_public_invoice_view`); drafts have no number and are 404 too.
+   * The tenant id comes from that SECURITY DEFINER row, and the render then
+   * runs in an ordinary RLS-scoped transaction for that tenant only.
+   */
+  async generatePdf(link: string): Promise<{ filename: string; content: Buffer }> {
+    const token = await resolveInvoiceToken(this.dbService.db, link);
+    if (!token || !this.invoices || (await this.isBlocked(token))) throw new NotFoundException("Invoice not found");
+    const rows = await this.dbService.db.execute<{ id: string; tenant_id: string; invoice_number: string | null; status: string }>(
+      sql`SELECT id, tenant_id, invoice_number, status FROM get_public_invoice_view(${token})`,
+    );
+    const hit = rows[0];
+    if (!hit || !hit.invoice_number || ["draft", "pending_review"].includes(hit.status)) throw new NotFoundException("Invoice not found");
+    const invoices = this.invoices;
+    const content = await this.dbService.sql.begin(async (tx) => {
+      await tx`SELECT set_config('app.current_tenant_id', ${hit.tenant_id}, true)`;
+      return invoices.generateInvoicePdf(drizzleTx(tx, schema) as PostgresJsDatabase<typeof schema>, hit.tenant_id, hit.id);
+    });
+    return { filename: pdfFilename(hit.invoice_number), content: content as Buffer };
+  }
+
   /** One portal attachment by token + id (`get_public_invoice_attachment`); 404 for anything else. */
   async downloadAttachment(link: string, attachmentId: string) {
     const token = UUID_PATTERN.test(attachmentId) ? await resolveInvoiceToken(this.dbService.db, link) : null;
@@ -396,8 +415,26 @@ export class PublicInvoicesService {
   }
 }
 
-function roundMinor(amount: number): number {
-  return Math.round(amount * 100) / 100;
+/** `<invoice number>.pdf`, safe inside a quoted Content-Disposition filename (ASCII only, no quotes or path parts). */
+export function pdfFilename(invoiceNumber: string): string {
+  const base = invoiceNumber
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .replace(/[^A-Za-z0-9._-]+/g, "-")
+    .replace(/^[.-]+|[.-]+$/g, "")
+    .slice(0, 64);
+  return `${base || "invoice"}.pdf`;
+}
+
+/**
+ * The /i/ page totals, computed exactly like the PDF (computeVatBreakdown):
+ * line discounts taken off, no VAT under reverse charge, rounded per rate.
+ */
+export function publicInvoiceBreakdown(rows: PublicInvoiceLineItemRow[], reverseCharge: boolean): InvoiceVatBreakdown {
+  return computeVatBreakdown(
+    rows.map((row) => ({ quantity: row.quantity, unitPrice: row.unit_price, vatRate: row.vat_rate, discountPercent: row.discount_percent ?? null })),
+    { reverseCharge },
+  );
 }
 
 /** Whether the /i/ page shows the "Vystaveno v Billantě" line, from `get_public_invoice_brand_credit`. */

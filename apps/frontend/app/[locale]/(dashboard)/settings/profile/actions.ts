@@ -8,34 +8,15 @@ import { cookies } from 'next/headers';
 import { auth, hashSessionToken, signOut } from '@/auth';
 import { mintBackendToken } from '@/lib/backend-token';
 import { passwordProblem } from '@/lib/password';
+import { signedInRecently, verifyPassword } from '@/lib/reauth';
 import { db } from '@/lib/db';
 import { sessions, users, verificationTokens } from '@/lib/auth-schema';
-import { sendEmailChangeEmail } from '@/lib/email';
+import { emailLocaleOf, sendEmailChangeEmail } from '@/lib/email';
 import { SITE_URL } from '@/lib/site';
 
 export type ProfileResult = { ok: true } | { ok: false; error: string; company?: string };
 
 const BCRYPT_COST_FACTOR = 12;
-
-/**
- * An account without a password has nothing to re-enter before a sensitive
- * change, so it needs a sign-in from the last few minutes instead. Otherwise
- * a stolen session cookie could set a password, move the email to the thief's
- * inbox or delete the account.
- */
-const REAUTH_WINDOW_MS = 10 * 60 * 1000;
-
-async function signedInRecently(userId: string): Promise<boolean> {
-  const jar = await cookies();
-  const raw = jar.get('__Secure-authjs.session-token')?.value ?? jar.get('authjs.session-token')?.value;
-  if (!raw) return false;
-  const [fresh] = await db
-    .select({ userId: sessions.userId })
-    .from(sessions)
-    .where(and(eq(sessions.sessionToken, hashSessionToken(raw)), eq(sessions.userId, userId), gt(sessions.createdAt, new Date(Date.now() - REAUTH_WINDOW_MS))))
-    .limit(1);
-  return Boolean(fresh);
-}
 
 async function currentUserId(): Promise<string | null> {
   const session = await auth();
@@ -95,21 +76,13 @@ const BACKEND_URL = (process.env.BACKEND_URL ?? 'http://localhost:3000').replace
 const EMAIL_CHANGE_TTL_MS = 60 * 60 * 1000; // 1 hour, same as password reset
 const EMAIL_CHANGE_PREFIX = 'email-change:';
 
-/** Re-checks the local password (if the account has one) before a sensitive change. */
-async function verifyPassword(userId: string, password: string): Promise<{ email: string } | 'wrong_current' | 'reauth_required' | null> {
-  const [user] = await db.select({ email: users.email, passwordHash: users.passwordHash }).from(users).where(eq(users.id, userId)).limit(1);
-  if (!user) return null;
-  if (user.passwordHash && !(await bcrypt.compare(password, user.passwordHash))) return 'wrong_current';
-  if (!user.passwordHash && !(await signedInRecently(userId))) return 'reauth_required';
-  return { email: user.email };
-}
 
 /**
  * Change of sign-in email (idea from faktorio, MIT © Jiri Spac): sends a
  * one-hour confirmation link to the NEW address; nothing changes until it is
  * opened (`app/api/auth/confirm-email`). The pending change lives in
  * `verification_tokens` as `email-change:<userId>:<newEmail>` + SHA-256 of
- * the token — the same storage the password-reset flow uses.
+ * the token – the same storage the password-reset flow uses.
  */
 export async function requestEmailChange(password: string, newEmailRaw: string, locale: string): Promise<ProfileResult> {
   const refused = await refuseDemo();
@@ -136,10 +109,10 @@ export async function requestEmailChange(password: string, newEmailRaw: string, 
     expires: new Date(Date.now() + EMAIL_CHANGE_TTL_MS)
   });
 
-  const lang = ['cs', 'sk', 'en'].includes(locale) ? locale : 'cs';
+  const lang = emailLocaleOf(locale);
   const confirmUrl = `${SITE_URL}/api/auth/confirm-email?token=${rawToken}&locale=${lang}`;
   try {
-    await sendEmailChangeEmail({ to: newEmail, confirmUrl, userId, validMinutes: EMAIL_CHANGE_TTL_MS / 60_000 });
+    await sendEmailChangeEmail({ to: newEmail, confirmUrl, userId, validMinutes: EMAIL_CHANGE_TTL_MS / 60_000, locale: lang });
   } catch (error) {
     console.error('Failed to queue email change confirmation', error);
     await db.delete(verificationTokens).where(like(verificationTokens.identifier, `${EMAIL_CHANGE_PREFIX}${userId}:%`));

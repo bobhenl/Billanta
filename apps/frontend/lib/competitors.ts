@@ -117,7 +117,7 @@ export function rowsFor(locale: string): { key: string; good: BrandKey[] }[] {
 }
 
 /** The homepage teaser: the rows people ask about first, out of the same data. */
-export const TEASER_ROW_KEYS = ['free', 'entry', 'ai', 'bank', 'taxEstimate', 'import', 'recurring'] as const;
+export const TEASER_ROW_KEYS = ['free', 'entry', 'ai', 'taxEstimate'] as const;
 
 /** "říjen 2026" for the "verified" note; mid-month so no time zone tips it into the previous month. */
 export function comparedAtLabel(locale: string): string {

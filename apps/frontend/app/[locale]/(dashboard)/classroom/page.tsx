@@ -4,6 +4,7 @@ import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
 import { auth } from '@/auth';
 import { Link, redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
+import { InfoHint } from '@/components/info-hint';
 import { ApiError, apiFetch, NotSignedInError } from '@/lib/api-client';
 import { classroomEnabled, type ClassSummary, type TeacherStatus } from '@/lib/classroom';
 import { ApplyForm } from './apply-form';
@@ -35,9 +36,11 @@ export default async function ClassroomPage() {
   }
 
   const { teacher, school } = status;
-  const header = (
+  const title = <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>;
+  // A newcomer applying needs the intro; an approved teacher already knows it.
+  const intro = (
     <div>
-      <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
+      {title}
       <p className="mt-1 text-sm text-muted-foreground">{t('description')}</p>
     </div>
   );
@@ -45,7 +48,7 @@ export default async function ClassroomPage() {
   if (!teacher || teacher.status === 'rejected') {
     return (
       <div className="mx-auto max-w-2xl">
-        {header}
+        {intro}
         {teacher?.status === 'rejected' && <Banner tone="err" title={t('rejected.title')} className="mt-5">{t('rejected.body')}</Banner>}
         <ApplyForm />
       </div>
@@ -55,7 +58,7 @@ export default async function ClassroomPage() {
   if (teacher.status === 'pending') {
     return (
       <div className="mx-auto max-w-2xl">
-        {header}
+        {intro}
         <Banner tone="info" title={t('pending.title')} className="mt-5">
           {t('pending.body', { school: school?.name ?? '' })}
         </Banner>
@@ -72,7 +75,7 @@ export default async function ClassroomPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      {header}
+      <InfoHint hint={t('description')}>{title}</InfoHint>
       {school?.suspended && (
         <Banner tone="warn" title={t('suspended.title')} className="mt-5">
           {t('suspended.body')}

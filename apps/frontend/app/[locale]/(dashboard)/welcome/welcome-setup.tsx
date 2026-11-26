@@ -1,16 +1,17 @@
 'use client';
 
-import { useEffect, useState, useTransition } from 'react';
-import { BadgeCheck, Bot, Check, Download, FileQuestion, FileSpreadsheet, Landmark, Loader2, Receipt, Save, Timer, type LucideIcon } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useEffect, useMemo, useState, useTransition } from 'react';
+import { BadgeCheck, Bot, Check, Lock, Download, FileQuestion, FileSpreadsheet, Landmark, Loader2, Receipt, Save, Timer, type LucideIcon } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
-import { buttonClass } from '@/components/modal';
+import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { BUSINESS_PRESETS, presetForModules, TOGGLEABLE_MODULES, type ModuleSet, type ToggleableModule } from '@/lib/business-presets';
 import { RegistryPicker, useCompanyRegistry } from '@/components/registry-picker';
 import { Typeahead } from '@/components/typeahead';
 import { fetchContactSearch } from '@/components/company-lookup';
 import { hasSlowRegistryPart, registryForCountry, type RegistryPart } from '@/lib/company-lookup';
+import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 import { forgetGuestInvoices, readGuestInvoices, type GuestInvoiceBody } from '@/lib/guest-invoices';
 import type { AresPrefill } from '../invoices/new/types';
@@ -41,10 +42,14 @@ export function WelcomeSetup({
   company,
   importApps,
   initialImportFrom,
-  managesClients = false
+  managesClients = false,
+  countries
 }: {
   initialModules: ModuleSet;
-  company: { ico: string; vatPayer: boolean; country: string };
+  /** `country` is the tax country; locked once an invoice was issued (the backend refuses a change then). */
+  company: { ico: string; vatPayer: boolean; country: string; countryLocked: boolean };
+  /** "Where is your business registered?": the active countries first, the rest shown as coming soon. */
+  countries: { code: string; active: boolean }[];
   importApps: { key: string; name: string }[];
   initialImportFrom: string | null;
   /** Ticked "Spravuji účetnictví pro klienty" at sign-up: land on the accountant profile, not the dashboard. */
@@ -54,7 +59,14 @@ export function WelcomeSetup({
   const t = useTranslations('welcome');
   const tm = useTranslations('settings.modules');
   const tLookup = useTranslations('companyLookup');
+  const locale = useLocale();
   const router = useRouter();
+  const [country, setCountry] = useState(company.country);
+  const regionName = useMemo(() => {
+    const names = new Intl.DisplayNames([locale], { type: 'region' });
+    return (code: string) => names.of(code) ?? code;
+  }, [locale]);
+  const canPick = (code: string) => !company.countryLocked && countries.some((c) => c.code === code && c.active);
   const [query, setQuery] = useState(company.ico);
   const [registry, setRegistry] = useCompanyRegistry();
   const [picked, setPicked] = useState<AresPrefill | null>(null);
@@ -100,7 +112,7 @@ export function WelcomeSetup({
 
   // Name, own name (OSVČ) or IČO, in ARES, RPO, VIES or a foreign register (same search as a new invoice's customer).
   // ARES hits at once, the slow Slovak name search appended when it answers.
-  const effectiveRegistry = registry === 'auto' ? registryForCountry(company.country) : registry;
+  const effectiveRegistry = registry === 'auto' ? registryForCountry(country) : registry;
   const fetchCompanies = (part: RegistryPart) => async (q: string) => {
     if (part === 'slow' && !hasSlowRegistryPart(q, effectiveRegistry)) return [];
     const { ares } = await fetchContactSearch(q, effectiveRegistry, part);
@@ -111,6 +123,9 @@ export function WelcomeSetup({
     setPicked(hit);
     setQuery(hit.legalName);
     if (hit.isVatPayer != null) setVatPayer(hit.isVatPayer);
+    // A company found in the Slovak register is almost surely registered there.
+    const found = hit.addressCountry?.toUpperCase();
+    if (found && canPick(found)) setCountry(found);
   };
 
   const companyPatch = (hit: AresPrefill): AresPatch => ({
@@ -128,9 +143,12 @@ export function WelcomeSetup({
       await carryOver();
       const patch: AresPatch = { dic_vat_payer: vatPayer, ...(picked ? companyPatch(picked) : {}) };
       if (!picked && /^\d{8}$/.test(query.trim())) patch.ico = query.trim();
+      if (country !== company.country) patch.country = country;
       const [c, m] = await Promise.all([updateCompany(patch), updateModules(modules)]);
       if (!c.ok || !m.ok) {
-        toast({ text: `${t('failed')}: ${(!c.ok ? c.error : !m.ok ? m.error : '') || ''}`, tone: 'err' });
+        const error = !c.ok ? c.error : !m.ok ? m.error : '';
+        const reason = error === 'country_locked' ? t('countryLocked') : error === 'country_not_supported' ? t('countryNotSupported') : error;
+        toast({ text: `${t('failed')}: ${reason || ''}`, tone: 'err' });
         return;
       }
       toast({ text: t('saved'), tone: 'ok' });
@@ -138,17 +156,22 @@ export function WelcomeSetup({
       router.refresh();
     });
 
-  const step = (n: number, title: string, hint?: string) => (
+  // The why of each question sits behind an (i), so the screen reads as three short questions.
+  const step = (n: number, title: string, hint: string) => (
     <div className="flex items-start gap-3">
       <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
         {n}
       </span>
-      <div>
+      <InfoHint hint={hint} className="min-w-0 flex-1 pt-0.5" bodyClassName="text-xs">
         <h2 className="font-bold">{title}</h2>
-        {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
-      </div>
+      </InfoHint>
     </div>
   );
+  const choice = (on: boolean) =>
+    cn(
+      'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
+      on ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:text-foreground'
+    );
 
   return (
     <div className="mx-auto max-w-2xl space-y-5 pb-10">
@@ -173,6 +196,48 @@ export function WelcomeSetup({
 
       <section className="space-y-3 rounded-xl border border-border bg-card p-4">
         {step(1, t('companyTitle'), t('companyHint'))}
+        <div>
+          <p className="mb-1.5 text-sm font-medium">{t('countryQuestion')}</p>
+          {company.countryLocked ? (
+            <p className="flex items-center gap-1.5 text-sm">
+              <Lock className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+              <span className="font-semibold">{regionName(country)}</span>
+              <span className="text-xs text-muted-foreground">{t('countryLocked')}</span>
+            </p>
+          ) : (
+            <>
+              <div className="flex flex-wrap gap-2">
+                {countries.map((c) =>
+                  c.active ? (
+                    <button
+                      key={c.code}
+                      type="button"
+                      aria-pressed={country === c.code}
+                      onClick={() => setCountry(c.code)}
+                      className={cn(
+                        'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
+                        country === c.code ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:text-foreground'
+                      )}
+                    >
+                      {country === c.code && <Check className="h-4 w-4" />}
+                      {regionName(c.code)}
+                    </button>
+                  ) : (
+                    <span
+                      key={c.code}
+                      aria-disabled="true"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-border px-3 py-1.5 text-sm text-muted-foreground"
+                    >
+                      {regionName(c.code)}
+                      <span className="text-[10px] font-semibold uppercase tracking-wide">{t('countrySoon')}</span>
+                    </span>
+                  )
+                )}
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">{t('countryHint')}</p>
+            </>
+          )}
+        </div>
         <div className="flex gap-2">
           <Typeahead<AresPrefill>
             className="min-w-0 flex-1"
@@ -208,9 +273,9 @@ export function WelcomeSetup({
             {[picked.legalName, [picked.addressStreet, picked.addressCity].filter(Boolean).join(', ')].filter(Boolean).join(' · ')}
           </p>
         )}
-        <div>
-          <p className="mb-1.5 text-sm font-medium">{t('vatQuestion')}</p>
-          <div className="inline-flex rounded-lg border border-border p-0.5">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-sm font-medium">{t('vatQuestion')}</p>
+          <div className="inline-flex rounded-lg border border-border p-0.5" role="group" aria-label={t('vatQuestion')}>
             {[true, false].map((v) => (
               <button
                 key={String(v)}
@@ -248,37 +313,35 @@ export function WelcomeSetup({
             </button>
           ))}
         </div>
-      </section>
-
-      <section className="space-y-3 rounded-xl border border-border bg-card p-4">
-        {step(3, t('modulesTitle'), t('modulesHint'))}
-        <div className="flex flex-wrap gap-2">
-          {TOGGLEABLE_MODULES.map((m) => {
-            const Icon = ICONS[m];
-            const on = modules[m];
-            return (
-              <button
-                key={m}
-                type="button"
-                aria-pressed={on}
-                title={tm(`items.${m}.description`)}
-                onClick={() => setModules({ ...modules, [m]: !on })}
-                className={cn(
-                  'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
-                  on ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:text-foreground'
-                )}
-              >
-                {on ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
-                {tm(`items.${m}.title`)}
-              </button>
-            );
-          })}
+        {/* The modules follow the preset; this row is only for fine-tuning it, so it shares the step. */}
+        <div className="border-t border-border pt-3">
+          <InfoHint hint={t('modulesHint')} className="mb-2" bodyClassName="text-xs">
+            <p className="text-sm font-medium">{t('modulesTitle')}</p>
+          </InfoHint>
+          <div className="flex flex-wrap gap-2">
+            {TOGGLEABLE_MODULES.map((m) => {
+              const Icon = ICONS[m];
+              const on = modules[m];
+              return (
+                <button
+                  key={m}
+                  type="button"
+                  aria-pressed={on}
+                  title={tm(`items.${m}.description`)}
+                  onClick={() => setModules({ ...modules, [m]: !on })}
+                  className={choice(on)}
+                >
+                  {on ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
+                  {tm(`items.${m}.title`)}
+                </button>
+              );
+            })}
+          </div>
         </div>
-        <p className="text-xs text-muted-foreground">{t('later')}</p>
       </section>
 
       <section className="space-y-3 rounded-xl border border-border bg-card p-4">
-        {step(4, t('importTitle'), t('importHint'))}
+        {step(3, t('importTitle'), t('importHint'))}
         <div className="flex flex-wrap gap-2">
           {[{ key: null, name: t('importNone') }, ...importApps, { key: 'excel', name: t('importOther') }].map((app) => (
             <button
@@ -286,10 +349,7 @@ export function WelcomeSetup({
               type="button"
               aria-pressed={importFrom === app.key}
               onClick={() => setImportFrom(app.key)}
-              className={cn(
-                'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
-                importFrom === app.key ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:text-foreground'
-              )}
+              className={choice(importFrom === app.key)}
             >
               {importFrom === app.key ? <Check className="h-4 w-4" /> : app.key === 'excel' && <FileSpreadsheet className="h-4 w-4" />}
               {app.name}
@@ -298,11 +358,11 @@ export function WelcomeSetup({
         </div>
       </section>
 
-      <div className="flex flex-wrap justify-end gap-2">
-        <button type="button" className={buttonClass.secondary} disabled={saving} onClick={skip}>
+      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <button type="button" className={cn(buttonClass.secondary, 'h-10')} disabled={saving} onClick={skip}>
           {t('skip')}
         </button>
-        <button type="button" className={buttonClass.primary} disabled={saving} onClick={finish}>
+        <button type="button" className={cn(buttonClass.primary, 'h-10')} disabled={saving} onClick={finish}>
           {saving && <Loader2 className="h-4 w-4 animate-spin" />}
           {importFrom ? t('finishImport') : t('finish')}
         </button>

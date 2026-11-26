@@ -10,12 +10,12 @@ import { SITE_NAME } from '@/lib/site';
  * Directory/browse page for the `/invoicing/[slug]` municipality landing
  * pages. This exists so every municipality page is reachable through real
  * on-site links (country -> region -> municipality), not only through
- * `app/sitemap.ts` — genuine crawlable internal linking is part of this
+ * `app/sitemap.ts` – genuine crawlable internal linking is part of this
  * feature's doorway-page mitigation, alongside the honesty notes on the
  * municipality pages themselves (see that file's top comment).
  */
 
-export const revalidate = 2592000; // 30 days — same rationale as the [slug] page.
+export const revalidate = 2592000; // 30 days – same rationale as the [slug] page.
 
 type Params = { locale: string };
 
@@ -37,95 +37,91 @@ export default async function MunicipalityIndexPage({ params }: { params: Promis
   const total = getAllMunicipalities().filter((m) => !country || m.country === country).length;
 
   return (
-    <>
-        <section className="container py-16 sm:py-24">
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={jsonLd([
-              webPageLd(locale, '/invoicing', 'CollectionPage', t('indexTitle'), t('indexLead')),
-              breadcrumbLd(locale, [
-                [SITE_NAME, '/'],
-                [t('breadcrumbBrowse'), '/invoicing']
-              ])
-            ])}
-          />
-          <h1 className="max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">
-            {t('indexTitle')}
-          </h1>
-          <p className="mt-4 max-w-2xl text-lg text-muted-foreground">{t('indexLead')}</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {t('indexCoverageNote', { count: total })}
-            {country && (
-              <>
-                {' '}
-                <Link href="/invoicing" locale={country === 'CZ' ? 'sk' : 'cs'} className="font-medium text-primary hover:underline">
-                  {t('otherCountry')}
-                </Link>
-              </>
-            )}
-          </p>
+    <section className="container py-12 sm:py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLd([
+          webPageLd(locale, '/invoicing', 'CollectionPage', t('indexTitle'), t('indexLead')),
+          breadcrumbLd(locale, [
+            [SITE_NAME, '/'],
+            [t('breadcrumbBrowse'), '/invoicing']
+          ])
+        ])}
+      />
+      <h1 className="max-w-2xl text-3xl font-extrabold tracking-tight sm:text-4xl">{t('indexTitle')}</h1>
+      <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{t('indexLead')}</p>
+      <p className="mt-2 text-sm text-muted-foreground">
+        {t('indexCoverageNote', { count: total })}
+        {country && (
+          <>
+            {' '}
+            <Link href="/invoicing" locale={country === 'CZ' ? 'sk' : 'cs'} className="font-medium text-primary hover:underline">
+              {t('otherCountry')}
+            </Link>
+          </>
+        )}
+      </p>
 
-          {country === 'SK' && <SkEinvoicingCallout className="mt-8 max-w-2xl" />}
+      {country === 'SK' && <SkEinvoicingCallout className="mt-8 max-w-2xl" />}
 
-          <div className="mt-12 grid gap-10 lg:grid-cols-2">
-            {groups.map((group) => {
-              const anchorId = regionAnchorId(group.country, group.region);
-              const countryLabel = group.country === 'CZ' ? t('countryCz') : t('countrySk');
-              const major = group.municipalities.filter(isMajorMunicipality);
+      <div className="mt-12 grid gap-10 lg:grid-cols-2">
+        {groups.map((group) => {
+          const anchorId = regionAnchorId(group.country, group.region);
+          const countryLabel = group.country === 'CZ' ? t('countryCz') : t('countrySk');
+          const major = group.municipalities.filter(isMajorMunicipality);
 
-              return (
-                <section
-                  key={anchorId}
-                  id={anchorId}
-                  className="scroll-mt-20 rounded-lg border border-border bg-card p-6 shadow-sm"
-                >
-                  <h2 className="font-semibold text-card-foreground">
-                    {group.region} <span className="font-normal text-muted-foreground">– {countryLabel}</span>
-                  </h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {t('regionMunicipalityCount', { count: group.municipalities.length })}
-                  </p>
+          return (
+            <section
+              key={anchorId}
+              id={anchorId}
+              className="scroll-mt-20 rounded-xl border border-border bg-card p-5"
+            >
+              <h2 className="font-bold">
+                {group.region} <span className="font-normal text-muted-foreground">– {countryLabel}</span>
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {t('regionMunicipalityCount', { count: group.municipalities.length })}
+              </p>
 
-                  {major.length > 0 && (
-                    <>
-                      <h3 className="mt-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('majorTowns')}</h3>
-                      <ul className="mt-2 flex flex-wrap gap-2">
-                        {major.map((m) => (
-                          <li key={m.slug}>
-                            <Link
-                              href={`/invoicing/${m.slug}`}
-                              className="inline-block rounded-full border border-border px-3 py-1 text-sm text-foreground hover:border-primary hover:text-primary"
-                            >
-                              {m.name}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </>
-                  )}
+              {major.length > 0 && (
+                <>
+                  <h3 className="mt-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('majorTowns')}</h3>
+                  <ul className="mt-2 grid gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
+                    {major.map((m) => (
+                      <li key={m.slug}>
+                        <Link
+                          href={`/invoicing/${m.slug}`}
+                          className="text-sm hover:text-primary hover:underline"
+                        >
+                          {m.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
 
-                  <details className="mt-4 group">
-                    <summary className="cursor-pointer text-sm font-medium text-primary">
-                      {t('expandListLabel')}
-                    </summary>
-                    <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-sm">
-                      {group.municipalities.map((m) => (
-                        <li key={m.slug}>
-                          <Link
-                            href={`/invoicing/${m.slug}`}
-                            className="text-muted-foreground transition-colors hover:text-foreground hover:underline"
-                          >
-                            {m.name}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </details>
-                </section>
-              );
-            })}
-          </div>
-        </section>
-      </>
+              <details className="mt-4 group">
+                <summary className="cursor-pointer text-sm font-medium text-primary">
+                  {t('expandListLabel')}
+                </summary>
+                <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-sm">
+                  {group.municipalities.map((m) => (
+                    <li key={m.slug}>
+                      <Link
+                        href={`/invoicing/${m.slug}`}
+                        className="text-muted-foreground transition-colors hover:text-foreground hover:underline"
+                      >
+                        {m.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            </section>
+          );
+        })}
+      </div>
+    </section>
   );
 }

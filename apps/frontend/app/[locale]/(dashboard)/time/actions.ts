@@ -88,7 +88,7 @@ function backendMessage(error: unknown): string {
       const message = Array.isArray(body.message) ? body.message.join(', ') : body.message ?? body.error;
       if (typeof message === 'string') return message;
     } catch {
-      // not JSON — fall through
+      // not JSON: fall through
     }
     return `HTTP ${error.status}`;
   }

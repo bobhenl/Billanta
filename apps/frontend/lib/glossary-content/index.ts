@@ -1,3 +1,4 @@
+import { contentLocale } from '@/i18n/locales';
 import { CS } from './cs';
 import { EN } from './en';
 import { SK } from './sk';
@@ -7,12 +8,12 @@ export type { GlossaryText } from './types';
 
 const TEXTS: Record<string, GlossaryTexts> = { cs: CS, sk: SK, en: EN };
 
-/** The term's text in `locale`, or undefined where it has none (a Czech-only term in Slovak). */
+/** The term's text in `locale`, or undefined where it has none (a Czech-only term in Slovak). Locales without texts of their own read English. */
 export function glossaryText(locale: string, slug: string): GlossaryText | undefined {
-  return TEXTS[locale]?.[slug];
+  return TEXTS[contentLocale(locale)]?.[slug];
 }
 
 /** All texts of one language, keyed by slug. */
 export function glossaryTexts(locale: string): GlossaryTexts {
-  return TEXTS[locale] ?? {};
+  return TEXTS[contentLocale(locale)] ?? {};
 }

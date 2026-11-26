@@ -7,7 +7,8 @@ import { apiFetch, NotSignedInError } from '@/lib/api-client';
 import { clientIp } from '@/lib/client-ip';
 import { PROMO_CODE, PROMO_COOKIE } from '@/lib/promo';
 import { lookupJoinCode } from '@/lib/promo-join';
-import { canManage, fetchMyAccess, fetchTenant } from '@/lib/tenant';
+import { onboardingCountries } from '@faktur/cz-compliance';
+import { canManage, fetchMyAccess, fetchTenant, taxCountryOf } from '@/lib/tenant';
 import { BUSINESS_PRESETS, TOGGLEABLE_MODULES, type ModuleSet } from '@/lib/business-presets';
 import { isSwitchBrand, SWITCH_COOKIE, switchBrandsFor } from '@/lib/switch';
 import { WelcomeSetup } from './welcome-setup';
@@ -30,6 +31,12 @@ async function promoPreset(): Promise<string | null> {
   return r && Date.now() - new Date(r.createdAt).getTime() < 24 * 60 * 60 * 1000 ? r.businessPreset : null;
 }
 
+/** The country switch: packs listed as "coming soon" only when EXTRA_COUNTRIES names them (or says `all`). */
+function previewCountries(): string[] | 'all' {
+  const raw = (process.env.EXTRA_COUNTRIES ?? '').trim();
+  return raw.toLowerCase() === 'all' ? 'all' : raw.split(',').map((c) => c.trim()).filter(Boolean);
+}
+
 /** First screen after signup: a few questions that decide which parts of the app show up. */
 export default async function WelcomePage() {
   const locale = await getLocale();
@@ -45,7 +52,8 @@ export default async function WelcomePage() {
     return (
       <WelcomeSetup
         initialModules={modules}
-        company={{ ico: tenant?.ico ?? '', vatPayer: tenant?.dicVatPayer ?? false, country: tenant?.addressCountry ?? 'CZ' }}
+        company={{ ico: tenant?.ico ?? '', vatPayer: tenant?.dicVatPayer ?? false, country: taxCountryOf(tenant), countryLocked: tenant?.countryLocked ?? false }}
+        countries={onboardingCountries(previewCountries())}
         importApps={switchBrandsFor(locale)}
         initialImportFrom={isSwitchBrand(from) ? from : null}
         managesClients={session?.managesClients ?? false}

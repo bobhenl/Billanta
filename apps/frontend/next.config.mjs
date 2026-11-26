@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import createNextIntlPlugin from 'next-intl/plugin';
 
 // The public site used Czech slugs before it went English. Old links and
@@ -7,7 +8,8 @@ const legacy = JSON.parse(readFileSync(new URL('./lib/legacy-slugs.json', import
 
 function legacyRedirects() {
   const out = [];
-  for (const prefix of ['/:locale(cs|sk|en)', '']) {
+  // Same list as i18n/locales.ts (this file can't import TypeScript).
+  for (const prefix of ['/:locale(cs|sk|en|de|pl|uk|hu|ro|fr|es|it|nl|pt)', '']) {
     const to = prefix ? '/:locale' : '';
     for (const [from, slug] of Object.entries(legacy.features)) {
       out.push({ source: `${prefix}/funkce/${from}`, destination: `${to}/features/${slug}`, permanent: true });
@@ -29,12 +31,20 @@ const backendUrl = (process.env.BACKEND_URL ?? 'http://localhost:3000').replace(
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Fixed when the image is built, so a tab from before a deploy can tell (components/update-notice.tsx).
+  env: { NEXT_PUBLIC_BUILD_STAMP: process.env.NEXT_PUBLIC_BUILD_STAMP ?? String(Date.now()) },
   // Caddy already strips `Server`; no reason to announce the framework either.
   poweredByHeader: false,
+  // Rendered pages are cached in memory with a size cap, not on disk: the
+  // on-demand municipality pages once filled the VPS disk (cache-handler.cjs).
+  cacheHandler: fileURLToPath(new URL('./cache-handler.cjs', import.meta.url)),
+  cacheMaxMemorySize: 0,
   // Standalone output traces the minimal server + node_modules needed to run
   // `node server.js` — lets apps/frontend/Dockerfile copy just that into a
   // slim runtime stage instead of the whole node_modules tree.
-  output: 'standalone',
+  // NEXT_STANDALONE=0 skips it for a local `next start`: the standalone copy
+  // needs symlinks, which Windows refuses without Developer Mode.
+  output: process.env.NEXT_STANDALONE === '0' ? undefined : 'standalone',
   // The Docker build on the small VPS skips the type check and lint that
   // `next build` would repeat: they run locally before every deploy.
   typescript: { ignoreBuildErrors: process.env.SKIP_BUILD_CHECKS === '1' },

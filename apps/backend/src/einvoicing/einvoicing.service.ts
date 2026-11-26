@@ -12,6 +12,7 @@ import { InvoicesService } from "../invoices/invoices.service";
 import type { DeliveryStatusUpdate, EInvoiceProvider, IncomingDocument, WebhookRequest } from "./einvoice-provider";
 import { applyStatusUpdate } from "./einvoice-status";
 import { parseIncomingUbl, partyEndpoint, type IncomingExpenseDraft } from "./incoming-ubl";
+import { tenantCountry } from "../tenants/home-currency";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 
@@ -51,7 +52,7 @@ export class EInvoicingService {
   async registerParticipant(db: TenantDb, tenantId: string) {
     const [tenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
     if (!tenant) throw new NotFoundException("tenant_not_found");
-    if (tenant.addressCountry !== "SK") throw new BadRequestException("einvoicing_sk_only");
+    if (tenantCountry(tenant) !== "SK") throw new BadRequestException("einvoicing_sk_only");
     const dic = skDic({ dic: tenant.dic ?? undefined });
     if (!dic) throw new BadRequestException("einvoicing_dic_required");
     const participantId = `0245:${dic}`;

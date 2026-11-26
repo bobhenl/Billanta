@@ -34,6 +34,32 @@ export async function matchTransaction(id: string, invoiceId: string) {
   return post(tx(id, 'match'), { invoiceId });
 }
 
+export type RematchResult = { ok: true; checked: number; matched: number; linked: number } | { ok: false; error: string };
+
+/** Runs auto-match again over unmatched payments; paid invoices are only linked, never changed. */
+export async function rematchTransactions(): Promise<RematchResult> {
+  try {
+    const result = await apiFetch<{ checked: number; matched: number; linked: number }>('/api/v1/bank-reconciliation/rematch', { method: 'POST' });
+    revalidatePath('/[locale]/(dashboard)', 'layout');
+    return { ok: true, ...result };
+  } catch (error) {
+    return { ok: false, error: errorCode(error) };
+  }
+}
+
+export type DraftFromPaymentResult = { ok: true; invoiceId: string } | { ok: false; error: string };
+
+/** A pending_review draft from an unmatched incoming payment, linked to it. Never issued here. */
+export async function draftInvoiceFromTransaction(id: string): Promise<DraftFromPaymentResult> {
+  try {
+    const result = await apiFetch<{ invoiceId: string }>(tx(id, 'draft-invoice'), { method: 'POST' });
+    revalidatePath('/[locale]/(dashboard)', 'layout');
+    return { ok: true, invoiceId: result.invoiceId };
+  } catch (error) {
+    return { ok: false, error: errorCode(error) };
+  }
+}
+
 export async function ignoreTransaction(id: string) {
   return post(tx(id, 'ignore'));
 }
@@ -44,13 +70,15 @@ export async function restoreTransaction(id: string) {
 
 export interface BankConnection {
   id: string;
-  provider: 'fio' | 'enable_banking' | 'paypal';
+  provider: 'fio' | 'enable_banking' | 'paypal' | 'stripe';
   status: 'pending' | 'active' | 'expired';
   label: string | null;
   accountNumber: string | null;
   bankName: string | null;
   bankCountry: string | null;
   consentExpiresAt: string | null;
+  /** PSD2: the account's currency (Revolut's sub-accounts share one IBAN). */
+  currency?: string | null;
   enabled: boolean;
   lastSyncedAt: string | null;
   lastError: string | null;
@@ -63,8 +91,12 @@ export type SyncResult = { ok: true; total: number; matched: number; pending: bo
 function errorCode(error: unknown): string {
   if (error instanceof ApiError) {
     try {
-      const parsed = JSON.parse(error.body) as { error?: unknown };
-      if (typeof parsed.error === 'string') return parsed.error;
+      const parsed = JSON.parse(error.body) as { error?: unknown; message?: unknown };
+      // Nest puts the code in `error` ({ error: "fio_token_format" }) or, for a plain
+      // `new ForbiddenException("two_factor_required")`, in `message` next to error "Forbidden".
+      for (const value of [parsed.error, parsed.message]) {
+        if (typeof value === 'string' && /^[a-z_]+$/.test(value)) return value;
+      }
     } catch {
       // not JSON
     }
@@ -102,11 +134,28 @@ export async function connectPaypal(input: { clientId: string; secret: string; s
   });
 }
 
+/** Stripe restricted key (rk_…); the backend checks it with one balance transactions call. */
+export async function connectStripe(input: { secretKey: string; label: string }): Promise<ActionResult> {
+  return call(`${connections}/stripe`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ secretKey: input.secretKey.trim(), label: input.label.trim() || null })
+  });
+}
+
 export async function setBankConnectionEnabled(id: string, enabled: boolean): Promise<ActionResult> {
   return call(`${connections}/${encodeURIComponent(id)}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ enabled })
+  });
+}
+
+export async function editBankConnection(id: string, input: { label: string }): Promise<ActionResult> {
+  return call(`${connections}/${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ label: input.label.trim() || null })
   });
 }
 
@@ -122,6 +171,24 @@ export async function syncBankConnection(id: string): Promise<SyncResult> {
     });
     revalidatePath('/[locale]/(dashboard)', 'layout');
     return { ok: true, total: result.total, matched: result.matched, pending: result.pending === true };
+  } catch (error) {
+    return { ok: false, error: errorCode(error) };
+  }
+}
+
+export type BackfillResult =
+  | { ok: true; total: number; matched: number; netUpdated: number }
+  | { ok: false; error: string };
+
+/** PayPal or Stripe history from `from` ("2026-01-01"); the backend caps it at three years and never drafts invoices from it. */
+export async function backfillBankConnection(id: string, from: string): Promise<BackfillResult> {
+  try {
+    const result = await apiFetch<{ total: number; matched: number; netUpdated?: number }>(
+      `${connections}/${encodeURIComponent(id)}/backfill`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ from }) }
+    );
+    revalidatePath('/[locale]/(dashboard)', 'layout');
+    return { ok: true, total: result.total, matched: result.matched, netUpdated: result.netUpdated ?? 0 };
   } catch (error) {
     return { ok: false, error: errorCode(error) };
   }

@@ -5,16 +5,20 @@ import { Landmark, Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { Modal, buttonClass, inputClass } from '@/components/modal';
+import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
+import { cn } from '@/lib/utils';
 import { type BankAccount, bankAccountLine } from '@/lib/bank-account';
 import { deleteBankAccount, saveBankAccount } from '../actions';
+import { BankCodeOptions } from '@/components/bank-code-options';
+import { editAccount } from '@/lib/bank-account-input';
 
 const CURRENCIES = ['EUR', 'USD', 'GBP', 'CZK', 'PLN', 'CHF', 'HUF'];
 
 type Draft = { label: string; accountNumber: string; bankCode: string; iban: string; swift: string; currency: string };
 const EMPTY: Draft = { label: '', accountNumber: '', bankCode: '', iban: '', swift: '', currency: '' };
 
-/** Extra accounts besides the primary one — e.g. an EUR account used automatically on EUR invoices. */
+/** Extra accounts besides the primary one – e.g. an EUR account used automatically on EUR invoices. */
 export function BankAccounts({ accounts, readOnly }: { accounts: BankAccount[]; readOnly: boolean }) {
   const t = useTranslations('settings.company.accounts');
   const router = useRouter();
@@ -37,7 +41,15 @@ export function BankAccounts({ accounts, readOnly }: { accounts: BankAccount[]; 
         : EMPTY
     });
 
-  const set = (key: keyof Draft, value: string) => setEditing((e) => (e ? { ...e, draft: { ...e.draft, [key]: value } } : e));
+  const set = (key: keyof Draft, value: string) =>
+    setEditing((e) => {
+      if (!e) return e;
+      const field = key === 'accountNumber' ? 'number' : key === 'bankCode' ? 'code' : key === 'iban' ? 'iban' : null;
+      if (!field) return { ...e, draft: { ...e.draft, [key]: value } };
+      const d = e.draft;
+      const a = editAccount({ number: d.accountNumber, code: d.bankCode, iban: d.iban, swift: d.swift }, field, value);
+      return { ...e, draft: { ...d, accountNumber: a.number, bankCode: a.code, iban: a.iban, swift: a.swift } };
+    });
 
   const save = () => {
     if (!editing) return;
@@ -92,14 +104,13 @@ export function BankAccounts({ accounts, readOnly }: { accounts: BankAccount[]; 
   return (
     <div id="bank-accounts" className="mt-5 scroll-mt-20 border-t border-border pt-4">
       <div className="flex items-center justify-between gap-3">
-        <div>
+        <InfoHint hint={t('hint')} className="min-w-0">
           <h3 className="text-sm font-bold">{t('title')}</h3>
-          <p className="text-xs text-muted-foreground">{t('hint')}</p>
-        </div>
+        </InfoHint>
         {!readOnly && (
-          <button type="button" className={buttonClass.secondary} onClick={() => open()}>
+          <button type="button" className={cn(buttonClass.secondary, 'shrink-0')} onClick={() => open()} title={t('add')} aria-label={t('add')}>
             <Plus className="h-4 w-4" />
-            {t('add')}
+            <span className="hidden sm:inline">{t('add')}</span>
           </button>
         )}
       </div>
@@ -113,12 +124,12 @@ export function BankAccounts({ accounts, readOnly }: { accounts: BankAccount[]; 
                 <div className="flex flex-wrap items-center gap-2 font-semibold">
                   {a.label}
                   {a.currency && (
-                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-bold text-primary">
+                    <span className="text-xs font-medium text-primary">
                       {t('autoFor', { currency: a.currency })}
                     </span>
                   )}
                 </div>
-                <div className="truncate font-mono text-xs text-muted-foreground">
+                <div className="break-all font-mono text-xs text-muted-foreground">
                   {bankAccountLine(a)}
                   {a.accountNumber && a.iban ? ` · ${a.iban}` : ''}
                   {a.swift ? ` · ${a.swift}` : ''}
@@ -126,10 +137,10 @@ export function BankAccounts({ accounts, readOnly }: { accounts: BankAccount[]; 
               </div>
               {!readOnly && (
                 <>
-                  <button type="button" className={buttonClass.ghost} onClick={() => open(a)} aria-label={t('edit')}>
+                  <button type="button" className={buttonClass.ghost} onClick={() => open(a)} title={t('edit')} aria-label={t('edit')}>
                     <Pencil className="h-4 w-4" />
                   </button>
-                  <button type="button" className={buttonClass.ghost} onClick={() => setConfirmDelete(a)} aria-label={t('delete')}>
+                  <button type="button" className={buttonClass.ghost} onClick={() => setConfirmDelete(a)} title={t('delete')} aria-label={t('delete')}>
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </>
@@ -158,12 +169,15 @@ export function BankAccounts({ accounts, readOnly }: { accounts: BankAccount[]; 
         <div className="grid gap-3 sm:grid-cols-4">
           {field('label', t('label'), { placeholder: t('labelPlaceholder'), maxLength: 100, autoFocus: true }, 'sm:col-span-4')}
           {field('accountNumber', t('accountNumber'), { placeholder: '123456789', maxLength: 17 }, 'sm:col-span-3')}
-          {field('bankCode', t('bankCode'), { placeholder: '0100', maxLength: 4, inputMode: 'numeric' }, 'sm:col-span-1')}
+          {field('bankCode', t('bankCode'), { placeholder: '0100', maxLength: 4, inputMode: 'numeric', list: 'extra-bank-codes' }, 'sm:col-span-1')}
+          <BankCodeOptions id="extra-bank-codes" />
           {field('iban', 'IBAN', { maxLength: 42 }, 'sm:col-span-3')}
           {field('swift', 'SWIFT / BIC', { maxLength: 11 }, 'sm:col-span-1')}
-          <label className="block text-sm sm:col-span-4">
-            <span className="mb-1 block font-medium">{t('currency')}</span>
-            <select className={inputClass} value={editing?.draft.currency ?? ''} onChange={(e) => set('currency', e.target.value)}>
+          <div className="block text-sm sm:col-span-4">
+            <InfoHint hint={t('currencyHint')} className="mb-1">
+              <span className="font-medium">{t('currency')}</span>
+            </InfoHint>
+            <select className={inputClass} aria-label={t('currency')} value={editing?.draft.currency ?? ''} onChange={(e) => set('currency', e.target.value)}>
               <option value="">{t('currencyNone')}</option>
               {CURRENCIES.map((c) => (
                 <option key={c} value={c}>
@@ -171,8 +185,7 @@ export function BankAccounts({ accounts, readOnly }: { accounts: BankAccount[]; 
                 </option>
               ))}
             </select>
-            <span className="mt-1 block text-xs text-muted-foreground">{t('currencyHint')}</span>
-          </label>
+          </div>
         </div>
       </Modal>
 

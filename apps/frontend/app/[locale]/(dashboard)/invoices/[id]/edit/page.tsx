@@ -42,6 +42,7 @@ interface DetailResponse {
     reverseChargeCode: string | null;
     exchangeRate: string | null;
     bankAccountId: string | null;
+    amountPaid: string | null;
   };
   contact: Contact | null;
   items: { description: string; quantity: string; unit: string | null; code: string | null; unitPrice: string; vatRate: string | null; discountPercent: string | null }[];
@@ -114,13 +115,14 @@ export default async function EditInvoicePage(props: {
 
   return (
     <div className="mx-auto max-w-6xl">
-      <h1 className="text-2xl font-extrabold tracking-tight">
+      <h1 className="break-words text-2xl font-extrabold tracking-tight">
         {issuedEdit ? t('editIssuedTitle', { number: invoice.invoiceNumber ?? '' }) : t('editTitle')}
       </h1>
-      <p className="mt-1 text-sm text-muted-foreground">{issuedEdit ? t('editIssuedLead') : t('editLead')}</p>
-      <div className="mt-6">
+      {/* A draft can change freely, which goes without saying; an issued one keeps its number and logs the reason. */}
+      {issuedEdit && <p className="mt-1 text-sm text-muted-foreground">{t('editIssuedLead')}</p>}
+      <div className="mt-4">
         <InvoiceForm
-          mode={{ kind: 'edit', id: invoice.id, issued: issuedEdit, reason: issuedEdit ? searchParams.reason?.slice(0, 1000) : undefined }}
+          mode={{ kind: 'edit', id: invoice.id, issued: issuedEdit, reason: issuedEdit ? searchParams.reason?.slice(0, 1000) : undefined, amountPaid: Number(invoice.amountPaid ?? 0) }}
           defaults={defaults} ai={ai} starred={starred} template={template} />
       </div>
     </div>

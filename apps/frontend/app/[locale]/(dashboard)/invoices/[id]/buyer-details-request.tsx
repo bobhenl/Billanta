@@ -5,6 +5,7 @@ import { CheckCircle2, Clock, Copy, Link2, Send, UserPen, UserSearch, X } from '
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
+import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import type { BuyerDetailsOutcome } from '@/lib/invoice-ui';
 import { cancelBuyerDetails, requestBuyerDetails } from '../actions';
@@ -137,13 +138,17 @@ export function BuyerDetailsRequest({
     >
       <p className="text-sm text-muted-foreground">{t('dialogHint')}</p>
       <label className="mt-4 block text-sm">
-        <span className="mb-1 block font-medium">{t('emailLabel')}</span>
+        <InfoHint hint={t('emailHint')} className="mb-1">
+          <span className="font-medium">{t('emailLabel')}</span>
+        </InfoHint>
         <input className={inputClass} type="email" value={to} onChange={(e) => setTo(e.target.value)} placeholder={t('emailPlaceholder')} maxLength={200} />
-        <span className="mt-1 block text-xs text-muted-foreground">{t('emailHint')}</span>
       </label>
       <fieldset className="mt-4 text-sm">
-        <legend className="mb-1 font-medium">{t('requiredLabel')}</legend>
-        <p className="mb-2 text-xs text-muted-foreground">{t('requiredHint')}</p>
+        <legend className="mb-2 font-medium">
+          <InfoHint hint={t('requiredHint')}>
+            <span>{t('requiredLabel')}</span>
+          </InfoHint>
+        </legend>
         <div className="flex flex-wrap gap-x-4 gap-y-2">
           {FIELDS.map((f) => (
             <label key={f} className="inline-flex items-center gap-2">
@@ -161,10 +166,9 @@ export function BuyerDetailsRequest({
       </fieldset>
       <label className="mt-4 flex items-start gap-2 text-sm">
         <input type="checkbox" className="mt-1" checked={auto} onChange={(e) => setAuto(e.target.checked)} />
-        <span>
-          <span className="block font-medium">{t('autoIssue')}</span>
-          <span className="block text-xs text-muted-foreground">{t('autoIssueHint')}</span>
-        </span>
+        <InfoHint hint={t('autoIssueHint')}>
+          <span className="font-medium">{t('autoIssue')}</span>
+        </InfoHint>
       </label>
       {token && !submittedAt && <p className="mt-4 text-xs text-warning">{t('replaceNote')}</p>}
     </Modal>

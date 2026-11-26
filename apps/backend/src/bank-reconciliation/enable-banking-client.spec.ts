@@ -7,11 +7,29 @@ import {
   extractVariableSymbol,
   parseTransactions,
   signAppJwt,
+  psd2BackfillFrom,
 } from "./enable-banking-client";
 
 const { privateKey, publicKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
 const pem = privateKey.export({ type: "pkcs8", format: "pem" }).toString();
 const config = { appId: "app-123", privateKey: pem, baseUrl: "https://api.example.test" };
+
+describe("psd2BackfillFrom", () => {
+  const now = new Date("2026-11-26T14:00:00Z");
+
+  it("starts at the beginning of the requested UTC day", () => {
+    expect(psd2BackfillFrom(new Date("2026-01-15T18:30:00Z"), now)).toEqual(new Date("2026-01-15T00:00:00Z"));
+  });
+
+  it("clamps an older day to two years back", () => {
+    expect(psd2BackfillFrom(new Date("2020-01-01T00:00:00Z"), now)).toEqual(new Date("2024-11-26T00:00:00Z"));
+  });
+
+  it("refuses a day that is not in the past", () => {
+    expect(psd2BackfillFrom(new Date("2026-12-01T00:00:00Z"), now)).toBeNull();
+    expect(psd2BackfillFrom(new Date("invalid"), now)).toBeNull();
+  });
+});
 
 describe("extractVariableSymbol", () => {
   it("reads common CZ/SK remittance forms", () => {
@@ -61,6 +79,28 @@ describe("parseTransactions", () => {
       counterpartyName: "Odběratel s.r.o.",
     });
     expect(rows[0]!.transactionDate.toISOString()).toBe("2026-09-30T00:00:00.000Z");
+  });
+
+  it("takes debits as negative movements to the payee when asked", () => {
+    const out = parseTransactions(
+      "acc-1",
+      [
+        {
+          entry_reference: "D1",
+          transaction_amount: { amount: "1500", currency: "CZK" },
+          credit_debit_indicator: "DBIT",
+          status: "BOOK",
+          booking_date: "2026-11-20",
+          creditor: { name: "Google Ireland" },
+          creditor_account: { iban: "IE00GOOG0000000000000" },
+          remittance_information: ["Google Ads 123-456"],
+        },
+      ],
+      true,
+    );
+    expect(out).toEqual([
+      expect.objectContaining({ externalId: "psd2:acc-1:D1", amount: "-1500.00", counterpartyName: "Google Ireland", message: "Google Ads 123-456" }),
+    ]);
   });
 
   it("fingerprints movements without a bank reference", () => {

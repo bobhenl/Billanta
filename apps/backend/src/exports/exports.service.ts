@@ -16,6 +16,7 @@ import { ReportRates } from "./uniform-rate";
 import { csvCell } from "./csv-cell";
 import {
   generateDphDp3,
+  generateDphDp3Identified,
   generateDphKh1,
   generateDphShv,
   submitterFromTenant,
@@ -25,6 +26,7 @@ import {
   type VatReceivedDoc,
 } from "./vat-returns";
 import { generateSkDphV25, generateSkKvDphV25, generateSkSvDphV20, skSubmitterFromTenant } from "./vat-returns-sk";
+import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 
 type Db = PostgresJsDatabase<typeof schema>;
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
@@ -301,7 +303,7 @@ export class ExportsService {
   async invoicesCsv(db: Db, period: ExportPeriod, filters: ReportFilters = {}, dateBy: ExportDateBy = "issue"): Promise<string> {
     const rows = await this.loadInvoices(db, period, filters, dateBy);
     // RLS scopes this to the caller's own company — its number variables feed the formulas.
-    const [tenant] = await db.select({ templateVars: schema.tenants.templateVars, country: schema.tenants.addressCountry }).from(schema.tenants).limit(1);
+    const [tenant] = await db.select({ templateVars: schema.tenants.templateVars, country: schema.tenants.country }).from(schema.tenants).limit(1);
     return invoicesCsvBody(rows, templateVarsOf(tenant?.templateVars), homeCurrencyOf(tenant?.country));
   }
 
@@ -331,7 +333,7 @@ export class ExportsService {
     const invoices = await this.loadInvoices(db, period);
     const expenses = await this.loadExpenses(db, period);
     const packId = `billanta-${isoDate(period.from)}`;
-    const home = homeCurrencyOf(tenant.addressCountry);
+    const home = tenantHomeCurrencyOf(tenant);
 
     const partner = (c: ContactRow | null) =>
       c
@@ -460,7 +462,7 @@ export class ExportsService {
   async moneyS3Xml(db: Db, period: ExportPeriod, tenant: typeof schema.tenants.$inferSelect): Promise<string> {
     const invoices = await this.loadInvoices(db, period);
     const expenses = await this.loadExpenses(db, period);
-    const home = homeCurrencyOf(tenant.addressCountry);
+    const home = tenantHomeCurrencyOf(tenant);
 
     const issued = invoices.map(({ invoice, contact, lineItems, totals }) => {
       const foreign = invoice.currency !== home;
@@ -570,6 +572,8 @@ export class ExportsService {
     db: Db,
     period: ExportPeriod,
     toHome: (currency: string, stored: string | null, date: Date) => Promise<number> = (c, s, d) => this.rateFor("CZK", c, s, d),
+    /** Also return expenses without a VAT rate (with no parts): the identified-person return warns about foreign ones. */
+    withUntaxed = false,
   ) {
     const duzp = sql<Date>`coalesce(${schema.invoices.taxableSupplyDate}, ${schema.invoices.issueDate})`;
     const rows = await db
@@ -643,24 +647,29 @@ export class ExportsService {
         and(
           gte(schema.expenses.expenseDate, period.from),
           lt(schema.expenses.expenseDate, period.to),
-          ne(schema.expenses.vatRate, "0"),
+          withUntaxed ? undefined : ne(schema.expenses.vatRate, "0"),
         ),
       )
       .orderBy(asc(schema.expenses.expenseDate));
     const received: VatReceivedDoc[] = [];
     for (const { expense, contact } of expenseRows) {
-      const rate = await toHome(expense.currency, expense.exchangeRate, expense.expenseDate);
       const vatRate = Number(expense.vatRate);
-      const { base, vat } = expenseVatParts(Number(expense.amount) * rate, vatRate, expense.reverseCharge);
-      received.push({
+      const doc = {
         number: expense.documentNumber ?? "",
         supplierDic: expense.supplierDic ?? contact?.dic ?? null,
+        supplierCountry: contact?.addressCountry ?? null,
         taxableDate: expense.expenseDate,
         reverseCharge: expense.reverseCharge,
         reverseChargeCode: expense.reverseChargeCode,
-        parts: [{ ratePercent: vatRate, base, vat }],
-        totalCzk: base + vat,
-      });
+      };
+      // Nothing to convert, and no rate lookup that could fail the export.
+      if (vatRate === 0) {
+        received.push({ ...doc, parts: [], totalCzk: 0 });
+        continue;
+      }
+      const rate = await toHome(expense.currency, expense.exchangeRate, expense.expenseDate);
+      const { base, vat } = expenseVatParts(Number(expense.amount) * rate, vatRate, expense.reverseCharge);
+      received.push({ ...doc, parts: [{ ratePercent: vatRate, base, vat }], totalCzk: base + vat });
     }
     return { issued, received };
   }
@@ -786,8 +795,14 @@ export class ExportsService {
     vatPeriod: VatPeriod,
     tenant: typeof schema.tenants.$inferSelect,
   ): Promise<{ body: string | null; warnings: VatExportWarning[] }> {
-    const { issued, received } = await this.loadVatDocs(db, period);
+    const identified = tenant.vatStatus === "identified";
+    const { issued, received } = await this.loadVatDocs(db, period, undefined, identified && kind === "dp3");
     const submitter = submitterFromTenant(tenant);
+    // The controller only lets an identified person ask for a monthly DP3 or SHV.
+    if (kind === "dp3" && identified && "month" in vatPeriod) {
+      const { xml, warnings } = generateDphDp3Identified({ issued, received, submitter, period: vatPeriod });
+      return { body: xml, warnings };
+    }
     if (kind === "dp3") return { body: generateDphDp3({ issued, received, submitter, period: vatPeriod }), warnings: [] };
     if (kind === "kh1") {
       const { xml, warnings } = generateDphKh1({ issued, received, submitter, period: vatPeriod });

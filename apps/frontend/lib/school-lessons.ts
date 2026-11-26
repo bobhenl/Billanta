@@ -17,6 +17,7 @@ import {
   BellRing,
   type LucideIcon
 } from 'lucide-react';
+import { contentLocale } from '@/i18n/locales';
 import type { DemoKind } from '@/lib/demo';
 import { scenarioKind, type DemoScenarioKey } from '@/lib/demo-scenarios';
 
@@ -124,9 +125,9 @@ const loaders: Record<string, () => Promise<{ default: LessonFile }>> = {
   en: () => import('@/content/school-lessons/en.json') as Promise<{ default: LessonFile }>
 };
 
-/** Server-only: the lesson text in one language (undefined where it is not published). */
+/** Server-only: the lesson text in one language (undefined where it is not published); English for a locale without lessons of its own. */
 export async function lessonContent(slug: string, locale: string): Promise<LessonContent | undefined> {
-  const load = loaders[locale];
+  const load = loaders[contentLocale(locale)];
   if (!load) return undefined;
   return (await load()).default[slug];
 }

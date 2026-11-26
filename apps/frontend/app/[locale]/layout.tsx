@@ -10,7 +10,8 @@ import { SessionProvider } from '@/components/session-provider';
 import { ToastFromQuery, Toaster } from '@/components/toaster';
 import { Suspense } from 'react';
 import { SITE_URL } from '@/lib/site';
-import { OG_IMAGE } from '@/lib/seo';
+import { OG_IMAGE, UNINDEXED_LOCALE } from '@/lib/seo';
+import { isIndexedLocale } from '@/i18n/locales';
 import { publicClientMessages } from '@/lib/client-messages';
 import '../globals.css';
 
@@ -66,7 +67,10 @@ export async function generateMetadata({
       card: 'summary_large_image'
     },
     applicationName: t('name'),
-    formatDetection: { telephone: false }
+    formatDetection: { telephone: false },
+    // The fallback for pages without robots of their own; middleware.ts
+    // sends the same as X-Robots-Tag.
+    ...(isIndexedLocale(locale) ? {} : { robots: UNINDEXED_LOCALE })
   };
 }
 

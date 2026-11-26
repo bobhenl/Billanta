@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { ArrowLeftRight } from 'lucide-react';
-import { AmountField, parseAmount, ResultRow, SelectField } from '@/components/public-tools/fields';
+import { AmountField, parseAmount, ResultRow, SelectField, toolCard } from '@/components/public-tools/fields';
+import { cn } from '@/lib/utils';
 
 /**
  * Converter over the ČNB list the page fetched on the server (CZK per 1 unit).
@@ -31,7 +32,7 @@ export function FxConverter({ rates }: { rates: [string, number][] }) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-      <form className="space-y-4 rounded-xl border border-border bg-card p-5" onSubmit={(e) => e.preventDefault()}>
+      <form className={cn(toolCard, 'space-y-4')} onSubmit={(e) => e.preventDefault()}>
         <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-2">
           <SelectField label={t('fields.from')} value={from} onChange={setFrom} options={options} />
           <button
@@ -42,15 +43,15 @@ export function FxConverter({ rates }: { rates: [string, number][] }) {
             }}
             aria-label={t('fields.swap')}
             title={t('fields.swap')}
-            className="mb-0.5 inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
           >
             <ArrowLeftRight className="h-4 w-4" aria-hidden />
           </button>
           <SelectField label={t('fields.to')} value={to} onChange={setTo} options={options} />
         </div>
-        <AmountField label={`${t('fields.amount')} (${from})`} value={amount} onChange={setAmount} />
+        <AmountField label={t('fields.amount')} value={amount} onChange={setAmount} unit={from} />
       </form>
-      <section aria-live="polite" className="rounded-xl border border-border bg-card p-5">
+      <section aria-live="polite" className={toolCard}>
         <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{tc('resultTitle')}</h2>
         <dl className="mt-3 text-sm">
           <ResultRow label={`${number(value, 2)} ${from}`} value={`${number(result, 2)} ${to}`} strong />

@@ -1,17 +1,23 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
-import { Building2, Landmark, Loader2, Plus, RefreshCw, ShieldCheck, Trash2, Wallet } from 'lucide-react';
+import { Building2, ChevronDown, CreditCard, History, Landmark, Loader2, Pencil, Plus, RefreshCw, ShieldCheck, Trash2, Wallet } from 'lucide-react';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { useCanDo, useCanWrite } from '@/components/access-provider';
-import { useRouter } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
+import { importWordsOf, type BankRule } from '@/lib/bank-rules';
+import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
+import { STATEMENT_INPUT_ID } from './bank-import';
 import {
+  backfillBankConnection,
   connectFio,
   connectPaypal,
+  connectStripe,
   disconnectBank,
+  editBankConnection,
   listPsd2Banks,
   setBankConnectionEnabled,
   startPsd2Connection,
@@ -43,23 +49,38 @@ const KNOWN_ERRORS = [
   'psd2_no_accounts',
   'psd2_state_invalid',
   'paypal_credentials_invalid',
-  'paypal_reporting_disabled'
+  'paypal_reporting_disabled',
+  'backfill_range',
+  'backfill_unsupported',
+  'psd2_history_refused',
+  'stripe_key_format',
+  'stripe_key_invalid',
+  'stripe_permissions_missing'
 ];
+
+/** Same check as the backend: restricted keys only, never a full secret key. */
+const STRIPE_KEY = /^rk_(live|test)_[A-Za-z0-9]{16,}$/;
 
 /** Renewal is offered this long before the bank consent runs out. */
 const EXPIRY_WARNING_MS = 14 * 24 * 60 * 60 * 1000;
 
 /**
- * "Napojení na banku" — automatic download of incoming payments: Fio over
+ * "Napojení na banku" – automatic download of incoming payments: Fio over
  * its own API token, other banks over PSD2 (Enable Banking) with a consent
  * given at the bank. The backend syncs on its own; the button syncs now.
  */
 export function BankConnections({
   connections,
-  psd2
+  psd2,
+  canManage = false,
+  importRules = []
 }: {
   connections: BankConnection[];
   psd2: { available: boolean; countries: string[] };
+  /** The "only download" bank rules, for the "only Google" tag on a PSD2 account. */
+  importRules?: Pick<BankRule, 'action' | 'enabled' | 'conditions' | 'connectionId'>[];
+  /** Owner/admin: may download PayPal or Stripe history (an accountant may only sync). */
+  canManage?: boolean;
 }) {
   const t = useTranslations('bank.connections');
   const format = useFormatter();
@@ -72,7 +93,7 @@ export function BankConnections({
   // Syncing only fetches new transactions to match; adding, renewing, pausing and removing a connection is `bank.connections`.
   const canSync = useCanDo('bank.match') && canWriteBank;
   const canEdit = canWriteBank && canManageConnections;
-  const [mode, setMode] = useState<null | 'choose' | 'fio' | 'psd2' | 'paypal'>(null);
+  const [mode, setMode] = useState<null | 'choose' | 'fio' | 'psd2' | 'paypal' | 'stripe'>(null);
   const [token, setToken] = useState('');
   const [label, setLabel] = useState('');
   const [country, setCountry] = useState(psd2.countries[0] ?? 'CZ');
@@ -91,6 +112,21 @@ export function BankConnections({
   const [paypalId, setPaypalId] = useState('');
   const [paypalSecret, setPaypalSecret] = useState('');
   const [sandbox, setSandbox] = useState(false);
+  const [stripeKey, setStripeKey] = useState('');
+  const [backfillId, setBackfillId] = useState<string | null>(null);
+  const [editing, setEditing] = useState<{ id: string; label: string } | null>(null);
+  const [backfillFrom, setBackfillFrom] = useState(() => `${new Date().getFullYear()}-01-01`);
+  const today = new Date().toISOString().slice(0, 10);
+  // History goes three years back (PayPal's Transaction Search limit), two for a PSD2 bank; the backend clamps it the same way.
+  const oldestFor = (c: BankConnection) => {
+    const d = new Date();
+    if (c.provider === 'enable_banking') d.setDate(d.getDate() - 730);
+    else {
+      d.setFullYear(d.getFullYear() - 3);
+      d.setDate(d.getDate() + 1);
+    }
+    return d.toISOString().slice(0, 10);
+  };
 
   const errorText = (code: string) => (KNOWN_ERRORS.includes(code) ? t(`errors.${code}`) : t('errors.generic', { code }));
 
@@ -127,6 +163,23 @@ export function BankConnections({
       else toast({ text: result.total ? t('synced', { total: result.total, matched: result.matched }) : t('syncedNothing'), tone: 'ok' });
     });
 
+  const providerName = (c: BankConnection) =>
+    c.provider === 'stripe' ? 'Stripe' : c.provider === 'enable_banking' ? c.bankName || t('psd2.bankFallback') : 'PayPal';
+
+  const backfill = (c: BankConnection) =>
+    run(c.id, async () => {
+      const result = await backfillBankConnection(c.id, backfillFrom);
+      if (!result.ok) {
+        toast({ text: errorText(result.error), tone: 'err' });
+        return;
+      }
+      const text = result.total
+        ? t('paypal.backfillDone', { total: result.total, matched: result.matched })
+        : t('paypal.backfillNothing', { provider: providerName(c) });
+      toast({ text: result.netUpdated ? `${text} ${t('paypal.backfillNets', { count: result.netUpdated })}` : text, tone: 'ok' });
+      setBackfillId(null);
+    });
+
   const connect = () =>
     run('new', async () => {
       const result = await connectFio(token, label);
@@ -155,6 +208,19 @@ export function BankConnections({
       setMode(null);
     });
 
+  const connectStripeAccount = () =>
+    run('new', async () => {
+      const result = await connectStripe({ secretKey: stripeKey, label });
+      if (!result.ok) {
+        toast({ text: errorText(result.error), tone: 'err' });
+        return;
+      }
+      toast({ text: t('stripe.connected'), tone: 'ok' });
+      setStripeKey('');
+      setLabel('');
+      setMode(null);
+    });
+
   /** Leaves for the bank's consent screen; the bank returns to /bank/psd2-callback. */
   const goToBank = (key: string, input: Parameters<typeof startPsd2Connection>[0]) => {
     setBusyId(key);
@@ -178,6 +244,14 @@ export function BankConnections({
       if (!result.ok) toast({ text: errorText(result.error), tone: 'err' });
     });
 
+  const saveEdit = (c: BankConnection) =>
+    run(c.id, async () => {
+      if (!editing) return;
+      const result = await editBankConnection(c.id, { label: editing.label });
+      if (!result.ok) toast({ text: errorText(result.error), tone: 'err' });
+      else setEditing(null);
+    });
+
   const remove = (c: BankConnection) => {
     if (!window.confirm(t(c.provider === 'enable_banking' ? 'psd2.disconnectConfirm' : 'disconnectConfirm'))) return;
     run(c.id, async () => {
@@ -187,8 +261,14 @@ export function BankConnections({
   };
 
   const inputClass =
-    'w-full rounded-lg border border-input bg-background px-3 py-2 text-sm font-normal outline-none focus:border-primary focus:ring-2 focus:ring-primary/20';
+    'h-10 w-full rounded-lg border border-input bg-background px-3 text-sm font-normal outline-none focus:border-primary focus:ring-2 focus:ring-primary/20';
   const softButton = 'rounded-full bg-muted px-3 py-1.5 text-xs font-semibold hover:bg-accent hover:text-primary disabled:opacity-60';
+  // Sync is one split button: the main part syncs now, the chevron (PayPal, owner/admin)
+  // opens the date picker for older history.
+  const syncPart = 'relative inline-flex items-center gap-1.5 py-1.5 text-xs font-bold focus-visible:z-10 disabled:opacity-60';
+  const syncSolid = 'bg-primary text-primary-foreground hover:opacity-90';
+  const syncSoft = 'bg-muted hover:bg-accent hover:text-primary';
+  const historyFor = (c: BankConnection) => canManage && (c.provider === 'paypal' || c.provider === 'stripe' || c.provider === 'enable_banking');
   const primaryButton =
     'inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:opacity-90 disabled:opacity-60';
 
@@ -214,15 +294,16 @@ export function BankConnections({
       )}
 
       {mode === 'choose' && (
-        <div className="mt-3">
+        <div className="anim-fade mt-3">
           <p className="text-xs font-semibold">{t('chooseProvider')}</p>
-          <div className="mt-2 grid gap-2 sm:grid-cols-3">
+          <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {(
               [
                 psd2.available && { key: 'psd2', icon: Building2, title: t('providers.psd2.title'), text: t('providers.psd2.text') },
                 { key: 'fio', icon: Landmark, title: t('providers.fio.title'), text: t('providers.fio.text') },
-                { key: 'paypal', icon: Wallet, title: t('providers.paypal.title'), text: t('providers.paypal.text') }
-              ].filter(Boolean) as { key: 'psd2' | 'fio' | 'paypal'; icon: typeof Landmark; title: string; text: string }[]
+                { key: 'paypal', icon: Wallet, title: t('providers.paypal.title'), text: t('providers.paypal.text') },
+                { key: 'stripe', icon: CreditCard, title: t('providers.stripe.title'), text: t('providers.stripe.text') }
+              ].filter(Boolean) as { key: 'psd2' | 'fio' | 'paypal' | 'stripe'; icon: typeof Landmark; title: string; text: string }[]
             ).map(({ key, icon: Icon, title, text }) => (
               <button
                 key={key}
@@ -238,7 +319,18 @@ export function BankConnections({
               </button>
             ))}
           </div>
-          {!psd2.available && <p className="mt-2 text-[11px] text-muted-foreground">{t('otherBanks')}</p>}
+          {!psd2.available && (
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              {t('otherBanks')}{' '}
+              <button
+                type="button"
+                onClick={() => document.getElementById(STATEMENT_INPUT_ID)?.click()}
+                className="font-semibold text-primary hover:underline"
+              >
+                {t('uploadStatement')}
+              </button>
+            </p>
+          )}
           <button type="button" onClick={() => setMode(null)} className="mt-2 rounded-full bg-muted px-4 py-1.5 text-xs font-semibold hover:bg-accent">
             {t('cancel')}
           </button>
@@ -254,16 +346,21 @@ export function BankConnections({
             return (
               <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 py-2.5">
                 <div className="min-w-0">
-                  <div className="truncate text-sm font-semibold">
-                    {c.label || c.bankName || (c.provider === 'paypal' ? 'PayPal' : 'Fio banka')}
+                  {/* Wraps instead of truncating, so "paused"/"expired" never get cut off on a phone. */}
+                  <div className="break-words text-sm font-semibold">
+                    {c.label || c.bankName || (c.provider === 'paypal' ? 'PayPal' : c.provider === 'stripe' ? 'Stripe' : 'Fio banka')}
                     {c.label && c.bankName && <span className="ml-2 text-xs font-normal text-muted-foreground">{c.bankName}</span>}
                     {c.accountNumber && <span className="ml-2 font-mono text-xs font-normal text-muted-foreground">{c.accountNumber}</span>}
-                    {!c.enabled && (
-                      <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">{t('paused')}</span>
+                    {c.currency && (
+                      <span className="ml-2 rounded bg-muted px-1.5 py-0.5 text-[11px] font-bold text-foreground">{c.currency}</span>
                     )}
-                    {expired && (
-                      <span className="ml-2 rounded-full bg-destructive/10 px-2 py-0.5 text-[11px] font-medium text-destructive">{t('psd2.expired')}</span>
+                    {c.provider === 'enable_banking' && importWordsOf(importRules, c.id).length > 0 && (
+                      <span className="ml-2 text-xs font-medium text-primary">
+                        · {t('edit.filterOn', { words: importWordsOf(importRules, c.id).join(', ') })}
+                      </span>
                     )}
+                    {!c.enabled && <span className="ml-2 text-xs font-medium text-muted-foreground">· {t('paused')}</span>}
+                    {expired && <span className="ml-2 text-xs font-semibold text-destructive">· {t('psd2.expired')}</span>}
                   </div>
                   <div className={cn('text-xs', c.lastError ? 'text-destructive' : 'text-muted-foreground')}>
                     {c.lastError
@@ -272,14 +369,14 @@ export function BankConnections({
                         ? t('lastSynced', { when: format.relativeTime(new Date(c.lastSyncedAt)) })
                         : t('neverSynced')}
                     {expiresAt && !expired && (
-                      <span className={cn('ml-1', expiringSoon ? 'font-semibold text-amber-600 dark:text-amber-400' : 'text-muted-foreground')}>
+                      <span className={cn('ml-1', expiringSoon ? 'font-semibold text-warning' : 'text-muted-foreground')}>
                         · {t('psd2.consentUntil', { date: format.dateTime(expiresAt, { dateStyle: 'medium' }) })}
                       </span>
                     )}
                   </div>
                 </div>
-                {(canEdit || canSync) && (
-                <div className="flex items-center gap-1.5">
+                {(canEdit || canSync || canManage) && (
+                <div className="flex flex-wrap items-center gap-1.5">
                   {canEdit && (expired || expiringSoon) && (
                     <button type="button" disabled={pending || !c.bankName} onClick={() => renew(c)} className={primaryButton}>
                       {busyId === c.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ShieldCheck className="h-3.5 w-3.5" />}
@@ -287,19 +384,61 @@ export function BankConnections({
                     </button>
                   )}
                   {canSync && !expired && (
-                    <button
-                      type="button"
-                      disabled={pending}
-                      onClick={() => sync(c.id)}
-                      className={expiringSoon ? cn(softButton, 'inline-flex items-center gap-1.5') : primaryButton}
-                    >
-                      <RefreshCw className={cn('h-3.5 w-3.5', busyId === c.id && 'animate-spin')} />
-                      {t('sync')}
-                    </button>
+                    <div className="inline-flex">
+                      <button
+                        type="button"
+                        disabled={pending}
+                        onClick={() => sync(c.id)}
+                        className={cn(
+                          syncPart,
+                          expiringSoon ? syncSoft : syncSolid,
+                          historyFor(c) ? 'rounded-l-full pl-3 pr-2.5' : 'rounded-full px-3'
+                        )}
+                      >
+                        <RefreshCw className={cn('h-3.5 w-3.5', busyId === c.id && 'animate-spin')} />
+                        {t('sync')}
+                      </button>
+                      {historyFor(c) && (
+                        <button
+                          type="button"
+                          disabled={pending}
+                          onClick={() => setBackfillId(backfillId === c.id ? null : c.id)}
+                          aria-label={t('paypal.backfill')}
+                          title={t('paypal.backfill')}
+                          aria-expanded={backfillId === c.id}
+                          aria-controls={`backfill-${c.id}`}
+                          className={cn(
+                            syncPart,
+                            expiringSoon ? cn(syncSoft, 'border-border') : cn(syncSolid, 'border-primary-foreground/30'),
+                            'rounded-r-full border-l px-2'
+                          )}
+                        >
+                          <ChevronDown
+                            className={cn('h-3.5 w-3.5 transition-transform motion-reduce:transition-none', backfillId === c.id && 'rotate-180')}
+                            aria-hidden="true"
+                          />
+                        </button>
+                      )}
+                    </div>
                   )}
                   {canEdit && !expired && (
                     <button type="button" disabled={pending} onClick={() => toggle(c)} className={softButton}>
                       {c.enabled ? t('pause') : t('resume')}
+                    </button>
+                  )}
+                  {canManage && (
+                    <button
+                      type="button"
+                      disabled={pending}
+                      aria-label={t('edit.open')}
+                      title={t('edit.open')}
+                      aria-expanded={editing?.id === c.id}
+                      onClick={() =>
+                        setEditing(editing?.id === c.id ? null : { id: c.id, label: c.label ?? '' })
+                      }
+                      className="rounded-full p-1.5 text-muted-foreground hover:bg-accent hover:text-primary disabled:opacity-60"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
                     </button>
                   )}
                   {canEdit && (
@@ -316,6 +455,91 @@ export function BankConnections({
                   )}
                 </div>
                 )}
+                {canManage && editing?.id === c.id && (
+                  <form
+                    aria-label={t('edit.open')}
+                    className="anim-fade min-w-0 basis-full rounded-lg border border-border bg-muted/40 p-4"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') setEditing(null);
+                    }}
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      saveEdit(c);
+                    }}
+                  >
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <label className="grid gap-1.5 text-xs font-semibold">
+                        {t('label')}
+                        <input
+                          autoFocus
+                          value={editing.label}
+                          maxLength={80}
+                          onChange={(e) => setEditing({ ...editing, label: e.target.value })}
+                          placeholder={c.bankName ?? ''}
+                          className={inputClass}
+                        />
+                      </label>
+                    </div>
+                    {c.provider === 'enable_banking' && (
+                      <p className="mt-2 break-words text-xs leading-relaxed text-muted-foreground">
+                        {t('edit.filterMoved')}{' '}
+                        <Link href={`/bank/rules?new=import&connection=${encodeURIComponent(c.id)}`} className="font-semibold text-primary hover:underline">
+                          {t('edit.filterRule')}
+                        </Link>
+                      </p>
+                    )}
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button type="submit" disabled={pending} className={cn(primaryButton, 'h-10 px-4')}>
+                        {busyId === c.id && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                        {t('edit.save')}
+                      </button>
+                      <button type="button" disabled={pending} onClick={() => setEditing(null)} className={cn(softButton, 'h-10 px-4')}>
+                        {t('cancel')}
+                      </button>
+                    </div>
+                  </form>
+                )}
+                {canEdit && historyFor(c) && backfillId === c.id && (
+                  <form
+                    id={`backfill-${c.id}`}
+                    aria-label={t('paypal.backfill')}
+                    className="anim-fade min-w-0 basis-full rounded-lg border border-border bg-muted/40 p-4"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') setBackfillId(null);
+                    }}
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      backfill(c);
+                    }}
+                  >
+                    <div className="flex flex-wrap items-end gap-3">
+                      <label htmlFor={`backfill-from-${c.id}`} className="grid gap-1.5 text-xs font-semibold">
+                        {t('paypal.backfillFrom')}
+                        <input
+                          id={`backfill-from-${c.id}`}
+                          type="date"
+                          required
+                          autoFocus
+                          min={oldestFor(c)}
+                          max={today}
+                          value={backfillFrom}
+                          onChange={(e) => setBackfillFrom(e.target.value)}
+                          className={cn(inputClass, 'w-44 max-w-full')}
+                        />
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        <button type="submit" disabled={pending || !backfillFrom} className={cn(primaryButton, 'h-10 px-4')}>
+                          {busyId === c.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <History className="h-3.5 w-3.5" />}
+                          {t('paypal.backfillRun')}
+                        </button>
+                        <button type="button" disabled={pending} onClick={() => setBackfillId(null)} className={cn(softButton, 'h-10 px-4')}>
+                          {t('cancel')}
+                        </button>
+                      </div>
+                    </div>
+                    <p className="mt-3 break-words text-xs leading-relaxed text-muted-foreground">{c.provider === 'enable_banking' ? t('psd2.backfillHint', { provider: providerName(c) }) : t('paypal.backfillHint', { provider: providerName(c) })}</p>
+                  </form>
+                )}
               </li>
             );
           })}
@@ -324,7 +548,7 @@ export function BankConnections({
 
       {mode === 'psd2' && (
         <form
-          className="mt-3 grid gap-3 sm:grid-cols-[7rem_1fr_12rem] sm:items-end"
+          className="anim-fade mt-3 grid gap-3 sm:grid-cols-[10rem_1fr_12rem] sm:items-end"
           onSubmit={(e) => {
             e.preventDefault();
             goToBank('new', { bankName, country, psuType, label });
@@ -372,7 +596,7 @@ export function BankConnections({
           </label>
           <fieldset className="flex flex-wrap items-center gap-3 text-xs sm:col-span-3">
             <legend className="sr-only">{t('psd2.accountType')}</legend>
-            <span className="font-semibold">{t('psd2.accountType')}</span>
+            <span aria-hidden="true" className="font-semibold">{t('psd2.accountType')}</span>
             {(['business', 'personal'] as const).map((type) => (
               <label key={type} className="inline-flex items-center gap-1.5">
                 <input type="radio" name="psuType" checked={psuType === type} onChange={() => setPsuType(type)} className="accent-primary" />
@@ -384,12 +608,12 @@ export function BankConnections({
             <button
               type="submit"
               disabled={pending || !bankName}
-              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:opacity-90 disabled:opacity-60"
+              className={buttonClass.primary}
             >
               {busyId === 'new' ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
               {t('psd2.continue')}
             </button>
-            <button type="button" onClick={() => setMode(null)} className="rounded-full bg-muted px-4 py-2 text-sm font-semibold hover:bg-accent">
+            <button type="button" onClick={() => setMode(null)} className={buttonClass.secondary}>
               {t('cancel')}
             </button>
           </div>
@@ -399,7 +623,7 @@ export function BankConnections({
 
       {mode === 'paypal' && (
         <form
-          className="mt-3 grid gap-3 sm:grid-cols-[1fr_1fr_12rem] sm:items-end"
+          className="anim-fade mt-3 grid gap-3 sm:grid-cols-[1fr_1fr_12rem] sm:items-end"
           onSubmit={(e) => {
             e.preventDefault();
             connectPaypalAccount();
@@ -437,16 +661,70 @@ export function BankConnections({
             {t('label')}
             <input value={label} onChange={(e) => setLabel(e.target.value)} maxLength={80} placeholder="PayPal" className={cn(inputClass, 'mt-1.5')} />
           </label>
-          <label className="inline-flex items-center gap-1.5 text-xs sm:col-span-3">
-            <input type="checkbox" checked={sandbox} onChange={(e) => setSandbox(e.target.checked)} className="accent-primary" />
-            <InfoHint hint={t('paypal.sandboxHint')} label={t('paypal.sandbox')}>
-              <span>{t('paypal.sandbox')}</span>
-            </InfoHint>
-          </label>
+          {/* Sandbox keys are a developer's test setup; a real account never needs this. */}
+          <details open={sandbox} className="group text-xs sm:col-span-3">
+            <summary className="inline-flex cursor-pointer list-none items-center gap-1 font-semibold text-muted-foreground hover:text-primary [&::-webkit-details-marker]:hidden">
+              <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden="true" />
+              {t('paypal.moreOptions')}
+            </summary>
+            <label className="mt-2 inline-flex items-center gap-1.5">
+              <input type="checkbox" checked={sandbox} onChange={(e) => setSandbox(e.target.checked)} className="accent-primary" />
+              <InfoHint hint={t('paypal.sandboxHint')} label={t('paypal.sandbox')}>
+                <span>{t('paypal.sandbox')}</span>
+              </InfoHint>
+            </label>
+          </details>
           <div className="flex flex-wrap gap-2 sm:col-span-3">
             <button
               type="submit"
               disabled={pending || paypalId.trim().length < 10 || paypalSecret.trim().length < 10}
+              className={buttonClass.primary}
+            >
+              {busyId === 'new' && <Loader2 className="h-4 w-4 animate-spin" />}
+              {t('connect')}
+            </button>
+            <button type="button" onClick={() => setMode(null)} className={buttonClass.secondary}>
+              {t('cancel')}
+            </button>
+          </div>
+          <p className="text-[11px] text-muted-foreground sm:col-span-3">{t('paypal.note')}</p>
+        </form>
+      )}
+
+      {mode === 'stripe' && (
+        <form
+          className="mt-3 grid gap-3 sm:grid-cols-[1fr_12rem] sm:items-end"
+          onSubmit={(e) => {
+            e.preventDefault();
+            connectStripeAccount();
+          }}
+        >
+          <div className="text-xs font-semibold">
+            <InfoHint hint={t('stripe.keyHint')} label={t('stripe.key')}>
+              <label htmlFor="stripe-key">{t('stripe.key')}</label>
+            </InfoHint>
+            <input
+              id="stripe-key"
+              value={stripeKey}
+              onChange={(e) => setStripeKey(e.target.value)}
+              type="password"
+              autoComplete="off"
+              spellCheck={false}
+              maxLength={255}
+              required
+              placeholder="rk_live_…"
+              className={cn(inputClass, 'mt-1.5 font-mono')}
+            />
+          </div>
+          <label className="text-xs font-semibold">
+            {t('label')}
+            <input value={label} onChange={(e) => setLabel(e.target.value)} maxLength={80} placeholder="Stripe" className={cn(inputClass, 'mt-1.5')} />
+          </label>
+          {stripeKey.trim().startsWith('sk_') && <p className="text-xs text-destructive sm:col-span-2">{t('errors.stripe_key_format')}</p>}
+          <div className="flex flex-wrap gap-2 sm:col-span-2">
+            <button
+              type="submit"
+              disabled={pending || !STRIPE_KEY.test(stripeKey.trim())}
               className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:opacity-90 disabled:opacity-60"
             >
               {busyId === 'new' && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -456,13 +734,13 @@ export function BankConnections({
               {t('cancel')}
             </button>
           </div>
-          <p className="text-[11px] text-muted-foreground sm:col-span-3">{t('paypal.note')}</p>
+          <p className="text-[11px] text-muted-foreground sm:col-span-2">{t('stripe.note')}</p>
         </form>
       )}
 
       {mode === 'fio' && (
         <form
-          className="mt-3 grid gap-3 sm:grid-cols-[1fr_12rem_auto] sm:items-end"
+          className="anim-fade mt-3 grid gap-3 sm:grid-cols-2 sm:items-end"
           onSubmit={(e) => {
             e.preventDefault();
             connect();
@@ -489,20 +767,19 @@ export function BankConnections({
             {t('label')}
             <input value={label} onChange={(e) => setLabel(e.target.value)} maxLength={80} placeholder={t('labelPlaceholder')} className={cn(inputClass, 'mt-1.5')} />
           </label>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 sm:col-span-2">
             <button
               type="submit"
               disabled={pending || token.trim().length !== 64}
-              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:opacity-90 disabled:opacity-60"
+              className={buttonClass.primary}
             >
               {busyId === 'new' && <Loader2 className="h-4 w-4 animate-spin" />}
               {t('connect')}
             </button>
-            <button type="button" onClick={() => setMode(null)} className="rounded-full bg-muted px-4 py-2 text-sm font-semibold hover:bg-accent">
+            <button type="button" onClick={() => setMode(null)} className={buttonClass.secondary}>
               {t('cancel')}
             </button>
           </div>
-          <p className="text-[11px] text-muted-foreground sm:col-span-3">{psd2.available ? t('psd2.otherBanksAvailable') : t('otherBanks')}</p>
         </form>
       )}
     </section>

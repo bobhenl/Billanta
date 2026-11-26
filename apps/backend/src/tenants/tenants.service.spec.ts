@@ -4,7 +4,7 @@ import { TenantsService } from "./tenants.service";
 /** A select chain that resolves to the given rows, like drizzle's `select().from().where().limit()`. */
 function dbReturning(rows: Record<string, unknown>[]) {
   const chain = { from: () => chain, where: () => chain, limit: async () => rows };
-  return { select: () => chain } as never;
+  return { select: () => chain, execute: async () => [{ locked: false }] } as never;
 }
 
 describe("TenantsService.findById", () => {
@@ -17,6 +17,15 @@ describe("TenantsService.findById", () => {
     expect(tenant).not.toHaveProperty("stripeSecretKeyEncrypted");
     expect(JSON.stringify(tenant)).not.toContain("iv:tag");
     expect(tenant).toMatchObject({ companyName: "Firma", hasStripeKey: true, hasLogo: false });
+  });
+
+  it("leaves out the tax model, which only owners and admins read", async () => {
+    const [tenant] = await new TenantsService().findById(
+      dbReturning([{ id: "t1", companyName: "Firma", logoData: null, taxModel: { partners: [{ name: "Partner A", credit: 30840 }] } }]),
+      "t1",
+    );
+    expect(tenant).not.toHaveProperty("taxModel");
+    expect(JSON.stringify(tenant)).not.toContain("Partner A");
   });
 
   it("says no Stripe key when none is stored", async () => {

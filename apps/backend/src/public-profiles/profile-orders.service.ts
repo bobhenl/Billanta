@@ -8,6 +8,7 @@ import { resolveBuyerContact } from "../invoices/buyer-details.util";
 import { BuyerDetailsService } from "../invoices/buyer-details.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import { publicProfileOf, SLUG_PATTERN } from "../tenants/public-profile";
+import { tenantCountry } from "../tenants/home-currency";
 import {
   DEFAULT_DAILY_ORDER_CAP,
   defaultVatRate,
@@ -111,12 +112,12 @@ export class ProfileOrdersService {
     if (block === "disabled") throw new NotFoundException("Profile not found");
     if (block === "daily_cap") throw new HttpException({ error: "daily_cap" }, HttpStatus.TOO_MANY_REQUESTS);
 
-    const built = orderLines(order, profile, defaultVatRate(tenant.vatStatus, tenant.addressCountry));
+    const built = orderLines(order, profile, defaultVatRate(tenant.vatStatus, tenantCountry(tenant)));
     if ("error" in built) throw new BadRequestException({ error: built.error });
 
     const match = await this.buyerDetails.findByIdentifier(db, order.buyer.ico, order.buyer.dic);
     const resolution = resolveBuyerContact({ attached: null, match, submitted: order.buyer });
-    const currency = orderCurrency(tenant.addressCountry);
+    const currency = orderCurrency(tenantCountry(tenant));
     const payment = orderPayment({
       prepay: profile.orders.prepay,
       lines: built.lines,

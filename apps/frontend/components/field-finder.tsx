@@ -102,7 +102,7 @@ export function jumpToField(id: string, attempts = 8) {
 /**
  * "Find a field" box for long forms (pattern ported from VoxelRank's server
  * form): accent-insensitive, forgives one typo, matches synonyms, and jumps
- * straight to the field — opening its section first via `onPick`. Optionally
+ * straight to the field – opening its section first via `onPick`. Optionally
  * shows how many required fields are filled; clicking it jumps to the first
  * missing one. The input has no `name`, so it is never submitted.
  */
@@ -193,7 +193,7 @@ export function FieldFinder({
           <ul
             id={listId}
             role="listbox"
-            className="absolute left-0 right-0 top-full z-40 mt-1 max-h-80 overflow-auto rounded-xl border border-border bg-card p-1 shadow-lg"
+            className="anim-pop absolute left-0 right-0 top-full z-40 mt-1 max-h-80 overflow-auto rounded-xl border border-border bg-card p-1 shadow-lg"
           >
             {results.length === 0 ? (
               <li className="px-3 py-2 text-sm text-muted-foreground">{labels.empty}</li>

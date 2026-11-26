@@ -1,14 +1,11 @@
 import type { Metadata } from 'next';
 import { Archive, Building2, CreditCard, History, LayoutDashboard, UserPlus } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { DemoCta } from '@/components/demo/demo-cta';
-import { NextPages, NumberedSteps, PageIntro } from '@/components/learn-page';
+import { AudienceHero, SectionTitle } from '@/components/audience-page';
+import { NextPages, NumberedSteps } from '@/components/learn-page';
 import { faqLd, FaqList, IconCards } from '@/components/segment-page';
-import { ShareQr } from '@/components/share-qr';
-import { Link } from '@/i18n/navigation';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
-import { buttonClass } from '@/lib/ui-classes';
 
 const PATH = '/for-owners';
 
@@ -49,23 +46,13 @@ export default async function OwnersPage({ params }: { params: Promise<{ locale:
           faqLd(faq)
         ])}
       />
-      <PageIntro eyebrow={t('eyebrow')} title={t('title')} lead={t('lead')}>
-        <Link href="/signup" className={buttonClass.primary}>
-          {tc('signup')}
-        </Link>
-        <Link href="/team-roles" className={buttonClass.secondary}>
-          {tc('allRoles')}
-        </Link>
-        <ShareQr />
-      </PageIntro>
+      <AudienceHero title={t('title')} lead={t('lead')} primary={{ href: '/signup', label: tc('signup') }} secondary={{ href: '/demo', label: tc('demo') }} />
 
-      <h2 className="mt-12 text-xl font-bold tracking-tight">{t('cardsTitle')}</h2>
+      <SectionTitle title={t('cardsTitle')} />
       <IconCards items={CARDS.map(({ icon, key }) => ({ icon, title: t(`cards.${key}.title`), body: t(`cards.${key}.body`) }))} />
 
-      <h2 className="mt-12 text-xl font-bold tracking-tight">{t('stepsTitle')}</h2>
-      <NumberedSteps steps={t.raw('steps') as { title: string; body: string }[]} />
-
-      <DemoCta className="mt-12" />
+      <SectionTitle title={t('stepsTitle')} />
+      <NumberedSteps steps={t.raw('steps') as { title: string; body: string }[]} className="lg:grid-cols-4" />
 
       <NextPages
         title={tc('nextTitle')}

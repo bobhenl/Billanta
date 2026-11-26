@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { splitDuplicates, type DedupeRow, type StoredDedupeRow } from "./dedupe";
+import { missingNets, splitDuplicates, type DedupeRow, type StoredDedupeRow } from "./dedupe";
 
 const day = new Date(Date.UTC(2026, 8, 30));
 
@@ -21,6 +21,13 @@ function stored(overrides: Partial<StoredDedupeRow> = {}): StoredDedupeRow {
 }
 
 describe("splitDuplicates", () => {
+  it("names the stored row each duplicate stands for, so it can fill what that row lacks", () => {
+    const known = stored();
+    const incoming = row({ amount: "1210.05" });
+    const result = splitDuplicates([incoming, row({ amount: "9.00" })], [known]);
+    expect(result.absorbed).toEqual([{ id: known.id, row: incoming }]);
+  });
+
   it("drops a row whose bank id is already stored", () => {
     const result = splitDuplicates([row({ externalId: "fio:1" }), row({ externalId: "fio:2", amount: "5.00" })], [
       stored({ externalId: "fio:1" }),
@@ -81,5 +88,25 @@ describe("splitDuplicates", () => {
     const result = splitDuplicates([row({ externalId: "gpc:7" }), row({ externalId: "gpc:7" })], []);
     expect(result.fresh).toHaveLength(1);
     expect(result.duplicates).toBe(1);
+  });
+});
+
+describe("missingNets", () => {
+  it("fills the conversion into stored rows that have none, by external id", () => {
+    expect(
+      missingNets(
+        [
+          { id: "a", externalId: "paypal:A", netAmount: null },
+          { id: "b", externalId: "paypal:B", netAmount: "500.00" },
+          { id: "c", externalId: "paypal:C", netAmount: null },
+          { id: "d", externalId: null, netAmount: null },
+        ],
+        [
+          { externalId: "paypal:A", netAmount: "1017.23", netCurrency: "CZK" },
+          { externalId: "paypal:B", netAmount: "999.00", netCurrency: "CZK" },
+          { externalId: "paypal:C", netAmount: null, netCurrency: null },
+        ],
+      ),
+    ).toEqual([{ id: "a", netAmount: "1017.23", netCurrency: "CZK" }]);
   });
 });

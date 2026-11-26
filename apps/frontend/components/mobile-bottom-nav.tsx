@@ -10,14 +10,15 @@ import { ACTIONS } from '@/components/command-palette';
 import { useLeaveOffline } from '@/components/offline-sync';
 import { DASHBOARD_NAV_ITEMS } from '@/lib/dashboard-nav-items';
 
-/**
- * The dashboard's phone tab bar: the four everyday sections, then "More"
- * — a panel with the remaining sections plus language, appearance and
- * sign-out (the dashboard's phone header carries only brand + account). See `mobile-tab-bar.tsx` for the bar itself.
- */
 /** Create actions of the "+" panel (the palette's, minus the less everyday ones). */
 const QUICK_ACTIONS = ['newInvoice', 'newExpense', 'newContact', 'newProforma', 'newQuote'];
 
+/**
+ * The dashboard's phone tab bar: the four everyday sections, then "More",
+ * a panel with the remaining sections plus language, appearance and
+ * sign-out (the dashboard's phone header carries only brand + account).
+ * See `mobile-tab-bar.tsx` for the bar itself.
+ */
 export function MobileBottomNav({ hidden = [], actionsHidden = hidden }: { hidden?: string[]; actionsHidden?: string[] }) {
   const t = useTranslations('nav');
   const tRoot = useTranslations();
@@ -30,11 +31,14 @@ export function MobileBottomNav({ hidden = [], actionsHidden = hidden }: { hidde
     icon,
     label: t(key)
   }));
-  const links = DASHBOARD_NAV_ITEMS.filter((item) => !item.mobileTab && !hidden.includes(item.key)).map(({ key, href, icon }) => ({
+  // Work sections first, then the account ones (history, billing, settings), each under its heading.
+  const links = DASHBOARD_NAV_ITEMS.filter((item) => !item.mobileTab && !hidden.includes(item.key)).map(({ key, href, icon, accountMenu }) => ({
     key,
     href,
     icon,
-    label: t(key)
+    label: t(key),
+    group: accountMenu ? 'account' : 'work',
+    groupLabel: tMobile(accountMenu ? 'groupAccount' : 'groupWork')
   }));
 
   const actions = ACTIONS.filter((a) => QUICK_ACTIONS.includes(a.key) && !(a.section && actionsHidden.includes(a.section)))

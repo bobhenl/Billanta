@@ -23,7 +23,7 @@ export type Milestone = (typeof MILESTONES)[number];
 /** One row per milestone, the count since `$1`; runs inside the student company's RLS context. */
 export const MILESTONE_SQL = `
 WITH since AS (SELECT $1::timestamptz AS at),
-home AS (SELECT CASE WHEN address_country = 'SK' THEN 'EUR' ELSE 'CZK' END AS currency FROM tenants LIMIT 1),
+home AS (SELECT home_currency AS currency FROM tenants LIMIT 1),
 issued AS (
   SELECT i.* FROM invoices i, since
   WHERE i.issued_at > since.at AND i.status NOT IN ('draft', 'pending_review')

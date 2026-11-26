@@ -15,7 +15,7 @@ export async function DirectoryJoin() {
       <div className="rounded-2xl border border-primary/30 bg-primary/5 p-6">
         <h2 className="text-lg font-bold tracking-tight">{t('joinTitle')}</h2>
         <p className="mt-2 text-sm text-muted-foreground">{t('joinBody', { site: SITE_NAME })}</p>
-        <Link href="/signup" className={`${buttonClass.primary} mt-4`}>
+        <Link href="/signup" className={`${buttonClass.primary} mt-4 px-5 py-2.5`}>
           {t('joinCta')}
         </Link>
       </div>

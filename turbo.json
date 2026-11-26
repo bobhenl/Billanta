@@ -3,6 +3,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "env": ["NEXT_STANDALONE"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
     "dev": {

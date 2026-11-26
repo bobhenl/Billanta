@@ -193,6 +193,15 @@ CREATE POLICY tenant_isolation ON bank_connections
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
 
+-- bank_rules – what to do with unmatched payments (migration 0091).
+ALTER TABLE bank_rules ENABLE ROW LEVEL SECURITY;
+ALTER TABLE bank_rules FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS tenant_isolation ON bank_rules;
+CREATE POLICY tenant_isolation ON bank_rules
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
 -- projects / time_entries — time tracking (migration 0029).
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE projects FORCE ROW LEVEL SECURITY;
@@ -555,13 +564,17 @@ GRANT EXECUTE ON FUNCTION get_public_invoice_view(uuid) TO faktur_app;
 -- `get_public_invoice_view`'s job). None of `invoice_line_items`' columns
 -- are sensitive — they're exactly what already appears on the invoice
 -- PDF/ISDOC export the client would otherwise receive by email.
+-- discount_percent was added in migration 0092 so the page's total matches
+-- the PDF; the row type changed, hence the DROP.
+DROP FUNCTION IF EXISTS get_public_invoice_line_items(uuid);
 CREATE OR REPLACE FUNCTION get_public_invoice_line_items(p_public_token uuid)
 RETURNS TABLE (
   description text,
   quantity numeric(12,3),
   unit_price numeric(14,4),
   vat_rate numeric(5,2),
-  sort_order integer
+  sort_order integer,
+  discount_percent numeric(5,2)
 )
 LANGUAGE sql
 SECURITY DEFINER
@@ -572,7 +585,8 @@ AS $$
     ili.quantity,
     ili.unit_price,
     ili.vat_rate,
-    ili.sort_order
+    ili.sort_order,
+    ili.discount_percent
   FROM invoice_line_items ili
   JOIN invoices i ON i.id = ili.invoice_id
   WHERE i.public_token = p_public_token
@@ -1166,19 +1180,24 @@ CREATE POLICY tenant_isolation ON tenant_invitations
 -- What the invite page shows before the invitee belongs to the tenant: the
 -- company name, role and invited email of ONE invitation, found by the
 -- sha256 of the token from the email link. Nothing else about the tenant.
-CREATE OR REPLACE FUNCTION get_tenant_invitation_preview(p_token_hash text)
+-- `permissions` (the role overrides) lets the invitee see what they will get
+-- access to before accepting. The return type grew, so the old one is dropped
+-- first (CREATE OR REPLACE cannot change it).
+DROP FUNCTION IF EXISTS get_tenant_invitation_preview(text);
+CREATE FUNCTION get_tenant_invitation_preview(p_token_hash text)
 RETURNS TABLE (
   company_name text,
   role text,
   email text,
   expired boolean,
-  accepted boolean
+  accepted boolean,
+  permissions jsonb
 )
 LANGUAGE sql
 SECURITY DEFINER
 SET search_path = public
 AS $$
-  SELECT t.company_name, i.role::text, i.email, i.expires_at < now(), i.accepted_at IS NOT NULL
+  SELECT t.company_name, i.role::text, i.email, i.expires_at < now(), i.accepted_at IS NOT NULL, i.permissions
   FROM tenant_invitations i
   JOIN tenants t ON t.id = i.tenant_id
   WHERE i.token_hash = p_token_hash;
@@ -1227,6 +1246,49 @@ $$;
 
 REVOKE ALL ON FUNCTION accept_tenant_invitation(text, uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION accept_tenant_invitation(text, uuid) TO faktur_app;
+
+-- Signing up FROM an invitation (frontend /api/auth/register with an invite
+-- token): the brand-new user joins the inviting tenant instead of getting a
+-- company of their own. Same checks as accept_tenant_invitation (unexpired,
+-- unused, matching email), plus the ToS acceptance that
+-- bootstrap_tenant_for_user records for a normal signup, here against the
+-- joined tenant. Returns NULL (and records nothing) when the invitation does
+-- not fit, so the caller rolls the new user back.
+CREATE OR REPLACE FUNCTION join_tenant_by_invitation(
+  p_token_hash text,
+  p_user_id uuid,
+  p_tos_version text,
+  p_ip_address text DEFAULT NULL
+)
+RETURNS uuid
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_tenant_id uuid;
+  v_tos_version_id uuid;
+BEGIN
+  v_tenant_id := accept_tenant_invitation(p_token_hash, p_user_id);
+  IF v_tenant_id IS NULL THEN
+    RETURN NULL;
+  END IF;
+
+  INSERT INTO tos_versions (version, content_hash)
+  VALUES (p_tos_version, md5('placeholder:' || p_tos_version))
+  ON CONFLICT (version) DO NOTHING;
+
+  SELECT id INTO v_tos_version_id FROM tos_versions WHERE version = p_tos_version;
+
+  INSERT INTO tos_acceptances (user_id, tenant_id, tos_version_id, ip_address)
+  VALUES (p_user_id, v_tenant_id, v_tos_version_id, p_ip_address);
+
+  RETURN v_tenant_id;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION join_tenant_by_invitation(text, uuid, text, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION join_tenant_by_invitation(text, uuid, text, text) TO faktur_app;
 
 -- ---------------------------------------------------------------------------
 -- tenant_bank_accounts (migration 0007)
@@ -1931,3 +1993,99 @@ DROP POLICY IF EXISTS tenant_isolation ON einvoice_status_events;
 CREATE POLICY tenant_isolation ON einvoice_status_events
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
+-- ---------------------------------------------------------------------------
+-- Per-member visibility of clients (migration 0100)
+-- ---------------------------------------------------------------------------
+-- RESTRICTIVE policies are ANDed with tenant_isolation, so they can only
+-- hide rows inside a tenant, never open another tenant.
+--
+-- app_view_mode() says how much of the tenant the current request sees:
+--   'full' – no signed-in user (crons, API keys, the AI service), the
+--            company owner, or a user with no membership here (classroom
+--            helpers that only set the user);
+--   'all'  – everything except contacts marked private (and their documents);
+--   'own'  – only contacts assigned to this user, documents of those
+--            contacts and documents this user created.
+-- Admins are always 'all': they manage the team, so a scope they could
+-- lift themselves would protect nothing. SECURITY DEFINER because the
+-- policies call it while tenant_memberships itself is RLS-protected; it
+-- reads one row of the current tenant and user, nothing caller-controlled.
+-- The policies call it as (SELECT app_view_mode()) so it runs once per
+-- query, and wrap the per-row checks in CASE so 'full' never evaluates them.
+CREATE OR REPLACE FUNCTION app_view_mode()
+RETURNS text
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT coalesce((
+    SELECT CASE
+      WHEN m.role = 'owner' THEN 'full'
+      WHEN m.role = 'admin' THEN 'all'
+      ELSE m.contact_scope
+    END
+    FROM tenant_memberships m
+    WHERE m.tenant_id = nullif(current_setting('app.current_tenant_id', true), '')::uuid
+      AND m.user_id = nullif(current_setting('app.current_user_id', true), '')::uuid
+  ), 'full');
+$$;
+
+REVOKE ALL ON FUNCTION app_view_mode() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION app_view_mode() TO faktur_app;
+
+DROP POLICY IF EXISTS member_visibility ON contacts;
+CREATE POLICY member_visibility ON contacts AS RESTRICTIVE
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE owner_user_id = nullif(current_setting('app.current_user_id', true), '')::uuid
+      OR ((SELECT app_view_mode()) = 'all' AND NOT is_private)
+  END);
+
+-- A document is visible with its contact; one without a contact follows
+-- the scope. The EXISTS runs under the contacts policies above.
+DROP POLICY IF EXISTS member_visibility ON invoices;
+CREATE POLICY member_visibility ON invoices AS RESTRICTIVE
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE created_by_user_id = nullif(current_setting('app.current_user_id', true), '')::uuid
+      OR (contact_id IS NULL AND (SELECT app_view_mode()) = 'all')
+      OR EXISTS (SELECT 1 FROM contacts c WHERE c.id = invoices.contact_id)
+  END);
+
+DROP POLICY IF EXISTS member_visibility ON expenses;
+CREATE POLICY member_visibility ON expenses AS RESTRICTIVE
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE created_by_user_id = nullif(current_setting('app.current_user_id', true), '')::uuid
+      OR (supplier_contact_id IS NULL AND (SELECT app_view_mode()) = 'all')
+      OR EXISTS (SELECT 1 FROM contacts c WHERE c.id = expenses.supplier_contact_id)
+  END);
+
+DROP POLICY IF EXISTS member_visibility ON invoice_line_items;
+CREATE POLICY member_visibility ON invoice_line_items AS RESTRICTIVE
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE EXISTS (SELECT 1 FROM invoices i WHERE i.id = invoice_line_items.invoice_id)
+  END);
+
+DROP POLICY IF EXISTS member_visibility ON recurring_invoice_templates;
+CREATE POLICY member_visibility ON recurring_invoice_templates AS RESTRICTIVE
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE EXISTS (SELECT 1 FROM contacts c WHERE c.id = recurring_invoice_templates.contact_id)
+  END);
+
+-- A payment is visible with the invoice or expense it paid; an unmatched
+-- one only to members who see the whole company ('all').
+DROP POLICY IF EXISTS member_visibility ON bank_transactions;
+CREATE POLICY member_visibility ON bank_transactions AS RESTRICTIVE
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE CASE
+      WHEN matched_invoice_id IS NOT NULL THEN EXISTS (SELECT 1 FROM invoices i WHERE i.id = bank_transactions.matched_invoice_id)
+      WHEN matched_expense_id IS NOT NULL THEN EXISTS (SELECT 1 FROM expenses e WHERE e.id = bank_transactions.matched_expense_id)
+      ELSE (SELECT app_view_mode()) = 'all'
+    END
+  END);

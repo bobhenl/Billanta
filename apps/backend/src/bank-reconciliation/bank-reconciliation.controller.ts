@@ -84,7 +84,7 @@ export class BankReconciliationController {
   @Get("transactions")
   @ApiOperation({ summary: "List bank transactions for the current tenant, optionally filtered by status" })
   list(@Req() req: TenantScopedRequest, @Query() query: ListBankTransactionsQueryDto) {
-    return this.bankReconciliationService.list(req.tenantDb!, query.status);
+    return this.bankReconciliationService.list(req.tenantDb!, query.status, query.invoiceId);
   }
 
   @Get("transactions/:id")
@@ -103,6 +103,19 @@ export class BankReconciliationController {
   @ApiOperation({ summary: "Manually link an unmatched bank transaction to a specific issued invoice" })
   manualMatch(@Req() req: TenantScopedRequest, @Param("id") id: string, @Body() dto: ManualMatchDto) {
     return this.bankReconciliationService.manualMatch(req.tenantDb!, req.user!.tenantId, id, dto.invoiceId);
+  }
+
+  // Writes go through RoleAccessGuard's "bank" area like match/ignore: viewers are refused.
+  @Post("rematch")
+  @ApiOperation({ summary: "Run auto-match again over every unmatched transaction; paid invoices are only linked, never changed" })
+  rematch(@Req() req: TenantScopedRequest) {
+    return this.bankReconciliationService.rematchUnmatched(req.tenantDb!, req.user!.tenantId);
+  }
+
+  @Post("transactions/:id/draft-invoice")
+  @ApiOperation({ summary: "Create a pending_review invoice draft from an unmatched incoming payment and link it" })
+  draftInvoice(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    return this.bankReconciliationService.createDraftFromPayment(req.tenantDb!, req.user!.tenantId, id);
   }
 
   @Post("transactions/:id/ignore")

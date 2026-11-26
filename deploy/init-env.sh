@@ -5,7 +5,7 @@
 set -eu
 cd /opt/billanta
 [ -e .env ] && { echo ".env already exists, not touching it"; exit 0; }
-SITE_URL=${1:?usage: init-env.sh http://149.56.99.247:8090}
+SITE_URL=${1:?usage: init-env.sh https://billanta.com}
 umask 077
 hex() { openssl rand -hex "$1"; }
 JWT=$(openssl rand -base64 48 | tr -d '\n')

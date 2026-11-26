@@ -2,12 +2,16 @@
 
 import { useMemo, useState, useTransition } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { Loader2, Search } from 'lucide-react';
+import { buyerInputClass } from '@/components/buyer-fields';
 import { CompanyLookup } from '@/components/company-lookup';
+import { InfoHint } from '@/components/info-hint';
 import { registryForCountry, type CompanyHit, type RegistryPart } from '@/lib/company-lookup';
 import type { BuyerDetailsField } from '@/lib/public-buyer-details';
 import { submitBuyerDetails, type BuyerDetailsInput } from '@/lib/public-buyer-details-actions';
+import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 const COUNTRIES = [
   'CZ', 'SK', 'AT', 'BE', 'BG', 'HR', 'CY', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO',
@@ -15,8 +19,8 @@ const COUNTRIES = [
 ];
 const EU = new Set(['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE']);
 
-const inputClass =
-  'h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring aria-[invalid=true]:border-destructive';
+// Same h-10 field as the order form, so inputs line up with CompanyLookup and the lookup button.
+const inputClass = buyerInputClass;
 
 interface Props {
   token: string;
@@ -31,7 +35,7 @@ interface Props {
  * the picked country (CZ + SK when unknown), an exact lookup by IČO
  * (ARES/RPO) or EU VAT ID (VIES), and the fields the supplier asked for.
  */
-export function BuyerDetailsForm({ token, supplierName, prefill, required }: Props) {
+export function BuyerDetailsForm({ token, prefill, required }: Props) {
   const t = useTranslations('buyerDetails.form');
   const locale = useLocale();
   const router = useRouter();
@@ -138,7 +142,7 @@ export function BuyerDetailsForm({ token, supplierName, prefill, required }: Pro
   };
 
   const label = (key: string, text: string, node: React.ReactNode, wide = false, mandatory = true) => (
-    <label className={`text-sm ${wide ? 'sm:col-span-2' : ''}`}>
+    <label className={cn('block min-w-0 text-sm', wide && 'sm:col-span-2')}>
       <span className="mb-1 block font-medium">
         {text}
         {mandatory ? (
@@ -155,11 +159,11 @@ export function BuyerDetailsForm({ token, supplierName, prefill, required }: Pro
   );
 
   return (
-    <form onSubmit={submit} className="mt-8 rounded-lg border border-primary/30 bg-primary/5 p-5">
-      <h2 className="text-sm font-semibold">{t('title')}</h2>
-      <p className="mt-1 text-sm text-muted-foreground">{t('hint', { supplier: supplierName })}</p>
+    // The page intro already says who the details are for, so the form starts with the fields.
+    <form onSubmit={submit} className="mt-6 rounded-xl border border-primary/30 bg-primary/5 p-4 sm:p-5">
+      <h2 className="text-base font-bold">{t('title')}</h2>
 
-      <div className="mt-4 flex flex-wrap gap-2" role="radiogroup" aria-label={t('kind')}>
+      <div className="mt-3 flex gap-2" role="radiogroup" aria-label={t('kind')}>
         {[false, true].map((person) => (
           <button
             key={String(person)}
@@ -167,7 +171,10 @@ export function BuyerDetailsForm({ token, supplierName, prefill, required }: Pro
             role="radio"
             aria-checked={form.isPerson === person}
             onClick={() => setForm((f) => ({ ...f, isPerson: person }))}
-            className={`h-9 rounded-md border px-3 text-sm font-medium ${form.isPerson === person ? 'border-primary bg-primary text-primary-foreground' : 'border-input bg-background hover:bg-muted'}`}
+            className={cn(
+              'h-10 min-w-0 flex-1 rounded-md border px-3 text-sm font-medium sm:flex-none',
+              form.isPerson === person ? 'border-primary bg-primary text-primary-foreground' : 'border-input bg-background hover:bg-muted'
+            )}
           >
             {person ? t('person') : t('company')}
           </button>
@@ -195,12 +202,14 @@ export function BuyerDetailsForm({ token, supplierName, prefill, required }: Pro
           )
         ) : (
           <div className="text-sm sm:col-span-2">
-            <span className="mb-1 block font-medium">
-              {t('companyName')}
-              <span className="text-destructive" aria-hidden="true">
-                {' '}*
+            <InfoHint hint={t('companySearchHint')} className="mb-1" rowClassName="font-medium">
+              <span>
+                {t('companyName')}
+                <span className="text-destructive" aria-hidden="true">
+                  {' '}*
+                </span>
               </span>
-            </span>
+            </InfoHint>
             <CompanyLookup
               value={form.name}
               onChange={(name) => setForm((f) => ({ ...f, name: name.slice(0, 200) }))}
@@ -215,21 +224,23 @@ export function BuyerDetailsForm({ token, supplierName, prefill, required }: Pro
               ariaLabel={t('companyName')}
               inputClassName={`rounded-md ${fields.name ? 'border-destructive' : ''}`}
             />
-            <span className="mt-1 block text-xs text-muted-foreground">{t('companySearchHint')}</span>
             {fieldError('name') && <span className="mt-1 block text-xs text-destructive">{fieldError('name')}</span>}
           </div>
         )}
         {!form.isPerson && (
-          <div className="grid grid-cols-[1fr_auto] items-end gap-2 sm:col-span-2">
-            <div className="grid gap-3 sm:grid-cols-2">
-              {domestic &&
-                label(
+          <div className="flex flex-col gap-3 sm:col-span-2 sm:flex-row sm:items-end">
+            {domestic && (
+              <div className="min-w-0 flex-1">
+                {label(
                   'ico',
                   t('ico'),
                   <input className={inputClass} value={form.ico} onChange={set('ico')} inputMode="numeric" maxLength={12} required={isRequired('ico')} aria-invalid={Boolean(fields.ico)} />,
                   false,
                   isRequired('ico')
                 )}
+              </div>
+            )}
+            <div className="min-w-0 flex-1">
               {label(
                 'dic',
                 domestic ? t('dic') : t('vatId'),
@@ -238,18 +249,13 @@ export function BuyerDetailsForm({ token, supplierName, prefill, required }: Pro
                 isRequired('dic')
               )}
             </div>
-            <button
-              type="button"
-              onClick={lookup}
-              disabled={looking}
-              className="inline-flex h-10 items-center gap-2 rounded-md border border-input bg-background px-3 text-sm font-medium hover:bg-muted disabled:opacity-50"
-            >
+            <button type="button" onClick={lookup} disabled={looking} className={cn(buttonClass.secondary, 'h-10 shrink-0 gap-2')}>
               {looking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
               {t('lookup')}
             </button>
-            {lookupNote && <p className="col-span-2 text-xs text-muted-foreground">{lookupNote}</p>}
           </div>
         )}
+        {!form.isPerson && lookupNote && <p className="-mt-1 text-xs text-muted-foreground sm:col-span-2">{lookupNote}</p>}
         {label(
           'street',
           t('street'),
@@ -278,7 +284,7 @@ export function BuyerDetailsForm({ token, supplierName, prefill, required }: Pro
       <button
         type="submit"
         disabled={pending}
-        className="mt-4 inline-flex h-10 items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+        className={cn(buttonClass.primary, 'mt-5 h-10 w-full gap-2 px-5 sm:w-auto')}
       >
         {pending && <Loader2 className="h-4 w-4 animate-spin" />}
         {t('submit')}

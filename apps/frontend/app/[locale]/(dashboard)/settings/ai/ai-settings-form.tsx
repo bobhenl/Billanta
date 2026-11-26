@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Check, KeyRound, Loader2, PowerOff, Sparkles } from 'lucide-react';
+import { Check, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Banner } from '@/components/banner';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 import type { AiSettings } from '../../invoices/new/types';
 import { saveAiSettings } from './actions';
@@ -44,24 +45,22 @@ export function AiSettingsForm({ initial }: { initial: AiSettings }) {
   const options = [
     {
       mode: 'own' as const,
-      icon: KeyRound,
       disabled: !settings.hasOwnKey,
       note: settings.hasOwnKey ? t('own.saved', { last4: settings.ownKeyLast4 ?? '' }) : t('own.needsKey')
     },
     {
       mode: 'platform' as const,
-      icon: Sparkles,
       disabled: !settings.platformAvailable,
       note: settings.platformAvailable ? t('platform.limit', { limit: settings.platformDailyLimit }) : t('platform.unavailable')
     },
-    { mode: 'off' as const, icon: PowerOff, disabled: false, note: t('off.note') }
+    { mode: 'off' as const, disabled: false, note: t('off.note') }
   ];
 
   return (
     <div className="space-y-4">
-      <section className="rounded-xl border border-border bg-card p-4">
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
         <InfoHint hint={t('keyHint')}>
-          <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('keyTitle')}</h2>
+          <h2 className="font-bold">{t('keyTitle')}</h2>
         </InfoHint>
         <form
           className="mt-3 flex flex-col gap-2 sm:flex-row"
@@ -78,12 +77,12 @@ export function AiSettingsForm({ initial }: { initial: AiSettings }) {
             onChange={(event) => setKey(event.target.value)}
             placeholder={settings.hasOwnKey ? `sk-ant-…${settings.ownKeyLast4 ?? ''}` : 'sk-ant-…'}
             aria-label={t('keyTitle')}
-            className="h-10 flex-1 rounded-lg border border-input bg-background px-3 font-mono text-sm outline-none focus:border-primary focus:ring-2 focus:ring-ring/30"
+            className={cn(inputClass, 'font-mono sm:flex-1')}
           />
           <button
             type="submit"
             disabled={pending || key.trim().length < 20}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground disabled:opacity-50"
+            className={cn(buttonClass.primary, 'shrink-0')}
           >
             {pending && <Loader2 className="h-4 w-4 animate-spin" />}
             {t('keySave')}
@@ -102,12 +101,12 @@ export function AiSettingsForm({ initial }: { initial: AiSettings }) {
         <p className="mt-3 text-xs text-muted-foreground">{t('keyStorage', { model: settings.model })}</p>
       </section>
 
-      <section className="rounded-xl border border-border bg-card p-4">
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
         <InfoHint hint={t('modeHint')}>
-          <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('modeTitle')}</h2>
+          <h2 className="font-bold">{t('modeTitle')}</h2>
         </InfoHint>
         <div role="radiogroup" aria-label={t('modeTitle')} className="mt-3 grid gap-2">
-          {options.map(({ mode, icon: Icon, disabled, note }) => {
+          {options.map(({ mode, disabled, note }) => {
             const active = settings.mode === mode;
             return (
               <button
@@ -122,14 +121,6 @@ export function AiSettingsForm({ initial }: { initial: AiSettings }) {
                   active ? 'border-primary bg-accent/60' : 'border-border hover:bg-secondary'
                 )}
               >
-                <span
-                  className={cn(
-                    'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
-                    active ? 'bg-primary text-primary-foreground' : 'bg-secondary'
-                  )}
-                >
-                  <Icon className="h-4 w-4" />
-                </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm font-bold">{t(`${mode}.title`)}</span>
                   <span className="block text-xs text-muted-foreground">{note}</span>
@@ -141,9 +132,9 @@ export function AiSettingsForm({ initial }: { initial: AiSettings }) {
         </div>
       </section>
 
-      <section className="rounded-xl border border-border bg-card p-4">
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
         <InfoHint hint={t('apiHint')}>
-          <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('apiTitle')}</h2>
+          <h2 className="font-bold">{t('apiTitle')}</h2>
         </InfoHint>
         <pre className="mt-3 overflow-x-auto rounded-lg bg-secondary p-3 text-xs leading-relaxed">
           <code>{API_EXAMPLE(t('apiExample'))}</code>

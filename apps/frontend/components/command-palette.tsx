@@ -50,6 +50,7 @@ import { SHORTCUTS_EVENT } from '@/components/keyboard-shortcuts';
 import { fuzzyScore } from '@/lib/fuzzy';
 import { invoiceQueryHref, parseInvoiceQuery } from '@/lib/nl-search';
 import { loadPaletteData, type PaletteContact, type PaletteInvoice } from '@/lib/search-actions';
+import { CHECK_BUILD_EVENT } from '@/components/update-notice';
 import { cn } from '@/lib/utils';
 
 /** sessionStorage key the invoice form reads to run an AI request typed into the palette. */
@@ -104,6 +105,7 @@ const PAGES: Entry[] = [
   { key: 'templates', href: '/invoices/templates', icon: LayoutTemplate, label: 'palette.pages.templates', section: 'invoices' },
   { key: 'expenses', href: '/expenses', icon: Receipt, label: 'nav.expenses', section: 'expenses', shortcut: 'G E' },
   { key: 'reports', href: '/reports', icon: BarChart3, label: 'nav.reports' },
+  { key: 'netIncome', href: '/reports/net-income', icon: Wallet, label: 'palette.pages.netIncome', section: 'manage' },
   { key: 'bank', href: '/bank', icon: Landmark, label: 'nav.bank', section: 'bank', shortcut: 'G B' },
   { key: 'time', href: '/time', icon: Timer, label: 'nav.time', section: 'time', shortcut: 'G T' },
   { key: 'contacts', href: '/contacts', icon: Users, label: 'nav.contacts', section: 'contacts', shortcut: 'G C' },
@@ -204,7 +206,11 @@ export function CommandPalette({ hidden = [] }: { hidden?: string[] }) {
     setLoading(true);
     loadPaletteData()
       .then(setData)
-      .catch(() => setData({ invoices: [], contacts: [], aiReady: false }))
+      .catch(() => {
+        setData({ invoices: [], contacts: [], aiReady: false });
+        // Most often a tab from before a deploy; the notice offers the reload.
+        window.dispatchEvent(new Event(CHECK_BUILD_EVENT));
+      })
       .finally(() => setLoading(false));
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -386,11 +392,11 @@ export function CommandPalette({ hidden = [] }: { hidden?: string[] }) {
           }}
           aria-label={t('palette.open')}
           title={`${t('palette.open')} (Ctrl K)`}
-          className="flex items-center gap-2 rounded-l-full py-1.5 pl-2.5 pr-1.5 hover:text-foreground lg:min-w-[9.5rem]"
+          className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-l-full py-1.5 pl-2.5 pr-1.5 hover:text-foreground lg:min-w-[9.5rem]"
         >
           <Search className="h-4 w-4" />
           <span className="hidden flex-1 text-left lg:inline">{t('palette.trigger')}</span>
-          <kbd className="hidden rounded border border-border bg-background px-1.5 text-[10px] font-semibold lg:inline">Ctrl K</kbd>
+          <kbd className="hidden whitespace-nowrap rounded border border-border bg-background px-1.5 text-[10px] font-semibold lg:inline">Ctrl K</kbd>
         </button>
         <button
           type="button"
@@ -408,12 +414,12 @@ export function CommandPalette({ hidden = [] }: { hidden?: string[] }) {
 
       {open && typeof document !== 'undefined' && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 px-4 pt-[12vh] backdrop-blur-sm"
+          className="anim-fade fixed inset-0 z-50 flex items-start justify-center bg-black/40 px-4 pt-[12vh] backdrop-blur-sm"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) setOpen(false);
           }}
         >
-          <div role="dialog" aria-modal="true" aria-label={t('palette.open')} className="w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-card text-foreground shadow-2xl">
+          <div role="dialog" aria-modal="true" aria-label={t('palette.open')} className="anim-dialog-flat w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-card text-foreground shadow-2xl">
             <div className="flex items-center gap-2 border-b border-border px-4">
               {aiMode ? <Sparkles className="h-4 w-4 shrink-0 text-primary" /> : <Search className="h-4 w-4 shrink-0 text-muted-foreground" />}
               <input

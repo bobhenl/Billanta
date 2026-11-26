@@ -19,7 +19,7 @@ export async function StatusLegend({ className }: { className?: string }) {
   return (
     <InfoHint
       className={className}
-      bodyClassName="block"
+      bodyClassName="block sm:max-w-[min(36rem,calc(100vw-1rem))]"
       hint={
         <div className="grid gap-5 sm:grid-cols-2">
           <div>

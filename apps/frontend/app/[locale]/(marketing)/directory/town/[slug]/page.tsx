@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
+import { ChipRow, chipClass } from '@/components/chip-row';
 import { DirectoryJoin } from '@/components/directory-join';
 import { DirectoryListings, directoryItemListLd } from '@/components/directory-listings';
 import { isThin, listingsForTown } from '@/lib/business-directory';
@@ -49,7 +50,7 @@ export default async function DirectoryTownPage({ params }: Props) {
   const trades = DIRECTORY_TRADES.filter((k) => listings.some((l) => l.trade === k));
 
   return (
-    <section className="container max-w-5xl py-10 sm:py-14">
+    <section className="container max-w-5xl py-12 sm:py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(breadcrumbLd(locale, [[SITE_NAME, '/'], [t('title'), '/directory'], [m.name, path]]))} />
       {!isThin(listings) && (
         <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(directoryItemListLd(t('townTitle', { name: m.name }), path, locale, listings, tradeLabel))} />
@@ -61,8 +62,8 @@ export default async function DirectoryTownPage({ params }: Props) {
         <span className="mx-2">/</span>
         <span className="text-foreground">{m.name}</span>
       </nav>
-      <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{t('townTitle', { name: m.name })}</h1>
-      <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">
+      <h1 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">{t('townTitle', { name: m.name })}</h1>
+      <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">
         {t('townIntro', { name: m.name, district: m.district, region: m.region, site: SITE_NAME })}
       </p>
       {listings.length > 0 && <p className="mt-6 text-sm text-muted-foreground">{t('count', { n: listings.length })}</p>}
@@ -78,15 +79,15 @@ export default async function DirectoryTownPage({ params }: Props) {
       {trades.length > 0 && (
         <>
           <h2 className="mt-10 text-lg font-bold tracking-tight">{t('townTrades')}</h2>
-          <ul className="mt-3 flex flex-wrap gap-2">
+          <ChipRow label={t('townTrades')} className="mt-3">
             {trades.map((k) => (
               <li key={k}>
-                <Link href={`/directory/${k}`} className="inline-flex rounded-full border border-border bg-card px-3 py-1.5 text-sm hover:border-primary hover:text-primary">
+                <Link href={`/directory/${k}`} className={chipClass}>
                   {tradeLabel(k)}
                 </Link>
               </li>
             ))}
-          </ul>
+          </ChipRow>
         </>
       )}
 

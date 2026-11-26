@@ -93,3 +93,22 @@ describe("roleMayAccess with per-area permissions", () => {
     expect(roleMayAccess("accountant", "POST", "v1/expenses", { expenses: "bogus" })).toBe(true);
   });
 });
+
+describe("net income report", () => {
+  it("is for owners and admins only, reads included, whatever the per-area overrides say", () => {
+    const all = { invoices: "write", contacts: "write", expenses: "write", bank: "write", reports: "write" };
+    for (const role of ["owner", "admin"]) {
+      expect(roleMayAccess(role, "GET", "v1/net-income")).toBe(true);
+      expect(roleMayAccess(role, "PUT", "v1/tenants/me/tax-model")).toBe(true);
+      expect(roleMayAccess(role, "PUT", "v1/invoices/abc/partner-shares")).toBe(true);
+    }
+    for (const role of ["accountant", "viewer", "service", "unknown"]) {
+      expect(roleMayAccess(role, "GET", "v1/net-income", all)).toBe(false);
+      expect(roleMayAccess(role, "GET", "v1/tenants/me/tax-model", all)).toBe(false);
+      expect(roleMayAccess(role, "PUT", "v1/tenants/me/tax-model", all)).toBe(false);
+      expect(roleMayAccess(role, "PUT", "v1/invoices/abc/partner-shares", all)).toBe(false);
+    }
+    // Other invoice routes keep following the invoice permission.
+    expect(roleMayAccess("accountant", "PATCH", "v1/invoices/abc", all)).toBe(true);
+  });
+});

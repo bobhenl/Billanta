@@ -19,7 +19,15 @@ import { RequirePlan } from "../billing/plan.guard";
 import { assertMayDo } from "../tenancy/permissions";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { BankConnectionsService } from "./bank-connections.service";
-import { CompletePsd2Dto, CreateBankConnectionDto, CreatePaypalDto, StartPsd2Dto, UpdateBankConnectionDto } from "./dto/bank-connection.dto";
+import {
+  BackfillBankConnectionDto,
+  CompletePsd2Dto,
+  CreateBankConnectionDto,
+  CreatePaypalDto,
+  CreateStripeDto,
+  StartPsd2Dto,
+  UpdateBankConnectionDto,
+} from "./dto/bank-connection.dto";
 
 @ApiTags("bank-reconciliation")
 @ApiBearerAuth()
@@ -50,6 +58,15 @@ export class BankConnectionsController {
   createPaypal(@Req() req: TenantScopedRequest, @Body() dto: CreatePaypalDto) {
     assertMayDo(req.user, "bank.connections");
     return this.service.createPaypal(req.tenantDb!, req.user!.tenantId, dto);
+  }
+
+  @Post("stripe")
+  @UseGuards(TwoFactorGuard)
+  @RequirePlan("stripe_sync")
+  @ApiOperation({ summary: "Connect a Stripe account with a read-only restricted key (balance transactions)" })
+  createStripe(@Req() req: TenantScopedRequest, @Body() dto: CreateStripeDto) {
+    assertMayDo(req.user, "bank.connections");
+    return this.service.createStripe(req.tenantDb!, req.user!.tenantId, dto);
   }
 
   @Get("psd2")
@@ -103,5 +120,13 @@ export class BankConnectionsController {
   sync(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
     assertMayDo(req.user, "bank.match");
     return this.service.syncOne(req.tenantDb!, req.user!.tenantId, id);
+  }
+
+  @Post(":id/backfill")
+  @RequirePlan("paypal_sync")
+  @ApiOperation({ summary: "Download older PayPal or Stripe payments (up to 3 years back) and match them; no drafts before autoDraftFrom" })
+  backfill(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: BackfillBankConnectionDto) {
+    assertMayDo(req.user, "bank.connections");
+    return this.service.backfill(req.tenantDb!, req.user!.tenantId, id, dto.from);
   }
 }

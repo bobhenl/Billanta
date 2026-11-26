@@ -39,14 +39,14 @@ export default async function AdminAccountantsPage({ searchParams }: { searchPar
   return (
     <div className="mx-auto max-w-3xl">
       <SettingsHeader title={t('title')} description={t('description')} />
-      <nav aria-label={t('statusLabel')} className="mt-5 flex flex-wrap gap-2">
+      <nav aria-label={t('statusLabel')} className="-mx-4 mt-5 flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0">
         {STATUSES.map((s) => (
           <Link
             key={s}
             href={{ pathname: '/admin/accountants', query: s === 'pending' ? {} : { status: s } }}
             aria-current={s === status ? 'page' : undefined}
             className={cn(
-              'rounded-full border px-3 py-1 text-sm font-semibold',
+              'shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-sm font-semibold',
               s === status ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:bg-accent/50'
             )}
           >

@@ -6,12 +6,14 @@ import {
   parseGpc,
   type ParsedBankStatement,
 } from "@faktur/cz-compliance";
-import { decodeBankStatement, parseBankStatementCsv, type ParsedBankTransactionRow } from "./csv-parser";
+import { decodeBankStatement, parseBankStatementCsv, paymentSymbol, type ParsedBankTransactionRow } from "./csv-parser";
 
 export const STATEMENT_EXTENSIONS = [".csv", ".xml", ".gpc", ".abo"] as const;
 
 export interface UploadedStatementRow extends ParsedBankTransactionRow {
   externalId: string | null;
+  /** Fee kept by a payment provider (Wise, Revolut, Stripe CSV), in `currency`. */
+  fee?: string | null;
 }
 
 /** bank_transactions.external_id is varchar(300). */
@@ -41,6 +43,8 @@ export function statementToRows(statement: ParsedBankStatement): UploadedStateme
         counterpartyAccount: entry.counterpartyAccount,
         counterpartyName: entry.counterpartyName,
         message: entry.message,
+        constantSymbol: paymentSymbol(entry.constantSymbol, 4),
+        specificSymbol: paymentSymbol(entry.specificSymbol, 10),
         externalId: entry.bankReference
           ? `${statement.format}:${statement.accountNumber ?? ""}:${entry.bankReference}`.slice(0, EXTERNAL_ID_MAX)
           : null,
@@ -62,7 +66,11 @@ export function parseUploadedStatement(
   const format = detectBankStatementFormat(filename, content);
   if (format === null) throw new BadRequestException("bank_statement_unknown_format");
   if (format === "csv") {
-    return { source: "csv", rows: parseBankStatementCsv(content).map((row) => ({ ...row, externalId: null })) };
+    // Wise, Revolut and Stripe exports carry their own transaction id and fee; bank CSVs have neither.
+    return {
+      source: "csv",
+      rows: parseBankStatementCsv(content).map((row) => ({ ...row, externalId: row.externalId ?? null, fee: row.fee ?? null })),
+    };
   }
   try {
     const statement = format === "camt053" ? parseCamt053(content) : parseGpc(content);

@@ -42,61 +42,44 @@ export default async function CalculatorsHub({ params }: { params: Promise<Param
     }))
   };
 
-  const card = 'group flex h-full gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/40';
+  const card = 'group block h-full rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40 sm:p-5';
   return (
-    <section className="container py-12 sm:py-16">
+    <section className="container py-6 sm:py-12">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(itemList)} />
       <ToolTabs kind="calculators" />
-      <h1 className="max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl">{t('calculators.indexTitle')}</h1>
-      <p className="mt-4 max-w-2xl text-lg text-muted-foreground">{t('calculators.indexLead')}</p>
+      <h1 className="max-w-3xl text-2xl font-extrabold tracking-tight sm:text-4xl">{t('calculators.indexTitle')}</h1>
+      <p className="mt-2 max-w-2xl text-base text-muted-foreground sm:mt-4 sm:text-lg">{t('calculators.indexLead')}</p>
 
-      <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {own.map((c) => {
-          const Icon = c.icon;
-          return (
-            <li key={c.slug}>
-              <Link href={`/calculators/${c.slug}`} className={card}>
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
-                  <Icon className="h-5 w-5" aria-hidden="true" />
-                </span>
-                <span>
-                  <span className="block font-semibold group-hover:text-primary">{t(`calculators.items.${c.key}.name`)}</span>
-                  <span className="mt-1 block text-sm text-muted-foreground">{t(`calculators.items.${c.key}.description`)}</span>
-                </span>
-              </Link>
-            </li>
-          );
-        })}
-        {czech.map((c) => {
-          const Icon = c.icon;
-          return (
-            <li key={c.slug}>
-              <Link href={`/calculators/${c.slug}`} locale="cs" hrefLang="cs" className={card}>
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
-                  <Icon className="h-5 w-5" aria-hidden="true" />
-                </span>
-                <span>
-                  <span className="block font-semibold group-hover:text-primary">{t(`calculators.items.${c.key}.name`)}</span>
-                  <span className="mt-1 inline-flex rounded-full bg-secondary px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    {t('common.czTag')}
-                  </span>
-                  <span className="mt-1 block text-sm text-muted-foreground">{t(`calculators.items.${c.key}.description`)}</span>
-                </span>
-              </Link>
-            </li>
-          );
-        })}
+      <ul className="mt-6 grid gap-3 sm:mt-10 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+        {own.map((c) => (
+          <li key={c.slug}>
+            <Link href={`/calculators/${c.slug}`} className={card}>
+              <span className="block font-semibold group-hover:text-primary">{t(`calculators.items.${c.key}.name`)}</span>
+              <span className="mt-1 block text-sm text-muted-foreground">{t(`calculators.items.${c.key}.description`)}</span>
+            </Link>
+          </li>
+        ))}
+        {czech.map((c) => (
+          <li key={c.slug}>
+            <Link href={`/calculators/${c.slug}`} locale="cs" hrefLang="cs" className={card}>
+              <span className="block font-semibold group-hover:text-primary">
+                {t(`calculators.items.${c.key}.name`)} <span className="text-xs font-normal text-muted-foreground">· {t('common.czTag')}</span>
+              </span>
+              <span className="mt-1 block text-sm text-muted-foreground">{t(`calculators.items.${c.key}.description`)}</span>
+            </Link>
+          </li>
+        ))}
       </ul>
 
       {guides.length > 0 && (
         <div className="mt-12">
           <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('common.relatedGuides')}</h2>
-          <ul className="mt-4 flex flex-wrap gap-2">
+          <ul className="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
             {guides.map((g) => (
               <li key={g.slug}>
                 <Link
                   href={`/guides/${g.slug}`}
-                  className="inline-flex rounded-full border border-border bg-card px-4 py-2 text-sm font-medium hover:border-primary/40 hover:text-primary"
+                  className="text-sm font-medium hover:text-primary hover:underline"
                 >
                   {t(`guides.items.${g.key}.name`)}
                 </Link>

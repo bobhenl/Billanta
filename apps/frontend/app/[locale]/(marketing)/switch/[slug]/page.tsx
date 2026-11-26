@@ -133,14 +133,14 @@ export default async function SwitchBrandPage({ params }: { params: Promise<Para
 
       <nav aria-label={t('othersTitle')} className="mt-12 border-t border-border pt-8">
         <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('othersTitle')}</h2>
-        <ul className="mt-4 flex flex-wrap gap-2">
+        <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
           {switchBrandsFor(locale)
             .filter((b) => b.key !== slug)
             .map((b) => (
               <li key={b.key}>
                 <Link
                   href={`/switch/${b.key}`}
-                  className="inline-flex rounded-full border border-border bg-card px-4 py-2 text-sm font-medium hover:border-primary/40 hover:text-primary"
+                  className="text-sm font-medium underline-offset-4 hover:text-primary hover:underline"
                 >
                   {b.name}
                 </Link>

@@ -10,7 +10,7 @@ type Result<T> = { ok: true; data: T } | { ok: false; error: string };
 const PAGE = '/[locale]/(dashboard)/settings/backup';
 
 /**
- * `POST /api/v1/backup-destinations` — webhook, SFTP or local download. A
+ * `POST /api/v1/backup-destinations` – webhook, SFTP or local download. A
  * webhook's signing secret is in THIS response only (reveal once, like API
  * keys); an SFTP destination without a password answers with the public key
  * to authorize on the server.
@@ -40,7 +40,7 @@ export async function createBackupDestination(
   }
 }
 
-/** `PATCH /api/v1/backup-destinations/:id` — schedule / pause / file encryption. */
+/** `PATCH /api/v1/backup-destinations/:id` – schedule / pause / file encryption. */
 export async function updateBackupDestination(
   id: string,
   patch: { schedule?: BackupSchedule; isActive?: boolean; encryption?: BackupEncryptionInput }
@@ -58,7 +58,7 @@ export async function updateBackupDestination(
   }
 }
 
-/** `DELETE /api/v1/backup-destinations/:id` — also drops its run history. */
+/** `DELETE /api/v1/backup-destinations/:id` – also drops its run history. */
 export async function deleteBackupDestination(id: string): Promise<Result<null>> {
   try {
     await apiFetch(`/api/v1/backup-destinations/${encodeURIComponent(id)}`, { method: 'DELETE' });

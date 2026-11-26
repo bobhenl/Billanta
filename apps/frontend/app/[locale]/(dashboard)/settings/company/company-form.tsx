@@ -2,8 +2,8 @@
 
 import { AddressInput } from '@/components/address-input';
 import { useMemo, useState, useTransition } from 'react';
-import { Building2, CreditCard, FileText, Landmark, Lightbulb, Loader2, MapPin, Percent, Phone, Save, Search } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { Building2, CreditCard, FileText, Globe2, Landmark, Lightbulb, Loader2, Lock, MapPin, Percent, Phone, Save, Search } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { CompanyLookup, fetchContactSearch } from '@/components/company-lookup';
 import { InfoHint } from '@/components/info-hint';
@@ -13,14 +13,21 @@ import { hitFromPrefill, registryForCountry, suggestedVatStatus, type CompanyHit
 import { lookupCompanyById } from '@/lib/company-lookup-actions';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
-import { isLegalEntityName, type VatStatus } from '@faktur/cz-compliance';
+import { cn } from '@/lib/utils';
+import { homeCurrencyOf, isLegalEntityName, type VatStatus } from '@faktur/cz-compliance';
+import { taxCountryOf } from '@/lib/tax-country';
 import type { BankAccount, TenantSettings } from '@/lib/tenant';
 import { vatStatusOf } from '@/lib/vat-status';
 const VAT_STATUS_OPTIONS: VatStatus[] = ['payer', 'identified', 'non_payer'];
 import { BankAccounts } from './bank-accounts';
+import { BankCodeOptions } from '@/components/bank-code-options';
+import { editAccount } from '@/lib/bank-account-input';
 import { LogoUpload } from './logo-upload';
 import { advancesPayload, rowsFromAdvances, rowsKey, TaxAdvancesEditor, type AdvanceRow, type RegimeAnswers } from './tax-advances-editor';
 import { updateCompany } from '../actions';
+
+/** Form fields that split and fill each other (see `editAccount`). */
+const ACCOUNT_FIELDS = { bankAccountNumber: 'number', bankAccountBankCode: 'code', bankAccountIban: 'iban' } as const;
 
 /** Form field → backend snake_case key; every value is edited as a string, except the flags below. */
 const FIELDS = {
@@ -81,7 +88,17 @@ export function CompanyForm({
   const [vatCheck, setVatCheck] = useState<VatPayerCheck | null>(null);
   const suggestion = suggestedVatStatus(vatCheck, values.vatStatus);
 
-  const set = (key: Field, value: string) => setValues((v) => ({ ...v, [key]: value }));
+  const set = (key: Field, value: string) =>
+    setValues((v) => {
+      const accountField = ACCOUNT_FIELDS[key as keyof typeof ACCOUNT_FIELDS];
+      if (!accountField) return { ...v, [key]: value };
+      const a = editAccount(
+        { number: v.bankAccountNumber, code: v.bankAccountBankCode, iban: v.bankAccountIban, swift: v.bankAccountSwift },
+        accountField,
+        value,
+      );
+      return { ...v, bankAccountNumber: a.number, bankAccountBankCode: a.code, bankAccountIban: a.iban, bankAccountSwift: a.swift };
+    });
   const dirty = (Object.keys(values) as (keyof Values)[]).filter((k) => values[k] !== initial[k]);
   const dirtyCount = dirty.length + (advancesDirty ? 1 : 0);
 
@@ -226,11 +243,18 @@ export function CompanyForm({
           <label className="block text-sm">
             <span className="mb-1 block font-medium">{t('ico')}</span>
             <div className="flex gap-2">
-              {input('ico', { inputMode: 'numeric', pattern: '\\d{8}', maxLength: 8, placeholder: '12345678' })}
+              {input('ico', { inputMode: 'numeric', pattern: '\\d{8}', maxLength: 8, placeholder: '12345678', className: cn(inputClass, 'min-w-0 flex-1') })}
+              {/* Icon only: with its label the button wrapped under the field on a phone. */}
               {!readOnly && (
-                <button type="button" className={buttonClass.secondary} disabled={!/^\d{8}$/.test(values.ico) || loadingAres} onClick={loadAres}>
+                <button
+                  type="button"
+                  className={cn(buttonClass.secondary, 'h-10 w-10 shrink-0 px-0')}
+                  disabled={!/^\d{8}$/.test(values.ico) || loadingAres}
+                  onClick={loadAres}
+                  title={t('loadRegistry')}
+                  aria-label={t('loadRegistry')}
+                >
                   {loadingAres ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-                  {t('loadRegistry')}
                 </button>
               )}
             </div>
@@ -238,17 +262,17 @@ export function CompanyForm({
               <span className="mt-1 block text-xs text-muted-foreground">{t('icoTrialHint', { days: trialHintDays })}</span>
             )}
           </label>
-          <label className="block text-sm">
-            <span className="mb-1 flex flex-wrap items-center gap-2">
+          <div className="block text-sm">
+            <InfoHint hint={t('dicKeepHint')} className="mb-1" rowClassName="flex-wrap gap-x-2">
               <span className="font-medium">{t('dic')}</span>
               <VatStatusBadge dic={values.dic} onResult={setVatCheck} />
-            </span>
-            {input('dic', { placeholder: 'CZ12345678', maxLength: 12 })}
-            <span className="mt-1 block text-xs text-muted-foreground">{t('dicKeepHint')}</span>
-          </label>
+            </InfoHint>
+            {input('dic', { placeholder: 'CZ12345678', maxLength: 12, 'aria-label': t('dic') })}
+          </div>
           {field('companyName', t('companyName'), { required: true, maxLength: 200 }, '', t('companyNameHint'))}
           {field('legalName', t('legalName'), { required: true, maxLength: 200 }, '', t('legalNameHint'))}
         </div>
+        <TaxCountry tenant={tenant} readOnly={readOnly} />
       </Section>
 
       <Section icon={MapPin} title={t('sections.address')}>
@@ -340,7 +364,8 @@ export function CompanyForm({
       <Section icon={CreditCard} title={t('sections.bank')} hint={t('sections.bankHint')}>
         <div className="grid gap-3 sm:grid-cols-4">
           {field('bankAccountNumber', t('accountNumber'), { placeholder: '123456789', maxLength: 17 }, 'sm:col-span-3')}
-          {field('bankAccountBankCode', t('bankCode'), { placeholder: '0100', maxLength: 4, inputMode: 'numeric' }, 'sm:col-span-1')}
+          {field('bankAccountBankCode', t('bankCode'), { placeholder: '0100', maxLength: 4, inputMode: 'numeric', list: 'company-bank-codes' }, 'sm:col-span-1')}
+          <BankCodeOptions id="company-bank-codes" />
           {field('bankAccountIban', 'IBAN', { placeholder: 'CZ65 0800 0000 1920 0014 5399', maxLength: 42 }, 'sm:col-span-3', t('ibanHint'))}
           {field('bankAccountSwift', 'SWIFT / BIC', { maxLength: 11 }, 'sm:col-span-1')}
         </div>
@@ -348,20 +373,20 @@ export function CompanyForm({
       </Section>
 
       {/* Invoice defaults (language, due days, payment, notes, customer, items…) live together in Settings → Faktury. */}
-      <Section icon={FileText} title={t('sections.defaults')}>
-        <p className="text-sm text-muted-foreground">
-          {t('defaultsMoved')}{' '}
-          <Link href="/settings/invoices#defaults" className="font-semibold text-foreground underline underline-offset-2">
-            {t('defaultsLink')}
-          </Link>
-        </p>
-      </Section>
+      {/* A pointer, not a section: a whole card for one link made the form look longer than it is. */}
+      <p className="flex flex-wrap items-center gap-x-1 px-1 text-sm text-muted-foreground">
+        <FileText className="h-4 w-4 shrink-0" aria-hidden="true" />
+        {t('defaultsMoved')}
+        <Link href="/settings/invoices#defaults" className="font-semibold text-foreground underline underline-offset-2">
+          {t('defaultsLink')}
+        </Link>
+      </p>
 
       {!readOnly && (
         <div className="sticky bottom-20 z-10 flex items-center justify-end gap-3 rounded-xl border border-border bg-card/95 p-3 shadow-lg backdrop-blur md:bottom-4">
           <span className="mr-auto text-sm text-muted-foreground">{dirtyCount > 0 ? t('unsaved', { count: dirtyCount }) : t('noChanges')}</span>
           {dirtyCount > 0 && (
-            <button type="button" className={buttonClass.ghost} onClick={() => {
+            <button type="button" className={buttonClass.secondary} onClick={() => {
               setValues(initial);
               setAdvanceRows(initialAdvances);
             }}>
@@ -391,5 +416,32 @@ function Section({ icon: Icon, title, hint, children }: { icon: typeof Building2
       {hint ? <InfoHint hint={hint}>{heading}</InfoHint> : heading}
       <div className="mt-3">{children}</div>
     </section>
+  );
+}
+
+/**
+ * The tax country, read-only here: it is picked in the welcome setup and
+ * fixed by the first issued invoice, while the address below stays free.
+ */
+function TaxCountry({ tenant, readOnly }: { tenant: TenantSettings; readOnly: boolean }) {
+  const t = useTranslations('settings.company');
+  const locale = useLocale();
+  const code = taxCountryOf(tenant);
+  const name = new Intl.DisplayNames([locale], { type: 'region' }).of(code) ?? code;
+  const currency = tenant.homeCurrency ?? homeCurrencyOf(code);
+  return (
+    <div className="mt-3 rounded-lg border border-border p-3 text-sm">
+      <p className="flex flex-wrap items-center gap-2">
+        {tenant.countryLocked ? <Lock className="h-4 w-4 text-muted-foreground" aria-hidden="true" /> : <Globe2 className="h-4 w-4 text-muted-foreground" aria-hidden="true" />}
+        <span className="font-medium">{t('taxCountry')}:</span>
+        <span>{t('taxCountryValue', { country: name, currency })}</span>
+        {!tenant.countryLocked && !readOnly && (
+          <Link href="/welcome" className="text-xs font-semibold text-primary hover:underline">
+            {t('taxCountryChange')}
+          </Link>
+        )}
+      </p>
+      <p className="mt-1 text-xs text-muted-foreground">{tenant.countryLocked ? t('taxCountryLocked') : t('taxCountryHint')}</p>
+    </div>
   );
 }

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { AlertTriangle } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { BlogAutomation, BlogDraftForms } from '@/components/admin-blog';
+import { InfoHint } from '@/components/info-hint';
 import { Link } from '@/i18n/navigation';
 import { adminBlogFetch, BLOG_STATUS_TONE, type AdminBlogListItem, type BlogAutopublish, type BlogStatus } from '@/lib/admin-blog';
 import { formatBlogDate } from '@/lib/blog';
@@ -27,8 +28,9 @@ export default async function AdminBlogPage() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
-      <p className="mt-1 text-sm text-muted-foreground">{t('description')}</p>
+      <InfoHint hint={t('description')}>
+        <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
+      </InfoHint>
 
       <div className="mt-6 space-y-4">
         <BlogAutomation autopublish={autopublish} />

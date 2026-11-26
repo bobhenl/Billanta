@@ -35,3 +35,15 @@ export async function copyText(text: string): Promise<void> {
   }
   if (!ok) throw new Error('copy_failed');
 }
+
+/** Saves text as a .txt file through a temporary link, so secrets shown once can be kept offline. */
+export function downloadText(filename: string, text: string): void {
+  const url = URL.createObjectURL(new Blob([text.endsWith('\n') ? text : `${text}\n`], { type: 'text/plain;charset=utf-8' }));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}

@@ -3,6 +3,10 @@
 import { revalidatePath } from 'next/cache';
 import { getTranslations } from 'next-intl/server';
 import { apiFetch, ApiError } from '@/lib/api-client';
+import { auth } from '@/auth';
+import { grantUnlock, revokeUnlock } from '@/lib/invoice-unlock';
+import { allow } from '@/lib/rate-limit';
+import { verifyPassword } from '@/lib/reauth';
 
 /**
  * Server actions behind the invoice detail page and the list's row menu.
@@ -27,6 +31,32 @@ const json = (method: string, body: unknown): RequestInit => ({
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify(body)
 });
+
+/** Owner/admin only (the backend checks); unlocking needs a fresh unlock first. */
+export async function setInvoiceLock(id: string, locked: boolean) {
+  return run<{ id: string; locked: boolean }>(`/api/v1/invoices/${id}/lock`, json('PATCH', { locked }));
+}
+
+/** Re-auth that opens locked invoices for a few minutes in this browser. */
+export async function unlockInvoices(password: string): Promise<ActionResult> {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId || session.twoFactor === 'pending') return { ok: false, error: 'not_signed_in' };
+  if (!allow(`unlock:${userId}`, { limit: 5, windowMs: 10 * 60 * 1000 })) return { ok: false, error: 'too_many_attempts' };
+  const me = await verifyPassword(userId, password);
+  if (!me) return { ok: false, error: 'not_signed_in' };
+  if (me === 'wrong_current' || me === 'reauth_required') return { ok: false, error: me };
+  await grantUnlock(userId);
+  revalidatePath('/[locale]/(dashboard)/invoices', 'layout');
+  return { ok: true, data: undefined };
+}
+
+/** Closes locked invoices again before the window runs out. */
+export async function relockInvoices(): Promise<ActionResult> {
+  await revokeUnlock();
+  revalidatePath('/[locale]/(dashboard)/invoices', 'layout');
+  return { ok: true, data: undefined };
+}
 
 export async function issueInvoice(id: string) {
   return run<{ id: string; invoiceNumber: string }>(`/api/v1/invoices/${id}/issue`);

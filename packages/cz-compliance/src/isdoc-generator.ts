@@ -101,6 +101,12 @@ export interface IsdocTotals {
   totalWithVat: number;
   /** Rounding correction applied to arrive at `totalWithVat` (ISDOC `RoundingAmount`), if any. */
   roundingAmount?: number;
+  /**
+   * Tax-inclusive amount already paid through a proforma (ISDOC
+   * `PaidDepositsAmount`). It lowers `PayableAmount`, so the buyer's
+   * accounting app does not book the full total as still owed.
+   */
+  paidDepositsAmount?: number;
   /** Breakdown by VAT rate, required by ISDOC's VAT recapitulation section. */
   vatRecapitulation: IsdocVatRecapitulationEntry[];
 }
@@ -625,8 +631,9 @@ function buildTaxTotalXml(groups: ComputedVatGroup[], fx: Fx): string {
  * scenarios.
  *
  * BEST-EFFORT: `IsdocInvoiceInput` has no concept of advance payments/deposits
- * already claimed on this invoice, so `AlreadyClaimedTax*Amount` and
- * `PaidDepositsAmount` are emitted as `0`, and `DifferenceTax*Amount` (defined
+ * already claimed on this invoice, so `AlreadyClaimedTax*Amount` is emitted
+ * as `0` (`PaidDepositsAmount` too, unless a paid proforma settled the
+ * invoice: `IsdocTotals.paidDepositsAmount`), and `DifferenceTax*Amount` (defined
  * by the schema doc as "difference between precept and already claimed") is
  * therefore equal to `TaxExclusiveAmount`/`TaxInclusiveAmount` respectively.
  * This is a logical inference from the field semantics (nothing already
@@ -636,6 +643,7 @@ function buildTaxTotalXml(groups: ComputedVatGroup[], fx: Fx): string {
  */
 function buildLegalMonetaryTotalXml(totals: IsdocTotals, fx: Fx): string {
   const taxInclusive = roundMoney(totals.totalWithoutVat + totals.totalVat);
+  const deposits = roundMoney(Math.max(0, totals.paidDepositsAmount ?? 0));
 
   return [
     '<LegalMonetaryTotal>',
@@ -646,8 +654,8 @@ function buildLegalMonetaryTotalXml(totals: IsdocTotals, fx: Fx): string {
     currAfter(fx, 'DifferenceTaxExclusiveAmount', totals.totalWithoutVat),
     currAfter(fx, 'DifferenceTaxInclusiveAmount', taxInclusive),
     ...(totals.roundingAmount !== undefined ? [currAfter(fx, 'PayableRoundingAmount', totals.roundingAmount)] : []),
-    currAfter(fx, 'PaidDepositsAmount', 0),
-    currAfter(fx, 'PayableAmount', totals.totalWithVat),
+    currAfter(fx, 'PaidDepositsAmount', deposits),
+    currAfter(fx, 'PayableAmount', roundMoney(totals.totalWithVat - deposits)),
     '</LegalMonetaryTotal>',
   ].join('');
 }

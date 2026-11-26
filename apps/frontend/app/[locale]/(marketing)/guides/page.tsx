@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { ArrowRight } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { ToolTabs } from '@/components/public-tools/tool-tabs';
@@ -43,28 +44,23 @@ export default async function GuidesHub({ params }: { params: Promise<Params> })
   };
 
   return (
-    <section className="container py-12 sm:py-16">
+    <section className="container py-6 sm:py-12">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(itemList)} />
       <ToolTabs kind="guides" />
-      <h1 className="max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl">{t('guides.indexTitle')}</h1>
-      <p className="mt-4 max-w-2xl text-lg text-muted-foreground">{t('guides.indexLead')}</p>
-      <ul className="mt-10 grid gap-4 sm:grid-cols-2">
-        {guides.map((g) => {
-          const Icon = g.icon;
-          return (
-            <li key={g.slug}>
-              <Link href={`/guides/${g.slug}`} className="group flex h-full gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/40">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
-                  <Icon className="h-5 w-5" aria-hidden="true" />
-                </span>
-                <span>
-                  <span className="block font-semibold group-hover:text-primary">{t(`guides.items.${g.key}.name`)}</span>
-                  <span className="mt-1 block text-sm text-muted-foreground">{t(`guides.items.${g.key}.description`)}</span>
-                </span>
-              </Link>
-            </li>
-          );
-        })}
+      <h1 className="max-w-3xl text-2xl font-extrabold tracking-tight sm:text-4xl">{t('guides.indexTitle')}</h1>
+      <p className="mt-2 max-w-2xl text-muted-foreground sm:mt-3 sm:text-lg">{t('guides.indexLead')}</p>
+      <ul className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2">
+        {guides.map((g) => (
+          <li key={g.slug}>
+            <Link href={`/guides/${g.slug}`} className="group flex h-full flex-col rounded-xl border border-border bg-card p-4 transition-colors sm:p-5 hover:border-primary/40">
+              <h2 className="flex items-center justify-between gap-2 text-base font-bold">
+                {t(`guides.items.${g.key}.name`)}
+                <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" aria-hidden="true" />
+              </h2>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{t(`guides.items.${g.key}.description`)}</p>
+            </Link>
+          </li>
+        ))}
       </ul>
       <NextPages
         title={tLearn('basicsTitle')}

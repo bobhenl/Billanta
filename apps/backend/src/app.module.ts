@@ -10,6 +10,7 @@ import { BackupDestinationsController } from "./backup-destinations/backup-desti
 import { BackupDestinationsModule } from "./backup-destinations/backup-destinations.module";
 import { BankReconciliationController } from "./bank-reconciliation/bank-reconciliation.controller";
 import { BankConnectionsController } from "./bank-reconciliation/bank-connections.controller";
+import { BankRulesController } from "./bank-reconciliation/bank-rules.controller";
 import { BankReconciliationModule } from "./bank-reconciliation/bank-reconciliation.module";
 import { BillingModule } from "./billing/billing.module";
 import { SubscriptionController } from "./billing/subscription.controller";
@@ -29,6 +30,8 @@ import { EInvoicingSettingsController, IncomingEInvoicesController, InvoiceEInvo
 import { EInvoicingModule } from "./einvoicing/einvoicing.module";
 import { ExportsController } from "./exports/exports.controller";
 import { ExportsModule } from "./exports/exports.module";
+import { InvoicePartnerSharesController, NetIncomeController, TaxModelController } from "./net-income/net-income.controller";
+import { NetIncomeModule } from "./net-income/net-income.module";
 import { InvoiceTemplatesController } from "./invoice-templates/invoice-templates.controller";
 import { InvoiceTemplatesModule } from "./invoice-templates/invoice-templates.module";
 import { TimeTrackingController } from "./time-tracking/time-tracking.controller";
@@ -133,6 +136,8 @@ import { ReferralsModule } from "./referrals/referrals.module";
     CardPaymentsModule,
     DashboardModule,
     ExportsModule,
+    // Report "Po zdanění": the company's tax model and net income per partner.
+    NetIncomeModule,
     // Bell / browser / email notifications per member and event.
     NotificationsModule,
     AuditModule,
@@ -239,6 +244,7 @@ export class AppModule implements NestModule {
         RecurringInvoicesController,
         BankReconciliationController,
         BankConnectionsController,
+        BankRulesController,
         BackupDestinationsController,
         TeamController,
         DashboardController,
@@ -260,6 +266,10 @@ export class AppModule implements NestModule {
         InvoiceEInvoiceController,
         IncomingEInvoicesController,
         EInvoicingSettingsController,
+        NetIncomeController,
+        TaxModelController,
+        // JWT only: the split between partners is internal, not in the public API.
+        InvoicePartnerSharesController,
       );
 
     // InvoicesController: same tenant-context requirement as every

@@ -1,3 +1,5 @@
+import { LOCALE_PATTERN } from '@/i18n/locales';
+import { BRAND_MARK_48_PNG } from '@/lib/brand-mark-data';
 import { REFERRAL_CODE } from '@/lib/referral';
 import { SITE_URL } from '@/lib/site';
 
@@ -67,14 +69,9 @@ export function badgeWidth(label: string): number {
   return 8 + 24 + 10 + labelWidth(label) + 14;
 }
 
-/** The brand mark from app/icon.svg, drawn in a 24px box. */
+/** The logo mark in a 24px box, inlined as a data URL: badges stay self-contained, no image files. */
 function markSvg(x: number, y: number): string {
-  return (
-    `<g transform="translate(${x} ${y}) scale(0.75)">` +
-    '<rect width="32" height="32" rx="8" fill="#4f46e5"/>' +
-    '<path d="M10.5 7.5h6.3a4.25 4.25 0 0 1 0 8.5H10.5zM10.5 16h7.4a4.5 4.5 0 0 1 0 9h-7.4z" fill="none" stroke="#fff" stroke-width="2.8" stroke-linejoin="round"/>' +
-    '<circle cx="24.6" cy="8.4" r="2.6" fill="#4ade80"/></g>'
-  );
+  return `<image x="${x}" y="${y}" width="24" height="24" href="${BRAND_MARK_48_PNG}"/>`;
 }
 
 /** A self-contained SVG badge (no fonts, scripts or external references). */
@@ -124,7 +121,7 @@ export function badgeImageSnippet({ kind, lang, theme, label, ref }: BadgeSnippe
 /** The same badge in plain HTML, for sites that block outside images. */
 export function badgeHtmlSnippet({ kind, lang, theme, label, ref }: BadgeSnippetInput): string {
   const c = BADGE_COLORS[theme];
-  const mark = `<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none">${markSvg(0, 0)}</svg>`;
+  const mark = `<img src="${BRAND_MARK_48_PNG}" width="24" height="24" alt="" style="flex:none;border:0">`;
   return (
     `<a href="${escapeHtml(backlinkUrl(kind, lang, ref))}" style="display:inline-flex;align-items:center;gap:10px;padding:7px 14px 7px 8px;border:1px solid ${c.border};border-radius:8px;background:${c.bg};color:${c.text};font:600 13px/1.2 ${FONT};text-decoration:none">` +
     `${mark}${escapeHtml(label)}</a>`
@@ -185,7 +182,7 @@ export function publicInvoiceUrl(pasted: string, lang: EmbedLang): string | null
   } catch {
     return null;
   }
-  const m = url.pathname.match(/^\/(?:(cs|sk|en)\/)?i\/([A-Za-z0-9_-]{6,160})\/?$/);
+  const m = url.pathname.match(new RegExp(`^/(?:(${LOCALE_PATTERN})/)?i/([A-Za-z0-9_-]{6,160})/?$`));
   return m ? `${SITE_URL}/${m[1] ?? lang}/i/${m[2]}` : null;
 }
 

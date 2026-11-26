@@ -45,6 +45,31 @@ export interface UblOptions {
    * (§ 74 ods. 1 p) ZoDPH).
    */
   precedingInvoice?: { number: string; issueDate?: string };
+  /**
+   * How the buyer pays (the invoice's `payment_method`, and its label for
+   * "other"). Only a bank transfer needs the seller's account; PayPal, a card
+   * or cash get their own UNCL 4461 code and no account warning.
+   */
+  paymentMethod?: string;
+  paymentMethodLabel?: string | null;
+}
+
+const ONLINE_SERVICE = /paypal|stripe|gopay|comgate|revolut|wise|apple pay|google pay/i;
+
+/** UNCL 4461 payment means code (BT-81), or null for a credit transfer, which depends on the account. */
+export function ublPaymentMeansCode(method: string | undefined, label?: string | null): string | null {
+  switch (method) {
+    case 'cash':
+    case 'cash_on_delivery':
+      return '10';
+    case 'card':
+      return '48';
+    case 'other':
+      // 68 is "online payment service"; anything else is mutually agreed.
+      return label && ONLINE_SERVICE.test(label) ? '68' : 'ZZZ';
+    default:
+      return null;
+  }
 }
 
 /**
@@ -329,11 +354,13 @@ export function generateUblInvoiceXml(input: IsdocInvoiceInput, options: UblOpti
   // the free text and the variable symbol share one.
   const note = [input.note, input.variableSymbol ? `VS: ${input.variableSymbol}` : undefined].filter(Boolean).join('\n');
 
+  const otherMeans = ublPaymentMeansCode(options.paymentMethod, options.paymentMethodLabel);
   const account = input.bankAccount;
-  const accountId = account?.iban?.replace(/\s+/g, '') || account?.accountNumber;
+  // BG-17 (the payee's account) belongs to a credit transfer only.
+  const accountId = otherMeans ? undefined : account?.iban?.replace(/\s+/g, '') || account?.accountNumber;
   const paymentMeans =
     '<cac:PaymentMeans>' +
-    el('cbc:PaymentMeansCode', account?.iban ? '58' : '30') +
+    el('cbc:PaymentMeansCode', otherMeans ?? (account?.iban ? '58' : '30')) +
     // A UBL 2.1 CreditNote has no DueDate in its header, so BT-9 goes here.
     (creditNote ? el('cbc:PaymentDueDate', date(input.dueDate)) : '') +
     opt('cbc:PaymentID', input.variableSymbol) +
@@ -477,6 +504,7 @@ export function validatePeppolInvoice(input: IsdocInvoiceInput, options: UblOpti
   if (options.documentType === 'credit_note' && !options.precedingInvoice?.number) add('BT-25', 'document', 'precedingMissing');
 
   if (!/^[A-Z]{3}$/.test(input.currency ?? '')) add('BR-05', 'currency', 'currencyInvalid');
+  if (ublPaymentMeansCode(options.paymentMethod, options.paymentMethodLabel)) return issues;
   if (!input.bankAccount?.iban && !input.bankAccount?.accountNumber) add('BR-49', 'payment', 'noAccount', 'warning');
   else if (!input.bankAccount?.iban) add('BR-61', 'payment', 'noIban', 'warning');
   return issues;

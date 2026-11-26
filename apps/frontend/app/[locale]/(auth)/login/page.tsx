@@ -1,18 +1,25 @@
+import type { Metadata } from 'next';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { auth } from '@/auth';
 import { Link, redirect } from '@/i18n/navigation';
 import { demoEnabled } from '@/lib/demo';
 import { enabledOAuthProviders } from '@/lib/oauth-providers';
 import { ClearCachedPages } from '@/components/offline-sync';
+import { safeNext } from '@/lib/invitation';
 import { LoginForm } from './login-form';
 
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('auth.login');
+  return { title: t('title') };
+}
+
 /**
- * Standalone login page — mirrors `(auth)/signup/page.tsx`'s structure
+ * Standalone login page – mirrors `(auth)/signup/page.tsx`'s structure
  * exactly (same route-group trick to skip the dashboard shell, same
  * centered-card layout). Stays a plain server component; all interactivity
  * lives in `login-form.tsx`.
  */
-export default async function LoginPage() {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string | string[] }> }) {
   // Password (or OAuth) already accepted, code still missing: dashboard pages
   // treat that session as signed out and land here, so pass it on.
   const session = await auth().catch(() => null);
@@ -23,7 +30,8 @@ export default async function LoginPage() {
       <div className="w-full max-w-md">
         {/* Covers sign-outs that skipped the menu (expired session, another tab). */}
         <ClearCachedPages />
-        <LoginForm providers={enabledOAuthProviders()} />
+        {/* `?next=`: back to the page that sent them here (an invitation link). */}
+        <LoginForm providers={enabledOAuthProviders()} next={safeNext((await searchParams).next)} />
         {demoEnabled() && <DemoHint />}
       </div>
     </div>

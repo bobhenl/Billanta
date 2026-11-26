@@ -26,7 +26,7 @@ export async function ToolTabs({ kind, current }: { kind: 'calculators' | 'guide
     ...tools.map((x) => ({ href: `/${kind}/${x.slug}`, label: t(`${kind}.items.${x.key}.name`), active: x.slug === current }))
   ];
   return (
-    <ToolTabsStrip storageKey={kind} label={t(`menu.${kind}`)} className="mb-8 max-w-full overflow-x-auto overscroll-x-contain [scrollbar-width:thin]">
+    <ToolTabsStrip storageKey={kind} label={t(`menu.${kind}`)} className="mb-5 max-w-full overflow-x-auto sm:mb-8 overscroll-x-contain [scrollbar-width:thin]">
       <ul className="flex w-max gap-1 rounded-xl border border-border bg-card p-1">
         {tabs.map((tab) => (
           <li key={tab.href}>

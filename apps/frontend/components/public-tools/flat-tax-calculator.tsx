@@ -11,7 +11,8 @@ import {
   type OsvcFlatRate,
   type RegimeOption
 } from '@faktur/cz-compliance';
-import { AmountField, money, parseAmount, ResultRow, SelectField } from '@/components/public-tools/fields';
+import { InfoHint } from '@/components/info-hint';
+import { AmountField, money, parseAmount, ResultRow, SelectField, toolCard } from '@/components/public-tools/fields';
 import { cn } from '@/lib/utils';
 
 const RATES = [80, 60, 40, 30] as const satisfies readonly OsvcFlatRate[];
@@ -69,7 +70,7 @@ export function FlatTaxCalculator({ years, prefill }: { years: number[]; prefill
   const czk = (n: number) => money(locale, n);
   const monthName = (m: number) => format.dateTime(new Date(Date.UTC(y, m - 1, 15)), { month: 'long', year: 'numeric', timeZone: 'Europe/Prague' });
 
-  if (!r) return <p className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">{t('unavailable.no_data')}</p>;
+  if (!r) return <p className={cn(toolCard, 'text-sm text-muted-foreground')}>{t('unavailable.no_data')}</p>;
 
   const flat = r.options.find((o) => o.kind === 'flat_tax')!;
   // Without typed actual expenses that column would only repeat "worse than the paušál".
@@ -86,22 +87,28 @@ export function FlatTaxCalculator({ years, prefill }: { years: number[]; prefill
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-      <form className="space-y-4 rounded-xl border border-border bg-card p-5" onSubmit={(e) => e.preventDefault()}>
+      <form className={cn(toolCard, 'space-y-4')} onSubmit={(e) => e.preventDefault()}>
         <SelectField label={t('fields.year')} value={year} onChange={setYear} options={years.map((v) => ({ value: String(v), label: String(v) }))} />
-        <AmountField label={t('fields.income')} value={income} onChange={setIncome} />
-        <AmountField label={t('fields.actualExpenses')} value={expenses} onChange={setExpenses} hint={t('fields.actualHint')} />
+        <AmountField label={t('fields.income')} value={income} onChange={setIncome} unit="CZK" />
+        <AmountField label={t('fields.actualExpenses')} value={expenses} onChange={setExpenses} info={t('fields.actualHint')} unit="CZK" />
         <SelectField
           label={t('fields.flatRate')}
           value={flatRate}
           onChange={setFlatRate}
           options={RATES.map((v) => ({ value: String(v), label: t(`rates.${v}`, { cap: new Intl.NumberFormat(locale).format(OSVC_FLAT_EXPENSE_CAPS[v]) }) }))}
         />
-        <SelectField label={t('fields.children')} value={children} onChange={(v) => setChildren(v)} options={CHILDREN.map((v) => ({ value: v, label: v }))} />
-        <Toggle label={t('fields.spouse')} checked={spouse} onChange={setSpouse} />
+        <SelectField
+          label={t('fields.children')}
+          value={children}
+          onChange={(v) => setChildren(v)}
+          options={CHILDREN.map((v) => ({ value: v, label: v }))}
+          info={t('fields.childrenInfo')}
+        />
+        <Toggle label={t('fields.spouse')} checked={spouse} onChange={setSpouse} info={t('fields.spouseInfo')} />
         <Toggle label={t('fields.vatPayer')} checked={vatPayer} onChange={setVatPayer} />
       </form>
 
-      <section aria-live="polite" className="min-w-0 rounded-xl border border-border bg-card p-5">
+      <section aria-live="polite" className={toolCard}>
         <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
           {tc('resultTitle')} · {y}
         </h2>
@@ -162,11 +169,12 @@ export function FlatTaxCalculator({ years, prefill }: { years: number[]; prefill
   );
 }
 
-function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <label className="flex cursor-pointer items-start gap-2.5 text-sm">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-primary" />
+function Toggle({ label, checked, onChange, info }: { label: string; checked: boolean; onChange: (v: boolean) => void; info?: string }) {
+  const box = (
+    <label className="flex cursor-pointer items-center gap-2.5 text-sm">
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="h-4 w-4 shrink-0 accent-primary" />
       <span>{label}</span>
     </label>
   );
+  return info ? <InfoHint hint={info}>{box}</InfoHint> : box;
 }

@@ -61,7 +61,7 @@ export default async function CoworkingPosterPage({ params, searchParams }: { pa
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         {t('back')}
       </Link>
-      <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">{t('title')}</h1>
+      <h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">{t('title')}</h1>
       <p className="mt-3 max-w-2xl text-muted-foreground">{t('lead')}</p>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">

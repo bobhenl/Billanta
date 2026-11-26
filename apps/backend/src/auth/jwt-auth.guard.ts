@@ -57,7 +57,7 @@ export class JwtAuthGuard implements CanActivate {
     // exactly one direction (AuthenticatedUser is structurally assignable
     // to this smaller object shape), which is what TypeScript checks for an
     // `as` assertion; it does not manufacture tenantId/role values.
-    req.user = { id: identity.sub, email: identity.email, twoFactor: identity.twoFactor } as AuthenticatedUser;
+    req.user = { id: identity.sub, email: identity.email, twoFactor: identity.twoFactor, unlocked: identity.unlocked } as AuthenticatedUser;
     return true;
   }
 }

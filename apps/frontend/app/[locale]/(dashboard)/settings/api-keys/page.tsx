@@ -40,7 +40,7 @@ export default async function ApiKeysSettingsPage() {
   // Owners and admins, or a member with this settings section (Settings → Team).
   const editable = canManage(role) || (role !== null && (await fetchMayEditSettings('apiKeys')));
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="mx-auto max-w-3xl">
       <SettingsHeader title={t('title')} description={t('description')} />
       <TwoFactorNotice className="mt-4" />
       {!editable && (

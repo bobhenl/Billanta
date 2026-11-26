@@ -52,10 +52,10 @@ export default async function PaymentRemindersHub({ params }: { params: Promise<
     <section className="container py-12 sm:py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(itemList)} />
       <ReminderTabs />
-      <h1 className="max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl">{t('indexTitle')}</h1>
-      <p className="mt-4 max-w-2xl text-lg text-muted-foreground">{t('indexLead')}</p>
+      <h1 className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl">{t('indexTitle')}</h1>
+      <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{t('indexLead')}</p>
 
-      <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {letters.map((x, i) => {
           const Icon = x.icon;
           return (

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Children, cloneElement, isValidElement, type ReactElement } from 'react';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { VAT_FORM_VERSIONS, VAT_INFO_CHECKED, VAT_OFFICIAL_URL } from '@faktur/cz-compliance';
 import { NewsletterSignup } from '@/components/newsletter-signup';
@@ -72,8 +73,17 @@ export async function GuidePage({
   const forms = sources
     ? undefined
     : t('guides.items.vatFiling.formsLine', { dp3: VAT_FORM_VERSIONS.DPHDP3, kh1: VAT_FORM_VERSIONS.DPHKH1, shv: VAT_FORM_VERSIONS.DPHSHV });
+  // Long guides get a short table of contents built from their own sections.
+  const sections: { id: string; title: string }[] = [];
+  const body = Children.map(children, (child) => {
+    if (!isValidElement(child) || child.type !== GuideSection) return child;
+    const el = child as ReactElement<GuideSectionProps>;
+    const id = `s${sections.length + 1}`;
+    sections.push({ id, title: el.props.title });
+    return cloneElement(el, { id });
+  });
   return (
-    <article className="container py-12 sm:py-16">
+    <article className="container py-6 sm:py-12">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd(guideArticleLd(locale, path, t(`${k}.title`), t(`${k}.description`), updatedOn))}
@@ -83,8 +93,22 @@ export async function GuidePage({
       <p className="mt-3 text-sm text-muted-foreground">
         {t('common.updated')}: <time dateTime={updatedOn}>{updated}</time>
       </p>
-      <div className="mt-10 max-w-3xl space-y-10">{children}</div>
-      <div className="mt-12 max-w-3xl">
+      {sections.length >= 4 && (
+        <nav aria-label={t('common.toc')} className="mt-8 max-w-2xl border-l-2 border-border pl-4">
+          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('common.toc')}</p>
+          <ol className="mt-2 space-y-1.5 text-sm">
+            {sections.map((s) => (
+              <li key={s.id}>
+                <a href={`#${s.id}`} className="text-foreground/80 hover:text-primary hover:underline">
+                  {s.title}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
+      <div className="mt-8 max-w-2xl space-y-10 sm:mt-10">{body}</div>
+      <div className="mt-12 max-w-2xl">
         <GuideSources
           checked={checked}
           officialUrl={sources?.officialUrl ?? VAT_OFFICIAL_URL}
@@ -96,7 +120,7 @@ export async function GuidePage({
       <div className="mt-12">
         <SignupCta />
       </div>
-      <div className="mt-12 max-w-3xl">
+      <div className="mt-12 max-w-2xl">
         {slug === SK_EINVOICING_GUIDE ? (
           <NewsletterSignup source="sk_einvoicing" country="SK" topics={['sk_einvoicing', 'deadlines']} />
         ) : (
@@ -110,11 +134,14 @@ export async function GuidePage({
   );
 }
 
-export function GuideSection({ title, children }: { title: string; children: React.ReactNode }) {
+type GuideSectionProps = { title: string; id?: string; children: React.ReactNode };
+
+/** `id` is set by GuidePage for its table of contents. */
+export function GuideSection({ title, id, children }: GuideSectionProps) {
   return (
-    <section>
-      <h2 className="text-xl font-semibold">{title}</h2>
-      <div className="mt-3 space-y-3 text-sm leading-relaxed text-foreground/90">{children}</div>
+    <section id={id} className="scroll-mt-24">
+      <h2 className="text-xl font-bold tracking-tight">{title}</h2>
+      <div className="mt-3 space-y-3 text-[15px] leading-7 text-foreground/90">{children}</div>
     </section>
   );
 }

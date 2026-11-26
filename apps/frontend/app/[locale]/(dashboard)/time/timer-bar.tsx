@@ -5,11 +5,11 @@ import { Play, Plus, Square } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { toast } from '@/components/toaster';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { formatElapsed, formatMinutes, type Project, type RunningTimer } from '@/lib/time-ui';
+import { cn } from '@/lib/utils';
 import { startTimer, stopTimer } from './actions';
 import { EntryModal } from './entry-modal';
-
-const input = 'h-10 rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20';
 
 /** Start/stop timer, plus "add by hand". One running timer per person. */
 export function TimerBar({ running, projects }: { running: RunningTimer | null; projects: Project[] }) {
@@ -44,7 +44,8 @@ export function TimerBar({ running, projects }: { running: RunningTimer | null; 
       {running ? (
         <div className="flex flex-wrap items-center gap-3">
           <span className="relative flex h-3 w-3 shrink-0">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive/60" />
+            {/* The ping says "recording"; with reduced motion the solid dot says it alone. */}
+            <span className="absolute inline-flex h-full w-full rounded-full bg-destructive/60 motion-safe:animate-ping" />
             <span className="relative inline-flex h-3 w-3 rounded-full bg-destructive" />
           </span>
           <div className="min-w-0 flex-1">
@@ -63,7 +64,7 @@ export function TimerBar({ running, projects }: { running: RunningTimer | null; 
                 () => toast({ text: t('stopped', { time: formatMinutes(Math.max(1, Math.round((elapsed ?? 0) / 60))) }), tone: 'ok' })
               )
             }
-            className="inline-flex h-10 items-center gap-1.5 rounded-full bg-destructive px-4 text-sm font-bold text-destructive-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+            className={cn(buttonClass.danger, 'h-10')}
           >
             <Square className="h-4 w-4 fill-current" />
             {t('stop')}
@@ -71,7 +72,7 @@ export function TimerBar({ running, projects }: { running: RunningTimer | null; 
         </div>
       ) : (
         <form
-          className="flex flex-wrap items-center gap-2"
+          className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_12rem] lg:grid-cols-[minmax(0,1fr)_12rem_auto]"
           onSubmit={(e) => {
             e.preventDefault();
             act(
@@ -81,14 +82,14 @@ export function TimerBar({ running, projects }: { running: RunningTimer | null; 
           }}
         >
           <input
-            className={`${input} min-w-0 flex-1 basis-56`}
+            className={cn(inputClass, 'h-10 min-w-0')}
             value={description}
             maxLength={500}
             onChange={(e) => setDescription(e.target.value)}
             placeholder={t('whatAreYouWorkingOn')}
             aria-label={t('columns.description')}
           />
-          <select className={`${input} max-w-full basis-44`} value={projectId} onChange={(e) => setProjectId(e.target.value)} aria-label={t('columns.project')}>
+          <select className={cn(inputClass, 'h-10 min-w-0')} value={projectId} onChange={(e) => setProjectId(e.target.value)} aria-label={t('columns.project')}>
             <option value="">{t('noProject')}</option>
             {projects.map((p) => (
               <option key={p.id} value={p.id}>
@@ -96,22 +97,21 @@ export function TimerBar({ running, projects }: { running: RunningTimer | null; 
               </option>
             ))}
           </select>
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              disabled={pending}
-              className="inline-flex h-10 items-center gap-1.5 rounded-full bg-primary px-4 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
-            >
+          <div className="flex gap-2 sm:col-span-2 lg:col-span-1">
+            <button type="submit" disabled={pending} className={cn(buttonClass.primary, 'h-10 flex-1 sm:flex-none')}>
               <Play className="h-4 w-4 fill-current" />
               {t('start')}
             </button>
+            {/* Starting the clock is the everyday action; a hand-made entry is the (+) beside it on a phone. */}
             <button
               type="button"
               onClick={() => setManual(true)}
-              className="inline-flex h-10 items-center gap-1.5 rounded-full border border-border px-4 text-sm font-semibold transition-colors hover:bg-accent hover:text-primary"
+              aria-label={t('addManual')}
+              title={t('addManual')}
+              className={cn(buttonClass.secondary, 'h-10 w-10 shrink-0 whitespace-nowrap px-0 sm:w-auto sm:px-4')}
             >
               <Plus className="h-4 w-4" />
-              {t('addManual')}
+              <span className="hidden sm:inline">{t('addManual')}</span>
             </button>
           </div>
         </form>

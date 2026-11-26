@@ -13,6 +13,8 @@ import { getFeaturePage } from '@/lib/feature-pages';
 import { getCalculator, getGuide, isPublishedIn } from '@/lib/public-tools';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
+import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 /**
  * One glossary term (see lib/glossary.ts): the quotable definition first,
@@ -49,8 +51,8 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="mt-10">
-      <h2 className="text-xl font-semibold">{title}</h2>
-      <div className="mt-3 space-y-3 text-sm leading-relaxed text-foreground/90">{children}</div>
+      <h2 className="text-xl font-bold tracking-tight">{title}</h2>
+      <div className="mt-3 space-y-3 text-[15px] leading-7 text-foreground/90">{children}</div>
     </div>
   );
 }
@@ -126,7 +128,7 @@ export default async function GlossaryTermPage({ params }: { params: Promise<Par
   ];
 
   return (
-    <article className="container max-w-3xl py-12 sm:py-16">
+    <article className="container max-w-2xl py-12 sm:py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(structuredData)} />
       <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
         <Link href="/glossary" className="hover:text-foreground">
@@ -136,10 +138,10 @@ export default async function GlossaryTermPage({ params }: { params: Promise<Par
         <span className="text-foreground">{text.term}</span>
       </nav>
 
-      <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{text.term}</h1>
+      <h1 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">{text.term}</h1>
       {text.aka ? <p className="mt-2 text-sm text-muted-foreground">{text.aka}</p> : null}
       {term.market !== 'both' ? (
-        <p className="mt-3 inline-flex rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
+        <p className="mt-2 text-xs font-medium text-muted-foreground">
           {term.market === 'cz' ? t('marketCz') : t('marketSk')}
         </p>
       ) : null}
@@ -186,10 +188,10 @@ export default async function GlossaryTermPage({ params }: { params: Promise<Par
 
       {related.length > 0 ? (
         <Section title={t('related')}>
-          <ul className="flex flex-wrap gap-2">
+          <ul className="grid gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((r) => (
               <li key={r.slug}>
-                <Link href={`/glossary/${r.slug}`} className="inline-flex rounded-full border border-border bg-card px-3 py-1.5 text-sm transition-colors hover:border-primary/40 hover:text-primary">
+                <Link href={`/glossary/${r.slug}`} className="text-sm hover:text-primary hover:underline">
                   {r.name}
                 </Link>
               </li>
@@ -246,11 +248,11 @@ async function OtherMarketNotice({ term, locale }: { term: GlossaryTerm; locale:
         <h1 className="text-2xl font-semibold tracking-tight">{t('otherTitle')}</h1>
         <p className="mt-3 text-sm text-muted-foreground">{t('otherText', { term: name })}</p>
         <div className="mt-5 flex flex-wrap gap-3">
-          <Link href={path} locale={original} className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90">
+          <Link href={path} locale={original} className={cn(buttonClass.primary, 'px-5 py-2.5')}>
             {t('otherOriginal')}
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
-          <Link href={path} locale="en" className="inline-flex items-center rounded-md border border-border px-5 py-2.5 text-sm font-semibold hover:border-primary/40">
+          <Link href={path} locale="en" className={cn(buttonClass.secondary, 'px-5 py-2.5')}>
             {t('otherEnglish')}
           </Link>
         </div>

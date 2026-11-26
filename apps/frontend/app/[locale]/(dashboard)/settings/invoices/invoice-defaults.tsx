@@ -139,13 +139,14 @@ export function InvoiceDefaultsFields({
         </InfoHint>
         {value.contact ? (
           <div className="mt-1 flex items-center justify-between gap-3 rounded-lg bg-secondary px-3 py-2">
-            <span className="min-w-0 truncate">
+            <span className="min-w-0 break-words">
               <span className="font-semibold">{value.contact.legalName}</span>
               {value.contact.ico && <span className="text-muted-foreground"> · IČO {value.contact.ico}</span>}
             </span>
             {!readOnly && (
               <button
                 type="button"
+                title={t('customerRemove')}
                 aria-label={t('customerRemove')}
                 onClick={() => set('contact', null)}
                 className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-background"
@@ -245,6 +246,7 @@ export function InvoiceDefaultsFields({
               <button
                 type="button"
                 disabled={readOnly}
+                title={t('itemRemove')}
                 aria-label={t('itemRemove')}
                 onClick={() => set('items', value.items.filter((_, j) => j !== i))}
                 className="col-span-2 inline-flex h-10 w-10 items-center justify-center justify-self-end rounded-lg text-muted-foreground hover:bg-secondary hover:text-destructive sm:col-span-1"

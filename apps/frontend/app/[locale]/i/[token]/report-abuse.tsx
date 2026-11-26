@@ -4,6 +4,9 @@ import { useState, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import { Flag, CheckCircle2 } from 'lucide-react';
 import { reportInvoice, type AbuseReason } from '@/lib/public-report-actions';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
+import { SITE_NAME } from '@/lib/site';
+import { cn } from '@/lib/utils';
 
 const REASONS: AbuseReason[] = ['fraud', 'not_ordered', 'spam', 'other'];
 
@@ -22,11 +25,9 @@ export function ReportAbuse({ token, initiallyOpen }: { token: string; initially
   const [done, setDone] = useState(false);
   const [pending, startTransition] = useTransition();
 
-  const field = 'w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none';
-
   if (done) {
     return (
-      <div className="mt-8 flex items-start gap-3 rounded-lg border border-border p-5 text-sm print:hidden">
+      <div className="mt-6 flex items-start gap-3 rounded-lg border border-border p-5 text-sm print:hidden">
         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
         <div>
           <p className="font-semibold">{t('doneTitle')}</p>
@@ -38,7 +39,7 @@ export function ReportAbuse({ token, initiallyOpen }: { token: string; initially
 
   if (!open) {
     return (
-      <div className="mt-8 text-center print:hidden">
+      <div className="mt-6 text-center print:hidden">
         <button
           type="button"
           onClick={() => setOpen(true)}
@@ -62,15 +63,15 @@ export function ReportAbuse({ token, initiallyOpen }: { token: string; initially
   };
 
   return (
-    <form id="report" onSubmit={submit} className="mt-8 space-y-3 rounded-lg border border-border p-5 print:hidden">
+    <form id="report" onSubmit={submit} className="mt-6 space-y-3 rounded-lg border border-border p-5 print:hidden">
       <h2 className="flex items-center gap-2 text-sm font-semibold">
         <Flag className="h-4 w-4 text-muted-foreground" />
         {t('title')}
       </h2>
-      <p className="text-xs text-muted-foreground">{t('hint')}</p>
+      <p className="text-xs text-muted-foreground">{t('hint', { name: SITE_NAME })}</p>
       <label className="block space-y-1 text-sm">
         <span className="font-medium">{t('reason')}</span>
-        <select value={reason} onChange={(e) => setReason(e.target.value as AbuseReason)} className={field}>
+        <select value={reason} onChange={(e) => setReason(e.target.value as AbuseReason)} className={cn(inputClass, 'h-10')}>
           {REASONS.map((r) => (
             <option key={r} value={r}>
               {t(`reasons.${r}`)}
@@ -80,18 +81,18 @@ export function ReportAbuse({ token, initiallyOpen }: { token: string; initially
       </label>
       <label className="block space-y-1 text-sm">
         <span className="font-medium">{t('message')}</span>
-        <textarea value={message} maxLength={2000} onChange={(e) => setMessage(e.target.value)} className={`${field} min-h-[80px]`} placeholder={t('messagePlaceholder')} />
+        <textarea value={message} maxLength={2000} onChange={(e) => setMessage(e.target.value)} className={`${inputClass} min-h-[80px]`} placeholder={t('messagePlaceholder')} />
       </label>
       <label className="block space-y-1 text-sm">
         <span className="font-medium">{t('email')}</span>
-        <input type="email" value={email} maxLength={200} onChange={(e) => setEmail(e.target.value)} className={field} placeholder={t('emailPlaceholder')} />
+        <input type="email" value={email} maxLength={200} onChange={(e) => setEmail(e.target.value)} className={cn(inputClass, 'h-10')} placeholder={t('emailPlaceholder')} />
       </label>
       {error && <p className="text-sm text-destructive">{error}</p>}
       <div className="flex flex-wrap gap-2">
-        <button type="submit" disabled={pending} className="rounded-lg bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground disabled:opacity-60">
+        <button type="submit" disabled={pending} className={cn(buttonClass.danger, 'h-10')}>
           {pending ? t('sending') : t('submit')}
         </button>
-        <button type="button" onClick={() => setOpen(false)} className="rounded-lg border border-border px-4 py-2 text-sm">
+        <button type="button" onClick={() => setOpen(false)} className={cn(buttonClass.ghost, 'h-10')}>
           {t('cancel')}
         </button>
       </div>

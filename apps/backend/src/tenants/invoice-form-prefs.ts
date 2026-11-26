@@ -59,6 +59,19 @@ const annualRateSchema = z.object({
 /** Accent colours offered for the PDF (title, total box); the first is the default. */
 export const PDF_ACCENTS = ["#4f46e5", "#2563eb", "#0d9488", "#16a34a", "#ea580c", "#e11d48", "#334155", "#111827"] as const;
 
+/**
+ * The QR code on the PDF:
+ * - auto: QR Platba (with the invoice embedded as QR Faktura) while there is
+ *   something to pay by transfer, otherwise a standalone QR Faktura;
+ * - auto_link: the same, plus a second code with the invoice's web page;
+ * - link: a code that opens the invoice's web page, where the customer sees
+ *   every way to pay and can download it;
+ * - payment_only: QR Platba while there is something to pay, otherwise none;
+ * - off: no QR code.
+ */
+export const PDF_QR_MODES = ["auto", "auto_link", "link", "payment_only", "off"] as const;
+export type PdfQrMode = (typeof PDF_QR_MODES)[number];
+
 /** Reminder settings for tenants that never saved them. */
 export const REMINDER_DEFAULTS = { enabled: true, intervalDays: 7, max: 3 } as const;
 
@@ -116,6 +129,14 @@ export const invoiceFormPrefsSchema = z
     public_link_prefix: z.enum(PUBLIC_LINK_PREFIXES).default("number"),
     /** The "Vystaveno v Billantě" line; only a paid plan can switch it off (invoices/brand-credit.ts). */
     brand_credit: z.boolean().default(true),
+    /** Which QR code the PDF prints (PDF_QR_MODES). */
+    pdf_qr: z.enum(PDF_QR_MODES).default("auto"),
+    /** The due date in the payment QR; some banks then schedule the payment for that day, so it is opt-in. */
+    pdf_qr_due_date: z.boolean().default(false),
+    /** The line of a draft made from a payment that says nothing about what was paid for ("Software services"). */
+    payment_draft_description: z.string().trim().max(500).nullish(),
+    /** Use that line even when the payment names its items (one wording on every invoice). */
+    payment_draft_description_always: z.boolean().default(false),
   })
   .transform((p) => ({
     show: p.show as Partial<Record<OptionalInvoiceField, boolean>>,
@@ -138,7 +159,33 @@ export const invoiceFormPrefsSchema = z
     annualRates: [...p.annual_rates].sort((a, b) => b.year - a.year || a.currency.localeCompare(b.currency)),
     publicLinkPrefix: p.public_link_prefix,
     brandCredit: p.brand_credit,
+    pdfQr: p.pdf_qr,
+    pdfQrDueDate: p.pdf_qr_due_date,
+    paymentDraftDescription: p.payment_draft_description || null,
+    paymentDraftDescriptionAlways: p.payment_draft_description_always && !!p.payment_draft_description,
   }));
+
+/** Whether the payment QR carries the due date; off unless switched on. */
+export function pdfQrDueDateOf(prefs: unknown): boolean {
+  return (prefs as { pdfQrDueDate?: unknown } | null)?.pdfQrDueDate === true;
+}
+
+/** The tenant's PDF QR mode; old or unknown values mean "auto". */
+export function pdfQrModeOf(prefs: unknown): PdfQrMode {
+  const value = (prefs as { pdfQr?: unknown } | null)?.pdfQr;
+  return PDF_QR_MODES.find((m) => m === value) ?? "auto";
+}
+
+/** The tenant's own line for payment drafts, or null. */
+export function paymentDraftDescriptionOf(prefs: unknown): string | null {
+  const value = (prefs as { paymentDraftDescription?: unknown } | null)?.paymentDraftDescription;
+  return typeof value === "string" && value.trim() ? value.trim().slice(0, 500) : null;
+}
+
+/** True when the tenant's own line beats the item names a payment brings. */
+export function paymentDraftDescriptionAlwaysOf(prefs: unknown): boolean {
+  return (prefs as { paymentDraftDescriptionAlways?: unknown } | null)?.paymentDraftDescriptionAlways === true && !!paymentDraftDescriptionOf(prefs);
+}
 
 /** The tenant's PDF accent, falling back to the default for old or unknown values. */
 export function pdfAccentOf(prefs: unknown): string {

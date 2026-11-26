@@ -72,11 +72,11 @@ export async function AutoRemindersBox() {
         <h2 className="text-lg font-semibold">{t('title')}</h2>
         <p className="mt-1.5 text-sm text-muted-foreground">{t('text')}</p>
         <div className="mt-4 flex flex-wrap gap-3">
-          <Link href="/signup" className={cn(buttonClass.primary, 'inline-flex items-center gap-2')}>
+          <Link href="/signup" className={cn(buttonClass.primary, 'px-5 py-2.5')}>
             {t('cta')}
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
-          <Link href="/features/payment-reminders" className={buttonClass.secondary}>
+          <Link href="/features/payment-reminders" className={cn(buttonClass.secondary, 'px-5 py-2.5')}>
             {t('more')}
           </Link>
         </div>

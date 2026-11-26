@@ -1,3 +1,4 @@
+import { contentLocale } from '@/i18n/locales';
 import { routing } from '@/i18n/routing';
 
 /**
@@ -372,7 +373,7 @@ export function glossaryLocales(term: Pick<GlossaryTerm, 'market'>): readonly st
 
 /** Languages the term has a full text in (en always; the term's own country language). */
 export function glossaryHasText(term: Pick<GlossaryTerm, 'market'>, locale: string): boolean {
-  if (locale === 'en' || term.market === 'both') return true;
+  if (contentLocale(locale) === 'en' || term.market === 'both') return true;
   return (term.market === 'cz' && locale === 'cs') || (term.market === 'sk' && locale === 'sk');
 }
 

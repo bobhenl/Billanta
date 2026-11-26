@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Loader2, Plus } from 'lucide-react';
+import { ChevronDown, Loader2, Plus } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass } from '@/components/modal';
@@ -106,6 +106,7 @@ export function PromoCodesAdmin({ codes }: { codes: AdminPromoCode[] }) {
   };
 
   const field = 'flex flex-col gap-1 text-sm font-medium';
+  const control = cn(inputClass, 'h-10');
 
   return (
     <>
@@ -114,11 +115,11 @@ export function PromoCodesAdmin({ codes }: { codes: AdminPromoCode[] }) {
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <label className={field}>
             {t('form.code')}
-            <input required value={form.code} onChange={set('code')} maxLength={32} placeholder="STARTUP-WEEK" className={cn(inputClass, 'font-mono uppercase')} />
+            <input required value={form.code} onChange={set('code')} maxLength={32} placeholder="STARTUP-WEEK" className={cn(control, 'font-mono uppercase')} />
           </label>
           <label className={field}>
             {t('form.kind')}
-            <select value={form.kind} onChange={set('kind')} className={inputClass}>
+            <select value={form.kind} onChange={set('kind')} className={control}>
               {KINDS.map((k) => (
                 <option key={k} value={k}>
                   {t(`kind.${k}`)}
@@ -128,7 +129,7 @@ export function PromoCodesAdmin({ codes }: { codes: AdminPromoCode[] }) {
           </label>
           <label className={field}>
             {t('form.benefitType')}
-            <select value={form.benefit_type} onChange={set('benefit_type')} className={inputClass}>
+            <select value={form.benefit_type} onChange={set('benefit_type')} className={control}>
               <option value="trial_days">{t('form.trialDays')}</option>
               <option value="free_months">{t('form.freeMonths')}</option>
             </select>
@@ -143,12 +144,12 @@ export function PromoCodesAdmin({ codes }: { codes: AdminPromoCode[] }) {
                 max={form.benefit_type === 'trial_days' ? 365 : 24}
                 value={form.benefit_value}
                 onChange={set('benefit_value')}
-                className={inputClass}
+                className={control}
               />
             </label>
             <label className={field}>
               {t('form.plan')}
-              <select value={form.benefit_plan} onChange={set('benefit_plan')} className={inputClass}>
+              <select value={form.benefit_plan} onChange={set('benefit_plan')} className={control}>
                 {PLANS.map((p) => (
                   <option key={p} value={p}>
                     {tPlan(p)}
@@ -159,57 +160,65 @@ export function PromoCodesAdmin({ codes }: { codes: AdminPromoCode[] }) {
           </div>
           <label className={field}>
             {t('form.maxRedemptions')}
-            <input type="number" min={1} value={form.max_redemptions} onChange={set('max_redemptions')} placeholder={t('form.unlimited')} className={inputClass} />
-          </label>
-          <label className={field}>
-            {t('form.ownerLabel')}
-            <input value={form.owner_label} onChange={set('owner_label')} maxLength={120} placeholder={t('form.ownerPlaceholder')} className={inputClass} />
-          </label>
-          <label className={field}>
-            {t('form.referralCode')}
-            <input
-              value={form.referral_code}
-              onChange={set('referral_code')}
-              maxLength={16}
-              placeholder={t('form.referralPlaceholder')}
-              className={cn(inputClass, 'font-mono uppercase')}
-            />
-          </label>
-          <label className={field}>
-            {t('form.businessPreset')}
-            <select value={form.business_preset} onChange={set('business_preset')} className={inputClass}>
-              <option value="">{t('form.presetNone')}</option>
-              {BUSINESS_PRESETS.map((p) => (
-                <option key={p.key} value={p.key}>
-                  {tModules(`presets.${p.key}.title`)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className={field}>
-            {t('form.defaultLocale')}
-            <select value={form.default_locale ?? ''} onChange={set('default_locale')} className={inputClass}>
-              <option value="">{t('form.localeVisitor')}</option>
-              {LOCALES.map((l) => (
-                <option key={l} value={l}>
-                  {t(`locale.${l}`)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className={field}>
-            {t('form.validFrom')}
-            <input type="date" value={form.valid_from} onChange={set('valid_from')} className={inputClass} />
-          </label>
-          <label className={field}>
-            {t('form.validUntil')}
-            <input type="date" value={form.valid_until} onChange={set('valid_until')} min={form.valid_from || undefined} className={inputClass} />
-          </label>
-          <label className={cn(field, 'sm:col-span-2')}>
-            {t('form.note')}
-            <textarea value={form.note} onChange={set('note')} maxLength={500} rows={2} className={inputClass} />
+            <input type="number" min={1} value={form.max_redemptions} onChange={set('max_redemptions')} placeholder={t('form.unlimited')} className={control} />
           </label>
         </div>
+        <details className="group mt-3 rounded-lg border border-border">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+            {t('form.moreDetails')}
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden="true" />
+          </summary>
+          <div className="grid gap-3 border-t border-border p-3 sm:grid-cols-2">
+            <label className={field}>
+              {t('form.ownerLabel')}
+              <input value={form.owner_label} onChange={set('owner_label')} maxLength={120} placeholder={t('form.ownerPlaceholder')} className={control} />
+            </label>
+            <label className={field}>
+              {t('form.referralCode')}
+              <input
+                value={form.referral_code}
+                onChange={set('referral_code')}
+                maxLength={16}
+                placeholder={t('form.referralPlaceholder')}
+                className={cn(control, 'font-mono uppercase')}
+              />
+            </label>
+            <label className={field}>
+              {t('form.businessPreset')}
+              <select value={form.business_preset} onChange={set('business_preset')} className={control}>
+                <option value="">{t('form.presetNone')}</option>
+                {BUSINESS_PRESETS.map((p) => (
+                  <option key={p.key} value={p.key}>
+                    {tModules(`presets.${p.key}.title`)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className={field}>
+              {t('form.defaultLocale')}
+              <select value={form.default_locale ?? ''} onChange={set('default_locale')} className={control}>
+                <option value="">{t('form.localeVisitor')}</option>
+                {LOCALES.map((l) => (
+                  <option key={l} value={l}>
+                    {t(`locale.${l}`)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className={field}>
+              {t('form.validFrom')}
+              <input type="date" value={form.valid_from} onChange={set('valid_from')} className={control} />
+            </label>
+            <label className={field}>
+              {t('form.validUntil')}
+              <input type="date" value={form.valid_until} onChange={set('valid_until')} min={form.valid_from || undefined} className={control} />
+            </label>
+            <label className={cn(field, 'sm:col-span-2')}>
+              {t('form.note')}
+              <textarea value={form.note} onChange={set('note')} maxLength={500} rows={2} className={inputClass} />
+            </label>
+          </div>
+        </details>
         <button type="submit" disabled={pending} className={cn(buttonClass.primary, 'mt-4')}>
           {pending && !busyId ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Plus className="h-4 w-4" aria-hidden="true" />}
           {t('form.submit')}
@@ -225,7 +234,7 @@ export function PromoCodesAdmin({ codes }: { codes: AdminPromoCode[] }) {
               <div className="min-w-0 flex-1">
                 <p className="flex flex-wrap items-center gap-2">
                   <span className="font-mono font-semibold">{c.code}</span>
-                  <span className="rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground">{t(`kind.${c.kind}`)}</span>
+                  <span className="text-xs text-muted-foreground">{t(`kind.${c.kind}`)}</span>
                   {!c.active && <span className="text-xs font-semibold text-muted-foreground">{t('inactive')}</span>}
                 </p>
                 <p className="mt-0.5 text-sm">{benefit(c)}</p>
@@ -243,15 +252,15 @@ export function PromoCodesAdmin({ codes }: { codes: AdminPromoCode[] }) {
                 </p>
                 {c.active && <JoinLink code={c.code} />}
               </div>
-              <div className="flex items-center gap-4">
-                <p className="text-right text-sm tabular-nums">
+              <div className="flex items-center justify-between gap-4 sm:justify-end">
+                <p className="text-sm tabular-nums sm:text-right">
                   <span className="font-semibold">
                     {c.maxRedemptions ? t('usedOf', { used: c.redemptionCount, max: c.maxRedemptions }) : t('used', { used: c.redemptionCount })}
                   </span>
                   <br />
                   <span className="text-xs text-muted-foreground">{t('paying', { count: c.paying })}</span>
                 </p>
-                <button type="button" onClick={() => toggle(c)} disabled={pending} className={buttonClass.secondary}>
+                <button type="button" onClick={() => toggle(c)} disabled={pending} className={cn(buttonClass.secondary, 'shrink-0')}>
                   {busyId === c.id && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
                   {t(c.active ? 'deactivate' : 'activate')}
                 </button>

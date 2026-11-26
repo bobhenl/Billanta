@@ -19,8 +19,8 @@ export function PageIntro({ eyebrow, title, lead, children }: { eyebrow: string;
   return (
     <>
       <p className="text-sm font-bold uppercase tracking-wider text-primary">{eyebrow}</p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h1>
-      <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">{lead}</p>
+      <h1 className="mt-2 max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl">{title}</h1>
+      <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{lead}</p>
       {children && <div className="mt-6 flex flex-wrap gap-2">{children}</div>}
     </>
   );

@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 /**
  * Cookie consent card, after VoxelRank's (public/css/consent.css there): a
  * compact corner card rather than a full-width bar, with three choices of
- * equal weight — accept, essential only, settings. "Essential only" is a
+ * equal weight – accept, essential only, settings. "Essential only" is a
  * real button with the same prominence as "accept", as the Czech DPA
  * (ÚOOÚ) and EDPB guidance require; nothing optional loads before a choice.
  *

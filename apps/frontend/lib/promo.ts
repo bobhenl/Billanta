@@ -1,9 +1,11 @@
+import { LOCALE_PATTERN } from '@/i18n/locales';
+
 /** Promo code from `?promo=` or a `/join/CODE` link (events, creators, schools), kept 30 days until the new company redeems it. */
 export const PROMO_COOKIE = 'billanta_promo';
 /** Mirrors apps/backend/src/promo-codes/promo-logic.ts (stored upper case). */
 export const PROMO_CODE = /^[A-Za-z0-9](?:[A-Za-z0-9-]{1,30}[A-Za-z0-9])$/;
 /** The group join link a QR code or poster points to, with or without a locale. */
-export const JOIN_PATH = /^\/(?:(cs|sk|en)\/)?join\/([^/]+)\/?$/;
+export const JOIN_PATH = new RegExp(`^/(?:(${LOCALE_PATTERN})/)?join/([^/]+)/?$`);
 
 export interface PromoBenefit {
   code: string;

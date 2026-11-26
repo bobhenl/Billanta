@@ -91,7 +91,7 @@ export function AddressInput({
         }}
       />
       {shown && (
-        <ul id={listId} role="listbox" className="absolute z-30 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-border bg-card py-1 shadow-lg">
+        <ul id={listId} role="listbox" className="anim-pop absolute z-30 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-border bg-card py-1 shadow-lg">
           {items.map((a, i) => (
             <li key={`${a.label}-${i}`} role="option" aria-selected={i === active}>
               <button

@@ -165,6 +165,8 @@ export const listInvoicesQuerySchema = z.object({
   order_number: z.string().trim().max(60).optional(),
   // Label or value of a custom header field.
   custom_field: z.string().trim().max(100).optional(),
+  // Exact value of a list-like custom field, as JSON ["label","value"] (the filter dropdown).
+  custom_value: z.string().max(200).optional(),
   // Team member who issued the document.
   issued_by: z.string().uuid().optional(),
   // Customer's country (ISO 3166-1 alpha-2); "foreign" = anything but CZ/SK.
@@ -180,6 +182,9 @@ export const listInvoicesQuerySchema = z.object({
   net_max: z.coerce.number().min(0).optional(),
   // Amount still left to pay.
   due_min: z.coerce.number().min(0).optional(),
+  // Invoices and credit notes that a tax-model partner gets a part of (own split, else the default shares).
+  // Owners and admins only, like the "Po zdanění" report; ignored for other roles.
+  partner: z.string().regex(/^[a-z0-9][a-z0-9-]{0,39}$/).optional(),
 });
 
 export type ListInvoicesQuery = z.infer<typeof listInvoicesQuerySchema>;

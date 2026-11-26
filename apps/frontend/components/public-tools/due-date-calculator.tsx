@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { AlertTriangle } from 'lucide-react';
 import { isWeekend, nextWorkingDay, publicHolidayOn, type HolidayCountry } from '@faktur/cz-compliance';
-import { ResultRow, Segmented, SelectField, TextField } from '@/components/public-tools/fields';
+import { ResultRow, Segmented, SelectField, TextField, toolCard } from '@/components/public-tools/fields';
+import { cn } from '@/lib/utils';
 
 const TERMS = ['7', '10', '14', '15', '21', '30', '45', '60', '90'];
 
@@ -40,7 +41,7 @@ export function DueDateCalculator({ defaultCountry }: { defaultCountry: HolidayC
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-      <form className="space-y-4 rounded-xl border border-border bg-card p-5" onSubmit={(e) => e.preventDefault()}>
+      <form className={cn(toolCard, 'space-y-4')} onSubmit={(e) => e.preventDefault()}>
         <Segmented
           label={t('fields.country')}
           value={country}
@@ -50,15 +51,15 @@ export function DueDateCalculator({ defaultCountry }: { defaultCountry: HolidayC
         <TextField label={t('fields.issued')} type="date" value={issued} onChange={setIssued} />
         <SelectField label={t('fields.term')} value={term} onChange={setTerm} options={TERMS.map((d) => ({ value: d, label: t('fields.days', { n: Number(d) }) }))} />
       </form>
-      <section aria-live="polite" className="rounded-xl border border-border bg-card p-5">
+      <section aria-live="polite" className={toolCard}>
         {due ? (
           <>
             <dl className="text-sm">
               <ResultRow label={t('result.due')} value={long(due)} strong />
             </dl>
             {next ? (
-              <div className="mt-4 flex gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm">
-                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+              <div className="mt-4 flex gap-3 rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
                 <div>
                   <p className="font-semibold">{holiday ? t('result.holiday', { name: th(holiday.key) }) : t('result.weekend')}</p>
                   <p className="mt-1 text-muted-foreground">{t('result.nextWorking', { date: long(next) })}</p>

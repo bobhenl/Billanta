@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { AuditLogList, type AuditMember } from '@/components/audit-log-list';
 import { Banner } from '@/components/banner';
+import { InfoHint } from '@/components/info-hint';
 import { apiFetch } from '@/lib/api-client';
 import { fetchAuditLog } from '@/lib/audit';
 
@@ -20,8 +21,9 @@ export default async function ActivityPage() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
-      <p className="mt-1 text-sm text-muted-foreground">{t('description')}</p>
+      <InfoHint hint={t('description')}>
+        <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
+      </InfoHint>
       <div className="mt-6">
         {initial ? <AuditLogList initial={initial} showFilters members={team.members} /> : <Banner tone="err" title={t('loadError')} />}
       </div>

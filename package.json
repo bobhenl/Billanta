@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
+    "local:prod": "node scripts/local-prod.mjs",
     "lint": "turbo run lint"
   },
   "devDependencies": {

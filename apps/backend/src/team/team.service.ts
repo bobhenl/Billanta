@@ -8,28 +8,25 @@ import {
   NotFoundException,
   Optional,
 } from "@nestjs/common";
-import { and, desc, eq, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, gt, isNull, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 import { AuditService } from "../audit/audit.service";
+import { loadPlanSummary } from "../billing/plan.guard";
 import { DbService } from "../db/db.service";
+import { appUrlOf, emailLocaleOf } from "../email/email-render";
 import { EmailService } from "../email/email.service";
+import { accessSummary } from "../tenancy/permissions";
 import { NotificationsService } from "../notifications/notifications.service";
 import type { StoredPermissions } from "../tenancy/permissions";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
 import type { CreateInvitationDto } from "./dto/create-invitation.dto";
+import { seatRefusal } from "./seats";
 
 type Db = PostgresJsDatabase<typeof schema>;
 
 const INVITATION_TTL_DAYS = 7;
-
-export const ROLE_LABEL_CS: Record<string, string> = {
-  owner: "Vlastník",
-  admin: "Administrátor",
-  accountant: "Účetní",
-  viewer: "Pouze čtení",
-};
 
 export function hashInvitationToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
@@ -41,7 +38,7 @@ function requireManager(user: AuthenticatedUser) {
   }
 }
 
-type PreviewRow = { company_name: string; role: string; email: string; expired: boolean; accepted: boolean };
+type PreviewRow = { company_name: string; role: string; email: string; expired: boolean; accepted: boolean; permissions: unknown };
 
 /**
  * Tenant team: who has access, pending invitations, and the pre-tenant
@@ -105,6 +102,7 @@ export class TeamService {
       .where(sql`lower(${schema.users.email}) = ${dto.email}`)
       .limit(1);
     if (existingMember) throw new ConflictException("This person is already a member");
+    await this.assertSeatFree(db, user.tenantId, { email: dto.email }, dto.role);
 
     // Invitations go to any address with the company name in the subject, so
     // they share the invoice e-mail caps and the suspended/paused checks.
@@ -137,12 +135,15 @@ export class TeamService {
     });
 
     const [tenant] = await db
-      .select({ companyName: schema.tenants.companyName })
+      .select({ companyName: schema.tenants.companyName, locale: schema.tenants.defaultLocale })
       .from(schema.tenants)
       .where(eq(schema.tenants.id, user.tenantId));
 
-    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3100").replace(/\/$/, "");
-    const acceptUrl = `${siteUrl}/invite/${token}`;
+    // The invitee has no account and so no language of their own yet: they
+    // get the inviting company's, in the e-mail and on the page it opens.
+    const locale = emailLocaleOf(tenant?.locale);
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3100";
+    const acceptUrl = appUrlOf(siteUrl, locale, `/invite/${token}`);
 
     // Without a mail provider the invitation only waits in the outbox, so
     // the inviter is told to pass the link on themselves.
@@ -152,8 +153,10 @@ export class TeamService {
         {
           to: dto.email,
           companyName: tenant?.companyName ?? "",
-          role: ROLE_LABEL_CS[dto.role] ?? dto.role,
+          role: dto.role,
+          permissions: invitation!.permissions,
           acceptUrl,
+          locale,
         },
         { tenantId: user.tenantId, db },
       );
@@ -189,6 +192,8 @@ export class TeamService {
     requireManager(user);
     const member = await this.requireMember(db, membershipId);
     if (member.role === "owner") throw new BadRequestException("The owner's role cannot be changed");
+    // Turning an accountant into a member (or back) moves them between allowances.
+    if ((member.role === "accountant") !== (role === "accountant")) await this.assertSeatFree(db, user.tenantId, { membershipId }, role);
     await db
       .update(schema.tenantMemberships)
       .set({ role, permissions: role === "admin" ? null : permissions ?? null })
@@ -227,6 +232,25 @@ export class TeamService {
     return { ok: true };
   }
 
+  /** 403 `seat_limit` when the plan has no room for one more `role` (see `seats.ts`). */
+  private async assertSeatFree(db: Db, tenantId: string, except: { email?: string; membershipId?: string }, role: string) {
+    const summary = await loadPlanSummary(db, tenantId);
+    if (!summary?.enforced) return;
+    const members = await db
+      .select({ id: schema.tenantMemberships.id, role: schema.tenantMemberships.role })
+      .from(schema.tenantMemberships);
+    const invitations = await db
+      .select({ email: schema.tenantInvitations.email, role: schema.tenantInvitations.role })
+      .from(schema.tenantInvitations)
+      .where(and(isNull(schema.tenantInvitations.acceptedAt), gt(schema.tenantInvitations.expiresAt, new Date())));
+    const taken = [
+      ...members.filter((m) => m.id !== except.membershipId).map((m) => m.role),
+      ...invitations.filter((i) => i.email !== except.email).map((i) => i.role),
+    ];
+    const refusal = seatRefusal(summary.plan, taken, role);
+    if (refusal) throw new ForbiddenException({ error: "seat_limit", message: "seat_limit", ...refusal });
+  }
+
   private async memberEmail(db: Db, userId: string) {
     const [row] = await db.select({ email: schema.users.email }).from(schema.users).where(eq(schema.users.id, userId)).limit(1);
     return row?.email ?? null;
@@ -253,6 +277,7 @@ export class TeamService {
       email: row.email,
       expired: row.expired,
       accepted: row.accepted,
+      access: accessSummary(row.role, row.permissions),
     };
   }
 

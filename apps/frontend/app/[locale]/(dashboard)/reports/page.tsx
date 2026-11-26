@@ -3,11 +3,11 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { Banner } from '@/components/banner';
 import { Link, redirect } from '@/i18n/navigation';
 import { apiFetch, NoTenantError, NotSignedInError } from '@/lib/api-client';
-import { fetchHomeCurrency } from '@/lib/tenant';
+import { canManage, fetchHomeCurrency, fetchMyAccess } from '@/lib/tenant';
 import { PERIOD_PRESETS, presetRange, type PeriodPreset } from '@/lib/period-presets';
 import { inAppCalculatorPath } from '@/lib/public-tools';
 import { isLegalEntityName } from '@/lib/tax-deadlines';
-import { fetchTenant, type TenantSettings } from '@/lib/tenant';
+import { fetchTenant, taxCountryOf, type TenantSettings } from '@/lib/tenant';
 import { PeriodReport } from '../dashboard/period-report';
 import type { Usage } from '@/lib/usage-defaults';
 import type { DashboardConfig, PeriodStats } from '../dashboard/types';
@@ -31,13 +31,15 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   let usage: Usage | null;
   let config: DashboardConfig | null;
   let tenant: TenantSettings | null;
+  let access: Awaited<ReturnType<typeof fetchMyAccess>> | null;
   try {
-    [stats, usage, config, tenant] = await Promise.all([
+    [stats, usage, config, tenant, access] = await Promise.all([
       apiFetch<PeriodStats>(`/api/v1/dashboard/stats?from=${from}&to=${to}${preset === 'all' ? '&period=all' : ''}`),
       // Both optional: without them the report shows everything, as before.
       apiFetch<Usage>('/api/v1/dashboard/usage').catch(() => null),
       apiFetch<DashboardConfig>('/api/v1/dashboard/config').catch(() => null),
-      fetchTenant().catch(() => null)
+      fetchTenant().catch(() => null),
+      fetchMyAccess().catch(() => null)
     ]);
   } catch (error) {
     if (error instanceof NotSignedInError) redirect({ href: '/login', locale });
@@ -48,27 +50,34 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
     );
   }
 
+  const link =
+    'inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-full border border-border bg-card px-3 text-sm font-semibold text-primary transition-colors hover:bg-accent';
+
   return (
-    <div>
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-extrabold tracking-tight">{t('pageTitle')}</h1>
-          <p className="mt-1 text-muted-foreground">{t('pageLead')}</p>
-        </div>
-        <div className="flex flex-wrap gap-x-4 gap-y-1">
+    <div className="mx-auto max-w-6xl">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <h1 className="text-2xl font-extrabold tracking-tight">{t('pageTitle')}</h1>
+        {/* Related pages as one swipeable row on a phone, so they never wrap under each other. */}
+        <nav className="-mx-4 flex w-[calc(100%+2rem)] gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:w-auto sm:flex-wrap sm:px-0">
           {/* The paušální režim is for Czech sole traders only. */}
-          {tenant && tenant.addressCountry.toUpperCase() !== 'SK' && !isLegalEntityName(tenant.legalName) && (
-            <Link href={inAppCalculatorPath('flat-tax')!} className="text-sm font-semibold text-primary hover:underline">
+          {tenant && taxCountryOf(tenant) !== 'SK' && !isLegalEntityName(tenant.legalName) && (
+            <Link href={inAppCalculatorPath('flat-tax')!} className={link}>
               {t('flatTaxLink')}
             </Link>
           )}
-          <Link href="/reports/tax-return" className="text-sm font-semibold text-primary hover:underline">
+          {/* Per-partner after-tax numbers are for owners and admins only. */}
+          {access && canManage(access.role) && (
+            <Link href="/reports/net-income" className={link}>
+              {t('netIncomeLink')}
+            </Link>
+          )}
+          <Link href="/reports/tax-return" className={link}>
             {t('taxReturnLink')}
           </Link>
-          <Link href="/settings/exports" className="text-sm font-semibold text-primary hover:underline">
+          <Link href="/settings/exports" className={link}>
             {t('exportsLink')}
           </Link>
-        </div>
+        </nav>
       </div>
       <PeriodReport key={preset} initial={stats} initialPreset={preset} usage={usage} savedKpis={config?.reportKpis ?? null} home={await fetchHomeCurrency()} />
     </div>

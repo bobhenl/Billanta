@@ -7,7 +7,6 @@ import { SkEinvoicingCallout } from '@/components/public-tools/sk-einvoicing-cal
 import { Link } from '@/i18n/navigation';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
-import { buttonClass } from '@/lib/ui-classes';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -48,23 +47,21 @@ export default async function ForPartnersPage({ params }: { params: Promise<{ lo
           ])
         )}
       />
-      <p className="text-sm font-bold uppercase tracking-wider text-primary">{t('eyebrow')}</p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{t('title')}</h1>
-      <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">{t('lead')}</p>
+      <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t('title')}</h1>
+      <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{t('lead')}</p>
 
       <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {SEGMENTS.map(({ key, href, icon: Icon }) => (
           <li key={key}>
-            <Link href={href} className="group flex h-full flex-col rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary hover:shadow-md">
-              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <Icon className="h-5 w-5" />
+            <Link href={href} className="group flex h-full flex-col rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/40">
+              <span className="flex items-center justify-between gap-2 font-bold">
+                <span className="flex items-center gap-2">
+                  <Icon className="h-4 w-4 shrink-0 text-primary" />
+                  {t(`segments.${key}.title`)}
+                </span>
+                <ArrowRight className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
               </span>
-              <span className="mt-3 font-bold">{t(`segments.${key}.title`)}</span>
-              <span className="mt-1 flex-1 text-sm text-muted-foreground">{t(`segments.${key}.body`)}</span>
-              <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
-                {t('more')}
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-              </span>
+              <span className="mt-1.5 text-sm text-muted-foreground">{t(`segments.${key}.body`)}</span>
             </Link>
           </li>
         ))}
@@ -77,13 +74,14 @@ export default async function ForPartnersPage({ params }: { params: Promise<{ lo
 
       <EmbedSection section="partners" tabs={['badge']} badgeKinds={['partner', 'customer']} className="mt-12" />
 
-      <PartnerContactCta subject={t('mailSubject')} className="mt-12" />
+      <PartnerContactCta subject={t('mailSubject')} />
 
-      <div className="mt-8 flex flex-wrap gap-2">
-        <Link href="/partners" className={buttonClass.secondary}>
+      <p className="mt-6">
+        <Link href="/partners" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
           {t('directory')}
+          <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Link>
-      </div>
+      </p>
     </section>
   );
 }

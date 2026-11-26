@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import { Building2, Globe, Languages, Mail, MapPin, Wallet } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import { ClosingCta, SectionTitle } from '@/components/audience-page';
 import { Link } from '@/i18n/navigation';
-import { buttonClass, inputClass } from '@/components/modal';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
 import {
   fetchAccountants,
   isRegion,
@@ -79,8 +80,8 @@ export default async function AccountantsDirectoryPage({ params, searchParams }:
   return (
     <section className="container max-w-5xl py-10 sm:py-14">
       {itemList && <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(itemList)} />}
-      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{t('title')}</h1>
-      <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">{t('lead')}</p>
+      <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t('title')}</h1>
+      <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{t('lead')}</p>
 
       <form method="get" aria-label={t('filters.label')} className="mt-6 grid gap-3 rounded-xl border border-border bg-card p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
         <label className="flex flex-col gap-1.5 text-sm font-semibold">
@@ -110,7 +111,7 @@ export default async function AccountantsDirectoryPage({ params, searchParams }:
           </select>
         </label>
         <div className="flex flex-wrap items-center gap-3">
-          <button type="submit" className={buttonClass.primary}>
+          <button type="submit" className={buttonClass.secondary}>
             {t('filters.apply')}
           </button>
           {filtered && (
@@ -135,19 +136,9 @@ export default async function AccountantsDirectoryPage({ params, searchParams }:
         </ul>
       )}
 
-      <div className="mt-12 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-2xl border border-border bg-card p-6">
-          <h2 className="text-lg font-bold tracking-tight">{t('howTitle')}</h2>
-          <p className="mt-2 text-sm text-muted-foreground">{t('howBody')}</p>
-        </div>
-        <div className="rounded-2xl border border-primary/30 bg-primary/5 p-6">
-          <h2 className="text-lg font-bold tracking-tight">{t('joinTitle')}</h2>
-          <p className="mt-2 text-sm text-muted-foreground">{t('joinBody')}</p>
-          <Link href="/for-accountants" className={`${buttonClass.primary} mt-4`}>
-            {t('joinCta')}
-          </Link>
-        </div>
-      </div>
+      <SectionTitle title={t('howTitle')} lead={t('howBody')} />
+
+      <ClosingCta title={t('joinTitle')} body={t('joinBody')} primary={{ href: '/for-accountants', label: t('joinCta') }} />
     </section>
   );
 }

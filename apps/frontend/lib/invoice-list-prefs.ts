@@ -37,7 +37,9 @@ export interface QuickPrefs {
   presets: PresetChip[];
 }
 
-export const DEFAULT_QUICK: QuickPrefs = { hiddenTypes: [], hiddenStatuses: [], presets: ['thisMonth', 'lastMonth', 'thisQuarter', 'thisYear', 'last30'] };
+// No quick-pick chips by default: every range is one click away in the "Období" menu.
+// `hiddenTypes` is no longer offered (types are a menu now) but stays so old cookies keep parsing.
+export const DEFAULT_QUICK: QuickPrefs = { hiddenTypes: [], hiddenStatuses: [], presets: [] };
 
 export function parseQuickPrefs(raw: string | undefined): QuickPrefs {
   if (!raw) return DEFAULT_QUICK;
@@ -138,6 +140,6 @@ export function writeJson(key: string, value: unknown) {
   try {
     window.localStorage.setItem(key, JSON.stringify(value));
   } catch {
-    // storage unavailable (private window) — the choice just isn't remembered
+    // storage unavailable (private window) – the choice just isn't remembered
   }
 }

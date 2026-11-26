@@ -26,7 +26,7 @@ export default async function CompaniesPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <SettingsHeader title={t('title')} description={t('description')} />
+      <SettingsHeader title={t('title')} />
       <CompaniesManager companies={data.tenants} activeId={data.active.id} />
     </div>
   );

@@ -26,6 +26,7 @@ export interface ExpenseInput {
   variableSymbol?: string | null;
   receiptFileUrl?: string | null;
   note?: string | null;
+  needsReview?: boolean;
 }
 
 async function run<T>(path: string, init: RequestInit): Promise<ActionResult<T>> {

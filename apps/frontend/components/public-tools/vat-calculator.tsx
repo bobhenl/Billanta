@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { VAT_RATES, vatFromBase, vatFromGross, type VatCountry } from '@faktur/cz-compliance';
-import { AmountField, money, parseAmount, ResultRow, Segmented, SelectField } from '@/components/public-tools/fields';
+import { AmountField, money, parseAmount, ResultRow, Segmented, SelectField, toolCard } from '@/components/public-tools/fields';
+import { cn } from '@/lib/utils';
 
 /** VAT both ways, Czech or Slovak rates from @faktur/cz-compliance (VAT_RATES). */
 export function VatCalculator({ defaultCountry }: { defaultCountry: VatCountry }) {
@@ -23,7 +24,7 @@ export function VatCalculator({ defaultCountry }: { defaultCountry: VatCountry }
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-      <form className="space-y-4 rounded-xl border border-border bg-card p-5" onSubmit={(e) => e.preventDefault()}>
+      <form className={cn(toolCard, 'space-y-4')} onSubmit={(e) => e.preventDefault()}>
         <Segmented
           label={t('fields.country')}
           value={country}
@@ -43,9 +44,9 @@ export function VatCalculator({ defaultCountry }: { defaultCountry: VatCountry }
             { value: 'gross', label: t('fields.fromGross') }
           ]}
         />
-        <AmountField label={`${t('fields.amount')} (${currency})`} value={amount} onChange={setAmount} />
+        <AmountField label={t('fields.amount')} value={amount} onChange={setAmount} unit={currency} />
       </form>
-      <section aria-live="polite" className="rounded-xl border border-border bg-card p-5">
+      <section aria-live="polite" className={toolCard}>
         <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
           {tc('resultTitle')} · {t(`countries.${country}`)} {rate} %
         </h2>

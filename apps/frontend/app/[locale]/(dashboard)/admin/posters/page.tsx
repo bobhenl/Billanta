@@ -46,7 +46,7 @@ export default async function AdminPostersPage({ searchParams }: { searchParams:
           <input type="hidden" name="submitted" value="1" />
           <label className={field}>
             {t('fields.template')}
-            <select name="template" defaultValue={o.template} className={inputClass}>
+            <select name="template" defaultValue={o.template} className={`${inputClass} h-10`}>
               {POSTER_TEMPLATES.map((v) => (
                 <option key={v} value={v}>
                   {t(`templates.${v}`)}
@@ -56,7 +56,7 @@ export default async function AdminPostersPage({ searchParams }: { searchParams:
           </label>
           <label className={field}>
             {t('fields.lang')}
-            <select name="lang" defaultValue={o.lang} className={inputClass}>
+            <select name="lang" defaultValue={o.lang} className={`${inputClass} h-10`}>
               {POSTER_LANGS.map((v) => (
                 <option key={v} value={v}>
                   {t(`langs.${v}`)}
@@ -66,7 +66,7 @@ export default async function AdminPostersPage({ searchParams }: { searchParams:
           </label>
           <label className={field}>
             {t('fields.target')}
-            <select name="target" defaultValue={o.target} className={inputClass}>
+            <select name="target" defaultValue={o.target} className={`${inputClass} h-10`}>
               {(Object.keys(POSTER_TARGETS) as PosterTarget[]).map((v) => (
                 <option key={v} value={v}>
                   {t(`targets.${v}`)}
@@ -76,7 +76,7 @@ export default async function AdminPostersPage({ searchParams }: { searchParams:
           </label>
           <label className={field}>
             {t('fields.size')}
-            <select name="size" defaultValue={o.size} className={inputClass}>
+            <select name="size" defaultValue={o.size} className={`${inputClass} h-10`}>
               {Object.keys(POSTER_SIZES).map((v) => (
                 <option key={v} value={v}>
                   {t(`sizes.${v}`)}
@@ -86,12 +86,12 @@ export default async function AdminPostersPage({ searchParams }: { searchParams:
           </label>
           <label className={field}>
             {t('fields.promo')}
-            <input name="promo" defaultValue={o.promo} maxLength={20} autoComplete="off" className={`${inputClass} font-mono uppercase`} />
+            <input name="promo" defaultValue={o.promo} maxLength={20} autoComplete="off" className={`${inputClass} h-10 font-mono uppercase`} />
             <span className="text-xs font-normal text-muted-foreground">{t('promoHint')}</span>
           </label>
           <label className={field}>
             {t('fields.event')}
-            <input name="event" defaultValue={o.event} maxLength={60} placeholder={t('eventPlaceholder')} className={inputClass} />
+            <input name="event" defaultValue={o.event} maxLength={60} placeholder={t('eventPlaceholder')} className={`${inputClass} h-10`} />
           </label>
           <label className="flex items-start gap-2 text-sm">
             <input type="checkbox" name="tabs" value="1" defaultChecked={o.tabs} className="mt-0.5 h-4 w-4 accent-primary" />

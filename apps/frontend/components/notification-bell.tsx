@@ -12,8 +12,8 @@ const POLL_MS = 60_000;
 
 /**
  * The header bell: unread badge (polled every minute while the tab is
- * visible), a dropdown with the latest notifications, and — when the member
- * allowed it in Settings → Notifikace and the browser granted permission —
+ * visible), a dropdown with the latest notifications, and – when the member
+ * allowed it in Settings → Notifikace and the browser granted permission –
  * a system popup for anything new that arrived since the last poll.
  */
 export function NotificationBell() {
@@ -51,7 +51,7 @@ export function NotificationBell() {
         const data = await load();
         const newest = data?.items.find((i) => !i.readAt);
         if (newest) {
-          const note = new Notification(newest.title, { body: newest.body ?? undefined, tag: newest.id, icon: '/icon.svg' });
+          const note = new Notification(newest.title, { body: newest.body ?? undefined, tag: newest.id, icon: '/brand/mark.png' });
           note.onclick = () => {
             window.focus();
             if (newest.link) router.push(newest.link);
@@ -119,7 +119,7 @@ export function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-10 z-50 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-border bg-card shadow-xl">
+        <div className="anim-pop absolute right-0 top-10 z-50 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-border bg-card shadow-xl">
           <div className="flex items-center justify-between border-b border-border px-3 py-2">
             <span className="text-sm font-bold">{t('title')}</span>
             <div className="flex items-center gap-1">

@@ -1,9 +1,9 @@
 import { randomUUID } from "node:crypto";
-import { BadRequestException, ConflictException, Injectable, NotFoundException, Optional, UnprocessableEntityException } from "@nestjs/common";
+import { peppolRelevant } from "./peppol-relevance";
+import { BadRequestException, ConflictException, HttpException, Injectable, NotFoundException, Optional, UnprocessableEntityException } from "@nestjs/common";
 import {
   checkInvoiceRequirements,
   generateIsdocXml,
-  homeCurrencyOf,
   generateUblInvoiceXml,
   validatePeppolInvoice,
   type PeppolIssue,
@@ -36,7 +36,10 @@ import {
   variableSymbolFor,
 } from "./invoice-numbering.util";
 import { computeInvoiceTotal, computeVatBreakdown, formatInvoiceAmount, lineBase, round2 } from "./invoice-total.util";
+import { enumerableCustomFields, hasCustomValue, parseCustomValue } from "./custom-field-options";
 import { documentVars } from "./custom-fields";
+import { belongsToPartner } from "./partner-filter";
+import { taxModelOf } from "../net-income/tax-model";
 import { resolveTenantForInvoice } from "../tenants/bank-accounts";
 import {
   BUYER_SNAPSHOT_KEYS,
@@ -50,7 +53,13 @@ import {
 import { buildIsdocInvoiceInput, contactToIsdocParty, tenantToIsdocParty } from "./isdoc-input.builder";
 import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 import { buyerDetailsLinkOf, clientPortalLinkOf, invoiceLinkOf, newShortKey } from "../public-links/public-link";
-import { BRAND_CREDIT_TENANT_FIELDS, brandCreditFor } from "./brand-credit";
+import { paymentDraftDescriptionAlwaysOf, paymentDraftDescriptionOf } from "../tenants/invoice-form-prefs";
+import { BRAND_CREDIT_TENANT_FIELDS, brandCreditFor, creditLangOf } from "./brand-credit";
+import { amountLeftToPay, isRemindableDocument } from "./invoice-reminders.util";
+import { appendNoteLine } from "../bank-reconciliation/payment-note";
+import { tenantHomeCurrencyOf } from "../tenants/home-currency";
+import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
+import { lockBlocks } from "./invoice-lock";
 
 // TODO: once packages/cz-compliance is ready, ARES-resolve
 // counterparty_ico / counterparty_name_raw into a real `contacts` row here
@@ -62,6 +71,9 @@ type InvoiceRow = typeof schema.invoices.$inferSelect;
 
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
 type LineItemInput = NonNullable<UpdateInvoiceDto["line_items"]>[number];
+
+/** The line a payment draft gets when the payment says nothing about what was paid for. */
+export const PAYMENT_DRAFT_PLACEHOLDER = "Platba PayPal";
 
 const ISSUABLE_STATUSES: ReadonlyArray<InvoiceRow["status"]> = ["draft", "pending_review"];
 
@@ -187,11 +199,27 @@ function startOfToday(): Date {
   return d;
 }
 
-/** "overdue" is not stored: an issued invoice whose due date has passed. */
+/**
+ * What a paid proforma already covered on the final invoice made from it
+ * ("Uhrazeno zálohou"), for the e-invoice's prepaid / paid-deposits amount.
+ * Zero for anything else: a later payment on the invoice itself is not a deposit.
+ */
+export function proformaDeposit(
+  invoice: Pick<InvoiceRow, "documentType" | "amountPaid">,
+  related: { documentType: string; status?: string | null } | null | undefined,
+): number {
+  if (invoice.documentType !== "invoice" || related?.documentType !== "proforma" || related.status !== "paid") return 0;
+  return Math.max(0, round2(Number(invoice.amountPaid ?? 0)));
+}
+
+/**
+ * "overdue" is not stored: an issued invoice whose due date has passed.
+ * Only documents that ask for money can be late, so not a quote or a credit note.
+ */
 export function isOverdue(invoice: Pick<InvoiceRow, "status" | "dueDate" | "documentType">): boolean {
   return (
     invoice.status === "issued" &&
-    invoice.documentType !== "quote" &&
+    isRemindableDocument(invoice.documentType) &&
     invoice.dueDate != null &&
     new Date(invoice.dueDate) < startOfToday()
   );
@@ -209,6 +237,13 @@ export const AI_SOURCES = ["ai_telegram", "ai_whatsapp", "ai_voice"] as const;
 
 function isAiSource(source: InvoiceRow["source"]): boolean {
   return (AI_SOURCES as readonly string[]).includes(source);
+}
+
+/** The payment method a draft made from a received payment shows: a bank row is a transfer, Stripe a card. */
+export function paymentDraftMethod(provider: "PayPal" | "Stripe" | "Banka") {
+  if (provider === "Banka") return { paymentMethod: "bank_transfer" as const, paymentMethodLabel: null };
+  if (provider === "Stripe") return { paymentMethod: "card" as const, paymentMethodLabel: null };
+  return { paymentMethod: "other" as const, paymentMethodLabel: "PayPal" };
 }
 
 @Injectable()
@@ -291,7 +326,7 @@ export class InvoicesService {
     const prefs = emailPrefsOf(liveTenant?.emailPrefs);
     const attachments: EmailAttachment[] = [];
     if (kind === "invoice" && invoice.invoiceNumber) {
-      const base = `faktura-${invoice.invoiceNumber.replace(/[^\w.-]+/g, "_")}`;
+      const base = invoiceFileBase(invoice);
       if (prefs.attachPdf) {
         attachments.push({ filename: `${base}.pdf`, content: await this.generateInvoicePdf(db, tenantId, invoice.id), contentType: "application/pdf" });
       }
@@ -321,7 +356,7 @@ export class InvoicesService {
    * computed totals, so the dashboard and API clients never have to fetch
    * line items row by row. RLS restricts all of it to the current tenant.
    */
-  async list(db: TenantDb, query: ListInvoicesQuery = {}) {
+  async list(db: TenantDb, query: ListInvoicesQuery = {}, tenantId?: string) {
     const conditions = [];
     if (query.type) conditions.push(eq(schema.invoices.documentType, query.type));
     if (query.contact_id) conditions.push(eq(schema.invoices.contactId, query.contact_id));
@@ -409,15 +444,24 @@ export class InvoicesService {
     const q = query.q?.trim();
     const note = query.note?.trim();
     const customField = query.custom_field?.trim();
+    const customValue = parseCustomValue(query.custom_value);
     const rows = allRows.filter(
       (r) =>
         (!q || fuzzyScore(q, [r.invoice.invoiceNumber, r.contactName, r.contactIco, r.invoice.variableSymbol, r.invoice.orderNumber]) > 0) &&
         (!note ||
           fuzzyScore(note, [r.invoice.internalNote, r.invoice.noteAbove, r.invoice.noteBelow, r.invoice.clientResponseNote]) > 0) &&
-        (!customField || fuzzyScore(customField, (r.invoice.customFields ?? []).flatMap((f) => [f.label, f.value])) > 0),
+        (!customField || fuzzyScore(customField, (r.invoice.customFields ?? []).flatMap((f) => [f.label, f.value])) > 0) &&
+        (!customValue || hasCustomValue(r.invoice.customFields, customValue)),
     );
+    // A null split means the company's default shares, so the partner filter needs the tax model.
+    const partnerId = query.partner;
+    const partners =
+      partnerId && tenantId
+        ? taxModelOf((await db.select({ taxModel: schema.tenants.taxModel }).from(schema.tenants).where(eq(schema.tenants.id, tenantId)))[0]?.taxModel).partners
+        : null;
+    const partnerRows = partnerId && partners ? rows.filter((r) => belongsToPartner(r.invoice, partners, partnerId)) : rows;
 
-    const ids = rows.map((r) => r.invoice.id);
+    const ids = partnerRows.map((r) => r.invoice.id);
     const items = ids.length
       ? await db.select().from(schema.invoiceLineItems).where(inArray(schema.invoiceLineItems.invoiceId, ids))
       : [];
@@ -432,8 +476,8 @@ export class InvoicesService {
     const item = query.item?.trim();
     const itemRows =
       query.vat_rate === undefined && !item
-        ? rows
-        : rows.filter((r) => {
+        ? partnerRows
+        : partnerRows.filter((r) => {
             const lines = itemsByInvoice.get(r.invoice.id) ?? [];
             return (
               (query.vat_rate === undefined || lines.some((l) => l.vatRate !== null && Number(l.vatRate) === query.vat_rate)) &&
@@ -791,6 +835,20 @@ export class InvoicesService {
     return updated;
   }
 
+  /** Unlocking needs the same fresh re-auth as opening; locking does not. */
+  async setLock(db: TenantDb, id: string, locked: boolean, user: AuthenticatedUser) {
+    const invoice = await this.requireInvoice(db, id);
+    if (Boolean(invoice.lockedAt) === locked) return { id, locked };
+    if (!locked && lockBlocks(invoice.lockedAt, user)) throw new HttpException("invoice_locked", 423);
+    const [updated] = await db
+      .update(schema.invoices)
+      .set(locked ? { lockedAt: new Date(), lockedBy: user.id } : { lockedAt: null, lockedBy: null })
+      .where(eq(schema.invoices.id, id))
+      .returning();
+    await this.log(db, updated, locked ? "locked" : "unlocked");
+    return { id, locked };
+  }
+
   async markUnpaid(db: TenantDb, id: string) {
     const invoice = await this.requireInvoice(db, id);
     if (invoice.status !== "paid") throw new BadRequestException("The document is not marked as paid");
@@ -963,6 +1021,15 @@ export class InvoicesService {
    * it was last billed at — so a repeat item is one pick instead of three
    * fields. Plain SQL over the tenant's own history; no AI involved.
    */
+  /** List-like custom fields and their values, for the filter dropdown. */
+  async customFieldOptions(db: TenantDb) {
+    const rows = await db
+      .select({ customFields: schema.invoices.customFields })
+      .from(schema.invoices)
+      .where(sql`jsonb_array_length(${schema.invoices.customFields}) > 0`);
+    return enumerableCustomFields(rows.map((r) => r.customFields));
+  }
+
   async itemSuggestions(db: TenantDb, rawQuery: string) {
     const q = rawQuery.trim();
     if (q.length < 2) return [];
@@ -1124,6 +1191,106 @@ export class InvoicesService {
   }
 
   /**
+   * An incoming PayPal payment with no invoice to pay becomes a draft for
+   * review (bank-reconciliation.service.ts): the payer as the customer (an
+   * existing contact with the same e-mail, or a new one), one line for the
+   * amount, and the payment already recorded, so issuing it makes it paid
+   * at once. Never numbered or issued here: a member reviews and issues it.
+   */
+  async createPaymentDraft(
+    db: TenantDb,
+    tenantId: string,
+    payment: {
+      amount: number;
+      currency: string;
+      paidAt: Date;
+      payerName: string | null;
+      payerEmail: string | null;
+      payerCountry: string | null;
+      description: string | null;
+      fee: number | null;
+      net: { amount: number; currency: string } | null;
+      note: string;
+      /** A bank rule chose the customer: bill this contact, no payer lookup. */
+      contactId?: string | null;
+      /** Where the money came from; it sets the draft's payment method. */
+      provider?: "PayPal" | "Stripe" | "Banka";
+      /** Kept when issued, instead of one made from the number. */
+      variableSymbol?: string | null;
+      constantSymbol?: string | null;
+      specificSymbol?: string | null;
+    },
+  ) {
+    const email = payment.payerEmail?.trim().toLowerCase() || null;
+    let contactId: string | null = payment.contactId ?? null;
+    if (!contactId && email) {
+      const [existing] = await db
+        .select({ id: schema.contacts.id })
+        .from(schema.contacts)
+        .where(sql`lower(${schema.contacts.email}) = ${email}`)
+        .limit(1);
+      contactId = existing?.id ?? null;
+    }
+    if (!contactId && (payment.payerName || email)) {
+      const [created] = await db
+        .insert(schema.contacts)
+        .values({
+          tenantId,
+          legalName: (payment.payerName || email)!.slice(0, 200),
+          email,
+          addressCountry: /^[A-Z]{2}$/.test(payment.payerCountry ?? "") ? payment.payerCountry! : "CZ",
+        })
+        .returning({ id: schema.contacts.id });
+      contactId = created?.id ?? null;
+    }
+
+    const [tenant] = await db
+      .select({ country: schema.tenants.country, invoiceFormPrefs: schema.tenants.invoiceFormPrefs })
+      .from(schema.tenants)
+      .where(eq(schema.tenants.id, tenantId));
+    const home = tenantHomeCurrencyOf(tenant);
+    const currency = payment.currency.toUpperCase();
+    const [invoice] = await db
+      .insert(schema.invoices)
+      .values({
+        tenantId,
+        contactId,
+        currency,
+        status: "pending_review",
+        source: "manual",
+        issueDate: payment.paidAt,
+        taxableSupplyDate: payment.paidAt,
+        dueDate: payment.paidAt,
+        ...paymentDraftMethod(payment.provider ?? "PayPal"),
+        variableSymbol: payment.variableSymbol ?? null,
+        constantSymbol: payment.constantSymbol ?? null,
+        specificSymbol: payment.specificSymbol ?? null,
+        amountPaid: round2(payment.amount).toFixed(2),
+        paymentFees: payment.fee && payment.fee > 0 ? round2(payment.fee).toFixed(2) : "0",
+        receivedCzk:
+          payment.net && payment.net.currency.toUpperCase() === home && currency !== home ? round2(payment.net.amount).toFixed(2) : null,
+        internalNote: payment.note,
+        needsAttention: !contactId,
+      })
+      .returning();
+    await db.insert(schema.invoiceLineItems).values({
+      tenantId,
+      invoiceId: invoice.id,
+      description: (
+        (paymentDraftDescriptionAlwaysOf(tenant?.invoiceFormPrefs) ? null : payment.description) ||
+        paymentDraftDescriptionOf(tenant?.invoiceFormPrefs) ||
+        PAYMENT_DRAFT_PLACEHOLDER
+      ).slice(0, 500),
+      quantity: "1",
+      unitPrice: round2(payment.amount).toFixed(2),
+      vatRate: null,
+      sortOrder: 0,
+    });
+    this.ping(invoice, "draft_ready", "Nový návrh faktury z platby PayPal", payment.payerName ? `Odběratel: ${payment.payerName}` : undefined);
+    return invoice;
+  }
+
+  /**
    * `POST /api/v1/invoices/voice-drafts`: a voice note recorded in the
    * dashboard (usually offline, sent once the connection is back) becomes a
    * `pending_review` draft, like a Telegram or WhatsApp voice note. The
@@ -1244,10 +1411,13 @@ export class InvoicesService {
         corrected,
         to: contact.email,
         invoiceNumber: invoice.invoiceNumber ?? invoice.id,
-        amount: formatInvoiceAmount(total, invoice.currency),
+        // Once something is paid the e-mail asks for the rest, like the PDF's "Zbývá uhradit".
+        amount: formatInvoiceAmount(Number(invoice.amountPaid ?? 0) > 0 ? amountLeftToPay(total, invoice.amountPaid) : total, invoice.currency),
         dueDate: invoice.dueDate,
         ...(await this.emailLinks(db, invoice, contact)),
-        credit: await this.emailCredit(db, invoice.tenantId),
+        language: invoice.language,
+        documentType: invoice.documentType,
+        credit: await this.emailCredit(db, invoice.tenantId, invoice.language),
         ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "invoice") } : {}),
       },
       // Collapses a double-click into one e-mail; a deliberate resend a minute later still goes out.
@@ -1272,9 +1442,9 @@ export class InvoicesService {
   }
 
   /** The "Vystaveno v Billantě" line for the company's e-mails (brand-credit.ts). */
-  private async emailCredit(db: TenantDb, tenantId: string) {
+  private async emailCredit(db: TenantDb, tenantId: string, language?: string | null) {
     const [tenant] = await db.select(BRAND_CREDIT_TENANT_FIELDS).from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
-    return tenant ? brandCreditFor(tenant, "cs", "email") : null;
+    return tenant ? brandCreditFor(tenant, creditLangOf(language), "email") : null;
   }
 
   /** Whether the issued invoice was edited in place after `since` (its last send). */
@@ -1303,23 +1473,28 @@ export class InvoicesService {
     const [invoice] = await db.select().from(schema.invoices).where(eq(schema.invoices.id, id)).limit(1);
     if (!invoice) throw new NotFoundException(`Invoice ${id} not found`);
     if (invoice.status !== "issued") throw new BadRequestException("Only an issued, unpaid invoice can be reminded");
+    // A quote is an offer and a credit note gives money back: neither is chased for payment.
+    if (!isRemindableDocument(invoice.documentType)) throw new BadRequestException("not_remindable");
     const [contact] = invoice.contactId
       ? await db.select().from(schema.contacts).where(eq(schema.contacts.id, invoice.contactId)).limit(1)
       : [];
     if (!contact?.email) throw new BadRequestException("This invoice's contact has no email address on file");
 
     const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, id));
-    const total = computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge });
+    // After a partial payment the reminder asks only for what is left.
+    const left = amountLeftToPay(computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge }), invoice.amountPaid);
     await assertCanSendEmail(db, invoice.tenantId);
     await this.emailService.sendPaymentReminderEmail(
       {
         to: contact.email,
         invoiceNumber: invoice.invoiceNumber ?? invoice.id,
-        amount: formatInvoiceAmount(total, invoice.currency),
+        amount: formatInvoiceAmount(left, invoice.currency),
         dueDate: invoice.dueDate,
         ...(await this.emailLinks(db, invoice, contact)),
         reminderCount: invoice.reminderCount + 1,
-        credit: await this.emailCredit(db, invoice.tenantId),
+        language: invoice.language,
+        documentType: invoice.documentType,
+        credit: await this.emailCredit(db, invoice.tenantId, invoice.language),
         ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "reminder") } : {}),
       },
       { tenantId: invoice.tenantId, db, idempotencyKey: `reminder:${invoice.id}:${invoice.reminderCount + 1}` },
@@ -1362,7 +1537,16 @@ export class InvoicesService {
     db: TenantDb,
     invoiceId: string,
     tenantId: string,
-    received?: { amount: number; currency: string; fee?: number; paidAt?: Date },
+    received?: {
+      amount: number;
+      currency: string;
+      fee?: number;
+      paidAt?: Date;
+      /** What PayPal credited after converting the payment, when it did. */
+      net?: { amount: number; currency: string } | null;
+      /** A line for the internal note (payment-note.ts). */
+      note?: string | null;
+    },
   ) {
     // A home-currency credit settling a foreign-currency invoice is the real
     // proceeds after the bank's conversion; keep it for the margin / exchange
@@ -1373,16 +1557,20 @@ export class InvoicesService {
         paymentFees: schema.invoices.paymentFees,
         amountPaid: schema.invoices.amountPaid,
         reverseCharge: schema.invoices.reverseCharge,
-        addressCountry: schema.tenants.addressCountry,
+        internalNote: schema.invoices.internalNote,
+        country: schema.tenants.country,
       })
       .from(schema.invoices)
       .innerJoin(schema.tenants, eq(schema.tenants.id, schema.invoices.tenantId))
       .where(eq(schema.invoices.id, invoiceId));
-    const home = homeCurrencyOf(current?.addressCountry);
+    const home = tenantHomeCurrencyOf(current);
+    // PayPal's own conversion counts the same way as the bank's.
+    const net = received?.net && received.net.currency.toUpperCase() === home && received.net.amount > 0 ? received.net.amount : null;
     const receivedCzk =
-      received && received.currency.toUpperCase() === home && current && current.currency !== home && received.amount > 0
-        ? { receivedCzk: round2(received.amount).toFixed(2) }
+      received && current && current.currency !== home && (net !== null || (received.currency.toUpperCase() === home && received.amount > 0))
+        ? { receivedCzk: round2(net ?? received.amount).toFixed(2) }
         : {};
+    const note = received?.note ? { internalNote: appendNoteLine(current?.internalNote, received.note) } : {};
     // Fee the payment provider kept (PayPal), booked like a manual "net received" entry.
     const fee =
       received?.fee && received.fee > 0 && current && received.currency.toUpperCase() === current.currency
@@ -1396,7 +1584,7 @@ export class InvoicesService {
     if (sameCurrency && paidSoFar < total - 0.005) {
       const [partial] = await db
         .update(schema.invoices)
-        .set({ amountPaid: paidSoFar.toFixed(2), ...fee, updatedAt: new Date() })
+        .set({ amountPaid: paidSoFar.toFixed(2), ...fee, ...note, updatedAt: new Date() })
         .where(
           and(
             eq(schema.invoices.id, invoiceId),
@@ -1421,6 +1609,7 @@ export class InvoicesService {
         amountPaid: total.toFixed(2),
         ...receivedCzk,
         ...fee,
+        ...note,
         updatedAt: new Date(),
       })
       .where(
@@ -1574,11 +1763,11 @@ export class InvoicesService {
     issueDate: Date,
   ): Promise<{ exchangeRate: string | null; exchangeRateMode: StoredRateMode | null; exchangeRateDate: string | null }> {
     const [tenant] = await db
-      .select({ invoiceFormPrefs: schema.tenants.invoiceFormPrefs, vatStatus: schema.tenants.vatStatus, addressCountry: schema.tenants.addressCountry })
+      .select({ invoiceFormPrefs: schema.tenants.invoiceFormPrefs, vatStatus: schema.tenants.vatStatus, country: schema.tenants.country })
       .from(schema.tenants)
       .where(eq(schema.tenants.id, tenantId))
       .limit(1);
-    const home = homeCurrencyOf(tenant?.addressCountry);
+    const home = tenantHomeCurrencyOf(tenant);
     if (invoice.currency.toUpperCase() === home) return { exchangeRate: null, exchangeRateMode: null, exchangeRateDate: null };
     const settings = exchangeRateSettingsOf(tenant?.invoiceFormPrefs);
     const day = new Date(invoice.taxableSupplyDate ?? issueDate);
@@ -1652,17 +1841,19 @@ export class InvoicesService {
    * `generateInvoicePdf` and `generateInvoiceIsdoc` so the "not issued yet"/
    * "not found" guards live in exactly one place.
    */
-  private async loadIssuedInvoiceForDocument(db: TenantDb, tenantId: string, invoiceId: string) {
+  private async loadIssuedInvoiceForDocument(db: TenantDb, tenantId: string, invoiceId: string, allowDraft = false) {
     const [invoice] = await db.select().from(schema.invoices).where(eq(schema.invoices.id, invoiceId)).limit(1);
     if (!invoice) {
       throw new NotFoundException(`Invoice ${invoiceId} not found`);
     }
 
-    if (!invoice.invoiceNumber) {
+    const previewable = allowDraft && (invoice.status === "draft" || invoice.status === "pending_review");
+    if (!invoice.invoiceNumber && !previewable) {
       throw new BadRequestException("Invoice has not been issued yet – no document to generate");
     }
 
     if (!invoice.contactId) {
+      if (previewable) throw new BadRequestException("draft_missing_customer");
       // Should be unreachable in practice (issue() requires a contact
       // before allocating a number), but guarded rather than assumed —
       // this method reads from the DB fresh, not from issue()'s in-memory
@@ -1696,6 +1887,7 @@ export class InvoicesService {
             invoiceNumber: schema.invoices.invoiceNumber,
             documentType: schema.invoices.documentType,
             issueDate: schema.invoices.issueDate,
+            status: schema.invoices.status,
           })
           .from(schema.invoices)
           .where(eq(schema.invoices.id, invoice.relatedInvoiceId))
@@ -1715,13 +1907,21 @@ export class InvoicesService {
    * `issue()` above) rather than reading back a previously stored file.
    */
   async generateInvoicePdf(db: TenantDb, tenantId: string, invoiceId: string): Promise<Buffer> {
+    return (await this.generateInvoicePdfFile(db, tenantId, invoiceId)).content;
+  }
+
+  /** The PDF named by its invoice number, "faktura-2_11_2026.pdf", the same as in the email. */
+  async generateInvoicePdfFile(db: TenantDb, tenantId: string, invoiceId: string): Promise<{ filename: string; content: Buffer }> {
+    // A draft renders too, as a stamped preview (see InvoicePdfService.generate).
     const { invoice, contact, tenant, lineItems, related } = await this.loadIssuedInvoiceForDocument(
       db,
       tenantId,
       invoiceId,
+      true,
     );
     const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
-    return this.invoicePdfService.generate(invoice, contact, tenant, lineItems, totals, related);
+    const content = await this.invoicePdfService.generate(invoice, contact, tenant, lineItems, totals, related);
+    return { filename: `${invoiceFileBase(invoice)}.pdf`, content };
   }
 
   /**
@@ -1729,14 +1929,15 @@ export class InvoicesService {
    * as `generateInvoicePdf`, via `@faktur/cz-compliance`'s `generateIsdocXml`.
    */
   async generateInvoiceIsdoc(db: TenantDb, tenantId: string, invoiceId: string): Promise<string> {
-    const { invoice, contact, tenant, lineItems } = await this.loadIssuedInvoiceForDocument(
+    const { invoice, contact, tenant, lineItems, related } = await this.loadIssuedInvoiceForDocument(
       db,
       tenantId,
       invoiceId,
     );
     const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
     const input = buildIsdocInvoiceInput(invoice, contact, tenant, lineItems, totals);
-    return generateIsdocXml(input);
+    const deposit = proformaDeposit(invoice, related);
+    return generateIsdocXml(deposit ? { ...input, totals: { ...input.totals, paidDepositsAmount: deposit } } : input);
   }
 
   /**
@@ -1772,6 +1973,9 @@ export class InvoicesService {
       reverseCharge: invoice.reverseCharge,
       documentType: invoice.documentType,
       precedingInvoice: preceding,
+      prepaidAmount: proformaDeposit(invoice, related) || undefined,
+      paymentMethod: invoice.paymentMethod,
+      paymentMethodLabel: invoice.paymentMethodLabel,
     };
     return { input, options };
   }
@@ -1807,7 +2011,7 @@ export class InvoicesService {
 
     let peppol: (PeppolIssue & { scheme: "peppol" })[] = [];
     const eDocument = invoice.documentType === "invoice" || invoice.documentType === "credit_note";
-    if (invoice.invoiceNumber && eDocument && contact && contact.addressCountry !== "CZ" && lineItems.length) {
+    if (invoice.invoiceNumber && eDocument && contact && peppolRelevant(contact) && lineItems.length) {
       const { issues } = await this.checkInvoiceUbl(db, tenantId, invoiceId);
       // The law check already reports what both would say about names and addresses.
       const seen = new Set(law.map((i) => `${i.field}:${i.code}`));
@@ -1821,4 +2025,21 @@ export class InvoicesService {
     const { input, options } = await this.ublInput(db, tenantId, invoiceId);
     return { issues: validatePeppolInvoice(input, options) };
   }
+}
+
+const FILE_PREFIX: Record<"cs" | "sk" | "en", Record<"invoice" | "proforma" | "credit_note" | "quote", string>> = {
+  cs: { invoice: "faktura", proforma: "zalohova-faktura", credit_note: "dobropis", quote: "nabidka" },
+  sk: { invoice: "faktura", proforma: "zalohova-faktura", credit_note: "dobropis", quote: "cenova-ponuka" },
+  en: { invoice: "invoice", proforma: "proforma-invoice", credit_note: "credit-note", quote: "quote" },
+};
+
+/**
+ * "faktura-2_11_2026": the kind of document in the language it is written in (not the
+ * language of whoever downloads it) and its number, safe in a file name and a mail header.
+ */
+export function invoiceFileBase(invoice: { invoiceNumber: string | null; documentType: string; language: string }): string {
+  const lang = invoice.language === "sk" || invoice.language === "en" ? invoice.language : "cs";
+  const prefix = FILE_PREFIX[lang][invoice.documentType as keyof (typeof FILE_PREFIX)["cs"]] ?? FILE_PREFIX[lang].invoice;
+  const draft = { cs: "koncept", sk: "koncept", en: "draft" }[lang];
+  return `${prefix}-${invoice.invoiceNumber ? invoice.invoiceNumber.replace(/[^\w.-]+/g, "_") : draft}`;
 }

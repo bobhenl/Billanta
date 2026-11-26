@@ -4,11 +4,9 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { AlertTriangle, Search } from 'lucide-react';
 import { parseVatId } from '@faktur/cz-compliance';
-import { Link } from '@/i18n/navigation';
-import { buttonClass } from '@/components/modal';
-import { CreateInvoiceLink } from '@/components/marketing-account-links';
+import { buttonClass } from '@/lib/ui-classes';
 import { RegistryPicker, useCompanyRegistry, type CompanyRegistry } from '@/components/registry-picker';
-import { ResultRow, TextField } from '@/components/public-tools/fields';
+import { ResultRow, TextField, toolCard } from '@/components/public-tools/fields';
 import { cn } from '@/lib/utils';
 
 /** One hit of `GET /api/public/company-lookup` (backend `PublicCompanyHit`). */
@@ -130,18 +128,18 @@ export function CompanyLookup() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-      <form className="min-w-0 space-y-4 rounded-xl border border-border bg-card p-5" onSubmit={lookup}>
-        <TextField label={t('fields.query')} value={query} onChange={setQuery} maxLength={120} placeholder="27082440" hint={t('fields.queryHint')} />
+      <form className={cn(toolCard, 'space-y-4')} onSubmit={lookup}>
+        <TextField label={t('fields.query')} value={query} onChange={setQuery} maxLength={120} placeholder="27082440" info={t('fields.queryHint')} />
         <div>
           <p className="text-sm font-medium">{t('fields.registry')}</p>
           <RegistryPicker value={registry} onChange={setRegistry} className="mt-1.5 max-w-full" />
         </div>
-        <button type="submit" disabled={state.kind === 'loading'} className={buttonClass.primary}>
+        <button type="submit" disabled={state.kind === 'loading'} className={cn(buttonClass.primary, 'w-full sm:w-auto')}>
           <Search className="h-4 w-4" aria-hidden="true" />
           {state.kind === 'loading' ? t('fields.searching') : t('fields.search')}
         </button>
       </form>
-      <section aria-live="polite" className="min-w-0 rounded-xl border border-border bg-card p-5">
+      <section aria-live="polite" className={toolCard}>
         {c ? (
           <>
             {hits.length > 1 && (
@@ -192,9 +190,6 @@ export function CompanyLookup() {
               </p>
             )}
             {c.source && <p className="mt-3 text-xs text-muted-foreground">{t('result.source', { source: c.source })}</p>}
-            <CreateInvoiceLink className={`${buttonClass.secondary} mt-4`}>
-              {t('result.invoice')}
-            </CreateInvoiceLink>
           </>
         ) : state.kind === 'error' ? (
           <p role="alert" className="text-sm font-medium text-destructive">

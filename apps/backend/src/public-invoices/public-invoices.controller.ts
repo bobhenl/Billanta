@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { Request, Response } from "express";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { PublicInvoicesService } from "./public-invoices.service";
-import { SlidingWindowLimiter, visitorBucket } from "../guest-invoices/guest-limits";
+import { SlidingWindowLimiter, visitorBucket, visitorIp } from "../guest-invoices/guest-limits";
 
 /**
  * PUBLIC, unauthenticated client-portal endpoint. A client clicking an
@@ -51,6 +51,8 @@ function reporterBucket(ip: string, req: Request): string {
 @Controller("v1/public/invoices")
 export class PublicInvoicesController {
   private readonly reportLimiter = new SlidingWindowLimiter(60 * 60 * 1000, 5);
+  // Rendering is the expensive part; a reader clicks a few times, a scraper many.
+  private readonly pdfLimiter = new SlidingWindowLimiter(10 * 60 * 1000, 30);
 
   constructor(private readonly publicInvoicesService: PublicInvoicesService) {}
 
@@ -72,6 +74,25 @@ export class PublicInvoicesController {
   })
   findByToken(@Param("token") token: string) {
     return this.publicInvoicesService.findByPublicToken(token);
+  }
+
+  @Get(":token/pdf")
+  @ApiOperation({
+    summary: "Download the invoice as PDF by its public token",
+    description:
+      "No authentication required. The same token checks as `GET :token`; 404 for an unknown, " +
+      "malformed or draft link and for a suspended company. Limited to 30 downloads per 10 minutes per visitor.",
+  })
+  async downloadPdf(@Param("token") token: string, @Ip() ip: string, @Req() req: Request, @Res() res: Response): Promise<void> {
+    if (!this.pdfLimiter.hit(visitorIp(ip, req))) throw new HttpException("Too many requests", HttpStatus.TOO_MANY_REQUESTS);
+    const pdf = await this.publicInvoicesService.generatePdf(token);
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="${pdf.filename}"`,
+      "X-Content-Type-Options": "nosniff",
+      "Cache-Control": "private, no-store",
+    });
+    res.send(pdf.content);
   }
 
   @Get(":token/attachments/:attachmentId")

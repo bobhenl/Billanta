@@ -11,6 +11,9 @@ import { toast } from '@/components/toaster';
 const STATEMENT_EXTENSIONS = ['.csv', '.xml', '.gpc', '.abo'];
 const STATEMENT_ERRORS = ['bank_statement_unknown_format', 'bank_statement_invalid'];
 
+/** Lets the bank connections box open the same file picker. */
+export const STATEMENT_INPUT_ID = 'bank-statement-file';
+
 /** "Nahrát výpis" – posts the statement through `/api/bank/import`, then refreshes the list. */
 export function BankImport() {
   const t = useTranslations('bank.import');
@@ -62,6 +65,7 @@ export function BankImport() {
     <div className="flex flex-col items-end gap-1">
       <input
         ref={input}
+        id={STATEMENT_INPUT_ID}
         type="file"
         accept=".csv,.xml,.gpc,.abo,text/csv,application/xml,text/xml"
         className="hidden"
@@ -74,7 +78,7 @@ export function BankImport() {
         type="button"
         disabled={busy}
         onClick={() => input.current?.click()}
-        className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:opacity-90 disabled:opacity-60"
+        className="inline-flex h-10 items-center gap-1.5 rounded-full bg-primary px-4 text-sm font-bold text-primary-foreground hover:opacity-90 disabled:opacity-60"
       >
         {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4" />}
         {busy ? t('importing') : t('submit')}

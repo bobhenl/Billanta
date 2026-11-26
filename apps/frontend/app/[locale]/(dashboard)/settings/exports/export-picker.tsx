@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Download, FileCode2, FileSpreadsheet, Receipt, UserPlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { inputClass } from '@/components/modal';
+import { inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 
 type Mode = 'month' | 'quarter' | 'year' | 'range';
@@ -45,7 +45,7 @@ export function ExportPicker({ home = 'CZK' }: { home?: string }) {
 
   return (
     <div className="mt-6 space-y-5">
-      <section className="rounded-xl border border-border bg-card p-5">
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
         <h2 className="font-bold">{t('period')}</h2>
         <div className="mt-3 inline-flex flex-wrap rounded-full border border-border bg-muted/40 p-0.5 text-sm">
           {(['month', 'quarter', 'year', 'range'] as Mode[]).map((m) => (
@@ -87,7 +87,7 @@ export function ExportPicker({ home = 'CZK' }: { home?: string }) {
         </div>
       </section>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2">
         {FILES.map(({ key, path, icon: Icon }) => (
           <a
             key={key}
@@ -95,24 +95,23 @@ export function ExportPicker({ home = 'CZK' }: { home?: string }) {
             download
             aria-disabled={!query}
             className={cn(
-              'flex flex-col rounded-xl border border-border bg-card p-5 transition-colors',
+              'flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors',
               query ? 'hover:border-primary hover:shadow-md' : 'pointer-events-none opacity-50'
             )}
           >
-            <Icon className="h-7 w-7 text-primary" />
-            <span className="mt-3 font-bold">{t(`files.${key}.title`)}</span>
-            <span className="mt-1 flex-1 text-xs text-muted-foreground">{t(`files.${key}.hint`, { home, source: home === 'EUR' ? 'ECB' : 'ČNB' })}</span>
-            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
-              <Download className="h-4 w-4" />
-              {t('download')}
+            <Icon className="mt-0.5 h-6 w-6 shrink-0 text-primary" aria-hidden="true" />
+            <span className="min-w-0 flex-1">
+              <span className="block font-bold">{t(`files.${key}.title`)}</span>
+              <span className="mt-0.5 block text-xs text-muted-foreground">{t(`files.${key}.hint`, { home, source: home === 'EUR' ? 'ECB' : 'ČNB' })}</span>
             </span>
+            <Download className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-label={t('download')} />
           </a>
         ))}
       </div>
 
       <section className="flex flex-wrap items-center gap-3 rounded-xl border border-dashed border-border p-4 text-sm">
-        <UserPlus className="h-5 w-5 text-primary" />
-        <span className="flex-1 text-muted-foreground">{t('accountantHint')}</span>
+        <UserPlus className="h-5 w-5 shrink-0 text-primary" />
+        <span className="min-w-0 flex-1 text-muted-foreground">{t('accountantHint')}</span>
         <Link href="/settings/team" className="font-semibold text-primary hover:underline">
           {t('inviteAccountant')} →
         </Link>

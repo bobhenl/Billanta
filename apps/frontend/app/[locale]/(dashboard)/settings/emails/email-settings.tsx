@@ -4,7 +4,7 @@ import { useRef, useState, useTransition } from 'react';
 import { BellRing, Check, FileText, Loader2, Paperclip, Save, Send, UserRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
-import { buttonClass, inputClass } from '@/components/modal';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
 import { Link, useRouter } from '@/i18n/navigation';
 import type { EmailPrefs } from '@/lib/tenant';
@@ -17,7 +17,7 @@ import { updateEmailPrefs } from '../actions';
 const PLACEHOLDERS = ['number', 'amount', 'due_date', 'vs', 'customer', 'link', 'company', 'reminder_no'] as const;
 
 /**
- * The backend's built-in texts (email.service.ts) — shown as placeholders so
+ * The backend's built-in texts (email.service.ts) – shown as placeholders so
  * an empty field visibly means "the default". The emails go out in Czech.
  */
 const DEFAULTS = {
@@ -111,7 +111,7 @@ export function EmailSettings({
   const sample = sampleValues({ companyName, email: companyEmail }, customVars);
   const fill = (template: string) => fillSample(template, sample);
 
-  const card = 'rounded-xl border border-border bg-card p-5';
+  const card = 'rounded-xl border border-border bg-card p-4 sm:p-5';
   const label = 'mb-1 block text-xs font-semibold text-muted-foreground';
   const check = 'flex items-center gap-2.5 text-sm';
 
@@ -154,7 +154,7 @@ export function EmailSettings({
           </div>
           <label className={cn(check, 'mt-4')}>
             <input type="checkbox" checked={bccMe} onChange={(e) => setBccMe(e.target.checked)} className="accent-[hsl(var(--primary))]" />
-            <InfoHint hint={t('bccHint', { email: companyEmail ?? '–' })}>
+            <InfoHint hint={companyEmail ? t('bccHint', { email: companyEmail }) : t('bccHintNoEmail')}>
               <span>{t('bcc')}</span>
             </InfoHint>
           </label>

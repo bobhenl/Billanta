@@ -23,9 +23,9 @@ export default async function DictateInvoicePage({ params }: { params: Promise<{
   const tGuest = await getTranslations('guestInvoice');
 
   return (
-    <section className="container max-w-5xl py-10 sm:py-14">
-      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{t('heading')}</h1>
-      <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">{t('lead')}</p>
+    <section className="container max-w-5xl py-12 sm:py-16">
+      <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t('heading')}</h1>
+      <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{t('lead')}</p>
       <p className="mt-2 max-w-2xl text-sm italic text-muted-foreground">{t('example')}</p>
       {/* Same as /create-invoice: Clarity must never record what visitors say or type here. */}
       <div data-clarity-mask="true">

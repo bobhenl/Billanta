@@ -19,6 +19,13 @@ export const ADMIN_PREFIXES = ["v1/tenants", "v1/team", "v1/api-keys", "v1/billi
 export const under = (path: string, prefix: string) => path === prefix || path.startsWith(`${prefix}/`);
 
 /**
+ * Owners and admins only, reads included: the "Po zdanění" report shows each
+ * partner's income and taxes, which other members must not see.
+ */
+const OWNER_ADMIN_PREFIXES = ["v1/net-income", "v1/tenants/me/tax-model"];
+const ownerAdminOnly = (path: string) => OWNER_ADMIN_PREFIXES.some((p) => under(path, p)) || /^v1\/invoices\/[^/]+\/(partner-shares|lock)$/.test(path);
+
+/**
  * Whether `role` (with its `permissions` overrides) may send `method` to
  * `path` (no `/api/` prefix, no query). Owners and admins may do anything.
  * Areas follow the member's level (`read` allows reads, `write` writes,
@@ -28,6 +35,7 @@ export const under = (path: string, prefix: string) => path === prefix || path.s
  */
 export function roleMayAccess(role: string, method: string, path: string, permissions?: unknown, body?: unknown): boolean {
   const safe = SAFE_METHODS.has(method.toUpperCase());
+  if (ownerAdminOnly(path)) return role === "owner" || role === "admin";
   if (role === "owner" || role === "admin" || role === "service") return true;
   if (PERSONAL_PREFIXES.some((p) => under(path, p))) return true;
   const req = requirementFor(method, path, body);

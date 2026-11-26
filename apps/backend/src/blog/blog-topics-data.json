@@ -73,7 +73,7 @@
           "title": "Vyplatí se paušální daň? Srovnání s výdajovým paušálem a skutečnými výdaji",
           "description": "Porovnejte paušální daň s výdajovým paušálem a skutečnými výdaji. Daň a pojištění pro každou variantu, slevy na děti a jasné doporučení.",
           "lines": [
-            "Zadejte roční příjmy, případně skutečné výdaje. Kalkulačka spočítá daň, sociální a zdravotní pojištění v paušálním režimu, s výdajovým paušálem i se skutečnými výdaji a řekne, co vychází nejlépe.",
+            "Zadejte roční příjmy a případně skutečné výdaje. Porovnáme paušální daň s výdajovým paušálem i se skutečnými výdaji a ukážeme, co vyjde nejlevněji.",
             "Obě možnosti vycházejí stejně.",
             "Do paušálního režimu vstoupit nemůžete, zbývá běžný režim.",
             "Snížení platí zpětně od ledna, co jste zaplatili navíc, vám finanční úřad vrátí jako přeplatek.",
@@ -253,7 +253,7 @@
           "title": "Vyhledání firmy podle IČO, DIČ nebo názvu (ARES, RPO, VIES)",
           "description": "Najděte firmu podle IČO, DIČ nebo názvu v ARES, slovenském RPO nebo evropském VIES. Ukážeme sídlo, DIČ a jestli je plátce DPH, případně nespolehlivý plátce.",
           "lines": [
-            "Zadejte IČO, DIČ nebo část názvu. Hledáme v českém ARES, ve slovenském registru právnických osob (RPO), v evropském VIES a v dalších registrech, které si vyberete.",
+            "Zadejte IČO, DIČ nebo část názvu. Hledáme v ARES, slovenském RPO, evropském VIES a dalších registrech, které vyberete.",
             "IČO hledáme v ARES a ve slovenském RPO podle zvoleného registru. DIČ s kódem země ověříme ve VIES, české DIČ v registru plátců DPH Finanční správy.",
             "U českého DIČ ukážeme, jestli je firma plátce DPH a jestli ji Finanční správa vede jako nespolehlivého plátce. U ostatních zemí VIES řekne jen, jestli je DIČ platné.",
             "Podle názvu hledáme v ARES a RPO. Pro firmy z jiných zemí vyberte jejich registr.",
@@ -266,7 +266,7 @@
           "title": "Vyhľadanie firmy podľa IČO, DIČ alebo názvu (RPO, ARES, VIES)",
           "description": "Nájdite firmu podľa IČO, IČ DPH alebo názvu v slovenskom RPO, českom ARES alebo európskom VIES. Ukážeme sídlo, IČ DPH a či je platné.",
           "lines": [
-            "Zadajte IČO, IČ DPH alebo časť názvu. Hľadáme v slovenskom registri právnických osôb (RPO), v českom ARES, v európskom VIES a v ďalších registroch, ktoré si vyberiete.",
+            "Zadajte IČO, IČ DPH alebo časť názvu. Hľadáme v slovenskom RPO, českom ARES, európskom VIES a ďalších registroch, ktoré si vyberiete.",
             "IČO hľadáme v RPO a v českom ARES podľa zvoleného registra. IČ DPH s kódom krajiny overíme vo VIES, české DIČ v registri platiteľov DPH českej finančnej správy.",
             "Pri českom DIČ ukážeme, či je firma platiteľ DPH a či ju finančná správa vedie ako nespoľahlivého platiteľa. Pri ostatných krajinách VIES povie iba to, či je IČ DPH platné.",
             "Podľa názvu hľadáme v RPO a ARES. Pre firmy z iných krajín vyberte ich register.",

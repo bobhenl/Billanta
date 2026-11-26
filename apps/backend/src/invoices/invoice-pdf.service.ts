@@ -6,7 +6,6 @@ import { dirname, join } from "node:path";
 import { Injectable, Logger } from "@nestjs/common";
 import {
   czechAccountToIban,
-  homeCurrencyOf,
   generateQrInvoiceString,
   generateSpaydString,
   isEuReverseChargeService,
@@ -16,13 +15,16 @@ import {
 } from "@faktur/cz-compliance";
 import { generatePayBySquareString } from "@faktur/cz-compliance/pay-by-square";
 import PDFDocument from "pdfkit";
+import { BRAND_MARK_PNG } from "./brand-mark";
 import { drawDemoWatermark } from "./invoice-pdf-demo";
 import QRCode from "qrcode";
 import * as schema from "../../drizzle/schema";
 import { lineBase, type InvoiceVatBreakdown } from "./invoice-total.util";
-import { pdfAccentOf, pdfSecondLanguageOf, tintOf } from "../tenants/invoice-form-prefs";
+import { pdfAccentOf, pdfQrDueDateOf, pdfQrModeOf, pdfSecondLanguageOf, tintOf, type PdfQrMode } from "../tenants/invoice-form-prefs";
+import { invoiceLinkOf } from "../public-links/public-link";
 import { rateLineLabel } from "./exchange-rate-mode";
-import { brandCreditFor, brandCreditUrl, CREDIT_LABELS, siteUrl, type BrandCredit } from "./brand-credit";
+import { BRAND_NAME, brandCreditFor, brandCreditUrl, CREDIT_LABELS, siteUrl, type BrandCredit } from "./brand-credit";
+import { tenantCountry, tenantHomeCurrencyOf } from "../tenants/home-currency";
 
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 type ContactRow = typeof schema.contacts.$inferSelect;
@@ -34,16 +36,26 @@ type TenantRow = typeof schema.tenants.$inferSelect;
  * from an identified person, who charges no VAT and so never ticks it),
  * "domestic" for the §92a note, else none.
  */
+/**
+ * A Czech or Slovak PSČ as people write it, "602 00". ARES and the other
+ * registers hand it over without the space, and typed ones come both ways.
+ */
+export function displayPostalCode(code: string | null, country: string | null | undefined): string | null {
+  const digits = code?.replace(/\s+/g, "") ?? "";
+  const local = !country || ["CZ", "SK"].includes(country.toUpperCase());
+  return local && /^\d{5}$/.test(digits) ? `${digits.slice(0, 3)} ${digits.slice(3)}` : code;
+}
+
 export function reverseChargeNoteKind(
   invoice: Pick<InvoiceRow, "documentType" | "reverseCharge">,
-  tenant: Pick<TenantRow, "vatStatus" | "addressCountry">,
+  tenant: Pick<TenantRow, "vatStatus" | "country">,
   contact?: Pick<ContactRow, "ico" | "dic" | "isPerson" | "addressCountry">,
 ): "eu" | "domestic" | null {
   const taxDocument = invoice.documentType === "invoice" || invoice.documentType === "credit_note";
   const customer = contact
     ? { ico: contact.ico ?? undefined, dic: contact.dic ?? undefined, isPerson: contact.isPerson, address: { countryCode: contact.addressCountry } }
     : undefined;
-  const euService = taxDocument && isEuReverseChargeService(tenant.vatStatus, tenant.addressCountry, customer);
+  const euService = taxDocument && isEuReverseChargeService(tenant.vatStatus, tenantCountry(tenant), customer);
   if (euService && (invoice.reverseCharge || tenant.vatStatus === "identified")) return "eu";
   return invoice.reverseCharge ? "domestic" : null;
 }
@@ -121,6 +133,9 @@ const L = {
     qr: "QR platba",
     qrPayBySquare: "PAY by square",
     qrInvoice: "QR Faktura",
+    qrLink: "Faktura online",
+    qrAfterIssue: "QR platba se doplní po vystavení",
+    qrInvoiceAfterIssue: "QR Faktura se doplní po vystavení",
     reverseCharge: "Daň odvede zákazník (přenesená daňová povinnost dle § 92a zákona o DPH).",
     // Service to a business in another EU state (§29/2c ZDPH, art. 196 of Directive 2006/112/EC).
     reverseChargeEu: "Daň odvede zákazník.",
@@ -183,6 +198,9 @@ const L = {
     qr: "QR platba",
     qrPayBySquare: "PAY by square",
     qrInvoice: "QR faktúra",
+    qrLink: "Faktúra online",
+    qrAfterIssue: "QR platba sa doplní po vystavení",
+    qrInvoiceAfterIssue: "QR faktúra sa doplní po vystavení",
     reverseCharge: "Prenesenie daňovej povinnosti.",
     reverseChargeEu: "Prenesenie daňovej povinnosti.",
     fxRate: "Kurz ČNB",
@@ -244,6 +262,9 @@ const L = {
     qr: "QR payment",
     qrPayBySquare: "PAY by square",
     qrInvoice: "QR invoice",
+    qrLink: "Invoice online",
+    qrAfterIssue: "QR payment is added once issued",
+    qrInvoiceAfterIssue: "QR invoice is added once issued",
     reverseCharge: "Reverse charge – VAT to be accounted for by the customer.",
     reverseChargeEu: "Reverse charge – VAT to be accounted for by the customer.",
     fxRate: "ČNB rate",
@@ -297,6 +318,26 @@ const stacked = (label: string) => label.replace(BILINGUAL_SEPARATOR, "\n");
  * Uses `pdfkit`: pure JS, no headless Chromium, so the backend image stays
  * small on a VPS.
  */
+/**
+ * Whether the document asks the buyer for money. A quote is an offer, a
+ * cancelled document is void and a credit note (negative total) pays back,
+ * so none of them gets a payment QR or the "Celkem k úhradě" label.
+ */
+function asksForPayment(invoice: InvoiceRow, totals: InvoiceVatBreakdown): boolean {
+  return invoice.documentType !== "quote" && invoice.status !== "cancelled" && totals.totalWithVat > 0;
+}
+
+function countryName(code: string, lang: Lang): string {
+  try {
+    return new Intl.DisplayNames([lang], { type: "region" }).of(code) ?? code;
+  } catch {
+    return code;
+  }
+}
+
+/** Stands in for the number on a draft's preview. */
+const DRAFT_NUMBER: Record<Lang, string> = { cs: "(koncept)", sk: "(koncept)", en: "(draft)" };
+
 @Injectable()
 export class InvoicePdfService {
   private readonly logger = new Logger(InvoicePdfService.name);
@@ -309,18 +350,36 @@ export class InvoicePdfService {
     totals: InvoiceVatBreakdown,
     related: RelatedDocument = null,
   ): Promise<Buffer> {
-    if (!invoice.invoiceNumber) {
-      throw new Error("InvoicePdfService.generate: invoice has no invoiceNumber – has it been issued?");
-    }
     const lang: Lang = invoice.language === "sk" || invoice.language === "en" ? invoice.language : "cs";
+    // An unissued draft is a preview: a placeholder number, no payment QR (its VS
+    // comes with the number) and a stamp on every page.
+    const draft = !invoice.invoiceNumber;
+    if (draft) invoice = { ...invoice, invoiceNumber: DRAFT_NUMBER[lang] };
     const second = pdfSecondLanguageOf(tenant.invoiceFormPrefs);
     const t = second && second !== lang ? bilingualLabels(L[lang], L[second]) : L[lang];
 
-    const payable = invoice.documentType !== "quote" && totals.totalWithVat > 0;
+    const payable = asksForPayment(invoice, totals);
     // A demo's fictional bank account must not end up in anyone's banking app.
-    const qr = invoice.documentType !== "quote" && !tenant.isDemo ? await this.buildQrCode(invoice, contact, tenant, totals, payable) : null;
+    const qrMode = pdfQrModeOf(tenant.invoiceFormPrefs);
+    const qr =
+      invoice.documentType !== "quote" && !tenant.isDemo && !draft && qrMode !== "off"
+        ? await this.buildQrCode(invoice, contact, tenant, totals, payable, qrMode === "auto_link" ? "auto" : qrMode, lang)
+        : null;
+    // The web page as a second code: the customer opens it with a phone camera, the bank app keeps the first one.
+    const linkQr =
+      qrMode === "auto_link" && invoice.documentType !== "quote" && !tenant.isDemo && !draft ? await this.buildLinkQr(invoice, tenant, lang) : null;
+    // A draft gets no code anyone could pay, but its preview keeps the code's place.
+    const qrPending =
+      draft && payable && invoice.documentType !== "quote" && !tenant.isDemo && qrMode !== "off" && invoice.paymentMethod === "bank_transfer";
 
-    const doc = new PDFDocument({ size: "A4", margin: 50, bufferPages: true, info: { Title: `${invoice.invoiceNumber}`, Creator: "Billanta" } });
+    // With the credit switched off the document carries no trace of Billanta, metadata included.
+    const credit = brandCreditFor(tenant, lang, "pdf");
+    const doc = new PDFDocument({
+      size: "A4",
+      margin: 50,
+      bufferPages: true,
+      info: { Title: `${invoice.invoiceNumber}`, ...(credit ? { Creator: BRAND_NAME } : {}) },
+    });
     if (FONTS) {
       doc.registerFont(REGULAR, FONTS.regular);
       doc.registerFont(BOLD, FONTS.bold);
@@ -341,14 +400,39 @@ export class InvoicePdfService {
       doc.font(REGULAR).fontSize(9).fillColor("black").text(fill(invoice.noteAbove) ?? "", 50, doc.y, { width: 500 });
       doc.moveDown(0.8);
     }
-    this.renderLineItemsTable(doc, t, lineItems, invoice);
-    const totalsTop = this.renderTotals(doc, t, totals, invoice, pdfAccentOf(tenant.invoiceFormPrefs), homeCurrencyOf(tenant.addressCountry));
+    // A non-VAT payer charges no VAT, so a "0%" column and a VAT summary of zeros only confuse the reader.
+    const showVat = tenant.dicVatPayer || totals.byRate.some((entry) => entry.vatAmount !== 0);
+    // A non-payer billing whole jobs (each line once, no unit) shows just what and how much. A tax
+    // document needs the quantity and unit price (§ 29 ZDPH), so a payer and an identified
+    // person's EU reverse charge invoice keep them.
+    const lumpSum =
+      !showVat &&
+      !reverseChargeNoteKind(invoice, tenant, contact) &&
+      lineItems.length > 0 &&
+      lineItems.every((i) => Number(i.quantity) === 1 && !i.unit && !Number(i.discountPercent));
+    this.renderLineItemsTable(doc, t, lineItems, invoice, showVat, lumpSum);
+    const totalsTop = this.renderTotals(doc, t, totals, invoice, pdfAccentOf(tenant.invoiceFormPrefs), tenantHomeCurrencyOf(tenant), showVat);
     // The brand name is written exactly so ("PAY by square"), never uppercased.
-    if (qr) this.renderPaymentQr(doc, qr.kind === "pay_by_square" ? t.qrPayBySquare : (qr.kind === "spayd" ? t.qr : t.qrInvoice).toUpperCase(), qr.png, totalsTop);
+    const qrLabel = qr
+      ? qr.kind === "pay_by_square"
+        ? t.qrPayBySquare
+        : (qr.kind === "spayd" ? t.qr : qr.kind === "link" ? t.qrLink : t.qrInvoice).toUpperCase()
+      : "";
+    // A draft made from a payment is paid already: once issued it gets the QR invoice, not a payment code.
+    const paidDraft = Number(invoice.amountPaid ?? 0) >= totals.totalWithVat;
+    const qrSlot = qr
+      ? { label: qrLabel, png: qr.png }
+      : qrPending
+        ? paidDraft
+          ? { label: t.qrInvoice.toUpperCase(), pending: t.qrInvoiceAfterIssue }
+          : { label: t.qr.toUpperCase(), pending: t.qrAfterIssue }
+        : null;
+    const linkSlot = linkQr ? { label: t.qrLink.toUpperCase(), png: linkQr } : null;
+    this.renderPaymentBlock(doc, this.bankRows(t, invoice, tenant, contact), qrSlot, linkSlot, totalsTop);
     this.renderFooterNotes(doc, t, invoice, tenant, fill, contact);
-    const credit = brandCreditFor(tenant, lang, "pdf");
     if (credit) this.renderCredit(doc, credit);
     if (tenant.isDemo) drawDemoWatermark(doc, lang, REGULAR, tenant.classroomClassId ? "classroom" : "demo");
+    else if (draft) drawDemoWatermark(doc, lang, REGULAR, "draft");
 
     doc.end();
     return finished;
@@ -393,6 +477,9 @@ export class InvoicePdfService {
    *
    * Slovak payers get PAY by square instead (rule in paymentQrScheme). It
    * has no slot for QR Faktura, so that code only pays.
+   *
+   * Settings → Faktury can swap this for a link to the invoice's web page
+   * (every way to pay is there) or keep only the payment code (PDF_QR_MODES).
    */
   private async buildQrCode(
     invoice: InvoiceRow,
@@ -400,18 +487,29 @@ export class InvoicePdfService {
     tenant: TenantRow,
     totals: InvoiceVatBreakdown,
     payable: boolean,
-  ): Promise<{ png: Buffer; kind: "spayd" | "pay_by_square" | "invoice" } | null> {
+    mode: PdfQrMode,
+    lang: Lang,
+  ): Promise<{ png: Buffer; kind: "spayd" | "pay_by_square" | "invoice" | "link" } | null> {
+    if (mode === "link") {
+      const png = await this.buildLinkQr(invoice, tenant, lang);
+      return png ? { png, kind: "link" } : null;
+    }
     // Same gate as the client-portal page (apps/frontend/app/[locale]/i/[token]/page.tsx):
     // prefer the stored IBAN, otherwise derive it from the domestic
     // account number + bank code, and omit the payment part when neither is on file.
     const iban = this.iban(tenant);
-    const sid = invoice.invoiceNumber
+    // Without the date the customer's bank offers to pay today instead of on the due date. Banks
+    // also read it from the QR Faktura inside the payment code, so that copy drops it too; a
+    // QR Faktura on its own is for bookkeeping and keeps it.
+    const dueDate = pdfQrDueDateOf(tenant.invoiceFormPrefs) ? (invoice.dueDate ?? undefined) : undefined;
+    const sidWith = (sidDueDate: Date | undefined) =>
+      invoice.invoiceNumber
       ? generateQrInvoiceString({
           invoiceNumber: invoice.invoiceNumber,
           issueDate: invoice.issueDate ?? new Date(),
           totalAmount: totals.totalWithVat,
           currency: invoice.currency,
-          dueDate: invoice.dueDate ?? undefined,
+          dueDate: sidDueDate,
           taxableSupplyDate: invoice.taxableSupplyDate ?? undefined,
           variableSymbol: invoice.variableSymbol ?? undefined,
           orderNumber: invoice.orderNumber ?? undefined,
@@ -427,16 +525,18 @@ export class InvoicePdfService {
           reverseCharge: invoice.reverseCharge,
           iban: iban ?? undefined,
           exchangeRate: invoice.exchangeRate ? Number(invoice.exchangeRate) : undefined,
-          software: "Billanta",
+          software: brandCreditFor(tenant, "cs", "pdf") ? BRAND_NAME : undefined,
         })
       : null;
+    const sid = sidWith(invoice.dueDate ?? undefined);
 
-    if (payable && iban && invoice.paymentMethod === "bank_transfer") {
-      // After a partial payment the QR asks only for what is left.
-      const amount =
-        Math.max(0, Math.round((totals.totalWithVat - Number(invoice.amountPaid ?? 0)) * 100) / 100) || totals.totalWithVat;
+    // After a partial payment the QR asks only for what is left; a paid document
+    // gets no payment code at all (it used to ask for the full amount again).
+    const amount =
+      invoice.status === "paid" ? 0 : Math.max(0, Math.round((totals.totalWithVat - Number(invoice.amountPaid ?? 0)) * 100) / 100);
+    if (payable && amount > 0 && iban && invoice.paymentMethod === "bank_transfer") {
       const scheme = paymentQrScheme({ payeeIban: iban, currency: invoice.currency, buyerCountry: contact.addressCountry });
-      const bysquare = scheme === "pay_by_square" ? this.payBySquare(invoice, tenant, iban, amount) : null;
+      const bysquare = scheme === "pay_by_square" ? this.payBySquare(invoice, tenant, iban, amount, dueDate) : null;
       if (bysquare) {
         return { png: await QRCode.toBuffer(bysquare, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" }), kind: "pay_by_square" };
       }
@@ -445,21 +545,28 @@ export class InvoicePdfService {
         amount,
         currency: invoice.currency,
         variableSymbol: invoice.variableSymbol ?? undefined,
-        dueDate: invoice.dueDate ?? undefined,
+        dueDate,
         message: invoice.invoiceNumber ?? undefined,
-        invoice: sid ? qrInvoiceForSpayd(sid) : undefined,
+        invoice: sid ? qrInvoiceForSpayd(sidWith(dueDate)!) : undefined,
       });
       return { png: await QRCode.toBuffer(spayd, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" }), kind: "spayd" };
     }
-    if (!sid) return null;
+    if (!sid || mode === "payment_only") return null;
     return { png: await QRCode.toBuffer(sid, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" }), kind: "invoice" };
+  }
+
+  /** A code that opens the invoice's web page; a draft has no working page yet. */
+  private async buildLinkQr(invoice: InvoiceRow, tenant: TenantRow, lang: Lang): Promise<Buffer | null> {
+    if (!invoice.invoiceNumber || !invoice.publicToken) return null;
+    const url = `${siteUrl()}/${lang}/i/${invoiceLinkOf(tenant, invoice)}`;
+    return QRCode.toBuffer(url, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" });
   }
 
   /**
    * PAY by square validates the IBAN and BIC, SPAYD does not. A bad account
    * on file must not break the whole PDF, so the caller falls back to SPAYD.
    */
-  private payBySquare(invoice: InvoiceRow, tenant: TenantRow, iban: string, amount: number): string | null {
+  private payBySquare(invoice: InvoiceRow, tenant: TenantRow, iban: string, amount: number, dueDate: Date | undefined): string | null {
     try {
       return generatePayBySquareString({
         iban,
@@ -467,7 +574,7 @@ export class InvoicePdfService {
         amount,
         currency: invoice.currency,
         variableSymbol: invoice.variableSymbol ?? undefined,
-        dueDate: invoice.dueDate ?? undefined,
+        dueDate,
         message: invoice.invoiceNumber ?? undefined,
         invoiceId: invoice.invoiceNumber ?? undefined,
         beneficiaryName: tenant.legalName,
@@ -532,10 +639,22 @@ export class InvoicePdfService {
     doc.font(BOLD).fontSize(8).fillColor(MUTED).text(t.supplier.toUpperCase(), 50, startY);
     doc.font(BOLD).fontSize(10).fillColor("black").text(tenant.legalName, 50, doc.y + 2, { width: 240 });
     doc.font(REGULAR).fontSize(9);
-    this.renderAddressLines(doc, tenant.addressStreet, tenant.addressCity, tenant.addressPostalCode, 50);
+    this.renderAddressLines(doc, tenant.addressStreet, tenant.addressCity, displayPostalCode(tenant.addressPostalCode, tenantCountry(tenant)), 50);
+    // Once the buyer's country is printed, the seller's is too, so a foreign reader sees both sides.
+    const buyerCountry = contact.addressCountry?.toUpperCase();
+    const sellerCountry = tenantCountry(tenant);
+    const docLang: Lang = invoice.language === "sk" || invoice.language === "en" ? invoice.language : "cs";
+    const foreignBuyer = !!buyerCountry && buyerCountry !== sellerCountry;
+    if (foreignBuyer) doc.text(countryName(sellerCountry, docLang), 50);
     if (tenant.ico) doc.text(`${t.ico}: ${tenant.ico}`, 50);
-    if (tenant.dic) doc.text(`${t.dic}: ${tenant.dic}`, 50);
+    // A Czech DIČ reads as "VAT payer" to most accountants, so a non-payer prints it only for a buyer
+    // abroad, where an EU reverse charge needs it. A Slovak DIČ is the
+    // income tax number, distinct from the IČ DPH, so it stays.
+    const ownDic = tenant.dicVatPayer || sellerCountry !== "CZ" || foreignBuyer;
+    if (tenant.dic && ownDic) doc.text(`${t.dic}: ${tenant.dic}`, 50);
     if (!tenant.dicVatPayer) doc.text(t.nonVatPayer, 50);
+    // The trade or commercial register entry describes the seller, so it sits with the seller.
+    if (tenant.registryNote) doc.text(fillTemplate(tenant.registryNote, vars), 50, doc.y, { width: 240 });
     if (tenant.email) doc.text(tenant.email, 50);
     if (tenant.phone) doc.text(tenant.phone, 50);
     const leftEnd = doc.y;
@@ -543,7 +662,9 @@ export class InvoicePdfService {
     doc.font(BOLD).fontSize(8).fillColor(MUTED).text(t.customer.toUpperCase(), right, startY);
     doc.font(BOLD).fontSize(10).fillColor("black").text(contact.legalName, right, doc.y + 2, { width: 240 });
     doc.font(REGULAR).fontSize(9);
-    this.renderAddressLines(doc, contact.addressStreet, contact.addressCity, contact.addressPostalCode, right);
+    this.renderAddressLines(doc, contact.addressStreet, contact.addressCity, displayPostalCode(contact.addressPostalCode, contact.addressCountry), right);
+    // A buyer abroad gets the country, in the document language.
+    if (foreignBuyer && buyerCountry) doc.text(countryName(buyerCountry, docLang), right);
     if (contact.ico) doc.text(`${t.ico}: ${contact.ico}`, right);
     if (contact.dic) doc.text(`${t.dic}: ${contact.dic}`, right);
     if (invoice.buyerContactPerson) doc.text(`${t.contactPerson}: ${invoice.buyerContactPerson}`, right, doc.y, { width: 240 });
@@ -554,7 +675,12 @@ export class InvoicePdfService {
     doc.moveTo(50, y - 8).lineTo(545, y - 8).strokeColor("#e5e7eb").stroke();
     const fmt = (d: Date | null) => (d ? new Date(d).toLocaleDateString("cs-CZ") : "–");
     const left: Array<[string, string]> = [[t.issueDate, fmt(invoice.issueDate)]];
-    if (invoice.documentType === "invoice" || invoice.documentType === "credit_note") {
+    // DUZP belongs on tax documents only (§29 ZDPH); a non-payer's invoice is
+    // not one, and printing the date there only raises questions.
+    const taxDocument = invoice.documentType === "invoice" || invoice.documentType === "credit_note";
+    // An identified person's domestic invoice is not a tax document either; only the EU reverse
+    // charge one is.
+    if (taxDocument && (tenant.dicVatPayer || (tenant.vatStatus === "identified" && !!reverseChargeNoteKind(invoice, tenant, contact)))) {
       left.push([t.taxableSupplyDate, fmt(invoice.taxableSupplyDate ?? invoice.issueDate)]);
     }
     if (invoice.dueDate) left.push([invoice.documentType === "quote" ? t.validUntil : t.dueDate, fmt(invoice.dueDate)]);
@@ -569,14 +695,6 @@ export class InvoicePdfService {
     const rightRows: Array<[string, string]> = [];
     if (invoice.documentType !== "quote") {
       rightRows.push([t.paymentMethod, invoice.paymentMethodLabel || t.methods[invoice.paymentMethod]]);
-      if (invoice.paymentMethod === "bank_transfer") {
-        if (tenant.bankAccountNumber) {
-          rightRows.push([t.account, `${tenant.bankAccountNumber}/${tenant.bankAccountBankCode ?? ""}`]);
-        }
-        const iban = this.iban(tenant);
-        if (iban) rightRows.push(["IBAN", iban]);
-        if (tenant.bankAccountSwift) rightRows.push(["SWIFT", tenant.bankAccountSwift]);
-      }
       if (invoice.variableSymbol) rightRows.push([t.vs, invoice.variableSymbol]);
       if (invoice.constantSymbol) rightRows.push([t.ks, invoice.constantSymbol]);
       if (invoice.specificSymbol) rightRows.push([t.ss, invoice.specificSymbol]);
@@ -618,14 +736,18 @@ export class InvoicePdfService {
     t: (typeof L)[Lang],
     lineItems: LineItemRow[],
     invoice: InvoiceRow,
+    showVat: boolean,
+    lumpSum = false,
   ): void {
     const currency = invoice.currency;
     const hasDiscount = lineItems.some((i) => Number(i.discountPercent) !== 0);
+    // Without the VAT column the description takes its 40pt, without quantity and unit price all the room.
+    const shift = showVat ? 0 : 40;
     const columns = {
-      description: { x: 50, width: hasDiscount ? 185 : 225 },
-      quantity: { x: hasDiscount ? 235 : 275, width: 60 },
-      unitPrice: { x: hasDiscount ? 300 : 335, width: hasDiscount ? 75 : 80 },
-      discount: { x: 375, width: 40 },
+      description: { x: 50, width: lumpSum ? 405 : (hasDiscount ? 185 : 225) + shift },
+      quantity: { x: (hasDiscount ? 235 : 275) + shift, width: 60 },
+      unitPrice: { x: (hasDiscount ? 300 : 335) + shift, width: hasDiscount ? 75 : 80 },
+      discount: { x: 375 + shift, width: 40 },
       vatRate: { x: 415, width: 40 },
       lineTotal: { x: 455, width: 90 },
     };
@@ -636,10 +758,12 @@ export class InvoicePdfService {
       doc.rect(50, top - 4, 495, twoLine ? 27 : 18).fill("#f3f4f6");
       doc.font(BOLD).fontSize(8).fillColor(MUTED);
       doc.text(stacked(t.description), columns.description.x + 4, top);
-      doc.text(stacked(t.quantity), columns.quantity.x, top, { width: columns.quantity.width, align: "right" });
-      doc.text(stacked(t.unitPrice), columns.unitPrice.x, top, { width: columns.unitPrice.width, align: "right" });
+      if (!lumpSum) {
+        doc.text(stacked(t.quantity), columns.quantity.x, top, { width: columns.quantity.width, align: "right" });
+        doc.text(stacked(t.unitPrice), columns.unitPrice.x, top, { width: columns.unitPrice.width, align: "right" });
+      }
       if (hasDiscount) doc.text(stacked(t.discount), columns.discount.x, top, { width: columns.discount.width, align: "right" });
-      doc.text(stacked(t.vat), columns.vatRate.x, top, { width: columns.vatRate.width, align: "right" });
+      if (showVat) doc.text(stacked(t.vat), columns.vatRate.x, top, { width: columns.vatRate.width, align: "right" });
       doc.text(stacked(t.total), columns.lineTotal.x, top, { width: columns.lineTotal.width - 4, align: "right" });
       return top + (twoLine ? 29 : 20);
     };
@@ -665,21 +789,23 @@ export class InvoicePdfService {
           .text(item.code, columns.description.x + 4, doc.y, { width: columns.description.width - 4 });
         doc.fontSize(9).fillColor("black");
       }
-      doc.text(`${this.formatNumber(quantity)}${item.unit ? ` ${item.unit}` : ""}`, columns.quantity.x, y, {
-        width: columns.quantity.width,
-        align: "right",
-      });
-      doc.text(this.formatAmount(Number(item.unitPrice), currency), columns.unitPrice.x, y, {
-        width: columns.unitPrice.width,
-        align: "right",
-      });
+      if (!lumpSum) {
+        doc.text(`${this.formatNumber(quantity)}${item.unit ? ` ${item.unit}` : ""}`, columns.quantity.x, y, {
+          width: columns.quantity.width,
+          align: "right",
+        });
+        doc.text(this.formatAmount(Number(item.unitPrice), currency), columns.unitPrice.x, y, {
+          width: columns.unitPrice.width,
+          align: "right",
+        });
+      }
       if (hasDiscount) {
         doc.text(Number(item.discountPercent) ? `${this.formatNumber(Number(item.discountPercent))}%` : "", columns.discount.x, y, {
           width: columns.discount.width,
           align: "right",
         });
       }
-      doc.text(`${vatRatePercent}%`, columns.vatRate.x, y, { width: columns.vatRate.width, align: "right" });
+      if (showVat) doc.text(`${vatRatePercent}%`, columns.vatRate.x, y, { width: columns.vatRate.width, align: "right" });
       doc.text(this.formatAmount(lineBase(item), currency), columns.lineTotal.x, y, {
         width: columns.lineTotal.width - 4,
         align: "right",
@@ -697,16 +823,19 @@ export class InvoicePdfService {
     invoice: InvoiceRow,
     accent: string,
     home: HomeCurrency,
+    showVat: boolean,
   ): number {
     const currency = invoice.currency;
     if (doc.y > 650) doc.addPage();
     const x = 300;
     let y = doc.y;
     const top = y;
-    doc.font(BOLD).fontSize(8).fillColor(MUTED).text(t.vatRecap.toUpperCase(), x, y);
-    y += 14;
+    if (showVat) {
+      doc.font(BOLD).fontSize(8).fillColor(MUTED).text(t.vatRecap.toUpperCase(), x, y);
+      y += 14;
+    }
     doc.font(REGULAR).fontSize(9).fillColor("black");
-    for (const entry of totals.byRate) {
+    for (const entry of showVat ? totals.byRate : []) {
       // Bilingual labels can wrap, so each row grows to its tallest cell.
       const cells: Array<[string, number, number, "left" | "right"]> = [
         [`${t.base} ${entry.vatRatePercent}%`, x, 80, "left"],
@@ -722,7 +851,10 @@ export class InvoicePdfService {
     }
     y += 6;
     doc.rect(x, y - 4, 245, 26).fill(tintOf(accent));
-    const totalLabel = invoice.documentType === "quote" ? t.totalQuote : t.totalToPay;
+    // Paid or partly paid: "Celkem", then what was paid and what is left (0 once
+    // settled), so a paid invoice no longer reads "Celkem k úhradě" with the full sum.
+    const paid = invoice.documentType === "quote" ? 0 : invoice.status === "paid" ? totals.totalWithVat : Number(invoice.amountPaid ?? 0);
+    const totalLabel = invoice.documentType === "quote" ? t.totalQuote : paid > 0 || !asksForPayment(invoice, totals) ? t.total : t.totalToPay;
     const bilingual = totalLabel.includes(BILINGUAL_SEPARATOR);
     doc
       .font(BOLD)
@@ -732,9 +864,7 @@ export class InvoicePdfService {
     doc.fontSize(12).text(this.formatAmount(totals.totalWithVat, currency), x + 110, y + 3, { width: 127, align: "right" });
     doc.fillColor("black");
     y += 34;
-    // Partial payment (deposit received): state what is paid and what is left.
-    const paid = Number(invoice.amountPaid ?? 0);
-    if (paid > 0 && invoice.documentType !== "quote" && paid < totals.totalWithVat) {
+    if (paid > 0) {
       doc.font(REGULAR).fontSize(9).fillColor("black");
       doc.text(stacked(t.paidSoFar), x + 8, y, { width: 120 });
       doc.text(`−${this.formatAmount(paid, currency)}`, x + 110, y, { width: 127, align: "right" });
@@ -770,12 +900,60 @@ export class InvoicePdfService {
     return top;
   }
 
-  /** Sits to the left of the totals block, level with its top (`top`). */
-  private renderPaymentQr(doc: PDFKit.PDFDocument, label: string, qrPngBuffer: Buffer, top: number): void {
-    doc.font(BOLD).fontSize(8).fillColor(MUTED).text(label, 50, top);
-    doc.image(qrPngBuffer, 50, top + 12, { width: 100, height: 100 });
+  /** Account, IBAN and SWIFT of a bank transfer: they go next to the QR code that pays into them. */
+  private bankRows(t: (typeof L)[Lang], invoice: InvoiceRow, tenant: TenantRow, contact: ContactRow): Array<[string, string]> {
+    if (invoice.documentType === "quote" || invoice.paymentMethod !== "bank_transfer") return [];
+    const rows: Array<[string, string]> = [];
+    if (tenant.bankAccountNumber) rows.push([t.account, `${tenant.bankAccountNumber}/${tenant.bankAccountBankCode ?? ""}`]);
+    // A domestic payment in the home currency only needs the local account
+    // number; IBAN and SWIFT are for payers abroad or in another currency.
+    const buyerCountry = contact.addressCountry?.toUpperCase();
+    const domestic = invoice.currency === tenantHomeCurrencyOf(tenant) && (!buyerCountry || buyerCountry === tenantCountry(tenant));
+    if (domestic && rows.length) return rows;
+    const iban = this.iban(tenant);
+    if (iban) rows.push(["IBAN", iban]);
+    if (tenant.bankAccountSwift) rows.push(["SWIFT", tenant.bankAccountSwift]);
+    return rows;
+  }
+
+  /**
+   * The bank details and the QR code side by side, to the left of the totals
+   * block and level with its top (`top`). The rows stack label over value so
+   * they fit beside the code without making the block taller than the code.
+   */
+  private renderPaymentBlock(
+    doc: PDFKit.PDFDocument,
+    rows: Array<[string, string]>,
+    qr: { label: string; png: Buffer } | { label: string; pending: string } | null,
+    linkQr: { label: string; png: Buffer } | null,
+    top: number,
+  ): void {
+    const codes = [qr, linkQr].filter((code) => code !== null);
+    if (!rows.length && !codes.length) return;
+    const size = 90;
+    codes.forEach((code, i) => {
+      const cx = 50 + i * (size + 15);
+      doc.font(BOLD).fontSize(8).fillColor(MUTED).text(code.label, cx, top, { width: codes.length > 1 ? size + 10 : 240, lineBreak: false });
+      if ("png" in code) {
+        doc.image(code.png, cx, top + 12, { width: size, height: size });
+      } else {
+        doc.save().roundedRect(cx, top + 12, size, size, 4).dash(3, { space: 3 }).strokeColor(MUTED).stroke().undash().restore();
+        doc.font(REGULAR).fontSize(7.5).fillColor(MUTED).text(code.pending, cx + 8, top + 12 + size / 2 - 12, { width: size - 16, align: "center" });
+      }
+    });
+    // Two codes fill the width beside the totals, so the bank details go under them.
+    const below = codes.length > 1;
+    const x = codes.length === 1 ? 50 + size + 10 : 50;
+    const width = 290 - x;
+    let y = below ? top + 12 + size + 10 : codes.length ? top + 14 : top;
+    for (const [label, value] of rows) {
+      doc.font(REGULAR).fontSize(7.5).fillColor(MUTED).text(label, x, y, { width });
+      y += doc.heightOfString(label, { width }) + 1;
+      doc.font(BOLD).fontSize(9).fillColor("black").text(value, x, y, { width });
+      y += doc.heightOfString(value, { width }) + 5;
+    }
     doc.fillColor("black");
-    doc.y = Math.max(doc.y, top + 120);
+    doc.y = Math.max(doc.y, y, codes.length ? top + 12 + size + 8 : top);
   }
 
   /**
@@ -804,7 +982,6 @@ export class InvoicePdfService {
         : null,
       fill(invoice.noteBelow),
       invoice.issuedByName ? `${t.issuedBy}: ${invoice.issuedByName}` : null,
-      fill(tenant.registryNote),
     ].filter((n): n is string => !!n);
     if (notes.length === 0) return;
     doc.moveDown(1);
@@ -842,19 +1019,9 @@ export class InvoicePdfService {
     doc.fillColor("black");
   }
 
-  /** The Billanta "B" tile from components/brand-mark.tsx, `size` points square. */
+  /** The Billanta logo mark (public/brand/mark.png), `size` points square. */
   private renderBrandMark(doc: PDFKit.PDFDocument, x: number, y: number, size: number): void {
-    const gradient = doc.linearGradient(x, y, x + size, y + size).stop(0, "#6366f1").stop(1, "#7c3aed");
-    doc.save();
-    doc.roundedRect(x, y, size, size, size / 4).fill(gradient);
-    doc.translate(x, y).scale(size / 32);
-    doc
-      .path("M10.5 7.5h6.3a4.25 4.25 0 0 1 0 8.5H10.5zM10.5 16h7.4a4.5 4.5 0 0 1 0 9h-7.4z")
-      .lineWidth(2.8)
-      .lineJoin("round")
-      .stroke("#ffffff");
-    doc.circle(24.6, 8.4, 2.6).fill("#4ade80");
-    doc.restore();
+    doc.image(BRAND_MARK_PNG, x, y, { width: size, height: size });
   }
 
   private formatNumber(n: number): string {

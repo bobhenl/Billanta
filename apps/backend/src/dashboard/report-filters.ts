@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isRemindableDocument } from "../invoices/invoice-reminders.util";
 
 /** Statuses the report filter offers; "unpaid" = issued, not paid yet; "overdue" = unpaid past due. */
 export const REPORT_STATUSES = ["paid", "unpaid", "overdue", "cancelled"] as const;
@@ -53,7 +54,7 @@ const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDat
 
 /** Same rule as `isOverdue` in invoices.service: unpaid and due before today. */
 export function isOverdueDoc(doc: Pick<FilterableDoc, "status" | "dueDate" | "documentType">, today: Date): boolean {
-  return doc.status === "issued" && doc.documentType !== "quote" && doc.dueDate != null && doc.dueDate < startOfDay(today);
+  return doc.status === "issued" && isRemindableDocument(doc.documentType) && doc.dueDate != null && doc.dueDate < startOfDay(today);
 }
 
 export function matchesFilters(doc: FilterableDoc, filters: ReportFilters, today = new Date()): boolean {

@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Check, Loader2, X } from 'lucide-react';
+import { Check, ChevronDown, Loader2, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
-import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { formatDate } from '@/lib/invoice-ui';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 import { decideTeacher, suspendSchool } from './actions';
 
@@ -73,6 +73,61 @@ function TeacherCard({ teacher: x }: { teacher: AdminTeacher }) {
     });
 
   const row = 'grid gap-0.5 sm:grid-cols-[9rem_1fr] sm:gap-3';
+
+  const controls = (
+    <>
+      {x.status === 'pending' && (
+        <label className="block text-sm font-medium">
+          {t('domain')}
+          <input value={domain} onChange={(e) => setDomain(e.target.value)} maxLength={200} placeholder="skola.cz" className={`${inputClass} mt-1 h-10`} />
+          <span className="mt-1 block text-xs font-normal text-muted-foreground">{t('domainHint')}</span>
+        </label>
+      )}
+      <label className="block text-sm font-medium">
+        {t('note')}
+        <textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={1000} rows={2} className={`${inputClass} mt-1`} />
+        <span className="mt-1 block text-xs font-normal text-muted-foreground">{t('noteHint')}</span>
+      </label>
+      <div className="flex flex-wrap gap-2">
+        {x.status !== 'approved' && (
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() => run(() => decideTeacher(x.id, 'approve', note.trim(), domain.trim()), t('approved'))}
+            className={cn(buttonClass.primary, 'h-10')}
+          >
+            {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+            {t('approve')}
+          </button>
+        )}
+        {x.status !== 'rejected' && (
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() => {
+              if (x.status === 'approved' && !window.confirm(t('rejectConfirm', { name: x.name }))) return;
+              run(() => decideTeacher(x.id, 'reject', note.trim(), ''), t('rejected'));
+            }}
+            className={cn(buttonClass.secondary, 'h-10')}
+          >
+            <X className="h-4 w-4" />
+            {t('reject')}
+          </button>
+        )}
+        <button
+          type="button"
+          disabled={pending}
+          onClick={() => {
+            if (!s.suspendedAt && !window.confirm(t('suspendConfirm', { school: s.name }))) return;
+            run(() => suspendSchool(s.id, !s.suspendedAt, note.trim()), s.suspendedAt ? t('unsuspended') : t('suspendedDone'));
+          }}
+          className={cn(buttonClass.ghost, 'h-10')}
+        >
+          {s.suspendedAt ? t('unsuspend') : t('suspend')}
+        </button>
+      </div>
+    </>
+  );
 
   return (
     <li className="rounded-xl border border-border bg-card p-4">
@@ -154,58 +209,18 @@ function TeacherCard({ teacher: x }: { teacher: AdminTeacher }) {
         )}
       </dl>
 
-      <div className="mt-4 space-y-3 border-t border-border pt-4">
-        {x.status === 'pending' && (
-          <label className="block text-sm font-medium">
-            {t('domain')}
-            <input value={domain} onChange={(e) => setDomain(e.target.value)} maxLength={200} placeholder="skola.cz" className={`${inputClass} mt-1`} />
-            <span className="mt-1 block text-xs font-normal text-muted-foreground">{t('domainHint')}</span>
-          </label>
-        )}
-        <label className="block text-sm font-medium">
-          {t('note')}
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={1000} rows={2} className={`${inputClass} mt-1`} />
-          <span className="mt-1 block text-xs font-normal text-muted-foreground">{t('noteHint')}</span>
-        </label>
-        <div className="flex flex-wrap gap-2">
-          {x.status !== 'approved' && (
-            <button
-              type="button"
-              disabled={pending}
-              onClick={() => run(() => decideTeacher(x.id, 'approve', note.trim(), domain.trim()), t('approved'))}
-              className={buttonClass.primary}
-            >
-              {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-              {t('approve')}
-            </button>
-          )}
-          {x.status !== 'rejected' && (
-            <button
-              type="button"
-              disabled={pending}
-              onClick={() => {
-                if (x.status === 'approved' && !window.confirm(t('rejectConfirm', { name: x.name }))) return;
-                run(() => decideTeacher(x.id, 'reject', note.trim(), ''), t('rejected'));
-              }}
-              className={buttonClass.secondary}
-            >
-              <X className="h-4 w-4" />
-              {t('reject')}
-            </button>
-          )}
-          <button
-            type="button"
-            disabled={pending}
-            onClick={() => {
-              if (!s.suspendedAt && !window.confirm(t('suspendConfirm', { school: s.name }))) return;
-              run(() => suspendSchool(s.id, !s.suspendedAt, note.trim()), s.suspendedAt ? t('unsuspended') : t('suspendedDone'));
-            }}
-            className={buttonClass.ghost}
-          >
-            {s.suspendedAt ? t('unsuspend') : t('suspend')}
-          </button>
-        </div>
-      </div>
+      {x.status === 'pending' ? (
+        <div className="mt-4 space-y-3 border-t border-border pt-4">{controls}</div>
+      ) : (
+        // A decided application is rarely revisited, so its controls stay folded.
+        <details className="group mt-4 border-t border-border pt-3">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+            {t('manage')}
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden="true" />
+          </summary>
+          <div className="mt-3 space-y-3">{controls}</div>
+        </details>
+      )}
     </li>
   );
 }

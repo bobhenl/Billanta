@@ -8,6 +8,7 @@ import { Link } from '@/i18n/navigation';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
 import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 const PATH = '/invoicing-for-beginners';
 
@@ -36,7 +37,7 @@ export default async function BeginnersPage({ params }: { params: Promise<{ loca
   const countries = locale === 'sk' ? (['sk', 'cz'] as const) : (['cz', 'sk'] as const);
 
   return (
-    <section className="container max-w-5xl py-10 sm:py-14">
+    <section className="container max-w-5xl py-12 sm:py-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd([
@@ -48,14 +49,14 @@ export default async function BeginnersPage({ params }: { params: Promise<{ loca
         ])}
       />
       <PageIntro eyebrow={t('eyebrow')} title={t('title')} lead={t('lead')}>
-        <Link href="/signup" className={buttonClass.primary}>
+        <Link href="/signup" className={cn(buttonClass.primary, 'px-6 py-3')}>
           {tc('signup')}
         </Link>
-        <Link href={{ pathname: '/demo', query: { for: 'beginners' } }} className={buttonClass.secondary}>
+        <Link href={{ pathname: '/demo', query: { for: 'beginners' } }} className={cn(buttonClass.secondary, 'px-6 py-3')}>
           <PlayCircle className="h-4 w-4" aria-hidden="true" />
           {tc('demo')}
         </Link>
-        <ShareQr />
+        <ShareQr className="py-3" />
       </PageIntro>
 
       <h2 className="mt-12 text-xl font-bold tracking-tight">{t('topicsTitle')}</h2>

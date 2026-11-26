@@ -3,7 +3,7 @@ import QRCode from "qrcode";
 import { describe, expect, it, vi } from "vitest";
 import * as schema from "../../drizzle/schema";
 import { computeVatBreakdown } from "./invoice-total.util";
-import { bilingualLabels, InvoicePdfService, mentionsReverseCharge } from "./invoice-pdf.service";
+import { bilingualLabels, InvoicePdfService, mentionsReverseCharge, displayPostalCode } from "./invoice-pdf.service";
 
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 type ContactRow = typeof schema.contacts.$inferSelect;
@@ -187,13 +187,21 @@ describe("InvoicePdfService.generate", () => {
     expect(broken.subarray(0, 5).toString("latin1")).toBe("%PDF-");
   });
 
-  it("throws if the invoice has no invoiceNumber (never issued)", async () => {
+  it("renders an unissued draft as a stamped preview without a payment QR code", async () => {
     const lineItems = makeLineItems();
     const totals = computeVatBreakdown(lineItems);
+    const qr = vi.spyOn(QRCode, "toBuffer");
+    const text = vi.spyOn(PDFDocument.prototype, "text");
 
-    await expect(
-      service.generate(makeInvoice({ invoiceNumber: null }), makeContact(), makeTenant(), lineItems, totals),
-    ).rejects.toThrow(/invoiceNumber/);
+    const pdf = await service.generate(makeInvoice({ invoiceNumber: null, status: "draft" }), makeContact(), makeTenant({ bankAccountIban: "CZ6508000000192000145399" }), lineItems, totals);
+
+    expect(pdf.subarray(0, 5).toString("latin1")).toBe("%PDF-");
+    expect(qr).not.toHaveBeenCalled();
+    const written = text.mock.calls.map((c) => String(c[0]));
+    expect(written).toContain("NÁHLED – nevystaveno");
+    expect(written.some((w) => w.includes("(koncept)"))).toBe(true);
+    qr.mockRestore();
+    text.mockRestore();
   });
 });
 
@@ -297,5 +305,229 @@ describe("InvoicePdfService.generateLetter", () => {
     });
     expect(pdf.subarray(0, 5).toString("latin1")).toBe("%PDF-");
     expect(pdf.subarray(-6).toString("latin1").trim()).toBe("%%EOF");
+  });
+});
+
+describe("InvoicePdfService VAT columns", () => {
+  async function lines(dicVatPayer: boolean, vatRate: string) {
+    const text = vi.spyOn(PDFDocument.prototype, "text");
+    const items = makeLineItems().map((item) => ({ ...item, vatRate }));
+    await new InvoicePdfService().generate(makeInvoice(), makeContact(), makeTenant({ dicVatPayer }), items, computeVatBreakdown(items));
+    const out = text.mock.calls.map((c) => String(c[0]));
+    text.mockRestore();
+    return out;
+  }
+
+  it("leaves the VAT column and summary off a non-VAT payer's invoice", async () => {
+    const payer = await lines(true, "21");
+    expect(payer).toContain("REKAPITULACE DPH");
+    expect(payer).toContain("21%");
+    const nonPayer = await lines(false, "0");
+    expect(nonPayer).not.toContain("REKAPITULACE DPH");
+    expect(nonPayer).not.toContain("0%");
+    expect(nonPayer).not.toContain("DPH");
+    // VAT charged by mistake is still shown, not hidden.
+    expect(await lines(false, "21")).toContain("REKAPITULACE DPH");
+  });
+
+  it("bills a non-payer's whole jobs without quantity and unit price, unless a tax document needs them", async () => {
+    async function headers(tenant: Partial<TenantRow>, quantity: string, contact: ContactRow = makeContact()) {
+      const text = vi.spyOn(PDFDocument.prototype, "text");
+      const items = makeLineItems().map((item) => ({ ...item, quantity, vatRate: "0" }));
+      await new InvoicePdfService().generate(makeInvoice(), contact, makeTenant(tenant), items, computeVatBreakdown(items));
+      const out = text.mock.calls.map((c) => String(c[0]));
+      text.mockRestore();
+      return out;
+    }
+    const lump = await headers({ dicVatPayer: false, vatStatus: "non_payer" } as Partial<TenantRow>, "1");
+    expect(lump).not.toContain("Množství");
+    expect(lump).not.toContain("Cena/j.");
+    expect(await headers({ dicVatPayer: false, vatStatus: "non_payer" } as Partial<TenantRow>, "3")).toContain("Množství");
+    expect(await headers({ dicVatPayer: true }, "1")).toContain("Množství");
+    // An identified person's service to an EU business is a tax document.
+    const euBuyer = makeContact({ addressCountry: "DE", dic: "DE123456789", ico: null } as Partial<ContactRow>);
+    expect(await headers({ dicVatPayer: false, vatStatus: "identified" } as Partial<TenantRow>, "1", euBuyer)).toContain("Množství");
+  });
+});
+
+describe("InvoicePdfService paid documents and foreign buyers", () => {
+  async function render(invoice: InvoiceRow, contact: ContactRow = makeContact()) {
+    const text = vi.spyOn(PDFDocument.prototype, "text");
+    const qr = vi.spyOn(QRCode, "toBuffer");
+    const lineItems = makeLineItems();
+    const totals = computeVatBreakdown(lineItems);
+    await new InvoicePdfService().generate(invoice, contact, makeTenant({ bankAccountIban: "CZ6508000000192000145399" }), lineItems, totals);
+    const out = { lines: text.mock.calls.map((c) => String(c[0])), qr: qr.mock.calls.map((c) => String(c[0])), total: totals.totalWithVat };
+    text.mockRestore();
+    qr.mockRestore();
+    return out;
+  }
+
+  it("asks a paid invoice for nothing: no payment QR, and zero left to pay", async () => {
+    const paid = await render(makeInvoice({ status: "paid" }));
+    expect(paid.qr.some((p) => p.startsWith("SPD*"))).toBe(false);
+    expect(paid.qr.some((p) => p.startsWith("SID*"))).toBe(true);
+    expect(paid.lines).toContain("Celkem");
+    expect(paid.lines).not.toContain("Celkem k úhradě");
+    expect(paid.lines).toContain("Zbývá uhradit");
+    expect(paid.lines.some((l) => /^0,00\s/.test(l))).toBe(true);
+  });
+
+  it("keeps the payment QR for the rest after a partial payment", async () => {
+    const partial = await render(makeInvoice({ amountPaid: "100.00" }));
+    expect(partial.qr.find((p) => p.startsWith("SPD*"))).toMatch(new RegExp(`AM:${(partial.total - 100).toFixed(2)}\*`));
+    expect(partial.lines).toContain("Zbývá uhradit");
+    const unpaid = await render(makeInvoice());
+    expect(unpaid.lines).toContain("Celkem k úhradě");
+    expect(unpaid.lines).not.toContain("Zbývá uhradit");
+  });
+
+  it("prints the QR code the company chose in Settings → Faktury", async () => {
+    async function qrFor(pdfQr: string, invoice: InvoiceRow = makeInvoice()) {
+      const qr = vi.spyOn(QRCode, "toBuffer");
+      const lineItems = makeLineItems();
+      const tenant = makeTenant({ bankAccountIban: "CZ6508000000192000145399", invoiceFormPrefs: { pdfQr } } as Partial<TenantRow>);
+      await new InvoicePdfService().generate(invoice, makeContact(), tenant, lineItems, computeVatBreakdown(lineItems));
+      const out = qr.mock.calls.map((c) => String(c[0]));
+      qr.mockRestore();
+      return out;
+    }
+    expect((await qrFor("auto"))[0]).toMatch(/^SPD\*/);
+    const link = await qrFor("link");
+    expect(link).toHaveLength(1);
+    expect(link[0]).toMatch(/\/cs\/i\/.*22222222-2222-2222-2222-222222222222/);
+    // No public token, no page to link to.
+    expect(await qrFor("link", makeInvoice({ publicToken: null } as unknown as Partial<InvoiceRow>))).toEqual([]);
+    expect(await qrFor("off")).toEqual([]);
+    // Both: the payment first, the page second; a paid one keeps QR Faktura next to the link.
+    const both = await qrFor("auto_link");
+    expect(both).toHaveLength(2);
+    expect(both[0]).toMatch(/^SPD\*/);
+    expect(both[1]).toMatch(/\/cs\/i\/.*22222222-2222-2222-2222-222222222222/);
+    const paidBoth = await qrFor("auto_link", makeInvoice({ status: "paid" }));
+    expect(paidBoth[0]).toMatch(/^SID\*/);
+    expect(paidBoth[1]).toMatch(/\/cs\/i\//);
+    expect(await qrFor("auto_link", makeInvoice({ invoiceNumber: null, status: "draft" }))).toEqual([]);
+    // Nothing left to pay: "payment only" prints no QR Faktura instead.
+    expect((await qrFor("payment_only"))[0]).toMatch(/^SPD\*/);
+    expect(await qrFor("payment_only", makeInvoice({ status: "paid" }))).toEqual([]);
+    expect((await qrFor("auto", makeInvoice({ status: "paid" })))[0]).toMatch(/^SID\*/);
+  });
+
+  it("leaves the due date out of the payment QR unless the company asks, so the bank offers to pay now", async () => {
+    async function spayd(invoiceFormPrefs: Record<string, unknown>) {
+      const qr = vi.spyOn(QRCode, "toBuffer");
+      const lineItems = makeLineItems();
+      const tenant = makeTenant({ bankAccountIban: "CZ6508000000192000145399", invoiceFormPrefs } as Partial<TenantRow>);
+      await new InvoicePdfService().generate(makeInvoice(), makeContact(), tenant, lineItems, computeVatBreakdown(lineItems));
+      const out = qr.mock.calls.map((c) => String(c[0])).find((p) => p.startsWith("SPD*")) ?? "";
+      qr.mockRestore();
+      return out;
+    }
+    expect(await spayd({ pdfQrDueDate: true })).toMatch(/\*DT:\d{8}\*/);
+    const now = await spayd({});
+    expect(now).toMatch(/^SPD\*/);
+    // Banks read the date from the QR Faktura inside the payment code too.
+    expect(now).toContain("X-INV:");
+    expect(now).not.toMatch(/DT:/);
+    // A QR Faktura on its own is for bookkeeping and keeps the due date.
+    const qr = vi.spyOn(QRCode, "toBuffer");
+    const lineItems = makeLineItems();
+    const tenant = makeTenant({ bankAccountIban: "CZ6508000000192000145399", invoiceFormPrefs: {} } as Partial<TenantRow>);
+    await new InvoicePdfService().generate(makeInvoice({ status: "paid" }), makeContact(), tenant, lineItems, computeVatBreakdown(lineItems));
+    const sid = qr.mock.calls.map((c) => String(c[0])).find((p) => p.startsWith("SID*")) ?? "";
+    qr.mockRestore();
+    expect(sid).toMatch(/\*DT:\d{8}\*/);
+  });
+
+  it("prints IBAN only when the payer is abroad or pays in another currency", async () => {
+    const home = await render(makeInvoice(), makeContact({ addressCountry: "CZ" }));
+    expect(home.lines).toContain("123456/0300");
+    expect(home.lines).not.toContain("IBAN");
+    expect((await render(makeInvoice(), makeContact({ addressCountry: "DE" }))).lines).toContain("IBAN");
+    expect((await render(makeInvoice({ currency: "EUR", exchangeRate: "25.000000" }), makeContact({ addressCountry: "CZ" }))).lines).toContain("IBAN");
+  });
+
+  it("keeps the QR code's place on a draft preview without a payable code", async () => {
+    const draft = await render(makeInvoice({ invoiceNumber: null, status: "draft" }));
+    expect(draft.qr).toEqual([]);
+    expect(draft.lines).toContain("QR platba se doplní po vystavení");
+    expect((await render(makeInvoice())).lines).not.toContain("QR platba se doplní po vystavení");
+    const paid = await render(makeInvoice({ invoiceNumber: null, status: "pending_review", amountPaid: "1000000" }));
+    expect(paid.lines).toContain("QR Faktura se doplní po vystavení");
+    expect(paid.lines).not.toContain("QR platba se doplní po vystavení");
+  });
+
+  it("prints a Czech non-payer's own DIČ only for a buyer abroad", async () => {
+    async function supplierLines(tenant: Partial<TenantRow>, contact: ContactRow = makeContact()) {
+      const text = vi.spyOn(PDFDocument.prototype, "text");
+      const items = makeLineItems().map((item) => ({ ...item, vatRate: "0" }));
+      await new InvoicePdfService().generate(makeInvoice(), contact, makeTenant(tenant), items, computeVatBreakdown(items));
+      const out = text.mock.calls.map((c) => String(c[0]));
+      text.mockRestore();
+      return out;
+    }
+    const identified = { dicVatPayer: false, vatStatus: "identified", dic: "CZ0202284379" } as Partial<TenantRow>;
+    expect(await supplierLines(identified)).not.toContain("DIČ: CZ0202284379");
+    expect(await supplierLines({ dicVatPayer: true, dic: "CZ0202284379" })).toContain("DIČ: CZ0202284379");
+    const euBuyer = makeContact({ addressCountry: "DE", dic: "DE123456789", ico: null } as Partial<ContactRow>);
+    expect(await supplierLines(identified, euBuyer)).toContain("DIČ: CZ0202284379");
+    expect(await supplierLines(identified, makeContact({ addressCountry: "US", dic: null, ico: null } as Partial<ContactRow>))).toContain("DIČ: CZ0202284379");
+    const slovak = { dicVatPayer: false, vatStatus: "non_payer", dic: "2020123456", country: "SK" } as Partial<TenantRow>;
+    expect(await supplierLines(slovak, makeContact({ addressCountry: "SK" } as Partial<ContactRow>))).toContain("DIČ: 2020123456");
+
+    // DUZP only on a tax document: an identified person's EU reverse charge, not a domestic invoice.
+    expect(await supplierLines(identified)).not.toContain("DUZP");
+    expect(await supplierLines(identified, euBuyer)).toContain("DUZP");
+    expect(await supplierLines({ dicVatPayer: true })).toContain("DUZP");
+
+    // The register entry sits with the seller, above the items.
+    const note = "Fyzická osoba zapsaná v živnostenském rejstříku.";
+    const lines = await supplierLines({ ...identified, registryNote: note } as Partial<TenantRow>);
+    expect(lines.indexOf(note)).toBeGreaterThan(-1);
+    expect(lines.indexOf(note)).toBeLessThan(lines.indexOf("Popis"));
+    expect(lines.filter((l) => l === note)).toHaveLength(1);
+  });
+
+  it("prints a Czech or Slovak PSČ with the space, whatever the register gave", async () => {
+    expect((await render(makeInvoice(), makeContact({ addressPostalCode: "60200", addressCity: "Brno", addressCountry: "CZ" }))).lines).toContain("602 00 Brno");
+    expect(displayPostalCode("81101", "SK")).toBe("811 01");
+    expect(displayPostalCode("602 00", "CZ")).toBe("602 00");
+    expect(displayPostalCode("10115", "DE")).toBe("10115");
+    expect(displayPostalCode("SW1A 1AA", "GB")).toBe("SW1A 1AA");
+  });
+
+  it("prints the country of a buyer abroad, not of a domestic one", async () => {
+    expect((await render(makeInvoice(), makeContact({ addressCountry: "US" }))).lines).toContain("Spojené státy");
+    expect((await render(makeInvoice({ language: "en" }), makeContact({ addressCountry: "US" }))).lines).toContain("United States");
+    expect((await render(makeInvoice(), makeContact({ addressCountry: "CZ" }))).lines.some((l) => l === "Česko")).toBe(false);
+  });
+
+  it("prints the seller's country next to a foreign buyer's, in the document language", async () => {
+    const abroad = await render(makeInvoice({ language: "en" }), makeContact({ addressCountry: "DE" }));
+    expect(abroad.lines).toContain("Germany");
+    expect(abroad.lines).toContain("Czechia");
+    expect((await render(makeInvoice({ language: "en" }), makeContact({ addressCountry: "CZ" }))).lines).not.toContain("Czechia");
+  });
+
+  it("asks a cancelled invoice for nothing: no payment QR and no \"Celkem k úhradě\"", async () => {
+    const cancelled = await render(makeInvoice({ status: "cancelled" }));
+    expect(cancelled.qr.some((p) => p.startsWith("SPD*"))).toBe(false);
+    expect(cancelled.lines).not.toContain("Celkem k úhradě");
+    expect(cancelled.lines).toContain("Celkem");
+  });
+});
+
+describe("InvoicePdfService credit note", () => {
+  it("labels the negative total \"Celkem\", not as something to pay", async () => {
+    const text = vi.spyOn(PDFDocument.prototype, "text");
+    const lineItems = makeLineItems().map((li) => ({ ...li, quantity: `-${li.quantity}` }));
+    const totals = computeVatBreakdown(lineItems);
+    expect(totals.totalWithVat).toBeLessThan(0);
+    await new InvoicePdfService().generate(makeInvoice({ documentType: "credit_note" }), makeContact(), makeTenant(), lineItems, totals);
+    const lines = text.mock.calls.map((c) => String(c[0]));
+    text.mockRestore();
+    expect(lines).not.toContain("Celkem k úhradě");
+    expect(lines).toContain("Celkem");
   });
 });

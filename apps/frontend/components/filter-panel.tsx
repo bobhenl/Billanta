@@ -42,8 +42,10 @@ export interface FilterPill {
  * `clearHref` is the page without the panel's own filters.
  *
  * Inline by default (opens under the button while filters are active).
- * With `modal`, the fields open in a dialog instead — for lists with many
- * filters — and the active ones show as removable pills beside the button.
+ * With `modal`, the fields open in a dialog instead – for lists with many
+ * filters – and the active ones show as removable pills beside the button.
+ * `leading` / `trailing` share that row (a page's own menus, a clear-all);
+ * `pillsClear={false}` drops the panel-only clear link when the page has its own.
  */
 export async function FilterPanel({
   active,
@@ -51,6 +53,9 @@ export async function FilterPanel({
   keep,
   modal,
   pills,
+  leading,
+  trailing,
+  pillsClear = true,
   children
 }: {
   active: number;
@@ -58,6 +63,9 @@ export async function FilterPanel({
   keep: Record<string, string | undefined>;
   modal?: boolean;
   pills?: FilterPill[];
+  leading?: ReactNode;
+  trailing?: ReactNode;
+  pillsClear?: boolean;
   children: ReactNode;
 }) {
   const t = await getTranslations('doc.filters');
@@ -97,6 +105,7 @@ export async function FilterPanel({
 
   return (
     <div className="mt-3 flex flex-wrap items-center gap-1.5">
+      {leading}
       <DismissableDetails data-filter-panel>
         {summary}
         <div data-dismiss="self" className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4">
@@ -105,7 +114,7 @@ export async function FilterPanel({
             role="dialog"
             aria-modal="true"
             aria-label={t('title')}
-            className="flex max-h-[90vh] w-full max-w-3xl flex-col rounded-t-2xl border border-border bg-card shadow-xl sm:rounded-2xl"
+            className="anim-sheet flex max-h-[90vh] w-full max-w-3xl flex-col rounded-t-2xl border border-border bg-card shadow-xl sm:rounded-2xl"
           >
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
               <span className="inline-flex items-center gap-2 font-bold">
@@ -136,11 +145,12 @@ export async function FilterPanel({
           <X className="h-3 w-3" aria-hidden />
         </Link>
       ))}
-      {pills && pills.length > 1 && (
+      {pillsClear && pills && pills.length > 1 && (
         <Link href={clearHref} className="px-1.5 text-xs font-semibold text-muted-foreground hover:text-primary">
           {t('clear')}
         </Link>
       )}
+      {trailing}
     </div>
   );
 }

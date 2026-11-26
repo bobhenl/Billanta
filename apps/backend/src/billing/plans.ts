@@ -109,10 +109,29 @@ export function planRank(plan: PlanKey): number {
 export const FEATURE_MIN_PLAN = {
   bank_sync: "start",
   paypal_sync: "start",
+  stripe_sync: "start",
   api_keys: "start",
   card_payments: "plus",
 } as const satisfies Record<string, PaidPlan>;
 export type PlanFeature = keyof typeof FEATURE_MIN_PLAN;
+
+/**
+ * People in the team per plan, the owner included (the pricing page's
+ * "3 uživatelé + účetní"). Accountants have their own small allowance so a
+ * company can bring its accounting firm, but can't pass the whole team off
+ * as accountants. Members over the limit after a downgrade stay; only new
+ * invitations are refused.
+ */
+export const PLAN_SEATS: Record<PlanKey, number> = { free: 1, start: 1, plus: 3, business: 10 };
+export const ACCOUNTANT_SEATS = 2;
+
+/** People the "Po zdanění" report splits income between. */
+export const PLAN_PARTNERS: Record<PlanKey, number> = { free: 1, start: 2, plus: 3, business: 10 };
+
+/** The cheapest plan that allows `n` of something, or null when none does. */
+export function planFor(limits: Record<PlanKey, number>, n: number): PaidPlan | null {
+  return PAID_PLANS.find((p) => limits[p] >= n) ?? null;
+}
 
 /** Free keeps two recurring templates; more need a paid plan. */
 export const FREE_RECURRING_TEMPLATES = 2;

@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
+import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 import {
   direction,
   distanceKm,
@@ -27,16 +29,16 @@ import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 
 /**
- * Local-SEO landing page — one per real Czech/Slovak municipality. See
+ * Local-SEO landing page – one per real Czech/Slovak municipality. See
  * `apps/frontend/data/README.md` for the data source and
  * `apps/frontend/lib/municipalities.ts` for how the (small) build-time set
  * vs. the (much larger) on-demand set is decided.
  *
  * Doorway-page risk: the product does not differ by municipality. What
- * makes each page its own is real data computed from the dataset — the
+ * makes each page its own is real data computed from the dataset – the
  * nearest places with distances, where the town lies against its district
  * and regional seat, the district's other municipalities and the competent
- * tax office — plus accountants who listed themselves for the town and
+ * tax office – plus accountants who listed themselves for the town and
  * the companies from it that opted into the business directory.
  * The page deliberately does NOT:
  *   - claim any town-specific customer count, testimonial, or usage stat
@@ -55,7 +57,7 @@ type Params = { locale: string; slug: string };
 
 // Statically pre-render only the district seats (the largest, most-searched
 // places, including both capitals). Every other municipality page is
-// rendered on first request and then cached — see `revalidate` below. An
+// rendered on first request and then cached – see `revalidate` below. An
 // on-demand ISR page is served as the same fully-rendered HTML to Googlebot.
 export function generateStaticParams() {
   return getBuildTimeMunicipalities().map((m) => ({ slug: m.slug }));
@@ -142,197 +144,188 @@ export default async function MunicipalityPage({ params }: { params: Promise<Par
       : null;
 
   return (
-    <>
-        <section className="container py-16 sm:py-24">
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={jsonLd(
-              breadcrumbLd(locale, [
-                [SITE_NAME, '/'],
-                [t('breadcrumbBrowse'), '/invoicing'],
-                [municipality.name, `/invoicing/${slug}`]
-              ])
-            )}
-          />
-          <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
-            <Link href="/invoicing" className="hover:text-foreground">
-              {t('breadcrumbBrowse')}
-            </Link>
-            <span className="mx-2">/</span>
-            <span className="text-foreground">{municipality.name}</span>
-          </nav>
+    <section className="container py-12 sm:py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLd(
+          breadcrumbLd(locale, [
+            [SITE_NAME, '/'],
+            [t('breadcrumbBrowse'), '/invoicing'],
+            [municipality.name, `/invoicing/${slug}`]
+          ])
+        )}
+      />
+      <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
+        <Link href="/invoicing" className="hover:text-foreground">
+          {t('breadcrumbBrowse')}
+        </Link>
+        <span className="mx-2">/</span>
+        <span className="text-foreground">{municipality.name}</span>
+      </nav>
 
-          <h1 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl">
-            {t('heading', { name: municipality.name })}
-          </h1>
-          <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            {t('lead', { name: municipality.name })}
+      <h1 className="mt-4 max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl">{t('heading', { name: municipality.name })}</h1>
+      <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{t('lead', { name: municipality.name })}</p>
+
+      <dl className="mt-8 flex flex-wrap gap-x-10 gap-y-3 text-sm">
+        <div>
+          <dt className="text-muted-foreground">{t('regionLabel')}</dt>
+          <dd className="font-medium text-foreground">{municipality.region}</dd>
+        </div>
+        <div>
+          <dt className="text-muted-foreground">{t('districtLabel')}</dt>
+          <dd className="font-medium text-foreground">{municipality.district}</dd>
+        </div>
+        <div>
+          <dt className="text-muted-foreground">{t('countryLabel')}</dt>
+          <dd className="font-medium text-foreground">{countryLabel}</dd>
+        </div>
+      </dl>
+
+      <Link href="/signup" className={cn(buttonClass.primary, 'mt-8 w-full px-6 py-3 sm:w-auto')}>
+        {t('cta')}
+      </Link>
+
+      <div className="mt-14 grid max-w-4xl gap-6 border-t border-border pt-8 md:grid-cols-2">
+        <div>
+          <h2 className="text-base font-semibold text-foreground">{t('whereTitle', { name: municipality.name })}</h2>
+          <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
+            {seatLine && <li>{seatLine}</li>}
+            {regionLine && <li>{regionLine}</li>}
+            {municipality.population != null && (
+              <li>{t(municipality.country === 'CZ' ? 'populationCz' : 'populationSk', { count: municipality.population })}</li>
+            )}
+            <li>{t('districtCount', { count: district.count, district: municipality.district })}</li>
+            {mapHref && (
+              <li>
+                <a href={mapHref} target="_blank" rel="noopener noreferrer nofollow" className="font-medium text-primary hover:underline">
+                  {t('mapLink')}
+                </a>
+              </li>
+            )}
+          </ul>
+        </div>
+        <div>
+          <h2 className="text-base font-semibold text-foreground">{t('taxTitle')}</h2>
+          <p className="mt-3 text-sm font-medium text-foreground">{getTaxOffice(municipality)}</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {municipality.country === 'CZ' ? t('taxNoteCz') : t('taxNoteSk')}
           </p>
+          {socialOffice && (
+            <>
+              <p className="mt-4 text-sm font-medium text-foreground">{socialOffice}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{t('socialNote')}</p>
+            </>
+          )}
+          <p className="mt-4 text-sm text-muted-foreground">
+            {municipality.country === 'CZ' ? t('healthNoteCz') : t('healthNoteSk')}
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {municipality.country === 'CZ' ? t('tradeNoteCz') : t('tradeNoteSk')}
+          </p>
+        </div>
+      </div>
 
-          <dl className="mt-8 flex flex-wrap gap-x-10 gap-y-3 text-sm">
-            <div>
-              <dt className="text-muted-foreground">{t('regionLabel')}</dt>
-              <dd className="font-medium text-foreground">{municipality.region}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">{t('districtLabel')}</dt>
-              <dd className="font-medium text-foreground">{municipality.district}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">{t('countryLabel')}</dt>
-              <dd className="font-medium text-foreground">{countryLabel}</dd>
-            </div>
-          </dl>
+      <div className="mt-10 max-w-2xl space-y-4 text-sm leading-relaxed text-muted-foreground">
+        <p>{t('body')}</p>
+        <p>{t('localNote', { district: municipality.district })}</p>
+      </div>
 
-          <Link
-            href="/signup"
-            className="mt-8 inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90"
-          >
-            {t('cta')}
+      {nearby.length > 0 && (
+        <div className="mt-10 max-w-3xl">
+          <h2 className="text-base font-semibold text-foreground">{t('nearbyTitle')}</h2>
+          <ul className="mt-3 grid gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
+            {nearby.map(({ municipality: n, km: d }) => (
+              <li key={n.slug}>
+                <Link
+                  href={`/invoicing/${n.slug}`}
+                  className="text-sm hover:text-primary hover:underline"
+                >
+                  {n.name} <span className="text-muted-foreground">· {t('km', { km: km(d) })}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {businesses.length > 0 && (
+        <div className="mt-10 max-w-3xl">
+          <h2 className="text-base font-semibold text-foreground">{tDir('townSection', { name: municipality.name, site: SITE_NAME })}</h2>
+          <div className="mt-3">
+            <DirectoryListings listings={businesses.slice(0, 8)} locale={locale} tradeLabel={(k) => tDir(`trades.${k}`)} showTown={false} />
+          </div>
+          <Link href={`/directory/town/${municipality.slug}`} className="mt-3 inline-block text-sm font-medium text-primary hover:underline">
+            {tDir('townSectionAll', { n: businesses.length })}
           </Link>
+        </div>
+      )}
 
-          <div className="mt-14 grid max-w-4xl gap-6 border-t border-border pt-8 md:grid-cols-2">
-            <div>
-              <h2 className="text-base font-semibold text-foreground">{t('whereTitle', { name: municipality.name })}</h2>
-              <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
-                {seatLine && <li>{seatLine}</li>}
-                {regionLine && <li>{regionLine}</li>}
-                {municipality.population != null && (
-                  <li>{t(municipality.country === 'CZ' ? 'populationCz' : 'populationSk', { count: municipality.population })}</li>
-                )}
-                <li>{t('districtCount', { count: district.count, district: municipality.district })}</li>
-                {mapHref && (
-                  <li>
-                    <a href={mapHref} target="_blank" rel="noopener noreferrer nofollow" className="font-medium text-primary hover:underline">
-                      {t('mapLink')}
-                    </a>
-                  </li>
-                )}
-              </ul>
-            </div>
-            <div>
-              <h2 className="text-base font-semibold text-foreground">{t('taxTitle')}</h2>
-              <p className="mt-3 text-sm font-medium text-foreground">{getTaxOffice(municipality)}</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {municipality.country === 'CZ' ? t('taxNoteCz') : t('taxNoteSk')}
-              </p>
-              {socialOffice && (
-                <>
-                  <p className="mt-4 text-sm font-medium text-foreground">{socialOffice}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{t('socialNote')}</p>
-                </>
-              )}
-              <p className="mt-4 text-sm text-muted-foreground">
-                {municipality.country === 'CZ' ? t('healthNoteCz') : t('healthNoteSk')}
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {municipality.country === 'CZ' ? t('tradeNoteCz') : t('tradeNoteSk')}
-              </p>
-            </div>
-          </div>
+      <div className="mt-10 max-w-3xl rounded-xl border border-border bg-card p-5">
+        <h2 className="text-base font-semibold text-foreground">{t('accountantsTitle', { region: regionLabel(municipality) })}</h2>
+        {accountants.length > 0 ? (
+          <>
+            <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+              {accountants.map((a) => (
+                <li key={a.id}>
+                  <Link
+                    href={a.profileSlug ? `/p/${a.profileSlug}` : '/accountants'}
+                    className="block rounded-lg border border-border p-3 transition-colors hover:border-primary/40"
+                  >
+                    <span className="block text-sm font-semibold text-foreground">{a.name}</span>
+                    {a.bio && <span className="line-clamp-2 block text-xs text-muted-foreground">{a.bio}</span>}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-xs text-muted-foreground">{t('accountantsNote')}</p>
+          </>
+        ) : (
+          <p className="mt-2 text-sm text-muted-foreground">{t('accountantsEmpty', { name: municipality.name })}</p>
+        )}
+        <Link href="/for-accountants" className="mt-3 inline-block text-sm font-medium text-primary hover:underline">
+          {t('accountantsJoin', { name: municipality.name })}
+        </Link>
+      </div>
 
-          <div className="mt-10 max-w-2xl space-y-4 text-sm leading-relaxed text-muted-foreground">
-            <p>{t('body')}</p>
-            <p>{t('localNote', { district: municipality.district })}</p>
-          </div>
+      {nearbyMajor.length > 0 && (
+        <div className="mt-8 max-w-3xl">
+          <h2 className="text-base font-semibold text-foreground">{t('nearbyMajorTitle')}</h2>
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+            {nearbyMajor.map(({ municipality: n, km: d }) => (
+              <li key={n.slug} className="text-sm text-muted-foreground">
+                <Link href={`/invoicing/${n.slug}`} className="font-medium text-foreground hover:text-primary hover:underline">
+                  {n.name}
+                </Link>{' '}
+                · {t('nearbyMajorItem', { km: km(d), dir: direction(municipality, n) ?? 'n' })}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
-          {nearby.length > 0 && (
-            <div className="mt-10 max-w-3xl">
-              <h2 className="text-base font-semibold text-foreground">{t('nearbyTitle')}</h2>
-              <ul className="mt-3 flex flex-wrap gap-2">
-                {nearby.map(({ municipality: n, km: d }) => (
-                  <li key={n.slug}>
-                    <Link
-                      href={`/invoicing/${n.slug}`}
-                      className="inline-block rounded-full border border-border px-3 py-1 text-sm text-foreground hover:border-primary hover:text-primary"
-                    >
-                      {n.name} <span className="text-muted-foreground">· {t('km', { km: km(d) })}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+      {district.others.length > 0 && (
+        <div className="mt-8 max-w-3xl">
+          <h2 className="text-base font-semibold text-foreground">
+            {t('districtTitle', { district: municipality.district })}
+          </h2>
+          <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-sm">
+            {district.others.map((n) => (
+              <li key={n.slug}>
+                <Link href={`/invoicing/${n.slug}`} className="text-muted-foreground hover:text-foreground hover:underline">
+                  {n.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
-          {businesses.length > 0 && (
-            <div className="mt-10 max-w-3xl">
-              <h2 className="text-base font-semibold text-foreground">{tDir('townSection', { name: municipality.name, site: SITE_NAME })}</h2>
-              <div className="mt-3">
-                <DirectoryListings listings={businesses.slice(0, 8)} locale={locale} tradeLabel={(k) => tDir(`trades.${k}`)} showTown={false} />
-              </div>
-              <Link href={`/directory/town/${municipality.slug}`} className="mt-3 inline-block text-sm font-medium text-primary hover:underline">
-                {tDir('townSectionAll', { n: businesses.length })}
-              </Link>
-            </div>
-          )}
-
-          <div className="mt-10 max-w-3xl rounded-lg border border-border bg-card p-5">
-            <h2 className="text-base font-semibold text-foreground">{t('accountantsTitle', { region: regionLabel(municipality) })}</h2>
-            {accountants.length > 0 ? (
-              <>
-                <ul className="mt-3 grid gap-3 sm:grid-cols-2">
-                  {accountants.map((a) => (
-                    <li key={a.id}>
-                      <Link
-                        href={a.profileSlug ? `/p/${a.profileSlug}` : '/accountants'}
-                        className="block rounded-md border border-border p-3 hover:border-primary"
-                      >
-                        <span className="block text-sm font-semibold text-foreground">{a.name}</span>
-                        {a.bio && <span className="line-clamp-2 block text-xs text-muted-foreground">{a.bio}</span>}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-3 text-xs text-muted-foreground">{t('accountantsNote')}</p>
-              </>
-            ) : (
-              <p className="mt-2 text-sm text-muted-foreground">{t('accountantsEmpty', { name: municipality.name })}</p>
-            )}
-            <Link href="/for-accountants" className="mt-3 inline-block text-sm font-medium text-primary hover:underline">
-              {t('accountantsJoin', { name: municipality.name })}
-            </Link>
-          </div>
-
-          {nearbyMajor.length > 0 && (
-            <div className="mt-8 max-w-3xl">
-              <h2 className="text-base font-semibold text-foreground">{t('nearbyMajorTitle')}</h2>
-              <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-                {nearbyMajor.map(({ municipality: n, km: d }) => (
-                  <li key={n.slug} className="text-sm text-muted-foreground">
-                    <Link href={`/invoicing/${n.slug}`} className="font-medium text-foreground hover:text-primary hover:underline">
-                      {n.name}
-                    </Link>{' '}
-                    · {t('nearbyMajorItem', { km: km(d), dir: direction(municipality, n) ?? 'n' })}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {district.others.length > 0 && (
-            <div className="mt-8 max-w-3xl">
-              <h2 className="text-base font-semibold text-foreground">
-                {t('districtTitle', { district: municipality.district })}
-              </h2>
-              <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-sm">
-                {district.others.map((n) => (
-                  <li key={n.slug}>
-                    <Link href={`/invoicing/${n.slug}`} className="text-muted-foreground hover:text-foreground hover:underline">
-                      {n.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          <Link
-            href={regionHref}
-            className="mt-10 inline-block text-sm font-medium text-primary hover:underline"
-          >
-            {t('browseCta', { region: municipality.region })}
-          </Link>
-        </section>
-      </>
+      <Link
+        href={regionHref}
+        className="mt-10 inline-block text-sm font-medium text-primary hover:underline"
+      >
+        {t('browseCta', { region: municipality.region })}
+      </Link>
+    </section>
   );
 }
