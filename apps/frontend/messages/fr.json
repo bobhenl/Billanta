@@ -14010,5 +14010,9 @@
       "bank_rule_not_found": "La règle n’existe plus.",
       "forbidden": "Vous n’avez pas le droit de modifier les règles."
     }
+  },
+  "updateNotice": {
+    "text": "Une nouvelle version de Billanta est disponible. Rechargez la page pour que tout fonctionne.",
+    "reload": "Recharger"
   }
 }

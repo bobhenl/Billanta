@@ -50,6 +50,7 @@ import { SHORTCUTS_EVENT } from '@/components/keyboard-shortcuts';
 import { fuzzyScore } from '@/lib/fuzzy';
 import { invoiceQueryHref, parseInvoiceQuery } from '@/lib/nl-search';
 import { loadPaletteData, type PaletteContact, type PaletteInvoice } from '@/lib/search-actions';
+import { CHECK_BUILD_EVENT } from '@/components/update-notice';
 import { cn } from '@/lib/utils';
 
 /** sessionStorage key the invoice form reads to run an AI request typed into the palette. */
@@ -205,7 +206,11 @@ export function CommandPalette({ hidden = [] }: { hidden?: string[] }) {
     setLoading(true);
     loadPaletteData()
       .then(setData)
-      .catch(() => setData({ invoices: [], contacts: [], aiReady: false }))
+      .catch(() => {
+        setData({ invoices: [], contacts: [], aiReady: false });
+        // Most often a tab from before a deploy; the notice offers the reload.
+        window.dispatchEvent(new Event(CHECK_BUILD_EVENT));
+      })
       .finally(() => setLoading(false));
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';

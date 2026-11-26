@@ -14011,5 +14011,9 @@
       "bank_rule_not_found": "Reguła już nie istnieje.",
       "forbidden": "Nie masz uprawnień do zmiany reguł."
     }
+  },
+  "updateNotice": {
+    "text": "Jest nowa wersja Billanty. Odśwież stronę, żeby wszystko działało.",
+    "reload": "Odśwież"
   }
 }

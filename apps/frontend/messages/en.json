@@ -14043,5 +14043,9 @@
   "amounts": {
     "hide": "Hide amounts",
     "show": "Show amounts"
+  },
+  "updateNotice": {
+    "text": "There is a new version of Billanta. Reload the page so everything works.",
+    "reload": "Reload"
   }
 }

@@ -14010,5 +14010,9 @@
       "bank_rule_not_found": "A szabály már nem létezik.",
       "forbidden": "Nincs jogosultsága a szabályok módosításához."
     }
+  },
+  "updateNotice": {
+    "text": "Elérhető a Billanta új verziója. Töltse újra az oldalt, hogy minden működjön.",
+    "reload": "Újratöltés"
   }
 }

@@ -13947,5 +13947,9 @@
   "amounts": {
     "hide": "Skryť sumy",
     "show": "Zobraziť sumy"
+  },
+  "updateNotice": {
+    "text": "Billanta má novú verziu. Obnovte stránku, nech všetko funguje.",
+    "reload": "Obnoviť"
   }
 }

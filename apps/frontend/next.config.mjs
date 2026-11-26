@@ -31,6 +31,8 @@ const backendUrl = (process.env.BACKEND_URL ?? 'http://localhost:3000').replace(
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Fixed when the image is built, so a tab from before a deploy can tell (components/update-notice.tsx).
+  env: { NEXT_PUBLIC_BUILD_STAMP: process.env.NEXT_PUBLIC_BUILD_STAMP ?? String(Date.now()) },
   // Caddy already strips `Server`; no reason to announce the framework either.
   poweredByHeader: false,
   // Rendered pages are cached in memory with a size cap, not on disk: the

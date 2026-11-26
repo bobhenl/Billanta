@@ -8,6 +8,7 @@ import { auth } from '@/auth';
 import { Link, redirect } from '@/i18n/navigation';
 import { BrandMark } from '@/components/brand-mark';
 import { CommandPalette } from '@/components/command-palette';
+import { UpdateNotice } from '@/components/update-notice';
 import { ClassroomBanner } from '@/components/classroom/classroom-banner';
 import { AccessProvider } from '@/components/access-provider';
 import { DemoBanner } from '@/components/demo/demo-banner';
@@ -171,6 +172,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           </main>
 
           <MobileBottomNav hidden={hidden} actionsHidden={paletteHidden} />
+          <UpdateNotice />
           <Suspense fallback={null}>
             <NavProgress />
           </Suspense>

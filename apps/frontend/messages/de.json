@@ -14011,5 +14011,9 @@
       "bank_rule_not_found": "Die Regel existiert nicht mehr.",
       "forbidden": "Sie haben keine Berechtigung, Regeln zu ändern."
     }
+  },
+  "updateNotice": {
+    "text": "Es gibt eine neue Version von Billanta. Laden Sie die Seite neu, damit alles funktioniert.",
+    "reload": "Neu laden"
   }
 }

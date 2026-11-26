@@ -14043,5 +14043,9 @@
   "amounts": {
     "hide": "Skrýt částky",
     "show": "Zobrazit částky"
+  },
+  "updateNotice": {
+    "text": "Billanta má novou verzi. Obnovte stránku, ať vše funguje.",
+    "reload": "Obnovit"
   }
 }
