@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import createNextIntlPlugin from 'next-intl/plugin';
 
 // The public site used Czech slugs before it went English. Old links and
@@ -32,6 +33,10 @@ const nextConfig = {
   reactStrictMode: true,
   // Caddy already strips `Server`; no reason to announce the framework either.
   poweredByHeader: false,
+  // Rendered pages are cached in memory with a size cap, not on disk: the
+  // on-demand municipality pages once filled the VPS disk (cache-handler.cjs).
+  cacheHandler: fileURLToPath(new URL('./cache-handler.cjs', import.meta.url)),
+  cacheMaxMemorySize: 0,
   // Standalone output traces the minimal server + node_modules needed to run
   // `node server.js` — lets apps/frontend/Dockerfile copy just that into a
   // slim runtime stage instead of the whole node_modules tree.
