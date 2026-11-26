@@ -23,6 +23,7 @@ import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import { fieldKey, formattedVars, resolveVars } from '@/lib/custom-fields';
 import { InvoicePreview } from './invoice-preview';
+import { NetEstimate } from '@/components/net-estimate';
 import { CopyFromInvoicePanel } from './copy-from-invoice';
 import { fetchExchangeRate, saveInvoice, suggestInvoice, suggestItems } from './actions';
 import type {
@@ -1830,6 +1831,12 @@ export function InvoiceForm({
               </div>
             ) : null}
           </dl>
+          {/* The same "what you keep" estimate as on the issued document, already while writing it. */}
+          {home === 'CZK' && !isQuote && documentType !== 'credit_note' && totals.base > 0 && (
+            <div className="mt-3">
+              <NetEstimate base={totals.base} currency={currency} czkRate={currency === home ? 1 : Number(exchangeRate.replace(',', '.')) || 0} />
+            </div>
+          )}
 
           {error && (
             <Banner tone="err" className="mt-3">
