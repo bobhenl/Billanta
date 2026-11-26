@@ -1911,6 +1911,8 @@ export class InvoicesService {
       documentType: invoice.documentType,
       precedingInvoice: preceding,
       prepaidAmount: proformaDeposit(invoice, related) || undefined,
+      paymentMethod: invoice.paymentMethod,
+      paymentMethodLabel: invoice.paymentMethodLabel,
     };
     return { input, options };
   }
