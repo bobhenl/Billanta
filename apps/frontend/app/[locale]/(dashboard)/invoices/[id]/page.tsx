@@ -550,7 +550,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                   })}
                 </p>
               )}
-              {convertedAt && <p className="mt-2 text-xs text-muted-foreground">{t('net.converted', { date: formatDate(convertedAt, locale), home })}</p>}
+              {convertedAt && <p className="mt-2 text-xs text-muted-foreground">{t('net.converted', { date: formatDate(convertedAt, locale) ?? '', home })}</p>}
               {held.length > 0 ? (
                 <p className="mt-2 text-xs text-muted-foreground">
                   <span className="amount">{t('net.held', { amount: formatMoney(heldAmount, held[0]!.currency, locale), home })}</span>
