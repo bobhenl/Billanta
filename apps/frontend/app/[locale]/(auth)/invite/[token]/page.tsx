@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * Landing page of an emailed team invitation (`/invite/<token>`, built by
+ * Landing page of an emailed team invitation (`/<locale>/invite/<token>`, built by
  * `TeamService.invite`). In the auth group, not the dashboard, because the
  * invitee often has no account yet: they get a short signup that joins this
  * company instead of founding their own. A signed-in invitee just accepts.
@@ -24,6 +24,8 @@ export default async function InvitePage(props: { params: Promise<{ token: strin
   const { token } = await props.params;
   const t = await getTranslations('invite');
   const tRoles = await getTranslations('settings.team.roles');
+  const tAreas = await getTranslations('settings.team.areas');
+  const tLevels = await getTranslations('settings.team.levels');
   const [session, preview] = await Promise.all([auth().catch(() => null), invitationPreview(token)]);
   const signedIn = Boolean(session?.user) && session?.twoFactor !== 'pending';
   const emailMismatch = preview !== null && signedIn && session?.user?.email?.toLowerCase() !== preview.email.toLowerCase();
@@ -48,6 +50,20 @@ export default async function InvitePage(props: { params: Promise<{ token: strin
             </>
           )}
         </div>
+        {preview && usable && (
+          <div className="mt-5 rounded-lg border border-border bg-muted/30 p-4">
+            <h2 className="text-sm font-semibold">{t('accessTitle')}</h2>
+            <ul className="mt-2 space-y-1 text-sm">
+              {preview.access.areas.map(({ area, level }) => (
+                <li key={area} className="flex items-center justify-between gap-3">
+                  <span>{tAreas(area)}</span>
+                  <span className={level === 'none' ? 'text-muted-foreground' : 'font-medium'}>{tLevels(level)}</span>
+                </li>
+              ))}
+            </ul>
+            {preview.access.manage && <p className="mt-2 text-xs text-muted-foreground">{t('accessManage')}</p>}
+          </div>
+        )}
         {preview && (
           <div className="mt-5">
             {preview.accepted ? (

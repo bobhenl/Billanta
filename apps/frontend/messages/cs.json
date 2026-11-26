@@ -3765,6 +3765,14 @@
         "rate_limited": "Příliš mnoho pokusů. Zkuste to za pár minut.",
         "not_signed_in": "Přihlášení vypršelo. Přihlaste se znovu."
       }
+    },
+    "passwordStrength": {
+      "label": "Síla hesla: {level}",
+      "tooWeak": "příliš slabé",
+      "weak": "slabé",
+      "fair": "ucházející",
+      "good": "dobré",
+      "strong": "silné"
     }
   },
   "legal": {
@@ -5284,7 +5292,7 @@
   },
   "invite": {
     "title": "Pozvánka do týmu",
-    "heading": "Pozvánka do firmy {company}",
+    "heading": "{company} vás zve do týmu",
     "asRole": "Připojíte se s rolí {role}.",
     "accept": "Přijmout pozvánku",
     "accepted": "Jste členem týmu.",
@@ -5304,7 +5312,9 @@
       "submit": "Vytvořit účet a přijmout",
       "emailTaken": "S tímto e-mailem už účet máte. Přihlaste se a pozvánku přijměte.",
       "invalid": "Pozvánka už neplatí. Požádejte o novou."
-    }
+    },
+    "accessTitle": "K čemu budete mít přístup",
+    "accessManage": "Budete moci také spravovat tým a nastavení firmy."
   },
   "templates": {
     "title": "Šablony faktur",

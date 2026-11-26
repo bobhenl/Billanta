@@ -1180,19 +1180,24 @@ CREATE POLICY tenant_isolation ON tenant_invitations
 -- What the invite page shows before the invitee belongs to the tenant: the
 -- company name, role and invited email of ONE invitation, found by the
 -- sha256 of the token from the email link. Nothing else about the tenant.
-CREATE OR REPLACE FUNCTION get_tenant_invitation_preview(p_token_hash text)
+-- `permissions` (the role overrides) lets the invitee see what they will get
+-- access to before accepting. The return type grew, so the old one is dropped
+-- first (CREATE OR REPLACE cannot change it).
+DROP FUNCTION IF EXISTS get_tenant_invitation_preview(text);
+CREATE FUNCTION get_tenant_invitation_preview(p_token_hash text)
 RETURNS TABLE (
   company_name text,
   role text,
   email text,
   expired boolean,
-  accepted boolean
+  accepted boolean,
+  permissions jsonb
 )
 LANGUAGE sql
 SECURITY DEFINER
 SET search_path = public
 AS $$
-  SELECT t.company_name, i.role::text, i.email, i.expires_at < now(), i.accepted_at IS NOT NULL
+  SELECT t.company_name, i.role::text, i.email, i.expires_at < now(), i.accepted_at IS NOT NULL, i.permissions
   FROM tenant_invitations i
   JOIN tenants t ON t.id = i.tenant_id
   WHERE i.token_hash = p_token_hash;

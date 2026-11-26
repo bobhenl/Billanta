@@ -3758,6 +3758,14 @@
         "rate_limited": "Troppi tentativi. Riprovi tra qualche minuto.",
         "not_signed_in": "L'accesso è scaduto. Acceda di nuovo."
       }
+    },
+    "passwordStrength": {
+      "label": "Sicurezza della password: {level}",
+      "tooWeak": "troppo debole",
+      "weak": "debole",
+      "fair": "discreta",
+      "good": "buona",
+      "strong": "forte"
     }
   },
   "legal": {
@@ -5255,7 +5263,7 @@
   },
   "invite": {
     "title": "Invito al team",
-    "heading": "Invito a {company}",
+    "heading": "{company} la invita nel suo team",
     "asRole": "Entrerà con il ruolo {role}.",
     "accept": "Accetta invito",
     "accepted": "Ora fa parte del team.",
@@ -5275,7 +5283,9 @@
       "submit": "Crea account e unisciti",
       "emailTaken": "Hai già un account con questa e-mail. Accedi per accettare l'invito.",
       "invalid": "Questo invito non è più valido. Chiedine uno nuovo."
-    }
+    },
+    "accessTitle": "A cosa avrà accesso",
+    "accessManage": "Potrà anche gestire il team e le impostazioni dell’azienda."
   },
   "templates": {
     "title": "Modelli di fattura",

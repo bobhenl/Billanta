@@ -8,8 +8,28 @@ import type { OutboxItem } from "../../drizzle/schema";
  */
 export type EmailLocale = "cs" | "sk" | "en";
 
+/**
+ * The e-mail language for a stored locale (tenant default, invoice language,
+ * newsletter issue). E-mails exist in cs, sk and en; any other app locale
+ * (de, pl…) reads English, and a missing value means a Czech company.
+ */
 export function emailLocaleOf(value: string | null | undefined): EmailLocale {
-  return value === "sk" || value === "en" ? value : "cs";
+  const code = value?.trim().slice(0, 2).toLowerCase();
+  if (!code) return "cs";
+  return code === "cs" || code === "sk" ? code : "en";
+}
+
+/**
+ * A link into the app in the e-mail's language. The frontend routes every
+ * page under a locale prefix; an unprefixed link would open in whatever the
+ * recipient's browser prefers instead of the language the e-mail is in.
+ * cs, sk and en are always routed, so an e-mail locale is a safe prefix.
+ */
+export function appUrlOf(siteUrl: string, locale: EmailLocale, path: string): string {
+  const base = siteUrl.replace(/\/$/, "");
+  const clean = path.startsWith("/") ? path : `/${path}`;
+  if (/^\/(cs|sk|en|de|pl|uk|hu|ro|fr|es|it|nl|pt)(\/|$|\?)/.test(clean)) return `${base}${clean}`;
+  return `${base}/${locale}${clean}`;
 }
 
 export function escapeHtml(value: string): string {

@@ -3765,6 +3765,14 @@
         "rate_limited": "Priveľa pokusov. Skúste to o pár minút.",
         "not_signed_in": "Prihlásenie vypršalo. Prihláste sa znova."
       }
+    },
+    "passwordStrength": {
+      "label": "Sila hesla: {level}",
+      "tooWeak": "príliš slabé",
+      "weak": "slabé",
+      "fair": "priemerné",
+      "good": "dobré",
+      "strong": "silné"
     }
   },
   "legal": {
@@ -5284,7 +5292,7 @@
   },
   "invite": {
     "title": "Pozvánka do tímu",
-    "heading": "Pozvánka do firmy {company}",
+    "heading": "{company} vás pozýva do tímu",
     "asRole": "Pripojíte sa s rolou {role}.",
     "accept": "Prijať pozvánku",
     "accepted": "Ste členom tímu.",
@@ -5304,7 +5312,9 @@
       "submit": "Vytvoriť účet a prijať",
       "emailTaken": "S týmto e-mailom už účet máte. Prihláste sa a pozvánku prijmite.",
       "invalid": "Pozvánka už neplatí. Požiadajte o novú."
-    }
+    },
+    "accessTitle": "K čomu budete mať prístup",
+    "accessManage": "Budete môcť tiež spravovať tím a nastavenia firmy."
   },
   "templates": {
     "title": "Šablóny faktúr",

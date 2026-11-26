@@ -6,6 +6,7 @@ import * as schema from "../../drizzle/schema";
 import { AuditService } from "../audit/audit.service";
 import { WelcomeTrialService } from "../billing/welcome-trial.service";
 import { demoConfig } from "../demo/demo-config";
+import type { EmailLocale } from "../email/email-render";
 import { NotificationsService } from "../notifications/notifications.service";
 import type { DashboardRole } from "../tenancy/tenant-context.middleware";
 import { findBankAccount, listBankAccounts } from "./bank-accounts";
@@ -29,6 +30,33 @@ const JSON_SETTINGS = ["emailPrefs", "templateVars", "paymentMethods", "publicPr
 /** "123456789/0100", else the IBAN, else "–" — for the change alert. */
 const formatAccount = (a: BankFields | undefined) =>
   a?.accountNumber ? `${a.accountNumber}${a.bankCode ? `/${a.bankCode}` : ""}` : a?.iban || "–";
+
+type BankAlertKind = "invoiceAccountChanged" | "added" | "changed" | "removed";
+
+/** The payout-account alert in the company's language (every member gets it, see `alertBankChange`). */
+const BANK_ALERT: Record<EmailLocale, Record<BankAlertKind | "check", string>> = {
+  cs: {
+    invoiceAccountChanged: "Bankovní účet na fakturách byl změněn",
+    added: "Přibyl bankovní účet pro platby",
+    changed: "Bankovní účet pro platby byl změněn",
+    removed: "Bankovní účet pro platby byl odebrán",
+    check: "Pokud jste změnu neprovedli vy ani nikdo z týmu, zkontrolujte účet v Nastavení a změňte si heslo.",
+  },
+  sk: {
+    invoiceAccountChanged: "Bankový účet na faktúrach bol zmenený",
+    added: "Pribudol bankový účet na platby",
+    changed: "Bankový účet na platby bol zmenený",
+    removed: "Bankový účet na platby bol odstránený",
+    check: "Ak ste zmenu neurobili vy ani nikto z tímu, skontrolujte účet v Nastaveniach a zmeňte si heslo.",
+  },
+  en: {
+    invoiceAccountChanged: "The bank account on your invoices was changed",
+    added: "A bank account for payments was added",
+    changed: "A bank account for payments was changed",
+    removed: "A bank account for payments was removed",
+    check: "If neither you nor anyone in your team made this change, check the account in Settings and change your password.",
+  },
+};
 
 /**
  * vat_status and the legacy dic_vat_payer flag, always written together (the
@@ -161,7 +189,7 @@ export class TenantsService {
         iban: values.bankAccountIban !== undefined ? (values.bankAccountIban ?? null) : before.iban,
       };
       if (after.accountNumber !== before.accountNumber || after.bankCode !== before.bankCode || after.iban !== before.iban) {
-        this.alertBankChange(id, "Bankovní účet na fakturách byl změněn", `${formatAccount(before)} → ${formatAccount(after)}`);
+        this.alertBankChange(id, "invoiceAccountChanged", `${formatAccount(before)} → ${formatAccount(after)}`);
       }
       // Form layout prefs change on every save of the invoice form — not history.
       // Settings objects are logged as "changed" only; their content is in the current settings.
@@ -277,7 +305,7 @@ export class TenantsService {
       .insert(schema.tenantBankAccounts)
       .values({ tenantId, ...this.bankValues(dto) })
       .returning();
-    this.alertBankChange(tenantId, "Přibyl bankovní účet pro platby", `${row.label}: ${formatAccount(row)}`);
+    this.alertBankChange(tenantId, "added", `${row.label}: ${formatAccount(row)}`);
     await this.audit?.record(db, tenantId, {
       entityType: "bank_account",
       entityId: row.id,
@@ -299,7 +327,7 @@ export class TenantsService {
       .where(and(eq(schema.tenantBankAccounts.tenantId, tenantId), eq(schema.tenantBankAccounts.id, id)))
       .returning();
     if (formatAccount(before) !== formatAccount(row)) {
-      this.alertBankChange(tenantId, "Bankovní účet pro platby byl změněn", `${row.label}: ${formatAccount(before)} → ${formatAccount(row)}`);
+      this.alertBankChange(tenantId, "changed", `${row.label}: ${formatAccount(before)} → ${formatAccount(row)}`);
     }
     const changes = this.audit?.diff(before as Record<string, unknown>, row as Record<string, unknown>, ["id", "tenantId", "createdAt", "updatedAt"]) ?? [];
     if (changes.length > 0) {
@@ -317,7 +345,7 @@ export class TenantsService {
       .where(and(eq(schema.tenantBankAccounts.tenantId, tenantId), eq(schema.tenantBankAccounts.id, id)))
       .returning({ id: schema.tenantBankAccounts.id, label: schema.tenantBankAccounts.label, accountNumber: schema.tenantBankAccounts.accountNumber, bankCode: schema.tenantBankAccounts.bankCode, iban: schema.tenantBankAccounts.iban });
     if (deleted.length === 0) throw new NotFoundException("Bank account not found");
-    this.alertBankChange(tenantId, "Bankovní účet pro platby byl odebrán", `${deleted[0].label}: ${formatAccount(deleted[0])}`);
+    this.alertBankChange(tenantId, "removed", `${deleted[0].label}: ${formatAccount(deleted[0])}`);
     await this.audit?.record(db, tenantId, {
       entityType: "bank_account",
       entityId: id,
@@ -333,12 +361,12 @@ export class TenantsService {
    * client's money elsewhere, so every member hears about it, whatever their
    * notification settings.
    */
-  private alertBankChange(tenantId: string, title: string, change: string) {
-    this.notifications?.notifySecurity(tenantId, {
-      title,
-      body: `${change}. Pokud jste změnu neprovedli vy ani nikdo z týmu, zkontrolujte účet v Nastavení a změňte si heslo.`,
+  private alertBankChange(tenantId: string, kind: BankAlertKind, change: string) {
+    this.notifications?.notifySecurity(tenantId, (locale) => ({
+      title: BANK_ALERT[locale][kind],
+      body: `${change}. ${BANK_ALERT[locale].check}`,
       link: "/settings",
-    });
+    }));
   }
 
   private assertAdmin(role: string | undefined) {

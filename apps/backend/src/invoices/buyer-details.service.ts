@@ -6,6 +6,7 @@ import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 import { AuditService } from "../audit/audit.service";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
+import { emailLocaleOf } from "../email/email-render";
 import { EmailService } from "../email/email.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import { buyerDetailsLinkOf } from "../public-links/public-link";
@@ -34,9 +35,9 @@ type InvoiceRow = typeof schema.invoices.$inferSelect;
 type Actor = "customer" | "system";
 
 /** The public page where the customer fills in their details (frontend `app/[locale]/d/[token]`); `link` from `buyerDetailsLinkOf`. */
-export function buyerDetailsUrlOf(link: string): string {
+export function buyerDetailsUrlOf(link: string, locale?: string): string {
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://faktur.app").replace(/\/$/, "");
-  return `${siteUrl}/d/${link}`;
+  return `${siteUrl}${locale ? `/${locale}` : ""}/d/${link}`;
 }
 
 const FIELD_LABELS: Record<string, string> = {
@@ -160,13 +161,16 @@ export class BuyerDetailsService {
       const total = computeInvoiceTotal(items, { reverseCharge: invoice.reverseCharge });
       // Queued in the same transaction: a refused request (sending limits) rolls everything back.
       await assertCanSendEmail(db, tenantId);
+      // The copyable `url` stays unprefixed (it opens in the visitor's language); the e-mail's opens in the draft's.
+      const language = emailLocaleOf(invoice.language);
       await this.email.sendBuyerDetailsRequestEmail(
         {
           to: email,
           companyName: tenant?.companyName ?? "",
           amount: formatInvoiceAmount(total, invoice.currency),
-          url,
+          url: buyerDetailsUrlOf(link, language),
           replyTo: tenant?.email ?? null,
+          language,
         },
         { tenantId, db },
       );

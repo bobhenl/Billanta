@@ -24,10 +24,10 @@ function fakeDb(selects: unknown[][]) {
 const user = { id: "u1", tenantId: "t1", role: "owner" } as never;
 const dto = { email: "ucetni@example.cz", role: "accountant" } as never;
 
-function run(send: () => Promise<void>) {
+function run(send: () => Promise<void>, tenant: Record<string, unknown> = { companyName: "Novák s.r.o." }) {
   const email = { sendInvitationEmail: vi.fn(send), isConfigured: () => true };
   const service = new TeamService({} as never, email as never);
-  return { email, result: service.invite(fakeDb([[], [{ companyName: "Novák s.r.o." }]]) as never, user, dto) };
+  return { email, result: service.invite(fakeDb([[], [tenant]]) as never, user, dto) };
 }
 
 describe("TeamService.invite", () => {
@@ -35,11 +35,19 @@ describe("TeamService.invite", () => {
     const { email, result } = run(async () => undefined);
     const out = await result;
     expect(email.sendInvitationEmail).toHaveBeenCalledWith(
-      expect.objectContaining({ to: "ucetni@example.cz", companyName: "Novák s.r.o.", role: "Účetní", acceptUrl: out.acceptUrl }),
+      expect.objectContaining({ to: "ucetni@example.cz", companyName: "Novák s.r.o.", role: "accountant", locale: "cs", acceptUrl: out.acceptUrl }),
       expect.objectContaining({ tenantId: "t1" }),
     );
     expect(out.emailSent).toBe(true);
-    expect(out.acceptUrl).toMatch(/\/invite\/[\w-]{20,}$/);
+    expect(out.acceptUrl).toMatch(/\/cs\/invite\/[\w-]{20,}$/);
+  });
+
+  it("writes the invitation and its link in the company's language", async () => {
+    const sk = run(async () => undefined, { companyName: "Novák s.r.o.", locale: "sk" });
+    expect((await sk.result).acceptUrl).toMatch(/\/sk\/invite\/[\w-]{20,}$/);
+    expect(sk.email.sendInvitationEmail).toHaveBeenCalledWith(expect.objectContaining({ locale: "sk" }), expect.anything());
+    const de = run(async () => undefined, { companyName: "Novák s.r.o.", locale: "de" });
+    expect((await de.result).acceptUrl).toMatch(/\/en\/invite\/[\w-]{20,}$/);
   });
 
   it("still creates the invitation and returns the link when sending fails", async () => {

@@ -3,7 +3,8 @@ import { ConfigService } from "@nestjs/config";
 import { Resend } from "resend";
 import { fillTemplate } from "../tenants/email-prefs";
 import { clientPortalUrlOf, portalUrlOf } from "../tenants/template-vars";
-import { escapeHtml, htmlToText } from "./email-render";
+import { emailLocaleOf, escapeHtml, htmlToText, type EmailLocale } from "./email-render";
+import { renderInvitationEmail, type InvitationEmailParams } from "./invitation-email";
 import { EmailOutboxService, type OutgoingEmail, type QueueContext } from "./email-outbox.service";
 import type { BrandCredit } from "../invoices/brand-credit";
 
@@ -209,7 +210,10 @@ export class EmailService {
    * once, ignores quiet hours and preferences, no unsubscribe link. Ordinary
    * notifications go through `EmailOutboxService.enqueueNotification` instead.
    */
-  async sendSecurityAlertEmail(params: { to: string; title: string; body?: string | null; url?: string | null }, queue: EmailQueueOptions) {
+  async sendSecurityAlertEmail(
+    params: { to: string; title: string; body?: string | null; url?: string | null; lang?: string | null },
+    queue: EmailQueueOptions,
+  ) {
     await this.queue(
       { kind: "security_alert", category: "transactional", to: params.to, subject: params.title, html: simpleMessageHtml(params) },
       queue,
@@ -260,27 +264,31 @@ export class EmailService {
     if (error) throw new Error(`Resend send failed (${error.name}): ${error.message}`);
   }
 
-  /** "Doplňte prosím své fakturační údaje" – the buyer-details link for a draft (BuyerDetailsService). */
+  /**
+   * "Doplňte prosím své fakturační údaje" – the buyer-details link for a
+   * draft (BuyerDetailsService), in the draft's language: the customer reads
+   * the invoice in it, so they read this request in it too.
+   */
   async sendBuyerDetailsRequestEmail(
-    params: { to: string; companyName: string; amount: string; url: string; replyTo?: string | null },
+    params: { to: string; companyName: string; amount: string; url: string; replyTo?: string | null; language?: string | null },
     queue: EmailQueueOptions,
   ) {
-    const html = `<!doctype html><html lang="cs"><body style="font-family:Arial,sans-serif;background:#f6f7f9;padding:24px;">
+    const lang = emailLocaleOf(params.language);
+    const l = BUYER_DETAILS_LABELS[lang];
+    const html = `<!doctype html><html lang="${lang}"><body style="font-family:Arial,sans-serif;background:#f6f7f9;padding:24px;">
       <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:12px;padding:28px;">
-        <h1 style="font-size:18px;margin:0 0 12px;color:#111;">Doplňte prosím své fakturační údaje</h1>
-        <p style="color:#374151;line-height:1.5;margin:0 0 12px;"><strong>${escapeHtml(params.companyName)}</strong> pro vás připravuje fakturu na
-          <strong>${escapeHtml(params.amount)}</strong>. Aby byla vystavená správně, vyplňte prosím, na koho má znít –
-          název nebo jméno, adresu a případně IČO a DIČ. Zabere to minutu.</p>
-        <p style="margin:20px 0;"><a href="${escapeHtml(params.url)}" style="display:inline-block;background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-size:14px;">Doplnit údaje</a></p>
+        <h1 style="font-size:18px;margin:0 0 12px;color:#111;">${l.heading}</h1>
+        <p style="color:#374151;line-height:1.5;margin:0 0 12px;">${l.body(escapeHtml(params.companyName), escapeHtml(params.amount))}</p>
+        <p style="margin:20px 0;"><a href="${escapeHtml(params.url)}" style="display:inline-block;background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-size:14px;">${l.button}</a></p>
         <p style="color:#9ca3af;font-size:12px;word-break:break-all;">${escapeHtml(params.url)}</p>
-        <p style="color:#9ca3af;font-size:12px;margin-top:16px;">Pokud jste nic neobjednávali, e-mail ignorujte.</p>
+        <p style="color:#9ca3af;font-size:12px;margin-top:16px;">${l.ignore}</p>
       </div></body></html>`;
     await this.queue(
       {
         kind: "buyer_details_request",
         category: "transactional",
         to: params.to,
-        subject: `Doplňte prosím fakturační údaje pro ${params.companyName}`,
+        subject: l.subject(params.companyName),
         html,
         fromName: params.companyName,
         replyTo: params.replyTo ?? null,
@@ -289,23 +297,10 @@ export class EmailService {
     );
   }
 
-  /** "You've been invited to <company> on Billanta" — Settings → Team. */
-  async sendInvitationEmail(params: { to: string; companyName: string; role: string; acceptUrl: string }, queue: EmailQueueOptions) {
-    const esc = (v: string) =>
-      v.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
-    const html = `<!doctype html><html><body style="font-family:Arial,sans-serif;background:#f6f7f9;padding:24px;">
-      <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:12px;padding:32px;">
-        <h1 style="font-size:20px;margin:0 0 16px;color:#111;">Pozvánka do ${esc(params.companyName)}</h1>
-        <p style="color:#374151;line-height:1.5;">Byli jste pozváni do firmy <strong>${esc(params.companyName)}</strong>
-          v aplikaci Billanta s rolí <strong>${esc(params.role)}</strong>. Pozvánka platí 7 dní.</p>
-        <p style="margin:24px 0;"><a href="${esc(params.acceptUrl)}" style="display:inline-block;background:#4f46e5;color:#fff;
-          text-decoration:none;padding:12px 24px;border-radius:8px;font-size:14px;">Přijmout pozvánku</a></p>
-        <p style="color:#6b7280;font-size:12px;">Pokud jste pozvánku nečekali, e-mail ignorujte.</p>
-      </div></body></html>`;
-    await this.queue(
-      { kind: "team_invitation", category: "transactional", to: params.to, subject: `Pozvánka do ${params.companyName} (Billanta)`, html },
-      queue,
-    );
+  /** "<company> invited you to their team" – Settings → Team, in the inviting company's language. */
+  async sendInvitationEmail(params: InvitationEmailParams & { to: string }, queue: EmailQueueOptions) {
+    const { subject, html, text } = renderInvitationEmail(params);
+    await this.queue({ kind: "team_invitation", category: "transactional", to: params.to, subject, html, text }, queue);
   }
 
   private async queue(email: OutgoingEmail, queue: EmailQueueOptions): Promise<void> {
@@ -359,10 +354,40 @@ export interface BillingNoticeDetail {
   value: string;
 }
 
+const BUYER_DETAILS_LABELS: Record<
+  EmailLocale,
+  { subject: (company: string) => string; heading: string; body: (company: string, amount: string) => string; button: string; ignore: string }
+> = {
+  cs: {
+    subject: (c) => `${c}: doplňte prosím své fakturační údaje`,
+    heading: "Doplňte prosím své fakturační údaje",
+    body: (c, a) =>
+      `<strong>${c}</strong> pro vás připravuje fakturu na <strong>${a}</strong>. Aby byla vystavená správně, vyplňte prosím, na koho má znít – název nebo jméno, adresu a případně IČO a DIČ. Zabere to minutu.`,
+    button: "Doplnit údaje",
+    ignore: "Pokud jste nic neobjednávali, e-mail ignorujte.",
+  },
+  sk: {
+    subject: (c) => `${c}: doplňte, prosím, svoje fakturačné údaje`,
+    heading: "Doplňte, prosím, svoje fakturačné údaje",
+    body: (c, a) =>
+      `<strong>${c}</strong> pre vás pripravuje faktúru na <strong>${a}</strong>. Aby bola vystavená správne, vyplňte, prosím, na koho má znieť – názov alebo meno, adresu a prípadne IČO a DIČ. Zaberie to minútu.`,
+    button: "Doplniť údaje",
+    ignore: "Ak ste nič neobjednávali, e-mail ignorujte.",
+  },
+  en: {
+    subject: (c) => `${c}: please fill in your billing details`,
+    heading: "Please fill in your billing details",
+    body: (c, a) =>
+      `<strong>${c}</strong> is preparing an invoice for you for <strong>${a}</strong>. So that it is issued correctly, please fill in who it should be addressed to – the name, the address and, if you have them, the company and VAT numbers. It takes a minute.`,
+    button: "Fill in the details",
+    ignore: "If you did not order anything, you can ignore this e-mail.",
+  },
+};
+
 const OPEN_IN_APP: Record<string, string> = { cs: "Otevřít v Billantě", sk: "Otvoriť v Billante", en: "Open in Billanta" };
 
-function simpleMessageHtml(params: { title: string; body?: string | null; url?: string | null; lang?: string; details?: BillingNoticeDetail[] }): string {
-  const lang = params.lang === "sk" || params.lang === "en" ? params.lang : "cs";
+function simpleMessageHtml(params: { title: string; body?: string | null; url?: string | null; lang?: string | null; details?: BillingNoticeDetail[] }): string {
+  const lang = emailLocaleOf(params.lang);
   const rows = (params.details ?? [])
     .map(
       (d) =>
@@ -391,11 +416,8 @@ function simpleMessageHtml(params: { title: string; body?: string | null; url?: 
  * (that's a separate, concurrently-built module) — this is the URL contract
  * that page is expected to implement.
  */
-type EmailLang = "cs" | "sk" | "en";
-
-function emailLangOf(language: string | null | undefined): EmailLang {
-  return language === "sk" || language === "en" ? language : "cs";
-}
+type EmailLang = EmailLocale;
+const emailLangOf = emailLocaleOf;
 
 /** Wording of the invoice and reminder e-mails per document language. */
 const EMAIL_LABELS: Record<
@@ -523,7 +545,7 @@ function renderInvoiceEmailHtml(params: {
   attachmentNames?: string[];
   credit?: BrandCredit | null;
 }): string {
-  const portalUrl = portalUrlOf(params.publicLink);
+  const portalUrl = portalUrlOf(params.publicLink, params.lang);
   const accent = params.accent && /^#[0-9a-fA-F]{6}$/.test(params.accent) ? params.accent : "#111827";
   const paragraphs = (text: string) => escapeHtml(text).replace(/\r?\n/g, "<br>");
   const l = EMAIL_LABELS[params.lang];
@@ -562,7 +584,7 @@ function renderInvoiceEmailHtml(params: {
           </p>
           ${
             params.clientPortalLink
-              ? `<p style="text-align:center; font-size:13px; margin:12px 0 0;"><a href="${clientPortalUrlOf(params.clientPortalLink)}" style="color:${accent};">${l.allDocuments}</a></p>`
+              ? `<p style="text-align:center; font-size:13px; margin:12px 0 0;"><a href="${clientPortalUrlOf(params.clientPortalLink, params.lang)}" style="color:${accent};">${l.allDocuments}</a></p>`
               : ""
           }
           ${
@@ -600,8 +622,8 @@ function placeholderValues(params: SendInvoiceEmailParams): Record<string, strin
       : "",
     company: params.custom?.companyName ?? "",
     customer: params.custom?.customerName ?? "",
-    link: portalUrlOf(params.publicLink),
-    portal_link: params.clientPortalLink ? clientPortalUrlOf(params.clientPortalLink) : "",
+    link: portalUrlOf(params.publicLink, emailLangOf(params.language)),
+    portal_link: params.clientPortalLink ? clientPortalUrlOf(params.clientPortalLink, emailLangOf(params.language)) : "",
   };
 }
 
