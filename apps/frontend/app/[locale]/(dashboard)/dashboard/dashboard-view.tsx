@@ -303,7 +303,7 @@ export function DashboardView({
                 )}
               >
                 <span className="block truncate text-[11px] font-semibold text-muted-foreground sm:text-xs">{t(`cards.${card}.label`)}</span>
-                <p title={cardValue[card].exact} className={cn('mt-1 truncate text-base font-extrabold tabular-nums sm:text-2xl', alert && 'text-destructive')}>
+                <p title={cardValue[card].exact} className={cn('mt-1 truncate text-base font-extrabold tabular-nums sm:text-2xl', alert && 'text-destructive', cardValue[card].exact && 'amount')}>
                   {cardValue[card].value}
                 </p>
                 <p className="mt-0.5 flex items-center gap-1 text-[11px] text-muted-foreground sm:text-xs">
@@ -401,7 +401,7 @@ export function DashboardView({
                       <span className="flex items-center gap-2 text-sm">
                         <span className="w-4 text-xs font-bold text-muted-foreground">{i + 1}.</span>
                         <span className="min-w-0 flex-1 truncate font-medium">{c.name}</span>
-                        <span className="shrink-0 font-semibold tabular-nums">{money(c.total)}</span>
+                        <span className="shrink-0 font-semibold tabular-nums"><span className="amount">{money(c.total)}</span></span>
                       </span>
                       <span className="ml-6 mt-1 block h-1 rounded-full bg-secondary">
                         <span className="block h-1 rounded-full bg-primary" style={{ width: `${share}%` }} />
@@ -483,7 +483,7 @@ function DocList({ docs, showDue = false }: { docs: DashboardDoc[]; showDue?: bo
               <span title={tGloss(`status.${status}`)} className={cn('hidden shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold sm:inline-flex', STATUS_BADGE_CLASSES[status])}>
                 {status === 'overdue' ? tDoc('overdue') : tStatus(status)}
               </span>
-              <span className="w-28 shrink-0 text-right font-semibold tabular-nums">{formatMoney(doc.total, doc.currency, locale)}</span>
+              <span className="w-28 shrink-0 text-right font-semibold tabular-nums"><span className="amount">{formatMoney(doc.total, doc.currency, locale)}</span></span>
             </Link>
           </li>
         );
@@ -510,11 +510,11 @@ function RevenueChart({ chart, money }: { chart: DashboardSummary['chart']; mone
         <div className="flex gap-4 text-xs">
           <span className="flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-sm bg-primary" />
-            {t('chart.revenue')} <strong className="tabular-nums">{money(totalRevenue)}</strong>
+            {t('chart.revenue')} <strong className="tabular-nums"><span className="amount">{money(totalRevenue)}</span></strong>
           </span>
           <span className="flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-sm bg-muted-foreground/40" />
-            {t('chart.expenses')} <strong className="tabular-nums">{money(totalExpenses)}</strong>
+            {t('chart.expenses')} <strong className="tabular-nums"><span className="amount">{money(totalExpenses)}</span></strong>
           </span>
         </div>
       </div>
@@ -1027,7 +1027,7 @@ function TaxDeadlines({
               )}
             </span>
             {amountOf(item) !== undefined ? (
-              <span className="shrink-0 text-sm font-semibold tabular-nums">{formatMoney(amountOf(item)!, currency, locale)}</span>
+              <span className="shrink-0 text-sm font-semibold tabular-nums"><span className="amount">{formatMoney(amountOf(item)!, currency, locale)}</span></span>
             ) : (
               isTaxAdvanceKind(item.kind) && abilities.manage && (
                 <Link href="/settings/company#zalohy" className="shrink-0 text-xs font-semibold text-primary hover:underline">
@@ -1236,7 +1236,7 @@ function FxRates({ currencies }: { currencies: string[] }) {
                 ))}
               </select>
               <span className="text-muted-foreground">=</span>
-              <span className="font-bold tabular-nums">{converted != null ? formatMoney(converted, 'CZK', locale) : '–'}</span>
+              <span className="font-bold tabular-nums"><span className="amount">{converted != null ? formatMoney(converted, 'CZK', locale) : '–'}</span></span>
             </div>
           )}
         </>

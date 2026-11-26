@@ -23,6 +23,7 @@ import { OfflineIndicator, OfflineProvider } from '@/components/offline-sync';
 import { PromoClaim } from '@/components/promo-claim';
 import { ReferralClaim } from '@/components/referral-claim';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { AmountsToggle, HIDE_AMOUNTS_SCRIPT } from '@/components/amounts-toggle';
 import { TrialBanner } from '@/components/trial-banner';
 import { UserMenu } from '@/components/user-menu';
 import { NOINDEX } from '@/lib/seo';
@@ -119,6 +120,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <NextIntlClientProvider messages={messages}>
       <AccessProvider access={access}>
       <OfflineProvider scope={offlineScope}>
+        <script dangerouslySetInnerHTML={{ __html: HIDE_AMOUNTS_SCRIPT }} />
         <div className="flex min-h-screen flex-col">
           <header className="site-header sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-md">
             <div className="container flex h-14 items-center justify-between gap-3">
@@ -132,6 +134,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
               <div className="flex items-center gap-1.5">
                 <OfflineIndicator />
                 <CommandPalette hidden={paletteHidden} />
+                <AmountsToggle />
                 <NotificationBell />
                 <LanguageSwitcher className="hidden md:inline-flex" />
                 <ThemeToggle className="hidden md:inline-flex" />

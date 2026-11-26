@@ -122,6 +122,13 @@
 }
 
 @layer components {
+  /* The header eye (components/amounts-toggle.tsx) hides money for screen
+     sharing. Blur keeps the layout and the length of each figure. */
+  html[data-hide-amounts] .amount {
+    filter: blur(0.4em);
+    user-select: none;
+  }
+
   /*
    * (i) hint, after VoxelRank's hint() partial: a quiet info icon next to a
    * label. A mouse gets a tooltip (.hint-tip), touch gets the text sliding

@@ -326,7 +326,7 @@ export function PeriodReport({
           return (
             <div key={k.key} className={cn('rounded-lg bg-secondary/60 px-3 py-2', dim && 'opacity-60')}>
               <p className="text-[11px] font-semibold text-muted-foreground">{t(`kpi.${k.key}`)}</p>
-              <p className="mt-0.5 text-base font-bold tabular-nums">{k.value}</p>
+              <p className={cn('mt-0.5 text-base font-bold tabular-nums', !['invoiceCount', 'daysToPay', 'customers', 'newCustomers'].includes(k.key) && 'amount')}>{k.value}</p>
               {dim ? (
                 <p className="text-[11px] text-muted-foreground">{t('customize.noExpensesHint')}</p>
               ) : (
@@ -400,8 +400,8 @@ export function PeriodReport({
                 <tr key={c.currency} className="border-t border-border first:border-t-0">
                   <td className="py-1.5 font-medium">{c.currency}</td>
                   <td className="py-1.5 text-xs text-muted-foreground">{t('docCount', { count: c.count })}</td>
-                  <td className="py-1.5 text-right tabular-nums">{formatMoney(c.amount, c.currency, locale)}</td>
-                  <td className="py-1.5 text-right font-semibold tabular-nums">{c.converted == null ? t('noRate') : money(c.converted)}</td>
+                  <td className="py-1.5 text-right tabular-nums"><span className="amount">{formatMoney(c.amount, c.currency, locale)}</span></td>
+                  <td className="py-1.5 text-right font-semibold tabular-nums"><span className="amount">{c.converted == null ? t('noRate') : money(c.converted)}</span></td>
                 </tr>
               ))}
             </tbody>
@@ -423,7 +423,7 @@ export function PeriodReport({
                       <span className="w-4 text-xs font-bold text-muted-foreground">{i + 1}.</span>
                       <span className="min-w-0 flex-1 truncate font-medium">{c.name}</span>
                       <span className="hidden shrink-0 text-xs text-muted-foreground sm:inline">{t('customerMeta', { count: c.count, share })}</span>
-                      <span className="shrink-0 font-semibold tabular-nums">{money(c.total)}</span>
+                      <span className="shrink-0 font-semibold tabular-nums"><span className="amount">{money(c.total)}</span></span>
                     </span>
                     <span className="ml-6 mt-1 block h-1 rounded-full bg-secondary">
                       <span className="block h-1 rounded-full bg-primary" style={{ width: `${top > 0 ? (c.total / top) * 100 : 0}%` }} />

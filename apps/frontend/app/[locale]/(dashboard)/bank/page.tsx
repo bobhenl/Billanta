@@ -159,7 +159,7 @@ export default async function BankReconciliationPage(props: {
           const body = (
             <>
               <div className="truncate text-[11px] font-semibold text-muted-foreground sm:text-xs">{card.label}</div>
-              <div title={String(card.value)} className={cn('mt-1 truncate text-base font-extrabold tabular-nums sm:text-2xl', card.tone)}>{card.value}</div>
+              <div title={String(card.value)} className={cn('mt-1 truncate text-base font-extrabold tabular-nums sm:text-2xl', card.tone, card.href === null && 'amount')}>{card.value}</div>
             </>
           );
           const box = 'min-w-0 rounded-xl border border-border bg-card p-2.5 sm:p-4';

@@ -430,10 +430,10 @@ export function ExpenseForm({
           </div>
           {Number(amount) > 0 && Number(vatRate) > 0 && (
             <p className="mt-2 text-sm text-muted-foreground">
-              {t(isReverseCharge ? 'vatBreakdownReverseCharge' : 'vatBreakdown', {
+              <span className="amount">{t(isReverseCharge ? 'vatBreakdownReverseCharge' : 'vatBreakdown', {
                 base: formatMoney(basePart, currency, locale),
                 vat: formatMoney(vatPart, currency, locale)
-              })}
+              })}</span>
             </p>
           )}
           {Number(vatRate) > 0 && (

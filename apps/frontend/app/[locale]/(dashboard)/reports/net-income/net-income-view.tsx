@@ -197,7 +197,7 @@ function IncomeList({
             </p>
             <p className="text-xs text-muted-foreground">
               {t('list.paidOn', { date: day(inv.paidAt) })}
-              {inv.currency !== 'CZK' && ` · ${formatMoney(inv.amount, inv.currency, locale)} · ${t(`list.source.${inv.source}`)}`}
+              <span className="amount">{inv.currency !== 'CZK' && ` · ${formatMoney(inv.amount, inv.currency, locale)} · ${t(`list.source.${inv.source}`)}`}</span>
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 sm:justify-end">

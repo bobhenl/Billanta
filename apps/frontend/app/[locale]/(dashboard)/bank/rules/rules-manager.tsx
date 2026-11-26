@@ -697,7 +697,7 @@ function RuleForm({
                         {tx.counterpartyName ?? tx.counterpartyAccount ?? '–'}
                       </span>
                       <span className={cn('shrink-0 font-semibold tabular-nums', Number(tx.amount) < 0 ? 'text-destructive' : 'text-success')}>
-                        {formatMoney(Number(tx.amount), tx.currency, locale)}
+                        <span className="amount">{formatMoney(Number(tx.amount), tx.currency, locale)}</span>
                       </span>
                     </li>
                   ))}

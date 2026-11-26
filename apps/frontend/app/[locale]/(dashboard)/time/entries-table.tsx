@@ -232,7 +232,7 @@ export function EntriesTable({
                 </div>
                 <div className="text-right">
                   <div className="font-mono font-bold tabular-nums">{formatMinutes(e.minutes)}</div>
-                  <div className="text-xs tabular-nums text-muted-foreground">{money(e)}</div>
+                  <div className="text-xs tabular-nums text-muted-foreground"><span className="amount">{money(e)}</span></div>
                   {rowActions(e)}
                 </div>
               </div>
@@ -308,8 +308,8 @@ export function EntriesTable({
                   <td className="max-w-[180px] truncate px-2 py-2.5 text-muted-foreground">{e.contactName ?? '–'}</td>
                   <td className="whitespace-nowrap px-2 py-2.5 text-right font-mono font-semibold tabular-nums">{formatMinutes(e.minutes)}</td>
                   <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums">
-                    {money(e)}
-                    {e.rate != null && <div className="text-xs text-muted-foreground">{formatMoney(e.rate, e.currency ?? 'CZK', locale)}/h</div>}
+                    <span className="amount">{money(e)}</span>
+                    {e.rate != null && <div className="text-xs text-muted-foreground"><span className="amount">{formatMoney(e.rate, e.currency ?? 'CZK', locale)}</span>/h</div>}
                   </td>
                   <td className="px-2 py-2.5">{stateBadge(e)}</td>
                   <td className="px-2 py-2.5" onClick={(ev) => ev.stopPropagation()}>
@@ -327,7 +327,7 @@ export function EntriesTable({
               <td className="whitespace-nowrap px-2 py-2 text-right font-mono font-extrabold tabular-nums">{formatMinutes(sums.minutes)}</td>
               <td className="whitespace-nowrap px-2 py-2 text-right font-extrabold tabular-nums">
                 {sums.amounts.map(([c, a]) => (
-                  <div key={c}>{formatMoney(a, c, locale)}</div>
+                  <div key={c}><span className="amount">{formatMoney(a, c, locale)}</span></div>
                 ))}
               </td>
               <td colSpan={2} />

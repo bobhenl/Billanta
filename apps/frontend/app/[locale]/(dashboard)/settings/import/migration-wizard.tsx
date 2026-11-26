@@ -488,7 +488,7 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
                       <td className="py-1.5 pr-3 font-mono text-xs">{row.number}</td>
                       <td className="py-1.5 pr-3">{row.customer}</td>
                       <td className="py-1.5 pr-3 whitespace-nowrap">{date(row.issueDate)}</td>
-                      <td className="py-1.5 pr-3 text-right whitespace-nowrap">{money(row.total, row.currency)}</td>
+                      <td className="py-1.5 pr-3 text-right whitespace-nowrap"><span className="amount">{money(row.total, row.currency)}</span></td>
                       <td className="py-1.5">{t(`status.${row.status}`)}</td>
                     </tr>
                   ))}

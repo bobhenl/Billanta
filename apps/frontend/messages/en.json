@@ -14004,5 +14004,9 @@
       "bank_rule_not_found": "The rule no longer exists.",
       "forbidden": "You don't have permission to change rules."
     }
+  },
+  "amounts": {
+    "hide": "Hide amounts",
+    "show": "Show amounts"
   }
 }

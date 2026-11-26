@@ -13908,5 +13908,9 @@
       "bank_rule_not_found": "Pravidlo už neexistuje.",
       "forbidden": "Na úpravu pravidiel nemáte oprávnenie."
     }
+  },
+  "amounts": {
+    "hide": "Skryť sumy",
+    "show": "Zobraziť sumy"
   }
 }

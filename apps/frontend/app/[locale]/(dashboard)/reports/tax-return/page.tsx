@@ -129,12 +129,12 @@ export default async function TaxReturnPage({ searchParams }: { searchParams: Pr
       <section className="mt-6 grid gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-sm text-muted-foreground">{t(r.basis === 'accrual' ? 'incomeAccrual' : 'income')}</p>
-          <p className="mt-1 text-2xl font-extrabold tabular-nums">{money(r.income)}</p>
+          <p className="mt-1 text-2xl font-extrabold tabular-nums"><span className="amount">{money(r.income)}</span></p>
           <p className="mt-1 text-xs text-muted-foreground">{t('invoiceCount', { count: r.counts.invoices })}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-sm text-muted-foreground">{t('actualExpenses')}</p>
-          <p className="mt-1 text-2xl font-extrabold tabular-nums">{money(r.actualExpenses)}</p>
+          <p className="mt-1 text-2xl font-extrabold tabular-nums"><span className="amount">{money(r.actualExpenses)}</span></p>
           <p className="mt-1 text-xs text-muted-foreground">{t('expenseCount', { count: r.counts.expenses })}</p>
         </div>
       </section>
@@ -225,7 +225,7 @@ export default async function TaxReturnPage({ searchParams }: { searchParams: Pr
             <Section title={t('flatTaxTitle')} lead={t('flatTaxLead')}>
               {flatTaxOption.available ? (
                 <p className="text-sm">
-                  {t('flatTaxBand', { band: flatTaxOption.band ?? 0, total: money(flatTaxOption.total) })}
+                  <span className="amount">{t('flatTaxBand', { band: flatTaxOption.band ?? 0, total: money(flatTaxOption.total) })}</span>
                 </p>
               ) : (
                 <p className="text-sm">{t(`flatTaxNo.${flatTaxOption.reason ?? 'no_data'}`)}</p>

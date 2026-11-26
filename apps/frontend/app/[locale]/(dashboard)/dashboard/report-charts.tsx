@@ -165,7 +165,7 @@ export function Donut({ title, slices, money, empty }: { title: string; slices: 
                   {s.sub && <span className="text-muted-foreground"> · {s.sub}</span>}
                 </span>
                 <span className="shrink-0 tabular-nums text-muted-foreground">{Math.round((s.value / sum) * 100)} %</span>
-                <span className="hidden shrink-0 font-semibold tabular-nums sm:inline">{money(s.value)}</span>
+                <span className="hidden shrink-0 font-semibold tabular-nums sm:inline"><span className="amount">{money(s.value)}</span></span>
               </li>
             ))}
           </ul>

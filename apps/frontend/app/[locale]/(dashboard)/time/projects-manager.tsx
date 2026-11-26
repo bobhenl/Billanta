@@ -132,7 +132,7 @@ export function ProjectsManager({ projects, contacts, home = 'CZK' }: { projects
               <dl className="mt-2 grid grid-cols-3 gap-2 text-xs">
                 <div>
                   <dt className="text-muted-foreground">{t('columns.rate')}</dt>
-                  <dd className="font-semibold tabular-nums">{p.hourlyRate ? `${formatMoney(Number(p.hourlyRate), p.currency, locale)}/h` : '–'}</dd>
+                  <dd className="font-semibold tabular-nums"><span className="amount">{p.hourlyRate ? `${formatMoney(Number(p.hourlyRate), p.currency, locale)}/h` : '–'}</span></dd>
                 </div>
                 <div>
                   <dt className="text-muted-foreground">{t('state.unbilled')}</dt>

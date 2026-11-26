@@ -163,7 +163,7 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
                   </p>
                 </div>
                 <div className="shrink-0 text-right">
-                  <p className="text-sm font-semibold tabular-nums">{formatMoney(Number(e.amount), e.currency, locale)}</p>
+                  <p className="text-sm font-semibold tabular-nums"><span className="amount">{formatMoney(Number(e.amount), e.currency, locale)}</span></p>
                   <p className={cn('text-xs font-semibold', state === 'paid' ? 'text-muted-foreground' : state === 'overdue' ? 'text-destructive' : 'text-warning')}>
                     {t(`state.${state}`)}
                   </p>
@@ -175,8 +175,8 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
         })}
         {sums.map(([currency, s]) => (
           <li key={currency} className="flex items-center justify-between gap-3 bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
-            <span>{t('vatIncluded', { vat: formatMoney(s.vat, currency, locale) })}</span>
-            <span className="text-sm font-extrabold tabular-nums text-foreground">{formatMoney(s.total, currency, locale)}</span>
+            <span><span className="amount">{t('vatIncluded', { vat: formatMoney(s.vat, currency, locale) })}</span></span>
+            <span className="text-sm font-extrabold tabular-nums text-foreground"><span className="amount">{formatMoney(s.total, currency, locale)}</span></span>
           </li>
         ))}
       </ul>
@@ -236,7 +236,7 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
                     {e.category ? (isKnownCategory(e.category) ? t(`category.${e.category}`) : e.category) : t('uncategorized')}
                   </td>
                   <td className="whitespace-nowrap px-2 py-2.5 tabular-nums text-muted-foreground">{formatDate(e.dueDate, locale) ?? '–'}</td>
-                  <td className="whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums">{formatMoney(Number(e.amount), e.currency, locale)}</td>
+                  <td className="whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums"><span className="amount">{formatMoney(Number(e.amount), e.currency, locale)}</span></td>
                   <td className="px-3 py-2.5">
                     <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', EXPENSE_STATE_CLASSES[state])}>{t(`state.${state}`)}</span>
                     {e.needsReview && (
@@ -255,11 +255,11 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
                     count: rows.filter((r) => r.currency === currency).length
                   })}{' '}
                   ·{' '}
-                  {t('vatIncluded', {
+                  <span className="amount">{t('vatIncluded', {
                     vat: formatMoney(s.vat, currency, locale)
-                  })}
+                  })}</span>
                 </td>
-                <td className="whitespace-nowrap px-2 py-2 text-right font-extrabold tabular-nums">{formatMoney(s.total, currency, locale)}</td>
+                <td className="whitespace-nowrap px-2 py-2 text-right font-extrabold tabular-nums"><span className="amount">{formatMoney(s.total, currency, locale)}</span></td>
                 <td />
               </tr>
             ))}

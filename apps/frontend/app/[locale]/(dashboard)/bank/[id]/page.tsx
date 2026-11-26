@@ -104,7 +104,7 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
           <div className="min-w-0">
             <h1 className="text-2xl font-extrabold tracking-tight tabular-nums">
               {amount > 0 && '+'}
-              {formatMoney(amount, tx.currency, locale)}
+              <span className="amount">{formatMoney(amount, tx.currency, locale)}</span>
             </h1>
             <p className="break-words text-sm text-muted-foreground">
               {tx.counterpartyName ?? t('unknownCounterparty')}
@@ -132,7 +132,7 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
                       <div className="font-semibold">{expense.supplierNameRaw ?? expense.description}</div>
                       <div className="text-xs text-muted-foreground">{expense.needsReview ? t('detail.expenseNeedsReview') : expense.description}</div>
                     </div>
-                    <span className="font-semibold tabular-nums">{formatMoney(Number(expense.amount), expense.currency, locale)}</span>
+                    <span className="font-semibold tabular-nums"><span className="amount">{formatMoney(Number(expense.amount), expense.currency, locale)}</span></span>
                   </Link>
                 ) : (
                   <p className="mt-2 text-sm text-muted-foreground">{t('detail.expenseGone')}</p>
@@ -144,7 +144,7 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
                     <div className="font-semibold">{matched.invoiceNumber ?? t('detail.draft')}</div>
                     <div className="text-xs text-muted-foreground">{matched.contactName}</div>
                   </div>
-                  <span className="font-semibold tabular-nums">{formatMoney(matched.total, matched.currency, locale)}</span>
+                  <span className="font-semibold tabular-nums"><span className="amount">{formatMoney(matched.total, matched.currency, locale)}</span></span>
                 </Link>
               ) : (
                 <p className="mt-2 text-sm text-muted-foreground">{t('detail.invoiceGone')}</p>
@@ -184,7 +184,7 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
                         )}
                         {paid && <div className="mt-0.5 text-xs text-muted-foreground">{t('detail.paidHint')}</div>}
                       </div>
-                      <span className="font-semibold tabular-nums">{formatMoney(invoice.total, invoice.currency, locale)}</span>
+                      <span className="font-semibold tabular-nums"><span className="amount">{formatMoney(invoice.total, invoice.currency, locale)}</span></span>
                       <TransactionActions id={tx.id} status={tx.status} matchInvoiceId={invoice.id} matchPaid={paid} secondary={draftFirst} />
                     </li>
                   ))}

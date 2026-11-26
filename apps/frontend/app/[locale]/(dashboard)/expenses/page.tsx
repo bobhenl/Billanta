@@ -194,7 +194,7 @@ export default async function ExpensesPage(props: { searchParams: Promise<Filter
             className="min-w-0 rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-primary/50 sm:p-4"
           >
             <div className="truncate text-[11px] font-semibold text-muted-foreground sm:text-xs">{card.label}</div>
-            <div title={formatMoney(card.value, home, locale)} className={cn('mt-1 truncate text-sm font-extrabold tabular-nums sm:text-2xl', card.tone)}>
+            <div title={formatMoney(card.value, home, locale)} className={cn('amount mt-1 truncate text-sm font-extrabold tabular-nums sm:text-2xl', card.tone)}>
               {/* Whole units on a phone: with haléře the sum no longer fits a third of the width. */}
               <span className="sm:hidden">{new Intl.NumberFormat(locale, { style: 'currency', currency: home, minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(card.value)}</span>
               <span className="hidden sm:inline">{formatMoney(card.value, home, locale)}</span>

@@ -162,7 +162,7 @@ export default async function TimePage(props: { searchParams: Promise<Filters> }
             )}
           >
             <div className="truncate text-xs font-semibold text-muted-foreground">{card.label}</div>
-            <div title={String(card.value)} className={cn('mt-1 truncate text-lg font-extrabold tabular-nums sm:text-2xl', card.tone)}>{card.value}</div>
+            <div title={String(card.value)} className={cn('mt-1 truncate text-lg font-extrabold tabular-nums sm:text-2xl', card.tone, card.key === 'unbilled' && 'amount')}>{card.value}</div>
             {card.sub && <div className="mt-0.5 truncate text-xs text-muted-foreground">{card.sub}</div>}
           </Link>
         ))}

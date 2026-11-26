@@ -353,7 +353,7 @@ export function InvoiceActions({
               onClick={() => setPayMode(m)}
               className={`rounded-lg border px-3 py-2 font-semibold ${payMode === m ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'}`}
             >
-              {m === 'full' ? t('partial.full', { amount: fmt(remaining) }) : t('partial.partial')}
+              <span className="amount">{m === 'full' ? t('partial.full', { amount: fmt(remaining) }) : t('partial.partial')}</span>
             </button>
           ))}
         </div>
@@ -368,7 +368,7 @@ export function InvoiceActions({
               </select>
             </div>
             {payUnit === 'percent' && payAmount ? <p className="mt-1 text-xs text-muted-foreground">= {fmt(payAmount)}</p> : null}
-            {amountPaid > 0 && <p className="mt-1 text-xs text-muted-foreground">{t('partial.alreadyPaid', { amount: fmt(amountPaid) })}</p>}
+            {amountPaid > 0 && <p className="mt-1 text-xs text-muted-foreground"><span className="amount">{t('partial.alreadyPaid', { amount: fmt(amountPaid) })}</span></p>}
           </div>
         )}
         <label className="block">

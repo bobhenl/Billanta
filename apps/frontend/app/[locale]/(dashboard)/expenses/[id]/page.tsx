@@ -114,7 +114,7 @@ export default async function ExpenseDetailPage(props: { params: Promise<{ id: s
         </div>
         <div className="sm:text-right">
           <div className="text-xs text-muted-foreground">{reverseCharge ? tForm('amountLabelReverseCharge') : t('total')}</div>
-          <div className="text-3xl font-extrabold tabular-nums">{money(amount)}</div>
+          <div className="text-3xl font-extrabold tabular-nums"><span className="amount">{money(amount)}</span></div>
         </div>
       </div>
 
@@ -134,11 +134,11 @@ export default async function ExpenseDetailPage(props: { params: Promise<{ id: s
               <dl className="mt-3 grid grid-cols-2 gap-3">
                 <div className="min-w-0 rounded-lg bg-muted/60 p-3">
                   <dt className="text-xs text-muted-foreground">{t('base')}</dt>
-                  <dd className="mt-1 truncate text-lg font-bold tabular-nums">{money(base)}</dd>
+                  <dd className="mt-1 truncate text-lg font-bold tabular-nums"><span className="amount">{money(base)}</span></dd>
                 </div>
                 <div className="min-w-0 rounded-lg bg-muted/60 p-3">
                   <dt className="text-xs text-muted-foreground">{t('vat', { rate })}</dt>
-                  <dd className="mt-1 truncate text-lg font-bold tabular-nums">{money(vat)}</dd>
+                  <dd className="mt-1 truncate text-lg font-bold tabular-nums"><span className="amount">{money(vat)}</span></dd>
                 </div>
               </dl>
               {reverseCharge && <p className="mt-2 text-xs text-muted-foreground">{tForm('reverseChargeLabel')}</p>}

@@ -77,7 +77,7 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
       { label: t('stats.open', { currency }), value: formatMoney(s.open, currency, locale), tone: s.open > 0 ? 'text-warning' : '' }
     ]),
     // A customer with nothing invoiced yet gets no row of zeros and dashes.
-    ...(billable.length ? [{ label: t('stats.overdue'), value: String(overdue), tone: overdue > 0 ? 'text-destructive' : '' }] : []),
+    ...(billable.length ? [{ label: t('stats.overdue'), value: String(overdue), tone: overdue > 0 ? 'text-destructive' : '', count: true }] : []),
     ...(avgDelay === null
       ? []
       : [
@@ -117,7 +117,7 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
           {stats.map((s) => (
             <div key={s.label} className="min-w-0 rounded-xl border border-border bg-card p-3 sm:p-4">
               <div title={s.label} className="truncate text-xs text-muted-foreground">{s.label}</div>
-              <div title={s.value} className={cn('mt-1 truncate text-lg font-extrabold tabular-nums sm:text-2xl', s.tone)}>{s.value}</div>
+              <div title={s.value} className={cn('mt-1 truncate text-lg font-extrabold tabular-nums sm:text-2xl', s.tone, !('count' in s) && 'amount')}>{s.value}</div>
             </div>
           ))}
         </div>
@@ -151,7 +151,7 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
                         <span className="block text-xs tabular-nums text-muted-foreground sm:hidden">{formatDate(e.expenseDate, locale)}</span>
                       </span>
                       <span className={cn('shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold', EXPENSE_STATE_CLASSES[state])}>{tExp(state)}</span>
-                      <span className="shrink-0 text-right font-semibold tabular-nums sm:w-28">{formatMoney(Number(e.amount), e.currency, locale)}</span>
+                      <span className="shrink-0 text-right font-semibold tabular-nums sm:w-28"><span className="amount">{formatMoney(Number(e.amount), e.currency, locale)}</span></span>
                     </Link>
                   </li>
                 );

@@ -258,7 +258,7 @@ export function ContactsList({
               </div>
               {row.stats && (
                 <div className="hidden shrink-0 text-right text-xs sm:block">
-                  {row.stats.revenueHome > 0 && <p className="font-semibold tabular-nums">{formatMoney(row.stats.revenueHome, home, locale)}</p>}
+                  {row.stats.revenueHome > 0 && <p className="font-semibold tabular-nums"><span className="amount">{formatMoney(row.stats.revenueHome, home, locale)}</span></p>}
                   <p className="text-muted-foreground">
                     {t('stats.invoices', { count: row.stats.count })}
                     {row.stats.lastIssue && ` · ${formatDate(row.stats.lastIssue, locale)}`}

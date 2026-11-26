@@ -303,13 +303,13 @@ export function InvoicesTable({
       case 'variableSymbol':
         return <span className="font-mono text-xs text-muted-foreground">{row.variableSymbol ?? '–'}</span>;
       case 'totalWithoutVat':
-        return <span className="tabular-nums text-muted-foreground">{formatMoney(row.totalWithoutVat, row.currency, locale)}</span>;
+        return <span className="tabular-nums text-muted-foreground"><span className="amount">{formatMoney(row.totalWithoutVat, row.currency, locale)}</span></span>;
       case 'total':
         return (
           <span className="font-semibold tabular-nums">
-            <AmountHover row={row} home={home}>{formatMoney(row.total, row.currency, locale)}</AmountHover>
+            <AmountHover row={row} home={home}><span className="amount">{formatMoney(row.total, row.currency, locale)}</span></AmountHover>
             {row.status === 'issued' && Number(row.amountPaid ?? 0) > 0 && (
-              <span className="block text-xs font-medium text-success">{t('partial.short', { amount: formatMoney(Number(row.amountPaid), row.currency, locale) })}</span>
+              <span className="block text-xs font-medium text-success"><span className="amount">{t('partial.short', { amount: formatMoney(Number(row.amountPaid), row.currency, locale) })}</span></span>
             )}
           </span>
         );
@@ -601,7 +601,7 @@ export function InvoicesTable({
                   {totalsByCurrency.map(([currency, sum], i) => (
                     <span key={currency} className="font-bold tabular-nums">
                       {i > 0 && ' · '}
-                      {formatMoney(sum, currency, locale)}
+                      <span className="amount">{formatMoney(sum, currency, locale)}</span>
                     </span>
                   ))}
                 </td>

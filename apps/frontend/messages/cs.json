@@ -14004,5 +14004,9 @@
       "bank_rule_not_found": "Pravidlo už neexistuje.",
       "forbidden": "Na úpravu pravidel nemáte oprávnění."
     }
+  },
+  "amounts": {
+    "hide": "Skrýt částky",
+    "show": "Zobrazit částky"
   }
 }

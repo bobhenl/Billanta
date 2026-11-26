@@ -214,17 +214,17 @@ export function ContactHover({ contactId, children }: { contactId: string | null
               {data.byCurrency.map((c) => (
                 <span key={c.currency} className="grid grid-cols-[1fr_auto] gap-x-3 tabular-nums">
                   <span className="text-muted-foreground">{t('invoiced')}</span>
-                  <span className="text-right">{money(c.invoiced, c.currency)}</span>
+                  <span className="text-right"><span className="amount">{money(c.invoiced, c.currency)}</span></span>
                   {c.unpaid > 0 && (
                     <>
                       <span className="text-muted-foreground">{t('unpaid')}</span>
-                      <span className="text-right">{money(c.unpaid, c.currency)}</span>
+                      <span className="text-right"><span className="amount">{money(c.unpaid, c.currency)}</span></span>
                     </>
                   )}
                   {c.overdue > 0 && (
                     <>
                       <span className="text-destructive">{t('overdue')}</span>
-                      <span className="text-right font-semibold text-destructive">{money(c.overdue, c.currency)}</span>
+                      <span className="text-right font-semibold text-destructive"><span className="amount">{money(c.overdue, c.currency)}</span></span>
                     </>
                   )}
                 </span>

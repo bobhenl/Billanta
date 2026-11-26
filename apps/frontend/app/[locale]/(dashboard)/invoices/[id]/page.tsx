@@ -226,10 +226,10 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
         </div>
         <div className="sm:text-right">
           <div className="text-xs uppercase tracking-wide text-muted-foreground">{t('totalDue')}</div>
-          <div className="text-3xl font-extrabold tabular-nums">{money(totals.totalWithVat)}</div>
+          <div className="text-3xl font-extrabold tabular-nums"><span className="amount">{money(totals.totalWithVat)}</span></div>
           {invoice.status === 'issued' && Number(invoice.amountPaid ?? 0) > 0 && (
             <div className="mt-1 text-sm">
-              <span className="font-semibold text-success">{t('partial.paid', { amount: money(Number(invoice.amountPaid)) })}</span>
+              <span className="font-semibold text-success"><span className="amount">{t('partial.paid', { amount: money(Number(invoice.amountPaid)) })}</span></span>
               <span className="text-muted-foreground"> · {t('partial.remaining', { amount: money(Math.max(0, totals.totalWithVat - Number(invoice.amountPaid))) })}</span>
             </div>
           )}
@@ -346,7 +346,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               <li key={item.id} className="py-2.5 first:pt-0">
                 <div className="flex justify-between gap-3">
                   <span className="min-w-0 break-words">{item.description}</span>
-                  <span className="shrink-0 font-semibold tabular-nums">{money(item.lineTotalWithoutVat)}</span>
+                  <span className="shrink-0 font-semibold tabular-nums"><span className="amount">{money(item.lineTotalWithoutVat)}</span></span>
                 </div>
                 <div className="mt-0.5 text-xs tabular-nums text-muted-foreground">
                   {Number(item.quantity).toLocaleString(locale)} {item.unit ?? ''} × {money(Number(item.unitPrice))}
@@ -375,14 +375,14 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                     <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums">
                       {Number(item.quantity).toLocaleString(locale)} {item.unit ?? ''}
                     </td>
-                    <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums">{money(Number(item.unitPrice))}</td>
+                    <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums"><span className="amount">{money(Number(item.unitPrice))}</span></td>
                     <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums text-muted-foreground">
                       {Number(item.discountPercent) ? `${Number(item.discountPercent)} %` : '–'}
                     </td>
                     <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums text-muted-foreground">
                       {item.vatRate === null ? '–' : `${Number(item.vatRate)} %`}
                     </td>
-                    <td className="whitespace-nowrap py-2.5 pl-2 text-right font-semibold tabular-nums">{money(item.lineTotalWithoutVat)}</td>
+                    <td className="whitespace-nowrap py-2.5 pl-2 text-right font-semibold tabular-nums"><span className="amount">{money(item.lineTotalWithoutVat)}</span></td>
                   </tr>
                 ))}
               </tbody>
@@ -395,27 +395,27 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                 <div key={r.vatRatePercent} className="flex justify-between text-muted-foreground">
                   <dt>{t('vatAt', { rate: r.vatRatePercent })}</dt>
                   <dd className="tabular-nums">
-                    {money(r.totalWithoutVat)} + {money(r.vatAmount)}
+                    <span className="amount">{money(r.totalWithoutVat)} + {money(r.vatAmount)}</span>
                   </dd>
                 </div>
               ))}
               <div className="flex justify-between border-t border-border pt-1">
                 <dt>{t('withoutVat')}</dt>
-                <dd className="tabular-nums">{money(totals.totalWithoutVat)}</dd>
+                <dd className="tabular-nums"><span className="amount">{money(totals.totalWithoutVat)}</span></dd>
               </div>
               <div className="flex justify-between">
                 <dt>{t('vatTotal')}</dt>
-                <dd className="tabular-nums">{money(totals.totalVat)}</dd>
+                <dd className="tabular-nums"><span className="amount">{money(totals.totalVat)}</span></dd>
               </div>
               <div className="flex justify-between text-base font-extrabold">
                 <dt>{t('totalDue')}</dt>
-                <dd className="tabular-nums">{money(totals.totalWithVat)}</dd>
+                <dd className="tabular-nums"><span className="amount">{money(totals.totalWithVat)}</span></dd>
               </div>
             </dl>
           </div>
           {quote && (
             <p className="mt-3 text-right text-xs text-muted-foreground">
-              {fx.kind === 'hidden'
+              <span className="amount">{fx.kind === 'hidden'
                 ? t('fxHidden', {
                     rate: quote.value.toLocaleString(locale, { maximumFractionDigits: 4 }),
                     pair: quote.pair,
@@ -436,7 +436,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                     pair: quote.pair,
                     vat: formatMoney(totals.totalVat * rate, home, locale),
                     total: formatMoney(totals.totalWithVat * rate, home, locale)
-                  })}
+                  })}</span>
             </p>
           )}
           {invoice.reverseCharge && <p className="mt-3 text-xs text-muted-foreground">{t('reverseChargeNote')}</p>}
@@ -489,7 +489,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                     <dt className="text-muted-foreground">{t('net.fees')}</dt>
                     <dd className="text-right tabular-nums text-destructive">
                       −{czk(fees * rate)}
-                      {invoice.currency !== home && <span className="block text-xs text-muted-foreground">{money(fees)}</span>}
+                      {invoice.currency !== home && <span className="block text-xs text-muted-foreground"><span className="amount">{money(fees)}</span></span>}
                     </dd>
                   </div>
                 )}
@@ -540,7 +540,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                 <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-bold [&::-webkit-details-marker]:hidden">
                   <ArrowDownLeft className="h-4 w-4 text-primary" />
                   <span className="flex-1">{t('received.title')}</span>
-                  <span className="font-extrabold tabular-nums">{formatMoney(Number(p.amount), p.currency, locale)}</span>
+                  <span className="font-extrabold tabular-nums"><span className="amount">{formatMoney(Number(p.amount), p.currency, locale)}</span></span>
                   <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
                 </summary>
                 <dl className="mt-3 space-y-1.5 text-sm">
