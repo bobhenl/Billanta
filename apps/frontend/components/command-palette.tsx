@@ -392,11 +392,11 @@ export function CommandPalette({ hidden = [] }: { hidden?: string[] }) {
           }}
           aria-label={t('palette.open')}
           title={`${t('palette.open')} (Ctrl K)`}
-          className="flex items-center gap-2 rounded-l-full py-1.5 pl-2.5 pr-1.5 hover:text-foreground lg:min-w-[9.5rem]"
+          className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-l-full py-1.5 pl-2.5 pr-1.5 hover:text-foreground lg:min-w-[9.5rem]"
         >
           <Search className="h-4 w-4" />
           <span className="hidden flex-1 text-left lg:inline">{t('palette.trigger')}</span>
-          <kbd className="hidden rounded border border-border bg-background px-1.5 text-[10px] font-semibold lg:inline">Ctrl K</kbd>
+          <kbd className="hidden whitespace-nowrap rounded border border-border bg-background px-1.5 text-[10px] font-semibold lg:inline">Ctrl K</kbd>
         </button>
         <button
           type="button"
