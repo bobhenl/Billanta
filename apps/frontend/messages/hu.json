@@ -2088,7 +2088,8 @@
         "all": "Teljes könyvelőjegyzék",
         "picked": "A(z) {email} ki van töltve. Ellenőrizze a szerepkört, és küldje el a meghívást."
       },
-      "copyLink": "Link másolása"
+      "copyLink": "Link másolása",
+      "seatLimit": "A csomagjában nincs több szabad hely. A Plus 3 felhasználós, a Business 10. A könyvelők nem számítanak bele (legfeljebb 2)."
     },
     "exports": {
       "title": "Exportok a könyvelőnek",
@@ -5251,7 +5252,30 @@
       "transactionId": "Tranzakcióazonosító",
       "open": "Megnyitás a banknál"
     },
-    "partnerDefaultShares": "alapértelmezett arányok"
+    "partnerDefaultShares": "alapértelmezett arányok",
+    "lockedRow": "Rejtett részletek",
+    "lock": {
+      "title": "A részletek rejtettek",
+      "intro": "A megtekintéshez adja meg a jelszavát.",
+      "password": "Jelszó",
+      "open": "Megjelenítés",
+      "note": "Megerősítés után a rejtett számlák 15 percig láthatók maradnak ebben a böngészőben. Az összesítésekbe és exportokba továbbra is beleszámítanak.",
+      "badge": "Rejtett részletek",
+      "lock": "Részletek elrejtése – jelszavas megerősítéssel",
+      "unlock": "Megjelenítés jelszó nélkül",
+      "lockHint": "Az ügyfelet, a megjegyzéseket és a fájlokat csak az látja, aki újra megadja a saját jelszavát",
+      "relock": "Újra elrejtés",
+      "lockedToast": "Részletek elrejtve",
+      "unlockedToast": "A részletek jelszó nélkül látszanak",
+      "teamHint": "Ez a zárolatlan vagy közös számítógépre pillantók ellen véd, nem a kollégák ellen: minden csapattag a saját jelszavával fedi fel őket. Ha egy számlát csak bizonyos emberek láthatnak, az ügyfélnél állítsa be, kinek van hozzáférése.",
+      "teamLink": "Beállítás: ki mit lát a csapatban",
+      "errors": {
+        "wrong_current": "Hibás jelszó.",
+        "reauth_required": "A fiókjához nincs jelszó. Jelentkezzen ki, majd be, és próbálja újra.",
+        "too_many_attempts": "Túl sok próbálkozás. Próbálja újra néhány perc múlva.",
+        "generic": "Nem sikerült. Próbálja újra."
+      }
+    }
   },
   "invite": {
     "title": "Meghívás a csapatba",
@@ -13918,14 +13942,20 @@
       "partnerCreditsIn": "Adókedvezmények {year}",
       "perOnce": "egyszeri",
       "from": "Ettől",
-      "to": "Eddig"
+      "to": "Eddig",
+      "partnerMember": "Csapattag",
+      "partnerMemberNone": "Nincs a csapatban",
+      "partnerClaimOwn": "Az általa kiállított számlák az övéi"
     },
     "errors": {
       "duplicate_partner": "Két partnernek azonos az azonosítója. Távolítsa el az egyiket, és adja hozzá újra.",
       "shares_must_be_positive": "Legalább egy részesedésnek nullánál nagyobbnak kell lennie.",
       "generic": "A beállításokat nem sikerült menteni. Ellenőrizze a számokat, és próbálja újra.",
       "expense_date_required": "Az egyszeri kiadáshoz dátum kell.",
-      "expense_range_invalid": "A kiadás előbb ér véget, mint ahogy kezdődik."
+      "expense_range_invalid": "A kiadás előbb ér véget, mint ahogy kezdődik.",
+      "duplicate_partner_user": "Egy csapattag csak egy társhoz kapcsolható.",
+      "partner_user_not_member": "Ez a személy már nincs a csapatban.",
+      "partner_limit": "Több társhoz magasabb csomag kell. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
       "title": "Csak tulajdonosoknak és adminisztrátoroknak",

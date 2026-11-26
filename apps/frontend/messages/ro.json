@@ -2088,7 +2088,8 @@
         "all": "Catalogul complet de contabili",
         "picked": "{email} a fost completat. Verificați rolul și trimiteți invitația."
       },
-      "copyLink": "Copiați linkul"
+      "copyLink": "Copiați linkul",
+      "seatLimit": "Planul dvs. nu mai are locuri libere. Plus are 3 utilizatori, Business 10. Contabilii nu se numără (până la 2)."
     },
     "exports": {
       "title": "Exporturi pentru contabil",
@@ -5251,7 +5252,30 @@
       "transactionId": "ID tranzacție",
       "open": "Deschide în bancă"
     },
-    "partnerDefaultShares": "cote implicite"
+    "partnerDefaultShares": "cote implicite",
+    "lockedRow": "Detalii ascunse",
+    "lock": {
+      "title": "Detaliile sunt ascunse",
+      "intro": "Introduceți parola pentru a le vedea.",
+      "password": "Parolă",
+      "open": "Afișează",
+      "note": "După confirmare, facturile ascunse rămân vizibile 15 minute în acest browser. Se numără în continuare în totaluri și exporturi.",
+      "badge": "Detalii ascunse",
+      "lock": "Ascunde detaliile – confirmare cu parolă",
+      "unlock": "Afișează fără parolă",
+      "lockHint": "Clientul, notițele și fișierele le vede doar cine își introduce din nou propria parolă",
+      "relock": "Ascunde din nou",
+      "lockedToast": "Detalii ascunse",
+      "unlockedToast": "Detaliile se afișează fără parolă",
+      "teamHint": "Aceasta protejează de privirile asupra unui calculator neblocat sau partajat, nu de colegi: fiecare membru al echipei le dezvăluie cu propria parolă. Dacă factura trebuie să o vadă doar anumite persoane, setați la client cine are acces.",
+      "teamLink": "Setează cine din echipă ce vede",
+      "errors": {
+        "wrong_current": "Parolă greșită.",
+        "reauth_required": "Contul dvs. nu are parolă. Deconectați-vă și conectați-vă din nou, apoi încercați iar.",
+        "too_many_attempts": "Prea multe încercări. Încercați peste câteva minute.",
+        "generic": "Nu a funcționat. Încercați din nou."
+      }
+    }
   },
   "invite": {
     "title": "Invitație în echipă",
@@ -13918,14 +13942,20 @@
       "partnerCreditsIn": "Deduceri în {year}",
       "perOnce": "o singură dată",
       "from": "De la",
-      "to": "Până la"
+      "to": "Până la",
+      "partnerMember": "Membru al echipei",
+      "partnerMemberNone": "Nu e în echipă",
+      "partnerClaimOwn": "Facturile emise de el sunt ale lui"
     },
     "errors": {
       "duplicate_partner": "Doi parteneri au același id. Eliminați unul și adăugați-l din nou.",
       "shares_must_be_positive": "Cel puțin o cotă trebuie să fie peste zero.",
       "generic": "Setările nu au putut fi salvate. Verificați numerele și încercați din nou.",
       "expense_date_required": "O cheltuială unică are nevoie de o dată.",
-      "expense_range_invalid": "O cheltuială se termină înainte să înceapă."
+      "expense_range_invalid": "O cheltuială se termină înainte să înceapă.",
+      "duplicate_partner_user": "Un membru al echipei poate fi legat de un singur asociat.",
+      "partner_user_not_member": "Persoana nu mai face parte din echipă.",
+      "partner_limit": "Mai mulți asociați necesită un plan superior. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
       "title": "Doar pentru proprietari și administratori",

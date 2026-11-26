@@ -2088,7 +2088,8 @@
         "all": "Volledige boekhoudersgids",
         "picked": "{email} is ingevuld. Controleer de rol en verstuur de uitnodiging."
       },
-      "copyLink": "Link kopiëren"
+      "copyLink": "Link kopiëren",
+      "seatLimit": "Je abonnement heeft geen vrije plek meer. Plus heeft 3 gebruikers, Business 10. Boekhouders tellen niet mee (tot 2)."
     },
     "exports": {
       "title": "Exports voor je boekhouder",
@@ -5251,7 +5252,30 @@
       "transactionId": "Transactie-ID",
       "open": "Openen bij bank"
     },
-    "partnerDefaultShares": "standaardaandelen"
+    "partnerDefaultShares": "standaardaandelen",
+    "lockedRow": "Verborgen details",
+    "lock": {
+      "title": "Details zijn verborgen",
+      "intro": "Voer je wachtwoord in om ze te zien.",
+      "password": "Wachtwoord",
+      "open": "Tonen",
+      "note": "Na bevestiging blijven verborgen facturen 15 minuten zichtbaar in deze browser. Ze tellen nog steeds mee in totalen en exports.",
+      "badge": "Verborgen details",
+      "lock": "Details verbergen – bevestigen met wachtwoord",
+      "unlock": "Tonen zonder wachtwoord",
+      "lockHint": "Alleen wie opnieuw zijn eigen wachtwoord invoert, ziet de klant, notities en bestanden",
+      "relock": "Opnieuw verbergen",
+      "lockedToast": "Details verborgen",
+      "unlockedToast": "Details worden zonder wachtwoord getoond",
+      "teamHint": "Dit beschermt tegen meekijken op een niet-vergrendelde of gedeelde computer, niet tegen collega's: elk teamlid maakt ze zichtbaar met zijn eigen wachtwoord. Moeten alleen bepaalde mensen een factuur zien, stel dan bij de klant in wie toegang heeft.",
+      "teamLink": "Instellen wie in het team wat ziet",
+      "errors": {
+        "wrong_current": "Onjuist wachtwoord.",
+        "reauth_required": "Je account heeft geen wachtwoord. Log uit en weer in en probeer het opnieuw.",
+        "too_many_attempts": "Te veel pogingen. Probeer het over een paar minuten opnieuw.",
+        "generic": "Dat lukte niet. Probeer het opnieuw."
+      }
+    }
   },
   "invite": {
     "title": "Uitnodiging voor het team",
@@ -13918,14 +13942,20 @@
       "partnerCreditsIn": "Heffingskortingen in {year}",
       "perOnce": "eenmalig",
       "from": "Van",
-      "to": "Tot"
+      "to": "Tot",
+      "partnerMember": "Teamlid",
+      "partnerMemberNone": "Niet in het team",
+      "partnerClaimOwn": "Facturen die diegene maakt, zijn van hem of haar"
     },
     "errors": {
       "duplicate_partner": "Twee partners hebben dezelfde id. Verwijder er een en voeg hem opnieuw toe.",
       "shares_must_be_positive": "Minstens één aandeel moet groter zijn dan nul.",
       "generic": "De instellingen konden niet worden opgeslagen. Controleer de getallen en probeer het opnieuw.",
       "expense_date_required": "Een eenmalige uitgave heeft een datum nodig.",
-      "expense_range_invalid": "Een uitgave eindigt voordat ze begint."
+      "expense_range_invalid": "Een uitgave eindigt voordat ze begint.",
+      "duplicate_partner_user": "Een teamlid kan maar aan één vennoot gekoppeld zijn.",
+      "partner_user_not_member": "Die persoon zit niet meer in het team.",
+      "partner_limit": "Meer vennoten vragen een hoger abonnement. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
       "title": "Alleen voor eigenaren en beheerders",

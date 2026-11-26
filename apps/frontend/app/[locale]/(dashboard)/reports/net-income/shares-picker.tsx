@@ -43,9 +43,9 @@ export function partnerColors(partners: Pick<TaxPartner, 'id'>[]): Record<string
   return Object.fromEntries(partners.map((p, i) => [p.id, PARTNER_COLORS[i % PARTNER_COLORS.length]!]));
 }
 
-/** Partners with a positive weight; the defaults when nothing is set. */
-function activeOf(value: Shares | null, partners: TaxPartner[]): Set<string> {
-  const src = value ?? Object.fromEntries(partners.map((p) => [p.id, p.share]));
+/** Partners with a positive weight; the fallback or the defaults when nothing is set. */
+function activeOf(value: Shares | null, partners: TaxPartner[], fallback: Shares | null): Set<string> {
+  const src = value ?? fallback ?? Object.fromEntries(partners.map((p) => [p.id, p.share]));
   return new Set(partners.filter((p) => (src[p.id] ?? 0) > 0).map((p) => p.id));
 }
 
@@ -67,18 +67,21 @@ export function SharesPicker({
   value,
   onChange,
   disabled,
-  label
+  label,
+  fallback = null
 }: {
   partners: TaxPartner[];
   value: Shares | null;
   onChange: (shares: Shares | null) => void;
   disabled?: boolean;
   label: string;
+  /** What applies while nothing is set, if not the default shares (the invoice creator's partner). */
+  fallback?: Shares | null;
 }) {
   const t = useTranslations('netIncome.shares');
   const tags = partnerTags(partners);
   const colors = partnerColors(partners);
-  const active = activeOf(value, partners);
+  const active = activeOf(value, partners, fallback);
   const ratio = unequal(value, partners);
   const [custom, setCustom] = useState(false);
   const [weights, setWeights] = useState<Record<string, string>>(() =>

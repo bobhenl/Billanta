@@ -2089,7 +2089,8 @@
         "all": "Celý adresár účtovníkov",
         "picked": "E-mail {email} je vyplnený. Skontrolujte rolu a pošlite pozvánku."
       },
-      "copyLink": "Kopírovať odkaz"
+      "copyLink": "Kopírovať odkaz",
+      "seatLimit": "Váš tarif už nemá voľné miesto v tíme. Plus má 3 používateľov, Firma 10. Účtovníci sa nepočítajú (max. 2)."
     },
     "exports": {
       "title": "Exporty pre účtovníka",
@@ -5259,20 +5260,22 @@
       "transactionId": "ID transakcie",
       "open": "Otvoriť v banke"
     },
-    "lockedRow": "Zamknutá faktúra",
+    "lockedRow": "Skryté detaily",
     "lock": {
-      "title": "Faktúra je zamknutá",
+      "title": "Detaily sú skryté",
       "intro": "Na zobrazenie zadajte svoje heslo.",
       "password": "Heslo",
-      "open": "Odomknúť",
-      "note": "Zamknuté faktúry zostanú otvorené 15 minút v tomto prehliadači. Do súčtov a exportov sa počítajú ďalej.",
-      "badge": "Zamknuté",
-      "lock": "Zamknúť",
-      "unlock": "Zrušiť zámok",
-      "lockHint": "Zákazníka, poznámky a dokumenty uvidí len ten, kto znova zadá heslo",
-      "relock": "Znova zamknúť",
-      "lockedToast": "Faktúra je zamknutá",
-      "unlockedToast": "Zámok zrušený",
+      "open": "Zobraziť",
+      "note": "Po overení zostanú skryté faktúry viditeľné 15 minút v tomto prehliadači. Do súčtov a exportov sa počítajú ďalej.",
+      "badge": "Skryté detaily",
+      "lock": "Skryť detaily – overiť heslom",
+      "unlock": "Zobrazovať bez hesla",
+      "lockHint": "Zákazníka, poznámky a dokumenty uvidí len ten, kto znova zadá svoje heslo",
+      "relock": "Znova skryť",
+      "lockedToast": "Detaily sú skryté",
+      "unlockedToast": "Detaily sa zobrazujú bez hesla",
+      "teamHint": "Chráni pred cudzím pohľadom na nezamknutom alebo zdieľanom počítači, nie pred kolegami: každý člen tímu si ich odkryje vlastným heslom. Ak má faktúru vidieť len niekto z tímu, nastavte pri klientovi, kto k nemu má prístup.",
+      "teamLink": "Nastaviť, kto z tímu čo vidí",
       "errors": {
         "wrong_current": "Heslo nesedí.",
         "reauth_required": "Váš účet nemá heslo. Odhláste sa a znova sa prihláste, potom to skúste znova.",
@@ -13851,14 +13854,20 @@
       "partnerCreditsIn": "Zľavy na dani v roku {year}",
       "perOnce": "jednorazovo",
       "from": "Od",
-      "to": "Do"
+      "to": "Do",
+      "partnerMember": "Člen tímu",
+      "partnerMemberNone": "Nie je v tíme",
+      "partnerClaimOwn": "Faktúry, ktoré vystaví, sú jeho"
     },
     "errors": {
       "duplicate_partner": "Dvaja spoločníci majú rovnaké označenie. Odoberte jedného a pridajte ho znova.",
       "shares_must_be_positive": "Aspoň jeden podiel musí byť väčší ako nula.",
       "generic": "Nastavenie sa nepodarilo uložiť. Skontrolujte čísla a skúste to znova.",
       "expense_date_required": "Jednorazový výdavok potrebuje dátum.",
-      "expense_range_invalid": "Pri výdavku je mesiac „do“ skôr ako „od“."
+      "expense_range_invalid": "Pri výdavku je mesiac „do“ skôr ako „od“.",
+      "duplicate_partner_user": "Jeden člen tímu môže byť len pri jednom spoločníkovi.",
+      "partner_user_not_member": "Vybraný človek už nie je v tíme.",
+      "partner_limit": "Ďalších spoločníkov umožňuje vyšší tarif. Zadarmo 1, Start 2, Plus 3, Firma 10."
     },
     "noAccess": {
       "title": "Len pre majiteľov a administrátorov",

@@ -2088,7 +2088,8 @@
         "all": "Directorio completo de contables",
         "picked": "Se ha rellenado {email}. Compruebe el rol y envíe la invitación."
       },
-      "copyLink": "Copiar enlace"
+      "copyLink": "Copiar enlace",
+      "seatLimit": "Tu plan no tiene plazas libres. Plus tiene 3 usuarios, Business 10. Los contables no cuentan (hasta 2)."
     },
     "exports": {
       "title": "Exportaciones para el contable",
@@ -5251,7 +5252,30 @@
       "transactionId": "ID de la transacción",
       "open": "Abrir en el banco"
     },
-    "partnerDefaultShares": "partes por defecto"
+    "partnerDefaultShares": "partes por defecto",
+    "lockedRow": "Detalles ocultos",
+    "lock": {
+      "title": "Los detalles están ocultos",
+      "intro": "Introduce tu contraseña para verlos.",
+      "password": "Contraseña",
+      "open": "Mostrar",
+      "note": "Tras confirmar, las facturas ocultas siguen visibles 15 minutos en este navegador. Siguen contando en los totales y exportaciones.",
+      "badge": "Detalles ocultos",
+      "lock": "Ocultar detalles – confirmar con contraseña",
+      "unlock": "Mostrar sin contraseña",
+      "lockHint": "Solo quien vuelva a introducir su propia contraseña ve el cliente, las notas y los archivos",
+      "relock": "Volver a ocultar",
+      "lockedToast": "Detalles ocultos",
+      "unlockedToast": "Los detalles se muestran sin contraseña",
+      "teamHint": "Protege frente a miradas en un ordenador desbloqueado o compartido, no frente a los compañeros: cada miembro del equipo los muestra con su propia contraseña. Si solo ciertas personas deben ver una factura, indica en el cliente quién tiene acceso.",
+      "teamLink": "Definir quién ve qué en el equipo",
+      "errors": {
+        "wrong_current": "Contraseña incorrecta.",
+        "reauth_required": "Tu cuenta no tiene contraseña. Cierra sesión, vuelve a entrar e inténtalo de nuevo.",
+        "too_many_attempts": "Demasiados intentos. Inténtalo en unos minutos.",
+        "generic": "No ha funcionado. Inténtalo de nuevo."
+      }
+    }
   },
   "invite": {
     "title": "Invitación al equipo",
@@ -13918,14 +13942,20 @@
       "partnerCreditsIn": "Deducciones en {year}",
       "perOnce": "una vez",
       "from": "Desde",
-      "to": "Hasta"
+      "to": "Hasta",
+      "partnerMember": "Miembro del equipo",
+      "partnerMemberNone": "Fuera del equipo",
+      "partnerClaimOwn": "Las facturas que cree son suyas"
     },
     "errors": {
       "duplicate_partner": "Dos socios tienen el mismo id. Quite uno y vuelva a añadirlo.",
       "shares_must_be_positive": "Al menos una participación debe ser mayor que cero.",
       "generic": "No se han podido guardar los ajustes. Compruebe los números y vuelva a intentarlo.",
       "expense_date_required": "Un gasto puntual necesita una fecha.",
-      "expense_range_invalid": "Un gasto termina antes de empezar."
+      "expense_range_invalid": "Un gasto termina antes de empezar.",
+      "duplicate_partner_user": "Un miembro del equipo solo puede vincularse a un socio.",
+      "partner_user_not_member": "Esa persona ya no está en el equipo.",
+      "partner_limit": "Más socios requieren un plan superior. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
       "title": "Solo para propietarios y administradores",

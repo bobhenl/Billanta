@@ -28,6 +28,10 @@ const partnerSchema = z.object({
   share: money(0, 1_000_000),
   /** Yearly slevy na dani (taxpayer, spouse, children…), Kč. */
   tax_credits: money(0, 10_000_000),
+  /** The team member this partner is, if they have an account in the company. */
+  user_id: z.string().uuid().nullish(),
+  /** Invoices that member creates are theirs, unless an invoice has its own split. */
+  claim_own: z.boolean().optional(),
 });
 
 /**
@@ -110,6 +114,8 @@ export const taxModelSchema = z
   .superRefine((m, ctx) => {
     const ids = m.partners.map((p) => p.id);
     if (new Set(ids).size !== ids.length) ctx.addIssue({ code: "custom", message: "duplicate_partner" });
+    const users = m.partners.map((p) => p.user_id).filter(Boolean);
+    if (new Set(users).size !== users.length) ctx.addIssue({ code: "custom", message: "duplicate_partner_user" });
     if (!m.partners.some((p) => p.share > 0)) ctx.addIssue({ code: "custom", message: "shares_must_be_positive" });
   });
 
@@ -167,4 +173,15 @@ export function settingsFor(model: TaxModel, year: number): ResolvedYear {
     tax_credits: entry?.tax_credits ?? 0,
     partners,
   };
+}
+
+/**
+ * Whose invoice it is when it has no split of its own: the partner linked to
+ * the member who created it, if that partner claims their own invoices;
+ * otherwise null, i.e. the default shares.
+ */
+export function creatorShares(model: TaxModel, createdByUserId: string | null): Shares | null {
+  if (!createdByUserId) return null;
+  const partner = model.partners.find((p) => p.claim_own && p.user_id === createdByUserId);
+  return partner ? { [partner.id]: 1 } : null;
 }

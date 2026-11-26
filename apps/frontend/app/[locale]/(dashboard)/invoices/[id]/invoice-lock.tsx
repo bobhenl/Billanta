@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react';
 import { Lock, LockOpen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useRouter } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { PasswordInput } from '@/components/password-input';
 import { toast } from '@/components/toaster';
 import { buttonClass, inputClass } from '@/lib/ui-classes';
@@ -54,7 +54,21 @@ export function UnlockInvoice() {
         </button>
       </form>
       <p className="mt-3 text-xs text-muted-foreground">{t('note')}</p>
+      <TeamHint />
     </div>
+  );
+}
+
+/** People read "hidden" as "hidden from colleagues", so say plainly that it isn't and point to what is. */
+function TeamHint() {
+  const t = useTranslations('doc.lock');
+  return (
+    <p className="mt-2 text-xs text-muted-foreground">
+      {t('teamHint')}{' '}
+      <Link href="/settings/team" className="font-medium text-primary underline-offset-2 hover:underline">
+        {t('teamLink')}
+      </Link>
+    </p>
   );
 }
 
@@ -85,24 +99,27 @@ export function InvoiceLockBar({ id, locked, canLock }: { id: string; locked: bo
   }
 
   return (
-    <div className="mb-3 flex flex-wrap items-center gap-2 text-sm">
-      {locked && (
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 font-semibold text-primary">
-          <Lock className="h-3.5 w-3.5" aria-hidden="true" />
-          {t('badge')}
-        </span>
-      )}
-      {canLock && (
-        <button type="button" onClick={toggle} disabled={pending} className={cn(buttonClass.secondary, 'h-8 px-3 text-xs')} title={locked ? undefined : t('lockHint')}>
-          {locked ? <LockOpen className="mr-1.5 h-3.5 w-3.5" /> : <Lock className="mr-1.5 h-3.5 w-3.5" />}
-          {locked ? t('unlock') : t('lock')}
-        </button>
-      )}
-      {locked && (
-        <button type="button" onClick={relock} disabled={pending} className="text-xs text-muted-foreground underline-offset-2 hover:underline">
-          {t('relock')}
-        </button>
-      )}
+    <div className="mb-3">
+      <div className="flex flex-wrap items-center gap-2 text-sm">
+        {locked && (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 font-semibold text-primary">
+            <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+            {t('badge')}
+          </span>
+        )}
+        {canLock && (
+          <button type="button" onClick={toggle} disabled={pending} className={cn(buttonClass.secondary, 'h-8 px-3 text-xs')} title={locked ? undefined : t('lockHint')}>
+            {locked ? <LockOpen className="mr-1.5 h-3.5 w-3.5" /> : <Lock className="mr-1.5 h-3.5 w-3.5" />}
+            {locked ? t('unlock') : t('lock')}
+          </button>
+        )}
+        {locked && (
+          <button type="button" onClick={relock} disabled={pending} className="text-xs text-muted-foreground underline-offset-2 hover:underline">
+            {t('relock')}
+          </button>
+        )}
+      </div>
+      {locked && <TeamHint />}
     </div>
   );
 }

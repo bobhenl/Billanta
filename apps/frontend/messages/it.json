@@ -2088,7 +2088,8 @@
         "all": "Elenco completo dei commercialisti",
         "picked": "{email} è stata inserita. Verifichi il ruolo e invii l'invito."
       },
-      "copyLink": "Copia link"
+      "copyLink": "Copia link",
+      "seatLimit": "Il tuo piano non ha più posti liberi. Plus ha 3 utenti, Business 10. I commercialisti non contano (fino a 2)."
     },
     "exports": {
       "title": "Esportazioni per il commercialista",
@@ -5251,7 +5252,30 @@
       "transactionId": "ID transazione",
       "open": "Apri in banca"
     },
-    "partnerDefaultShares": "quote predefinite"
+    "partnerDefaultShares": "quote predefinite",
+    "lockedRow": "Dettagli nascosti",
+    "lock": {
+      "title": "I dettagli sono nascosti",
+      "intro": "Inserisci la tua password per vederli.",
+      "password": "Password",
+      "open": "Mostra",
+      "note": "Dopo la conferma, le fatture nascoste restano visibili per 15 minuti in questo browser. Continuano a contare nei totali e nelle esportazioni.",
+      "badge": "Dettagli nascosti",
+      "lock": "Nascondi dettagli – conferma con password",
+      "unlock": "Mostra senza password",
+      "lockHint": "Cliente, note e file li vede solo chi reinserisce la propria password",
+      "relock": "Nascondi di nuovo",
+      "lockedToast": "Dettagli nascosti",
+      "unlockedToast": "I dettagli si vedono senza password",
+      "teamHint": "Protegge dagli sguardi su un computer non bloccato o condiviso, non dai colleghi: ogni membro del team li mostra con la propria password. Se una fattura deve vederla solo qualcuno, imposta sul cliente chi vi ha accesso.",
+      "teamLink": "Imposta chi nel team vede cosa",
+      "errors": {
+        "wrong_current": "Password errata.",
+        "reauth_required": "Il tuo account non ha una password. Esci e accedi di nuovo, poi riprova.",
+        "too_many_attempts": "Troppi tentativi. Riprova tra qualche minuto.",
+        "generic": "Non ha funzionato. Riprova."
+      }
+    }
   },
   "invite": {
     "title": "Invito al team",
@@ -13918,14 +13942,20 @@
       "partnerCreditsIn": "Detrazioni nel {year}",
       "perOnce": "una tantum",
       "from": "Da",
-      "to": "A"
+      "to": "A",
+      "partnerMember": "Membro del team",
+      "partnerMemberNone": "Fuori dal team",
+      "partnerClaimOwn": "Le fatture che crea sono sue"
     },
     "errors": {
       "duplicate_partner": "Due soci hanno lo stesso id. Ne rimuova uno e lo aggiunga di nuovo.",
       "shares_must_be_positive": "Almeno una quota deve essere maggiore di zero.",
       "generic": "Impossibile salvare le impostazioni. Controlli i numeri e riprovi.",
       "expense_date_required": "Una spesa una tantum richiede una data.",
-      "expense_range_invalid": "Una spesa finisce prima di iniziare."
+      "expense_range_invalid": "Una spesa finisce prima di iniziare.",
+      "duplicate_partner_user": "Un membro del team può essere collegato a un solo socio.",
+      "partner_user_not_member": "Questa persona non fa più parte del team.",
+      "partner_limit": "Più soci richiedono un piano superiore. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
       "title": "Solo per proprietari e amministratori",

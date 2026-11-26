@@ -2088,7 +2088,8 @@
         "all": "Diretório completo de contabilistas",
         "picked": "{email} foi preenchido. Verifique a função e envie o convite."
       },
-      "copyLink": "Copiar ligação"
+      "copyLink": "Copiar ligação",
+      "seatLimit": "O seu plano já não tem lugares livres. O Plus tem 3 utilizadores, o Business 10. Os contabilistas não contam (até 2)."
     },
     "exports": {
       "title": "Exportações para o contabilista",
@@ -5251,7 +5252,30 @@
       "transactionId": "ID da transação",
       "open": "Abrir no banco"
     },
-    "partnerDefaultShares": "quotas padrão"
+    "partnerDefaultShares": "quotas padrão",
+    "lockedRow": "Detalhes ocultos",
+    "lock": {
+      "title": "Os detalhes estão ocultos",
+      "intro": "Introduza a sua palavra-passe para os ver.",
+      "password": "Palavra-passe",
+      "open": "Mostrar",
+      "note": "Depois de confirmar, as faturas ocultas ficam visíveis durante 15 minutos neste navegador. Continuam a contar nos totais e exportações.",
+      "badge": "Detalhes ocultos",
+      "lock": "Ocultar detalhes – confirmar com palavra-passe",
+      "unlock": "Mostrar sem palavra-passe",
+      "lockHint": "Só quem voltar a introduzir a sua própria palavra-passe vê o cliente, as notas e os ficheiros",
+      "relock": "Ocultar novamente",
+      "lockedToast": "Detalhes ocultos",
+      "unlockedToast": "Os detalhes aparecem sem palavra-passe",
+      "teamHint": "Protege contra olhares num computador desbloqueado ou partilhado, não contra colegas: cada membro da equipa mostra-os com a sua própria palavra-passe. Se só certas pessoas devem ver uma fatura, defina no cliente quem tem acesso.",
+      "teamLink": "Definir quem na equipa vê o quê",
+      "errors": {
+        "wrong_current": "Palavra-passe errada.",
+        "reauth_required": "A sua conta não tem palavra-passe. Termine a sessão, volte a entrar e tente novamente.",
+        "too_many_attempts": "Demasiadas tentativas. Tente dentro de alguns minutos.",
+        "generic": "Não funcionou. Tente novamente."
+      }
+    }
   },
   "invite": {
     "title": "Convite para a equipa",
@@ -13918,14 +13942,20 @@
       "partnerCreditsIn": "Deduções em {year}",
       "perOnce": "uma vez",
       "from": "De",
-      "to": "Até"
+      "to": "Até",
+      "partnerMember": "Membro da equipa",
+      "partnerMemberNone": "Fora da equipa",
+      "partnerClaimOwn": "As faturas que criar são dele"
     },
     "errors": {
       "duplicate_partner": "Dois sócios têm o mesmo id. Remova um e adicione-o de novo.",
       "shares_must_be_positive": "Pelo menos uma quota tem de ser superior a zero.",
       "generic": "Não foi possível guardar as definições. Verifique os números e tente novamente.",
       "expense_date_required": "Uma despesa única precisa de uma data.",
-      "expense_range_invalid": "Uma despesa termina antes de começar."
+      "expense_range_invalid": "Uma despesa termina antes de começar.",
+      "duplicate_partner_user": "Um membro da equipa só pode estar ligado a um sócio.",
+      "partner_user_not_member": "Essa pessoa já não está na equipa.",
+      "partner_limit": "Mais sócios exigem um plano superior. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
       "title": "Apenas para proprietários e administradores",

@@ -2088,7 +2088,8 @@
         "all": "Vollständiges Verzeichnis der Buchhaltungen",
         "picked": "{email} ist eingetragen. Prüfen Sie die Rolle und senden Sie die Einladung."
       },
-      "copyLink": "Link kopieren"
+      "copyLink": "Link kopieren",
+      "seatLimit": "Ihr Tarif hat keinen freien Platz mehr. Plus hat 3 Nutzer, Business 10. Steuerberater zählen nicht mit (bis zu 2)."
     },
     "exports": {
       "title": "Exporte für die Buchhaltung",
@@ -5252,7 +5253,30 @@
       "transactionId": "Transaktions-ID",
       "open": "In der Bank öffnen"
     },
-    "partnerDefaultShares": "Standardanteile"
+    "partnerDefaultShares": "Standardanteile",
+    "lockedRow": "Verborgene Details",
+    "lock": {
+      "title": "Details sind verborgen",
+      "intro": "Geben Sie Ihr Passwort ein, um sie anzuzeigen.",
+      "password": "Passwort",
+      "open": "Anzeigen",
+      "note": "Nach der Bestätigung bleiben verborgene Rechnungen 15 Minuten in diesem Browser sichtbar. In Summen und Exporten zählen sie weiter.",
+      "badge": "Verborgene Details",
+      "lock": "Details verbergen – mit Passwort bestätigen",
+      "unlock": "Ohne Passwort anzeigen",
+      "lockHint": "Kunde, Notizen und Dateien sieht nur, wer sein eigenes Passwort erneut eingibt",
+      "relock": "Wieder verbergen",
+      "lockedToast": "Details verborgen",
+      "unlockedToast": "Details werden ohne Passwort angezeigt",
+      "teamHint": "Das schützt vor Blicken auf einen nicht gesperrten oder geteilten Computer, nicht vor Kollegen: Jedes Teammitglied macht sie mit seinem eigenen Passwort sichtbar. Wenn nur bestimmte Personen eine Rechnung sehen sollen, legen Sie beim Kunden fest, wer Zugriff hat.",
+      "teamLink": "Festlegen, wer im Team was sieht",
+      "errors": {
+        "wrong_current": "Falsches Passwort.",
+        "reauth_required": "Ihr Konto hat kein Passwort. Melden Sie sich ab und wieder an und versuchen Sie es erneut.",
+        "too_many_attempts": "Zu viele Versuche. Versuchen Sie es in ein paar Minuten erneut.",
+        "generic": "Das hat nicht geklappt. Bitte versuchen Sie es erneut."
+      }
+    }
   },
   "invite": {
     "title": "Einladung ins Team",
@@ -13919,14 +13943,20 @@
       "partnerCreditsIn": "Steuerermäßigungen {year}",
       "perOnce": "einmalig",
       "from": "Von",
-      "to": "Bis"
+      "to": "Bis",
+      "partnerMember": "Teammitglied",
+      "partnerMemberNone": "Nicht im Team",
+      "partnerClaimOwn": "Rechnungen, die diese Person erstellt, gehören ihr"
     },
     "errors": {
       "duplicate_partner": "Zwei Partner haben dieselbe ID. Entfernen Sie einen und fügen Sie ihn erneut hinzu.",
       "shares_must_be_positive": "Mindestens ein Anteil muss größer als null sein.",
       "generic": "Die Einstellungen konnten nicht gespeichert werden. Prüfen Sie die Zahlen und versuchen Sie es erneut.",
       "expense_date_required": "Eine einmalige Ausgabe braucht ein Datum.",
-      "expense_range_invalid": "Eine Ausgabe endet, bevor sie beginnt."
+      "expense_range_invalid": "Eine Ausgabe endet, bevor sie beginnt.",
+      "duplicate_partner_user": "Ein Teammitglied kann nur mit einem Partner verknüpft sein.",
+      "partner_user_not_member": "Diese Person ist nicht mehr im Team.",
+      "partner_limit": "Weitere Partner brauchen einen höheren Tarif. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
       "title": "Nur für Inhaber und Administratoren",

@@ -2088,7 +2088,8 @@
         "all": "Pełny katalog księgowych",
         "picked": "Wpisano {email}. Sprawdź rolę i wyślij zaproszenie."
       },
-      "copyLink": "Kopiuj link"
+      "copyLink": "Kopiuj link",
+      "seatLimit": "Twój plan nie ma już wolnego miejsca. Plus ma 3 użytkowników, Business 10. Księgowi się nie liczą (do 2)."
     },
     "exports": {
       "title": "Eksporty dla księgowej",
@@ -5252,7 +5253,30 @@
       "transactionId": "ID transakcji",
       "open": "Otwórz w banku"
     },
-    "partnerDefaultShares": "domyślne udziały"
+    "partnerDefaultShares": "domyślne udziały",
+    "lockedRow": "Ukryte szczegóły",
+    "lock": {
+      "title": "Szczegóły są ukryte",
+      "intro": "Wpisz swoje hasło, aby je zobaczyć.",
+      "password": "Hasło",
+      "open": "Pokaż",
+      "note": "Po potwierdzeniu ukryte faktury pozostaną widoczne przez 15 minut w tej przeglądarce. Nadal liczą się do sum i eksportów.",
+      "badge": "Ukryte szczegóły",
+      "lock": "Ukryj szczegóły – potwierdzaj hasłem",
+      "unlock": "Pokazuj bez hasła",
+      "lockHint": "Klienta, notatki i pliki zobaczy tylko ten, kto ponownie wpisze swoje hasło",
+      "relock": "Ukryj ponownie",
+      "lockedToast": "Szczegóły ukryte",
+      "unlockedToast": "Szczegóły są widoczne bez hasła",
+      "teamHint": "Chroni przed spojrzeniem na niezablokowany lub wspólny komputer, a nie przed współpracownikami: każdy członek zespołu odkrywa je własnym hasłem. Jeśli fakturę mają widzieć tylko wybrane osoby, ustaw przy kliencie, kto ma do niego dostęp.",
+      "teamLink": "Ustaw, kto w zespole co widzi",
+      "errors": {
+        "wrong_current": "Złe hasło.",
+        "reauth_required": "Twoje konto nie ma hasła. Wyloguj się i zaloguj ponownie, a potem spróbuj jeszcze raz.",
+        "too_many_attempts": "Zbyt wiele prób. Spróbuj za kilka minut.",
+        "generic": "Nie udało się. Spróbuj ponownie."
+      }
+    }
   },
   "invite": {
     "title": "Zaproszenie do zespołu",
@@ -13919,14 +13943,20 @@
       "partnerCreditsIn": "Ulgi podatkowe w roku {year}",
       "perOnce": "jednorazowo",
       "from": "Od",
-      "to": "Do"
+      "to": "Do",
+      "partnerMember": "Członek zespołu",
+      "partnerMemberNone": "Spoza zespołu",
+      "partnerClaimOwn": "Faktury, które wystawi, są jego"
     },
     "errors": {
       "duplicate_partner": "Dwóch wspólników ma ten sam identyfikator. Usuń jednego i dodaj go ponownie.",
       "shares_must_be_positive": "Co najmniej jeden udział musi być większy od zera.",
       "generic": "Nie udało się zapisać ustawień. Sprawdź liczby i spróbuj ponownie.",
       "expense_date_required": "Wydatek jednorazowy wymaga daty.",
-      "expense_range_invalid": "Wydatek kończy się, zanim się zaczyna."
+      "expense_range_invalid": "Wydatek kończy się, zanim się zaczyna.",
+      "duplicate_partner_user": "Członek zespołu może być powiązany tylko z jednym wspólnikiem.",
+      "partner_user_not_member": "Ta osoba nie należy już do zespołu.",
+      "partner_limit": "Więcej wspólników wymaga wyższego planu. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
       "title": "Tylko dla właścicieli i administratorów",

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { allocate, computeNetIncome, sharedExpenseAmount, type Span, splitOf } from "./net-income";
-import { DEFAULT_TAX_MODEL, RATE_KEYS, settingsFor, type TaxModel, taxModelOf, taxModelSchema } from "./tax-model";
+import { creatorShares, DEFAULT_TAX_MODEL, RATE_KEYS, settingsFor, type TaxModel, taxModelOf, taxModelSchema } from "./tax-model";
 
 /** A span starting in January 2026. */
 const span = (months: number, month = 1, year = 2026): Span => ({ year, month, months });
@@ -278,5 +278,32 @@ describe("computeNetIncome, tax_scope", () => {
   it("is per partner when nothing says otherwise (legacy and new years)", () => {
     expect(taxModelSchema.parse({ ...trio, years: { "2026": entry({}) } }).years["2026"]!.tax_scope).toBe("per_partner");
     expect(computeNetIncome(trio, income, span(12)).taxScope).toBe("per_partner");
+  });
+});
+
+describe("creatorShares, partners linked to members", () => {
+  const U1 = "11111111-1111-4111-8111-111111111111";
+  const U2 = "22222222-2222-4222-8222-222222222222";
+  const model = taxModelSchema.parse({
+    ...DEFAULT_TAX_MODEL,
+    partners: [
+      { id: "a", name: "A", share: 50, tax_credits: 0, user_id: U1, claim_own: true },
+      { id: "b", name: "B", share: 50, tax_credits: 0, user_id: U2, claim_own: false },
+    ],
+  });
+
+  it("gives the creator's invoice to their partner when they claim their own", () => {
+    expect(creatorShares(model, U1)).toEqual({ a: 1 });
+  });
+
+  it("falls back to the default shares for a linked partner who doesn't claim, or nobody", () => {
+    expect(creatorShares(model, U2)).toBeNull();
+    expect(creatorShares(model, null)).toBeNull();
+    expect(creatorShares(model, "33333333-3333-4333-8333-333333333333")).toBeNull();
+  });
+
+  it("refuses one member linked to two partners", () => {
+    const r = taxModelSchema.safeParse({ ...model, partners: model.partners.map((p) => ({ ...p, user_id: U1 })) });
+    expect(r.success).toBe(false);
   });
 });

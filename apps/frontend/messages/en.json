@@ -2089,7 +2089,8 @@
         "all": "Full accountant directory",
         "picked": "{email} is filled in. Check the role and send the invitation."
       },
-      "copyLink": "Copy link"
+      "copyLink": "Copy link",
+      "seatLimit": "Your plan has no free seat left. Plus has 3 users, Business 10. Accountants don't count (up to 2)."
     },
     "exports": {
       "title": "Accountant exports",
@@ -5259,20 +5260,22 @@
       "transactionId": "Transaction ID",
       "open": "Open in bank"
     },
-    "lockedRow": "Locked invoice",
+    "lockedRow": "Hidden details",
     "lock": {
-      "title": "This invoice is locked",
-      "intro": "Enter your password to view it.",
+      "title": "Details are hidden",
+      "intro": "Enter your password to view them.",
       "password": "Password",
-      "open": "Unlock",
-      "note": "Locked invoices stay open for 15 minutes in this browser. They still count in totals and exports.",
-      "badge": "Locked",
-      "lock": "Lock",
-      "unlock": "Remove lock",
-      "lockHint": "Only someone who re-enters their password sees the customer, notes and files",
-      "relock": "Lock again",
-      "lockedToast": "Invoice locked",
-      "unlockedToast": "Lock removed",
+      "open": "Show",
+      "note": "Once you confirm, hidden invoices stay visible for 15 minutes in this browser. They still count in totals and exports.",
+      "badge": "Hidden details",
+      "lock": "Hide details – confirm with password",
+      "unlock": "Show without password",
+      "lockHint": "Only someone who re-enters their own password sees the customer, notes and files",
+      "relock": "Hide again",
+      "lockedToast": "Details hidden",
+      "unlockedToast": "Details now show without a password",
+      "teamHint": "This protects against someone looking at an unlocked or shared computer, not against colleagues: every team member reveals them with their own password. If only certain people should see an invoice, set who has access on the client.",
+      "teamLink": "Set who in the team sees what",
       "errors": {
         "wrong_current": "Wrong password.",
         "reauth_required": "Your account has no password. Sign out and back in, then try again.",
@@ -13947,14 +13950,20 @@
       "partnerCreditsIn": "Tax credits in {year}",
       "perOnce": "one-off",
       "from": "From",
-      "to": "To"
+      "to": "To",
+      "partnerMember": "Team member",
+      "partnerMemberNone": "Not in the team",
+      "partnerClaimOwn": "Invoices they create are theirs"
     },
     "errors": {
       "duplicate_partner": "Two partners have the same id. Remove one and add it again.",
       "shares_must_be_positive": "At least one share must be above zero.",
       "generic": "Could not save the settings. Check the numbers and try again.",
       "expense_date_required": "A one-off expense needs a date.",
-      "expense_range_invalid": "An expense ends before it starts."
+      "expense_range_invalid": "An expense ends before it starts.",
+      "duplicate_partner_user": "A team member can be linked to one partner only.",
+      "partner_user_not_member": "That person is no longer in the team.",
+      "partner_limit": "More partners need a higher plan. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
       "title": "For owners and admins only",

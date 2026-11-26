@@ -2088,7 +2088,8 @@
         "all": "Annuaire complet des comptables",
         "picked": "{email} a été renseigné. Vérifiez le rôle et envoyez l’invitation."
       },
-      "copyLink": "Copier le lien"
+      "copyLink": "Copier le lien",
+      "seatLimit": "Votre offre n'a plus de place libre. Plus compte 3 utilisateurs, Business 10. Les comptables ne comptent pas (jusqu'à 2)."
     },
     "exports": {
       "title": "Exports pour le comptable",
@@ -5251,7 +5252,30 @@
       "transactionId": "ID de transaction",
       "open": "Ouvrir dans la banque"
     },
-    "partnerDefaultShares": "parts par défaut"
+    "partnerDefaultShares": "parts par défaut",
+    "lockedRow": "Détails masqués",
+    "lock": {
+      "title": "Les détails sont masqués",
+      "intro": "Saisissez votre mot de passe pour les voir.",
+      "password": "Mot de passe",
+      "open": "Afficher",
+      "note": "Après confirmation, les factures masquées restent visibles 15 minutes dans ce navigateur. Elles comptent toujours dans les totaux et les exports.",
+      "badge": "Détails masqués",
+      "lock": "Masquer les détails – confirmer par mot de passe",
+      "unlock": "Afficher sans mot de passe",
+      "lockHint": "Seule une personne qui ressaisit son propre mot de passe voit le client, les notes et les fichiers",
+      "relock": "Masquer à nouveau",
+      "lockedToast": "Détails masqués",
+      "unlockedToast": "Les détails s'affichent sans mot de passe",
+      "teamHint": "Cela protège des regards sur un ordinateur non verrouillé ou partagé, pas des collègues : chaque membre de l'équipe les affiche avec son propre mot de passe. Si seules certaines personnes doivent voir une facture, définissez sur le client qui y a accès.",
+      "teamLink": "Définir qui voit quoi dans l'équipe",
+      "errors": {
+        "wrong_current": "Mot de passe incorrect.",
+        "reauth_required": "Votre compte n'a pas de mot de passe. Déconnectez-vous puis reconnectez-vous, puis réessayez.",
+        "too_many_attempts": "Trop de tentatives. Réessayez dans quelques minutes.",
+        "generic": "Cela n'a pas fonctionné. Veuillez réessayer."
+      }
+    }
   },
   "invite": {
     "title": "Invitation dans l’équipe",
@@ -13918,14 +13942,20 @@
       "partnerCreditsIn": "Réductions d’impôt en {year}",
       "perOnce": "une fois",
       "from": "Du",
-      "to": "Au"
+      "to": "Au",
+      "partnerMember": "Membre de l'équipe",
+      "partnerMemberNone": "Hors équipe",
+      "partnerClaimOwn": "Les factures qu'il crée lui reviennent"
     },
     "errors": {
       "duplicate_partner": "Deux associés ont le même identifiant. Supprimez-en un et ajoutez-le à nouveau.",
       "shares_must_be_positive": "Au moins une part doit être supérieure à zéro.",
       "generic": "Impossible d’enregistrer les paramètres. Vérifiez les chiffres et réessayez.",
       "expense_date_required": "Une dépense ponctuelle a besoin d’une date.",
-      "expense_range_invalid": "Une dépense se termine avant de commencer."
+      "expense_range_invalid": "Une dépense se termine avant de commencer.",
+      "duplicate_partner_user": "Un membre de l'équipe ne peut être lié qu'à un seul associé.",
+      "partner_user_not_member": "Cette personne ne fait plus partie de l'équipe.",
+      "partner_limit": "Davantage d'associés nécessitent une offre supérieure. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
       "title": "Réservé aux propriétaires et administrateurs",
