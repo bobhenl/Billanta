@@ -535,7 +535,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               ]
             ];
             return (
-              <details key={p.id} className="group rounded-xl border border-border bg-card p-4">
+              <details key={p.id} open className="group rounded-xl border border-border bg-card p-4">
                 <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-bold [&::-webkit-details-marker]:hidden">
                   <ArrowDownLeft className="h-4 w-4 text-primary" />
                   <span className="flex-1">{t('received.title')}</span>
