@@ -14204,7 +14204,7 @@
       "lead": "Cifrar – solo tú y los miembros con la clave veréis el contenido, el servidor no puede leerlo.",
       "what": "Se cifran las descripciones de las líneas y las notas (encima, debajo de las líneas e internas).",
       "keeps": "Los informes y paneles siguen funcionando: importes, fechas y referencias de pago quedan sin cifrar.",
-      "loses": "Para los documentos cifrados el servidor no puede crear PDF ni ISDOC, adjuntarlos a un correo ni encontrarlos al buscar por texto.",
+      "loses": "Para los documentos cifrados el servidor no puede crear PDF ni ISDOC ni adjuntarlos a un correo. La búsqueda por texto se hace solo en tu navegador tras desbloquear.",
       "locked": "Los documentos bloqueados se omiten.",
       "done": "{n, plural, one {# documento cifrado} other {# documentos cifrados}}.",
       "nothing": "No había nada que cifrar.",
@@ -14215,11 +14215,12 @@
       "lockedLead": "Desbloquéalo para editarlo. Solo se abre en tu navegador.",
       "otherKey": "Este documento está cifrado con una clave que esta empresa no tiene.",
       "unlock": "Desbloquear",
-      "aiUnavailable": "El autocompletado con IA no está disponible en el Modo confidencial mientras se cifra: el texto tendría que ir al servidor.",
       "sealFailed": "No se pudo cifrar el documento. No se guardó nada.",
       "sealToggle": "Cifrar este documento",
-      "sealOnHint": "Solo tú y los miembros con la clave veréis las descripciones y notas. PDF, ISDOC y sugerencias de líneas no estarán disponibles.",
-      "sealOffHint": "El documento se guarda sin cifrar, como hasta ahora."
+      "sealOnHint": "Solo tú y los miembros con la clave veréis las descripciones y notas. PDF e ISDOC no estarán disponibles; las sugerencias de líneas se buscan solo en tu navegador.",
+      "sealOffHint": "El documento se guarda sin cifrar, como hasta ahora.",
+      "aiConsent": "Enviar este texto a la IA: irá una sola vez al servidor y al proveedor de IA y no se guardará",
+      "aiConsentHint": "El servidor no guarda ni registra el texto. Lo que devuelva la IA se cifra en tu navegador al guardar. El consentimiento vale solo para esta ejecución."
     },
     "actions": {
       "blocked": "No disponible en el Modo confidencial: el servidor no puede leer un documento cifrado. Desactiva el adjunto PDF/ISDOC en los ajustes de correo o envía un enlace.",
@@ -14236,8 +14237,8 @@
         "loses": [
           "PDF, ISDOC, UBL y Peppol creados por el servidor",
           "Adjunto PDF/ISDOC en los correos",
-          "Búsqueda por texto de líneas y notas, sugerencias de líneas",
-          "Autocompletado de documentos con IA",
+          "Búsqueda por texto y sugerencias de líneas en el servidor (tras desbloquear, las hace tu navegador)",
+          "Autocompletado con IA sin tu consentimiento expreso (el texto se envía una sola vez, solo cuando lo confirmas)",
           "Descripciones de líneas en el enlace público y en las exportaciones para el contable (Pohoda, Money, CSV)"
         ]
       },
@@ -14355,6 +14356,54 @@
       "recoveryReplaced": "El nuevo código de recuperación está activo",
       "categoriesTitle": "Qué se cifra",
       "categoriesLead": "Llegarán más opciones. En cada una ves qué dejaría de funcionar."
+    },
+    "search": {
+      "lockedHint": "{n, plural, one {# documento tiene textos cifrados que el servidor no puede buscar.} many {# documentos tienen textos cifrados que el servidor no puede buscar.} other {# documentos tienen textos cifrados que el servidor no puede buscar.}} Desbloquea y tu navegador los buscará.",
+      "unlock": "Desbloquear y buscar",
+      "searching": "Buscando textos cifrados en tu navegador…",
+      "included": "Los resultados incluyen textos cifrados, buscados solo en tu navegador.",
+      "failed": "No se pudieron buscar los textos cifrados. Los resultados cubren solo textos legibles.",
+      "skippedLocked": "{n, plural, one {# documento bloqueado no se ha buscado.} many {# documentos bloqueados no se han buscado.} other {# documentos bloqueados no se han buscado.}}"
+    },
+    "export": {
+      "title": "Exportar con textos descifrados",
+      "lead": "Documentos del periodo elegido, con descripciones de líneas y notas. El archivo se genera en tu navegador y se guarda directamente en tu equipo; el servidor no lo ve. Trátalo como un documento sensible.",
+      "csv": "Descargar CSV",
+      "json": "Descargar JSON",
+      "working": "Descifrando…",
+      "done": "{n, plural, one {Guardado # documento.} many {Guardados # documentos.} other {Guardados # documentos.}}",
+      "failed": "No se pudo preparar la exportación. Inténtalo de nuevo.",
+      "needsUnlock": "Antes de exportar te pediremos desbloquear el Modo confidencial.",
+      "skippedLocked": "{n, plural, one {Falta # documento bloqueado en la exportación.} many {Faltan # documentos bloqueados en la exportación.} other {Faltan # documentos bloqueados en la exportación.}}",
+      "unreadable": "[No se puede descifrar]",
+      "unreadableCount": "{n, plural, one {# texto no se pudo descifrar.} many {# textos no se pudieron descifrar.} other {# textos no se pudieron descifrar.}}",
+      "accountingNote": "Las exportaciones contables de arriba (CSV, Pohoda, Money S3) las genera el servidor, así que muestran «[Důvěrný obsah]» en lugar de los textos cifrados. Importes, IVA, fechas y clientes están completos.",
+      "columns": {
+        "documentType": "Tipo de documento",
+        "invoiceNumber": "Número",
+        "status": "Estado",
+        "issueDate": "Fecha de emisión",
+        "taxableSupplyDate": "Fecha de devengo",
+        "dueDate": "Vencimiento",
+        "paidAt": "Pagado",
+        "contactName": "Cliente",
+        "contactIco": "IČO",
+        "variableSymbol": "Símbolo variable",
+        "currency": "Moneda",
+        "totalWithoutVat": "Base",
+        "totalVat": "IVA",
+        "total": "Total",
+        "noteAbove": "Texto sobre las líneas",
+        "noteBelow": "Texto bajo las líneas",
+        "internalNote": "Nota interna",
+        "itemDescription": "Línea",
+        "itemCode": "Código de línea",
+        "quantity": "Cantidad",
+        "unit": "Unidad",
+        "unitPrice": "Precio unitario",
+        "vatRate": "Tipo de IVA %",
+        "discountPercent": "Descuento %"
+      }
     }
   }
 }

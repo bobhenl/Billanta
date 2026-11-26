@@ -14209,7 +14209,7 @@
       "lead": "Zašifrovat – obsah uvidíte jen vy a členové s klíčem, server ho nepřečte.",
       "what": "Šifrují se popisy položek a poznámky (nad položkami, pod položkami a interní).",
       "keeps": "Přehledy a dashboardy fungují dál: částky, data a variabilní symboly zůstávají nešifrované.",
-      "loses": "U zašifrovaných dokladů nevytvoří server PDF ani ISDOC, nepřiloží je k e-mailu a nenajde je v hledání podle textu.",
+      "loses": "U zašifrovaných dokladů nevytvoří server PDF ani ISDOC a nepřiloží je k e-mailu. Hledání podle textu proběhne jen ve vašem prohlížeči po odemčení.",
       "locked": "Zamčené doklady se přeskočí.",
       "done": "{n, plural, one {Zašifrován # doklad} few {Zašifrovány # doklady} other {Zašifrováno # dokladů}}.",
       "nothing": "Nebylo co šifrovat.",
@@ -14220,11 +14220,12 @@
       "lockedLead": "Pro úpravu ho odemkněte. Otevře se jen ve vašem prohlížeči.",
       "otherKey": "Doklad je zašifrovaný klíčem, který tato firma nemá.",
       "unlock": "Odemknout",
-      "aiUnavailable": "AI předvyplnění je při šifrování dokladu nedostupné v Důvěrném režimu – text by musel odejít na server.",
       "sealFailed": "Doklad se nepodařilo zašifrovat. Nic se neuložilo.",
       "sealToggle": "Zašifrovat tento doklad",
-      "sealOnHint": "Popisy položek a poznámky uvidíte jen vy a členové s klíčem. PDF, ISDOC a návrhy položek nebudou dostupné.",
-      "sealOffHint": "Doklad se uloží bez šifrování, jako dřív."
+      "sealOnHint": "Popisy položek a poznámky uvidíte jen vy a členové s klíčem. PDF a ISDOC nebudou dostupné, návrhy položek se hledají jen ve vašem prohlížeči.",
+      "sealOffHint": "Doklad se uloží bez šifrování, jako dřív.",
+      "aiConsent": "Poslat tento text AI – jednorázově odejde na server a k poskytovateli AI, neuloží se",
+      "aiConsentHint": "Server text neukládá ani nezapisuje do logů. Co AI vrátí, se při uložení zašifruje ve vašem prohlížeči. Souhlas platí jen pro jedno spuštění."
     },
     "actions": {
       "blocked": "Nedostupné v Důvěrném režimu: server zašifrovaný doklad nepřečte. Vypněte přílohu PDF/ISDOC v nastavení e-mailů, nebo pošlete odkaz.",
@@ -14241,8 +14242,8 @@
         "loses": [
           "PDF, ISDOC, UBL a Peppol vytvořené serverem",
           "Příloha PDF/ISDOC v e-mailu",
-          "Hledání podle textu položek a poznámek, návrhy položek",
-          "AI předvyplnění dokladu",
+          "Hledání podle textu a návrhy položek na serveru (po odemčení je zvládne váš prohlížeč)",
+          "AI předvyplnění bez výslovného souhlasu (text se pošle jen jednorázově, když to potvrdíte)",
           "Popisy položek na veřejném odkazu a v exportech pro účetní (Pohoda, Money, CSV)"
         ]
       },
@@ -14367,6 +14368,54 @@
       "upgrade": "Zobrazit tarify",
       "downgradedTitle": "Šifrování dalších dokladů je v tarifech Plus a Firma",
       "downgradedBody": "Zašifrované doklady dál odemknete, přečtete i upravíte. Nové doklady se ale ukládají bez šifrování."
+    },
+    "search": {
+      "lockedHint": "{n, plural, one {# doklad má zašifrované texty, které server nemůže prohledat.} few {# doklady mají zašifrované texty, které server nemůže prohledat.} other {# dokladů má zašifrované texty, které server nemůže prohledat.}} Po odemčení je prohledá váš prohlížeč.",
+      "unlock": "Odemknout a prohledat",
+      "searching": "Prohledávám zašifrované texty ve vašem prohlížeči…",
+      "included": "Výsledky zahrnují i zašifrované texty. Prohledal je jen váš prohlížeč.",
+      "failed": "Zašifrované texty se nepodařilo prohledat. Výsledky obsahují jen čitelné texty.",
+      "skippedLocked": "{n, plural, one {# uzamčený doklad se neprohledal.} few {# uzamčené doklady se neprohledaly.} other {# uzamčených dokladů se neprohledalo.}}"
+    },
+    "export": {
+      "title": "Export s dešifrovanými texty",
+      "lead": "Doklady ze zvoleného období včetně popisů položek a poznámek. Soubor se sestaví ve vašem prohlížeči a uloží rovnou do počítače, server ho nevidí. Zacházejte s ním jako s citlivým dokumentem.",
+      "csv": "Stáhnout CSV",
+      "json": "Stáhnout JSON",
+      "working": "Dešifruji…",
+      "done": "{n, plural, one {Uložen # doklad.} few {Uloženy # doklady.} other {Uloženo # dokladů.}}",
+      "failed": "Export se nepodařilo připravit. Zkuste to znovu.",
+      "needsUnlock": "Před exportem vás požádáme o odemčení Důvěrného režimu.",
+      "skippedLocked": "{n, plural, one {# uzamčený doklad v exportu chybí.} few {# uzamčené doklady v exportu chybí.} other {# uzamčených dokladů v exportu chybí.}}",
+      "unreadable": "[Nelze dešifrovat]",
+      "unreadableCount": "{n, plural, one {# text se nepodařilo dešifrovat.} few {# texty se nepodařilo dešifrovat.} other {# textů se nepodařilo dešifrovat.}}",
+      "accountingNote": "Exporty pro účetní výše (CSV, Pohoda, Money S3) vytváří server, proto mají místo zašifrovaných textů „[Důvěrný obsah]“. Částky, DPH, data a odběratelé v nich jsou úplné.",
+      "columns": {
+        "documentType": "Typ dokladu",
+        "invoiceNumber": "Číslo",
+        "status": "Stav",
+        "issueDate": "Datum vystavení",
+        "taxableSupplyDate": "DUZP",
+        "dueDate": "Splatnost",
+        "paidAt": "Uhrazeno",
+        "contactName": "Odběratel",
+        "contactIco": "IČO",
+        "variableSymbol": "Variabilní symbol",
+        "currency": "Měna",
+        "totalWithoutVat": "Základ",
+        "totalVat": "DPH",
+        "total": "Celkem",
+        "noteAbove": "Text nad položkami",
+        "noteBelow": "Text pod položkami",
+        "internalNote": "Interní poznámka",
+        "itemDescription": "Položka",
+        "itemCode": "Kód položky",
+        "quantity": "Množství",
+        "unit": "Jednotka",
+        "unitPrice": "Cena za jednotku",
+        "vatRate": "Sazba DPH %",
+        "discountPercent": "Sleva %"
+      }
     }
   }
 }

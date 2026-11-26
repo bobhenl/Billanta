@@ -44,6 +44,8 @@ export interface ItemSuggestion {
   description: string;
   unitPrice: number;
   vatRate: number | null;
+  /** ISO time of the newest use; sorts plain and encrypted history together. */
+  lastUsed?: string;
 }
 
 export interface SuggestionResult {

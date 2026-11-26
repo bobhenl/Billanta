@@ -14205,7 +14205,7 @@
       "lead": "Verschlüsseln – den Inhalt sehen nur Sie und Mitglieder mit Schlüssel, der Server kann ihn nicht lesen.",
       "what": "Verschlüsselt werden Positionsbeschreibungen und Notizen (über und unter den Positionen sowie interne).",
       "keeps": "Berichte und Dashboards funktionieren weiter: Beträge, Daten und Verwendungszwecke bleiben unverschlüsselt.",
-      "loses": "Für verschlüsselte Belege erstellt der Server kein PDF oder ISDOC, hängt sie keiner E-Mail an und findet sie nicht über die Textsuche.",
+      "loses": "Für verschlüsselte Belege erstellt der Server kein PDF oder ISDOC und hängt sie keiner E-Mail an. Die Textsuche läuft nach dem Entsperren nur in Ihrem Browser.",
       "locked": "Gesperrte Belege werden übersprungen.",
       "done": "{n, plural, one {# Beleg verschlüsselt} other {# Belege verschlüsselt}}.",
       "nothing": "Es gab nichts zu verschlüsseln.",
@@ -14216,11 +14216,12 @@
       "lockedLead": "Entsperren Sie ihn zum Bearbeiten. Er wird nur in Ihrem Browser geöffnet.",
       "otherKey": "Dieser Beleg ist mit einem Schlüssel verschlüsselt, den diese Firma nicht hat.",
       "unlock": "Entsperren",
-      "aiUnavailable": "Das KI-Vorausfüllen ist beim Verschlüsseln im Vertraulichen Modus nicht verfügbar – der Text müsste an den Server gehen.",
       "sealFailed": "Der Beleg konnte nicht verschlüsselt werden. Nichts wurde gespeichert.",
       "sealToggle": "Diesen Beleg verschlüsseln",
-      "sealOnHint": "Positionsbeschreibungen und Notizen sehen nur Sie und Mitglieder mit Schlüssel. PDF, ISDOC und Positionsvorschläge sind nicht verfügbar.",
-      "sealOffHint": "Der Beleg wird wie bisher unverschlüsselt gespeichert."
+      "sealOnHint": "Positionsbeschreibungen und Notizen sehen nur Sie und Mitglieder mit Schlüssel. PDF und ISDOC sind nicht verfügbar, Positionsvorschläge werden nur in Ihrem Browser gesucht.",
+      "sealOffHint": "Der Beleg wird wie bisher unverschlüsselt gespeichert.",
+      "aiConsent": "Diesen Text an die KI senden – er geht einmalig an den Server und den KI-Anbieter und wird nicht gespeichert",
+      "aiConsentHint": "Der Server speichert und protokolliert den Text nicht. Was die KI zurückgibt, wird beim Speichern in Ihrem Browser verschlüsselt. Die Zustimmung gilt nur für diesen einen Lauf."
     },
     "actions": {
       "blocked": "Im Vertraulichen Modus nicht verfügbar: Der Server kann einen verschlüsselten Beleg nicht lesen. Schalten Sie den PDF/ISDOC-Anhang in den E-Mail-Einstellungen aus oder senden Sie einen Link.",
@@ -14237,8 +14238,8 @@
         "loses": [
           "Vom Server erstellte PDF-, ISDOC-, UBL- und Peppol-Dateien",
           "PDF/ISDOC-Anhang in E-Mails",
-          "Suche im Text von Positionen und Notizen, Positionsvorschläge",
-          "KI-Vorausfüllen von Belegen",
+          "Textsuche und Positionsvorschläge auf dem Server (nach dem Entsperren übernimmt das Ihr Browser)",
+          "KI-Vorausfüllen ohne Ihre ausdrückliche Zustimmung (der Text wird nur einmalig gesendet, wenn Sie es bestätigen)",
           "Positionsbeschreibungen im öffentlichen Link und in Exporten für die Buchhaltung (Pohoda, Money, CSV)"
         ]
       },
@@ -14356,6 +14357,54 @@
       "recoveryReplaced": "Der neue Wiederherstellungscode gilt",
       "categoriesTitle": "Was verschlüsselt wird",
       "categoriesLead": "Weitere Optionen folgen. Bei jeder sehen Sie, was nicht mehr funktionieren würde."
+    },
+    "search": {
+      "lockedHint": "{n, plural, one {# Beleg hat verschlüsselte Texte, die der Server nicht durchsuchen kann.} other {# Belege haben verschlüsselte Texte, die der Server nicht durchsuchen kann.}} Nach dem Entsperren durchsucht Ihr Browser sie.",
+      "unlock": "Entsperren und suchen",
+      "searching": "Verschlüsselte Texte werden in Ihrem Browser durchsucht…",
+      "included": "Die Ergebnisse enthalten auch verschlüsselte Texte, durchsucht nur in Ihrem Browser.",
+      "failed": "Die verschlüsselten Texte konnten nicht durchsucht werden. Die Ergebnisse umfassen nur lesbare Texte.",
+      "skippedLocked": "{n, plural, one {# gesperrter Beleg wurde nicht durchsucht.} other {# gesperrte Belege wurden nicht durchsucht.}}"
+    },
+    "export": {
+      "title": "Export mit entschlüsselten Texten",
+      "lead": "Belege aus dem gewählten Zeitraum mit Positionsbeschreibungen und Notizen. Die Datei entsteht in Ihrem Browser und wird direkt auf Ihrem Computer gespeichert, der Server sieht sie nicht. Behandeln Sie sie als vertrauliches Dokument.",
+      "csv": "CSV herunterladen",
+      "json": "JSON herunterladen",
+      "working": "Wird entschlüsselt…",
+      "done": "{n, plural, one {# Beleg gespeichert.} other {# Belege gespeichert.}}",
+      "failed": "Der Export konnte nicht vorbereitet werden. Bitte versuchen Sie es erneut.",
+      "needsUnlock": "Vor dem Export werden Sie gebeten, den Vertraulichen Modus zu entsperren.",
+      "skippedLocked": "{n, plural, one {# gesperrter Beleg fehlt im Export.} other {# gesperrte Belege fehlen im Export.}}",
+      "unreadable": "[Nicht entschlüsselbar]",
+      "unreadableCount": "{n, plural, one {# Text konnte nicht entschlüsselt werden.} other {# Texte konnten nicht entschlüsselt werden.}}",
+      "accountingNote": "Die Exporte für die Buchhaltung oben (CSV, Pohoda, Money S3) erstellt der Server, daher steht dort statt verschlüsselter Texte „[Důvěrný obsah]“. Beträge, MwSt., Daten und Kunden sind darin vollständig.",
+      "columns": {
+        "documentType": "Belegart",
+        "invoiceNumber": "Nummer",
+        "status": "Status",
+        "issueDate": "Ausstellungsdatum",
+        "taxableSupplyDate": "Leistungsdatum",
+        "dueDate": "Fälligkeit",
+        "paidAt": "Bezahlt",
+        "contactName": "Kunde",
+        "contactIco": "IČO",
+        "variableSymbol": "Variabler Symbol",
+        "currency": "Währung",
+        "totalWithoutVat": "Netto",
+        "totalVat": "MwSt.",
+        "total": "Gesamt",
+        "noteAbove": "Text über den Positionen",
+        "noteBelow": "Text unter den Positionen",
+        "internalNote": "Interne Notiz",
+        "itemDescription": "Position",
+        "itemCode": "Positionscode",
+        "quantity": "Menge",
+        "unit": "Einheit",
+        "unitPrice": "Einzelpreis",
+        "vatRate": "MwSt.-Satz %",
+        "discountPercent": "Rabatt %"
+      }
     }
   }
 }

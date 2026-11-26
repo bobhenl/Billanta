@@ -19,7 +19,7 @@ import { DismissableDetails } from '@/components/dismissable-details';
 import { DATE_PRESETS, isDatePreset, parseQuickPrefs, presetFilters, QUICK_COOKIE } from '@/lib/invoice-list-prefs';
 import { bankAccountLine, type BankAccount } from '@/lib/bank-account';
 import { InvoiceViewBar } from './invoice-view-bar';
-import { InvoicesTable } from './invoices-table';
+import { SealedSearchTable } from './sealed-search';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('invoices');
@@ -236,7 +236,8 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
   let partners: TaxPartner[];
   try {
     [invoices, customers, bankAccounts, team, home, canEdit, fieldOptions, partners] = await Promise.all([
-      apiFetch<InvoiceRow[]>(`/api/v1/invoices${query ? `?${query}` : ''}`),
+      // With a text filter, documents whose encrypted texts might match come back marked for SealedSearchTable.
+      apiFetch<InvoiceRow[]>(`/api/v1/invoices${query ? `?${query}${filters.note || filters.item ? '&sealed=candidates' : ''}` : ''}`),
       apiFetch<{ id: string; legalName: string; color?: string | null }[]>('/api/v1/contacts').catch(() => []),
       apiFetch<BankAccount[]>('/api/v1/tenants/me/bank-accounts').catch(() => []),
       apiFetch<{ members: { userId: string; name: string | null; email: string }[] }>('/api/v1/team').catch(() => ({ members: [] })),
@@ -845,7 +846,7 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
         </FilterGroup>
       </FilterPanel>
 
-      <InvoicesTable rows={invoices} filtered={Boolean(query)} home={home} newHref="/invoices/new" partners={partners} />
+      <SealedSearchTable rows={invoices} filtered={Boolean(query)} home={home} newHref="/invoices/new" partners={partners} note={filters.note} item={filters.item} />
     </div>
   );
 }

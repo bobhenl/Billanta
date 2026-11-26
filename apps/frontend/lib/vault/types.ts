@@ -32,3 +32,43 @@ export interface PlainInvoice {
   internalNote?: string;
   items: { id: string; description: string }[];
 }
+
+/** `GET /api/v1/vault/invoices/documents`: one document with its texts exactly as stored, envelopes unopened. */
+export interface VaultDocument {
+  id: string;
+  documentType: string;
+  invoiceNumber: string | null;
+  status: string;
+  issueDate: string | null;
+  taxableSupplyDate: string | null;
+  dueDate: string | null;
+  paidAt: string | null;
+  currency: string;
+  variableSymbol: string | null;
+  contactName: string | null;
+  contactIco: string | null;
+  noteAbove: string | null;
+  noteBelow: string | null;
+  internalNote: string | null;
+  totalWithoutVat: number;
+  totalVat: number;
+  total: number;
+  createdAt: string;
+  items: {
+    description: string;
+    code: string | null;
+    quantity: number;
+    unit: string | null;
+    unitPrice: number;
+    vatRate: number | null;
+    discountPercent: number;
+    createdAt: string;
+  }[];
+}
+
+export interface VaultDocumentPage {
+  documents: VaultDocument[];
+  /** Locked documents the member has not re-authenticated for; left out of the page. */
+  skippedLocked: number;
+  next: string | null;
+}

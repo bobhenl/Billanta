@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import type { VaultCategory, VaultWrap } from '@faktur/cz-compliance';
 import { apiFetch } from '@/lib/api-client';
 import { backendMessage } from '@/lib/action-error';
-import type { PlainInvoice, VaultStatus } from './types';
+import type { PlainInvoice, VaultDocumentPage, VaultStatus } from './types';
 
 type Result<T> = { ok: true; value: T } | { ok: false; error: string };
 
@@ -65,4 +65,16 @@ export async function storeSealedInvoices(invoices: PlainInvoice[]) {
   const result = await call<{ sealed: number }>('/api/v1/vault/invoices/seal', json('POST', { invoices: invoices.map(({ invoiceNumber: _n, ...rest }) => rest) }));
   if (result.ok) revalidatePath('/invoices', 'layout');
   return result;
+}
+
+/**
+ * One page of documents for search, suggestions and the readable export.
+ * The texts come back as stored; only the browser opens the envelopes.
+ */
+export async function fetchVaultDocuments(page: { after?: string | null; sealedOnly: boolean; from?: string; to?: string }) {
+  const query = new URLSearchParams({ limit: '200', sealed_only: String(page.sealedOnly) });
+  if (page.after) query.set('after', page.after);
+  if (page.from) query.set('from', page.from);
+  if (page.to) query.set('to', page.to);
+  return call<VaultDocumentPage>(`/api/v1/vault/invoices/documents?${query}`);
 }

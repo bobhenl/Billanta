@@ -14205,7 +14205,7 @@
       "lead": "Zaszyfruj – treść zobaczysz tylko Ty i członkowie z kluczem, serwer jej nie odczyta.",
       "what": "Szyfrowane są opisy pozycji i notatki (nad pozycjami, pod pozycjami i wewnętrzne).",
       "keeps": "Raporty i pulpity działają dalej: kwoty, daty i tytuły płatności pozostają niezaszyfrowane.",
-      "loses": "Dla zaszyfrowanych dokumentów serwer nie utworzy PDF ani ISDOC, nie dołączy ich do e-maila i nie znajdzie ich w wyszukiwaniu tekstowym.",
+      "loses": "Dla zaszyfrowanych dokumentów serwer nie utworzy PDF ani ISDOC i nie dołączy ich do e-maila. Wyszukiwanie tekstowe działa po odblokowaniu tylko w Twojej przeglądarce.",
       "locked": "Zablokowane dokumenty są pomijane.",
       "done": "{n, plural, one {Zaszyfrowano # dokument} few {Zaszyfrowano # dokumenty} other {Zaszyfrowano # dokumentów}}.",
       "nothing": "Nie było czego szyfrować.",
@@ -14216,11 +14216,12 @@
       "lockedLead": "Odblokuj go, aby edytować. Otworzy się tylko w Twojej przeglądarce.",
       "otherKey": "Ten dokument jest zaszyfrowany kluczem, którego ta firma nie ma.",
       "unlock": "Odblokuj",
-      "aiUnavailable": "Wypełnianie przez AI jest niedostępne w Trybie poufnym podczas szyfrowania – tekst musiałby trafić na serwer.",
       "sealFailed": "Nie udało się zaszyfrować dokumentu. Nic nie zapisano.",
       "sealToggle": "Zaszyfruj ten dokument",
-      "sealOnHint": "Opisy pozycji i notatki zobaczysz tylko Ty i członkowie z kluczem. PDF, ISDOC i podpowiedzi pozycji nie będą dostępne.",
-      "sealOffHint": "Dokument zapisze się bez szyfrowania, jak dotąd."
+      "sealOnHint": "Opisy pozycji i notatki zobaczysz tylko Ty i członkowie z kluczem. PDF i ISDOC nie będą dostępne, podpowiedzi pozycji są wyszukiwane tylko w Twojej przeglądarce.",
+      "sealOffHint": "Dokument zapisze się bez szyfrowania, jak dotąd.",
+      "aiConsent": "Wyślij ten tekst do AI – jednorazowo trafi na serwer i do dostawcy AI, nie zostanie zapisany",
+      "aiConsentHint": "Serwer nie zapisuje tekstu ani nie umieszcza go w logach. To, co zwróci AI, zostanie zaszyfrowane w Twojej przeglądarce przy zapisie. Zgoda dotyczy tylko tego jednego uruchomienia."
     },
     "actions": {
       "blocked": "Niedostępne w Trybie poufnym: serwer nie odczyta zaszyfrowanego dokumentu. Wyłącz załącznik PDF/ISDOC w ustawieniach e-maili albo wyślij link.",
@@ -14237,8 +14238,8 @@
         "loses": [
           "PDF, ISDOC, UBL i Peppol tworzone przez serwer",
           "Załącznik PDF/ISDOC w e-mailach",
-          "Wyszukiwanie po tekście pozycji i notatek, podpowiedzi pozycji",
-          "Wypełnianie dokumentu przez AI",
+          "Wyszukiwanie tekstowe i podpowiedzi pozycji na serwerze (po odblokowaniu zajmie się tym Twoja przeglądarka)",
+          "Wypełnianie przez AI bez Twojej wyraźnej zgody (tekst jest wysyłany jednorazowo, tylko gdy to potwierdzisz)",
           "Opisy pozycji w publicznym linku i w eksportach dla księgowej (Pohoda, Money, CSV)"
         ]
       },
@@ -14356,6 +14357,54 @@
       "recoveryReplaced": "Nowy kod odzyskiwania obowiązuje",
       "categoriesTitle": "Co jest szyfrowane",
       "categoriesLead": "Kolejne opcje wkrótce. Przy każdej widać, co przestałoby działać."
+    },
+    "search": {
+      "lockedHint": "{n, plural, one {# dokument ma zaszyfrowane teksty, których serwer nie może przeszukać.} few {# dokumenty mają zaszyfrowane teksty, których serwer nie może przeszukać.} many {# dokumentów ma zaszyfrowane teksty, których serwer nie może przeszukać.} other {# dokumentu ma zaszyfrowane teksty, których serwer nie może przeszukać.}} Po odblokowaniu przeszuka je Twoja przeglądarka.",
+      "unlock": "Odblokuj i szukaj",
+      "searching": "Przeszukuję zaszyfrowane teksty w Twojej przeglądarce…",
+      "included": "Wyniki obejmują też zaszyfrowane teksty, przeszukane tylko w Twojej przeglądarce.",
+      "failed": "Nie udało się przeszukać zaszyfrowanych tekstów. Wyniki obejmują tylko czytelne teksty.",
+      "skippedLocked": "{n, plural, one {# zablokowany dokument nie został przeszukany.} few {# zablokowane dokumenty nie zostały przeszukane.} many {# zablokowanych dokumentów nie przeszukano.} other {# zablokowanego dokumentu nie przeszukano.}}"
+    },
+    "export": {
+      "title": "Eksport z odszyfrowanymi tekstami",
+      "lead": "Dokumenty z wybranego okresu wraz z opisami pozycji i notatkami. Plik powstaje w Twojej przeglądarce i zapisuje się od razu na komputerze; serwer go nie widzi. Traktuj go jak poufny dokument.",
+      "csv": "Pobierz CSV",
+      "json": "Pobierz JSON",
+      "working": "Odszyfrowuję…",
+      "done": "{n, plural, one {Zapisano # dokument.} few {Zapisano # dokumenty.} many {Zapisano # dokumentów.} other {Zapisano # dokumentu.}}",
+      "failed": "Nie udało się przygotować eksportu. Spróbuj ponownie.",
+      "needsUnlock": "Przed eksportem poprosimy o odblokowanie Trybu poufnego.",
+      "skippedLocked": "{n, plural, one {W eksporcie brakuje # zablokowanego dokumentu.} few {W eksporcie brakuje # zablokowanych dokumentów.} many {W eksporcie brakuje # zablokowanych dokumentów.} other {W eksporcie brakuje # zablokowanego dokumentu.}}",
+      "unreadable": "[Nie można odszyfrować]",
+      "unreadableCount": "{n, plural, one {Nie udało się odszyfrować # tekstu.} few {Nie udało się odszyfrować # tekstów.} many {Nie udało się odszyfrować # tekstów.} other {Nie udało się odszyfrować # tekstu.}}",
+      "accountingNote": "Eksporty dla księgowej powyżej (CSV, Pohoda, Money S3) tworzy serwer, dlatego zamiast zaszyfrowanych tekstów jest w nich „[Důvěrný obsah]”. Kwoty, VAT, daty i kontrahenci są w nich kompletne.",
+      "columns": {
+        "documentType": "Typ dokumentu",
+        "invoiceNumber": "Numer",
+        "status": "Status",
+        "issueDate": "Data wystawienia",
+        "taxableSupplyDate": "Data dostawy",
+        "dueDate": "Termin płatności",
+        "paidAt": "Zapłacono",
+        "contactName": "Nabywca",
+        "contactIco": "IČO",
+        "variableSymbol": "Symbol zmienny",
+        "currency": "Waluta",
+        "totalWithoutVat": "Netto",
+        "totalVat": "VAT",
+        "total": "Razem",
+        "noteAbove": "Tekst nad pozycjami",
+        "noteBelow": "Tekst pod pozycjami",
+        "internalNote": "Notatka wewnętrzna",
+        "itemDescription": "Pozycja",
+        "itemCode": "Kod pozycji",
+        "quantity": "Ilość",
+        "unit": "Jednostka",
+        "unitPrice": "Cena jednostkowa",
+        "vatRate": "Stawka VAT %",
+        "discountPercent": "Rabat %"
+      }
     }
   }
 }

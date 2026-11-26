@@ -14204,7 +14204,7 @@
       "lead": "Versleutelen – alleen jij en leden met de sleutel zien de inhoud, de server kan hem niet lezen.",
       "what": "Regelomschrijvingen en notities (boven, onder de regels en intern) worden versleuteld.",
       "keeps": "Rapporten en dashboards blijven werken: bedragen, datums en betalingskenmerken blijven onversleuteld.",
-      "loses": "Voor versleutelde documenten kan de server geen pdf of ISDOC maken, ze niet aan een e-mail toevoegen en ze niet vinden via tekstzoeken.",
+      "loses": "Voor versleutelde documenten kan de server geen pdf of ISDOC maken en ze niet aan een e-mail toevoegen. Zoeken op tekst gebeurt na ontgrendelen alleen in je browser.",
       "locked": "Vergrendelde documenten worden overgeslagen.",
       "done": "{n, plural, one {# document versleuteld} other {# documenten versleuteld}}.",
       "nothing": "Er viel niets te versleutelen.",
@@ -14215,11 +14215,12 @@
       "lockedLead": "Ontgrendel het om te bewerken. Het opent alleen in je browser.",
       "otherKey": "Dit document is versleuteld met een sleutel die dit bedrijf niet heeft.",
       "unlock": "Ontgrendelen",
-      "aiUnavailable": "Vooraf invullen met AI is niet beschikbaar in de Vertrouwelijke modus tijdens het versleutelen – de tekst zou naar de server moeten.",
       "sealFailed": "Het document kon niet worden versleuteld. Er is niets opgeslagen.",
       "sealToggle": "Dit document versleutelen",
-      "sealOnHint": "Alleen jij en leden met de sleutel zien regelomschrijvingen en notities. Pdf, ISDOC en regelsuggesties zijn niet beschikbaar.",
-      "sealOffHint": "Het document wordt zoals voorheen onversleuteld opgeslagen."
+      "sealOnHint": "Alleen jij en leden met de sleutel zien regelomschrijvingen en notities. Pdf en ISDOC zijn niet beschikbaar; regelsuggesties worden alleen in je browser gezocht.",
+      "sealOffHint": "Het document wordt zoals voorheen onversleuteld opgeslagen.",
+      "aiConsent": "Deze tekst naar AI sturen – hij gaat één keer naar de server en de AI-aanbieder en wordt niet opgeslagen",
+      "aiConsentHint": "De server slaat de tekst niet op en logt hem niet. Wat AI teruggeeft, wordt bij het opslaan in je browser versleuteld. De toestemming geldt alleen voor deze ene keer."
     },
     "actions": {
       "blocked": "Niet beschikbaar in de Vertrouwelijke modus: de server kan een versleuteld document niet lezen. Zet de pdf/ISDOC-bijlage uit in de e-mailinstellingen of stuur een link.",
@@ -14236,8 +14237,8 @@
         "loses": [
           "Pdf, ISDOC, UBL en Peppol gemaakt door de server",
           "Pdf/ISDOC-bijlage in e-mails",
-          "Zoeken op tekst van regels en notities, regelsuggesties",
-          "Documenten vooraf invullen met AI",
+          "Zoeken op tekst en regelsuggesties op de server (na ontgrendelen doet je browser dat)",
+          "Vooraf invullen met AI zonder je uitdrukkelijke toestemming (de tekst gaat maar één keer weg, als je het bevestigt)",
           "Regelomschrijvingen op de openbare link en in exports voor de boekhouder (Pohoda, Money, CSV)"
         ]
       },
@@ -14355,6 +14356,54 @@
       "recoveryReplaced": "De nieuwe herstelcode geldt",
       "categoriesTitle": "Wat wordt versleuteld",
       "categoriesLead": "Meer opties volgen. Bij elke zie je wat er niet meer zou werken."
+    },
+    "search": {
+      "lockedHint": "{n, plural, one {# document heeft versleutelde teksten die de server niet kan doorzoeken.} other {# documenten hebben versleutelde teksten die de server niet kan doorzoeken.}} Ontgrendel en je browser doorzoekt ze.",
+      "unlock": "Ontgrendelen en zoeken",
+      "searching": "Versleutelde teksten worden in je browser doorzocht…",
+      "included": "De resultaten bevatten ook versleutelde teksten, alleen in je browser doorzocht.",
+      "failed": "De versleutelde teksten konden niet worden doorzocht. De resultaten gaan alleen over leesbare teksten.",
+      "skippedLocked": "{n, plural, one {# vergrendeld document is niet doorzocht.} other {# vergrendelde documenten zijn niet doorzocht.}}"
+    },
+    "export": {
+      "title": "Export met ontsleutelde teksten",
+      "lead": "Documenten uit de gekozen periode, met regelomschrijvingen en notities. Het bestand wordt in je browser gemaakt en direct op je computer opgeslagen; de server ziet het niet. Behandel het als een vertrouwelijk document.",
+      "csv": "CSV downloaden",
+      "json": "JSON downloaden",
+      "working": "Ontsleutelen…",
+      "done": "{n, plural, one {# document opgeslagen.} other {# documenten opgeslagen.}}",
+      "failed": "De export kon niet worden voorbereid. Probeer het opnieuw.",
+      "needsUnlock": "Voor de export vragen we je de Vertrouwelijke modus te ontgrendelen.",
+      "skippedLocked": "{n, plural, one {# vergrendeld document ontbreekt in de export.} other {# vergrendelde documenten ontbreken in de export.}}",
+      "unreadable": "[Niet te ontsleutelen]",
+      "unreadableCount": "{n, plural, one {# tekst kon niet worden ontsleuteld.} other {# teksten konden niet worden ontsleuteld.}}",
+      "accountingNote": "De exports voor de boekhouder hierboven (CSV, Pohoda, Money S3) maakt de server, daarom staat er „[Důvěrný obsah]” in plaats van versleutelde teksten. Bedragen, btw, datums en klanten zijn volledig.",
+      "columns": {
+        "documentType": "Documenttype",
+        "invoiceNumber": "Nummer",
+        "status": "Status",
+        "issueDate": "Factuurdatum",
+        "taxableSupplyDate": "Leveringsdatum",
+        "dueDate": "Vervaldatum",
+        "paidAt": "Betaald",
+        "contactName": "Klant",
+        "contactIco": "IČO",
+        "variableSymbol": "Variabel symbool",
+        "currency": "Valuta",
+        "totalWithoutVat": "Netto",
+        "totalVat": "Btw",
+        "total": "Totaal",
+        "noteAbove": "Tekst boven de regels",
+        "noteBelow": "Tekst onder de regels",
+        "internalNote": "Interne notitie",
+        "itemDescription": "Regel",
+        "itemCode": "Regelcode",
+        "quantity": "Aantal",
+        "unit": "Eenheid",
+        "unitPrice": "Prijs per eenheid",
+        "vatRate": "Btw-tarief %",
+        "discountPercent": "Korting %"
+      }
     }
   }
 }

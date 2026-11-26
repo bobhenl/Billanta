@@ -14204,7 +14204,7 @@
       "lead": "Titkosítás – a tartalmat csak Ön és a kulccsal rendelkező tagok látják, a szerver nem tudja elolvasni.",
       "what": "A tételleírások és a megjegyzések (a tételek felett, alatt és a belsők) titkosítva lesznek.",
       "keeps": "A kimutatások és az irányítópultok továbbra is működnek: az összegek, dátumok és közlemények titkosítatlanok maradnak.",
-      "loses": "Titkosított bizonylathoz a szerver nem készít PDF-et vagy ISDOC-ot, nem csatolja e-mailhez, és szöveges kereséssel sem találja meg.",
+      "loses": "Titkosított bizonylathoz a szerver nem készít PDF-et vagy ISDOC-ot, és nem csatolja e-mailhez. A szöveges keresés feloldás után csak a böngészőjében fut.",
       "locked": "A zárolt bizonylatok kimaradnak.",
       "done": "{n, plural, one {# bizonylat titkosítva} other {# bizonylat titkosítva}}.",
       "nothing": "Nem volt mit titkosítani.",
@@ -14215,11 +14215,12 @@
       "lockedLead": "A szerkesztéshez oldja fel. Csak az Ön böngészőjében nyílik meg.",
       "otherKey": "Ez a bizonylat olyan kulccsal titkosított, amellyel ez a cég nem rendelkezik.",
       "unlock": "Feloldás",
-      "aiUnavailable": "Az AI-kitöltés titkosítás közben nem érhető el Bizalmas módban – a szövegnek a szerverre kellene kerülnie.",
       "sealFailed": "A bizonylatot nem sikerült titkosítani. Semmi sem mentődött.",
       "sealToggle": "A bizonylat titkosítása",
-      "sealOnHint": "A tételleírásokat és megjegyzéseket csak Ön és a kulccsal rendelkező tagok látják. PDF, ISDOC és tételjavaslatok nem lesznek elérhetők.",
-      "sealOffHint": "A bizonylat a korábbiakhoz hasonlóan titkosítás nélkül mentődik."
+      "sealOnHint": "A tételleírásokat és megjegyzéseket csak Ön és a kulccsal rendelkező tagok látják. PDF és ISDOC nem lesz elérhető, a tételjavaslatokat csak a böngészője keresi.",
+      "sealOffHint": "A bizonylat a korábbiakhoz hasonlóan titkosítás nélkül mentődik.",
+      "aiConsent": "A szöveg elküldése az AI-nak – egyszer eljut a szerverre és az AI-szolgáltatóhoz, nem kerül mentésre",
+      "aiConsentHint": "A szerver nem tárolja és nem naplózza a szöveget. Amit az AI visszaad, mentéskor a böngészőjében titkosítódik. A hozzájárulás csak erre az egy futtatásra érvényes."
     },
     "actions": {
       "blocked": "Bizalmas módban nem érhető el: a szerver nem tudja elolvasni a titkosított bizonylatot. Kapcsolja ki a PDF/ISDOC-mellékletet az e-mail-beállításokban, vagy küldjön linket.",
@@ -14236,8 +14237,8 @@
         "loses": [
           "A szerver által készített PDF, ISDOC, UBL és Peppol",
           "PDF/ISDOC-melléklet az e-mailekben",
-          "Keresés a tételek és megjegyzések szövegében, tételjavaslatok",
-          "Bizonylat kitöltése AI-jal",
+          "Szöveges keresés és tételjavaslatok a szerveren (feloldás után ezt a böngészője végzi)",
+          "AI-kitöltés kifejezett hozzájárulás nélkül (a szöveg csak egyszer megy el, ha jóváhagyja)",
           "Tételleírások a nyilvános linken és a könyvelőnek szóló exportokban (Pohoda, Money, CSV)"
         ]
       },
@@ -14355,6 +14356,54 @@
       "recoveryReplaced": "Az új helyreállító kód érvényes",
       "categoriesTitle": "Mi titkosítódik",
       "categoriesLead": "További lehetőségek jönnek. Mindegyiknél látja, mi nem működne."
+    },
+    "search": {
+      "lockedHint": "{n, plural, one {# bizonylatban titkosított szöveg van, amelyben a szerver nem tud keresni.} other {# bizonylatban titkosított szöveg van, amelyben a szerver nem tud keresni.}} Feloldás után a böngészője keres bennük.",
+      "unlock": "Feloldás és keresés",
+      "searching": "Keresés a titkosított szövegekben a böngészőjében…",
+      "included": "A találatok a titkosított szövegeket is tartalmazzák, ezekben csak a böngészője keresett.",
+      "failed": "A titkosított szövegekben nem sikerült keresni. A találatok csak az olvasható szövegekre vonatkoznak.",
+      "skippedLocked": "{n, plural, one {# zárolt bizonylatban nem történt keresés.} other {# zárolt bizonylatban nem történt keresés.}}"
+    },
+    "export": {
+      "title": "Exportálás visszafejtett szövegekkel",
+      "lead": "A kiválasztott időszak bizonylatai tételleírásokkal és megjegyzésekkel. A fájl a böngészőjében készül, és közvetlenül a gépére kerül, a szerver nem látja. Kezelje bizalmas dokumentumként.",
+      "csv": "CSV letöltése",
+      "json": "JSON letöltése",
+      "working": "Visszafejtés…",
+      "done": "{n, plural, one {# bizonylat mentve.} other {# bizonylat mentve.}}",
+      "failed": "Az exportot nem sikerült elkészíteni. Próbálja újra.",
+      "needsUnlock": "Exportálás előtt fel kell oldania a Bizalmas módot.",
+      "skippedLocked": "{n, plural, one {# zárolt bizonylat hiányzik az exportból.} other {# zárolt bizonylat hiányzik az exportból.}}",
+      "unreadable": "[Nem fejthető vissza]",
+      "unreadableCount": "{n, plural, one {# szöveget nem sikerült visszafejteni.} other {# szöveget nem sikerült visszafejteni.}}",
+      "accountingNote": "A fenti könyvelési exportokat (CSV, Pohoda, Money S3) a szerver készíti, ezért a titkosított szövegek helyén „[Důvěrný obsah]” áll. Az összegek, az áfa, a dátumok és a vevők teljesek.",
+      "columns": {
+        "documentType": "Bizonylattípus",
+        "invoiceNumber": "Szám",
+        "status": "Állapot",
+        "issueDate": "Kiállítás dátuma",
+        "taxableSupplyDate": "Teljesítés dátuma",
+        "dueDate": "Fizetési határidő",
+        "paidAt": "Kifizetve",
+        "contactName": "Vevő",
+        "contactIco": "IČO",
+        "variableSymbol": "Változó szimbólum",
+        "currency": "Pénznem",
+        "totalWithoutVat": "Nettó",
+        "totalVat": "Áfa",
+        "total": "Összesen",
+        "noteAbove": "Szöveg a tételek felett",
+        "noteBelow": "Szöveg a tételek alatt",
+        "internalNote": "Belső megjegyzés",
+        "itemDescription": "Tétel",
+        "itemCode": "Tételkód",
+        "quantity": "Mennyiség",
+        "unit": "Egység",
+        "unitPrice": "Egységár",
+        "vatRate": "Áfakulcs %",
+        "discountPercent": "Kedvezmény %"
+      }
     }
   }
 }
