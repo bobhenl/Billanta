@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { peppolRelevant } from "./peppol-relevance";
 import { BadRequestException, ConflictException, Injectable, NotFoundException, Optional, UnprocessableEntityException } from "@nestjs/common";
 import {
   checkInvoiceRequirements,
@@ -1948,7 +1949,7 @@ export class InvoicesService {
 
     let peppol: (PeppolIssue & { scheme: "peppol" })[] = [];
     const eDocument = invoice.documentType === "invoice" || invoice.documentType === "credit_note";
-    if (invoice.invoiceNumber && eDocument && contact && contact.addressCountry !== "CZ" && lineItems.length) {
+    if (invoice.invoiceNumber && eDocument && contact && peppolRelevant(contact) && lineItems.length) {
       const { issues } = await this.checkInvoiceUbl(db, tenantId, invoiceId);
       // The law check already reports what both would say about names and addresses.
       const seen = new Set(law.map((i) => `${i.field}:${i.code}`));
