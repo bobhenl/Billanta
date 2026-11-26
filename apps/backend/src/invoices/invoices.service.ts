@@ -60,6 +60,7 @@ import { appendNoteLine } from "../bank-reconciliation/payment-note";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
 import { lockBlocks } from "./invoice-lock";
+import { plainOrNull } from "../vault/sealed";
 
 // TODO: once packages/cz-compliance is ready, ARES-resolve
 // counterparty_ico / counterparty_name_raw into a real `contacts` row here
@@ -449,7 +450,8 @@ export class InvoicesService {
       (r) =>
         (!q || fuzzyScore(q, [r.invoice.invoiceNumber, r.contactName, r.contactIco, r.invoice.variableSymbol, r.invoice.orderNumber]) > 0) &&
         (!note ||
-          fuzzyScore(note, [r.invoice.internalNote, r.invoice.noteAbove, r.invoice.noteBelow, r.invoice.clientResponseNote]) > 0) &&
+          // Encrypted notes are left out: fuzzy matching would find words in random base64.
+          fuzzyScore(note, [plainOrNull(r.invoice.internalNote), plainOrNull(r.invoice.noteAbove), plainOrNull(r.invoice.noteBelow), r.invoice.clientResponseNote]) > 0) &&
         (!customField || fuzzyScore(customField, (r.invoice.customFields ?? []).flatMap((f) => [f.label, f.value])) > 0) &&
         (!customValue || hasCustomValue(r.invoice.customFields, customValue)),
     );
@@ -481,7 +483,7 @@ export class InvoicesService {
             const lines = itemsByInvoice.get(r.invoice.id) ?? [];
             return (
               (query.vat_rate === undefined || lines.some((l) => l.vatRate !== null && Number(l.vatRate) === query.vat_rate)) &&
-              (!item || lines.some((l) => fuzzyScore(item, [l.description, l.code]) > 0))
+              (!item || lines.some((l) => fuzzyScore(item, [plainOrNull(l.description), l.code]) > 0))
             );
           });
 
@@ -1043,7 +1045,8 @@ export class InvoicesService {
         lastUsed: schema.invoiceLineItems.createdAt,
       })
       .from(schema.invoiceLineItems)
-      .where(ilike(schema.invoiceLineItems.description, `%${escaped}%`))
+      // Encrypted descriptions can't be suggested, and must not match as base64.
+      .where(and(ilike(schema.invoiceLineItems.description, `%${escaped}%`), sql`${schema.invoiceLineItems.description} NOT LIKE 'enc:v1:%'`))
       .orderBy(schema.invoiceLineItems.description, desc(schema.invoiceLineItems.createdAt))
       .limit(30);
     return rows

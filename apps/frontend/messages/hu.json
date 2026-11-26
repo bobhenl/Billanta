@@ -767,7 +767,8 @@
     },
     "print": "Nyomtatás / PDF",
     "downloadPdf": "PDF letöltése",
-    "downloadPdfShort": "PDF"
+    "downloadPdfShort": "PDF",
+    "confidentialItem": "Bizalmas tétel"
   },
   "expenses": {
     "title": "Költségek",
@@ -1761,6 +1762,10 @@
         "accountantProfile": {
           "title": "Könyvelői profil",
           "description": "Megjelenés a könyvelők jegyzékében és a könyvelői partnerprogram."
+        },
+        "confidential": {
+          "title": "Bizalmas mód",
+          "description": "Bizonylatszövegek titkosítása a böngészőben"
         }
       },
       "managedByAdmins": "A cégadatokat, a csapatot, az előfizetést és a többi cégbeállítást a tulajdonos vagy egy adminisztrátor kezeli."
@@ -14097,5 +14102,217 @@
   "updateNotice": {
     "text": "Elérhető a Billanta új verziója. Töltse újra az oldalt, hogy minden működjön.",
     "reload": "Újratöltés"
+  },
+  "vault": {
+    "settingsLink": "Bizalmas mód beállításai",
+    "plan": {
+      "title": "A Bizalmas mód a Plus és Business csomagok része",
+      "body": "A csomagváltás után a cég tulajdonosa itt kapcsolja be. Ha később kisebb csomagra vált, a már titkosított bizonylatok továbbra is feloldhatók és olvashatók.",
+      "upgrade": "Csomagok megtekintése",
+      "downgradedTitle": "További bizonylatok titkosításához Plus vagy Business csomag kell",
+      "downgradedBody": "A titkosított bizonylatokat továbbra is feloldhatja, olvashatja és szerkesztheti. Az új bizonylatok viszont titkosítás nélkül mentődnek."
+    },
+    "unlock": {
+      "title": "Bizalmas mód feloldása",
+      "lead": "A titkosított szövegek csak az Ön böngészőjében nyílnak meg. A jelszó és a kód soha nem kerül a szerverre.",
+      "cancel": "Vissza",
+      "submit": "Feloldás",
+      "passkeyButton": "Hozzáférési kulcs használata",
+      "methods": {
+        "password": "Széfjelszó",
+        "recovery": "Helyreállító kód",
+        "passkey": "Hozzáférési kulcs"
+      },
+      "password": "Széfjelszó",
+      "currentPassword": "Jelenlegi széfjelszó",
+      "recovery": "Helyreállító kód",
+      "newPasswordRequired": "Új széfjelszó (legalább 10 karakter)",
+      "newPasswordOptional": "Új széfjelszó (nem kötelező, ha elfelejtette a sajátját)",
+      "passkeyLead": "A böngésző ujjlenyomatot, arcot vagy biztonsági kulcsot kér.",
+      "settingsHint": "A jelszót, a hozzáférési kulcsokat és a helyreállító kódot itt kezeli:",
+      "errors": {
+        "passwordShort": "Az új jelszónak legalább 10 karakterből kell állnia.",
+        "passkeyFailed": "A hozzáférési kulcs nem működött. Próbálja a jelszót vagy a helyreállító kódot.",
+        "saveFailed": "Az új jelszót nem sikerült menteni. Próbálja újra.",
+        "recoveryMalformed": "A helyreállító kód 30 karakteres (6 darab 5-ös csoport). Ellenőrizze.",
+        "noPassword": "Még nincs széfjelszava. Oldja fel a helyreállító kóddal, és állítson be egyet.",
+        "wrongSecret": "A jelszó vagy a kód nem egyezik.",
+        "unlockFailed": "A feloldás nem sikerült. Próbálja újra."
+      }
+    },
+    "text": {
+      "locked": "Titkosítva",
+      "otherKey": "Másik kulccsal titkosítva",
+      "unlock": "Feloldás"
+    },
+    "seal": {
+      "button": {
+        "invoice": "Titkosítás",
+        "contact": "Az ügyfél bizonylatainak titkosítása",
+        "company": "Az egész cég titkosítása"
+      },
+      "title": {
+        "invoice": "A bizonylat titkosítása",
+        "contact": "Az ügyfél összes bizonylatának titkosítása",
+        "company": "A cég összes bizonylatának titkosítása"
+      },
+      "cancel": "Vissza",
+      "confirm": "Titkosítás",
+      "progress": "Titkosítás… {n}",
+      "lead": "Titkosítás – a tartalmat csak Ön és a kulccsal rendelkező tagok látják, a szerver nem tudja elolvasni.",
+      "what": "A tételleírások és a megjegyzések (a tételek felett, alatt és a belsők) titkosítva lesznek.",
+      "keeps": "A kimutatások és az irányítópultok továbbra is működnek: az összegek, dátumok és közlemények titkosítatlanok maradnak.",
+      "loses": "Titkosított bizonylathoz a szerver nem készít PDF-et vagy ISDOC-ot, nem csatolja e-mailhez, és szöveges kereséssel sem találja meg.",
+      "locked": "A zárolt bizonylatok kimaradnak.",
+      "done": "{n, plural, one {# bizonylat titkosítva} other {# bizonylat titkosítva}}.",
+      "nothing": "Nem volt mit titkosítani.",
+      "failed": "A titkosítás nem sikerült. A már titkosított bizonylatok titkosítva maradnak."
+    },
+    "editor": {
+      "lockedTitle": "Ez a bizonylat titkosított",
+      "lockedLead": "A szerkesztéshez oldja fel. Csak az Ön böngészőjében nyílik meg.",
+      "otherKey": "Ez a bizonylat olyan kulccsal titkosított, amellyel ez a cég nem rendelkezik.",
+      "unlock": "Feloldás",
+      "aiUnavailable": "Az AI-kitöltés titkosítás közben nem érhető el Bizalmas módban – a szövegnek a szerverre kellene kerülnie.",
+      "sealFailed": "A bizonylatot nem sikerült titkosítani. Semmi sem mentődött.",
+      "sealToggle": "A bizonylat titkosítása",
+      "sealOnHint": "A tételleírásokat és megjegyzéseket csak Ön és a kulccsal rendelkező tagok látják. PDF, ISDOC és tételjavaslatok nem lesznek elérhetők.",
+      "sealOffHint": "A bizonylat a korábbiakhoz hasonlóan titkosítás nélkül mentődik."
+    },
+    "actions": {
+      "blocked": "Bizalmas módban nem érhető el: a szerver nem tudja elolvasni a titkosított bizonylatot. Kapcsolja ki a PDF/ISDOC-mellékletet az e-mail-beállításokban, vagy küldjön linket.",
+      "pdfUnavailable": "A PDF Bizalmas módban nem érhető el. A részleteket kinyomtathatja a böngészőből (Ctrl+P).",
+      "sendHint": "Ez a bizonylat titkosított: az e-mail csak linkkel megy ki, a szerver nem tud PDF-et vagy ISDOC-ot csatolni."
+    },
+    "categories": {
+      "recommended": "Ajánlott",
+      "planned": "Hamarosan",
+      "losesTitle": "Ami nem fog működni:",
+      "texts": {
+        "title": "Tételleírások és megjegyzések",
+        "description": "Amit szállított, és a bizonylat megjegyzései. Az összegek, dátumok és azonosítók olvashatók maradnak.",
+        "loses": [
+          "A szerver által készített PDF, ISDOC, UBL és Peppol",
+          "PDF/ISDOC-melléklet az e-mailekben",
+          "Keresés a tételek és megjegyzések szövegében, tételjavaslatok",
+          "Bizonylat kitöltése AI-jal",
+          "Tételleírások a nyilvános linken és a könyvelőnek szóló exportokban (Pohoda, Money, CSV)"
+        ]
+      },
+      "attachments": {
+        "title": "Mellékletek és nyugták",
+        "description": "Bizonylatokhoz és költségekhez csatolt fájlok.",
+        "loses": [
+          "Nyugták AI-alapú beolvasása",
+          "Mellékletek előnézete",
+          "Mellékletek e-mailben küldése és átadása a könyvelőnek"
+        ]
+      },
+      "contacts": {
+        "title": "Partnerek neve és címe",
+        "description": "Ügyfélnevek, címek, e-mailek és telefonszámok.",
+        "loses": [
+          "Kitöltés és frissítés az ARES-ből",
+          "Banki befizetések párosítása a fizető neve alapján",
+          "A szerver által küldött e-mailek (nem ismeri a címet)",
+          "Partnerek keresése a szerveren"
+        ]
+      },
+      "amounts": {
+        "title": "Összegek",
+        "description": "Árak, ÁFA és bizonylatösszegek.",
+        "loses": [
+          "Banki befizetések automatikus párosítása",
+          "ÁFA-kimutatások, összesítő jelentés és ÁFA-exportok",
+          "Irányítópultok, nettó jövedelem és grafikonok",
+          "Összeget tartalmazó emlékeztetők és a szerver által készített QR-fizetés"
+        ]
+      }
+    },
+    "enable": {
+      "offTitle": "A Bizalmas mód ki van kapcsolva",
+      "ownerOnly": "Csak a cég tulajdonosa kapcsolhatja be.",
+      "introTitle": "Bizalmas mód",
+      "intro": "A kiválasztott szövegek közvetlenül az Ön böngészőjében titkosítódnak egy olyan kulccsal, amelyet csak az Ön cége ismer. Sem a szerver, sem a mentései, sem mi nem tudjuk elolvasni őket.",
+      "notE2eeNote": "Széfjelszóval, hozzáférési kulccsal vagy helyreállító kóddal oldható fel. A bejelentkezés vagy a kétlépcsős azonosítás nem nyitja meg a kulcsot – különben a szervernek ismernie kellene.",
+      "chooseTitle": "Mit titkosítson",
+      "chooseLead": "Minden lehetőség kikapcsolja azokat a funkciókat, amelyeknek olvasniuk kell a szöveget. Az alkalmazás többi része tovább működik.",
+      "warningsTitle": "Mielőtt bekapcsolja",
+      "warnings": {
+        "lost": "Tudomásul veszem, hogy ha minden széfjelszót és a helyreállító kódot is elveszítjük, a titkosított adatok nem állíthatók helyre. Az ügyfélszolgálat sem tudja megnyitni őket.",
+        "archive": "Tudomásul veszem, hogy a bizonylatokat 10 évig meg kell őriznünk, és az ÁFA-bevallásokat magunk adjuk be. Rendszeresen letöltjük a bizonylatarchívumot.",
+        "features": "Tudomásul veszem, mely funkciók nem működnek a titkosított bizonylatoknál."
+      },
+      "next": "Tovább",
+      "back": "Vissza",
+      "passwordTitle": "Széfjelszó",
+      "passwordLead": "Eltér a bejelentkezési jelszótól, legalább {n} karakter. Soha nem kerül a szerverre.",
+      "password": "Széfjelszó",
+      "passwordAgain": "Jelszó újra",
+      "codeTitle": "Helyreállító kód",
+      "codeLead": "Csak most jelenik meg. Nyomtassa ki, vagy tárolja a számítógépen kívül. Feloldja az adatokat, ha elfelejti a jelszót, és odaadhatja a hozzáférésre jogosult kollégáknak.",
+      "copied": "Másolva",
+      "copy": "Másolás",
+      "download": "Letöltés fájlként",
+      "codeFileHeader": "A Bizalmas mód helyreállító kódja ({site}). Tárolja biztonságos helyen.",
+      "retype": "Írja be újra a kódot ellenőrzésként",
+      "retypeMismatch": "A kód még nem egyezik.",
+      "submit": "Bizalmas mód bekapcsolása",
+      "done": "A Bizalmas mód be van kapcsolva.",
+      "errors": {
+        "acks": "Kérjük, erősítse meg az összes figyelmeztetést.",
+        "passwordShort": "A jelszónak legalább {n} karakterből kell állnia.",
+        "passwordMismatch": "A jelszavak nem egyeznek.",
+        "failed": "A bekapcsolás nem sikerült. Próbálja újra.",
+        "vault_already_enabled": "A Bizalmas mód már be van kapcsolva.",
+        "owner_only": "Csak a cég tulajdonosa kapcsolhatja be.",
+        "plan_required": "A Bizalmas mód a Plus és Business csomagok része."
+      }
+    },
+    "settings": {
+      "title": "Bizalmas mód",
+      "description": "Bizonylatszövegek titkosítása a böngészőben.",
+      "loadError": "A beállításokat nem sikerült betölteni.",
+      "failed": "Nem sikerült. Próbálja újra.",
+      "onTitle": "A Bizalmas mód be van kapcsolva",
+      "unlockedHere": "Ebben a böngészőben feloldva. Kijelentkezéskor a kulcs törlődik.",
+      "lockedHere": "Ebben a böngészőben zárolva.",
+      "lock": "Zárolás",
+      "unlock": "Feloldás",
+      "archiveTitle": "Az archívum az Ön felelőssége",
+      "archiveBody": "A bizonylatokat 10 évig meg kell őriznie, és az ÁFA-bevallások továbbra is az Ön kötelezettségei. Töltse le rendszeresen a bizonylatarchívumot, és a helyreállító kódot a számítógépen kívül tárolja.",
+      "archiveLink": "Exportok és archívum",
+      "sealTitle": "Meglévő bizonylatok titkosítása",
+      "sealLead": "A régebbi bizonylatok titkosítatlanok maradnak, amíg nem szerkeszti vagy itt nem titkosítja őket.",
+      "sealNew": "Új bizonylatok automatikus titkosítása",
+      "sealNewHint": "A szerkesztőben A bizonylat titkosítása opció előre be lesz kapcsolva.",
+      "saved": "Mentve",
+      "methodsTitle": "Feloldási módjaim",
+      "passwordSet": "A széfjelszó be van állítva",
+      "passwordMissing": "Még nincs széfjelszava",
+      "changePassword": "Módosítás",
+      "setPassword": "Beállítás",
+      "passkeyUnnamed": "Hozzáférési kulcs",
+      "passkeyRemoved": "Hozzáférési kulcs eltávolítva",
+      "removePasskey": "Hozzáférési kulcs eltávolítása",
+      "passkeyLead": "Feloldás ujjlenyomattal vagy arccal",
+      "addPasskey": "Hozzáférési kulcs hozzáadása",
+      "newPassword": "Új széfjelszó (legalább {n} karakter)",
+      "savePassword": "Jelszó mentése",
+      "passwordShort": "A jelszónak legalább {n} karakterből kell állnia.",
+      "passwordSaved": "Széfjelszó mentve",
+      "passkeyHint": "Erősítse meg a jelenlegi jelszóval vagy a helyreállító kóddal, majd a böngésző kéri a hozzáférési kulcs létrehozását.",
+      "passkeyLabel": "Név (pl. Laptop)",
+      "passkeyNoPrf": "Ez az eszköz vagy böngésző nem támogatja a hozzáférési kulcsot titkosításhoz.",
+      "passkeyAdded": "Hozzáférési kulcs hozzáadva",
+      "recoveryTitle": "Helyreállító kód",
+      "recoveryLead": "Az új kód azonnal érvényteleníti a régit. A régi kóddal feloldó kollégák megtartják saját jelszavukat.",
+      "recoveryShownOnce": "A kód csak most jelenik meg. Tárolja biztonságos helyen.",
+      "recoveryWritten": "Elmentettem",
+      "recoveryNew": "Új helyreállító kód létrehozása",
+      "recoveryReplaced": "Az új helyreállító kód érvényes",
+      "categoriesTitle": "Mi titkosítódik",
+      "categoriesLead": "További lehetőségek jönnek. Mindegyiknél látja, mi nem működne."
+    }
   }
 }

@@ -27,6 +27,8 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { AmountsToggle, HIDE_AMOUNTS_SCRIPT } from '@/components/amounts-toggle';
 import { TrialBanner } from '@/components/trial-banner';
 import { UserMenu } from '@/components/user-menu';
+import { VaultProvider } from '@/components/vault/vault-provider';
+import type { VaultStatus } from '@/lib/vault/types';
 import { NOINDEX } from '@/lib/seo';
 import { canManage, fetchMyAccess, fetchTenant, forbiddenSettings, hiddenSections, type TenantSettings } from '@/lib/tenant';
 import { apiFetch, fetchMyCompanies, isStudentCompanyOfOthers } from '@/lib/api-client';
@@ -75,7 +77,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // The backend enforces access (RoleAccessGuard); the shell just leaves out
   // what this member can't open or the company switched off, and tells a
   // viewer up front that they can only look.
-  const [access, companies] = await Promise.all([fetchMyAccess().catch(() => null), fetchMyCompanies().catch(() => null)]);
+  const [access, companies, vault] = await Promise.all([
+    fetchMyAccess().catch(() => null),
+    fetchMyCompanies().catch(() => null),
+    // "Důvěrný režim": only wrapped keys come back; the browser unlocks them (components/vault).
+    apiFetch<VaultStatus>('/api/v1/vault/me').catch(() => null)
+  ]);
   const role = access?.role ?? null;
   // A practice company of a class shows the class strip instead of the demo countdown.
   const classroom = companies?.active.classroom ? await apiFetch<StudentCompany>('/api/v1/classroom/student').catch(() => null) : null;
@@ -121,6 +128,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <NextIntlClientProvider messages={messages}>
       <AccessProvider access={access}>
       <OfflineProvider scope={offlineScope}>
+      <VaultProvider tenantId={companies?.active.id ?? null} status={vault}>
         <script dangerouslySetInnerHTML={{ __html: HIDE_AMOUNTS_SCRIPT }} />
         <div className="flex min-h-screen flex-col">
           <header className="site-header sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-md">
@@ -180,6 +188,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           {claimReferral && <ReferralClaim />}
           {claimPromo && <PromoClaim />}
         </div>
+      </VaultProvider>
       </OfflineProvider>
       </AccessProvider>
     </NextIntlClientProvider>

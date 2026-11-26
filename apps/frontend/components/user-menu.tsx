@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { Briefcase, Building2, Check, CreditCard, Download, Gift, Globe, GraduationCap, History, LogOut, Plus, Settings, User, UserCog, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { clearVaultKeys } from '@/lib/vault/session';
 import { signOut, useSession } from 'next-auth/react';
 import { Link, useRouter } from '@/i18n/navigation';
 import { InstallAppButton } from '@/components/install-app-button';
@@ -185,6 +186,8 @@ export function UserMenu({
             onClick={async () => {
               if (!(await leaveOffline())) return;
               setOpen(false);
+              // An unlocked "Důvěrný režim" key never outlives the session.
+              await clearVaultKeys();
               void signOut({ callbackUrl: '/' });
             }}
             className="flex w-full items-center gap-2.5 rounded-md border-t border-border px-2 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10"

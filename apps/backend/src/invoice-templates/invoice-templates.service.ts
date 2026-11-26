@@ -3,6 +3,7 @@ import { asc, desc, eq, inArray } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { InvoicesService } from "../invoices/invoices.service";
+import { isSealed } from "../vault/sealed";
 import type {
   BulkInvoiceDto,
   CreateInvoiceTemplateDto,
@@ -108,7 +109,8 @@ export class InvoiceTemplatesService {
       .insert(schema.invoiceTemplates)
       .values({
         tenantId,
-        name: name?.trim() || items[0]?.description.slice(0, 120) || "Šablona",
+        // An encrypted description would make a broken, unreadable name.
+        name: name?.trim() || (items[0] && !isSealed(items[0].description) ? items[0].description.slice(0, 120) : "") || "Šablona",
         contactId: invoice.contactId,
         documentType: invoice.documentType === "credit_note" ? "invoice" : invoice.documentType,
         currency: invoice.currency,

@@ -25,6 +25,7 @@ import { invoiceLinkOf } from "../public-links/public-link";
 import { rateLineLabel } from "./exchange-rate-mode";
 import { BRAND_NAME, brandCreditFor, brandCreditUrl, CREDIT_LABELS, siteUrl, type BrandCredit } from "./brand-credit";
 import { tenantCountry, tenantHomeCurrencyOf } from "../tenants/home-currency";
+import { assertServerReadable, printedTexts } from "../vault/sealed";
 
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 type ContactRow = typeof schema.contacts.$inferSelect;
@@ -350,6 +351,8 @@ export class InvoicePdfService {
     totals: InvoiceVatBreakdown,
     related: RelatedDocument = null,
   ): Promise<Buffer> {
+    // Důvěrný režim: the server can't read the text, and must not print ciphertext instead.
+    assertServerReadable(...printedTexts(invoice, lineItems));
     const lang: Lang = invoice.language === "sk" || invoice.language === "en" ? invoice.language : "cs";
     // An unissued draft is a preview: a placeholder number, no payment QR (its VS
     // comes with the number) and a stamp on every page.

@@ -1233,6 +1233,46 @@ export const bankRules = pgTable(
 );
 
 // ---------------------------------------------------------------------------
+// "Důvěrný režim" (migration 0101) — tenant-scoped. The browser encrypts item
+// descriptions and invoice notes with a per-company data key; these tables
+// hold only that key wrapped per member (vault password or passkey PRF) and
+// by the recovery code. See `@faktur/cz-compliance` confidential.ts.
+// ---------------------------------------------------------------------------
+export const tenantVaults = pgTable("tenant_vaults", {
+  tenantId: uuid("tenant_id")
+    .primaryKey()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  /** A known text sealed with the data key: lets a browser check an unwrapped key. */
+  keyCheck: text("key_check").notNull(),
+  /** The invoice editor encrypts new documents by default. */
+  sealNew: boolean("seal_new").notNull().default(true),
+  /** What the company encrypts (`VaultCategory`); only "texts" is implemented so far. */
+  categories: text("categories").array().notNull().default(["texts"]),
+  enabledBy: uuid("enabled_by").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const vaultKeyWraps = pgTable("vault_key_wraps", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenantVaults.tenantId, { onDelete: "cascade" }),
+  /** Null for the company's recovery-code wrap. */
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  kind: varchar("kind", { length: 16 }).notNull().$type<"password" | "recovery" | "passkey">(),
+  kdf: varchar("kdf", { length: 16 }).notNull().$type<"pbkdf2-sha256" | "hkdf-sha256">(),
+  iterations: integer("iterations"),
+  salt: text("salt").notNull(),
+  iv: text("iv").notNull(),
+  wrappedKey: text("wrapped_key").notNull(),
+  /** Passkey wraps: the WebAuthn credential id (base64url) to ask the authenticator for. */
+  credentialId: text("credential_id"),
+  label: text("label"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
 // bank_connections — tenant-scoped. Read-only bank API tokens (Fio for now)
 // that the hourly sync uses to pull incoming payments automatically. The
 // token is stored encrypted and never returned by the API.

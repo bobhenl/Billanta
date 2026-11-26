@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { ConfidentialText } from '@/components/vault/confidential-text';
 import { Clock, FileText, Home, LayoutTemplate, MoreHorizontal, Package, Pencil, Plus, Repeat, Trash2, Users, Wallet, type LucideIcon } from 'lucide-react';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { EmptyState } from '@/components/empty-state';
@@ -156,7 +157,7 @@ export function TemplateGallery({ saved, presets }: { saved: SavedTemplateRow[];
                   <ul className="mt-3 space-y-0.5 text-xs text-muted-foreground">
                     {row.lineItems.slice(0, 3).map((item, i) => (
                       <li key={i} className="truncate">
-                        · {item.description}
+                        · <ConfidentialText value={item.description} />
                       </li>
                     ))}
                     {row.lineItems.length > 3 && <li>{t('moreItems', { count: row.lineItems.length - 3 })}</li>}

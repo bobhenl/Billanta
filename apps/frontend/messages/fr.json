@@ -767,7 +767,8 @@
     },
     "print": "Imprimer / PDF",
     "downloadPdf": "Télécharger le PDF",
-    "downloadPdfShort": "PDF"
+    "downloadPdfShort": "PDF",
+    "confidentialItem": "Ligne confidentielle"
   },
   "expenses": {
     "title": "Dépenses",
@@ -1761,6 +1762,10 @@
         "accountantProfile": {
           "title": "Profil de comptable",
           "description": "Inscription à l’annuaire des comptables et programme partenaire pour les comptables."
+        },
+        "confidential": {
+          "title": "Mode confidentiel",
+          "description": "Chiffrer les textes des documents dans le navigateur"
         }
       },
       "managedByAdmins": "Les informations de l’entreprise, l’équipe, l’abonnement et les autres paramètres de l’entreprise sont gérés par le propriétaire ou un administrateur."
@@ -14097,5 +14102,217 @@
   "updateNotice": {
     "text": "Une nouvelle version de Billanta est disponible. Rechargez la page pour que tout fonctionne.",
     "reload": "Recharger"
+  },
+  "vault": {
+    "settingsLink": "Réglages du Mode confidentiel",
+    "plan": {
+      "title": "Le Mode confidentiel fait partie des offres Plus et Business",
+      "body": "Après le changement d'offre, le propriétaire de l'entreprise l'active ici. Si vous rétrogradez plus tard, les documents déjà chiffrés restent déverrouillables et lisibles.",
+      "upgrade": "Voir les offres",
+      "downgradedTitle": "Chiffrer d'autres documents nécessite l'offre Plus ou Business",
+      "downgradedBody": "Vous pouvez toujours déverrouiller, lire et modifier les documents chiffrés. Les nouveaux documents sont enregistrés sans chiffrement."
+    },
+    "unlock": {
+      "title": "Déverrouiller le Mode confidentiel",
+      "lead": "Les textes chiffrés ne s'ouvrent que dans votre navigateur. Le mot de passe et le code ne sont jamais envoyés au serveur.",
+      "cancel": "Retour",
+      "submit": "Déverrouiller",
+      "passkeyButton": "Utiliser une clé d'accès",
+      "methods": {
+        "password": "Mot de passe du coffre",
+        "recovery": "Code de secours",
+        "passkey": "Clé d'accès"
+      },
+      "password": "Mot de passe du coffre",
+      "currentPassword": "Mot de passe actuel du coffre",
+      "recovery": "Code de secours",
+      "newPasswordRequired": "Nouveau mot de passe du coffre (au moins 10 caractères)",
+      "newPasswordOptional": "Nouveau mot de passe du coffre (facultatif, si vous avez oublié le vôtre)",
+      "passkeyLead": "Votre navigateur demandera une empreinte, votre visage ou une clé de sécurité.",
+      "settingsHint": "Gérez votre mot de passe, vos clés d'accès et le code de secours dans les",
+      "errors": {
+        "passwordShort": "Le nouveau mot de passe doit comporter au moins 10 caractères.",
+        "passkeyFailed": "La clé d'accès n'a pas fonctionné. Essayez le mot de passe ou le code de secours.",
+        "saveFailed": "Impossible d'enregistrer le nouveau mot de passe. Veuillez réessayer.",
+        "recoveryMalformed": "Le code de secours comporte 30 caractères (6 groupes de 5). Vérifiez-le.",
+        "noPassword": "Vous n'avez pas encore de mot de passe du coffre. Déverrouillez avec le code de secours et définissez-en un.",
+        "wrongSecret": "Le mot de passe ou le code ne correspond pas.",
+        "unlockFailed": "Le déverrouillage a échoué. Veuillez réessayer."
+      }
+    },
+    "text": {
+      "locked": "Chiffré",
+      "otherKey": "Chiffré avec une autre clé",
+      "unlock": "Déverrouiller"
+    },
+    "seal": {
+      "button": {
+        "invoice": "Chiffrer",
+        "contact": "Chiffrer les documents du client",
+        "company": "Chiffrer toute l'entreprise"
+      },
+      "title": {
+        "invoice": "Chiffrer ce document",
+        "contact": "Chiffrer tous les documents de ce client",
+        "company": "Chiffrer tous les documents de l'entreprise"
+      },
+      "cancel": "Retour",
+      "confirm": "Chiffrer",
+      "progress": "Chiffrement… {n}",
+      "lead": "Chiffrer – seuls vous et les membres disposant de la clé verront le contenu, le serveur ne peut pas le lire.",
+      "what": "Les descriptions de lignes et les notes (au-dessus, en dessous des lignes et internes) sont chiffrées.",
+      "keeps": "Les rapports et tableaux de bord continuent de fonctionner : montants, dates et références de paiement restent en clair.",
+      "loses": "Pour les documents chiffrés, le serveur ne peut ni créer de PDF ou d'ISDOC, ni les joindre à un e-mail, ni les trouver par recherche de texte.",
+      "locked": "Les documents verrouillés sont ignorés.",
+      "done": "{n, plural, one {# document chiffré} other {# documents chiffrés}}.",
+      "nothing": "Il n'y avait rien à chiffrer.",
+      "failed": "Le chiffrement a échoué. Les documents déjà chiffrés le restent."
+    },
+    "editor": {
+      "lockedTitle": "Ce document est chiffré",
+      "lockedLead": "Déverrouillez-le pour le modifier. Il ne s'ouvre que dans votre navigateur.",
+      "otherKey": "Ce document est chiffré avec une clé que cette entreprise ne possède pas.",
+      "unlock": "Déverrouiller",
+      "aiUnavailable": "Le pré-remplissage par IA n'est pas disponible en Mode confidentiel pendant le chiffrement – le texte devrait partir vers le serveur.",
+      "sealFailed": "Impossible de chiffrer le document. Rien n'a été enregistré.",
+      "sealToggle": "Chiffrer ce document",
+      "sealOnHint": "Seuls vous et les membres disposant de la clé verront les descriptions de lignes et les notes. PDF, ISDOC et suggestions de lignes ne seront pas disponibles.",
+      "sealOffHint": "Le document est enregistré sans chiffrement, comme avant."
+    },
+    "actions": {
+      "blocked": "Indisponible en Mode confidentiel : le serveur ne peut pas lire un document chiffré. Désactivez la pièce jointe PDF/ISDOC dans les réglages des e-mails ou envoyez un lien.",
+      "pdfUnavailable": "Le PDF n'est pas disponible en Mode confidentiel. Vous pouvez imprimer le détail depuis votre navigateur (Ctrl+P).",
+      "sendHint": "Ce document est chiffré : l'e-mail part avec un lien seulement, le serveur ne peut pas joindre de PDF ou d'ISDOC."
+    },
+    "categories": {
+      "recommended": "Recommandé",
+      "planned": "Bientôt",
+      "losesTitle": "Ce qui cesse de fonctionner :",
+      "texts": {
+        "title": "Descriptions de lignes et notes",
+        "description": "Ce que vous avez fourni et les notes du document. Montants, dates et références restent lisibles.",
+        "loses": [
+          "PDF, ISDOC, UBL et Peppol créés par le serveur",
+          "Pièce jointe PDF/ISDOC dans les e-mails",
+          "Recherche dans le texte des lignes et des notes, suggestions de lignes",
+          "Pré-remplissage des documents par IA",
+          "Descriptions de lignes sur le lien public et dans les exports pour le comptable (Pohoda, Money, CSV)"
+        ]
+      },
+      "attachments": {
+        "title": "Pièces jointes et reçus",
+        "description": "Fichiers joints aux documents et aux dépenses.",
+        "loses": [
+          "Lecture des reçus par IA",
+          "Aperçus des pièces jointes",
+          "Envoi des pièces jointes par e-mail et transmission au comptable"
+        ]
+      },
+      "contacts": {
+        "title": "Noms et adresses des contacts",
+        "description": "Noms des clients, adresses, e-mails et téléphones.",
+        "loses": [
+          "Complément et mise à jour depuis ARES",
+          "Rapprochement des paiements bancaires par nom du payeur",
+          "E-mails envoyés par le serveur (il ne connaît pas l'adresse)",
+          "Recherche de contacts sur le serveur"
+        ]
+      },
+      "amounts": {
+        "title": "Montants",
+        "description": "Prix, TVA et totaux des documents.",
+        "loses": [
+          "Rapprochement automatique des paiements bancaires",
+          "Rapports TVA, déclaration de contrôle et exports TVA",
+          "Tableaux de bord, revenu net et graphiques",
+          "Relances avec montant et paiements QR créés par le serveur"
+        ]
+      }
+    },
+    "enable": {
+      "offTitle": "Le Mode confidentiel est désactivé",
+      "ownerOnly": "Seul le propriétaire de l'entreprise peut l'activer.",
+      "introTitle": "Mode confidentiel",
+      "intro": "Les textes choisis sont chiffrés directement dans votre navigateur avec une clé que seule votre entreprise connaît. Ni le serveur, ni ses sauvegardes, ni nous ne pouvons les lire.",
+      "notE2eeNote": "Il se déverrouille avec un mot de passe du coffre, une clé d'accès ou le code de secours. La connexion ou l'authentification à deux facteurs n'ouvrent pas la clé – sinon le serveur devrait la connaître.",
+      "chooseTitle": "Que chiffrer",
+      "chooseLead": "Chaque option désactive les fonctions qui doivent lire le texte. Le reste de l'application continue de fonctionner.",
+      "warningsTitle": "Avant de l'activer",
+      "warnings": {
+        "lost": "Je comprends que si nous perdons tous les mots de passe du coffre et le code de secours, les données chiffrées ne pourront pas être récupérées. Le support ne pourra pas non plus les ouvrir.",
+        "archive": "Je comprends que nous devons conserver les documents 10 ans et déposer nous-mêmes les déclarations de TVA. Nous téléchargerons régulièrement l'archive des documents.",
+        "features": "Je comprends quelles fonctions cessent de fonctionner pour les documents chiffrés."
+      },
+      "next": "Continuer",
+      "back": "Retour",
+      "passwordTitle": "Mot de passe du coffre",
+      "passwordLead": "Différent de votre mot de passe de connexion, au moins {n} caractères. Il n'est jamais envoyé au serveur.",
+      "password": "Mot de passe du coffre",
+      "passwordAgain": "Confirmer le mot de passe",
+      "codeTitle": "Code de secours",
+      "codeLead": "Affiché uniquement maintenant. Imprimez-le ou conservez-le hors de l'ordinateur. Il déverrouille les données si vous oubliez votre mot de passe, et vous le donnez aux collègues qui doivent y avoir accès.",
+      "copied": "Copié",
+      "copy": "Copier",
+      "download": "Télécharger en fichier",
+      "codeFileHeader": "Code de secours du Mode confidentiel ({site}). Conservez-le en lieu sûr.",
+      "retype": "Ressaisissez le code pour le vérifier",
+      "retypeMismatch": "Le code ne correspond pas encore.",
+      "submit": "Activer le Mode confidentiel",
+      "done": "Le Mode confidentiel est activé.",
+      "errors": {
+        "acks": "Veuillez confirmer tous les avertissements.",
+        "passwordShort": "Le mot de passe doit comporter au moins {n} caractères.",
+        "passwordMismatch": "Les mots de passe ne correspondent pas.",
+        "failed": "L'activation a échoué. Veuillez réessayer.",
+        "vault_already_enabled": "Le Mode confidentiel est déjà activé.",
+        "owner_only": "Seul le propriétaire de l'entreprise peut l'activer.",
+        "plan_required": "Le Mode confidentiel fait partie des offres Plus et Business."
+      }
+    },
+    "settings": {
+      "title": "Mode confidentiel",
+      "description": "Chiffrer les textes des documents dans votre navigateur.",
+      "loadError": "Impossible de charger les réglages.",
+      "failed": "Cela n'a pas fonctionné. Veuillez réessayer.",
+      "onTitle": "Le Mode confidentiel est activé",
+      "unlockedHere": "Déverrouillé dans ce navigateur. La clé est supprimée à la déconnexion.",
+      "lockedHere": "Verrouillé dans ce navigateur.",
+      "lock": "Verrouiller",
+      "unlock": "Déverrouiller",
+      "archiveTitle": "L'archive est à votre charge",
+      "archiveBody": "Vous devez conserver les documents 10 ans, et les déclarations de TVA restent votre obligation. Téléchargez régulièrement l'archive des documents et gardez le code de secours hors de l'ordinateur.",
+      "archiveLink": "Exports et archive",
+      "sealTitle": "Chiffrer les documents existants",
+      "sealLead": "Les anciens documents restent en clair jusqu'à ce que vous les modifiiez ou les chiffriez ici.",
+      "sealNew": "Chiffrer automatiquement les nouveaux documents",
+      "sealNewHint": "Dans l'éditeur, l'option Chiffrer ce document sera cochée par défaut.",
+      "saved": "Enregistré",
+      "methodsTitle": "Mes méthodes de déverrouillage",
+      "passwordSet": "Le mot de passe du coffre est défini",
+      "passwordMissing": "Vous n'avez pas encore de mot de passe du coffre",
+      "changePassword": "Modifier",
+      "setPassword": "Définir",
+      "passkeyUnnamed": "Clé d'accès",
+      "passkeyRemoved": "Clé d'accès supprimée",
+      "removePasskey": "Supprimer la clé d'accès",
+      "passkeyLead": "Déverrouiller avec l'empreinte ou le visage",
+      "addPasskey": "Ajouter une clé d'accès",
+      "newPassword": "Nouveau mot de passe du coffre (au moins {n} caractères)",
+      "savePassword": "Enregistrer le mot de passe",
+      "passwordShort": "Le mot de passe doit comporter au moins {n} caractères.",
+      "passwordSaved": "Mot de passe du coffre enregistré",
+      "passkeyHint": "Confirmez avec votre mot de passe actuel ou le code de secours, puis votre navigateur vous demandera de créer une clé d'accès.",
+      "passkeyLabel": "Nom (p. ex. Portable)",
+      "passkeyNoPrf": "Cet appareil ou ce navigateur ne prend pas en charge les clés d'accès pour le chiffrement.",
+      "passkeyAdded": "Clé d'accès ajoutée",
+      "recoveryTitle": "Code de secours",
+      "recoveryLead": "Un nouveau code invalide immédiatement l'ancien. Les collègues qui ont déverrouillé avec l'ancien code gardent leur propre mot de passe.",
+      "recoveryShownOnce": "Le code n'est affiché que maintenant. Conservez-le en lieu sûr.",
+      "recoveryWritten": "Je l'ai enregistré",
+      "recoveryNew": "Créer un nouveau code de secours",
+      "recoveryReplaced": "Le nouveau code de secours est actif",
+      "categoriesTitle": "Ce qui est chiffré",
+      "categoriesLead": "D'autres options arrivent. Pour chacune, vous voyez ce qui cesserait de fonctionner."
+    }
   }
 }

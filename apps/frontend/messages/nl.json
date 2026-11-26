@@ -767,7 +767,8 @@
     },
     "print": "Afdrukken / PDF",
     "downloadPdf": "PDF downloaden",
-    "downloadPdfShort": "PDF"
+    "downloadPdfShort": "PDF",
+    "confidentialItem": "Vertrouwelijke regel"
   },
   "expenses": {
     "title": "Kosten",
@@ -1761,6 +1762,10 @@
         "accountantProfile": {
           "title": "Boekhoudersprofiel",
           "description": "Vermelding in de boekhoudersgids en het partnerprogramma voor boekhouders."
+        },
+        "confidential": {
+          "title": "Vertrouwelijke modus",
+          "description": "Documentteksten versleutelen in de browser"
         }
       },
       "managedByAdmins": "Bedrijfsgegevens, het team, het abonnement en andere bedrijfsinstellingen worden beheerd door de eigenaar of een beheerder."
@@ -14097,5 +14102,217 @@
   "updateNotice": {
     "text": "Er is een nieuwe versie van Billanta. Laad de pagina opnieuw zodat alles werkt.",
     "reload": "Opnieuw laden"
+  },
+  "vault": {
+    "settingsLink": "Instellingen van de Vertrouwelijke modus",
+    "plan": {
+      "title": "De Vertrouwelijke modus zit in de abonnementen Plus en Business",
+      "body": "Na het upgraden zet de eigenaar van het bedrijf hem hier aan. Stap je later terug, dan blijven al versleutelde documenten te ontgrendelen en te lezen.",
+      "upgrade": "Abonnementen bekijken",
+      "downgradedTitle": "Meer documenten versleutelen vraagt om Plus of Business",
+      "downgradedBody": "Versleutelde documenten kun je nog steeds ontgrendelen, lezen en bewerken. Nieuwe documenten worden wel onversleuteld opgeslagen."
+    },
+    "unlock": {
+      "title": "Vertrouwelijke modus ontgrendelen",
+      "lead": "Versleutelde teksten openen alleen in je browser. Wachtwoord en code gaan nooit naar de server.",
+      "cancel": "Terug",
+      "submit": "Ontgrendelen",
+      "passkeyButton": "Passkey gebruiken",
+      "methods": {
+        "password": "Kluiswachtwoord",
+        "recovery": "Herstelcode",
+        "passkey": "Passkey"
+      },
+      "password": "Kluiswachtwoord",
+      "currentPassword": "Huidig kluiswachtwoord",
+      "recovery": "Herstelcode",
+      "newPasswordRequired": "Nieuw kluiswachtwoord (minstens 10 tekens)",
+      "newPasswordOptional": "Nieuw kluiswachtwoord (optioneel, als je het jouwe vergeten bent)",
+      "passkeyLead": "Je browser vraagt om een vingerafdruk, gezicht of beveiligingssleutel.",
+      "settingsHint": "Beheer je wachtwoord, passkeys en herstelcode in de",
+      "errors": {
+        "passwordShort": "Het nieuwe wachtwoord moet minstens 10 tekens hebben.",
+        "passkeyFailed": "De passkey werkte niet. Probeer je wachtwoord of de herstelcode.",
+        "saveFailed": "Het nieuwe wachtwoord kon niet worden opgeslagen. Probeer het opnieuw.",
+        "recoveryMalformed": "De herstelcode heeft 30 tekens (6 groepen van 5). Controleer hem.",
+        "noPassword": "Je hebt nog geen kluiswachtwoord. Ontgrendel met de herstelcode en stel er een in.",
+        "wrongSecret": "Wachtwoord of code klopt niet.",
+        "unlockFailed": "Ontgrendelen is mislukt. Probeer het opnieuw."
+      }
+    },
+    "text": {
+      "locked": "Versleuteld",
+      "otherKey": "Versleuteld met een andere sleutel",
+      "unlock": "Ontgrendelen"
+    },
+    "seal": {
+      "button": {
+        "invoice": "Versleutelen",
+        "contact": "Documenten van klant versleutelen",
+        "company": "Heel het bedrijf versleutelen"
+      },
+      "title": {
+        "invoice": "Dit document versleutelen",
+        "contact": "Alle documenten van deze klant versleutelen",
+        "company": "Alle documenten van het bedrijf versleutelen"
+      },
+      "cancel": "Terug",
+      "confirm": "Versleutelen",
+      "progress": "Versleutelen… {n}",
+      "lead": "Versleutelen – alleen jij en leden met de sleutel zien de inhoud, de server kan hem niet lezen.",
+      "what": "Regelomschrijvingen en notities (boven, onder de regels en intern) worden versleuteld.",
+      "keeps": "Rapporten en dashboards blijven werken: bedragen, datums en betalingskenmerken blijven onversleuteld.",
+      "loses": "Voor versleutelde documenten kan de server geen pdf of ISDOC maken, ze niet aan een e-mail toevoegen en ze niet vinden via tekstzoeken.",
+      "locked": "Vergrendelde documenten worden overgeslagen.",
+      "done": "{n, plural, one {# document versleuteld} other {# documenten versleuteld}}.",
+      "nothing": "Er viel niets te versleutelen.",
+      "failed": "Versleutelen is mislukt. Al versleutelde documenten blijven versleuteld."
+    },
+    "editor": {
+      "lockedTitle": "Dit document is versleuteld",
+      "lockedLead": "Ontgrendel het om te bewerken. Het opent alleen in je browser.",
+      "otherKey": "Dit document is versleuteld met een sleutel die dit bedrijf niet heeft.",
+      "unlock": "Ontgrendelen",
+      "aiUnavailable": "Vooraf invullen met AI is niet beschikbaar in de Vertrouwelijke modus tijdens het versleutelen – de tekst zou naar de server moeten.",
+      "sealFailed": "Het document kon niet worden versleuteld. Er is niets opgeslagen.",
+      "sealToggle": "Dit document versleutelen",
+      "sealOnHint": "Alleen jij en leden met de sleutel zien regelomschrijvingen en notities. Pdf, ISDOC en regelsuggesties zijn niet beschikbaar.",
+      "sealOffHint": "Het document wordt zoals voorheen onversleuteld opgeslagen."
+    },
+    "actions": {
+      "blocked": "Niet beschikbaar in de Vertrouwelijke modus: de server kan een versleuteld document niet lezen. Zet de pdf/ISDOC-bijlage uit in de e-mailinstellingen of stuur een link.",
+      "pdfUnavailable": "Pdf is niet beschikbaar in de Vertrouwelijke modus. Je kunt de detailpagina vanuit je browser afdrukken (Ctrl+P).",
+      "sendHint": "Dit document is versleuteld: de e-mail gaat alleen met een link, de server kan geen pdf of ISDOC bijvoegen."
+    },
+    "categories": {
+      "recommended": "Aanbevolen",
+      "planned": "Binnenkort",
+      "losesTitle": "Wat stopt met werken:",
+      "texts": {
+        "title": "Regelomschrijvingen en notities",
+        "description": "Wat je hebt geleverd en de notities op het document. Bedragen, datums en kenmerken blijven leesbaar.",
+        "loses": [
+          "Pdf, ISDOC, UBL en Peppol gemaakt door de server",
+          "Pdf/ISDOC-bijlage in e-mails",
+          "Zoeken op tekst van regels en notities, regelsuggesties",
+          "Documenten vooraf invullen met AI",
+          "Regelomschrijvingen op de openbare link en in exports voor de boekhouder (Pohoda, Money, CSV)"
+        ]
+      },
+      "attachments": {
+        "title": "Bijlagen en bonnetjes",
+        "description": "Bestanden bij documenten en uitgaven.",
+        "loses": [
+          "Bonnetjes uitlezen met AI",
+          "Voorbeelden van bijlagen",
+          "Bijlagen e-mailen en doorgeven aan de boekhouder"
+        ]
+      },
+      "contacts": {
+        "title": "Namen en adressen van contacten",
+        "description": "Klantnamen, adressen, e-mails en telefoonnummers.",
+        "loses": [
+          "Aanvullen en bijwerken uit ARES",
+          "Bankbetalingen koppelen op naam van de betaler",
+          "E-mails verstuurd door de server (die kent het adres niet)",
+          "Contacten zoeken op de server"
+        ]
+      },
+      "amounts": {
+        "title": "Bedragen",
+        "description": "Prijzen, btw en documenttotalen.",
+        "loses": [
+          "Automatisch koppelen van bankbetalingen",
+          "Btw-rapporten, controleaangifte en btw-exports",
+          "Dashboards, netto-inkomen en grafieken",
+          "Herinneringen met bedrag en QR-betalingen gemaakt door de server"
+        ]
+      }
+    },
+    "enable": {
+      "offTitle": "De Vertrouwelijke modus staat uit",
+      "ownerOnly": "Alleen de eigenaar van het bedrijf kan hem aanzetten.",
+      "introTitle": "Vertrouwelijke modus",
+      "intro": "Gekozen teksten worden direct in je browser versleuteld met een sleutel die alleen je bedrijf kent. De server, zijn back-ups en wij kunnen ze niet lezen.",
+      "notE2eeNote": "Je ontgrendelt met een kluiswachtwoord, een passkey of de herstelcode. Inloggen of tweestapsverificatie opent de sleutel niet – anders zou de server hem moeten kennen.",
+      "chooseTitle": "Wat versleutelen",
+      "chooseLead": "Elke optie zet functies uit die de tekst moeten lezen. De rest van de app blijft werken.",
+      "warningsTitle": "Voordat je hem aanzet",
+      "warnings": {
+        "lost": "Ik begrijp dat versleutelde gegevens niet te herstellen zijn als we alle kluiswachtwoorden en de herstelcode kwijtraken. Ook support kan ze niet openen.",
+        "archive": "Ik begrijp dat we documenten 10 jaar moeten bewaren en btw-aangiften zelf moeten indienen. We downloaden regelmatig het documentarchief.",
+        "features": "Ik begrijp welke functies niet meer werken voor versleutelde documenten."
+      },
+      "next": "Verder",
+      "back": "Terug",
+      "passwordTitle": "Kluiswachtwoord",
+      "passwordLead": "Anders dan je inlogwachtwoord, minstens {n} tekens. Het gaat nooit naar de server.",
+      "password": "Kluiswachtwoord",
+      "passwordAgain": "Wachtwoord herhalen",
+      "codeTitle": "Herstelcode",
+      "codeLead": "Wordt alleen nu getoond. Druk hem af of bewaar hem buiten de computer. Hij ontgrendelt de gegevens als je je wachtwoord vergeet, en je geeft hem aan collega's die toegang moeten hebben.",
+      "copied": "Gekopieerd",
+      "copy": "Kopiëren",
+      "download": "Downloaden als bestand",
+      "codeFileHeader": "Herstelcode van de Vertrouwelijke modus ({site}). Bewaar hem op een veilige plek.",
+      "retype": "Typ de code over ter controle",
+      "retypeMismatch": "De code klopt nog niet.",
+      "submit": "Vertrouwelijke modus aanzetten",
+      "done": "De Vertrouwelijke modus staat aan.",
+      "errors": {
+        "acks": "Bevestig alle waarschuwingen.",
+        "passwordShort": "Het wachtwoord moet minstens {n} tekens hebben.",
+        "passwordMismatch": "De wachtwoorden komen niet overeen.",
+        "failed": "Aanzetten is mislukt. Probeer het opnieuw.",
+        "vault_already_enabled": "De Vertrouwelijke modus staat al aan.",
+        "owner_only": "Alleen de eigenaar van het bedrijf kan hem aanzetten.",
+        "plan_required": "De Vertrouwelijke modus zit in de abonnementen Plus en Business."
+      }
+    },
+    "settings": {
+      "title": "Vertrouwelijke modus",
+      "description": "Documentteksten versleutelen in je browser.",
+      "loadError": "De instellingen konden niet worden geladen.",
+      "failed": "Dat lukte niet. Probeer het opnieuw.",
+      "onTitle": "De Vertrouwelijke modus staat aan",
+      "unlockedHere": "Ontgrendeld in deze browser. Bij uitloggen wordt de sleutel gewist.",
+      "lockedHere": "Vergrendeld in deze browser.",
+      "lock": "Vergrendelen",
+      "unlock": "Ontgrendelen",
+      "archiveTitle": "Het archief is jouw zaak",
+      "archiveBody": "Je moet documenten 10 jaar bewaren en btw-aangiften blijven jouw plicht. Download regelmatig het documentarchief en bewaar de herstelcode buiten de computer.",
+      "archiveLink": "Exports en archief",
+      "sealTitle": "Bestaande documenten versleutelen",
+      "sealLead": "Oudere documenten blijven onversleuteld tot je ze bewerkt of hier versleutelt.",
+      "sealNew": "Nieuwe documenten automatisch versleutelen",
+      "sealNewHint": "In de editor staat de optie Dit document versleutelen al aan.",
+      "saved": "Opgeslagen",
+      "methodsTitle": "Mijn ontgrendelmethoden",
+      "passwordSet": "Kluiswachtwoord is ingesteld",
+      "passwordMissing": "Je hebt nog geen kluiswachtwoord",
+      "changePassword": "Wijzigen",
+      "setPassword": "Instellen",
+      "passkeyUnnamed": "Passkey",
+      "passkeyRemoved": "Passkey verwijderd",
+      "removePasskey": "Passkey verwijderen",
+      "passkeyLead": "Ontgrendelen met vingerafdruk of gezicht",
+      "addPasskey": "Passkey toevoegen",
+      "newPassword": "Nieuw kluiswachtwoord (minstens {n} tekens)",
+      "savePassword": "Wachtwoord opslaan",
+      "passwordShort": "Het wachtwoord moet minstens {n} tekens hebben.",
+      "passwordSaved": "Kluiswachtwoord opgeslagen",
+      "passkeyHint": "Bevestig met je huidige wachtwoord of de herstelcode, daarna vraagt je browser om een passkey te maken.",
+      "passkeyLabel": "Naam (bijv. Laptop)",
+      "passkeyNoPrf": "Dit apparaat of deze browser ondersteunt geen passkeys voor versleuteling.",
+      "passkeyAdded": "Passkey toegevoegd",
+      "recoveryTitle": "Herstelcode",
+      "recoveryLead": "Een nieuwe code maakt de oude meteen ongeldig. Collega's die met de oude code ontgrendelden, houden hun eigen wachtwoord.",
+      "recoveryShownOnce": "De code wordt alleen nu getoond. Bewaar hem op een veilige plek.",
+      "recoveryWritten": "Ik heb hem bewaard",
+      "recoveryNew": "Nieuwe herstelcode maken",
+      "recoveryReplaced": "De nieuwe herstelcode geldt",
+      "categoriesTitle": "Wat wordt versleuteld",
+      "categoriesLead": "Meer opties volgen. Bij elke zie je wat er niet meer zou werken."
+    }
   }
 }

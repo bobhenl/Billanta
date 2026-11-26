@@ -51,6 +51,8 @@ const AREA_PREFIXES: [string, PermissionArea][] = [
   ["v1/expenses", "expenses"],
   ["v1/bank-reconciliation", "bank"],
   ["v1/exports", "reports"],
+  // Encrypting existing documents in place ("Zašifrovat").
+  ["v1/vault/invoices", "invoices"],
 ];
 
 export function areaForPath(path: string): PermissionArea | null {

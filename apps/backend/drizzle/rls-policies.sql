@@ -1988,3 +1988,21 @@ DROP POLICY IF EXISTS tenant_isolation ON einvoice_status_events;
 CREATE POLICY tenant_isolation ON einvoice_status_events
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
+-- ---------------------------------------------------------------------------
+-- "Důvěrný režim" (migration 0101): standard tenant isolation. The rows hold
+-- only wrapped keys and a sealed check value; nothing here is readable
+-- without a member's vault password, passkey or the recovery code.
+-- ---------------------------------------------------------------------------
+ALTER TABLE tenant_vaults ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tenant_vaults FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON tenant_vaults;
+CREATE POLICY tenant_isolation ON tenant_vaults
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+ALTER TABLE vault_key_wraps ENABLE ROW LEVEL SECURITY;
+ALTER TABLE vault_key_wraps FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON vault_key_wraps;
+CREATE POLICY tenant_isolation ON vault_key_wraps
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);

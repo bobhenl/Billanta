@@ -694,6 +694,13 @@
       "when": 1793600100000,
       "tag": "0099_bank_import_rules",
       "breakpoints": true
+    },
+    {
+      "idx": 101,
+      "version": "7",
+      "when": 1793600300000,
+      "tag": "0101_confidential_vault",
+      "breakpoints": true
     }
   ]
 }
