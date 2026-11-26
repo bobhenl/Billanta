@@ -2053,7 +2053,8 @@
         "expenses": "Assistant dépenses",
         "auditor": "Conseiller fiscal / auditeur",
         "viewer": "Lecture seule",
-        "custom": "Droits personnalisés"
+        "custom": "Droits personnalisés",
+        "assistant": "Assistant (brouillons uniquement)"
       },
       "presetHints": {
         "admin": "Accès complet, y compris l’équipe, les informations de l’entreprise et la facturation du service.",
@@ -2062,7 +2063,8 @@
         "expenses": "Saisit les dépenses et les reçus, consulte les factures et les contacts.",
         "auditor": "Voit tout, y compris la banque et les exports, ne modifie rien.",
         "viewer": "Consulte les factures, les contacts et les dépenses. Pas de banque ni d’exports.",
-        "custom": "Définissez l’accès à chaque domaine séparément."
+        "custom": "Réglez l’accès de chaque domaine, et dépliez un domaine pour choisir ses actions une par une.",
+        "assistant": "Prépare les brouillons de factures et les contacts. L’émission, l’envoi et l’annulation restent entre vos mains."
       },
       "presetsHint": "Choisissez un profil prêt à l’emploi, ou ajustez l’accès d’un membre domaine par domaine (icône des curseurs).",
       "areas": {
@@ -2071,7 +2073,10 @@
         "contacts": "Contacts",
         "expenses": "Dépenses",
         "bank": "Banque",
-        "reports": "Exports"
+        "reports": "Exports",
+        "projects": "Projets et temps",
+        "recurring": "Factures récurrentes",
+        "settings": "Paramètres"
       },
       "levels": {
         "none": "Aucun accès",
@@ -2080,7 +2085,7 @@
       },
       "editPermissions": "Modifier les droits",
       "editPermissionsFor": "Droits – {name}",
-      "permissionsHint": "La modification inclut la lecture. Seuls les administrateurs gèrent l’équipe, les informations de l’entreprise et la facturation du service.",
+      "permissionsHint": "La modification inclut la lecture. Dépliez un domaine pour activer ou désactiver ses actions. Seuls les administrateurs gèrent l’équipe, les modules, les sauvegardes et l’abonnement.",
       "save": "Enregistrer",
       "directory": {
         "toggle": "Pas de comptable ? Choisissez-en un vérifié",
@@ -2094,7 +2099,47 @@
         "picked": "{email} a été renseigné. Vérifiez le rôle et envoyez l’invitation."
       },
       "copyLink": "Copier le lien",
-      "seatLimit": "Votre offre n'a plus de place libre. Plus compte 3 utilisateurs, Business 10. Les comptables ne comptent pas (jusqu'à 2)."
+      "seatLimit": "Votre offre n'a plus de place libre. Plus compte 3 utilisateurs, Business 10. Les comptables ne comptent pas (jusqu'à 2).",
+      "actions": {
+        "invoices": {
+          "create": "Créer et modifier des brouillons",
+          "issue": "Émettre (attribuer un numéro)",
+          "send": "Envoyer aux clients et relancer",
+          "cancel": "Annuler et supprimer"
+        },
+        "expenses": {
+          "create": "Saisir et modifier",
+          "approve": "Valider (payé, e-factures reçues)",
+          "delete": "Supprimer"
+        },
+        "bank": {
+          "match": "Rapprocher les paiements et synchroniser",
+          "connections": "Gérer les connexions bancaires"
+        },
+        "reports": {
+          "export": "Télécharger les exports"
+        },
+        "settings": {
+          "company": "Entreprise et comptes bancaires",
+          "numbering": "Numérotation des documents",
+          "templates": "Modèles, e-mails et variables",
+          "paymentMethods": "Moyens de paiement",
+          "integrations": "Intégrations et webhooks",
+          "apiKeys": "Clés API"
+        }
+      },
+      "actionHints": {
+        "apiKeys": "Une clé a un accès complet à toute l’entreprise, quelles que soient ces autorisations."
+      },
+      "actionsCount": "{granted}/{total}",
+      "summaryWithout": "sans : {list}",
+      "locked": {
+        "backup": "Sauvegardes",
+        "billing": "Abonnement",
+        "ownerOnly": "Propriétaire uniquement",
+        "adminsOnly": "Propriétaire et administrateurs uniquement"
+      },
+      "fillFromPreset": "Remplir depuis"
     },
     "exports": {
       "title": "Exports pour le comptable",

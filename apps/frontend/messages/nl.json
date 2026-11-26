@@ -2053,7 +2053,8 @@
         "expenses": "Assistent uitgaven",
         "auditor": "Belastingadviseur / auditor",
         "viewer": "Alleen lezen",
-        "custom": "Aangepaste rechten"
+        "custom": "Aangepaste rechten",
+        "assistant": "Assistent (alleen concepten)"
       },
       "presetHints": {
         "admin": "Volledige toegang, inclusief team, bedrijfsgegevens en abonnement.",
@@ -2062,7 +2063,8 @@
         "expenses": "Registreert uitgaven en bonnetjes, bekijkt facturen en contacten.",
         "auditor": "Ziet alles inclusief bank en exports, wijzigt niets.",
         "viewer": "Bekijkt facturen, contacten en uitgaven. Geen bank of exports.",
-        "custom": "Stel de toegang per onderdeel apart in."
+        "custom": "Stel de toegang per onderdeel in en klap een onderdeel open om losse acties te kiezen.",
+        "assistant": "Bereidt conceptfacturen en contacten voor. Uitgeven, versturen en annuleren laat je aan jou over."
       },
       "presetsHint": "Kies een kant-en-klaar profiel of stel de toegang van een lid per onderdeel nauwkeurig in (schuifregelaarpictogram).",
       "areas": {
@@ -2071,7 +2073,10 @@
         "contacts": "Contacten",
         "expenses": "Uitgaven",
         "bank": "Bank",
-        "reports": "Exports"
+        "reports": "Exports",
+        "projects": "Projecten en tijd",
+        "recurring": "Terugkerende facturen",
+        "settings": "Instellingen"
       },
       "levels": {
         "none": "Geen toegang",
@@ -2080,7 +2085,7 @@
       },
       "editPermissions": "Rechten bewerken",
       "editPermissionsFor": "Rechten – {name}",
-      "permissionsHint": "Bewerken omvat lezen. Alleen beheerders beheren het team, de bedrijfsgegevens en het abonnement.",
+      "permissionsHint": "Bewerken omvat lezen. Klap een onderdeel open om losse acties aan of uit te zetten. Alleen beheerders beheren het team, de modules, de back-ups en het abonnement.",
       "save": "Opslaan",
       "directory": {
         "toggle": "Geen boekhouder? Kies een geverifieerde",
@@ -2094,7 +2099,47 @@
         "picked": "{email} is ingevuld. Controleer de rol en verstuur de uitnodiging."
       },
       "copyLink": "Link kopiëren",
-      "seatLimit": "Je abonnement heeft geen vrije plek meer. Plus heeft 3 gebruikers, Business 10. Boekhouders tellen niet mee (tot 2)."
+      "seatLimit": "Je abonnement heeft geen vrije plek meer. Plus heeft 3 gebruikers, Business 10. Boekhouders tellen niet mee (tot 2).",
+      "actions": {
+        "invoices": {
+          "create": "Concepten maken en bewerken",
+          "issue": "Uitgeven (nummer toekennen)",
+          "send": "Naar klanten sturen en herinneren",
+          "cancel": "Annuleren en verwijderen"
+        },
+        "expenses": {
+          "create": "Vastleggen en bewerken",
+          "approve": "Goedkeuren (betaald, ontvangen e-facturen)",
+          "delete": "Verwijderen"
+        },
+        "bank": {
+          "match": "Betalingen koppelen en synchroniseren",
+          "connections": "Bankkoppelingen beheren"
+        },
+        "reports": {
+          "export": "Exports downloaden"
+        },
+        "settings": {
+          "company": "Bedrijf en bankrekeningen",
+          "numbering": "Nummering van documenten",
+          "templates": "Sjablonen, e-mails en variabelen",
+          "paymentMethods": "Betaalmethoden",
+          "integrations": "Integraties en webhooks",
+          "apiKeys": "API-sleutels"
+        }
+      },
+      "actionHints": {
+        "apiKeys": "Een sleutel heeft volledige toegang tot het hele bedrijf, wat deze rechten ook zeggen."
+      },
+      "actionsCount": "{granted}/{total}",
+      "summaryWithout": "zonder: {list}",
+      "locked": {
+        "backup": "Back-ups",
+        "billing": "Abonnement",
+        "ownerOnly": "Alleen eigenaar",
+        "adminsOnly": "Alleen eigenaar en beheerders"
+      },
+      "fillFromPreset": "Invullen vanuit"
     },
     "exports": {
       "title": "Exports voor je boekhouder",

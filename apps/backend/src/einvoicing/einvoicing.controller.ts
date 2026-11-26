@@ -4,6 +4,7 @@ import type { Request } from "express";
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { assertMayDo } from "../tenancy/permissions";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { createExpenseSchema } from "../expenses/dto/create-expense.dto";
 import { EInvoicingService } from "./einvoicing.service";
@@ -31,6 +32,7 @@ export class InvoiceEInvoiceController {
   @Post()
   @ApiOperation({ summary: "Send an issued invoice or credit note over Peppol" })
   send(@Req() req: TenantScopedRequest, @Param("invoiceId", ParseUUIDPipe) invoiceId: string) {
+    assertMayDo(req.user, "invoices.send");
     return this.einvoicing.sendInvoice(req.tenantDb!, req.user!.tenantId, invoiceId);
   }
 }
@@ -56,6 +58,7 @@ export class IncomingEInvoicesController {
   @Post(":id/accept")
   @ApiOperation({ summary: "Book a received e-invoice as an expense, with the reviewer's corrections" })
   accept(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: AcceptIncomingDto) {
+    assertMayDo(req.user, "expenses.approve");
     return this.einvoicing.acceptIncoming(req.tenantDb!, req.user!.tenantId, req.user!.id, id, dto);
   }
 
@@ -63,6 +66,7 @@ export class IncomingEInvoicesController {
   @HttpCode(200)
   @ApiOperation({ summary: "Mark a received e-invoice as not an expense (it stays archived)" })
   reject(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    assertMayDo(req.user, "expenses.approve");
     return this.einvoicing.rejectIncoming(req.tenantDb!, req.user!.id, id);
   }
 }
@@ -84,6 +88,7 @@ export class EInvoicingSettingsController {
   @Post("register")
   @ApiOperation({ summary: "Register the company as a Peppol participant (0245:DIČ)" })
   async register(@Req() req: TenantScopedRequest) {
+    assertMayDo(req.user, "settings.integrations");
     return { participant: await this.einvoicing.registerParticipant(req.tenantDb!, req.user!.tenantId) };
   }
 }

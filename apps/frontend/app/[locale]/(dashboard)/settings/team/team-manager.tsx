@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { ChevronDown, Copy, Loader2, Mail, SlidersHorizontal, Trash2, UserPlus, X } from 'lucide-react';
+import { Fragment, useState, useTransition, type ReactNode } from 'react';
+import { ChevronDown, ChevronRight, Copy, Loader2, Lock, Mail, SlidersHorizontal, Trash2, UserPlus, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
@@ -9,8 +9,18 @@ import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { formatDate } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
-import { PERMISSION_AREAS, type PermissionLevel } from '@/lib/access';
-import { effective, presetOf, TEAM_PRESETS, toAssignment, type Perms } from '@/lib/team-presets';
+import { PERMISSION_ACTIONS, PERMISSION_AREAS, type PermissionArea, type PermissionLevel } from '@/lib/access';
+import {
+  allowedActions,
+  AREA_ACTIONS,
+  effective,
+  presetOf,
+  sameAccess,
+  TEAM_PRESETS,
+  toAssignment,
+  type Access,
+  type StoredPerms
+} from '@/lib/team-presets';
 import { changeMemberRole, inviteMember, removeMember, revokeInvitation, type MemberPermissions, type TeamRole } from '../actions';
 import { copyText } from '@/lib/clipboard';
 import type { PublicAccountant } from '@/lib/accountant-directory';
@@ -24,14 +34,14 @@ export interface TeamData {
     name: string | null;
     image: string | null;
     role: TeamRole;
-    permissions?: Partial<Perms> | null;
+    permissions?: StoredPerms | null;
     createdAt: string;
   }[];
   invitations: {
     id: string;
     email: string;
     role: TeamRole;
-    permissions?: Partial<Perms> | null;
+    permissions?: StoredPerms | null;
     expiresAt: string;
     createdAt: string;
     expired: boolean;
@@ -46,67 +56,212 @@ const LEVEL_CLASSES: Record<PermissionLevel, string> = {
   write: 'text-success font-semibold'
 };
 
-/** What to send for a chosen preset or custom levels. */
-function assignmentFor(preset: string, perms: Perms): { role: AssignableRole; permissions: MemberPermissions } {
+/** What to send for a chosen preset or a custom access. */
+function assignmentFor(preset: string, access: Access): { role: AssignableRole; permissions: MemberPermissions } {
   const p = TEAM_PRESETS.find((x) => x.key === preset);
   if (p?.role === 'admin') return { role: 'admin', permissions: null };
-  return toAssignment(p ? p.perms : perms);
+  return toAssignment(p ? p.access : access);
 }
 
-/** Area × level matrix for custom access. */
-function PermissionGrid({ value, onChange, disabled }: { value: Perms; onChange: (next: Perms) => void; disabled?: boolean }) {
+/** The non-admin preset an access matches, or 'custom' (the dialog's preset follows the ticks). */
+const presetKeyOf = (access: Access) => TEAM_PRESETS.find((p) => p.role !== 'admin' && sameAccess(p.access, access))?.key ?? 'custom';
+
+const reaches = (have: PermissionLevel, need: 'read' | 'write') => (need === 'read' ? have !== 'none' : have === 'write');
+
+/** Settings only splits into sections: its pages are open to read for everyone, so "none" means nothing there. */
+const levelsOf = (area: PermissionArea): PermissionLevel[] => (area === 'settings' ? ['read', 'write'] : LEVELS);
+
+/**
+ * Which clients a member sees ("Klienti: celá firma / jen přiřazení",
+ * `tenant_memberships.contact_scope`) will be a row right under Kontakty,
+ * passed in here. Empty until that lands.
+ */
+const CONTACT_SCOPE_ROW: Partial<Record<PermissionArea, ReactNode>> | undefined = undefined;
+
+/** Settings pages that are never handed out: shown locked so the owner sees why they are missing. */
+const LOCKED_SETTINGS = ['backup', 'billing'] as const;
+
+/**
+ * Area × level matrix. Each area with finer actions has a chevron that
+ * opens them as checkboxes; a box is greyed out while the area level is too
+ * low for it. Ticking a settings section raises settings to "Úpravy", the
+ * only level at which sections apply.
+ */
+function PermissionGrid({
+  value,
+  onChange,
+  disabled,
+  extraRows
+}: {
+  value: Access;
+  onChange: (next: Access) => void;
+  disabled?: boolean;
+  /** Rows to show right after an area's row (e.g. which clients a member sees, after contacts). */
+  extraRows?: Partial<Record<PermissionArea, ReactNode>>;
+}) {
   const t = useTranslations('settings.team');
+  const [open, setOpen] = useState<Set<PermissionArea>>(new Set());
+  const allowed = allowedActions(value);
+  const toggleOpen = (area: PermissionArea) =>
+    setOpen((prev) => {
+      const next = new Set(prev);
+      if (next.has(area)) next.delete(area);
+      else next.add(area);
+      return next;
+    });
   return (
     <div className="overflow-hidden rounded-lg border border-border">
       <table className="w-full text-sm">
         <thead className="bg-muted/40 text-xs text-muted-foreground">
           <tr>
-            <th className="px-3 py-2 text-left font-medium">{t('areas.title')}</th>
+            <th className="px-2 py-2 text-left font-medium sm:px-3">{t('areas.title')}</th>
             {LEVELS.map((l) => (
-              <th key={l} className="px-2 py-2 text-center font-medium">
+              <th key={l} className="w-14 px-1 py-2 text-center font-medium sm:w-20 sm:px-2">
                 {t(`levels.${l}`)}
               </th>
             ))}
           </tr>
         </thead>
         <tbody className="divide-y divide-border">
-          {PERMISSION_AREAS.map((area) => (
-            <tr key={area}>
-              <td className="px-3 py-2 font-medium">{t(`areas.${area}`)}</td>
-              {LEVELS.map((l) => (
-                <td key={l} className="px-2 py-2 text-center">
-                  <input
-                    type="radio"
-                    name={`perm-${area}`}
-                    aria-label={`${t(`areas.${area}`)}: ${t(`levels.${l}`)}`}
-                    className="accent-primary"
-                    checked={value[area] === l}
-                    disabled={disabled}
-                    onChange={() => onChange({ ...value, [area]: l })}
-                  />
-                </td>
-              ))}
-            </tr>
-          ))}
+          {PERMISSION_AREAS.map((area) => {
+            const actions = AREA_ACTIONS[area];
+            const expanded = open.has(area);
+            const granted = actions.filter((a) => allowed[a]).length;
+            const usable = actions.filter((a) => area === 'settings' || reaches(value.levels[area], PERMISSION_ACTIONS[a])).length;
+            return (
+              <Fragment key={area}>
+                <tr>
+                  <td className="px-2 py-1.5 sm:px-3">
+                    {actions.length > 0 ? (
+                      <button
+                        type="button"
+                        aria-expanded={expanded}
+                        aria-controls={`perm-actions-${area}`}
+                        onClick={() => toggleOpen(area)}
+                        className="-ml-1 flex items-center gap-1 rounded px-1 py-0.5 text-left font-medium hover:text-primary"
+                      >
+                        <ChevronRight className={cn('h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform', expanded && 'rotate-90')} />
+                        <span>{t(`areas.${area}`)}</span>
+                        {usable > 0 && (
+                          <span className={cn('text-[11px] font-normal tabular-nums', granted < usable && area !== 'settings' ? 'text-warning' : 'text-muted-foreground')}>
+                            {t('actionsCount', { granted, total: usable })}
+                          </span>
+                        )}
+                      </button>
+                    ) : (
+                      <span className="pl-5 font-medium">{t(`areas.${area}`)}</span>
+                    )}
+                  </td>
+                  {LEVELS.map((l) => (
+                    <td key={l} className="px-1 py-1.5 text-center sm:px-2">
+                      {levelsOf(area).includes(l) ? (
+                        <input
+                          type="radio"
+                          name={`perm-${area}`}
+                          aria-label={`${t(`areas.${area}`)}: ${t(`levels.${l}`)}`}
+                          className="accent-primary"
+                          checked={value.levels[area] === l}
+                          disabled={disabled}
+                          onChange={() => onChange({ ...value, levels: { ...value.levels, [area]: l } })}
+                        />
+                      ) : (
+                        <span aria-hidden className="text-muted-foreground">
+                          –
+                        </span>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+                {expanded && (
+                  <tr id={`perm-actions-${area}`} className="bg-muted/20">
+                    <td colSpan={LEVELS.length + 1} className="px-2 pb-2.5 pt-1 sm:px-3">
+                      <div className="grid gap-x-4 gap-y-1.5 pl-5 sm:grid-cols-2">
+                        {actions.map((a) => {
+                          // Sections lift settings to "write" themselves; other areas need the level set first.
+                          const usable = area === 'settings' || reaches(value.levels[area], PERMISSION_ACTIONS[a]);
+                          return (
+                            <label key={a} className={cn('flex items-start gap-2 text-[13px]', !usable && 'text-muted-foreground')}>
+                              <input
+                                type="checkbox"
+                                className="mt-0.5 accent-primary"
+                                checked={allowed[a]}
+                                disabled={disabled || !usable}
+                                onChange={(e) => {
+                                  const flags = { ...value.flags, [a]: e.target.checked };
+                                  const levels = area === 'settings' && e.target.checked ? { ...value.levels, settings: 'write' as const } : value.levels;
+                                  onChange({ levels, flags });
+                                }}
+                              />
+                              <span>
+                                {t(`actions.${a}`)}
+                                {a === 'settings.apiKeys' && <span className="block text-[11px] text-warning">{t('actionHints.apiKeys')}</span>}
+                              </span>
+                            </label>
+                          );
+                        })}
+                        {area === 'settings' &&
+                          LOCKED_SETTINGS.map((key) => (
+                            <span key={key} className="flex items-start gap-2 text-[13px] text-muted-foreground">
+                              <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                              <span>
+                                {t(`locked.${key}`)}
+                                <span className="block text-[11px]">{t(key === 'backup' ? 'locked.ownerOnly' : 'locked.adminsOnly')}</span>
+                              </span>
+                            </span>
+                          ))}
+                      </div>
+                    </td>
+                  </tr>
+                )}
+                {extraRows?.[area]}
+              </Fragment>
+            );
+          })}
         </tbody>
       </table>
     </div>
   );
 }
 
-/** One-line summary of a non-admin's access: struck through = none, bold ✎ = edit. */
-function AccessSummary({ role, permissions }: { role: TeamRole; permissions?: Partial<Perms> | null }) {
+/**
+ * One-line summary of a non-admin's access: struck through = none, ✎ =
+ * edit, a count when only some of the area's actions are allowed. Settings
+ * shows up only once a section is granted (reading them is open to all).
+ */
+function AccessSummary({ role, permissions }: { role: TeamRole; permissions?: StoredPerms | null }) {
   const t = useTranslations('settings.team');
   if (role === 'owner' || role === 'admin') return null;
-  const perms = effective(role, permissions);
+  const access = effective(role, permissions);
+  const allowed = allowedActions(access);
   return (
     <p className="mt-0.5 flex flex-wrap gap-x-2 text-[11px]">
-      {PERMISSION_AREAS.map((a) => (
-        <span key={a} className={LEVEL_CLASSES[perms[a]]} title={t(`levels.${perms[a]}`)}>
-          {t(`areas.${a}`)}
-          {perms[a] === 'write' ? ' ✎' : ''}
-        </span>
-      ))}
+      {PERMISSION_AREAS.map((a) => {
+        const level = access.levels[a];
+        const actions = AREA_ACTIONS[a];
+        const granted = actions.filter((x) => allowed[x]);
+        if (a === 'settings') {
+          if (granted.length === 0) return null;
+          return (
+            <span key={a} className={LEVEL_CLASSES.write} title={granted.map((x) => t(`actions.${x}`)).join(', ')}>
+              {t('areas.settings')} ✎ {t('actionsCount', { granted: granted.length, total: actions.length })}
+            </span>
+          );
+        }
+        // Only what the level would allow counts as missing: a read-only area isn't "partial" for lacking write actions.
+        const missing = actions.filter((x) => !allowed[x] && reaches(level, PERMISSION_ACTIONS[x]));
+        const usable = actions.filter((x) => reaches(level, PERMISSION_ACTIONS[x]));
+        return (
+          <span
+            key={a}
+            className={LEVEL_CLASSES[level]}
+            title={missing.length ? `${t(`levels.${level}`)} · ${t('summaryWithout', { list: missing.map((x) => t(`actions.${x}`)).join(', ') })}` : t(`levels.${level}`)}
+          >
+            {t(`areas.${a}`)}
+            {level === 'write' ? ' ✎' : ''}
+            {missing.length ? ` ${t('actionsCount', { granted: usable.length - missing.length, total: usable.length })}` : ''}
+          </span>
+        );
+      })}
     </p>
   );
 }
@@ -139,8 +294,8 @@ export function TeamManager({
   const [inviteOpen, setInviteOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [preset, setPreset] = useState('accountant');
-  const [customPerms, setCustomPerms] = useState<Perms>(effective('accountant', null));
-  const [editing, setEditing] = useState<{ id: string; name: string; perms: Perms } | null>(null);
+  const [customAccess, setCustomAccess] = useState<Access>(effective('accountant', null));
+  const [editing, setEditing] = useState<{ id: string; name: string; access: Access } | null>(null);
   const [createdLink, setCreatedLink] = useState<{ url: string; emailSent: boolean } | null>(null);
   const [removing, setRemoving] = useState<TeamData['members'][number] | null>(null);
 
@@ -166,7 +321,7 @@ export function TeamManager({
 
   const sendInvite = () =>
     startTransition(async () => {
-      const { role, permissions } = assignmentFor(preset, customPerms);
+      const { role, permissions } = assignmentFor(preset, customAccess);
       const result = await inviteMember(email.trim(), role, permissions);
       if (!result.ok) {
         toast({ text: failText(result.error), tone: 'err' });
@@ -230,7 +385,7 @@ export function TeamManager({
                         const key = e.target.value;
                         const current = effective(m.role, m.permissions);
                         if (key === 'custom') {
-                          setEditing({ id: m.id, name: m.name || m.email, perms: current });
+                          setEditing({ id: m.id, name: m.name || m.email, access: current });
                           return;
                         }
                         const { role, permissions } = assignmentFor(key, current);
@@ -250,7 +405,7 @@ export function TeamManager({
                         className={buttonClass.ghost}
                         aria-label={t('editPermissions')}
                         title={t('editPermissions')}
-                        onClick={() => setEditing({ id: m.id, name: m.name || m.email, perms: effective(m.role, m.permissions) })}
+                        onClick={() => setEditing({ id: m.id, name: m.name || m.email, access: effective(m.role, m.permissions) })}
                       >
                         <SlidersHorizontal className="h-4 w-4" />
                       </button>
@@ -330,7 +485,7 @@ export function TeamManager({
                 <span className={cn('rounded-full px-2 py-0.5 text-xs font-semibold', ROLE_CLASSES[p.role])}>{t(`presets.${p.key}`)}</span>
               </dt>
               <dd className="mt-1.5 text-xs text-muted-foreground">{t(`presetHints.${p.key}`)}</dd>
-              {p.role !== 'admin' && <AccessSummary role={p.role} permissions={p.perms} />}
+              {p.role !== 'admin' && <AccessSummary role={p.role} permissions={toAssignment(p.access).permissions} />}
             </div>
           ))}
         </dl>
@@ -397,7 +552,7 @@ export function TeamManager({
                       onChange={() => {
                         setPreset(key);
                         const p = TEAM_PRESETS.find((x) => x.key === key);
-                        if (p && p.role !== 'admin') setCustomPerms(p.perms);
+                        if (p && p.role !== 'admin') setCustomAccess(p.access);
                       }}
                     />
                     <span>
@@ -408,7 +563,17 @@ export function TeamManager({
                 ))}
               </div>
             </fieldset>
-            {preset === 'custom' && <PermissionGrid value={customPerms} onChange={setCustomPerms} />}
+            {/* A preset fills the grid; changing a tick turns it into "custom" unless it lands on another preset. */}
+            {preset !== 'admin' && (
+              <PermissionGrid
+                value={customAccess}
+                onChange={(next) => {
+                  setCustomAccess(next);
+                  setPreset(presetKeyOf(next));
+                }}
+                extraRows={CONTACT_SCOPE_ROW}
+              />
+            )}
             {DIRECTORY_PRESETS.has(preset) && (
               <AccountantPicker
                 accountants={accountants}
@@ -437,7 +602,7 @@ export function TeamManager({
               disabled={pending}
               onClick={() => {
                 if (!editing) return;
-                const { role, permissions } = toAssignment(editing.perms);
+                const { role, permissions } = toAssignment(editing.access);
                 run(() => changeMemberRole(editing.id, role, permissions), t('roleChanged'), () => setEditing(null));
               }}
             >
@@ -449,7 +614,33 @@ export function TeamManager({
         {editing && (
           <div className="space-y-3">
             <p className="text-xs text-muted-foreground">{t('permissionsHint')}</p>
-            <PermissionGrid value={editing.perms} onChange={(perms) => setEditing({ ...editing, perms })} disabled={pending} />
+            <label className="flex flex-wrap items-center gap-2 text-sm">
+              <span className="font-medium">{t('fillFromPreset')}</span>
+              <select
+                className={cn(inputClass, 'w-auto py-1.5')}
+                value={presetKeyOf(editing.access)}
+                disabled={pending}
+                onChange={(e) => {
+                  const p = TEAM_PRESETS.find((x) => x.key === e.target.value);
+                  if (p) setEditing({ ...editing, access: p.access });
+                }}
+              >
+                {TEAM_PRESETS.filter((p) => p.role !== 'admin').map((p) => (
+                  <option key={p.key} value={p.key}>
+                    {t(`presets.${p.key}`)}
+                  </option>
+                ))}
+                <option value="custom" disabled>
+                  {t('presets.custom')}
+                </option>
+              </select>
+            </label>
+            <PermissionGrid
+              value={editing.access}
+              onChange={(access) => setEditing({ ...editing, access })}
+              disabled={pending}
+              extraRows={CONTACT_SCOPE_ROW}
+            />
           </div>
         )}
       </Modal>

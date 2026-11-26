@@ -2053,7 +2053,8 @@
         "expenses": "Asystent ds. wydatków",
         "auditor": "Doradca podatkowy / audytor",
         "viewer": "Tylko odczyt",
-        "custom": "Własne uprawnienia"
+        "custom": "Własne uprawnienia",
+        "assistant": "Asystent (tylko szkice)"
       },
       "presetHints": {
         "admin": "Pełny dostęp, łącznie z zespołem, danymi firmy i płatnościami za Billantę.",
@@ -2062,7 +2063,8 @@
         "expenses": "Wprowadza wydatki i paragony, przegląda faktury i kontakty.",
         "auditor": "Widzi wszystko, łącznie z bankiem i eksportami, niczego nie zmienia.",
         "viewer": "Przegląda faktury, kontakty i wydatki. Bez banku i eksportów.",
-        "custom": "Ustaw dostęp dla każdego obszaru osobno."
+        "custom": "Ustaw dostęp dla każdego obszaru, a po rozwinięciu obszaru także dla poszczególnych czynności.",
+        "assistant": "Przygotowuje szkice faktur i kontakty. Wystawianie, wysyłanie i anulowanie zostawia tobie."
       },
       "presetsHint": "Wybierz gotowy profil albo dostosuj dostęp członka do poszczególnych obszarów (ikona suwaków).",
       "areas": {
@@ -2071,7 +2073,10 @@
         "contacts": "Kontakty",
         "expenses": "Wydatki",
         "bank": "Bank",
-        "reports": "Eksporty"
+        "reports": "Eksporty",
+        "projects": "Projekty i czas",
+        "recurring": "Faktury cykliczne",
+        "settings": "Ustawienia"
       },
       "levels": {
         "none": "Brak dostępu",
@@ -2080,7 +2085,7 @@
       },
       "editPermissions": "Edytuj uprawnienia",
       "editPermissionsFor": "Uprawnienia – {name}",
-      "permissionsHint": "Edycja obejmuje odczyt. Zespołem, danymi firmy i płatnościami za Billantę zarządzają tylko administratorzy.",
+      "permissionsHint": "Edycja obejmuje odczyt. Rozwiń obszar, aby włączyć lub wyłączyć poszczególne czynności. Zespołem, modułami, kopiami zapasowymi i subskrypcją zarządzają tylko administratorzy.",
       "save": "Zapisz",
       "directory": {
         "toggle": "Nie masz księgowej? Wybierz sprawdzoną",
@@ -2094,7 +2099,47 @@
         "picked": "Wpisano {email}. Sprawdź rolę i wyślij zaproszenie."
       },
       "copyLink": "Kopiuj link",
-      "seatLimit": "Twój plan nie ma już wolnego miejsca. Plus ma 3 użytkowników, Business 10. Księgowi się nie liczą (do 2)."
+      "seatLimit": "Twój plan nie ma już wolnego miejsca. Plus ma 3 użytkowników, Business 10. Księgowi się nie liczą (do 2).",
+      "actions": {
+        "invoices": {
+          "create": "Tworzenie i edycja szkiców",
+          "issue": "Wystawianie (nadanie numeru)",
+          "send": "Wysyłanie klientom i przypomnienia",
+          "cancel": "Anulowanie i usuwanie"
+        },
+        "expenses": {
+          "create": "Dodawanie i edycja",
+          "approve": "Zatwierdzanie (opłacone, odebrane e-faktury)",
+          "delete": "Usuwanie"
+        },
+        "bank": {
+          "match": "Parowanie płatności i synchronizacja",
+          "connections": "Zarządzanie połączeniami z bankiem"
+        },
+        "reports": {
+          "export": "Pobieranie eksportów"
+        },
+        "settings": {
+          "company": "Firma i rachunki bankowe",
+          "numbering": "Numeracja dokumentów",
+          "templates": "Szablony, e-maile i zmienne",
+          "paymentMethods": "Metody płatności",
+          "integrations": "Integracje i webhooki",
+          "apiKeys": "Klucze API"
+        }
+      },
+      "actionHints": {
+        "apiKeys": "Klucz ma pełny dostęp do całej firmy, niezależnie od tych uprawnień."
+      },
+      "actionsCount": "{granted}/{total}",
+      "summaryWithout": "bez: {list}",
+      "locked": {
+        "backup": "Kopie zapasowe",
+        "billing": "Subskrypcja",
+        "ownerOnly": "Tylko właściciel",
+        "adminsOnly": "Tylko właściciel i administratorzy"
+      },
+      "fillFromPreset": "Wypełnij według"
     },
     "exports": {
       "title": "Eksporty dla księgowej",

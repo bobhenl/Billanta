@@ -156,14 +156,16 @@ export async function fetchMyRole(): Promise<string | null> {
 export const canManage = (role: string | null) => role === 'owner' || role === 'admin';
 
 export { PERMISSION_AREAS, APP_MODULES } from './access';
-export type { PermissionArea, PermissionLevel, AppModule } from './access';
-import type { AppModule, PermissionArea, PermissionLevel } from './access';
+export type { PermissionArea, PermissionLevel, AppModule, PermissionAction } from './access';
+import type { AppModule, PermissionAction, PermissionArea, PermissionLevel } from './access';
 import type { PlanSummary } from './plan';
 
 /** `GET /api/v1/tenants/me/access`: the member's effective access and the company's enabled modules. */
 export interface MyAccess {
   role: string;
   permissions: Record<PermissionArea, PermissionLevel>;
+  /** Effective finer actions (issue, send, settings sections…); missing from an older backend. */
+  actions?: Partial<Record<PermissionAction, boolean>>;
   modules: Record<AppModule, boolean>;
   /** Effective plan and trial; missing from an older backend. */
   plan?: PlanSummary | null;
@@ -172,8 +174,8 @@ export interface MyAccess {
 // The dashboard layout and most pages both ask for it; one call per request.
 export const fetchMyAccess = cache(async (): Promise<MyAccess> => apiFetch<MyAccess>('/api/v1/tenants/me/access'));
 
-export { canWrite } from './access';
-import { canWrite } from './access';
+export { canWrite, canDo } from './access';
+import { canDo, canWrite } from './access';
 
 /** Server components: whether the member may change things in `area` (see `canWrite`; a failed access fetch allows). */
 export async function fetchCanWrite(area: PermissionArea | null): Promise<boolean> {
@@ -189,7 +191,8 @@ export function hiddenSections(access: MyAccess | null): string[] {
   if (p.contacts === 'none') hidden.push('contacts');
   if (p.expenses === 'none' || !access.modules.expenses) hidden.push('expenses');
   if (p.bank === 'none' || !access.modules.bank) hidden.push('bank');
-  if (p.invoices === 'none' || !access.modules.time) hidden.push('time');
+  if (p.projects === 'none' || !access.modules.time) hidden.push('time');
+  if (p.recurring === 'none' || !access.modules.recurring) hidden.push('recurring');
   if (!canManage(access.role)) hidden.push('billing');
   return hidden;
 }
@@ -220,14 +223,43 @@ export const MANAGER_SETTINGS = [
 ] as const;
 export type SettingsKey = (typeof MANAGER_SETTINGS)[number] | 'integrations' | 'exports';
 
+/**
+ * Settings pages an owner can hand to a member through a settings section
+ * (Settings → Team), keyed to the action the backend checks on save. The
+ * rest of `MANAGER_SETTINGS` stays with owners and admins.
+ */
+export const SETTINGS_SECTION_OF: Partial<Record<SettingsKey, PermissionAction>> = {
+  company: 'settings.company',
+  publicProfile: 'settings.company',
+  numbering: 'settings.numbering',
+  invoices: 'settings.templates',
+  emails: 'settings.templates',
+  variables: 'settings.templates',
+  paymentMethods: 'settings.paymentMethods',
+  integrations: 'settings.integrations',
+  apiKeys: 'settings.apiKeys'
+};
+
+/** Whether the member may save the settings page `key`: owners and admins always, others through its section. */
+export function mayEditSettings(access: MyAccess | null, key: SettingsKey): boolean {
+  if (!access || canManage(access.role)) return true;
+  const section = SETTINGS_SECTION_OF[key];
+  return section !== undefined && canDo(access, section);
+}
+
+/** Server components: `mayEditSettings` for the signed-in member (a failed access fetch allows; the backend decides). */
+export async function fetchMayEditSettings(key: SettingsKey): Promise<boolean> {
+  return mayEditSettings(await fetchMyAccess().catch(() => null), key);
+}
+
 /** Settings pages this member's role can't use (switched-off modules are not counted here). */
 export function forbiddenSettings(access: MyAccess | null): Set<SettingsKey> {
   const out = new Set<SettingsKey>();
   if (!access || canManage(access.role)) return out;
-  for (const key of MANAGER_SETTINGS) out.add(key);
-  // The calendar feed is the only part of Integrace a non-admin can switch on, and the guard lets only accountants write there.
-  if (access.role !== 'accountant') out.add('integrations');
-  if (access.permissions.reports === 'none') out.add('exports');
+  for (const key of MANAGER_SETTINGS) if (!mayEditSettings(access, key)) out.add(key);
+  // Without the section, the calendar feed is the only part of Integrace a non-admin can switch on, and the guard lets only accountants write there.
+  if (access.role !== 'accountant' && !mayEditSettings(access, 'integrations')) out.add('integrations');
+  if (!canDo(access, 'reports.export')) out.add('exports');
   return out;
 }
 

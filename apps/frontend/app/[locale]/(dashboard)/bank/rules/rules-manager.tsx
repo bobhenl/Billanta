@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { ArrowDown, ArrowUp, ListFilter, Pencil, Play, Plus, Trash2, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
-import { useCanWrite } from '@/components/access-provider';
+import { useCanDo, useCanWrite } from '@/components/access-provider';
 import { EmptyState } from '@/components/empty-state';
 import { ConfirmModal, Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
@@ -170,7 +170,10 @@ export function RulesManager({
 }) {
   const t = useTranslations('bankRules');
   const router = useRouter();
-  const canEdit = useCanWrite('bank');
+  // Rules are bank setup (Settings → Team: bank connections and rules), the backend checks the same.
+  const canWriteBank = useCanWrite('bank');
+  const canManageRules = useCanDo('bank.connections');
+  const canEdit = canWriteBank && canManageRules;
   const [pending, startTransition] = useTransition();
   const [editing, setEditing] = useState<{ rule: BankRule | null; draft: Draft } | null>(
     prefill ? { rule: null, draft: draftFromPrefill(prefill) } : null

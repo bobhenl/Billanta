@@ -2053,7 +2053,8 @@
         "expenses": "Költségrögzítő asszisztens",
         "auditor": "Adótanácsadó / könyvvizsgáló",
         "viewer": "Csak olvasás",
-        "custom": "Egyéni jogosultságok"
+        "custom": "Egyéni jogosultságok",
+        "assistant": "Asszisztens (csak piszkozatok)"
       },
       "presetHints": {
         "admin": "Teljes hozzáférés, beleértve a csapatot, a cégadatokat és a számlázást.",
@@ -2062,7 +2063,8 @@
         "expenses": "Költségeket és bizonylatokat rögzít, számlákat és partnereket tekint meg.",
         "auditor": "Mindent lát, beleértve a bankot és az exportokat, de semmit sem módosít.",
         "viewer": "Számlákat, partnereket és költségeket tekint meg. Bank és exportok nélkül.",
-        "custom": "A hozzáférés területenként külön állítható be."
+        "custom": "Állítsd be a hozzáférést területenként, egy terület kinyitásával pedig az egyes műveletekhez is.",
+        "assistant": "Számlapiszkozatokat és partnereket készít elő. A kiállítás, küldés és sztornó a te dolgod marad."
       },
       "presetsHint": "Válasszon kész profilt, vagy finomhangolja a tag hozzáférését területenként (csúszkák ikon).",
       "areas": {
@@ -2071,7 +2073,10 @@
         "contacts": "Partnerek",
         "expenses": "Költségek",
         "bank": "Bank",
-        "reports": "Exportok"
+        "reports": "Exportok",
+        "projects": "Projektek és idő",
+        "recurring": "Ismétlődő számlák",
+        "settings": "Beállítások"
       },
       "levels": {
         "none": "Nincs hozzáférés",
@@ -2080,7 +2085,7 @@
       },
       "editPermissions": "Jogosultságok szerkesztése",
       "editPermissionsFor": "Jogosultságok – {name}",
-      "permissionsHint": "A szerkesztés magában foglalja az olvasást. A csapatot, a cégadatokat és a számlázást csak adminisztrátorok kezelik.",
+      "permissionsHint": "A szerkesztés az olvasást is tartalmazza. Nyiss ki egy területet az egyes műveletek be- vagy kikapcsolásához. A csapatot, a modulokat, a mentéseket és az előfizetést csak adminisztrátorok kezelik.",
       "save": "Mentés",
       "directory": {
         "toggle": "Nincs könyvelője? Válasszon egy ellenőrzöttet",
@@ -2094,7 +2099,47 @@
         "picked": "A(z) {email} ki van töltve. Ellenőrizze a szerepkört, és küldje el a meghívást."
       },
       "copyLink": "Link másolása",
-      "seatLimit": "A csomagjában nincs több szabad hely. A Plus 3 felhasználós, a Business 10. A könyvelők nem számítanak bele (legfeljebb 2)."
+      "seatLimit": "A csomagjában nincs több szabad hely. A Plus 3 felhasználós, a Business 10. A könyvelők nem számítanak bele (legfeljebb 2).",
+      "actions": {
+        "invoices": {
+          "create": "Piszkozatok létrehozása és szerkesztése",
+          "issue": "Kiállítás (sorszám kiosztása)",
+          "send": "Küldés ügyfeleknek és emlékeztetők",
+          "cancel": "Sztornó és törlés"
+        },
+        "expenses": {
+          "create": "Rögzítés és szerkesztés",
+          "approve": "Jóváhagyás (fizetve, beérkezett e-számlák)",
+          "delete": "Törlés"
+        },
+        "bank": {
+          "match": "Fizetések párosítása és szinkronizálás",
+          "connections": "Bankkapcsolatok kezelése"
+        },
+        "reports": {
+          "export": "Exportok letöltése"
+        },
+        "settings": {
+          "company": "Cég és bankszámlák",
+          "numbering": "Bizonylatok számozása",
+          "templates": "Sablonok, e-mailek és változók",
+          "paymentMethods": "Fizetési módok",
+          "integrations": "Integrációk és webhookok",
+          "apiKeys": "API-kulcsok"
+        }
+      },
+      "actionHints": {
+        "apiKeys": "Egy kulcs teljes hozzáférést ad az egész céghez, függetlenül ezektől a jogosultságoktól."
+      },
+      "actionsCount": "{granted}/{total}",
+      "summaryWithout": "kivéve: {list}",
+      "locked": {
+        "backup": "Mentések",
+        "billing": "Előfizetés",
+        "ownerOnly": "Csak a tulajdonos",
+        "adminsOnly": "Csak a tulajdonos és az adminisztrátorok"
+      },
+      "fillFromPreset": "Kitöltés ez alapján:"
     },
     "exports": {
       "title": "Exportok a könyvelőnek",

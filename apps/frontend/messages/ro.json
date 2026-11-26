@@ -2053,7 +2053,8 @@
         "expenses": "Asistent pentru cheltuieli",
         "auditor": "Consultant fiscal / auditor",
         "viewer": "Doar citire",
-        "custom": "Permisiuni personalizate"
+        "custom": "Permisiuni personalizate",
+        "assistant": "Asistent (doar ciorne)"
       },
       "presetHints": {
         "admin": "Acces complet, inclusiv la echipă, datele firmei și abonament.",
@@ -2062,7 +2063,8 @@
         "expenses": "Înregistrează cheltuieli și bonuri, vizualizează facturi și clienți.",
         "auditor": "Vede totul, inclusiv banca și exporturile, dar nu modifică nimic.",
         "viewer": "Vizualizează facturi, clienți și cheltuieli. Fără bancă sau exporturi.",
-        "custom": "Setați accesul separat pentru fiecare zonă."
+        "custom": "Setează accesul pentru fiecare zonă, iar dacă deschizi o zonă, și pentru fiecare acțiune.",
+        "assistant": "Pregătește ciorne de facturi și contacte. Emiterea, trimiterea și anularea rămân la tine."
       },
       "presetsHint": "Alegeți un profil predefinit sau ajustați accesul unui membru pe zone (pictograma cu glisoare).",
       "areas": {
@@ -2071,7 +2073,10 @@
         "contacts": "Clienți",
         "expenses": "Cheltuieli",
         "bank": "Bancă",
-        "reports": "Exporturi"
+        "reports": "Exporturi",
+        "projects": "Proiecte și timp",
+        "recurring": "Facturi recurente",
+        "settings": "Setări"
       },
       "levels": {
         "none": "Fără acces",
@@ -2080,7 +2085,7 @@
       },
       "editPermissions": "Editați permisiunile",
       "editPermissionsFor": "Permisiuni – {name}",
-      "permissionsHint": "Editarea include citirea. Doar administratorii gestionează echipa, datele firmei și abonamentul.",
+      "permissionsHint": "Editarea include citirea. Deschide o zonă ca să pornești sau să oprești acțiunile ei. Echipa, modulele, copiile de siguranță și abonamentul le gestionează doar administratorii.",
       "save": "Salvați",
       "directory": {
         "toggle": "Nu aveți contabil? Alegeți unul verificat",
@@ -2094,7 +2099,47 @@
         "picked": "{email} a fost completat. Verificați rolul și trimiteți invitația."
       },
       "copyLink": "Copiați linkul",
-      "seatLimit": "Planul dvs. nu mai are locuri libere. Plus are 3 utilizatori, Business 10. Contabilii nu se numără (până la 2)."
+      "seatLimit": "Planul dvs. nu mai are locuri libere. Plus are 3 utilizatori, Business 10. Contabilii nu se numără (până la 2).",
+      "actions": {
+        "invoices": {
+          "create": "Creare și editare ciorne",
+          "issue": "Emitere (atribuire număr)",
+          "send": "Trimitere către clienți și remindere",
+          "cancel": "Anulare și ștergere"
+        },
+        "expenses": {
+          "create": "Înregistrare și editare",
+          "approve": "Aprobare (plătit, e-facturi primite)",
+          "delete": "Ștergere"
+        },
+        "bank": {
+          "match": "Asociere plăți și sincronizare",
+          "connections": "Gestionare conexiuni bancare"
+        },
+        "reports": {
+          "export": "Descărcare exporturi"
+        },
+        "settings": {
+          "company": "Firmă și conturi bancare",
+          "numbering": "Numerotarea documentelor",
+          "templates": "Șabloane, e-mailuri și variabile",
+          "paymentMethods": "Metode de plată",
+          "integrations": "Integrări și webhookuri",
+          "apiKeys": "Chei API"
+        }
+      },
+      "actionHints": {
+        "apiKeys": "O cheie are acces complet la toată firma, indiferent de aceste permisiuni."
+      },
+      "actionsCount": "{granted}/{total}",
+      "summaryWithout": "fără: {list}",
+      "locked": {
+        "backup": "Copii de siguranță",
+        "billing": "Abonament",
+        "ownerOnly": "Doar proprietarul",
+        "adminsOnly": "Doar proprietarul și administratorii"
+      },
+      "fillFromPreset": "Completează după"
     },
     "exports": {
       "title": "Exporturi pentru contabil",

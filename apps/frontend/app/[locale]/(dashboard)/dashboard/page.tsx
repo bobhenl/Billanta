@@ -5,7 +5,7 @@ import { Banner } from '@/components/banner';
 import { redirect } from '@/i18n/navigation';
 import { apiFetch, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { auth } from '@/auth';
-import { canManage, fetchMyAccess, fetchTenant, forbiddenSettings, hiddenSections, taxCountryOf, vatStatusOf, type MyAccess, type TaxAdvances } from '@/lib/tenant';
+import { canDo, canManage, fetchMyAccess, fetchTenant, forbiddenSettings, hiddenSections, taxCountryOf, vatStatusOf, type MyAccess, type TaxAdvances } from '@/lib/tenant';
 import { isLegalEntityName, type TaxProfile } from '@/lib/tax-deadlines';
 import { normalizeTaxAdvances, taxReturnSeason } from '@faktur/cz-compliance';
 import type { TimeSummary } from '@/lib/time-ui';
@@ -31,8 +31,8 @@ function abilitiesOf(access: MyAccess | null): DashboardAbilities {
   return {
     role: access.role,
     hidden: hiddenSections(access),
-    createInvoices: p.invoices === 'write',
-    createExpenses: p.expenses === 'write' && access.modules.expenses,
+    createInvoices: canDo(access, 'invoices.create'),
+    createExpenses: canDo(access, 'expenses.create') && access.modules.expenses,
     createContacts: p.contacts === 'write',
     manage: canManage(access.role),
     exports: access.modules.reports && !forbidden.has('exports'),

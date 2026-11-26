@@ -3,16 +3,18 @@ import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
-import { fetchCanWrite, type PermissionArea } from '@/lib/tenant';
+import { canDo, canWrite, fetchMyAccess, type PermissionAction, type PermissionArea } from '@/lib/tenant';
 
 /**
  * A "you can only look here" card in place of a create or edit form the
  * member can't save (opened by URL or an old bookmark; the app no longer
  * links them there). Returns null when they may write. Usage:
- * `const gate = await writeGate('invoices', '/invoices'); if (gate) return gate;`
+ * `const gate = await writeGate('invoices', '/invoices', 'invoices.create'); if (gate) return gate;`
+ * (`action`: a finer permission the form also needs, see Settings → Team).
  */
-export async function writeGate(area: PermissionArea, back: string): Promise<React.ReactElement | null> {
-  if (await fetchCanWrite(area)) return null;
+export async function writeGate(area: PermissionArea, back: string, action?: PermissionAction): Promise<React.ReactElement | null> {
+  const access = await fetchMyAccess().catch(() => null);
+  if (canWrite(access, area) && (!action || canDo(access, action))) return null;
   const t = await getTranslations('app.readOnly');
   return (
     <div className="mx-auto mt-6 max-w-lg rounded-xl border border-border bg-card p-6 text-center">

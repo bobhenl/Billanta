@@ -2053,7 +2053,8 @@
         "expenses": "Asistente de gastos",
         "auditor": "Asesor fiscal / auditor",
         "viewer": "Solo lectura",
-        "custom": "Permisos personalizados"
+        "custom": "Permisos personalizados",
+        "assistant": "Asistente (solo borradores)"
       },
       "presetHints": {
         "admin": "Acceso completo, incluidos el equipo, los datos de la empresa y la suscripción.",
@@ -2062,7 +2063,8 @@
         "expenses": "Registra gastos y recibos; consulta facturas y contactos.",
         "auditor": "Lo ve todo, incluidos el banco y las exportaciones, sin cambiar nada.",
         "viewer": "Consulta facturas, contactos y gastos. Sin banco ni exportaciones.",
-        "custom": "Configure el acceso a cada área por separado."
+        "custom": "Define el acceso de cada área y despliega un área para elegir sus acciones una a una.",
+        "assistant": "Prepara borradores de facturas y contactos. Emitir, enviar y anular queda en tus manos."
       },
       "presetsHint": "Elija un perfil predefinido o ajuste el acceso de un miembro por áreas (icono de controles deslizantes).",
       "areas": {
@@ -2071,7 +2073,10 @@
         "contacts": "Contactos",
         "expenses": "Gastos",
         "bank": "Banco",
-        "reports": "Exportaciones"
+        "reports": "Exportaciones",
+        "projects": "Proyectos y tiempo",
+        "recurring": "Facturas recurrentes",
+        "settings": "Ajustes"
       },
       "levels": {
         "none": "Sin acceso",
@@ -2080,7 +2085,7 @@
       },
       "editPermissions": "Editar permisos",
       "editPermissionsFor": "Permisos – {name}",
-      "permissionsHint": "La edición incluye la lectura. Solo los administradores gestionan el equipo, los datos de la empresa y la suscripción.",
+      "permissionsHint": "Editar incluye leer. Despliega un área para activar o desactivar sus acciones. Solo los administradores gestionan el equipo, los módulos, las copias de seguridad y la suscripción.",
       "save": "Guardar",
       "directory": {
         "toggle": "¿No tiene contable? Elija uno verificado",
@@ -2094,7 +2099,47 @@
         "picked": "Se ha rellenado {email}. Compruebe el rol y envíe la invitación."
       },
       "copyLink": "Copiar enlace",
-      "seatLimit": "Tu plan no tiene plazas libres. Plus tiene 3 usuarios, Business 10. Los contables no cuentan (hasta 2)."
+      "seatLimit": "Tu plan no tiene plazas libres. Plus tiene 3 usuarios, Business 10. Los contables no cuentan (hasta 2).",
+      "actions": {
+        "invoices": {
+          "create": "Crear y editar borradores",
+          "issue": "Emitir (asignar número)",
+          "send": "Enviar a clientes y recordar",
+          "cancel": "Anular y eliminar"
+        },
+        "expenses": {
+          "create": "Registrar y editar",
+          "approve": "Aprobar (pagado, e-facturas recibidas)",
+          "delete": "Eliminar"
+        },
+        "bank": {
+          "match": "Conciliar pagos y sincronizar",
+          "connections": "Gestionar conexiones bancarias"
+        },
+        "reports": {
+          "export": "Descargar exportaciones"
+        },
+        "settings": {
+          "company": "Empresa y cuentas bancarias",
+          "numbering": "Numeración de documentos",
+          "templates": "Plantillas, correos y variables",
+          "paymentMethods": "Métodos de pago",
+          "integrations": "Integraciones y webhooks",
+          "apiKeys": "Claves API"
+        }
+      },
+      "actionHints": {
+        "apiKeys": "Una clave tiene acceso completo a toda la empresa, digan lo que digan estos permisos."
+      },
+      "actionsCount": "{granted}/{total}",
+      "summaryWithout": "sin: {list}",
+      "locked": {
+        "backup": "Copias de seguridad",
+        "billing": "Suscripción",
+        "ownerOnly": "Solo el propietario",
+        "adminsOnly": "Solo el propietario y los administradores"
+      },
+      "fillFromPreset": "Rellenar desde"
     },
     "exports": {
       "title": "Exportaciones para el contable",

@@ -23,7 +23,7 @@ import type { Response } from "express";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { planSummary } from "../billing/plan-access";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
-import { effectivePermissions } from "../tenancy/permissions";
+import { effectiveActions, effectivePermissions } from "../tenancy/permissions";
 import { BankAccountDto } from "./dto/bank-account.dto";
 import { NumberFormatsDto } from "./dto/number-formats.dto";
 import { resolveModules } from "./modules";
@@ -48,12 +48,13 @@ export class TenantsController {
   @Get("me/access")
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: "What the signed-in member may do here: role, per-area permissions and the company's enabled modules" })
+  @ApiOperation({ summary: "What the signed-in member may do here: role, per-area permissions, finer actions and the company's enabled modules" })
   async getAccess(@Req() req: TenantScopedRequest) {
     const [tenant] = await this.tenantsService.findById(req.tenantDb!, req.user!.tenantId);
     return {
       role: req.user!.role,
       permissions: effectivePermissions(req.user!.role, req.user!.permissions),
+      actions: effectiveActions(req.user!.role, req.user!.permissions),
       modules: resolveModules(tenant?.enabledModules),
       // Drives the trial banner and the read-only state of paid features.
       plan: tenant ? planSummary(tenant, new Date()) : null,
@@ -65,7 +66,7 @@ export class TenantsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: "Update the company profile, bank details and invoice defaults (owner/admin)" })
   updateCurrentTenant(@Req() req: TenantScopedRequest, @Body() dto: UpdateTenantDto) {
-    return this.tenantsService.update(req.tenantDb!, req.user!.tenantId, req.user!.role, dto);
+    return this.tenantsService.update(req.tenantDb!, req.user!.tenantId, req.user!, dto);
   }
 
   @Get("me/number-formats")
@@ -73,7 +74,7 @@ export class TenantsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: "Document number pattern per type, counters and a preview of the next number (owner/admin)" })
   getNumberFormats(@Req() req: TenantScopedRequest) {
-    return this.tenantsService.getNumberFormats(req.tenantDb!, req.user!.tenantId, req.user!.role);
+    return this.tenantsService.getNumberFormats(req.tenantDb!, req.user!.tenantId, req.user!);
   }
 
   @Put("me/number-formats")
@@ -81,7 +82,7 @@ export class TenantsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: "Set the number pattern and the next number per document type; affects only numbers issued from now on (owner/admin)" })
   updateNumberFormats(@Req() req: TenantScopedRequest, @Body() dto: NumberFormatsDto) {
-    return this.tenantsService.updateNumberFormats(req.tenantDb!, req.user!.tenantId, req.user!.role, dto);
+    return this.tenantsService.updateNumberFormats(req.tenantDb!, req.user!.tenantId, req.user!, dto);
   }
 
   @Get("me/public-profile/slug")
@@ -113,7 +114,7 @@ export class TenantsController {
   @ApiOperation({ summary: "Upload the company logo – PNG or JPEG up to 512 kB, multipart field \"file\" (owner/admin)" })
   uploadLogo(@Req() req: TenantScopedRequest, @UploadedFile() file?: { buffer: Buffer; size: number }) {
     if (!file) throw new BadRequestException({ error: "no_file" });
-    return this.tenantsService.setLogo(req.tenantDb!, req.user!.tenantId, req.user!.role, file.buffer);
+    return this.tenantsService.setLogo(req.tenantDb!, req.user!.tenantId, req.user!, file.buffer);
   }
 
   @Delete("me/logo")
@@ -121,7 +122,7 @@ export class TenantsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: "Remove the company logo (owner/admin)" })
   deleteLogo(@Req() req: TenantScopedRequest) {
-    return this.tenantsService.setLogo(req.tenantDb!, req.user!.tenantId, req.user!.role, null);
+    return this.tenantsService.setLogo(req.tenantDb!, req.user!.tenantId, req.user!, null);
   }
 
   @Get("me/bank-accounts")
@@ -137,7 +138,7 @@ export class TenantsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: "Add a bank account (owner/admin)" })
   createBankAccount(@Req() req: TenantScopedRequest, @Body() dto: BankAccountDto) {
-    return this.tenantsService.createBankAccount(req.tenantDb!, req.user!.tenantId, req.user!.role, dto);
+    return this.tenantsService.createBankAccount(req.tenantDb!, req.user!.tenantId, req.user!, dto);
   }
 
   @Put("me/bank-accounts/:id")
@@ -149,7 +150,7 @@ export class TenantsController {
     @Param("id", ParseUUIDPipe) id: string,
     @Body() dto: BankAccountDto,
   ) {
-    return this.tenantsService.updateBankAccount(req.tenantDb!, req.user!.tenantId, req.user!.role, id, dto);
+    return this.tenantsService.updateBankAccount(req.tenantDb!, req.user!.tenantId, req.user!, id, dto);
   }
 
   @Delete("me/bank-accounts/:id")
@@ -157,7 +158,7 @@ export class TenantsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: "Remove a bank account (owner/admin)" })
   deleteBankAccount(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
-    return this.tenantsService.deleteBankAccount(req.tenantDb!, req.user!.tenantId, req.user!.role, id);
+    return this.tenantsService.deleteBankAccount(req.tenantDb!, req.user!.tenantId, req.user!, id);
   }
 
   // Deliberately NOT behind JwtAuthGuard: signup is how a brand-new tenant

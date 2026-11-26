@@ -140,7 +140,7 @@ export default async function TimePage(props: { searchParams: Promise<Filters> }
     );
 
   // Time entries and projects sit under the invoices permission on the API.
-  const canEdit = await fetchCanWrite('invoices');
+  const canEdit = await fetchCanWrite('projects');
 
   return (
     <div className="mx-auto max-w-6xl">

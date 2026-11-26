@@ -2053,7 +2053,8 @@
         "expenses": "Assistenz für Ausgaben",
         "auditor": "Steuerberater/Prüfer",
         "viewer": "Nur lesen",
-        "custom": "Eigene Berechtigungen"
+        "custom": "Eigene Berechtigungen",
+        "assistant": "Assistenz (nur Entwürfe)"
       },
       "presetHints": {
         "admin": "Voller Zugriff einschließlich Team, Unternehmensdaten und Abrechnung.",
@@ -2062,7 +2063,8 @@
         "expenses": "Erfasst Ausgaben und Belege, sieht Rechnungen und Kontakte.",
         "auditor": "Sieht alles einschließlich Bank und Exporten, ändert nichts.",
         "viewer": "Sieht Rechnungen, Kontakte und Ausgaben. Keine Bank und keine Exporte.",
-        "custom": "Zugriff für jeden Bereich einzeln festlegen."
+        "custom": "Lege den Zugriff für jeden Bereich fest und klappe einen Bereich auf, um einzelne Aktionen zu wählen.",
+        "assistant": "Bereitet Rechnungsentwürfe und Kontakte vor. Ausstellen, Senden und Stornieren bleibt bei dir."
       },
       "presetsHint": "Wählen Sie ein fertiges Profil oder passen Sie den Zugriff eines Mitglieds pro Bereich an (Schieberegler-Symbol).",
       "areas": {
@@ -2071,7 +2073,10 @@
         "contacts": "Kontakte",
         "expenses": "Ausgaben",
         "bank": "Bank",
-        "reports": "Exporte"
+        "reports": "Exporte",
+        "projects": "Projekte und Zeit",
+        "recurring": "Wiederkehrende Rechnungen",
+        "settings": "Einstellungen"
       },
       "levels": {
         "none": "Kein Zugriff",
@@ -2080,7 +2085,7 @@
       },
       "editPermissions": "Berechtigungen bearbeiten",
       "editPermissionsFor": "Berechtigungen – {name}",
-      "permissionsHint": "Bearbeiten schließt Lesen ein. Nur Administratoren verwalten Team, Unternehmensdaten und Abrechnung.",
+      "permissionsHint": "Bearbeiten schließt Lesen ein. Klappe einen Bereich auf, um einzelne Aktionen ein- oder auszuschalten. Team, Module, Backups und Abo verwalten nur Administratoren.",
       "save": "Speichern",
       "directory": {
         "toggle": "Noch keine Buchhaltung? Wählen Sie eine geprüfte aus",
@@ -2094,7 +2099,47 @@
         "picked": "{email} ist eingetragen. Prüfen Sie die Rolle und senden Sie die Einladung."
       },
       "copyLink": "Link kopieren",
-      "seatLimit": "Ihr Tarif hat keinen freien Platz mehr. Plus hat 3 Nutzer, Business 10. Steuerberater zählen nicht mit (bis zu 2)."
+      "seatLimit": "Ihr Tarif hat keinen freien Platz mehr. Plus hat 3 Nutzer, Business 10. Steuerberater zählen nicht mit (bis zu 2).",
+      "actions": {
+        "invoices": {
+          "create": "Entwürfe erstellen und bearbeiten",
+          "issue": "Ausstellen (Nummer vergeben)",
+          "send": "An Kunden senden und erinnern",
+          "cancel": "Stornieren und löschen"
+        },
+        "expenses": {
+          "create": "Erfassen und bearbeiten",
+          "approve": "Freigeben (bezahlt, empfangene E-Rechnungen)",
+          "delete": "Löschen"
+        },
+        "bank": {
+          "match": "Zahlungen zuordnen und synchronisieren",
+          "connections": "Bankverbindungen verwalten"
+        },
+        "reports": {
+          "export": "Exporte herunterladen"
+        },
+        "settings": {
+          "company": "Firma und Bankkonten",
+          "numbering": "Belegnummerierung",
+          "templates": "Vorlagen, E-Mails und Variablen",
+          "paymentMethods": "Zahlungsarten",
+          "integrations": "Integrationen und Webhooks",
+          "apiKeys": "API-Schlüssel"
+        }
+      },
+      "actionHints": {
+        "apiKeys": "Ein Schlüssel hat vollen Zugriff auf das ganze Unternehmen, unabhängig von diesen Berechtigungen."
+      },
+      "actionsCount": "{granted}/{total}",
+      "summaryWithout": "ohne: {list}",
+      "locked": {
+        "backup": "Backups",
+        "billing": "Abo",
+        "ownerOnly": "Nur Inhaber",
+        "adminsOnly": "Nur Inhaber und Administratoren"
+      },
+      "fillFromPreset": "Ausfüllen aus"
     },
     "exports": {
       "title": "Exporte für die Buchhaltung",

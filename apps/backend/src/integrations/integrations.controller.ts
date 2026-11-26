@@ -20,7 +20,7 @@ export class IntegrationsController {
   @Get()
   @ApiOperation({ summary: "Feed token of the current member and the company's webhooks (admins only)" })
   get(@Req() req: TenantScopedRequest) {
-    return this.integrations.get(req.tenantDb!, req.user!.tenantId, req.user!.id, req.user!.role);
+    return this.integrations.get(req.tenantDb!, req.user!.tenantId, req.user!.id, req.user!);
   }
 
   @Post("feed")
@@ -42,7 +42,7 @@ export class IntegrationsController {
   saveWebhooks(@Req() req: TenantScopedRequest, @Body() body: unknown) {
     const parsed = webhooksBody.safeParse(body);
     if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
-    return this.integrations.saveWebhooks(req.tenantDb!, req.user!.tenantId, req.user!.role, parsed.data.webhooks);
+    return this.integrations.saveWebhooks(req.tenantDb!, req.user!.tenantId, req.user!, parsed.data.webhooks);
   }
 
   @Post("webhooks/:id/test")
@@ -50,6 +50,6 @@ export class IntegrationsController {
   @HttpCode(200)
   @ApiOperation({ summary: "Send a test message to one webhook" })
   test(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
-    return this.integrations.testWebhook(req.tenantDb!, req.user!.tenantId, req.user!.role, id);
+    return this.integrations.testWebhook(req.tenantDb!, req.user!.tenantId, req.user!, id);
   }
 }

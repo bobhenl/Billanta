@@ -6,7 +6,7 @@ import { SettingsHeader } from '@/components/settings-header';
 import { NotSignedInError } from '@/lib/api-client';
 import { townCandidates } from '@/lib/business-directory';
 import { getMunicipalityBySlug } from '@/lib/municipalities';
-import { canManage, fetchMyRole, fetchTenant, type PublicProfileSettings, type TenantSettings } from '@/lib/tenant';
+import { canManage, fetchMayEditSettings, fetchMyRole, fetchTenant, type PublicProfileSettings, type TenantSettings } from '@/lib/tenant';
 import { PublicProfileEditor } from './public-profile-editor';
 import { settingsGate } from '@/components/settings-gate';
 
@@ -65,17 +65,19 @@ export default async function PublicProfileSettingsPage() {
   const storedTown = initial.directory.town ? getMunicipalityBySlug(initial.directory.town) : undefined;
   if (storedTown && !towns.some((c) => c.slug === storedTown.slug)) towns.push({ slug: storedTown.slug, name: storedTown.name, district: storedTown.district });
 
+  // Owners and admins, or a member with this settings section (Settings → Team).
+  const editable = canManage(role) || (role !== null && (await fetchMayEditSettings('publicProfile')));
   return (
     <div className="mx-auto max-w-4xl">
       <SettingsHeader title={t('title')} description={t('description')} />
-      {!canManage(role) && (
+      {!editable && (
         <Banner tone="info" className="mt-4">
           {t('readOnly')}
         </Banner>
       )}
       <PublicProfileEditor
         initial={initial}
-        readOnly={!canManage(role)}
+        readOnly={!editable}
         suggestedSlug={suggestSlug(tenant.companyName)}
         towns={towns}
         company={{ name: tenant.companyName, email: tenant.email, phone: tenant.phone, website: tenant.website, hasLogo: tenant.hasLogo, hasAddress: Boolean(tenant.addressStreet || tenant.addressCity), ico: tenant.ico, hasBankAccount: Boolean(tenant.bankAccountIban || tenant.bankAccountNumber) }}

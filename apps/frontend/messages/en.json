@@ -2054,7 +2054,8 @@
         "expenses": "Expenses assistant",
         "auditor": "Tax advisor / auditor",
         "viewer": "Read-only",
-        "custom": "Custom permissions"
+        "custom": "Custom permissions",
+        "assistant": "Assistant (drafts only)"
       },
       "presetHints": {
         "admin": "Full access including the team, company details and billing.",
@@ -2063,7 +2064,8 @@
         "expenses": "Records expenses and receipts, views invoices and contacts.",
         "auditor": "Sees everything including bank and exports, changes nothing.",
         "viewer": "Views invoices, contacts and expenses. No bank or exports.",
-        "custom": "Set access for each area separately."
+        "custom": "Set access for each area, and expand an area for its individual actions.",
+        "assistant": "Prepares invoice drafts and contacts. Leaves issuing, sending and cancelling to you."
       },
       "presetsHint": "Pick a ready-made profile, or fine-tune a member's access per area (sliders icon).",
       "areas": {
@@ -2072,7 +2074,10 @@
         "contacts": "Contacts",
         "expenses": "Expenses",
         "bank": "Bank",
-        "reports": "Exports"
+        "reports": "Exports",
+        "projects": "Projects and time",
+        "recurring": "Recurring invoices",
+        "settings": "Settings"
       },
       "levels": {
         "none": "No access",
@@ -2081,7 +2086,7 @@
       },
       "editPermissions": "Edit permissions",
       "editPermissionsFor": "Permissions – {name}",
-      "permissionsHint": "Edit includes read. Only administrators manage the team, company details and billing.",
+      "permissionsHint": "Edit includes read. Expand an area to switch its individual actions on or off. Only admins manage the team, modules, backups and the subscription.",
       "save": "Save",
       "directory": {
         "toggle": "Don't have an accountant? Pick a verified one",
@@ -2095,7 +2100,47 @@
         "picked": "{email} is filled in. Check the role and send the invitation."
       },
       "copyLink": "Copy link",
-      "seatLimit": "Your plan has no free seat left. Plus has 3 users, Business 10. Accountants don't count (up to 2)."
+      "seatLimit": "Your plan has no free seat left. Plus has 3 users, Business 10. Accountants don't count (up to 2).",
+      "actions": {
+        "invoices": {
+          "create": "Create and edit drafts",
+          "issue": "Issue (assign a number)",
+          "send": "Send to clients and remind",
+          "cancel": "Cancel and delete"
+        },
+        "expenses": {
+          "create": "Record and edit",
+          "approve": "Approve (paid, received e-invoices)",
+          "delete": "Delete"
+        },
+        "bank": {
+          "match": "Match payments and sync",
+          "connections": "Manage bank connections"
+        },
+        "reports": {
+          "export": "Download exports"
+        },
+        "settings": {
+          "company": "Company and bank accounts",
+          "numbering": "Document numbering",
+          "templates": "Templates, emails and variables",
+          "paymentMethods": "Payment methods",
+          "integrations": "Integrations and webhooks",
+          "apiKeys": "API keys"
+        }
+      },
+      "actionHints": {
+        "apiKeys": "A key has full access to the whole company, whatever these permissions say."
+      },
+      "actionsCount": "{granted}/{total}",
+      "summaryWithout": "without: {list}",
+      "locked": {
+        "backup": "Backups",
+        "billing": "Subscription",
+        "ownerOnly": "Owner only",
+        "adminsOnly": "Owner and admins only"
+      },
+      "fillFromPreset": "Fill in from"
     },
     "exports": {
       "title": "Accountant exports",

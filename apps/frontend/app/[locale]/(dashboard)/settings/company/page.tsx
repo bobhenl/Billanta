@@ -5,7 +5,7 @@ import { Banner } from '@/components/banner';
 import { SettingsHeader } from '@/components/settings-header';
 import { NotSignedInError } from '@/lib/api-client';
 import { trialDays } from '@/lib/plan';
-import { type BankAccount, canManage, fetchBankAccounts, fetchMyAccess, fetchMyRole, fetchTenant, type TenantSettings } from '@/lib/tenant';
+import { type BankAccount, canManage, fetchMayEditSettings, fetchBankAccounts, fetchMyAccess, fetchMyRole, fetchTenant, type TenantSettings } from '@/lib/tenant';
 import { CompanyForm } from './company-form';
 import { settingsGate } from '@/components/settings-gate';
 
@@ -35,15 +35,17 @@ export default async function CompanyPage() {
   const days = trialDays();
   const trialHintDays = days > 0 && !tenant.ico && !tenant.isDemo && plan && !plan.trial && plan.source === 'free' ? days : null;
 
+  // Owners and admins, or a member with this settings section (Settings → Team).
+  const editable = canManage(role) || (role !== null && (await fetchMayEditSettings('company')));
   return (
     <div className="mx-auto max-w-3xl">
       <SettingsHeader title={t('title')} description={t('description')} />
-      {!canManage(role) && (
+      {!editable && (
         <Banner tone="info" className="mt-4">
           {t('readOnly')}
         </Banner>
       )}
-      <CompanyForm tenant={tenant} accounts={accounts} readOnly={!canManage(role)} trialHintDays={trialHintDays} />
+      <CompanyForm tenant={tenant} accounts={accounts} readOnly={!editable} trialHintDays={trialHintDays} />
     </div>
   );
 }
