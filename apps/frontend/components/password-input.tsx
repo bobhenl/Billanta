@@ -19,6 +19,8 @@ export function PasswordInput({ className, ...props }: Omit<InputHTMLAttributes<
       <input {...props} type={visible ? 'text' : 'password'} className={cn(className, 'w-full pr-10')} />
       <button
         type="button"
+        // Out of the tab order, so Tab goes from one password field straight to the next.
+        tabIndex={-1}
         aria-label={visible ? t('hidePassword') : t('showPassword')}
         aria-pressed={visible}
         onClick={() => setVisible(!visible)}
