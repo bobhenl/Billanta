@@ -22,9 +22,10 @@ const fmt = (n: number, currency: string) =>
 
 /**
  * "PayPal: zaplaceno 25,00 USD, poplatek 1,20 USD, připsáno 545,12 Kč (kurz 22,9042 Kč/USD)".
- * Stripe payments get the same line under their own name.
+ * Stripe payments get the same line under their own name, a plain bank
+ * payment under "Banka".
  */
-export function paypalPaymentNote(input: PaymentNoteInput, provider: "PayPal" | "Stripe" = "PayPal"): string {
+export function paypalPaymentNote(input: PaymentNoteInput, provider: "PayPal" | "Stripe" | "Banka" = "PayPal"): string {
   const currency = input.currency.toUpperCase();
   const parts = [`zaplaceno ${fmt(input.amount, currency)}`];
   const fee = input.fee && input.fee > 0 ? input.fee : 0;

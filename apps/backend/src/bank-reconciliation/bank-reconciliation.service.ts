@@ -19,6 +19,7 @@ import {
   type PaidLinkCandidate,
 } from "./matching";
 import { paypalPaymentNote } from "./payment-note";
+import { payerName } from "./payer-name";
 import { parseUploadedStatement } from "./statement-upload";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
@@ -247,7 +248,7 @@ export class BankReconciliationService {
                 // "0002026001" and "2026001" are one symbol; a non-numeric one is kept as typed.
                 variableSymbol: normalizeVariableSymbol(row.variableSymbol) ?? row.variableSymbol,
                 counterpartyAccount: row.counterpartyAccount,
-                counterpartyName: row.counterpartyName,
+                counterpartyName: payerName(row.counterpartyName, row.message ?? null),
                 externalId: row.externalId ?? null,
                 fee: row.fee ?? null,
                 netAmount: row.netAmount ?? null,
@@ -462,7 +463,7 @@ export class BankReconciliationService {
       description: tx.message,
       fee: received.fee ?? null,
       net: received.net,
-      note: received.note ?? paypalPaymentNote(received),
+      note: received.note ?? paypalPaymentNote(received, "Banka"),
       contactId: rule?.contactId ?? null,
     });
     const [transaction] = await db

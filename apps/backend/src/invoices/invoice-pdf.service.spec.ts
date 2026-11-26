@@ -363,6 +363,21 @@ describe("InvoicePdfService paid documents and foreign buyers", () => {
     expect((await qrFor("auto", makeInvoice({ status: "paid" })))[0]).toMatch(/^SID\*/);
   });
 
+  it("prints IBAN only when the payer is abroad or pays in another currency", async () => {
+    const home = await render(makeInvoice(), makeContact({ addressCountry: "CZ" }));
+    expect(home.lines).toContain("123456/0300");
+    expect(home.lines).not.toContain("IBAN");
+    expect((await render(makeInvoice(), makeContact({ addressCountry: "DE" }))).lines).toContain("IBAN");
+    expect((await render(makeInvoice({ currency: "EUR", exchangeRate: "25.000000" }), makeContact({ addressCountry: "CZ" }))).lines).toContain("IBAN");
+  });
+
+  it("keeps the QR code's place on a draft preview without a payable code", async () => {
+    const draft = await render(makeInvoice({ invoiceNumber: null, status: "draft" }));
+    expect(draft.qr).toEqual([]);
+    expect(draft.lines).toContain("QR platba se doplní po vystavení");
+    expect((await render(makeInvoice())).lines).not.toContain("QR platba se doplní po vystavení");
+  });
+
   it("prints the country of a buyer abroad, not of a domestic one", async () => {
     expect((await render(makeInvoice(), makeContact({ addressCountry: "US" }))).lines).toContain("Spojené státy");
     expect((await render(makeInvoice({ language: "en" }), makeContact({ addressCountry: "US" }))).lines).toContain("United States");

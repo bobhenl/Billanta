@@ -124,6 +124,7 @@ const L = {
     qrPayBySquare: "PAY by square",
     qrInvoice: "QR Faktura",
     qrLink: "Faktura online",
+    qrAfterIssue: "QR platba se doplní po vystavení",
     reverseCharge: "Daň odvede zákazník (přenesená daňová povinnost dle § 92a zákona o DPH).",
     // Service to a business in another EU state (§29/2c ZDPH, art. 196 of Directive 2006/112/EC).
     reverseChargeEu: "Daň odvede zákazník.",
@@ -187,6 +188,7 @@ const L = {
     qrPayBySquare: "PAY by square",
     qrInvoice: "QR faktúra",
     qrLink: "Faktúra online",
+    qrAfterIssue: "QR platba sa doplní po vystavení",
     reverseCharge: "Prenesenie daňovej povinnosti.",
     reverseChargeEu: "Prenesenie daňovej povinnosti.",
     fxRate: "Kurz ČNB",
@@ -249,6 +251,7 @@ const L = {
     qrPayBySquare: "PAY by square",
     qrInvoice: "QR invoice",
     qrLink: "Invoice online",
+    qrAfterIssue: "QR payment is added once issued",
     reverseCharge: "Reverse charge – VAT to be accounted for by the customer.",
     reverseChargeEu: "Reverse charge – VAT to be accounted for by the customer.",
     fxRate: "ČNB rate",
@@ -349,6 +352,9 @@ export class InvoicePdfService {
       invoice.documentType !== "quote" && !tenant.isDemo && !draft && qrMode !== "off"
         ? await this.buildQrCode(invoice, contact, tenant, totals, payable, qrMode, lang)
         : null;
+    // A draft gets no code anyone could pay, but its preview keeps the code's place.
+    const qrPending =
+      draft && payable && invoice.documentType !== "quote" && !tenant.isDemo && qrMode !== "off" && invoice.paymentMethod === "bank_transfer";
 
     // With the credit switched off the document carries no trace of Billanta, metadata included.
     const credit = brandCreditFor(tenant, lang, "pdf");
@@ -386,7 +392,8 @@ export class InvoicePdfService {
         ? t.qrPayBySquare
         : (qr.kind === "spayd" ? t.qr : qr.kind === "link" ? t.qrLink : t.qrInvoice).toUpperCase()
       : "";
-    this.renderPaymentBlock(doc, this.bankRows(t, invoice, tenant), qr ? { label: qrLabel, png: qr.png } : null, totalsTop);
+    const qrSlot = qr ? { label: qrLabel, png: qr.png } : qrPending ? { label: t.qr.toUpperCase(), pending: t.qrAfterIssue } : null;
+    this.renderPaymentBlock(doc, this.bankRows(t, invoice, tenant, contact), qrSlot, totalsTop);
     this.renderFooterNotes(doc, t, invoice, tenant, fill, contact);
     if (credit) this.renderCredit(doc, credit);
     if (tenant.isDemo) drawDemoWatermark(doc, lang, REGULAR, tenant.classroomClassId ? "classroom" : "demo");
@@ -829,10 +836,15 @@ export class InvoicePdfService {
   }
 
   /** Account, IBAN and SWIFT of a bank transfer: they go next to the QR code that pays into them. */
-  private bankRows(t: (typeof L)[Lang], invoice: InvoiceRow, tenant: TenantRow): Array<[string, string]> {
+  private bankRows(t: (typeof L)[Lang], invoice: InvoiceRow, tenant: TenantRow, contact: ContactRow): Array<[string, string]> {
     if (invoice.documentType === "quote" || invoice.paymentMethod !== "bank_transfer") return [];
     const rows: Array<[string, string]> = [];
     if (tenant.bankAccountNumber) rows.push([t.account, `${tenant.bankAccountNumber}/${tenant.bankAccountBankCode ?? ""}`]);
+    // A domestic payment in the home currency only needs the local account
+    // number; IBAN and SWIFT are for payers abroad or in another currency.
+    const buyerCountry = contact.addressCountry?.toUpperCase();
+    const domestic = invoice.currency === tenantHomeCurrencyOf(tenant) && (!buyerCountry || buyerCountry === tenantCountry(tenant));
+    if (domestic && rows.length) return rows;
     const iban = this.iban(tenant);
     if (iban) rows.push(["IBAN", iban]);
     if (tenant.bankAccountSwift) rows.push(["SWIFT", tenant.bankAccountSwift]);
@@ -847,14 +859,19 @@ export class InvoicePdfService {
   private renderPaymentBlock(
     doc: PDFKit.PDFDocument,
     rows: Array<[string, string]>,
-    qr: { label: string; png: Buffer } | null,
+    qr: { label: string; png: Buffer } | { label: string; pending: string } | null,
     top: number,
   ): void {
     if (!rows.length && !qr) return;
     const size = 90;
     if (qr) {
       doc.font(BOLD).fontSize(8).fillColor(MUTED).text(qr.label, 50, top, { width: 240 });
-      doc.image(qr.png, 50, top + 12, { width: size, height: size });
+      if ("png" in qr) {
+        doc.image(qr.png, 50, top + 12, { width: size, height: size });
+      } else {
+        doc.save().roundedRect(50, top + 12, size, size, 4).dash(3, { space: 3 }).strokeColor(MUTED).stroke().undash().restore();
+        doc.font(REGULAR).fontSize(7.5).fillColor(MUTED).text(qr.pending, 58, top + 12 + size / 2 - 12, { width: size - 16, align: "center" });
+      }
     }
     const x = qr ? 50 + size + 10 : 50;
     const width = 290 - x;
