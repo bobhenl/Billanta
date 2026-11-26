@@ -144,10 +144,13 @@ export function TeamManager({
   const [createdLink, setCreatedLink] = useState<{ url: string; emailSent: boolean } | null>(null);
   const [removing, setRemoving] = useState<TeamData['members'][number] | null>(null);
 
+  // The plan's seat limit gets a sentence of its own; other codes stay as they are.
+  const failText = (error?: string) => (error?.includes('seat_limit') ? t('seatLimit') : `${t('failed')}: ${error}`);
+
   const run = (fn: () => Promise<{ ok: boolean; error?: string }>, done: string, after?: () => void) =>
     startTransition(async () => {
       const result = await fn();
-      toast(result.ok ? { text: done, tone: 'ok' } : { text: `${t('failed')}: ${result.error}`, tone: 'err' });
+      toast(result.ok ? { text: done, tone: 'ok' } : { text: failText(result.error), tone: 'err' });
       if (result.ok) after?.();
       router.refresh();
     });
@@ -166,7 +169,7 @@ export function TeamManager({
       const { role, permissions } = assignmentFor(preset, customPerms);
       const result = await inviteMember(email.trim(), role, permissions);
       if (!result.ok) {
-        toast({ text: `${t('failed')}: ${result.error}`, tone: 'err' });
+        toast({ text: failText(result.error), tone: 'err' });
         return;
       }
       setCreatedLink({ url: result.data.acceptUrl, emailSent: result.data.emailSent });

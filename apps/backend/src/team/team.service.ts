@@ -8,16 +8,18 @@ import {
   NotFoundException,
   Optional,
 } from "@nestjs/common";
-import { and, desc, eq, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, gt, isNull, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 import { AuditService } from "../audit/audit.service";
+import { loadPlanSummary } from "../billing/plan.guard";
 import { DbService } from "../db/db.service";
 import { EmailService } from "../email/email.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
 import type { CreateInvitationDto } from "./dto/create-invitation.dto";
+import { seatRefusal } from "./seats";
 
 type Db = PostgresJsDatabase<typeof schema>;
 
@@ -104,6 +106,7 @@ export class TeamService {
       .where(sql`lower(${schema.users.email}) = ${dto.email}`)
       .limit(1);
     if (existingMember) throw new ConflictException("This person is already a member");
+    await this.assertSeatFree(db, user.tenantId, { email: dto.email }, dto.role);
 
     // Invitations go to any address with the company name in the subject, so
     // they share the invoice e-mail caps and the suspended/paused checks.
@@ -188,6 +191,8 @@ export class TeamService {
     requireManager(user);
     const member = await this.requireMember(db, membershipId);
     if (member.role === "owner") throw new BadRequestException("The owner's role cannot be changed");
+    // Turning an accountant into a member (or back) moves them between allowances.
+    if ((member.role === "accountant") !== (role === "accountant")) await this.assertSeatFree(db, user.tenantId, { membershipId }, role);
     await db
       .update(schema.tenantMemberships)
       .set({ role, permissions: role === "admin" ? null : permissions ?? null })
@@ -224,6 +229,25 @@ export class TeamService {
       action: member.userId === user.id ? "left" : "removed",
     });
     return { ok: true };
+  }
+
+  /** 403 `seat_limit` when the plan has no room for one more `role` (see `seats.ts`). */
+  private async assertSeatFree(db: Db, tenantId: string, except: { email?: string; membershipId?: string }, role: string) {
+    const summary = await loadPlanSummary(db, tenantId);
+    if (!summary?.enforced) return;
+    const members = await db
+      .select({ id: schema.tenantMemberships.id, role: schema.tenantMemberships.role })
+      .from(schema.tenantMemberships);
+    const invitations = await db
+      .select({ email: schema.tenantInvitations.email, role: schema.tenantInvitations.role })
+      .from(schema.tenantInvitations)
+      .where(and(isNull(schema.tenantInvitations.acceptedAt), gt(schema.tenantInvitations.expiresAt, new Date())));
+    const taken = [
+      ...members.filter((m) => m.id !== except.membershipId).map((m) => m.role),
+      ...invitations.filter((i) => i.email !== except.email).map((i) => i.role),
+    ];
+    const refusal = seatRefusal(summary.plan, taken, role);
+    if (refusal) throw new ForbiddenException({ error: "seat_limit", message: "seat_limit", ...refusal });
   }
 
   private async memberEmail(db: Db, userId: string) {
