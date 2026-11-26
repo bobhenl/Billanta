@@ -306,10 +306,10 @@ describe("parsePaypalWithdrawals", () => {
 });
 
 describe("parsePaypalConversions", () => {
-  const leg = (id: string, amount: string, currency: string, at: string, ref?: string) => ({
+  const leg = (id: string, amount: string, currency: string, at: string, ref?: string, code = "T0200") => ({
     transaction_info: {
       transaction_id: id,
-      transaction_event_code: "T0200",
+      transaction_event_code: code,
       transaction_initiation_date: at,
       transaction_amount: { currency_code: currency, value: amount },
       transaction_status: "S",
@@ -326,6 +326,18 @@ describe("parsePaypalConversions", () => {
     ]);
     expect(rows).toEqual([
       expect.objectContaining({ externalId: "paypal:C1", amount: "1810.21", currency: "CZK", conversion: { amount: "85.18", currency: "USD" } }),
+    ]);
+  });
+
+  it("reads the T0201 legs PayPal books when a withdrawal converts the balance", () => {
+    // The legs point at each other; the payment came the evening before.
+    const rows = parsePaypalConversions([
+      detail({ transaction_amount: { currency_code: "USD", value: "45.00" }, fee_amount: { currency_code: "USD", value: "-2.41" } }),
+      leg("D1", "-42.59", "USD", "2026-11-11T01:14:01Z", "C1", "T0201"),
+      leg("C1", "892.68", "CZK", "2026-11-11T01:14:01Z", "D1", "T0201"),
+    ]);
+    expect(rows).toEqual([
+      expect.objectContaining({ externalId: "paypal:C1", amount: "892.68", currency: "CZK", conversion: { amount: "42.59", currency: "USD" } }),
     ]);
   });
 

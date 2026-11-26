@@ -255,7 +255,8 @@ const netKey = (time: string | null | undefined, currency: string, amount: numbe
   `${time?.slice(0, 10)}|${currency}|${Math.abs(amount).toFixed(2)}`;
 
 /**
- * The credit legs of PayPal's currency conversions (event T0200): with
+ * The credit legs of PayPal's currency conversions (T0200, or T0201 when
+ * the balance is converted on the way out, as part of a withdrawal): with
  * auto-conversion on, a received USD payment is followed by a USD debit and
  * a CZK credit. The credit usually points at the payment through
  * `paypal_reference_id`, or at the debit leg that does. When neither does,
@@ -263,6 +264,8 @@ const netKey = (time: string | null | undefined, currency: string, amount: numbe
  * from (the debit leg's). Last resort: PayPal converts what is left after
  * the fee, so a debit of exactly the payment's net on the same day is it.
  */
+const CONVERSION_CODES = new Set(["T0200", "T0201"]);
+
 function conversionCredits(details: RawDetail[]) {
   const byReference = new Map<string, ConversionCredit>();
   const byTime = new Map<string, ConversionCredit>();
@@ -272,7 +275,7 @@ function conversionCredits(details: RawDetail[]) {
   const credits: Leg[] = [];
   for (const detail of details) {
     const info = detail?.transaction_info;
-    if (!info || info.transaction_event_code !== "T0200" || info.transaction_status !== "S") continue;
+    if (!info || !CONVERSION_CODES.has(info.transaction_event_code ?? "") || info.transaction_status !== "S") continue;
     const amount = money(info.transaction_amount);
     const currency = info.transaction_amount?.currency_code?.toUpperCase().slice(0, 3);
     if (amount === null || !currency) continue;
