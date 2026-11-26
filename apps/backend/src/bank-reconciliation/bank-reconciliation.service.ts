@@ -76,7 +76,19 @@ function receivedFrom(tx: StoredRow) {
     paidAt: tx.transactionDate,
     net,
     note: provider
-      ? paypalPaymentNote({ amount: Number(tx.amount), currency: tx.currency, fee, netAmount: net?.amount, netCurrency: net?.currency }, provider)
+      ? paypalPaymentNote(
+          {
+            amount: Number(tx.amount),
+            currency: tx.currency,
+            fee,
+            netAmount: net?.amount,
+            netCurrency: net?.currency,
+            transactionId: tx.externalId!.slice(tx.externalId!.indexOf(":") + 1),
+            // PayPal carries the number of its own invoice; it was read as the variable symbol.
+            invoiceNumber: provider === "PayPal" ? tx.variableSymbol : null,
+          },
+          provider,
+        )
       : null,
   };
 }

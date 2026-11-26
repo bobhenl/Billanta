@@ -25,6 +25,15 @@ describe("paypalPaymentNote", () => {
   });
 });
 
+describe("paypalPaymentNote references", () => {
+  it("names the provider's invoice and transaction, so the payment can be found there", () => {
+    expect(paypalPaymentNote({ amount: 25, currency: "USD", fee: 1.65, transactionId: "45E277802F441913Y", invoiceNumber: "44" })).toBe(
+      "PayPal (faktura 44, transakce 45E277802F441913Y): zaplaceno 25,00 USD, poplatek 1,65 USD, připsáno 23,35 USD",
+    );
+    expect(paypalPaymentNote({ amount: 10, currency: "EUR", transactionId: "ch_1A" }, "Stripe")).toBe("Stripe (transakce ch_1A): zaplaceno 10,00 EUR");
+  });
+});
+
 describe("appendNoteLine", () => {
   it("adds the line under the existing note once", () => {
     expect(appendNoteLine(null, "A")).toBe("A");

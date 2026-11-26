@@ -10,6 +10,9 @@ export interface PaymentNoteInput {
   fee?: number | null;
   netAmount?: number | null;
   netCurrency?: string | null;
+  /** The provider's own ids, to find the payment there for a refund or a dispute. */
+  transactionId?: string | null;
+  invoiceNumber?: string | null;
 }
 
 const unit = (currency: string) => (currency === "CZK" ? "Kč" : currency);
@@ -39,7 +42,11 @@ export function paypalPaymentNote(input: PaymentNoteInput, provider: "PayPal" | 
   } else if (fee) {
     parts.push(`připsáno ${fmt(input.amount - fee, currency)}`);
   }
-  return `${provider}: ${parts.join(", ")}`;
+  const refs = [
+    input.invoiceNumber ? `faktura ${input.invoiceNumber}` : null,
+    input.transactionId ? `transakce ${input.transactionId}` : null,
+  ].filter(Boolean);
+  return `${provider}${refs.length ? ` (${refs.join(", ")})` : ""}: ${parts.join(", ")}`;
 }
 
 /** The note with the line added below what is already there, once. */
