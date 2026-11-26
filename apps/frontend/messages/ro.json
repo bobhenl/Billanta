@@ -5231,7 +5231,9 @@
       "net": "Venit net",
       "noReceived": "Introduceți suma încasată în {home} pentru a vedea și diferența de curs.",
       "rates": "Curs real {real} față de cursul facturii {invoice} ({pair}).",
-      "held": "{amount} este încă în soldul PayPal. Suma reală în {home} apare când PayPal o convertește la retragere."
+      "held": "{amount} este încă în soldul PayPal. Suma reală în {home} apare când PayPal o convertește la retragere.",
+      "conversion": "Conversie valutară",
+      "converted": "Convertit în {home} pe {date} la cursul PayPal."
     },
     "history": "Istoricul modificărilor",
     "correction": {

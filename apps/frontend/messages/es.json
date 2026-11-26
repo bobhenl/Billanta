@@ -5231,7 +5231,9 @@
       "net": "Ingresos netos",
       "noReceived": "Introduzca el importe abonado en {home} para ver también la diferencia de cambio.",
       "rates": "Tipo real {real} frente al de la factura {invoice} ({pair}).",
-      "held": "{amount} sigue en su saldo de PayPal. El importe real en {home} aparecerá cuando PayPal lo convierta al retirarlo."
+      "held": "{amount} sigue en su saldo de PayPal. El importe real en {home} aparecerá cuando PayPal lo convierta al retirarlo.",
+      "conversion": "Conversión de divisa",
+      "converted": "Convertido a {home} el {date} al tipo de PayPal."
     },
     "history": "Historial de cambios",
     "correction": {

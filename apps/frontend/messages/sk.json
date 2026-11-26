@@ -5239,7 +5239,9 @@
       "net": "Čistý výnos",
       "noReceived": "Zadajte pripísanú sumu v {home}, aby sme vypočítali aj kurzový rozdiel.",
       "rates": "Skutočný kurz {real} oproti kurzu faktúry {invoice} ({pair}).",
-      "held": "{amount} zatiaľ ostáva na zostatku PayPalu. Skutočnú sumu v {home} uvidíte, keď ju PayPal pri výbere prevedie."
+      "held": "{amount} zatiaľ ostáva na zostatku PayPalu. Skutočnú sumu v {home} uvidíte, keď ju PayPal pri výbere prevedie.",
+      "conversion": "Prevod meny",
+      "converted": "Prevedené na {home} {date} kurzom PayPalu."
     },
     "history": "História zmien",
     "correction": {
