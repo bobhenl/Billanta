@@ -97,14 +97,19 @@ async function resolveProfileCard(locale: string, rawSlug: string): Promise<Card
   };
 }
 
-export async function GET(
-  _req: Request,
-  props: { params: Promise<{ locale: string; path?: string[] }> }
-) {
-  const params = await props.params;
-  const path = params.path ?? [];
+/**
+ * On the edge runtime Next hands `/og/cs` (the home page card, no path) an
+ * empty params object, so the segments are read from the URL instead.
+ */
+function ogSegments(url: string): { locale: string; path: string[] } {
+  const [, locale = '', ...path] = new URL(url).pathname.split('/').filter(Boolean);
+  return { locale: decodeURIComponent(locale), path: path.map(decodeURIComponent) };
+}
+
+export async function GET(req: Request) {
+  const { locale, path } = ogSegments(req.url);
   const card: Card | null =
-    path[0] === 'p' && path.length === 2 ? await resolveProfileCard(params.locale, path[1]!) : await resolveOgCard(params.locale, path);
+    path[0] === 'p' && path.length === 2 ? await resolveProfileCard(locale, path[1]!) : await resolveOgCard(locale, path);
   if (!card) return new Response('Not found', { status: 404 });
   const [regular, bold] = await loadFonts();
   const title = clip(card.title, 90);
