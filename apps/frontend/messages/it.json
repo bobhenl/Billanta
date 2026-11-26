@@ -14238,8 +14238,9 @@
           "PDF, ISDOC, UBL e Peppol creati dal server",
           "Allegato PDF/ISDOC nelle e-mail",
           "Ricerca testuale e suggerimenti di righe sul server (dopo lo sblocco li gestisce il tuo browser)",
-          "Compilazione con IA senza il tuo consenso esplicito (il testo viene inviato una sola volta, solo quando confermi)",
-          "Descrizioni delle righe nel link pubblico e negli export per il commercialista (Pohoda, Money, CSV)"
+          "Compilazione con IA senza un clic esplicito (il testo passa una volta dal server all’IA, solo quando confermi, e non viene salvato)",
+          "Descrizioni delle righe sul link pubblico",
+          "Testi leggibili nelle esportazioni contabili del server (Pohoda, Money e CSV mostrano «[Důvěrný obsah]»; l’esportazione con testi decifrati la crea il tuo browser)"
         ]
       },
       "attachments": {

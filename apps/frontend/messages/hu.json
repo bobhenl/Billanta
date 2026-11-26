@@ -14238,8 +14238,9 @@
           "A szerver által készített PDF, ISDOC, UBL és Peppol",
           "PDF/ISDOC-melléklet az e-mailekben",
           "Szöveges keresés és tételjavaslatok a szerveren (feloldás után ezt a böngészője végzi)",
-          "AI-kitöltés kifejezett hozzájárulás nélkül (a szöveg csak egyszer megy el, ha jóváhagyja)",
-          "Tételleírások a nyilvános linken és a könyvelőnek szóló exportokban (Pohoda, Money, CSV)"
+          "AI-kitöltés kifejezett kattintás nélkül (a szöveg csak jóváhagyás után, egyszer megy át a szerveren az AI-hoz, és nem kerül mentésre)",
+          "Tételleírások a nyilvános linken",
+          "Olvasható szövegek a szerver könyvelési exportjaiban (a Pohoda, Money és CSV „[Důvěrný obsah]” szöveget mutat; a visszafejtett exportot a böngészője készíti)"
         ]
       },
       "attachments": {

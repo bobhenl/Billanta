@@ -14238,8 +14238,9 @@
           "Pdf, ISDOC, UBL en Peppol gemaakt door de server",
           "Pdf/ISDOC-bijlage in e-mails",
           "Zoeken op tekst en regelsuggesties op de server (na ontgrendelen doet je browser dat)",
-          "Vooraf invullen met AI zonder je uitdrukkelijke toestemming (de tekst gaat maar één keer weg, als je het bevestigt)",
-          "Regelomschrijvingen op de openbare link en in exports voor de boekhouder (Pohoda, Money, CSV)"
+          "Vooraf invullen met AI zonder uitdrukkelijke klik (de tekst gaat alleen na je bevestiging één keer via de server naar AI en wordt niet opgeslagen)",
+          "Regelomschrijvingen op de openbare link",
+          "Leesbare teksten in de boekhoudexports van de server (Pohoda, Money en CSV tonen „[Důvěrný obsah]”; de export met ontsleutelde teksten maakt je browser)"
         ]
       },
       "attachments": {

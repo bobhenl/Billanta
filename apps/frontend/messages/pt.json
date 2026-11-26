@@ -14238,8 +14238,9 @@
           "PDF, ISDOC, UBL e Peppol criados pelo servidor",
           "Anexo PDF/ISDOC nos e-mails",
           "Pesquisa por texto e sugestões de linhas no servidor (depois de desbloquear, o seu navegador trata disso)",
-          "Preenchimento por IA sem o seu consentimento expresso (o texto é enviado uma única vez, só quando confirma)",
-          "Descrições das linhas na ligação pública e nas exportações para o contabilista (Pohoda, Money, CSV)"
+          "Preenchimento por IA sem um clique expresso (o texto passa uma vez pelo servidor até à IA, só quando confirma, e não é guardado)",
+          "Descrições das linhas na ligação pública",
+          "Textos legíveis nas exportações contabilísticas do servidor (Pohoda, Money e CSV mostram «[Důvěrný obsah]»; a exportação com textos decifrados é criada pelo seu navegador)"
         ]
       },
       "attachments": {

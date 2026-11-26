@@ -14238,8 +14238,9 @@
           "PDF, ISDOC, UBL și Peppol create de server",
           "Atașamentul PDF/ISDOC în e-mailuri",
           "Căutarea după text și sugestiile de poziții pe server (după deblocare, le face browserul dvs.)",
-          "Completarea cu AI fără acordul dvs. explicit (textul se trimite o singură dată, doar când confirmați)",
-          "Descrierile pozițiilor pe linkul public și în exporturile pentru contabil (Pohoda, Money, CSV)"
+          "Completarea cu AI fără un clic explicit (textul trece o singură dată prin server către AI, doar când confirmați, și nu se salvează)",
+          "Descrierile pozițiilor pe linkul public",
+          "Texte lizibile în exporturile contabile ale serverului (Pohoda, Money și CSV afișează „[Důvěrný obsah]”; exportul cu texte decriptate îl creează browserul dvs.)"
         ]
       },
       "attachments": {

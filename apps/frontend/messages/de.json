@@ -14239,8 +14239,9 @@
           "Vom Server erstellte PDF-, ISDOC-, UBL- und Peppol-Dateien",
           "PDF/ISDOC-Anhang in E-Mails",
           "Textsuche und Positionsvorschläge auf dem Server (nach dem Entsperren übernimmt das Ihr Browser)",
-          "KI-Vorausfüllen ohne Ihre ausdrückliche Zustimmung (der Text wird nur einmalig gesendet, wenn Sie es bestätigen)",
-          "Positionsbeschreibungen im öffentlichen Link und in Exporten für die Buchhaltung (Pohoda, Money, CSV)"
+          "KI-Vorausfüllen ohne ausdrücklichen Klick (der Text geht nur nach Ihrer Bestätigung einmalig über den Server zur KI und wird nicht gespeichert)",
+          "Positionsbeschreibungen über den öffentlichen Link",
+          "Lesbare Texte in den Buchhaltungsexporten des Servers (Pohoda, Money und CSV zeigen „[Důvěrný obsah]“; den Export mit entschlüsselten Texten erstellt Ihr Browser)"
         ]
       },
       "attachments": {

@@ -14238,8 +14238,9 @@
           "PDF, ISDOC, UBL y Peppol creados por el servidor",
           "Adjunto PDF/ISDOC en los correos",
           "Búsqueda por texto y sugerencias de líneas en el servidor (tras desbloquear, las hace tu navegador)",
-          "Autocompletado con IA sin tu consentimiento expreso (el texto se envía una sola vez, solo cuando lo confirmas)",
-          "Descripciones de líneas en el enlace público y en las exportaciones para el contable (Pohoda, Money, CSV)"
+          "Autocompletado con IA sin un clic expreso (el texto pasa una vez por el servidor hacia la IA, solo cuando lo confirmas, y no se guarda)",
+          "Descripciones de líneas en el enlace público",
+          "Textos legibles en las exportaciones contables del servidor (Pohoda, Money y CSV muestran «[Důvěrný obsah]»; la exportación con textos descifrados la crea tu navegador)"
         ]
       },
       "attachments": {

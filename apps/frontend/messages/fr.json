@@ -14238,8 +14238,9 @@
           "PDF, ISDOC, UBL et Peppol créés par le serveur",
           "Pièce jointe PDF/ISDOC dans les e-mails",
           "Recherche de texte et suggestions de lignes côté serveur (après déverrouillage, votre navigateur s’en charge)",
-          "Pré-remplissage par IA sans votre accord explicite (le texte n’est envoyé qu’une fois, quand vous le confirmez)",
-          "Descriptions de lignes sur le lien public et dans les exports pour le comptable (Pohoda, Money, CSV)"
+          "Pré-remplissage par IA sans clic explicite (le texte passe une fois par le serveur vers l’IA, seulement quand vous confirmez, et n’est pas enregistré)",
+          "Descriptions de lignes sur le lien public",
+          "Textes lisibles dans les exports comptables du serveur (Pohoda, Money et CSV affichent « [Důvěrný obsah] » ; l’export avec textes déchiffrés est créé par votre navigateur)"
         ]
       },
       "attachments": {

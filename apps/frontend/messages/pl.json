@@ -14239,8 +14239,9 @@
           "PDF, ISDOC, UBL i Peppol tworzone przez serwer",
           "Załącznik PDF/ISDOC w e-mailach",
           "Wyszukiwanie tekstowe i podpowiedzi pozycji na serwerze (po odblokowaniu zajmie się tym Twoja przeglądarka)",
-          "Wypełnianie przez AI bez Twojej wyraźnej zgody (tekst jest wysyłany jednorazowo, tylko gdy to potwierdzisz)",
-          "Opisy pozycji w publicznym linku i w eksportach dla księgowej (Pohoda, Money, CSV)"
+          "Wypełnianie przez AI bez wyraźnego kliknięcia (tekst jednorazowo przejdzie przez serwer do AI, tylko gdy to potwierdzisz, i nie zostanie zapisany)",
+          "Opisy pozycji pod linkiem publicznym",
+          "Czytelne teksty w eksportach dla księgowej z serwera (Pohoda, Money i CSV mają „[Důvěrný obsah]”; eksport z odszyfrowanymi tekstami tworzy Twoja przeglądarka)"
         ]
       },
       "attachments": {

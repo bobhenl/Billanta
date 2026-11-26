@@ -14243,8 +14243,9 @@
           "PDF, ISDOC, UBL a Peppol vytvořené serverem",
           "Příloha PDF/ISDOC v e-mailu",
           "Hledání podle textu a návrhy položek na serveru (po odemčení je zvládne váš prohlížeč)",
-          "AI předvyplnění bez výslovného souhlasu (text se pošle jen jednorázově, když to potvrdíte)",
-          "Popisy položek na veřejném odkazu a v exportech pro účetní (Pohoda, Money, CSV)"
+          "AI předvyplnění bez výslovného kliknutí (text jednorázově projde serverem k AI, jen když to potvrdíte, a neuloží se)",
+          "Popisy položek na veřejném odkazu",
+          "Čitelné texty v exportech pro účetní ze serveru (Pohoda, Money, CSV mají „[Důvěrný obsah]“; export s dešifrovanými texty vytvoří váš prohlížeč)"
         ]
       },
       "attachments": {

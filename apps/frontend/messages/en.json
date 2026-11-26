@@ -14243,8 +14243,9 @@
           "PDF, ISDOC, UBL and Peppol created by the server",
           "PDF/ISDOC attachment in emails",
           "Text search and item suggestions on the server (your browser handles them after unlock)",
-          "AI prefill without your explicit consent (the text is sent once, only when you confirm)",
-          "Line descriptions on the public link and in accountant exports (Pohoda, Money, CSV)"
+          "AI prefill without an explicit click (the text passes the server to AI once, only when you confirm, and is not stored)",
+          "Line descriptions on the public link",
+          "Readable texts in the server’s accountant exports (Pohoda, Money and CSV show “[Důvěrný obsah]”; your browser builds the export with decrypted texts)"
         ]
       },
       "attachments": {
