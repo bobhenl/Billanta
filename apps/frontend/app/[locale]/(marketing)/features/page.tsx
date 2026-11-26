@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ArrowRight } from 'lucide-react';
+import { Archive, ArrowRight, Database, History, KeyRound, Sparkles, Users, Webhook } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
@@ -12,6 +12,23 @@ const AUDIENCES = [
   ['partners', '/for-partners'],
   ['coworkings', '/for-coworkings'],
   ['schools', '/for-schools']
+] as const;
+
+/**
+ * "Bezpečnost a data": what the product does today to keep a company's data
+ * apart, traceable and in the customer's hands. Each line must match shipped
+ * code (RLS migrations, audit_log, tenancy/permissions.ts, TwoFactorGuard,
+ * backup-destinations, api-keys, AI drafts). Features still on branches wait
+ * in docs/drafts/features-security-copy.md until they ship.
+ */
+const SECURITY = [
+  { key: 'isolation', icon: Database },
+  { key: 'audit', icon: History, href: '/features/audit-log' },
+  { key: 'team', icon: Users, href: '/features/team-and-roles' },
+  { key: 'signIn', icon: KeyRound },
+  { key: 'backups', icon: Archive, href: '/features/data-backups' },
+  { key: 'api', icon: Webhook, href: '/features/api-webhooks' },
+  { key: 'ai', icon: Sparkles, href: '/features/ai-invoice-prefill' }
 ] as const;
 
 /** Hub of the feature landing pages — one card (and one crawlable link) per feature. */
@@ -63,6 +80,32 @@ export default async function FeaturesIndexPage({ params }: { params: Promise<{ 
           </li>
         ))}
       </ul>
+
+      <section aria-labelledby="security" className="mt-14">
+        <h2 id="security" className="text-2xl font-semibold tracking-tight">
+          {t('security.title')}
+        </h2>
+        <p className="mt-2 max-w-2xl text-muted-foreground">{t('security.lead')}</p>
+        <ul className="mt-6 grid gap-x-8 gap-y-6 sm:grid-cols-2">
+          {SECURITY.map((item) => (
+            <li key={item.key} className="flex gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
+                <item.icon className="h-[18px] w-[18px]" aria-hidden="true" />
+              </span>
+              <div>
+                <h3 className="text-base font-bold">{t(`security.items.${item.key}.name`)}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t(`security.items.${item.key}.text`)}</p>
+                {'href' in item && (
+                  <Link href={item.href} className="mt-1 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+                    {t('more')}
+                    <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                  </Link>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <div className="mt-12">
         <Link

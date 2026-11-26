@@ -3647,6 +3647,7 @@
           "title": "Účet a zabezpečení",
           "body": [
             "Uživatel odpovídá za pravdivost údajů v účtu a za zabezpečení přístupu: hesla, API klíčů, propojení s Telegramem nebo WhatsAppem a tokenů bankovního spojení. Za činnost provedenou přes jeho účet nebo klíče odpovídá uživatel.",
+            "Vlastník a správci firmy rozhodují, koho do firmy pozvou a jakou roli a oprávnění mu dají. Za činnost členů týmu a API klíčů firmy odpovídá uživatel stejně jako za vlastní. Provozovatel doporučuje zapnout dvoufázové ověření. Bez něj nejde napojit banku ani vytvořit API klíč, webhook nebo cíl záloh.",
             "Podezření na zneužití účtu je třeba bez odkladu oznámit provozovateli."
           ]
         },
@@ -3685,7 +3686,8 @@
         {
           "title": "Návrhy vytvořené umělou inteligencí",
           "body": [
-            "Faktury vytvořené z hlasové zprávy, z textu nebo z naskenovaného dokladu jsou vždy jen návrh. AI se může mýlit, například v částce, odběrateli nebo sazbě DPH. Kliknutím na „Vystavit“ přebírá uživatel plnou odpovědnost za obsah dokladu, bez ohledu na to, jak návrh vznikl."
+            "Faktury vytvořené z hlasové zprávy, z textu nebo z naskenovaného dokladu jsou vždy jen návrh. AI se může mýlit, například v částce, odběrateli nebo sazbě DPH. Kliknutím na „Vystavit“ přebírá uživatel plnou odpovědnost za obsah dokladu, bez ohledu na to, jak návrh vznikl.",
+            "AI doklad sama nikdy nevystaví ani neodešle. Vystavení je vždy samostatný krok uživatele."
           ]
         },
         {
@@ -3712,7 +3714,8 @@
           "body": [
             "API je určeno k propojení s vlastními systémy uživatele. Provozovatel může stanovit limity počtu požadavků podle tarifu a dočasně omezit nebo zneplatnit API klíč, pokud jeho používání ohrožuje stabilitu služby nebo porušuje tyto podmínky.",
             "Provozovatel může API rozšiřovat a měnit. Zrušení verze API nebo změnu, která není zpětně kompatibilní, oznámí nejméně 30 dní předem, kromě změn nutných z bezpečnostních důvodů.",
-            "Za zabezpečení API klíčů, za cílové adresy webhooků a za zpracování dat, která přes API nebo webhooky odejdou mimo službu, odpovídá uživatel."
+            "Za zabezpečení API klíčů, za cílové adresy webhooků a za zpracování dat, která přes API nebo webhooky odejdou mimo službu, odpovídá uživatel.",
+            "API klíč se zobrazí jen jednou při vytvoření. Provozovatel uchovává jen jeho otisk a klíč znovu zobrazit nemůže. Uniklý klíč musí uživatel bez odkladu zrušit v nastavení. Změny provedené přes API klíč se zapíšou do historie změn jako změny provedené API klíčem."
           ]
         },
         {
@@ -3730,6 +3733,7 @@
             "Data, která uživatel do služby vloží, patří jemu. Kdykoli si je může exportovat. Osobní údaje svých odběratelů zpracovává provozovatel jako zpracovatel podle Zpracovatelské smlouvy (DPA), která je součástí těchto podmínek.",
             "Uživatel může účet kdykoli zrušit. Provozovatel může účet pozastavit nebo zrušit při porušení podmínek, zneužití služby nebo při prodlení s platbou podle článku 12. Mimo naléhavé případy to předem oznámí e-mailem. Po zrušení zůstanou data k exportu po dobu 30 dní. Poté se smažou, ze záloh nejpozději do 90 dní, pokud zákon neukládá jinak.",
             "Před zrušením účtu si uživatel musí exportovat doklady, které je povinen archivovat (daňové doklady zpravidla 10 let). Po uplynutí lhůty k exportu je provozovatel nemůže obnovit. Obnova dat, která uživatel sám smazal, není zaručena.",
+            "Zálohy, které si uživatel nastaví do vlastního úložiště (SFTP server, Google Disk), jsou mimo službu. Za toto úložiště, za přístup k němu a za klíč nebo heslo k šifrovaným zálohám odpovídá uživatel. Soukromý klíč age provozovatel nemá a obnovit ho nemůže. Tyto zálohy ani historie změn v aplikaci nenahrazují archivaci účetních a daňových dokladů po dobu stanovenou zákonem, za kterou odpovídá uživatel.",
             "Bezplatný účet, ke kterému se nikdo nepřihlásil déle než 12 měsíců, může provozovatel zrušit. Nejméně 30 dní předem na to upozorní e-mailem."
           ]
         },
@@ -3802,9 +3806,11 @@
         {
           "title": "Jaké údaje zpracováváme",
           "body": [
-            "Údaje o účtu: jméno, e-mail, hash hesla nebo identita z přihlášení přes Google, role v týmu, nastavení.",
+            "Údaje o účtu: jméno, e-mail, hash hesla nebo identita z přihlášení přes Google či jiného poskytovatele přihlášení, role a oprávnění v týmu, nastavení. Pokud si uživatel zapne dvoufázové ověření, ukládáme šifrovaný klíč k němu a otisky záložních kódů.",
             "Firemní a fakturační údaje: obchodní firma, IČO, DIČ, adresa, bankovní účet, logo, vystavené doklady, platby, výdaje.",
             "Údaje o odběratelích v dokladech: názvy, IČO, DIČ, adresy, e-maily a telefony kontaktních osob.",
+            "Pozvánky do týmu: e-mail pozvané osoby, nabídnutá role a datum, do kdy pozvánka platí.",
+            "Historie změn: kdo a kdy změnil fakturu, kontakt, údaje firmy, bankovní účet, člena týmu nebo API klíč (člen týmu, API klíč, AI nebo systém), původní a nová hodnota a případný důvod opravy. Historii vidí členové týmu firmy.",
             "Technické údaje: IP adresa, typ prohlížeče, záznamy o přihlášení a bezpečnostní logy. Analytika jen se souhlasem, viz článek 7.",
             "Při použití AI funkcí: hlasové zprávy, texty a fotografie dokladů, které uživatel odešle ke zpracování."
           ]
@@ -3824,11 +3830,12 @@
             "Hosting a databáze: OVHcloud (OVH Hosting Inc.), virtuální server v datacentru v Kanadě. Pro Kanadu platí rozhodnutí Evropské komise o odpovídající ochraně, viz článek 5.",
             "Resend: odesílání e-mailů (faktury, upomínky, ověření účtu).",
             "Stripe a GoPay: platby předplatného. Údaje o platebních kartách zpracovávají jen tyto brány, Billanta je nevidí.",
-            "Anthropic: AI návrhy faktur z textu a obrázků. OpenAI: přepis hlasových zpráv na text. Obojí jen tehdy, když uživatel AI funkci použije.",
+            "Anthropic: AI návrhy faktur z textu a obrázků. OpenAI: přepis hlasových zpráv na text a u hlasových zpráv z Telegramu nebo WhatsAppu také návrh faktury z přepisu. Obojí jen tehdy, když uživatel AI funkci použije.",
             "Google: přihlášení přes Google a zálohy na vlastní Google Disk uživatele, jen pokud je uživatel zapne. Na Google Disk provozovatele ukládáme také šifrované noční zálohy celé databáze, viz článek 10.",
+            "Další poskytovatelé přihlášení nabízení na přihlašovací stránce: jen pokud se jimi uživatel přihlásí. Od poskytovatele dostaneme jméno, e-mail, profilový obrázek a identifikátor účtu.",
             "Telegram a Meta (WhatsApp): jen pokud uživatel propojí účet s chatovou aplikací.",
             "Microsoft (Clarity): analytika veřejných stránek (jen se souhlasem tam, kde se vyžaduje).",
-            "Údaje se dále předávají jen tam, kam je pošle sám uživatel: banka nebo PayPal přes zapnuté napojení (Fio, PSD2 přes Enable Banking, PayPal), vlastní webhooky a úložiště záloh, e-maily odběratelům. Dotazy do veřejných registrů (ARES, VIES) obsahují jen IČO nebo DIČ.",
+            "Údaje se dále předávají jen tam, kam je pošle sám uživatel: banka nebo PayPal přes zapnuté napojení (Fio, PSD2 přes Enable Banking, PayPal), vlastní účet Stripe pro platby faktur kartou, vlastní webhooky, systémy napojené přes API klíč, vlastní úložiště záloh (SFTP server, Google Disk) a e-maily odběratelům. Dotazy do veřejných registrů (ARES, VIES) obsahují jen IČO nebo DIČ.",
             "Aktuální seznam zpracovatelů s datem poslední změny je vždy v tomto článku."
           ]
         },
@@ -3844,6 +3851,7 @@
           "body": [
             "Údaje o účtu uchováváme po dobu trvání účtu a 30 dní po jeho zrušení. Pak je smažeme, kromě údajů, které musíme uchovat ze zákona (např. doklady o předplatném 10 let). Ze záloh se odstraní nejpozději do 90 dní. Bezplatný účet bez přihlášení déle než 12 měsíců můžeme po předchozím upozornění zrušit.",
             "Doklady uživatele zůstávají v účtu, dokud je uživatel nesmaže nebo nezruší účet. Za jejich archivaci po dobu stanovenou zákonem odpovídá uživatel.",
+            "Historii změn uchováváme, dokud firma v aplikaci existuje, a smaže se spolu s jejími daty podle prvního odstavce. Když člen týmu zruší svůj účet, jeho záznamy v historii zůstanou, jen bez odkazu na jeho účet.",
             "Hlasové zprávy a obrázky odeslané AI službě provozovatel po zpracování nearchivuje, uloží se jen výsledný návrh faktury. Poskytovatelé AI je mohou podle svých podmínek krátce uchovat (např. kvůli odhalování zneužití) a nepoužívají je k trénování modelů.",
             "Bezpečnostní logy uchováváme nejvýše 12 měsíců."
           ]
@@ -3864,14 +3872,16 @@
         {
           "title": "Zabezpečení",
           "body": [
-            "Data jsou šifrována při přenosu (TLS). Data jednotlivých firem jsou v databázi oddělena (row-level security). Citlivé klíče (bankovní tokeny, klíče k AI, konfigurace záloh) ukládáme šifrovaně. Přístup k produkčním datům má jen nezbytně nutný okruh osob."
+            "Data jsou šifrována při přenosu (TLS). Data jednotlivých firem jsou v databázi oddělena (row-level security). Citlivé klíče (bankovní tokeny, klíče k AI, konfigurace záloh) ukládáme šifrovaně. Přístup k produkčním datům má jen nezbytně nutný okruh osob.",
+            "Dvoufázové ověření je volitelné. Bez něj ale nejde napojit banku ani vytvořit API klíč, webhook nebo cíl záloh. API klíče ukládáme jen jako otisk (hash), celý klíč se zobrazí jen jednou při vytvoření. Historii změn nejde v aplikaci upravit ani smazat."
           ]
         },
         {
           "title": "Zálohy",
           "body": [
             "Celou databázi služby zálohujeme každou noc. Záloha se ještě na serveru zašifruje nástrojem age veřejným klíčem. Soukromý klíč, kterým jde zálohu otevřít, na serveru není, provozovatel ho uchovává offline. Zašifrované zálohy jsou na serveru a jejich kopie na Google Disku provozovatele. Bez soukromého klíče je nepřečte ani ten, kdo má přístup k serveru nebo k účtu Google. Zálohy mažeme nejpozději po 90 dnech (článek 6).",
-            "Vedle toho si firma může sama zapnout zálohy svých dat: na vlastní Google Disk, na vlastní SFTP server, přes webhook, nebo si zálohu stáhnout. Takové zálohy jdou jen tam, kam je uživatel nastaví, a může je zašifrovat vlastním klíčem age nebo heslem. U Google Disku má Billanta přístup jen k souborům, které sama vytvořila. Za úložiště, které si uživatel zvolí, odpovídá on."
+            "Vedle toho si firma může sama zapnout zálohy svých dat: na vlastní Google Disk, na vlastní SFTP server, přes webhook, nebo si zálohu stáhnout. Takové zálohy jdou jen tam, kam je uživatel nastaví, a může je zašifrovat vlastním klíčem age nebo heslem. U Google Disku má Billanta přístup jen k souborům, které sama vytvořila. Za úložiště, které si uživatel zvolí, odpovídá on.",
+            "Při šifrování veřejným klíčem age má soukromý klíč jen uživatel a provozovatel takovou zálohu otevřít nemůže. Pokud uživatel zvolí heslo, ukládáme ho šifrovaně, aby se zálohy mohly dělat automaticky. Cíle záloh nastavuje vlastník firmy."
           ]
         },
         {
@@ -6346,6 +6356,40 @@
       "partners": "Pro partnery",
       "coworkings": "Pro coworkingy",
       "schools": "Pro školy a učitele"
+    },
+    "security": {
+      "title": "Bezpečnost a data",
+      "lead": "Jak jsou data vaší firmy chráněná a co máte pod kontrolou vy.",
+      "items": {
+        "isolation": {
+          "name": "Data firem jsou oddělená v databázi",
+          "text": "Každá firma vidí jen svá data. Hlídá to přímo databáze Postgres pravidly row-level security, ne jen kód aplikace."
+        },
+        "audit": {
+          "name": "Historie změn",
+          "text": "Změny faktur, kontaktů, údajů firmy, bankovních účtů, týmu a API klíčů se zapisují i s autorem: člen týmu, API klíč, AI nebo systém. Záznam v aplikaci smazat ani upravit nejde."
+        },
+        "team": {
+          "name": "Tým, role a oprávnění",
+          "text": "Kolegy a účetní pozvete e-mailem, pozvánka platí 7 dní. Role vlastník, správce, účetní a čtenář. U každého člena nastavíte, jestli faktury, kontakty, výdaje, banku a reporty nevidí, jen čte, nebo může upravovat."
+        },
+        "signIn": {
+          "name": "Přihlášení a dvoufázové ověření",
+          "text": "Přihlásíte se heslem nebo účtem Google. Dvoufázové ověření kódem z aplikace má 10 záložních kódů. Napojit banku, vytvořit API klíč, webhook nebo cíl záloh jde jen po dvoufázovém přihlášení."
+        },
+        "backups": {
+          "name": "Zálohy do vašeho úložiště",
+          "text": "Zálohu posíláte na vlastní SFTP server nebo na svůj Google Disk, volitelně zašifrovanou nástrojem age vaším veřejným klíčem nebo heslem. Úložiště je vaše. Cíle záloh nastavuje vlastník firmy."
+        },
+        "api": {
+          "name": "API klíče a webhooky",
+          "text": "API klíč uvidíte jen jednou při vytvoření, u nás zůstane jen jeho otisk. Klíč můžete kdykoli zrušit. Webhooky jsou podepsané HMAC, takže ověříte, že je poslala Billanta."
+        },
+        "ai": {
+          "name": "AI jen připravuje návrhy",
+          "text": "Faktura z hlasové zprávy, textu nebo fotky vznikne jako návrh. Vystaví ji vždy člověk kliknutím v aplikaci. AI můžete ve firmě vypnout a pak se do ní nic neposílá."
+        }
+      }
     }
   },
   "guestInvoice": {
