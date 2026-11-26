@@ -392,7 +392,15 @@ export class InvoicePdfService {
     }
     // A non-VAT payer charges no VAT, so a "0%" column and a VAT summary of zeros only confuse the reader.
     const showVat = tenant.dicVatPayer || totals.byRate.some((entry) => entry.vatAmount !== 0);
-    this.renderLineItemsTable(doc, t, lineItems, invoice, showVat);
+    // A non-payer billing whole jobs (each line once, no unit) shows just what and how much. A tax
+    // document needs the quantity and unit price (§ 29 ZDPH), so a payer and an identified
+    // person's EU reverse charge invoice keep them.
+    const lumpSum =
+      !showVat &&
+      !reverseChargeNoteKind(invoice, tenant, contact) &&
+      lineItems.length > 0 &&
+      lineItems.every((i) => Number(i.quantity) === 1 && !i.unit && !Number(i.discountPercent));
+    this.renderLineItemsTable(doc, t, lineItems, invoice, showVat, lumpSum);
     const totalsTop = this.renderTotals(doc, t, totals, invoice, pdfAccentOf(tenant.invoiceFormPrefs), tenantHomeCurrencyOf(tenant), showVat);
     // The brand name is written exactly so ("PAY by square"), never uppercased.
     const qrLabel = qr
@@ -705,13 +713,14 @@ export class InvoicePdfService {
     lineItems: LineItemRow[],
     invoice: InvoiceRow,
     showVat: boolean,
+    lumpSum = false,
   ): void {
     const currency = invoice.currency;
     const hasDiscount = lineItems.some((i) => Number(i.discountPercent) !== 0);
-    // Without the VAT column the description takes its 40pt.
+    // Without the VAT column the description takes its 40pt, without quantity and unit price all the room.
     const shift = showVat ? 0 : 40;
     const columns = {
-      description: { x: 50, width: (hasDiscount ? 185 : 225) + shift },
+      description: { x: 50, width: lumpSum ? 405 : (hasDiscount ? 185 : 225) + shift },
       quantity: { x: (hasDiscount ? 235 : 275) + shift, width: 60 },
       unitPrice: { x: (hasDiscount ? 300 : 335) + shift, width: hasDiscount ? 75 : 80 },
       discount: { x: 375 + shift, width: 40 },
@@ -725,8 +734,10 @@ export class InvoicePdfService {
       doc.rect(50, top - 4, 495, twoLine ? 27 : 18).fill("#f3f4f6");
       doc.font(BOLD).fontSize(8).fillColor(MUTED);
       doc.text(stacked(t.description), columns.description.x + 4, top);
-      doc.text(stacked(t.quantity), columns.quantity.x, top, { width: columns.quantity.width, align: "right" });
-      doc.text(stacked(t.unitPrice), columns.unitPrice.x, top, { width: columns.unitPrice.width, align: "right" });
+      if (!lumpSum) {
+        doc.text(stacked(t.quantity), columns.quantity.x, top, { width: columns.quantity.width, align: "right" });
+        doc.text(stacked(t.unitPrice), columns.unitPrice.x, top, { width: columns.unitPrice.width, align: "right" });
+      }
       if (hasDiscount) doc.text(stacked(t.discount), columns.discount.x, top, { width: columns.discount.width, align: "right" });
       if (showVat) doc.text(stacked(t.vat), columns.vatRate.x, top, { width: columns.vatRate.width, align: "right" });
       doc.text(stacked(t.total), columns.lineTotal.x, top, { width: columns.lineTotal.width - 4, align: "right" });
@@ -754,14 +765,16 @@ export class InvoicePdfService {
           .text(item.code, columns.description.x + 4, doc.y, { width: columns.description.width - 4 });
         doc.fontSize(9).fillColor("black");
       }
-      doc.text(`${this.formatNumber(quantity)}${item.unit ? ` ${item.unit}` : ""}`, columns.quantity.x, y, {
-        width: columns.quantity.width,
-        align: "right",
-      });
-      doc.text(this.formatAmount(Number(item.unitPrice), currency), columns.unitPrice.x, y, {
-        width: columns.unitPrice.width,
-        align: "right",
-      });
+      if (!lumpSum) {
+        doc.text(`${this.formatNumber(quantity)}${item.unit ? ` ${item.unit}` : ""}`, columns.quantity.x, y, {
+          width: columns.quantity.width,
+          align: "right",
+        });
+        doc.text(this.formatAmount(Number(item.unitPrice), currency), columns.unitPrice.x, y, {
+          width: columns.unitPrice.width,
+          align: "right",
+        });
+      }
       if (hasDiscount) {
         doc.text(Number(item.discountPercent) ? `${this.formatNumber(Number(item.discountPercent))}%` : "", columns.discount.x, y, {
           width: columns.discount.width,

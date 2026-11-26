@@ -329,6 +329,25 @@ describe("InvoicePdfService VAT columns", () => {
     // VAT charged by mistake is still shown, not hidden.
     expect(await lines(false, "21")).toContain("REKAPITULACE DPH");
   });
+
+  it("bills a non-payer's whole jobs without quantity and unit price, unless a tax document needs them", async () => {
+    async function headers(tenant: Partial<TenantRow>, quantity: string, contact: ContactRow = makeContact()) {
+      const text = vi.spyOn(PDFDocument.prototype, "text");
+      const items = makeLineItems().map((item) => ({ ...item, quantity, vatRate: "0" }));
+      await new InvoicePdfService().generate(makeInvoice(), contact, makeTenant(tenant), items, computeVatBreakdown(items));
+      const out = text.mock.calls.map((c) => String(c[0]));
+      text.mockRestore();
+      return out;
+    }
+    const lump = await headers({ dicVatPayer: false, vatStatus: "non_payer" } as Partial<TenantRow>, "1");
+    expect(lump).not.toContain("Množství");
+    expect(lump).not.toContain("Cena/j.");
+    expect(await headers({ dicVatPayer: false, vatStatus: "non_payer" } as Partial<TenantRow>, "3")).toContain("Množství");
+    expect(await headers({ dicVatPayer: true }, "1")).toContain("Množství");
+    // An identified person's service to an EU business is a tax document.
+    const euBuyer = makeContact({ addressCountry: "DE", dic: "DE123456789", ico: null } as Partial<ContactRow>);
+    expect(await headers({ dicVatPayer: false, vatStatus: "identified" } as Partial<TenantRow>, "1", euBuyer)).toContain("Množství");
+  });
 });
 
 describe("InvoicePdfService paid documents and foreign buyers", () => {
