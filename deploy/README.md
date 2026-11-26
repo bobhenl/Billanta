@@ -8,7 +8,9 @@ host's Caddy. Billanta lives in `/opt/billanta`:
   and rotated logs. Only loopback ports are published: frontend on 3110,
   backend on 3111, AI on 3112.
 - `deploy/Caddyfile.billanta` is the block added to `/etc/caddy/Caddyfile`.
-  It serves `http://149.56.99.247:8090` until there is a domain.
+  It serves `https://billanta.com` behind Cloudflare (Full strict and
+  Authenticated Origin Pulls). The old `http://149.56.99.247:8090` only
+  redirects there, except the webhook paths, which still proxy.
 - `.env` is written once by `deploy/init-env.sh` with random secrets. It is
   never committed. Third-party keys (Resend, Stripe, Anthropic, OAuth…) are
   added by hand, followed by `docker compose … up -d`.

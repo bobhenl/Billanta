@@ -20,7 +20,7 @@ env:
   REGISTRY: ghcr.io/${{ github.repository_owner }}
   # NEXT_PUBLIC_* are inlined into the client bundle, so they are build inputs.
   # Repository variables override the defaults without editing this file.
-  NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'http://149.56.99.247:8090' }}
+  NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'https://billanta.com' }}
   NEXT_PUBLIC_CONTACT_EMAIL: ${{ vars.NEXT_PUBLIC_CONTACT_EMAIL || 'hello@billanta.com' }}
 
 jobs:

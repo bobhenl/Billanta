@@ -1,12 +1,17 @@
 # Billanta on the shared VPS, appended to /etc/caddy/Caddyfile.
-# No domain yet: plain HTTP on the IP at :8090 (ufw allows 8090/tcp).
-# Once a domain points here, replace `http://:8090` with `billanta.com` (and
-# the Cloudflare tls block the other sites use), add HSTS, and update
-# NEXTAUTH_URL / NEXT_PUBLIC_SITE_URL.
-http://:8090 {
+# Behind Cloudflare (Full strict + Authenticated Origin Pulls); ufw lets only
+# Cloudflare reach 80/443.
+billanta.com {
+	tls {
+		client_auth {
+			mode require_and_verify
+			trusted_ca_cert_file /etc/caddy/cloudflare_origin_pull_ca.pem
+		}
+	}
 	encode zstd gzip
 
 	header {
+		Strict-Transport-Security "max-age=31536000"
 		X-Content-Type-Options "nosniff"
 		Referrer-Policy "strict-origin-when-cross-origin"
 		Permissions-Policy "camera=(self), geolocation=(), microphone=(self)"
@@ -21,19 +26,25 @@ http://:8090 {
 	# Public /ai-webhook/telegram|whatsapp -> ai-service /webhook/telegram|whatsapp.
 	handle /ai-webhook/* {
 		uri replace /ai-webhook/ /webhook/ 1
-		reverse_proxy localhost:3112
+		reverse_proxy localhost:3112 {
+			header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
+		}
 	}
 
 	# Same split as the repo's Caddyfile: /api/v1 and /api/docs are NestJS,
 	# the rest of /api (Auth.js, upload/download proxies) is Next.js.
 	handle /api/v1/* {
 		reverse_proxy localhost:3111 {
+			# The peer is a Cloudflare edge node; pass the visitor's address instead.
+			header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
 			header_up -X-Guest-Ip
 		}
 	}
 
 	handle /api/docs* {
-		reverse_proxy localhost:3111
+		reverse_proxy localhost:3111 {
+			header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
+		}
 	}
 
 	# Cache-Control, ready for Cloudflare. The rule throughout: only a
@@ -45,7 +56,9 @@ http://:8090 {
 	# missing, so Auth.js and the public routes that chose their own keep it.
 	handle /api/* {
 		header ?Cache-Control "private, no-store"
-		reverse_proxy localhost:3110
+		reverse_proxy localhost:3110 {
+			header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
+		}
 	}
 
 	# Sitemaps and robots.txt are read by crawlers that come back tomorrow:
@@ -55,6 +68,8 @@ http://:8090 {
 	@crawlerFiles path /sitemap/* /robots.txt
 	handle @crawlerFiles {
 		reverse_proxy localhost:3110 {
+			# The peer is a Cloudflare edge node; pass the visitor's address instead.
+			header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
 			header_down Cache-Control "^(public, max-age=0, must-revalidate|s-maxage=\d+(, stale-while-revalidate=\d+)?)$" "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400"
 		}
 	}
@@ -72,7 +87,36 @@ http://:8090 {
 	# `public, max-age=31536000, immutable`.
 	handle {
 		reverse_proxy localhost:3110 {
+			# The peer is a Cloudflare edge node; pass the visitor's address instead.
+			header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
 			header_down Cache-Control "^s-maxage=\d+(, stale-while-revalidate=\d+)?$" "public, max-age=0, s-maxage=300, stale-while-revalidate=600"
 		}
+	}
+}
+
+www.billanta.com {
+	tls {
+		client_auth {
+			mode require_and_verify
+			trusted_ca_cert_file /etc/caddy/cloudflare_origin_pull_ca.pem
+		}
+	}
+	redir https://billanta.com{uri} permanent
+}
+
+# Old address by IP: send people and bookmarks to the domain. Webhooks
+# (Telegram, WhatsApp, Stripe) do not follow redirects, so those still proxy.
+http://:8090 {
+	handle /ai-webhook/* {
+		uri replace /ai-webhook/ /webhook/ 1
+		reverse_proxy localhost:3112
+	}
+	handle /api/v1/* {
+		reverse_proxy localhost:3111 {
+			header_up -X-Guest-Ip
+		}
+	}
+	handle {
+		redir https://billanta.com{uri} permanent
 	}
 }
