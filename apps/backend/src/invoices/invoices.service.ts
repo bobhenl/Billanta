@@ -1789,17 +1789,19 @@ export class InvoicesService {
    * `generateInvoicePdf` and `generateInvoiceIsdoc` so the "not issued yet"/
    * "not found" guards live in exactly one place.
    */
-  private async loadIssuedInvoiceForDocument(db: TenantDb, tenantId: string, invoiceId: string) {
+  private async loadIssuedInvoiceForDocument(db: TenantDb, tenantId: string, invoiceId: string, allowDraft = false) {
     const [invoice] = await db.select().from(schema.invoices).where(eq(schema.invoices.id, invoiceId)).limit(1);
     if (!invoice) {
       throw new NotFoundException(`Invoice ${invoiceId} not found`);
     }
 
-    if (!invoice.invoiceNumber) {
+    const previewable = allowDraft && (invoice.status === "draft" || invoice.status === "pending_review");
+    if (!invoice.invoiceNumber && !previewable) {
       throw new BadRequestException("Invoice has not been issued yet – no document to generate");
     }
 
     if (!invoice.contactId) {
+      if (previewable) throw new BadRequestException("draft_missing_customer");
       // Should be unreachable in practice (issue() requires a contact
       // before allocating a number), but guarded rather than assumed —
       // this method reads from the DB fresh, not from issue()'s in-memory
@@ -1853,10 +1855,12 @@ export class InvoicesService {
    * `issue()` above) rather than reading back a previously stored file.
    */
   async generateInvoicePdf(db: TenantDb, tenantId: string, invoiceId: string): Promise<Buffer> {
+    // A draft renders too, as a stamped preview (see InvoicePdfService.generate).
     const { invoice, contact, tenant, lineItems, related } = await this.loadIssuedInvoiceForDocument(
       db,
       tenantId,
       invoiceId,
+      true,
     );
     const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
     return this.invoicePdfService.generate(invoice, contact, tenant, lineItems, totals, related);

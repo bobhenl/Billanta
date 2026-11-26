@@ -4950,7 +4950,8 @@
       "rotateLink": "New client link",
       "editAnyway": "Edit anyway",
       "markPaidShort": "Paid",
-      "viewPdf": "Open PDF"
+      "viewPdf": "Open PDF",
+      "previewPdf": "PDF preview (draft, without number and payment QR)"
     },
     "confirm": {
       "back": "Back",

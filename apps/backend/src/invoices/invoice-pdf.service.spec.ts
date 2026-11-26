@@ -187,13 +187,21 @@ describe("InvoicePdfService.generate", () => {
     expect(broken.subarray(0, 5).toString("latin1")).toBe("%PDF-");
   });
 
-  it("throws if the invoice has no invoiceNumber (never issued)", async () => {
+  it("renders an unissued draft as a stamped preview without a payment QR code", async () => {
     const lineItems = makeLineItems();
     const totals = computeVatBreakdown(lineItems);
+    const qr = vi.spyOn(QRCode, "toBuffer");
+    const text = vi.spyOn(PDFDocument.prototype, "text");
 
-    await expect(
-      service.generate(makeInvoice({ invoiceNumber: null }), makeContact(), makeTenant(), lineItems, totals),
-    ).rejects.toThrow(/invoiceNumber/);
+    const pdf = await service.generate(makeInvoice({ invoiceNumber: null, status: "draft" }), makeContact(), makeTenant({ bankAccountIban: "CZ6508000000192000145399" }), lineItems, totals);
+
+    expect(pdf.subarray(0, 5).toString("latin1")).toBe("%PDF-");
+    expect(qr).not.toHaveBeenCalled();
+    const written = text.mock.calls.map((c) => String(c[0]));
+    expect(written).toContain("NÁHLED – nevystaveno");
+    expect(written.some((w) => w.includes("(koncept)"))).toBe(true);
+    qr.mockRestore();
+    text.mockRestore();
   });
 });
 

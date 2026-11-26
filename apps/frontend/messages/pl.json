@@ -4943,7 +4943,8 @@
       "rotateLink": "Nowy link dla klienta",
       "editAnyway": "Mimo to edytuj",
       "markPaidShort": "Zapłacona",
-      "viewPdf": "Otwórz PDF"
+      "viewPdf": "Otwórz PDF",
+      "previewPdf": "Podgląd PDF (szkic, bez numeru i kodu QR płatności)"
     },
     "confirm": {
       "back": "Wstecz",

@@ -4950,7 +4950,8 @@
       "rotateLink": "Nový odkaz pre klienta",
       "editAnyway": "Napriek tomu upraviť",
       "markPaidShort": "Uhradené",
-      "viewPdf": "Otvoriť PDF"
+      "viewPdf": "Otvoriť PDF",
+      "previewPdf": "Náhľad PDF (koncept, bez čísla a QR platby)"
     },
     "confirm": {
       "back": "Späť",

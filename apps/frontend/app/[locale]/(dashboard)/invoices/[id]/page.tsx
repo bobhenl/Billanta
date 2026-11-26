@@ -254,6 +254,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           home={home}
           sentAt={invoice.sentAt}
           editedAfterSend={editedAfterSend}
+          hasCustomer={Boolean(contact)}
         />
         {invoice.invoiceNumber && detail.links?.public && (
           <PublicLinkPanel

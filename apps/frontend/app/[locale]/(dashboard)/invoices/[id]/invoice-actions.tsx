@@ -64,7 +64,8 @@ export function InvoiceActions({
   currency = 'CZK',
   home = 'CZK',
   sentAt = null,
-  editedAfterSend = false
+  editedAfterSend = false,
+  hasCustomer = true
 }: {
   id: string;
   documentType: DocumentType;
@@ -84,6 +85,8 @@ export function InvoiceActions({
   sentAt?: string | null;
   /** Edited in place after the last send: the customer has an older copy. */
   editedAfterSend?: boolean;
+  /** A draft's PDF preview needs a customer to print. */
+  hasCustomer?: boolean;
 }) {
   const t = useTranslations('doc');
   const router = useRouter();
@@ -173,13 +176,14 @@ export function InvoiceActions({
             <span className="hidden sm:inline">{t('actions.markPaid')}</span>
           </button>
         )}
-        {numbered && (
+        {/* A draft opens a stamped preview: no number, no payment QR yet. */}
+        {(numbered || (isDraft && hasCustomer)) && (
           <a
             href={`/api/files/invoices/${id}/pdf`}
             target="_blank"
             rel="noreferrer"
             className={cn(buttonClass.secondary, 'px-3')}
-            title={t('actions.viewPdf')}
+            title={numbered ? t('actions.viewPdf') : t('actions.previewPdf')}
           >
             {/* Opens in a new tab, from where it can be printed or saved. */}
             <FileText className="h-4 w-4" />

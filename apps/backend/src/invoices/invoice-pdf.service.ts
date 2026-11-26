@@ -319,6 +319,9 @@ function countryName(code: string, lang: Lang): string {
   }
 }
 
+/** Stands in for the number on a draft's preview. */
+const DRAFT_NUMBER: Record<Lang, string> = { cs: "(koncept)", sk: "(koncept)", en: "(draft)" };
+
 @Injectable()
 export class InvoicePdfService {
   private readonly logger = new Logger(InvoicePdfService.name);
@@ -331,10 +334,11 @@ export class InvoicePdfService {
     totals: InvoiceVatBreakdown,
     related: RelatedDocument = null,
   ): Promise<Buffer> {
-    if (!invoice.invoiceNumber) {
-      throw new Error("InvoicePdfService.generate: invoice has no invoiceNumber – has it been issued?");
-    }
     const lang: Lang = invoice.language === "sk" || invoice.language === "en" ? invoice.language : "cs";
+    // An unissued draft is a preview: a placeholder number, no payment QR (its VS
+    // comes with the number) and a stamp on every page.
+    const draft = !invoice.invoiceNumber;
+    if (draft) invoice = { ...invoice, invoiceNumber: DRAFT_NUMBER[lang] };
     const second = pdfSecondLanguageOf(tenant.invoiceFormPrefs);
     const t = second && second !== lang ? bilingualLabels(L[lang], L[second]) : L[lang];
 
@@ -342,7 +346,7 @@ export class InvoicePdfService {
     // A demo's fictional bank account must not end up in anyone's banking app.
     const qrMode = pdfQrModeOf(tenant.invoiceFormPrefs);
     const qr =
-      invoice.documentType !== "quote" && !tenant.isDemo && qrMode !== "off"
+      invoice.documentType !== "quote" && !tenant.isDemo && !draft && qrMode !== "off"
         ? await this.buildQrCode(invoice, contact, tenant, totals, payable, qrMode, lang)
         : null;
 
@@ -386,6 +390,7 @@ export class InvoicePdfService {
     this.renderFooterNotes(doc, t, invoice, tenant, fill, contact);
     if (credit) this.renderCredit(doc, credit);
     if (tenant.isDemo) drawDemoWatermark(doc, lang, REGULAR, tenant.classroomClassId ? "classroom" : "demo");
+    else if (draft) drawDemoWatermark(doc, lang, REGULAR, "draft");
 
     doc.end();
     return finished;
