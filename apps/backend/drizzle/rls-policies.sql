@@ -1988,3 +1988,99 @@ DROP POLICY IF EXISTS tenant_isolation ON einvoice_status_events;
 CREATE POLICY tenant_isolation ON einvoice_status_events
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
+-- ---------------------------------------------------------------------------
+-- Per-member visibility of clients (migration 0100)
+-- ---------------------------------------------------------------------------
+-- RESTRICTIVE policies are ANDed with tenant_isolation, so they can only
+-- hide rows inside a tenant, never open another tenant.
+--
+-- app_view_mode() says how much of the tenant the current request sees:
+--   'full' – no signed-in user (crons, API keys, the AI service), the
+--            company owner, or a user with no membership here (classroom
+--            helpers that only set the user);
+--   'all'  – everything except contacts marked private (and their documents);
+--   'own'  – only contacts assigned to this user, documents of those
+--            contacts and documents this user created.
+-- Admins are always 'all': they manage the team, so a scope they could
+-- lift themselves would protect nothing. SECURITY DEFINER because the
+-- policies call it while tenant_memberships itself is RLS-protected; it
+-- reads one row of the current tenant and user, nothing caller-controlled.
+-- The policies call it as (SELECT app_view_mode()) so it runs once per
+-- query, and wrap the per-row checks in CASE so 'full' never evaluates them.
+CREATE OR REPLACE FUNCTION app_view_mode()
+RETURNS text
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT coalesce((
+    SELECT CASE
+      WHEN m.role = 'owner' THEN 'full'
+      WHEN m.role = 'admin' THEN 'all'
+      ELSE m.contact_scope
+    END
+    FROM tenant_memberships m
+    WHERE m.tenant_id = nullif(current_setting('app.current_tenant_id', true), '')::uuid
+      AND m.user_id = nullif(current_setting('app.current_user_id', true), '')::uuid
+  ), 'full');
+$$;
+
+REVOKE ALL ON FUNCTION app_view_mode() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION app_view_mode() TO faktur_app;
+
+DROP POLICY IF EXISTS member_visibility ON contacts;
+CREATE POLICY member_visibility ON contacts AS RESTRICTIVE
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE owner_user_id = nullif(current_setting('app.current_user_id', true), '')::uuid
+      OR ((SELECT app_view_mode()) = 'all' AND NOT is_private)
+  END);
+
+-- A document is visible with its contact; one without a contact follows
+-- the scope. The EXISTS runs under the contacts policies above.
+DROP POLICY IF EXISTS member_visibility ON invoices;
+CREATE POLICY member_visibility ON invoices AS RESTRICTIVE
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE created_by_user_id = nullif(current_setting('app.current_user_id', true), '')::uuid
+      OR (contact_id IS NULL AND (SELECT app_view_mode()) = 'all')
+      OR EXISTS (SELECT 1 FROM contacts c WHERE c.id = invoices.contact_id)
+  END);
+
+DROP POLICY IF EXISTS member_visibility ON expenses;
+CREATE POLICY member_visibility ON expenses AS RESTRICTIVE
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE created_by_user_id = nullif(current_setting('app.current_user_id', true), '')::uuid
+      OR (supplier_contact_id IS NULL AND (SELECT app_view_mode()) = 'all')
+      OR EXISTS (SELECT 1 FROM contacts c WHERE c.id = expenses.supplier_contact_id)
+  END);
+
+DROP POLICY IF EXISTS member_visibility ON invoice_line_items;
+CREATE POLICY member_visibility ON invoice_line_items AS RESTRICTIVE
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE EXISTS (SELECT 1 FROM invoices i WHERE i.id = invoice_line_items.invoice_id)
+  END);
+
+DROP POLICY IF EXISTS member_visibility ON recurring_invoice_templates;
+CREATE POLICY member_visibility ON recurring_invoice_templates AS RESTRICTIVE
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE EXISTS (SELECT 1 FROM contacts c WHERE c.id = recurring_invoice_templates.contact_id)
+  END);
+
+-- A payment is visible with the invoice or expense it paid; an unmatched
+-- one only to members who see the whole company ('all').
+DROP POLICY IF EXISTS member_visibility ON bank_transactions;
+CREATE POLICY member_visibility ON bank_transactions AS RESTRICTIVE
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE CASE
+      WHEN matched_invoice_id IS NOT NULL THEN EXISTS (SELECT 1 FROM invoices i WHERE i.id = bank_transactions.matched_invoice_id)
+      WHEN matched_expense_id IS NOT NULL THEN EXISTS (SELECT 1 FROM expenses e WHERE e.id = bank_transactions.matched_expense_id)
+      ELSE (SELECT app_view_mode()) = 'all'
+    END
+  END);

@@ -462,6 +462,10 @@ export const tenantMemberships = pgTable(
     // (Settings → Integrace); null = feeds off. Resolved without a session
     // through `find_feed_owner` in drizzle/rls-policies.sql.
     feedToken: uuid("feed_token"),
+    // 'all' = sees the whole company; 'own' = only contacts assigned to them
+    // and their documents (0100, enforced by RLS via app_view_mode()).
+    // Ignored for owners and admins.
+    contactScope: varchar("contact_scope", { length: 8 }).notNull().default("all"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
@@ -517,6 +521,11 @@ export const contacts = pgTable("contacts", {
   isPerson: boolean("is_person").notNull().default(false),
   // Colour label shown as a dot next to the customer everywhere (CONTACT_COLORS); null = none.
   color: varchar("color", { length: 16 }),
+  // Who the customer belongs to in the team (0100): defaults to whoever
+  // created it. is_private hides it, with its documents and payments, from
+  // everyone but that person and the company owner (RLS, app_view_mode()).
+  ownerUserId: uuid("owner_user_id").references(() => users.id, { onDelete: "set null" }),
+  isPrivate: boolean("is_private").notNull().default(false),
   // Private note about the customer (payment habits, contact person …); never printed or sent.
   internalNote: text("internal_note"),
   // Client portal link (/c/:portalToken) listing every issued document for this customer;
@@ -588,6 +597,9 @@ export const invoices = pgTable(
     // takes responsibility for the invoice content — tracked independently
     // from whenever an AI draft was originally produced.
     issuedByUserId: uuid("issued_by_user_id").references(() => users.id),
+    // Whoever created the draft (0100, column default from app.current_user_id);
+    // a member who sees only their own clients still sees what they made.
+    createdByUserId: uuid("created_by_user_id").references(() => users.id, { onDelete: "set null" }),
     issuedAt: timestamp("issued_at", { withTimezone: true }),
     aiDraftReviewedAt: timestamp("ai_draft_reviewed_at", { withTimezone: true }),
     // --- Additions beyond the §4 list, needed for §6 step 8/10 ---
@@ -1066,6 +1078,8 @@ export const expenses = pgTable("expenses", {
   expenseDate: timestamp("expense_date", { withTimezone: true, mode: "date" }).notNull(),
   category: text("category"),
   receiptFileUrl: text("receipt_file_url"),
+  // Whoever entered it (0100, column default from app.current_user_id).
+  createdByUserId: uuid("created_by_user_id").references(() => users.id, { onDelete: "set null" }),
   // The supplier's own document number and payment details as printed on
   // the received invoice (typed in, or read by AI from a photo/PDF).
   documentNumber: varchar("document_number", { length: 64 }),
