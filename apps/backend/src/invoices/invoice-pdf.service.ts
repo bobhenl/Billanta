@@ -498,13 +498,18 @@ export class InvoicePdfService {
     // prefer the stored IBAN, otherwise derive it from the domestic
     // account number + bank code, and omit the payment part when neither is on file.
     const iban = this.iban(tenant);
-    const sid = invoice.invoiceNumber
+    // Without the date the customer's bank offers to pay today instead of on the due date. Banks
+    // also read it from the QR Faktura inside the payment code, so that copy drops it too; a
+    // QR Faktura on its own is for bookkeeping and keeps it.
+    const dueDate = pdfQrDueDateOf(tenant.invoiceFormPrefs) ? (invoice.dueDate ?? undefined) : undefined;
+    const sidWith = (sidDueDate: Date | undefined) =>
+      invoice.invoiceNumber
       ? generateQrInvoiceString({
           invoiceNumber: invoice.invoiceNumber,
           issueDate: invoice.issueDate ?? new Date(),
           totalAmount: totals.totalWithVat,
           currency: invoice.currency,
-          dueDate: invoice.dueDate ?? undefined,
+          dueDate: sidDueDate,
           taxableSupplyDate: invoice.taxableSupplyDate ?? undefined,
           variableSymbol: invoice.variableSymbol ?? undefined,
           orderNumber: invoice.orderNumber ?? undefined,
@@ -523,6 +528,7 @@ export class InvoicePdfService {
           software: brandCreditFor(tenant, "cs", "pdf") ? BRAND_NAME : undefined,
         })
       : null;
+    const sid = sidWith(invoice.dueDate ?? undefined);
 
     // After a partial payment the QR asks only for what is left; a paid document
     // gets no payment code at all (it used to ask for the full amount again).
@@ -530,8 +536,6 @@ export class InvoicePdfService {
       invoice.status === "paid" ? 0 : Math.max(0, Math.round((totals.totalWithVat - Number(invoice.amountPaid ?? 0)) * 100) / 100);
     if (payable && amount > 0 && iban && invoice.paymentMethod === "bank_transfer") {
       const scheme = paymentQrScheme({ payeeIban: iban, currency: invoice.currency, buyerCountry: contact.addressCountry });
-      // Without the date the customer's bank offers to pay today instead of on the due date.
-      const dueDate = pdfQrDueDateOf(tenant.invoiceFormPrefs) ? (invoice.dueDate ?? undefined) : undefined;
       const bysquare = scheme === "pay_by_square" ? this.payBySquare(invoice, tenant, iban, amount, dueDate) : null;
       if (bysquare) {
         return { png: await QRCode.toBuffer(bysquare, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" }), kind: "pay_by_square" };
@@ -543,7 +547,7 @@ export class InvoicePdfService {
         variableSymbol: invoice.variableSymbol ?? undefined,
         dueDate,
         message: invoice.invoiceNumber ?? undefined,
-        invoice: sid ? qrInvoiceForSpayd(sid) : undefined,
+        invoice: sid ? qrInvoiceForSpayd(sidWith(dueDate)!) : undefined,
       });
       return { png: await QRCode.toBuffer(spayd, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" }), kind: "spayd" };
     }
@@ -649,6 +653,8 @@ export class InvoicePdfService {
     const ownDic = tenant.dicVatPayer || sellerCountry !== "CZ" || foreignBuyer;
     if (tenant.dic && ownDic) doc.text(`${t.dic}: ${tenant.dic}`, 50);
     if (!tenant.dicVatPayer) doc.text(t.nonVatPayer, 50);
+    // The trade or commercial register entry describes the seller, so it sits with the seller.
+    if (tenant.registryNote) doc.text(fillTemplate(tenant.registryNote, vars), 50, doc.y, { width: 240 });
     if (tenant.email) doc.text(tenant.email, 50);
     if (tenant.phone) doc.text(tenant.phone, 50);
     const leftEnd = doc.y;
@@ -672,7 +678,9 @@ export class InvoicePdfService {
     // DUZP belongs on tax documents only (§29 ZDPH); a non-payer's invoice is
     // not one, and printing the date there only raises questions.
     const taxDocument = invoice.documentType === "invoice" || invoice.documentType === "credit_note";
-    if (taxDocument && (tenant.dicVatPayer || tenant.vatStatus === "identified")) {
+    // An identified person's domestic invoice is not a tax document either; only the EU reverse
+    // charge one is.
+    if (taxDocument && (tenant.dicVatPayer || (tenant.vatStatus === "identified" && !!reverseChargeNoteKind(invoice, tenant, contact)))) {
       left.push([t.taxableSupplyDate, fmt(invoice.taxableSupplyDate ?? invoice.issueDate)]);
     }
     if (invoice.dueDate) left.push([invoice.documentType === "quote" ? t.validUntil : t.dueDate, fmt(invoice.dueDate)]);
@@ -974,7 +982,6 @@ export class InvoicePdfService {
         : null,
       fill(invoice.noteBelow),
       invoice.issuedByName ? `${t.issuedBy}: ${invoice.issuedByName}` : null,
-      fill(tenant.registryNote),
     ].filter((n): n is string => !!n);
     if (notes.length === 0) return;
     doc.moveDown(1);

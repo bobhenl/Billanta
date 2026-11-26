@@ -427,7 +427,17 @@ describe("InvoicePdfService paid documents and foreign buyers", () => {
     expect(await spayd({})).toMatch(/\*DT:\d{8}\*/);
     const now = await spayd({ pdfQrDueDate: false });
     expect(now).toMatch(/^SPD\*/);
-    expect(now).not.toMatch(/\*DT:/);
+    // Banks read the date from the QR Faktura inside the payment code too.
+    expect(now).toContain("X-INV:");
+    expect(now).not.toMatch(/DT:/);
+    // A QR Faktura on its own is for bookkeeping and keeps the due date.
+    const qr = vi.spyOn(QRCode, "toBuffer");
+    const lineItems = makeLineItems();
+    const tenant = makeTenant({ bankAccountIban: "CZ6508000000192000145399", invoiceFormPrefs: { pdfQrDueDate: false } } as Partial<TenantRow>);
+    await new InvoicePdfService().generate(makeInvoice({ status: "paid" }), makeContact(), tenant, lineItems, computeVatBreakdown(lineItems));
+    const sid = qr.mock.calls.map((c) => String(c[0])).find((p) => p.startsWith("SID*")) ?? "";
+    qr.mockRestore();
+    expect(sid).toMatch(/\*DT:\d{8}\*/);
   });
 
   it("prints IBAN only when the payer is abroad or pays in another currency", async () => {
@@ -465,6 +475,18 @@ describe("InvoicePdfService paid documents and foreign buyers", () => {
     expect(await supplierLines(identified, makeContact({ addressCountry: "US", dic: null, ico: null } as Partial<ContactRow>))).toContain("DIČ: CZ0202284379");
     const slovak = { dicVatPayer: false, vatStatus: "non_payer", dic: "2020123456", country: "SK" } as Partial<TenantRow>;
     expect(await supplierLines(slovak, makeContact({ addressCountry: "SK" } as Partial<ContactRow>))).toContain("DIČ: 2020123456");
+
+    // DUZP only on a tax document: an identified person's EU reverse charge, not a domestic invoice.
+    expect(await supplierLines(identified)).not.toContain("DUZP");
+    expect(await supplierLines(identified, euBuyer)).toContain("DUZP");
+    expect(await supplierLines({ dicVatPayer: true })).toContain("DUZP");
+
+    // The register entry sits with the seller, above the items.
+    const note = "Fyzická osoba zapsaná v živnostenském rejstříku.";
+    const lines = await supplierLines({ ...identified, registryNote: note } as Partial<TenantRow>);
+    expect(lines.indexOf(note)).toBeGreaterThan(-1);
+    expect(lines.indexOf(note)).toBeLessThan(lines.indexOf("Popis"));
+    expect(lines.filter((l) => l === note)).toHaveLength(1);
   });
 
   it("prints a Czech or Slovak PSČ with the space, whatever the register gave", async () => {
