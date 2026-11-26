@@ -27,7 +27,8 @@ const dto = { email: "ucetni@example.cz", role: "accountant" } as never;
 function run(send: () => Promise<void>, tenant: Record<string, unknown> = { companyName: "Novák s.r.o." }) {
   const email = { sendInvitationEmail: vi.fn(send), isConfigured: () => true };
   const service = new TeamService({} as never, email as never);
-  return { email, result: service.invite(fakeDb([[], [tenant]]) as never, user, dto) };
+  // Selects in order: existing member, the plan (limits off, as for older companies), the company.
+  return { email, result: service.invite(fakeDb([[], [{ planEnforced: false }], [tenant]]) as never, user, dto) };
 }
 
 describe("TeamService.invite", () => {
@@ -48,6 +49,16 @@ describe("TeamService.invite", () => {
     expect(sk.email.sendInvitationEmail).toHaveBeenCalledWith(expect.objectContaining({ locale: "sk" }), expect.anything());
     const de = run(async () => undefined, { companyName: "Novák s.r.o.", locale: "de" });
     expect((await de.result).acceptUrl).toMatch(/\/en\/invite\/[\w-]{20,}$/);
+  });
+
+  it("refuses a member past the plan, counting pending invitations", async () => {
+    const email = { sendInvitationEmail: vi.fn(async () => undefined), isConfigured: () => true };
+    const service = new TeamService({} as never, email as never);
+    const db = fakeDb([[], [{ planEnforced: true, subscriptionPlan: "plus", subscriptionStatus: "active" }], [{ id: "m1", role: "owner" }, { id: "m2", role: "viewer" }], [{ email: "x@example.cz", role: "admin" }]]);
+    await expect(service.invite(db as never, user, { email: "novy@example.cz", role: "viewer" } as never)).rejects.toMatchObject({
+      response: { error: "seat_limit", pool: "members", limit: 3, plan: "business" },
+    });
+    expect(email.sendInvitationEmail).not.toHaveBeenCalled();
   });
 
   it("still creates the invitation and returns the link when sending fails", async () => {
