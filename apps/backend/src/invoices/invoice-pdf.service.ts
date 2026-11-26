@@ -387,8 +387,10 @@ export class InvoicePdfService {
       doc.font(REGULAR).fontSize(9).fillColor("black").text(fill(invoice.noteAbove) ?? "", 50, doc.y, { width: 500 });
       doc.moveDown(0.8);
     }
-    this.renderLineItemsTable(doc, t, lineItems, invoice);
-    const totalsTop = this.renderTotals(doc, t, totals, invoice, pdfAccentOf(tenant.invoiceFormPrefs), tenantHomeCurrencyOf(tenant));
+    // A non-VAT payer charges no VAT, so a "0%" column and a VAT summary of zeros only confuse the reader.
+    const showVat = tenant.dicVatPayer || totals.byRate.some((entry) => entry.vatAmount !== 0);
+    this.renderLineItemsTable(doc, t, lineItems, invoice, showVat);
+    const totalsTop = this.renderTotals(doc, t, totals, invoice, pdfAccentOf(tenant.invoiceFormPrefs), tenantHomeCurrencyOf(tenant), showVat);
     // The brand name is written exactly so ("PAY by square"), never uppercased.
     const qrLabel = qr
       ? qr.kind === "pay_by_square"
@@ -693,14 +695,17 @@ export class InvoicePdfService {
     t: (typeof L)[Lang],
     lineItems: LineItemRow[],
     invoice: InvoiceRow,
+    showVat: boolean,
   ): void {
     const currency = invoice.currency;
     const hasDiscount = lineItems.some((i) => Number(i.discountPercent) !== 0);
+    // Without the VAT column the description takes its 40pt.
+    const shift = showVat ? 0 : 40;
     const columns = {
-      description: { x: 50, width: hasDiscount ? 185 : 225 },
-      quantity: { x: hasDiscount ? 235 : 275, width: 60 },
-      unitPrice: { x: hasDiscount ? 300 : 335, width: hasDiscount ? 75 : 80 },
-      discount: { x: 375, width: 40 },
+      description: { x: 50, width: (hasDiscount ? 185 : 225) + shift },
+      quantity: { x: (hasDiscount ? 235 : 275) + shift, width: 60 },
+      unitPrice: { x: (hasDiscount ? 300 : 335) + shift, width: hasDiscount ? 75 : 80 },
+      discount: { x: 375 + shift, width: 40 },
       vatRate: { x: 415, width: 40 },
       lineTotal: { x: 455, width: 90 },
     };
@@ -714,7 +719,7 @@ export class InvoicePdfService {
       doc.text(stacked(t.quantity), columns.quantity.x, top, { width: columns.quantity.width, align: "right" });
       doc.text(stacked(t.unitPrice), columns.unitPrice.x, top, { width: columns.unitPrice.width, align: "right" });
       if (hasDiscount) doc.text(stacked(t.discount), columns.discount.x, top, { width: columns.discount.width, align: "right" });
-      doc.text(stacked(t.vat), columns.vatRate.x, top, { width: columns.vatRate.width, align: "right" });
+      if (showVat) doc.text(stacked(t.vat), columns.vatRate.x, top, { width: columns.vatRate.width, align: "right" });
       doc.text(stacked(t.total), columns.lineTotal.x, top, { width: columns.lineTotal.width - 4, align: "right" });
       return top + (twoLine ? 29 : 20);
     };
@@ -754,7 +759,7 @@ export class InvoicePdfService {
           align: "right",
         });
       }
-      doc.text(`${vatRatePercent}%`, columns.vatRate.x, y, { width: columns.vatRate.width, align: "right" });
+      if (showVat) doc.text(`${vatRatePercent}%`, columns.vatRate.x, y, { width: columns.vatRate.width, align: "right" });
       doc.text(this.formatAmount(lineBase(item), currency), columns.lineTotal.x, y, {
         width: columns.lineTotal.width - 4,
         align: "right",
@@ -772,16 +777,19 @@ export class InvoicePdfService {
     invoice: InvoiceRow,
     accent: string,
     home: HomeCurrency,
+    showVat: boolean,
   ): number {
     const currency = invoice.currency;
     if (doc.y > 650) doc.addPage();
     const x = 300;
     let y = doc.y;
     const top = y;
-    doc.font(BOLD).fontSize(8).fillColor(MUTED).text(t.vatRecap.toUpperCase(), x, y);
-    y += 14;
+    if (showVat) {
+      doc.font(BOLD).fontSize(8).fillColor(MUTED).text(t.vatRecap.toUpperCase(), x, y);
+      y += 14;
+    }
     doc.font(REGULAR).fontSize(9).fillColor("black");
-    for (const entry of totals.byRate) {
+    for (const entry of showVat ? totals.byRate : []) {
       // Bilingual labels can wrap, so each row grows to its tallest cell.
       const cells: Array<[string, number, number, "left" | "right"]> = [
         [`${t.base} ${entry.vatRatePercent}%`, x, 80, "left"],

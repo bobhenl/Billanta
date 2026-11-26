@@ -308,6 +308,29 @@ describe("InvoicePdfService.generateLetter", () => {
   });
 });
 
+describe("InvoicePdfService VAT columns", () => {
+  async function lines(dicVatPayer: boolean, vatRate: string) {
+    const text = vi.spyOn(PDFDocument.prototype, "text");
+    const items = makeLineItems().map((item) => ({ ...item, vatRate }));
+    await new InvoicePdfService().generate(makeInvoice(), makeContact(), makeTenant({ dicVatPayer }), items, computeVatBreakdown(items));
+    const out = text.mock.calls.map((c) => String(c[0]));
+    text.mockRestore();
+    return out;
+  }
+
+  it("leaves the VAT column and summary off a non-VAT payer's invoice", async () => {
+    const payer = await lines(true, "21");
+    expect(payer).toContain("REKAPITULACE DPH");
+    expect(payer).toContain("21%");
+    const nonPayer = await lines(false, "0");
+    expect(nonPayer).not.toContain("REKAPITULACE DPH");
+    expect(nonPayer).not.toContain("0%");
+    expect(nonPayer).not.toContain("DPH");
+    // VAT charged by mistake is still shown, not hidden.
+    expect(await lines(false, "21")).toContain("REKAPITULACE DPH");
+  });
+});
+
 describe("InvoicePdfService paid documents and foreign buyers", () => {
   async function render(invoice: InvoiceRow, contact: ContactRow = makeContact()) {
     const text = vi.spyOn(PDFDocument.prototype, "text");
