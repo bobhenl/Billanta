@@ -219,7 +219,7 @@ export function sectionsForTenantPatch(body: unknown): PermissionAction[] | null
   if (!body || typeof body !== "object" || Array.isArray(body)) return [];
   const sections = new Set<PermissionAction>();
   for (const key of Object.keys(body)) {
-    const section = Object.hasOwn(TENANT_FIELD_SECTIONS, key) ? TENANT_FIELD_SECTIONS[key] : undefined;
+    const section = Object.prototype.hasOwnProperty.call(TENANT_FIELD_SECTIONS, key) ? TENANT_FIELD_SECTIONS[key] : undefined;
     if (!section) return null;
     sections.add(section);
   }

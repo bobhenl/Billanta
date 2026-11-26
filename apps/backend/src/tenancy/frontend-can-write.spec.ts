@@ -72,7 +72,9 @@ describe("frontend canWrite and canDo", () => {
   });
 
   it("canWrite matches roleMayAccess for every role, area and override", () => {
-    for (const role of ROLES) {
+    // A role the backend doesn't know gets no actions, so it can't create in
+    // invoices, expenses or bank whatever the level; canWrite is about levels.
+    for (const role of ROLES.filter((r) => r !== "unknown")) {
       for (const area of Object.keys(AREA_PATH) as (keyof typeof AREA_PATH)[]) {
         for (const level of LEVELS) {
           const overrides = level ? { [area]: level } : undefined;

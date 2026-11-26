@@ -56,6 +56,8 @@ export function canWrite(access: WriteAccess | null | undefined, area: Permissio
   const { role } = access;
   if (FULL_ACCESS.has(role)) return true;
   if (area === null) return role === 'accountant';
+  // Every recurring run makes an invoice draft, so the backend also wants invoices.create.
+  if (area === 'recurring' && !canDo(access, 'invoices.create')) return false;
   return access.permissions[area] === 'write';
 }
 

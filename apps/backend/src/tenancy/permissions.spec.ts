@@ -176,7 +176,7 @@ describe("requirementFor", () => {
   });
 
   it("names a section for every company-settings field except the admin-only ones", () => {
-    const fields = Object.keys(updateTenantSchema.shape).filter((f) => !Object.hasOwn(TENANT_FIELD_SECTIONS, f));
+    const fields = Object.keys(updateTenantSchema.shape).filter((f) => !Object.prototype.hasOwnProperty.call(TENANT_FIELD_SECTIONS, f));
     expect(fields).toEqual(["enabled_modules"]);
   });
 });
