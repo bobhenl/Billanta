@@ -2052,7 +2052,18 @@
       "taxCountryValue": "{country} · účtovníctvo v {currency}",
       "taxCountryHint": "Určuje sadzby DPH, menu účtovníctva a exporty. Adresa sídla ju nemení. Zmeniť ju môžete v úvodnom nastavení, kým nevystavíte prvú faktúru.",
       "taxCountryLocked": "Po vystavení prvej faktúry už krajinu zdanenia zmeniť nemožno.",
-      "taxCountryChange": "Zmeniť"
+      "taxCountryChange": "Zmeniť",
+      "filingOffices": {
+        "title": "Úrady pre podania",
+        "hint": "Kam podávate daňové priznania a prehľady. Finančný úrad sa zapíše do XML pre EPO (priznanie k DPH, kontrolné a súhrnné hlásenie, priznanie k dani z príjmov), poisťovňa a OSSZ predvyplnia ročné prehľady. Čo nevyplníte, doplníte až pri podaní.",
+        "taxOffice": "Finančný úrad",
+        "taxWorkplace": "Územné pracovisko",
+        "healthInsurer": "Zdravotná poisťovňa",
+        "socialOffice": "OSSZ / PSSZ",
+        "none": "Nevybrané",
+        "residence": "Bydlisko (pre úrady)",
+        "residenceHint": "Trvalý pobyt, ak sa líši od adresy sídla. Úrady vedú fyzickú osobu pod adresou bydliska, preto ju v podaniach použijeme namiesto adresy podnikania. Ak je rovnaká, nechajte prázdne."
+      }
     },
     "team": {
       "title": "Tím",
@@ -2257,7 +2268,7 @@
         "missingDic": "Doplňte DIČ firmy v Nastaveniach – bez neho priznanie nemožno vytvoriť.",
         "rateUnavailable": "Kurz ČNB sa nepodarilo načítať. Skúste to o chvíľu.",
         "failed": "Súbor sa nepodarilo vytvoriť.",
-        "disclaimer": "Súbor pred podaním skontrolujte v EPO a doplňte finančný úrad. Plnenia do EÚ sa vykazujú ako služby (kód 3); doklady bez DIČ dodávateľa spadajú do B.3.",
+        "disclaimer": "Súbor pred podaním skontrolujte v EPO. Finančný úrad sa vyplní z nastavení (Fakturačné údaje), inak ho vyberte v EPO. Plnenia do EÚ sa vykazujú ako služby (kód 3); doklady bez DIČ dodávateľa spadajú do B.3.",
         "formVersions": "Export vytvára XML vo verziách DPHDP3 {dp3}, DPHKH1 {kh1} a DPHSHV {shv}. Pravidlá a verzie formulárov sme naposledy overili {date}.",
         "officialLink": "Aktuálne informácie na webe českej Finančnej správy",
         "guideLink": "Návod na podanie (CZ)",

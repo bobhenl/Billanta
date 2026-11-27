@@ -2051,7 +2051,18 @@
       "taxCountryValue": "{country} · Buchführung in {currency}",
       "taxCountryHint": "Bestimmt die USt.-Sätze, die Währung Ihrer Buchführung und die Exporte. Die Sitzadresse ändert daran nichts. Sie können es in der Ersteinrichtung ändern, bis Sie Ihre erste Rechnung ausstellen.",
       "taxCountryLocked": "Nach der ersten ausgestellten Rechnung lässt sich das Steuerland nicht mehr ändern.",
-      "taxCountryChange": "Ändern"
+      "taxCountryChange": "Ändern",
+      "filingOffices": {
+        "title": "Ämter für Meldungen",
+        "hint": "Wo Sie Steuererklärungen und Jahresübersichten einreichen. Das Finanzamt wird in die EPO-XML-Dateien geschrieben (USt-Erklärung, Kontrollmeldung, Zusammenfassende Meldung, Einkommensteuererklärung); Krankenkasse und Sozialversicherungsamt füllen die Jahresübersichten vor. Leere Felder ergänzen Sie beim Einreichen.",
+        "taxOffice": "Finanzamt (finanční úřad)",
+        "taxWorkplace": "Dienststelle (územní pracoviště)",
+        "healthInsurer": "Krankenkasse",
+        "socialOffice": "Sozialversicherungsamt (OSSZ / PSSZ)",
+        "none": "Nicht gewählt",
+        "residence": "Wohnsitz (für Behörden)",
+        "residenceHint": "Ihr ständiger Wohnsitz, falls er von der Geschäftsadresse abweicht. Behörden führen eine Person unter ihrem Wohnsitz, daher verwenden die Meldungen ihn statt der Geschäftsadresse. Leer lassen, wenn er gleich ist."
+      }
     },
     "team": {
       "title": "Team",
@@ -2256,7 +2267,7 @@
         "missingDic": "Tragen Sie in den Einstellungen die USt-IdNr. Ihres Unternehmens ein – die Meldungen benötigen sie.",
         "rateUnavailable": "Der ČNB-Wechselkurs konnte nicht geladen werden. Versuchen Sie es gleich noch einmal.",
         "failed": "Die Datei konnte nicht erstellt werden.",
-        "disclaimer": "Prüfen Sie die Datei vor der Abgabe in EPO und wählen Sie dort das Finanzamt aus. EU-Leistungen werden als Dienstleistungen gemeldet (Code 3); Belege ohne USt-IdNr. des Lieferanten fallen unter B.3.",
+        "disclaimer": "Prüfen Sie die Datei vor der Abgabe in EPO. Das Finanzamt kommt aus Einstellungen → Unternehmensdaten; ist es nicht gesetzt, wählen Sie es in EPO. EU-Leistungen werden als Dienstleistungen gemeldet (Code 3); Belege ohne USt-IdNr. des Lieferanten fallen unter B.3.",
         "formVersions": "Der Export erstellt XML in den Versionen DPHDP3 {dp3}, DPHKH1 {kh1} und DPHSHV {shv}. Regeln und Formularversionen haben wir zuletzt am {date} geprüft.",
         "officialLink": "Aktuelle Informationen der tschechischen Finanzverwaltung",
         "guideLink": "Anleitung zur Abgabe",

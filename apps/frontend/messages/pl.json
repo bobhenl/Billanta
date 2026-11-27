@@ -2051,7 +2051,18 @@
       "taxCountryValue": "{country} · księgi prowadzone w {currency}",
       "taxCountryHint": "Określa stawki VAT, walutę ksiąg i eksporty. Adres siedziby go nie zmienia. Możesz go zmienić w ustawieniach powitalnych, dopóki nie wystawisz pierwszej faktury.",
       "taxCountryLocked": "Kraju podatkowego nie można zmienić po wystawieniu pierwszej faktury.",
-      "taxCountryChange": "Zmień"
+      "taxCountryChange": "Zmień",
+      "filingOffices": {
+        "title": "Urzędy do zgłoszeń",
+        "hint": "Gdzie składasz zeznania podatkowe i roczne zestawienia. Urząd skarbowy trafia do plików XML dla EPO (deklaracja VAT, raport kontrolny, informacja podsumowująca, zeznanie o podatku dochodowym), a kasa chorych i urząd ubezpieczeń społecznych wypełniają roczne zestawienia. Puste pola uzupełnisz przy składaniu.",
+        "taxOffice": "Urząd skarbowy (finanční úřad)",
+        "taxWorkplace": "Oddział terenowy (územní pracoviště)",
+        "healthInsurer": "Kasa ubezpieczenia zdrowotnego",
+        "socialOffice": "Urząd ubezpieczeń społecznych (OSSZ / PSSZ)",
+        "none": "Nie wybrano",
+        "residence": "Miejsce zamieszkania (dla urzędów)",
+        "residenceHint": "Stały adres zamieszkania, jeśli różni się od adresu firmy. Urzędy prowadzą osobę fizyczną pod adresem zamieszkania, dlatego w zgłoszeniach użyjemy go zamiast adresu firmy. Zostaw puste, jeśli jest taki sam."
+      }
     },
     "team": {
       "title": "Zespół",
@@ -2256,7 +2267,7 @@
         "missingDic": "Uzupełnij NIP swojej firmy w Ustawieniach – zgłoszenia go wymagają.",
         "rateUnavailable": "Nie udało się wczytać kursu ČNB. Spróbuj ponownie za chwilę.",
         "failed": "Nie udało się wygenerować pliku.",
-        "disclaimer": "Przed złożeniem sprawdź plik w EPO i wybierz tam urząd skarbowy. Dostawy do UE wykazujemy jako usługi (kod 3); dokumenty bez NIP dostawcy trafiają do B.3.",
+        "disclaimer": "Przed złożeniem sprawdź plik w EPO. Urząd skarbowy pochodzi z ustawień firmy; jeśli go tam nie ma, wybierz go w EPO. Dostawy do UE wykazujemy jako usługi (kod 3); dokumenty bez NIP dostawcy trafiają do B.3.",
         "formVersions": "Eksport tworzy XML w wersjach DPHDP3 {dp3}, DPHKH1 {kh1} i DPHSHV {shv}. Zasady i wersje formularzy ostatnio sprawdziliśmy {date}.",
         "officialLink": "Aktualne informacje czeskiej administracji skarbowej",
         "guideLink": "Instrukcja składania",

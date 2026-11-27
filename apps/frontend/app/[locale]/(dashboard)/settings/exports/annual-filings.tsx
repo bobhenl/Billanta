@@ -81,12 +81,14 @@ const HEALTH_ROWS = ['profit', 'baseFromProfit', 'minBase', 'base', 'premium', '
 const HEALTH_STRONG = new Set(['premium', 'balance', 'nextAdvance']);
 const ERROR_CODES = ['form_not_published', 'year_not_supported', 'invalid_filings_query'] as const;
 
-/** Office codes looked up from the company address on the server, and the data box from Settings. */
+/** Office codes from Settings → Company or looked up from the company address on the server, and the data box from Settings. */
 export interface AnnualFilingsPrefill {
   taxOffice: number | null;
   taxWorkplace: number | null;
   ossz: string | null;
   dataBox: string | null;
+  /** Zdravotní pojišťovna code from Settings → Company. */
+  insurer?: string | null;
 }
 
 const REMEMBER_KEY = 'billanta.filings.person';
@@ -164,7 +166,7 @@ export function AnnualFilings({ prefill, usage }: { prefill: AnnualFilingsPrefil
     setRemember(on);
     if (!on) writeRemembered(null);
   };
-  const [insurer, setInsurer] = useState('111');
+  const [insurer, setInsurer] = useState(prefill.insurer || '111');
   const [data, setData] = useState<Filings | null | undefined>(undefined);
   const [busy, setBusy] = useState<'dpfdp' | 'osvc' | null>(null);
   const [error, setError] = useState<string | null>(null);
