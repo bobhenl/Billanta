@@ -1946,7 +1946,8 @@
         "errors": {
           "month": "Uzupełnij miesiąc, od którego obowiązuje każdy wiersz.",
           "duplicate": "Dwa wiersze mają ten sam miesiąc. Połącz je w jeden.",
-          "amount": "Zaliczki muszą być liczbami od 0 do 10 000 000."
+          "amount": "Zaliczki muszą być liczbami od 0 do 10 000 000.",
+          "secondary_activity_period_invalid": "Działalność dodatkowa nie może skończyć się przed rozpoczęciem."
         },
         "flatTaxLabel": {
           "flat": "Podatek ryczałtowy",
@@ -1961,7 +1962,10 @@
           "yes": "Tak",
           "no": "Nie",
           "main": "Główna",
-          "secondary": "Dodatkowa"
+          "secondary": "Dodatkowa",
+          "secondaryFrom": "Działalność dodatkowa od",
+          "secondaryTo": "Do",
+          "secondaryPeriodHint": "Opcjonalne, na przykład gdy studiujesz tylko do określonego dnia. Puste pole oznacza bez ograniczenia. Poza tym okresem działalność liczy się jako główna."
         },
         "minimumAsk": {
           "flatTax": "Aby pokazać ustawowe minimum, powiedz nam, czy rozliczasz się w reżimie ryczałtowym:",
@@ -14181,9 +14185,15 @@
         "custom": "Inna kwota…",
         "customAmount": "Ulgi łącznie za rok"
       },
-      "secondaryActivity": "Działalność dodatkowa (student, pracownik, urlop rodzicielski…)",
       "secondaryActivityHint": "Poniżej rocznego zysku {amount} CZK nie płaci się ubezpieczenia społecznego. Zdrowotne płaci się od faktycznego zysku, bez minimum.",
-      "secondaryActivityUnknown": "Progu na rok {year} jeszcze nie znamy, więc ubezpieczenie społeczne jest zawsze liczone."
+      "secondaryActivityUnknown": "Progu na rok {year} jeszcze nie znamy, więc ubezpieczenie społeczne jest zawsze liczone.",
+      "secondaryActivityState": "Działalność dodatkowa:",
+      "secondaryWholeYear": "cały rok",
+      "secondaryNone": "nie",
+      "secondaryActivityChange": "Zmień w ustawieniach firmy",
+      "secondaryActivityPartial": "Próg obniża się o jedną dwunastą za każdy miesiąc bez działalności dodatkowej. Miesiące działalności głównej są zawsze ubezpieczone.",
+      "secondaryActivityLegacy": "Włączone wcześniej bezpośrednio w tym raporcie. Teraz ustawia się to w ustawieniach firmy.",
+      "secondaryActivityLegacyClear": "Wyłącz"
     },
     "errors": {
       "duplicate_partner": "Dwóch wspólników ma ten sam identyfikator. Usuń jednego i dodaj go ponownie.",

@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { czTaxYear } from '@faktur/cz-compliance';
+import { czTaxYear, netIncomeSecondaryMonths, type NetIncomeActivity } from '@faktur/cz-compliance';
 import { ChevronDown, ChevronLeft, ChevronRight, Copy, Loader2, Plus, RotateCcw, Save, SlidersHorizontal, Trash2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Banner } from '@/components/banner';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
-import { useRouter } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { RATE_KEYS, resolvedYear, type PartnerMember, type SharedExpense, type TaxModel, type TaxPartner, type TaxRates, type YearSettings, yearSource } from '@/lib/net-income';
 import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
@@ -149,19 +149,75 @@ function CreditsField({ year, value, onChange, label, disabled }: { year: number
   );
 }
 
+/** Runs of months as "leden–červen, září" in the locale's own month names. */
+function monthRuns(flags: boolean[], locale: string): string {
+  const name = (m: number) => new Intl.DateTimeFormat(locale, { month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(2000, m, 1)));
+  const runs: string[] = [];
+  for (let m = 0; m < 12; m++) {
+    if (!flags[m] || flags[m - 1]) continue;
+    let end = m;
+    while (flags[end + 1]) end++;
+    runs.push(end === m ? name(m) : `${name(m)}–${name(end)}`);
+  }
+  return runs.join(', ');
+}
+
+/**
+ * Vedlejší činnost in the shown year, read-only: company settings decide it
+ * (netIncomeSecondaryMonths). A year the report itself once switched to
+ * secondary still counts while settings say nothing; that switch can only be
+ * turned off here.
+ */
+function SecondaryActivityLine({ model, year, activity, readOnly, onClearLegacy }: { model: TaxModel; year: number; activity: NetIncomeActivity | null; readOnly: boolean; onClearLegacy: () => void }) {
+  const t = useTranslations('netIncome.config');
+  const locale = useLocale();
+  const months = netIncomeSecondaryMonths(activity, model, year);
+  const count = months.secondary.filter(Boolean).length;
+  const state = count === 12 ? t('secondaryWholeYear') : count === 0 ? t('secondaryNone') : monthRuns(months.secondary, locale);
+  const known = czTaxYear(year);
+  return (
+    <div className="text-sm">
+      <p>
+        <span className="font-medium">{t('secondaryActivityState')}</span> {state}{' '}
+        <Link href="/settings/company#zalohy" className="text-xs font-semibold text-primary hover:underline">
+          {t('secondaryActivityChange')}
+        </Link>
+      </p>
+      {months.source === 'legacy' && (
+        <p className="text-xs text-muted-foreground">
+          {t('secondaryActivityLegacy')}{' '}
+          {!readOnly && (
+            <button type="button" className="font-semibold text-primary hover:underline" onClick={onClearLegacy}>
+              {t('secondaryActivityLegacyClear')}
+            </button>
+          )}
+        </p>
+      )}
+      {count > 0 && (
+        <p className="text-xs text-muted-foreground">
+          {known ? t('secondaryActivityHint', { amount: known.social.secondaryThreshold.toLocaleString(locale) }) : t('secondaryActivityUnknown', { year })}
+          {known && count < 12 && ` ${t('secondaryActivityPartial')}`}
+        </p>
+      )}
+    </div>
+  );
+}
+
 export function TaxModelEditor({
   initial,
   readOnly,
   year: reportYear,
-  members
+  members,
+  activity
 }: {
   initial: TaxModel;
   readOnly: boolean;
   year: number;
   members: PartnerMember[];
+  /** Hlavní / vedlejší činnost from company settings. */
+  activity: NetIncomeActivity | null;
 }) {
   const t = useTranslations('netIncome.config');
-  const locale = useLocale();
   const tErr = useTranslations('netIncome.errors');
   const router = useRouter();
   const [model, setModel] = useState<TaxModel>(initial);
@@ -294,21 +350,15 @@ export function TaxModelEditor({
               <CreditsField key={fieldKey('credits')} year={year} label={t('partnerCredits')} value={shown.tax_credits} disabled={locked} onChange={(n) => setEntry({ tax_credits: n })} />
             )}
           </div>
-          <label className="flex items-start gap-2 text-sm">
-            <input
-              type="checkbox"
-              className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
-              checked={!!shown.secondary_activity}
-              disabled={locked}
-              onChange={(e) => setEntry({ secondary_activity: e.target.checked })}
-            />
-            <span>
-              {t('secondaryActivity')}
-              <span className="block text-xs text-muted-foreground">
-                {czTaxYear(year) ? t('secondaryActivityHint', { amount: czTaxYear(year)!.social.secondaryThreshold.toLocaleString(locale) }) : t('secondaryActivityUnknown', { year })}
-              </span>
-            </span>
-          </label>
+          <SecondaryActivityLine
+            model={model}
+            year={year}
+            activity={activity}
+            readOnly={readOnly}
+            onClearLegacy={() =>
+              setModel((m) => ({ ...m, years: Object.fromEntries(Object.entries(m.years).map(([y, e]) => [y, { ...e, secondary_activity: false }])) }))
+            }
+          />
           <p className="text-xs text-muted-foreground">{t(onePerson ? 'scopeOnePersonHint' : 'yearHint')}</p>
           <InfoHint hint={t('ratesHint')} className="text-xs text-muted-foreground">
             {t('ratesHintLabel')}

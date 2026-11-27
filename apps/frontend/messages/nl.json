@@ -1946,7 +1946,8 @@
         "errors": {
           "month": "Vul bij elke rij de maand in vanaf wanneer die geldt.",
           "duplicate": "Twee rijen hebben dezelfde maand. Voeg ze samen tot één.",
-          "amount": "Voorschotten moeten getallen zijn van 0 tot 10.000.000."
+          "amount": "Voorschotten moeten getallen zijn van 0 tot 10.000.000.",
+          "secondary_activity_period_invalid": "De nevenactiviteit kan niet eindigen voordat ze begint."
         },
         "flatTaxLabel": {
           "flat": "Forfaitaire belasting",
@@ -1961,7 +1962,10 @@
           "yes": "Ja",
           "no": "Nee",
           "main": "Hoofdactiviteit",
-          "secondary": "Nevenactiviteit"
+          "secondary": "Nevenactiviteit",
+          "secondaryFrom": "Nevenactiviteit vanaf",
+          "secondaryTo": "Tot",
+          "secondaryPeriodHint": "Optioneel, bijvoorbeeld als u alleen tot een bepaalde dag studeert. Een leeg veld betekent zonder grens. Buiten deze periode telt de activiteit als hoofdactiviteit."
         },
         "minimumAsk": {
           "flatTax": "Om het wettelijke minimum te tonen, vertel ons of je onder de forfaitaire regeling valt:",
@@ -14180,9 +14184,15 @@
         "custom": "Ander bedrag…",
         "customAmount": "Kortingen totaal per jaar"
       },
-      "secondaryActivity": "Nevenactiviteit (student, werknemer, ouderschapsverlof…)",
       "secondaryActivityHint": "Onder een jaarwinst van {amount} CZK is geen sociale verzekering verschuldigd. De zorgverzekering wordt over de werkelijke winst betaald, zonder minimum.",
-      "secondaryActivityUnknown": "De grens voor {year} is nog niet bekend, dus de sociale verzekering telt altijd mee."
+      "secondaryActivityUnknown": "De grens voor {year} is nog niet bekend, dus de sociale verzekering telt altijd mee.",
+      "secondaryActivityState": "Nevenactiviteit:",
+      "secondaryWholeYear": "heel het jaar",
+      "secondaryNone": "nee",
+      "secondaryActivityChange": "Wijzigen in de bedrijfsinstellingen",
+      "secondaryActivityPartial": "De drempel daalt met een twaalfde voor elke maand zonder nevenactiviteit. Maanden met hoofdactiviteit zijn altijd verzekerd.",
+      "secondaryActivityLegacy": "Eerder direct in dit overzicht ingeschakeld. Dit stelt u nu in bij de bedrijfsinstellingen.",
+      "secondaryActivityLegacyClear": "Uitschakelen"
     },
     "errors": {
       "duplicate_partner": "Twee partners hebben dezelfde id. Verwijder er een en voeg hem opnieuw toe.",

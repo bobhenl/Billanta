@@ -41,7 +41,11 @@ export type NetIncomeTaxScope = 'per_partner' | 'one_person';
 export interface NetIncomeYearSettings extends NetIncomeRates {
   tax_scope: NetIncomeTaxScope;
   tax_credits: number;
-  /** Vedlejší činnost (a student, an employee…): no social insurance below the rozhodná částka. */
+  /**
+   * Legacy: the report's own "vedlejší činnost" switch, now set in company
+   * settings (NetIncomeActivity). Still read as a whole year in secondary
+   * activity while the company has not answered hlavní / vedlejší there.
+   */
   secondary_activity?: boolean;
   partners: Record<string, { tax_credits: number }>;
 }
@@ -212,16 +216,99 @@ function splitAmong(model: NetIncomeTaxModel, items: NetIncomeItem[]): number[] 
   return allocateWholeKc(exact);
 }
 
+/**
+ * Settings → Company: hlavní or vedlejší činnost (null = not answered) and,
+ * for vedlejší, the calendar days it lasts ("YYYY-MM-DD", null = open-ended).
+ * Outside those days the activity is the main one.
+ */
+export interface NetIncomeActivity {
+  kind: 'main' | 'secondary' | null;
+  from: string | null;
+  to: string | null;
+}
+
+/** One calendar year month by month (index 0 = January). */
+export interface NetIncomeSecondaryYear {
+  /** Vedlejší činnost at least part of the month. */
+  secondary: boolean[];
+  /** Hlavní činnost at least part of the month. */
+  main: boolean[];
+  /** Where it came from: company settings, the report's legacy switch, or neither (all main). */
+  source: 'settings' | 'legacy' | 'none';
+}
+
+const pad2 = (n: number) => String(n).padStart(2, '0');
+
+/**
+ * The months of `year` in secondary and in main activity. Company settings
+ * decide once hlavní / vedlejší is answered there; until then a year the
+ * report itself switched to secondary (the old `secondary_activity` flag)
+ * counts as secondary all year, so a saved report keeps its figures. The
+ * activity is assumed to run the whole year (no start or break dates).
+ */
+export function netIncomeSecondaryMonths(activity: NetIncomeActivity | null | undefined, model: NetIncomeTaxModel, year: number): NetIncomeSecondaryYear {
+  const all = (v: boolean) => Array.from({ length: 12 }, () => v);
+  if (activity?.kind === 'secondary') {
+    const secondary: boolean[] = [];
+    const main: boolean[] = [];
+    for (let m = 1; m <= 12; m++) {
+      const first = `${year}-${pad2(m)}-01`;
+      const last = `${year}-${pad2(m)}-${pad2(new Date(Date.UTC(year, m, 0)).getUTCDate())}`;
+      const touches = (!activity.from || activity.from <= last) && (!activity.to || activity.to >= first);
+      const covers = (!activity.from || activity.from <= first) && (!activity.to || activity.to >= last);
+      secondary.push(touches);
+      main.push(!covers);
+    }
+    return { secondary, main, source: 'settings' };
+  }
+  if (activity?.kind == null && netIncomeSettingsFor(model, year).secondary_activity) return { secondary: all(true), main: all(false), source: 'legacy' };
+  return { secondary: all(false), main: all(true), source: activity?.kind ? 'settings' : 'none' };
+}
+
+/** The span's months by activity, with the year's rozhodná částka. */
+interface SecondarySpan {
+  threshold: number;
+  months: number;
+  secondary: number;
+  main: number;
+}
+
+/**
+ * The part of the profit that is socially insured when part of the span is
+ * in vedlejší činnost.
+ *
+ * Zákon č. 155/1995 Sb., § 10 odst. 2 and 3 (vedlejší činnost as defined in
+ * § 9 odst. 6): a secondary activity is insured only when its income (the
+ * daňový základ for social insurance) reaches the rozhodná částka; the
+ * částka "se sníží o jednu dvanáctinu" (a twelfth, rounded up) for every
+ * whole month without secondary activity. With main and secondary activity in
+ * one year, the secondary income is the profit divided by the months with any
+ * activity times the months with secondary activity. Months of main activity
+ * are always insured: if the secondary part is not, zákon č. 589/1992 Sb.,
+ * § 5b odst. 1 counts only the profit divided by the months with any activity
+ * times the months with main activity. A month with both counts for both.
+ *
+ * An estimate: the law tests the whole calendar year's profit. A month or a
+ * quarter is tested on its own, against the same share of the yearly částka
+ * (a twelfth per month, less a rounded-up twelfth per month without
+ * secondary activity), which matches the law only for a whole year.
+ */
+export function insuredProfitShare(base: number, s: SecondarySpan | null): number {
+  if (!s || s.secondary === 0) return 1;
+  const limit = (s.threshold * s.months) / 12 - (s.months - s.secondary) * Math.ceil(s.threshold / 12);
+  const secondaryIncome = (base / s.months) * s.secondary;
+  return secondaryIncome >= limit ? 1 : s.main / s.months;
+}
+
 type TaxPart = Omit<NetIncomeLine, 'income' | 'sharedExpenses' | 'net'>;
 const TAX_KEYS = ['flatExpenses', 'base', 'taxBeforeCredits', 'credits', 'social', 'health'] as const;
 
 /**
  * One OSVČ's tax on `income` over a `fraction` of the year (cap, credits and
- * the rozhodná částka are yearly). In a secondary activity a profit under the
- * rozhodná částka is not insured socially (§ 9 odst. 6 zákona č. 589/1992 Sb.);
- * the law tests the whole year's profit, here the prorated part stands in for it.
+ * the rozhodná částka are yearly). Social insurance only on the insured part
+ * of the profit (insuredProfitShare).
  */
-function taxOf(income: number, rates: NetIncomeYear, yearlyCredits: number, fraction: number, secondaryThreshold: number | null): TaxPart & { capped: boolean } {
+function taxOf(income: number, rates: NetIncomeYear, yearlyCredits: number, fraction: number, secondary: SecondarySpan | null): TaxPart & { capped: boolean } {
   const cap = rates.flat_expense_cap == null ? Infinity : rates.flat_expense_cap * fraction;
   const flat = income > 0 ? (income * rates.flat_expense_percent) / 100 : 0;
   const flatExpenses = Math.round(Math.min(flat, cap));
@@ -229,8 +316,8 @@ function taxOf(income: number, rates: NetIncomeYear, yearlyCredits: number, frac
   const taxBeforeCredits = Math.round((base * rates.income_tax_percent) / 100);
   const credits = Math.min(taxBeforeCredits, Math.round(yearlyCredits * fraction));
   const incomeTax = taxBeforeCredits - credits;
-  const uninsured = rates.secondary_activity && secondaryThreshold != null && base < secondaryThreshold * fraction;
-  const social = uninsured ? 0 : Math.round((base * rates.social_base_percent * rates.social_rate_percent) / 10_000);
+  const insured = base * insuredProfitShare(base, secondary);
+  const social = Math.round((insured * rates.social_base_percent * rates.social_rate_percent) / 10_000);
   const health = Math.round((base * rates.health_base_percent * rates.health_rate_percent) / 10_000);
   return { flatExpenses, base, taxBeforeCredits, credits, incomeTax, social, health, taxes: incomeTax + social + health, capped: flat > cap };
 }
@@ -248,12 +335,15 @@ function taxOf(income: number, rates: NetIncomeYear, yearlyCredits: number, frac
  *
  * An estimate: no minimum insurance, no 23 % band, no tax base rounding.
  */
-export function computeNetIncome(model: NetIncomeTaxModel, items: NetIncomeItem[], span: NetIncomeSpan): NetIncomeResult {
+export function computeNetIncome(model: NetIncomeTaxModel, items: NetIncomeItem[], span: NetIncomeSpan, activity?: NetIncomeActivity | null): NetIncomeResult {
   const { months } = span;
   const fraction = months / 12;
   const rates = netIncomeSettingsFor(model, span.year);
   // An unknown year has no rozhodná částka, so its social insurance stays in.
   const threshold = czTaxYear(span.year)?.social.secondaryThreshold ?? null;
+  const byMonth = netIncomeSecondaryMonths(activity, model, span.year);
+  const inSpan = (flags: boolean[]) => flags.slice(span.month - 1, span.month - 1 + months).filter(Boolean).length;
+  const secondary = threshold == null ? null : { threshold, months, secondary: inSpan(byMonth.secondary), main: inSpan(byMonth.main) };
   const incomes = splitAmong(model, items);
   const expenses = splitAmong(model, sharedExpenseItems(model, span));
   const total = incomes.reduce((s, v) => s + v, 0);
@@ -262,7 +352,7 @@ export function computeNetIncome(model: NetIncomeTaxModel, items: NetIncomeItem[
 
   let taxes: (TaxPart & { capped: boolean })[];
   if (rates.tax_scope === 'one_person') {
-    const one = taxOf(total, rates, rates.tax_credits, fraction, threshold);
+    const one = taxOf(total, rates, rates.tax_credits, fraction, secondary);
     const parts = Object.fromEntries(TAX_KEYS.map((k) => [k, allocateWholeKc(weights.map((w) => one[k] * w))])) as Record<(typeof TAX_KEYS)[number], number[]>;
     taxes = model.partners.map((_, i) => {
       const line = Object.fromEntries(TAX_KEYS.map((k) => [k, parts[k][i]!])) as Record<(typeof TAX_KEYS)[number], number>;
@@ -270,7 +360,7 @@ export function computeNetIncome(model: NetIncomeTaxModel, items: NetIncomeItem[
       return { ...line, incomeTax, taxes: incomeTax + line.social + line.health, capped: one.capped };
     });
   } else {
-    taxes = model.partners.map((p, i) => taxOf(incomes[i]!, rates, rates.partners.get(p.id)!.tax_credits, fraction, threshold));
+    taxes = model.partners.map((p, i) => taxOf(incomes[i]!, rates, rates.partners.get(p.id)!.tax_credits, fraction, secondary));
   }
 
   const partners = model.partners.map((p, i): NetIncomePartnerLine => {
@@ -407,6 +497,8 @@ export interface NetIncomeInputs {
   /** Plain documents left out for want of a rate. */
   missingRates: number;
   sealedDocs: SealedNetIncomeDoc[];
+  /** Hlavní / vedlejší činnost from company settings (absent: not answered). */
+  activity?: NetIncomeActivity | null;
 }
 
 export interface NetIncomeReport {
@@ -417,6 +509,10 @@ export interface NetIncomeReport {
   settings: Omit<NetIncomeYear, 'partners'> & { partners: Record<string, { tax_credits: number }> };
   result: NetIncomeResult;
   tips: NetIncomeTip[];
+  /** Hlavní / vedlejší činnost the report was computed with (null: not answered). */
+  activity: NetIncomeActivity | null;
+  /** The report year month by month in secondary / main activity. */
+  secondary: NetIncomeSecondaryYear;
   /** Each month of a quarter or year on its own; null for a month. */
   byMonth: { month: number; income: number; taxes: number; sharedExpenses: number; net: number }[] | null;
   invoices: NetIncomeInvoice[];
@@ -446,13 +542,13 @@ export function netIncomeReportOf(inputs: Omit<NetIncomeInputs, 'sealedDocs'>): 
   ];
 
   // One-off and dated shared expenses are placed by the same calendar months as the extra income above.
-  const result = computeNetIncome(model, itemsOf(null), span);
+  const result = computeNetIncome(model, itemsOf(null), span, inputs.activity);
   // Each month on its own (credits and the paušál cap at 1/12), to compare them side by side.
   const byMonth =
     span.months > 1
       ? Array.from({ length: span.months }, (_, i) => {
           const month = span.month + i;
-          const r = computeNetIncome(model, itemsOf(month), { year: period.year, month, months: 1 });
+          const r = computeNetIncome(model, itemsOf(month), { year: period.year, month, months: 1 }, inputs.activity);
           return { month, income: r.totals.income, taxes: r.totals.taxes, sharedExpenses: r.totals.sharedExpenses, net: r.totals.net };
         })
       : null;
@@ -465,6 +561,8 @@ export function netIncomeReportOf(inputs: Omit<NetIncomeInputs, 'sealedDocs'>): 
     settings: { ...settings, partners: Object.fromEntries(settings.partners) },
     result,
     tips: netIncomeTips(model, period.year, result),
+    activity: inputs.activity ?? null,
+    secondary: netIncomeSecondaryMonths(inputs.activity, model, period.year),
     byMonth,
     invoices,
     extraIncome,

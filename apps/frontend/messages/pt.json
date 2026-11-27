@@ -1946,7 +1946,8 @@
         "errors": {
           "month": "Preencha o mês a partir do qual cada linha se aplica.",
           "duplicate": "Duas linhas têm o mesmo mês. Junte-as numa só.",
-          "amount": "Os adiantamentos têm de ser números entre 0 e 10 000 000."
+          "amount": "Os adiantamentos têm de ser números entre 0 e 10 000 000.",
+          "secondary_activity_period_invalid": "A atividade secundária não pode terminar antes de começar."
         },
         "flatTaxLabel": {
           "flat": "Imposto fixo",
@@ -1961,7 +1962,10 @@
           "yes": "Sim",
           "no": "Não",
           "main": "Principal",
-          "secondary": "Secundária"
+          "secondary": "Secundária",
+          "secondaryFrom": "Atividade secundária desde",
+          "secondaryTo": "Até",
+          "secondaryPeriodHint": "Opcional, por exemplo se estuda só até um certo dia. Um campo vazio significa sem limite. Fora deste período a atividade conta como principal."
         },
         "minimumAsk": {
           "flatTax": "Para mostrar o mínimo legal, indique se está no regime de imposto fixo:",
@@ -14180,9 +14184,15 @@
         "custom": "Outro valor…",
         "customAmount": "Total de deduções do ano"
       },
-      "secondaryActivity": "Atividade secundária (estudante, empregado, licença parental…)",
       "secondaryActivityHint": "Abaixo de um lucro anual de {amount} CZK não há segurança social a pagar. O seguro de saúde paga-se sobre o lucro real, sem mínimo.",
-      "secondaryActivityUnknown": "O limiar de {year} ainda não é conhecido, por isso a segurança social é sempre contada."
+      "secondaryActivityUnknown": "O limiar de {year} ainda não é conhecido, por isso a segurança social é sempre contada.",
+      "secondaryActivityState": "Atividade secundária:",
+      "secondaryWholeYear": "o ano todo",
+      "secondaryNone": "não",
+      "secondaryActivityChange": "Alterar nas definições da empresa",
+      "secondaryActivityPartial": "O limiar desce um duodécimo por cada mês sem atividade secundária. Os meses de atividade principal são sempre segurados.",
+      "secondaryActivityLegacy": "Ativado antes diretamente neste relatório. Agora define-se nas definições da empresa.",
+      "secondaryActivityLegacyClear": "Desativar"
     },
     "errors": {
       "duplicate_partner": "Dois sócios têm o mesmo id. Remova um e adicione-o de novo.",

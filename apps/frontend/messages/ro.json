@@ -1946,7 +1946,8 @@
         "errors": {
           "month": "Completați luna din care se aplică fiecare rând.",
           "duplicate": "Două rânduri au aceeași lună. Uniți-le într-unul singur.",
-          "amount": "Avansurile trebuie să fie numere între 0 și 10.000.000."
+          "amount": "Avansurile trebuie să fie numere între 0 și 10.000.000.",
+          "secondary_activity_period_invalid": "Activitatea secundară nu se poate încheia înainte să înceapă."
         },
         "flatTaxLabel": {
           "flat": "Impozit forfetar",
@@ -1961,7 +1962,10 @@
           "yes": "Da",
           "no": "Nu",
           "main": "Principală",
-          "secondary": "Secundară"
+          "secondary": "Secundară",
+          "secondaryFrom": "Activitate secundară de la",
+          "secondaryTo": "Până la",
+          "secondaryPeriodHint": "Opțional, de exemplu dacă sunteți student doar până la o anumită zi. Un câmp gol înseamnă fără limită. În afara acestei perioade activitatea contează ca principală."
         },
         "minimumAsk": {
           "flatTax": "Pentru a afișa minimul legal, spuneți-ne dacă sunteți în regimul impozitului forfetar:",
@@ -14180,9 +14184,15 @@
         "custom": "Altă sumă…",
         "customAmount": "Reduceri totale pe an"
       },
-      "secondaryActivity": "Activitate secundară (student, angajat, concediu parental…)",
       "secondaryActivityHint": "Sub un profit anual de {amount} CZK nu se plătesc asigurări sociale. Asigurarea de sănătate se plătește din profitul real, fără minim.",
-      "secondaryActivityUnknown": "Pragul pentru {year} nu este încă cunoscut, așa că asigurările sociale se calculează mereu."
+      "secondaryActivityUnknown": "Pragul pentru {year} nu este încă cunoscut, așa că asigurările sociale se calculează mereu.",
+      "secondaryActivityState": "Activitate secundară:",
+      "secondaryWholeYear": "tot anul",
+      "secondaryNone": "nu",
+      "secondaryActivityChange": "Modificați în setările firmei",
+      "secondaryActivityPartial": "Pragul scade cu o douăsprezecime pentru fiecare lună fără activitate secundară. Lunile de activitate principală sunt mereu asigurate.",
+      "secondaryActivityLegacy": "Activat anterior direct în acest raport. Acum se setează în setările firmei.",
+      "secondaryActivityLegacyClear": "Dezactivați"
     },
     "errors": {
       "duplicate_partner": "Doi parteneri au același id. Eliminați unul și adăugați-l din nou.",

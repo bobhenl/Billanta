@@ -1946,7 +1946,8 @@
         "errors": {
           "month": "Compili il mese da cui vale ogni riga.",
           "duplicate": "Due righe hanno lo stesso mese. Le unisca in una sola.",
-          "amount": "Gli acconti devono essere numeri da 0 a 10.000.000."
+          "amount": "Gli acconti devono essere numeri da 0 a 10.000.000.",
+          "secondary_activity_period_invalid": "L’attività secondaria non può finire prima di iniziare."
         },
         "flatTaxLabel": {
           "flat": "Imposta forfettaria",
@@ -1961,7 +1962,10 @@
           "yes": "Sì",
           "no": "No",
           "main": "Principale",
-          "secondary": "Secondaria"
+          "secondary": "Secondaria",
+          "secondaryFrom": "Attività secondaria dal",
+          "secondaryTo": "Al",
+          "secondaryPeriodHint": "Facoltativo, per esempio se studi solo fino a un certo giorno. Un campo vuoto significa senza limite. Fuori da questo periodo l’attività conta come principale."
         },
         "minimumAsk": {
           "flatTax": "Per mostrare il minimo di legge, ci indichi se aderisce al regime forfettario:",
@@ -14180,9 +14184,15 @@
         "custom": "Altro importo…",
         "customAmount": "Detrazioni totali dell’anno"
       },
-      "secondaryActivity": "Attività secondaria (studente, dipendente, congedo parentale…)",
       "secondaryActivityHint": "Sotto un utile annuo di {amount} CZK non si pagano i contributi sociali. L’assicurazione sanitaria si paga sull’utile effettivo, senza minimo.",
-      "secondaryActivityUnknown": "La soglia per il {year} non è ancora nota, quindi i contributi sociali vengono sempre conteggiati."
+      "secondaryActivityUnknown": "La soglia per il {year} non è ancora nota, quindi i contributi sociali vengono sempre conteggiati.",
+      "secondaryActivityState": "Attività secondaria:",
+      "secondaryWholeYear": "tutto l’anno",
+      "secondaryNone": "no",
+      "secondaryActivityChange": "Modifica nelle impostazioni dell’azienda",
+      "secondaryActivityPartial": "La soglia scende di un dodicesimo per ogni mese senza attività secondaria. I mesi di attività principale sono sempre assicurati.",
+      "secondaryActivityLegacy": "Attivato prima direttamente in questo report. Ora si imposta nelle impostazioni dell’azienda.",
+      "secondaryActivityLegacyClear": "Disattiva"
     },
     "errors": {
       "duplicate_partner": "Due soci hanno lo stesso id. Ne rimuova uno e lo aggiunga di nuovo.",

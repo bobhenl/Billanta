@@ -1946,7 +1946,8 @@
         "errors": {
           "month": "Indiquez le mois à partir duquel chaque ligne s’applique.",
           "duplicate": "Deux lignes ont le même mois. Fusionnez-les en une seule.",
-          "amount": "Les acomptes doivent être des nombres compris entre 0 et 10 000 000."
+          "amount": "Les acomptes doivent être des nombres compris entre 0 et 10 000 000.",
+          "secondary_activity_period_invalid": "L’activité secondaire ne peut pas se terminer avant de commencer."
         },
         "flatTaxLabel": {
           "flat": "Impôt forfaitaire",
@@ -1961,7 +1962,10 @@
           "yes": "Oui",
           "no": "Non",
           "main": "Principale",
-          "secondary": "Secondaire"
+          "secondary": "Secondaire",
+          "secondaryFrom": "Activité secondaire du",
+          "secondaryTo": "Au",
+          "secondaryPeriodHint": "Facultatif, par exemple si vous êtes étudiant jusqu’à une date précise. Un champ vide signifie sans limite. En dehors de cette période, l’activité compte comme principale."
         },
         "minimumAsk": {
           "flatTax": "Pour afficher le minimum légal, indiquez-nous si vous relevez du régime forfaitaire :",
@@ -14180,9 +14184,15 @@
         "custom": "Autre montant…",
         "customAmount": "Total des réductions de l’année"
       },
-      "secondaryActivity": "Activité secondaire (étudiant, salarié, congé parental…)",
       "secondaryActivityHint": "En dessous d’un bénéfice annuel de {amount} CZK, aucune cotisation sociale n’est due. L’assurance maladie se paie sur le bénéfice réel, sans minimum.",
-      "secondaryActivityUnknown": "Le seuil de {year} n’est pas encore connu, les cotisations sociales sont donc toujours comptées."
+      "secondaryActivityUnknown": "Le seuil de {year} n’est pas encore connu, les cotisations sociales sont donc toujours comptées.",
+      "secondaryActivityState": "Activité secondaire :",
+      "secondaryWholeYear": "toute l’année",
+      "secondaryNone": "non",
+      "secondaryActivityChange": "Modifier dans les paramètres de l’entreprise",
+      "secondaryActivityPartial": "Le seuil baisse d’un douzième pour chaque mois sans activité secondaire. Les mois d’activité principale sont toujours assurés.",
+      "secondaryActivityLegacy": "Activé auparavant dans ce rapport. Cela se règle désormais dans les paramètres de l’entreprise.",
+      "secondaryActivityLegacyClear": "Désactiver"
     },
     "errors": {
       "duplicate_partner": "Deux associés ont le même identifiant. Supprimez-en un et ajoutez-le à nouveau.",

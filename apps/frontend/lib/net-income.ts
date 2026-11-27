@@ -1,5 +1,7 @@
 /** Shapes of `GET /api/v1/net-income` and the tax model (apps/backend/src/net-income). */
 
+import type { NetIncomeActivity, NetIncomeSecondaryYear } from '@faktur/cz-compliance';
+
 export type Shares = Record<string, number>;
 
 /** A team member a partner can be linked to (from GET /api/v1/team). */
@@ -129,6 +131,10 @@ export interface NetIncomeReport {
     totals: NetIncomeLine;
   };
   tips: NetIncomeTip[];
+  /** Hlavní / vedlejší činnost from company settings; missing on an older backend. */
+  activity?: NetIncomeActivity | null;
+  /** The report year month by month in secondary / main activity. */
+  secondary?: NetIncomeSecondaryYear;
   byMonth: { month: number; income: number; taxes: number; sharedExpenses: number; net: number }[] | null;
   invoices: {
     id: string;

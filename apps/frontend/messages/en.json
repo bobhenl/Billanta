@@ -1947,7 +1947,8 @@
         "errors": {
           "month": "Fill in the month each row applies from.",
           "duplicate": "Two rows have the same month. Merge them into one.",
-          "amount": "Advances must be numbers from 0 to 10,000,000."
+          "amount": "Advances must be numbers from 0 to 10,000,000.",
+          "secondary_activity_period_invalid": "The secondary activity cannot end before it starts."
         },
         "flatTaxLabel": {
           "flat": "Flat tax",
@@ -1962,7 +1963,10 @@
           "yes": "Yes",
           "no": "No",
           "main": "Main",
-          "secondary": "Secondary"
+          "secondary": "Secondary",
+          "secondaryFrom": "Secondary activity from",
+          "secondaryTo": "To",
+          "secondaryPeriodHint": "Optional, for example when you are a student only until a certain day. An empty field means no limit. Outside this period the activity counts as main."
         },
         "minimumAsk": {
           "flatTax": "To show the statutory minimum, tell us whether you are in the flat-tax regime:",
@@ -14188,9 +14192,15 @@
         "custom": "Other amount…",
         "customAmount": "Total credits for the year"
       },
-      "secondaryActivity": "Secondary activity (student, employee, parental leave…)",
       "secondaryActivityHint": "Below a yearly profit of {amount} CZK no social insurance is due. Health insurance is paid from the actual profit, with no minimum.",
-      "secondaryActivityUnknown": "The threshold for {year} is not known yet, so social insurance is always counted."
+      "secondaryActivityUnknown": "The threshold for {year} is not known yet, so social insurance is always counted.",
+      "secondaryActivityState": "Secondary activity:",
+      "secondaryWholeYear": "all year",
+      "secondaryNone": "no",
+      "secondaryActivityChange": "Change in company settings",
+      "secondaryActivityPartial": "The threshold drops by a twelfth for each month without secondary activity. Months of main activity are always insured.",
+      "secondaryActivityLegacy": "Turned on earlier in this report. It is now set in company settings.",
+      "secondaryActivityLegacyClear": "Turn off"
     },
     "errors": {
       "duplicate_partner": "Two partners have the same id. Remove one and add it again.",

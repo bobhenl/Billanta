@@ -153,7 +153,7 @@ export function NetIncomeView({
 
       <IncomeList report={report} canSplit={canSplit && many} nameOf={nameOf} kind={kind} />
 
-      <TaxModelEditor initial={model} readOnly={!canEdit} year={report.period.year} members={members} />
+      <TaxModelEditor initial={model} readOnly={!canEdit} year={report.period.year} members={members} activity={report.activity ?? null} />
     </>
   );
 }

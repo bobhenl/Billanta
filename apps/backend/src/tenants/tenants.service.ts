@@ -73,6 +73,25 @@ export function vatFields(
 }
 
 /**
+ * The vedlejší činnost days after the patch: a side left out keeps the stored
+ * day, so a patch with only one of them is checked against the other.
+ * Throws when the period would end before it starts.
+ */
+export function secondaryPeriodFields(
+  dto: Pick<UpdateTenantDto, "secondary_activity_from" | "secondary_activity_to">,
+  current: { secondaryActivityFrom: string | null; secondaryActivityTo: string | null } | undefined,
+): { secondaryActivityFrom?: string | null; secondaryActivityTo?: string | null } {
+  if (dto.secondary_activity_from === undefined && dto.secondary_activity_to === undefined) return {};
+  const from = dto.secondary_activity_from !== undefined ? dto.secondary_activity_from : (current?.secondaryActivityFrom ?? null);
+  const to = dto.secondary_activity_to !== undefined ? dto.secondary_activity_to : (current?.secondaryActivityTo ?? null);
+  if (from && to && from > to) throw new BadRequestException("secondary_activity_period_invalid");
+  return {
+    ...(dto.secondary_activity_from !== undefined && { secondaryActivityFrom: from }),
+    ...(dto.secondary_activity_to !== undefined && { secondaryActivityTo: to }),
+  };
+}
+
+/**
  * The advance periods as stored: oldest first, amounts rounded to cents,
  * null = not set in that period (0 stays: nothing to pay from then). A period
  * without any amount says nothing and is dropped.
@@ -177,6 +196,7 @@ export class TenantsService {
     if (slug && (await this.profileSlugTaken(db, id, slug))) throw new ConflictException({ error: "slug_taken" });
     const [row] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, id)).limit(1);
     Object.assign(values, vatFields(dto, row?.vatStatus));
+    Object.assign(values, secondaryPeriodFields(dto, row));
     if (dto.country !== undefined) {
       const change = countryChange(row?.country, dto.country, await isCountryLocked(db));
       if (change) Object.assign(values, change);

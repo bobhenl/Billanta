@@ -212,6 +212,8 @@ export const TENANT_FIELD_SECTIONS: Record<string, PermissionAction> = {
   tax_advances: "settings.company",
   flat_tax_regime: "settings.company",
   activity_kind: "settings.company",
+  secondary_activity_from: "settings.company",
+  secondary_activity_to: "settings.company",
   address_street: "settings.company",
   address_city: "settings.company",
   address_postal_code: "settings.company",

@@ -799,6 +799,13 @@
       "when": 1793602300000,
       "tag": "0120_vat_filing_reminders",
       "breakpoints": true
+    },
+    {
+      "idx": 115,
+      "version": "7",
+      "when": 1793602400000,
+      "tag": "0121_secondary_activity_period",
+      "breakpoints": true
     }
   ]
 }
