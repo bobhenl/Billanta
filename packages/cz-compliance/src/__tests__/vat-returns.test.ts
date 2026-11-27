@@ -494,6 +494,13 @@ describe("EPO structures of 2026", () => {
     expect(warnings).toEqual([]);
   });
 
+  it("KH: a Swiss VAT number is not an EU one, so its A.2 row has no k_stat", () => {
+    const ch = received({ number: "CH-1", supplierDic: "CHE123456789", reverseCharge: true, parts: [{ ratePercent: 21, base: 500, vat: 105 }], totalCzk: 500 });
+    const { xml } = generateDphKh1({ issued: [], received: [ch], submitter, period, today });
+    expect(xml).toContain('<VetaA2 c_radku="1" c_evid_dd="CH-1" dppd="15.09.2026" zakl_dane1="500" dan1="105" zakl_dane2="0" dan2="0" />');
+    expect(xml).not.toContain("k_stat=");
+  });
+
   it("writes c_ufo and c_pracufo into every VetaP when they are set", () => {
     const s = submitterFromTenant({ ...tenant, taxOffice: 461, taxWorkplace: 3004 });
     const dp3 = generateDphDp3({ issued: [issued({})], received: [], submitter: s, period, today });
