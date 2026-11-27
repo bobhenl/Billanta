@@ -165,7 +165,7 @@ describe("InvoicesService.sealCardPayment", () => {
   });
 
   it("refuses a document whose amounts the server can read (409 amounts_plain)", async () => {
-    const s = store(pending(), { id: INVOICE, tenantId: "t1", invoiceNumber: "1", documentType: "invoice", status: "paid", variableSymbol: null, encAmounts: null as never });
+    const s = store(pending(), { id: INVOICE, tenantId: "t1", invoiceNumber: "1", documentType: "invoice", status: "paid", variableSymbol: "1", encAmounts: null as never });
     await expect(seal(s)).rejects.toThrow("amounts_plain");
   });
 });
