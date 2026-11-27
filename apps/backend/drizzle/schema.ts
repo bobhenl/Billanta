@@ -234,6 +234,19 @@ export const tenants = pgTable("tenants", {
   registryNote: text("registry_note"),
   // ID datové schránky (7 chars). Public, so plain text; prefills the yearly přehled for ČSSZ.
   dataBoxId: varchar("data_box_id", { length: 7 }),
+  // Offices the yearly and VAT filings go to (CZ code lists in
+  // @faktur/cz-compliance cz-tax-offices / cz-social-offices); null = not set,
+  // the files then leave them for EPO / the portal to ask (migration 0124).
+  taxOffice: smallint("tax_office"),
+  taxWorkplace: smallint("tax_workplace"),
+  healthInsurer: varchar("health_insurer", { length: 3 }),
+  socialOffice: smallint("social_office"),
+  // An OSVČ's trvalý pobyt when it differs from the business address. The
+  // tax office knows the person by it (§ 13 daňového řádu), so VAT filings of
+  // a natural person use it in VetaP.
+  residenceStreet: text("residence_street"),
+  residenceCity: text("residence_city"),
+  residencePostalCode: varchar("residence_postal_code", { length: 10 }),
   bankAccountSwift: varchar("bank_account_swift", { length: 11 }),
   defaultDueDays: integer("default_due_days").notNull().default(14),
   defaultPaymentMethod: paymentMethodEnum("default_payment_method").notNull().default("bank_transfer"),

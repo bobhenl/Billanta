@@ -33,3 +33,32 @@ describe("TenantsService.findById", () => {
     expect(tenant).toMatchObject({ hasStripeKey: false });
   });
 });
+
+describe("TenantsService.update tax office", () => {
+  const actor = { userId: "u1", role: "owner" } as never;
+
+  it("rejects a pracoviště of another office, also against the stored office", async () => {
+    const service = new TenantsService();
+    // 3004 Brno IV belongs to 461 (Jihomoravský kraj), not to 451 (Praha).
+    await expect(service.update(dbReturning([{ id: "t1" }]), "t1", actor, { tax_office: 451, tax_workplace: 3004 })).rejects.toThrow(
+      "tax_workplace_mismatch",
+    );
+    await expect(service.update(dbReturning([{ id: "t1", taxOffice: 451 }]), "t1", actor, { tax_workplace: 3004 })).rejects.toThrow(
+      "tax_workplace_mismatch",
+    );
+  });
+
+  it("accepts a pracoviště of the stored office", async () => {
+    // The stub db has no update chain, so the call fails later; only the pair check matters here.
+    const result = await new TenantsService()
+      .update(dbReturning([{ id: "t1", taxOffice: 461 }]), "t1", actor, { tax_workplace: 3004 })
+      .catch((e: Error) => e);
+    expect(String(result instanceof Error ? result.message : "")).not.toContain("tax_workplace_mismatch");
+  });
+
+  it("rejects clearing the office while its pracoviště stays", async () => {
+    await expect(
+      new TenantsService().update(dbReturning([{ id: "t1", taxOffice: 461, taxWorkplace: 3004 }]), "t1", actor, { tax_office: null }),
+    ).rejects.toThrow("tax_workplace_mismatch");
+  });
+});
