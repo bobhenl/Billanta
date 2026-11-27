@@ -90,9 +90,5 @@ export function emailPrefsOf(stored: unknown): EmailPrefs {
   };
 }
 
-/** Replaces `{number}`, `{amount}`… — unknown placeholders stay as typed. */
-export function fillTemplate(template: string, values: Partial<Record<string, string>>): string {
-  return template.replace(/\{([a-z_][a-z0-9_]*)\}/g, (match, key: string) =>
-    Object.prototype.hasOwnProperty.call(values, key) ? (values as Record<string, string>)[key] ?? "" : match,
-  );
-}
+/** Replaces `{number}`, `{amount}`… – unknown placeholders stay as typed. Shared with the PDF layout. */
+export { fillTemplate } from "@faktur/cz-compliance";

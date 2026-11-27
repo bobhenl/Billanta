@@ -26,7 +26,7 @@ import { PayerNote } from "./payer-note";
 import { CardPayButton } from "./card-pay-button";
 import { PaymentDetails, type PaymentDetailRow } from "./payment-details";
 import { PrintButton } from "./print-button";
-import { SealedItemText, SealedNotice, SealedTextsProvider } from "./sealed-texts";
+import { SealedItemText, SealedNotice, SealedPdfButton, SealedTextsProvider } from "./sealed-texts";
 import { InfoHint } from "@/components/info-hint";
 import { buttonClass } from "@/lib/ui-classes";
 import { cn } from "@/lib/utils";
@@ -291,8 +291,7 @@ export default async function PublicInvoicePage({
             )}
           </div>
           {/* The real document once it has a number; an unnumbered one can only be printed from the page. */}
-          {/* The server can't print what it can't read, so a sealed document prints from this page.
-              TODO: switch to the shared in-browser PDF renderer once it lands. */}
+          {/* The server can't print what it can't read, so this browser draws a sealed document's PDF. */}
           {invoice.invoiceNumber && !sealed ? (
             <a
               href={`/api/public/invoices/${token}/pdf`}
@@ -304,6 +303,8 @@ export default async function PublicInvoicePage({
               <span className="sm:hidden">{t("downloadPdfShort")}</span>
               <span className="hidden sm:inline">{t("downloadPdf")}</span>
             </a>
+          ) : invoice.invoiceNumber ? (
+            <SealedPdfButton token={token} />
           ) : (
             <PrintButton />
           )}

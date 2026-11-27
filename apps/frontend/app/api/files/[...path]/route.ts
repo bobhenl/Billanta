@@ -10,6 +10,9 @@ import { apiFetchRaw, ApiError, NotSignedInError } from '@/lib/api-client';
 const ALLOWED = [
   // Route names stay case-sensitive (only the ids may be upper-case).
   /^invoices\/[0-9a-fA-F-]{36}\/(pdf|isdoc|ubl)$/,
+  // Důvěrný režim: the browser draws a sealed invoice's PDF/ISDOC from these itself.
+  /^invoices\/[0-9a-fA-F-]{36}\/(pdf-model|isdoc-input|ubl-input)$/,
+  /^invoices\/pdf-fonts\/(regular|bold)$/,
   /^invoices\/[0-9a-fA-F-]{36}\/attachments\/[0-9a-fA-F-]{36}$/,
   /^expenses\/[0-9a-fA-F-]{36}\/attachments\/[0-9a-fA-F-]{36}$/,
   /^tenants\/me\/logo$/,

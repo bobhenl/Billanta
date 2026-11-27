@@ -7418,13 +7418,23 @@
         "buyer_details_cancelled": "hat die Anfrage nach Kundenangaben geschlossen für",
         "profile_order": "erstellt durch eine Bestellung über das öffentliche Profil:",
         "link_renamed": "hat den öffentlichen Link umbenannt",
-        "send_waiting_pdf": "zum Versand mit PDF vorgemerkt:"
+        "send_waiting_pdf": "zum Versand mit PDF vorgemerkt:",
+        "locked": "hat gesperrt",
+        "unlocked": "hat entsperrt",
+        "made_private": "hat als privat markiert",
+        "made_shared": "hat für das Team freigegeben"
       },
       "tenant": {
         "updated": "hat die Unternehmensdaten bearbeitet",
         "logo_uploaded": "hat das Logo hochgeladen",
         "logo_removed": "hat das Logo entfernt",
-        "number_formats_updated": "hat die Belegnummerierung geändert"
+        "number_formats_updated": "hat die Belegnummerierung geändert",
+        "vault_wrap_removed": "hat eine Entsperrmethode des Tresors entfernt",
+        "vault_password_replaced": "hat das Tresorpasswort geändert",
+        "vault_seal_new_off": "hat die Verschlüsselung neuer Belege ausgeschaltet",
+        "vault_recovery_replaced": "hat den Wiederherstellungscode des Tresors ersetzt",
+        "vault_enabled": "hat den vertraulichen Modus eingeschaltet",
+        "vault_categories_changed": "hat die Kategorien des vertraulichen Modus geändert"
       },
       "bank_account": {
         "created": "hat das Bankkonto hinzugefügt",
@@ -7434,7 +7444,8 @@
       "contact": {
         "created": "hat den Kontakt hinzugefügt",
         "updated": "hat den Kontakt bearbeitet",
-        "deleted": "hat den Kontakt gelöscht"
+        "deleted": "hat den Kontakt gelöscht",
+        "visibility_changed": "hat Zuständigkeit und Sichtbarkeit geändert von"
       },
       "member": {
         "invited": "hat eingeladen",
@@ -7532,7 +7543,14 @@
       "skippedRows": "Übersprungene Zeilen",
       "numberFormat": "Nummernformat",
       "nextNumber": "Nächste Nummer",
-      "publicSlug": "Linkname"
+      "publicSlug": "Linkname",
+      "stepUp": "Bestätigt mit",
+      "vaultWrap": "Entsperrmethode des Tresors",
+      "sealNew": "Neue Belege verschlüsseln",
+      "isPrivate": "Privat",
+      "ownerUserId": "Gehört zu",
+      "contactScope": "Sieht Kunden",
+      "vaultCategories": "Ausgeschaltete Kategorien"
     },
     "values": {
       "invoice": "Rechnung",
@@ -7547,7 +7565,12 @@
       "owner": "Inhaber",
       "admin": "Administrator",
       "accountant": "Buchhaltung",
-      "viewer": "Nur lesen"
+      "viewer": "Nur lesen",
+      "totp": "App-Code",
+      "recovery": "Wiederherstellungscode",
+      "password": "Passwort",
+      "recent_sign_in": "Kürzliche Anmeldung",
+      "passkey": "Passkey"
     },
     "cleared": "geleert",
     "filters": {
@@ -14340,7 +14363,7 @@
       "lead": "Verschlüsseln – den Inhalt sehen nur Sie und Mitglieder mit Schlüssel, der Server kann ihn nicht lesen.",
       "what": "Verschlüsselt werden Positionsbeschreibungen und Notizen (über und unter den Positionen sowie interne).",
       "keeps": "Berichte und Dashboards funktionieren weiter: Beträge, Daten und Verwendungszwecke bleiben unverschlüsselt.",
-      "loses": "Für verschlüsselte Belege erstellt der Server kein PDF oder ISDOC und hängt sie keiner E-Mail an. Die Textsuche läuft nach dem Entsperren nur in Ihrem Browser.",
+      "loses": "Für verschlüsselte Belege erstellt nur Ihr Browser PDF, ISDOC und UBL. Der Server hängt sie nur dann an eine E-Mail an, wenn die Datei aus Ihrem Browser einmal durch ihn läuft, und speichert sie nicht. Die Textsuche läuft nach dem Entsperren nur in Ihrem Browser.",
       "locked": "Gesperrte Belege werden übersprungen.",
       "done": "{n, plural, one {# Beleg verschlüsselt} other {# Belege verschlüsselt}}.",
       "nothing": "Es gab nichts zu verschlüsseln.",
@@ -14353,14 +14376,13 @@
       "unlock": "Entsperren",
       "sealFailed": "Der Beleg konnte nicht verschlüsselt werden. Nichts wurde gespeichert.",
       "sealToggle": "Diesen Beleg verschlüsseln",
-      "sealOnHint": "Positionsbeschreibungen und Notizen sehen nur Sie und Mitglieder mit Schlüssel. PDF und ISDOC sind nicht verfügbar, Positionsvorschläge werden nur in Ihrem Browser gesucht.",
+      "sealOnHint": "Positionsbeschreibungen und Notizen sehen nur Sie und Mitglieder mit Schlüssel. PDF, ISDOC und UBL erstellt Ihr Browser, Positionsvorschläge werden nur in Ihrem Browser gesucht.",
       "sealOffHint": "Der Beleg wird wie bisher unverschlüsselt gespeichert.",
       "aiConsent": "Diesen Text an die KI senden – er geht einmalig an den Server und den KI-Anbieter und wird nicht gespeichert",
       "aiConsentHint": "Der Server speichert und protokolliert den Text nicht. Was die KI zurückgibt, wird beim Speichern in Ihrem Browser verschlüsselt. Die Zustimmung gilt nur für diesen einen Lauf."
     },
     "actions": {
-      "blocked": "Im Vertraulichen Modus nicht verfügbar: Der Server kann einen verschlüsselten Beleg nicht lesen. Schalten Sie den PDF/ISDOC-Anhang in den E-Mail-Einstellungen aus oder senden Sie einen Link.",
-      "pdfUnavailable": "PDF ist im Vertraulichen Modus nicht verfügbar. Sie können die Detailseite aus dem Browser drucken (Strg+P).",
+      "blocked": "Die verschlüsselten Texte ließen sich nicht öffnen. Entsperren Sie den Tresor mit dem richtigen Schlüssel und versuchen Sie es erneut.",
       "sendHint": "Das Dokument ist verschlüsselt, daher kann der Server weder PDF noch ISDOC selbst erstellen. Je nach Einstellung geht der Link sofort und das PDF aus Ihrem Browser, oder nur der Link.",
       "linkCopied": "Link mit Schlüssel kopiert",
       "keyLink": "Kundenlink mit Schlüssel",
@@ -14370,8 +14392,13 @@
       "unlockFirst": "Ohne Entsperren lassen sich verschlüsselte Anlagen nicht anhängen.",
       "decryptFailed": "Eine Anlage konnte nicht entschlüsselt werden.",
       "passFiles": "{n, plural, one {# verschlüsselte Anlage anhängen} other {# verschlüsselte Anlagen anhängen}}",
-      "passFilesHint": "Ihr Browser entschlüsselt sie, und sie gehen einmalig über den Server in diese E-Mail. Der Server speichert sie nicht und löscht sie nach der Zustellung.",
-      "passFilesWaiting": "Dieser Beleg wartet darauf, dass ein Browser das PDF erstellt, und die Anlagen dürfen nicht auf dem Server warten. Senden Sie die E-Mail ohne sie, oder stellen Sie im vertraulichen Modus ein, dass der Link sofort geht."
+      "passFilesHint": "Ihr Browser entschlüsselt sie, und sie gehen einmalig über den Server in diese E-Mail. Der Server speichert und protokolliert sie nicht.",
+      "passFilesWaiting": "Dieses Dokument wartet darauf, dass ein Browser das PDF erstellt, und die Anhänge dürfen nicht auf dem Server warten. Haken Sie auch „PDF/ISDOC anhängen“ an, dann geht alles auf einmal raus, oder senden Sie die E-Mail ohne Anhänge.",
+      "pdfLocal": "Das PDF erstellt Ihr Browser, der Server sieht die verschlüsselten Texte nicht.",
+      "isdocLocal": "Die ISDOC-Datei erstellt Ihr Browser, der Server sieht die verschlüsselten Texte nicht.",
+      "attachOnce": "PDF/ISDOC anhängen – die Datei läuft zum Versand einmal über den Server und wird nicht gespeichert",
+      "attachOnceHint": "PDF und ISDOC erstellt Ihr Browser. Der Server schickt sie einmal in dieser E-Mail an den Kunden, ohne sie zu speichern oder zu protokollieren.",
+      "ublLocal": "Die UBL-Datei erstellt Ihr Browser, der Server sieht die verschlüsselten Texte nicht."
     },
     "categories": {
       "recommended": "Empfohlen",
@@ -14381,12 +14408,15 @@
         "title": "Positionsbeschreibungen und Notizen",
         "description": "Was Sie geliefert haben und die Notizen auf dem Beleg. Beträge, Daten und Symbole bleiben lesbar.",
         "loses": [
-          "Vom Server erstellte PDF-, ISDOC-, UBL- und Peppol-Dateien",
-          "PDF/ISDOC-Anhang in E-Mails",
+          "Versand über Peppol",
           "Textsuche und Positionsvorschläge auf dem Server (nach dem Entsperren übernimmt das Ihr Browser)",
           "KI-Vorausfüllen ohne ausdrücklichen Klick (der Text geht nur nach Ihrer Bestätigung einmalig über den Server zur KI und wird nicht gespeichert)",
           "Öffentlicher Link: Ihr Kunde sieht den vollen Wortlaut nur über den Link mit Schlüssel aus der Belegansicht. Ein Link ohne Schlüssel (z. B. aus einer automatischen Mahnung) zeigt ihn nur auf einem Gerät, auf dem der Kunde vorher den vollständigen Link geöffnet hat",
           "Lesbare Texte in den Buchhaltungsexporten des Servers (Pohoda, Money und CSV zeigen „[Důvěrný obsah]“; den Export mit entschlüsselten Texten erstellt Ihr Browser)"
+        ],
+        "changes": [
+          "PDF, ISDOC und UBL erstellt Ihr Browser",
+          "PDF/ISDOC-Anhang in E-Mails: Ihr Browser erstellt die Datei, sie läuft einmal durch den Server und wird nicht gespeichert"
         ]
       },
       "attachments": {
@@ -14433,7 +14463,8 @@
           "Mahnungen mit Betrag und vom Server erstellte QR-Zahlungen"
         ]
       },
-      "howTitle": "So funktioniert es:"
+      "howTitle": "So funktioniert es:",
+      "changesTitle": "Funktioniert anders:"
     },
     "enable": {
       "offTitle": "Der Vertrauliche Modus ist aus",
@@ -14786,5 +14817,28 @@
       "Den Verschlüsselungscode (eine Datei ohne Abhängigkeiten) veröffentlichen wir in einem eigenen GitHub-Repository, damit sich die Hashes mit einem eigenen Build vergleichen lassen.",
       "Eine unabhängige Prüfung des Codes ist geplant."
     ]
+  },
+  "stepUp": {
+    "title": "Bestätigen Sie, dass Sie es sind",
+    "loading": "Wird geladen…",
+    "intro": {
+      "totp": "Vor Sicherheitsänderungen fragen wir erneut nach. Geben Sie den Code aus Ihrer Authenticator-App oder einen Wiederherstellungscode ein.",
+      "password": "Vor Sicherheitsänderungen fragen wir erneut nach. Geben Sie Ihr Kontopasswort ein.",
+      "sign_in": "Vor Sicherheitsänderungen fragen wir erneut nach. Ihr Konto hat kein Passwort, daher genügt eine kürzliche Anmeldung. Ist sie älter, melden Sie sich erneut an."
+    },
+    "code": "App-Code oder Wiederherstellungscode",
+    "password": "Passwort",
+    "twoFactorHint": "Mit Zwei-Faktor-Authentifizierung wäre hier ein Code vom Handy nötig, das Passwort allein würde nicht reichen.",
+    "twoFactorLink": "Zwei-Faktor-Authentifizierung einschalten",
+    "note": "Die Bestätigung gilt 5 Minuten in diesem Browser.",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "errors": {
+      "invalid_code": "Der Code stimmt nicht. Versuchen Sie es erneut.",
+      "wrong_current": "Das Passwort stimmt nicht.",
+      "reauth_required": "Bitte melden Sie sich erneut an und wiederholen Sie die Änderung.",
+      "too_many_attempts": "Zu viele Versuche. Versuchen Sie es in ein paar Minuten erneut.",
+      "generic": "Die Bestätigung ist fehlgeschlagen."
+    }
   }
 }

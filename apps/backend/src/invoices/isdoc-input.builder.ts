@@ -94,8 +94,23 @@ export function buildIsdocInvoiceInput(
   totals: InvoiceVatBreakdown,
 ): IsdocInvoiceInput {
   // ISDOC, UBL and Peppol carry the item texts; encrypted ones can only be exported in the browser.
-  // The same for an encrypted buyer (category "contacts"). TODO(vault-client-pdf): browser export.
+  // The same for an encrypted buyer (category "contacts").
   assertServerReadable(...printedTexts(invoice, lineItems), ...documentBuyerTexts(invoice, contact));
+  return buildIsdocInvoiceInputSealed(invoice, contact, tenant, lineItems, totals);
+}
+
+/**
+ * The same input with sealed item texts left as envelopes, for the browser
+ * to open and turn into ISDOC itself. Never feed it to a server-side
+ * generator: that is what the check in `buildIsdocInvoiceInput` is for.
+ */
+export function buildIsdocInvoiceInputSealed(
+  invoice: InvoiceRow,
+  contact: ContactRow,
+  tenant: TenantRow,
+  lineItems: LineItemRow[],
+  totals: InvoiceVatBreakdown,
+): IsdocInvoiceInput {
   if (!invoice.invoiceNumber || !invoice.issueDate || !invoice.dueDate) {
     throw new Error(
       "buildIsdocInvoiceInput: invoice is missing invoiceNumber/issueDate/dueDate – has it been issued?",

@@ -302,10 +302,35 @@ describe("InvoicesService.sendInvoice", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db = { select, update } as any;
 
-    await service.sendInvoice(db, "inv-1", undefined, "user-1", passed);
+    await service.sendInvoice(db, "inv-1", undefined, "user-1", { extra: passed });
 
     expect(emailService.sendInvoiceEmail).not.toHaveBeenCalled();
     expect(emailService.sendNow).toHaveBeenCalledWith(expect.objectContaining({ to: "client@example.com" }), expect.objectContaining({ userId: "user-1" }));
+  });
+
+  it("sends the browser's PDF and decrypted files in one e-mail at once, even in the wait mode", async () => {
+    const invoice = makeInvoice({ noteAbove: await seal(await generateDataKey(), "důvěrné") });
+    const select = vi
+      .fn()
+      .mockReturnValueOnce(makeSelectChain([invoice]))
+      .mockReturnValueOnce(makeSelectChain([makeContact()]))
+      .mockReturnValueOnce(makeSelectChain(lineItems))
+      // Důvěrný režim set to "wait for the PDF" and PDFs attached: without the browser's PDF the e-mail would wait.
+      .mockReturnValue(
+        makeSelectChain([{ mode: "wait", emailPrefs: { attachPdf: true }, companyName: "Vejtom", publicProfile: {}, invoiceFormPrefs: {}, planEnforced: true, referralCode: null }]),
+      );
+    const insert = vi.fn();
+    const update = vi.fn().mockReturnValue(makeUpdateChain([invoice]));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = { select, update, insert } as any;
+
+    const result = await service.sendInvoice(db, "inv-1", undefined, "user-1", { pdf: Buffer.from("%PDF-1.3 sealed"), extra: passed });
+
+    expect(result).not.toHaveProperty("vaultEmail");
+    expect(insert).not.toHaveBeenCalled();
+    expect(emailService.sendInvoiceEmail).not.toHaveBeenCalled();
+    const [email] = emailService.sendNow.mock.calls[0]!;
+    expect((email as { attachments: { filename: string }[] }).attachments.map((a) => a.filename)).toEqual([expect.stringMatching(/\.pdf$/), "uctenka.pdf"]);
   });
 
   it("refuses decrypted files when the e-mail would wait for a browser, so they are never queued", async () => {
@@ -322,7 +347,7 @@ describe("InvoicesService.sendInvoice", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db = { select, update: vi.fn(), insert } as any;
 
-    await expect(service.sendInvoice(db, "inv-1", "tenant-1", "user-1", passed)).rejects.toBeInstanceOf(ConflictException);
+    await expect(service.sendInvoice(db, "inv-1", "tenant-1", "user-1", { extra: passed })).rejects.toThrow("pass_files_waiting");
     expect(insert).not.toHaveBeenCalled();
     expect(emailService.sendNow).not.toHaveBeenCalled();
     expect(emailService.sendInvoiceEmail).not.toHaveBeenCalled();
@@ -1011,5 +1036,33 @@ describe("invoiceFileBase", () => {
     expect(invoiceFileBase({ invoiceNumber: "P1", documentType: "quote", language: "sk" })).toBe("cenova-ponuka-P1");
     expect(invoiceFileBase({ invoiceNumber: "D1", documentType: "credit_note", language: "en" })).toBe("credit-note-D1");
     expect(invoiceFileBase({ invoiceNumber: null, documentType: "invoice", language: "de" })).toBe("faktura-koncept");
+  });
+});
+
+describe("InvoicesService.sendInvoice with browser-rendered files (Důvěrný režim)", () => {
+  const files = { pdf: Buffer.from("%PDF-1.3") };
+  const sealedItem = { ...lineItems[0]!, description: "enc:v1:AAAAAAAAAAAAAAAA:BBBBBBBBBBBBBBBBBBBBBBBB" };
+  const setup = (invoice: ReturnType<typeof makeInvoice>, items: typeof lineItems) => {
+    const emailService = { sendInvoiceEmail: vi.fn().mockResolvedValue(undefined) };
+    const service = new InvoicesService(emailService as unknown as EmailService, { generate: vi.fn() } as unknown as InvoicePdfService);
+    const select = vi
+      .fn()
+      .mockReturnValueOnce(makeSelectChain([invoice]))
+      .mockReturnValueOnce(makeSelectChain([makeContact()]))
+      .mockReturnValueOnce(makeSelectChain(items));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return { emailService, service, db: { select, update: vi.fn() } as any };
+  };
+
+  it("refuses files for a plain invoice: the server renders its own", async () => {
+    const { emailService, service, db } = setup(makeInvoice(), lineItems);
+    await expect(service.sendInvoice(db, "inv-1", undefined, undefined, files)).rejects.toThrow("not_confidential");
+    expect(emailService.sendInvoiceEmail).not.toHaveBeenCalled();
+  });
+
+  it("refuses files for a sealed draft that has no number yet", async () => {
+    const { emailService, service, db } = setup(makeInvoice({ invoiceNumber: null, status: "draft" }), [sealedItem]);
+    await expect(service.sendInvoice(db, "inv-1", undefined, undefined, files)).rejects.toThrow("invoice_not_issued");
+    expect(emailService.sendInvoiceEmail).not.toHaveBeenCalled();
   });
 });

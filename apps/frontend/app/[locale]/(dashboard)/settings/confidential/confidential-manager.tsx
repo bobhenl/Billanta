@@ -17,6 +17,7 @@ import {
 import { Banner } from '@/components/banner';
 import { PasswordInput } from '@/components/password-input';
 import { toast } from '@/components/toaster';
+import { useStepUp } from '@/components/step-up';
 import { SealAttachmentsButton } from '@/components/vault/seal-attachments-button';
 import { SealContactsButton } from '@/components/vault/seal-contacts-button';
 import { SealButton } from '@/components/vault/seal-button';
@@ -76,6 +77,8 @@ function CategoryList({ selected, onToggle }: { selected: VaultCategory[]; onTog
       {VAULT_CATEGORIES.map((category) => {
         const on = selected.includes(category.id);
         const loses = t.raw(`${category.id}.loses`) as string[];
+        // What keeps working, only differently (made in the browser, sent on an explicit click).
+        const changes = t.has(`${category.id}.changes`) ? (t.raw(`${category.id}.changes`) as string[]) : [];
         const how = t.has(`${category.id}.how`) ? (t.raw(`${category.id}.how`) as string[]) : [];
         return (
           <li key={category.id} className={cn('rounded-xl border p-3', on ? 'border-primary/40 bg-accent/30' : 'border-border bg-card', !category.available && 'opacity-80')}>
@@ -110,6 +113,16 @@ function CategoryList({ selected, onToggle }: { selected: VaultCategory[]; onTog
                     <li key={line}>{line}</li>
                   ))}
                 </ul>
+                {changes.length > 0 && (
+                  <>
+                    <span className="mt-2 block text-xs font-semibold">{t('changesTitle')}</span>
+                    <ul className="mt-1 list-disc space-y-0.5 pl-5 text-xs text-muted-foreground">
+                      {changes.map((line) => (
+                        <li key={line}>{line}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
               </span>
             </label>
           </li>
@@ -356,6 +369,8 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
   const [passkeyLabel, setPasskeyLabel] = useState('');
   const [newCode, setNewCode] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // Removing or replacing a way in, and switching encryption of new documents off, need a step-up.
+  const { withStepUp, stepUpDialog } = useStepUp();
   const passkeys = vault.wraps.filter((w) => w.kind === 'passkey');
   const hasPassword = vault.wraps.some((w) => w.kind === 'password');
 
@@ -377,6 +392,7 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
 
   return (
     <div className="mt-4 space-y-4">
+      {stepUpDialog}
       <section className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-4">
         {key ? <LockOpen className="h-5 w-5 text-success" aria-hidden="true" /> : <LockKeyhole className="h-5 w-5 text-primary" aria-hidden="true" />}
         <div className="min-w-0 flex-1">
@@ -427,7 +443,10 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
               type="checkbox"
               defaultChecked={vault.sealNew}
               onChange={async (e) => {
-                const r = await updateVaultSettings(e.target.checked);
+                const box = e.currentTarget;
+                const next = box.checked;
+                const r = await withStepUp(() => updateVaultSettings(next));
+                if (!r) return void (box.checked = !next);
                 report(r.ok, t('saved'));
               }}
               className="mt-0.5 h-4 w-4 accent-primary"
@@ -459,7 +478,10 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
               <span className="flex-1">{p.label || t('passkeyUnnamed')}</span>
               <button
                 type="button"
-                onClick={async () => report((await removeVaultWrap(p.id)).ok, t('passkeyRemoved'))}
+                onClick={async () => {
+                  const r = await withStepUp(() => removeVaultWrap(p.id));
+                  if (r) report(r.ok, t('passkeyRemoved'));
+                }}
                 className={buttonClass.ghost}
                 aria-label={t('removePasskey')}
               >
@@ -489,7 +511,9 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
               label={t('savePassword')}
               onKey={async (k) => {
                 if (newPassword.length < MIN_PASSWORD) return void toast({ text: t('passwordShort', { n: MIN_PASSWORD }), tone: 'err' });
-                const r = await addVaultWrap(await wrapWithPassword(k, newPassword));
+                const wrap = await wrapWithPassword(k, newPassword);
+                const r = await withStepUp(() => addVaultWrap(wrap));
+                if (!r) return;
                 if (r.ok) await keepUnlocked(k);
                 setNewPassword('');
                 report(r.ok, t('passwordSaved'));
@@ -542,8 +566,10 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
               onKey={async (k) => {
                 setBusy(true);
                 const code = generateRecoveryCode();
-                const r = await replaceRecoveryWrap(await wrapWithRecoveryCode(k, code));
+                const wrap = await wrapWithRecoveryCode(k, code);
+                const r = await withStepUp(() => replaceRecoveryWrap(wrap));
                 setBusy(false);
+                if (!r) return;
                 if (r.ok) setNewCode(code);
                 report(r.ok, t('recoveryReplaced'));
               }}
@@ -568,7 +594,9 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
                   const next = vault.categories.includes(id) ? vault.categories.filter((c) => c !== id) : [...vault.categories, id];
                   if (!next.length) return void toast({ text: t('categoriesMin'), tone: 'err' });
                   if (!next.includes(id) && !window.confirm(t('categoryOffConfirm'))) return;
-                  report((await updateVaultCategories(next)).ok, t('saved'));
+                  // Dropping a category needs a step-up; adding one does not.
+                  const r = await withStepUp(() => updateVaultCategories(next));
+                  if (r) report(r.ok, t('saved'));
                 }
               : undefined
           }

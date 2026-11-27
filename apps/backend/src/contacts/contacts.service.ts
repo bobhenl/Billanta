@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { assertStepUp, stepUpChange } from "../auth/step-up";
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException, Optional } from "@nestjs/common";
 import { clientPortalLinkOf, newShortKey } from "../public-links/public-link";
 import { assertPlanFeature } from "../billing/plan-limits";
@@ -680,6 +681,7 @@ export class ContactsService {
       .filter((field) => set[field] !== before[field])
       .map((field) => ({ field, from: before[field], to: set[field] }));
     if (changes.length === 0) return before;
+    const stepUp = assertStepUp(user);
     let row: typeof before | undefined;
     try {
       [row] = await db
@@ -690,7 +692,7 @@ export class ContactsService {
     } catch (error) {
       throw visibilityError(error);
     }
-    await this.audit?.record(db, before.tenantId, { entityType: "contact", entityId: id, entityLabel: contactLabel(before.legalName), action: "visibility_changed", changes });
+    await this.audit?.record(db, before.tenantId, { entityType: "contact", entityId: id, entityLabel: contactLabel(before.legalName), action: "visibility_changed", changes: [...changes, stepUpChange(stepUp)] });
     return row ?? before;
   }
 

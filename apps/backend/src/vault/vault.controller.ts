@@ -58,13 +58,13 @@ export class VaultController {
   @Post("me/wraps")
   @ApiOperation({ summary: "Set the caller's vault password or add a passkey (the key wrapped in the browser)" })
   addWrap(@Req() req: TenantScopedRequest, @Body() dto: MemberWrapDto) {
-    return this.vault.addWrap(req.tenantDb!, req.user!.tenantId, req.user!.id, dto.wrap);
+    return this.vault.addWrap(req.tenantDb!, req.user!.tenantId, req.user!, dto.wrap);
   }
 
   @Delete("me/wraps/:id")
   @ApiOperation({ summary: "Remove one of the caller's own unlock methods" })
   removeWrap(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
-    return this.vault.removeWrap(req.tenantDb!, req.user!.tenantId, req.user!.id, id);
+    return this.vault.removeWrap(req.tenantDb!, req.user!.tenantId, req.user!, id);
   }
 
   @Post("enable")

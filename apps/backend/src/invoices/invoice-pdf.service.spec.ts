@@ -1,5 +1,6 @@
 import PDFDocument from "pdfkit";
 import QRCode from "qrcode";
+import { generateDataKey, open, openInvoicePdfModel, renderInvoicePdf, seal } from "@faktur/cz-compliance";
 import { describe, expect, it, vi } from "vitest";
 import * as schema from "../../drizzle/schema";
 import { computeVatBreakdown } from "./invoice-total.util";
@@ -529,5 +530,43 @@ describe("InvoicePdfService credit note", () => {
     text.mockRestore();
     expect(lines).not.toContain("Celkem k úhradě");
     expect(lines).toContain("Celkem");
+  });
+});
+
+describe("InvoicePdfService Důvěrný režim (sealed texts)", () => {
+  async function sealedInvoice() {
+    const key = await generateDataKey();
+    const lineItems = makeLineItems().map((li) => ({ ...li, description: "" }));
+    lineItems[0]!.description = await seal(key, "Tajná položka");
+    const invoice = makeInvoice({ noteAbove: await seal(key, "Tajná poznámka"), noteBelow: null });
+    return { key, invoice, lineItems, totals: computeVatBreakdown(lineItems) };
+  }
+
+  it("refuses to render a sealed invoice on the server", async () => {
+    const { invoice, lineItems, totals } = await sealedInvoice();
+    const service = new InvoicePdfService();
+    // Before any of the layout work: the shared renderer refusing too is only the second line.
+    const build = vi.spyOn(service, "buildModel");
+    await expect(service.generate(invoice, makeContact(), makeTenant(), lineItems, totals)).rejects.toThrow("confidential_content");
+    expect(build).not.toHaveBeenCalled();
+  });
+
+  it("hands the browser a model with the envelopes untouched, which only renders once opened", async () => {
+    const { key, invoice, lineItems, totals } = await sealedInvoice();
+    const model = await new InvoicePdfService().buildModel(invoice, makeContact(), makeTenant(), lineItems, totals);
+    expect(model.noteAbove).toBe(invoice.noteAbove);
+    expect(model.table.items[0]!.description).toBe(lineItems[0]!.description);
+    expect(JSON.stringify(model)).not.toContain("Tajná");
+
+    await expect(renderInvoicePdf(PDFDocument, model, null)).rejects.toThrow("confidential_content");
+
+    const text = vi.spyOn(PDFDocument.prototype, "text");
+    const pdf = await renderInvoicePdf(PDFDocument, await openInvoicePdfModel(model, (v) => open(key, v)), null);
+    const lines = text.mock.calls.map((c) => String(c[0]));
+    text.mockRestore();
+    expect(Buffer.from(pdf).subarray(0, 5).toString("latin1")).toBe("%PDF-");
+    expect(lines).toContain("Tajná položka");
+    expect(lines.some((l) => l.includes("Tajná poznámka"))).toBe(true);
+    expect(lines.some((l) => l.startsWith("enc:v1:"))).toBe(false);
   });
 });

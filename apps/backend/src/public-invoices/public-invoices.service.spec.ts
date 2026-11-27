@@ -1,7 +1,7 @@
 import { NotFoundException } from "@nestjs/common";
 import { describe, expect, it, vi } from "vitest";
 import { generateDataKey, generateDocumentKey, seal, sealWithDocumentKey } from "@faktur/cz-compliance";
-import { pdfFilename, PublicInvoicesService } from "./public-invoices.service";
+import { clientPdfModel, pdfFilename, PublicInvoicesService } from "./public-invoices.service";
 
 const TOKEN = "3f2504e0-4f89-41d3-9a0c-0305e82c3301";
 
@@ -136,6 +136,31 @@ describe("PublicInvoicesService.findByPublicToken totals", () => {
     expect(v.vatTotal).toBe(0);
     expect(v.total).toBe(1800);
     expect(v.qrInvoice).toContain("*AM:1800.00*");
+  });
+});
+
+describe("clientPdfModel", () => {
+  it("hands the client only document-key ciphertext of the items and drops sealed notes", async () => {
+    const company = await generateDataKey();
+    const doc = await generateDocumentKey(company);
+    const item = await sealWithDocumentKey(doc, "Tajná položka");
+    const note = await seal(company, "Interní poznámka");
+    const model = {
+      noteAbove: note,
+      notes: { noteBelow: "Děkujeme" },
+      table: { items: [{ description: item }, { description: "Plain" }] },
+    } as never;
+    const out = clientPdfModel(model) as unknown as {
+      noteAbove: string | null;
+      notes: { noteBelow: string | null };
+      table: { items: { description: string }[] };
+    };
+    expect(out.noteAbove).toBeNull();
+    expect(out.notes.noteBelow).toBe("Děkujeme");
+    expect(out.table.items[0].description).toBe(item.split(":").slice(0, 4).join(":"));
+    expect(out.table.items[1].description).toBe("Plain");
+    // The wrapped document key stays on the server.
+    expect(JSON.stringify(out)).not.toContain(doc.wrap.split(":")[1]);
   });
 });
 

@@ -1,14 +1,19 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { KeyRound } from 'lucide-react';
+import { createContext, useContext, useEffect, useState, useTransition, type ReactNode } from 'react';
+import { Download, KeyRound, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { forgetClientKeys, openClientTexts, type ClientCipherText, type ClientTextsResult } from '@faktur/cz-compliance';
+import { renderClientPdf, saveDocument } from '@/lib/vault/documents';
+import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
+import { PrintButton } from './print-button';
 
 type State = { status: 'opening' } | ({ status: 'done'; forgotten?: true } & ClientTextsResult);
 
-const SealedContext = createContext<{ state: State; preview: boolean; forget: (keyIds: string[]) => void }>({
+const SealedContext = createContext<{ state: State; items: (ClientCipherText | null)[]; preview: boolean; forget: (keyIds: string[]) => void }>({
   state: { status: 'done', texts: [], source: null },
+  items: [],
   preview: false,
   forget: () => {}
 });
@@ -54,7 +59,7 @@ export function SealedTextsProvider({ items, preview, children }: { items: (Clie
     setState((s) => (s.status === 'done' ? { status: 'done', texts: s.texts.map(() => null), source: null, forgotten: true } : s));
   };
 
-  return <SealedContext.Provider value={{ state, preview, forget }}>{children}</SealedContext.Provider>;
+  return <SealedContext.Provider value={{ state, items, preview, forget }}>{children}</SealedContext.Provider>;
 }
 
 /** One line item's text: the opened one, or "Důvěrná položka" while it stays closed. */
@@ -96,5 +101,49 @@ export function SealedNotice({ keyIds }: { keyIds: string[] }) {
         </button>
       ) : null}
     </p>
+  );
+}
+
+/**
+ * The download button of an encrypted document: once every item text opened
+ * here, this browser draws the PDF from them (the server cannot). Until then,
+ * or if drawing fails, the page's own print dialog stays the way out.
+ */
+export function SealedPdfButton({ token }: { token: string }) {
+  const t = useTranslations('publicInvoice');
+  const { state, items } = useContext(SealedContext);
+  const [pending, startTransition] = useTransition();
+  const [failed, setFailed] = useState(false);
+  const opened = new Map<string, string>();
+  if (state.status === 'done') items.forEach((item, i) => item && state.texts[i] != null && opened.set(item.cipher, state.texts[i]!));
+  const ready = state.status === 'done' && items.every((item) => !item || opened.has(item.cipher));
+  if (!ready || failed) return <PrintButton />;
+
+  const download = () =>
+    startTransition(async () => {
+      try {
+        const doc = await renderClientPdf(token, async (cipher) => {
+          const text = opened.get(cipher);
+          if (text == null) throw new Error('closed');
+          return text;
+        });
+        saveDocument(doc);
+      } catch {
+        setFailed(true);
+      }
+    });
+
+  return (
+    <button
+      type="button"
+      onClick={download}
+      disabled={pending}
+      className={cn(buttonClass.primary, 'h-10 shrink-0 px-3 sm:px-4 print:hidden')}
+      aria-label={t('downloadPdf')}
+    >
+      {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+      <span className="sm:hidden">{t('downloadPdfShort')}</span>
+      <span className="hidden sm:inline">{t('downloadPdf')}</span>
+    </button>
   );
 }

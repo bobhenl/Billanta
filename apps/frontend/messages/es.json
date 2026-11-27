@@ -7417,13 +7417,23 @@
         "buyer_details_cancelled": "cerró la solicitud de datos del cliente para",
         "profile_order": "creado mediante un pedido desde el perfil público:",
         "link_renamed": "renombró el enlace público",
-        "send_waiting_pdf": "puso en cola para enviar con PDF"
+        "send_waiting_pdf": "puso en cola para enviar con PDF",
+        "locked": "bloqueó",
+        "unlocked": "desbloqueó",
+        "made_private": "marcó como privado",
+        "made_shared": "compartió con el equipo"
       },
       "tenant": {
         "updated": "editó los datos de la empresa",
         "logo_uploaded": "subió el logotipo",
         "logo_removed": "eliminó el logotipo",
-        "number_formats_updated": "cambió la numeración de documentos"
+        "number_formats_updated": "cambió la numeración de documentos",
+        "vault_wrap_removed": "eliminó un método de desbloqueo de la caja fuerte",
+        "vault_password_replaced": "cambió la contraseña de la caja fuerte",
+        "vault_seal_new_off": "desactivó el cifrado de documentos nuevos",
+        "vault_recovery_replaced": "sustituyó el código de recuperación de la caja fuerte",
+        "vault_enabled": "activó el modo confidencial",
+        "vault_categories_changed": "cambió las categorías del modo confidencial"
       },
       "bank_account": {
         "created": "añadió la cuenta bancaria",
@@ -7433,7 +7443,8 @@
       "contact": {
         "created": "añadió el contacto",
         "updated": "editó el contacto",
-        "deleted": "eliminó el contacto"
+        "deleted": "eliminó el contacto",
+        "visibility_changed": "cambió el responsable y la visibilidad de"
       },
       "member": {
         "invited": "invitó a",
@@ -7531,7 +7542,14 @@
       "skippedRows": "Filas omitidas",
       "numberFormat": "Formato de número",
       "nextNumber": "Número siguiente",
-      "publicSlug": "Nombre del enlace"
+      "publicSlug": "Nombre del enlace",
+      "stepUp": "Confirmado con",
+      "vaultWrap": "Método de desbloqueo de la caja fuerte",
+      "sealNew": "Cifrar documentos nuevos",
+      "isPrivate": "Privado",
+      "ownerUserId": "Pertenece a",
+      "contactScope": "Ve clientes",
+      "vaultCategories": "Categorías desactivadas"
     },
     "values": {
       "invoice": "Factura",
@@ -7546,7 +7564,12 @@
       "owner": "Propietario",
       "admin": "Administrador",
       "accountant": "Contable",
-      "viewer": "Solo lectura"
+      "viewer": "Solo lectura",
+      "totp": "Código de la aplicación",
+      "recovery": "Código de recuperación",
+      "password": "Contraseña",
+      "recent_sign_in": "Inicio de sesión reciente",
+      "passkey": "Passkey"
     },
     "cleared": "borrado",
     "filters": {
@@ -14339,7 +14362,7 @@
       "lead": "Cifrar – solo tú y los miembros con la clave veréis el contenido, el servidor no puede leerlo.",
       "what": "Se cifran las descripciones de las líneas y las notas (encima, debajo de las líneas e internas).",
       "keeps": "Los informes y paneles siguen funcionando: importes, fechas y referencias de pago quedan sin cifrar.",
-      "loses": "Para los documentos cifrados el servidor no puede crear PDF ni ISDOC ni adjuntarlos a un correo. La búsqueda por texto se hace solo en tu navegador tras desbloquear.",
+      "loses": "En los documentos cifrados solo tu navegador crea el PDF, ISDOC y UBL. El servidor los adjunta a un correo solo cuando el archivo de tu navegador pasa por él una vez, y no lo guarda. La búsqueda por texto se hace solo en tu navegador tras desbloquear.",
       "locked": "Los documentos bloqueados se omiten.",
       "done": "{n, plural, one {# documento cifrado} other {# documentos cifrados}}.",
       "nothing": "No había nada que cifrar.",
@@ -14352,14 +14375,13 @@
       "unlock": "Desbloquear",
       "sealFailed": "No se pudo cifrar el documento. No se guardó nada.",
       "sealToggle": "Cifrar este documento",
-      "sealOnHint": "Solo tú y los miembros con la clave veréis las descripciones y notas. PDF e ISDOC no estarán disponibles; las sugerencias de líneas se buscan solo en tu navegador.",
+      "sealOnHint": "Solo tú y los miembros con la clave veréis las descripciones y notas. Tu navegador crea el PDF, ISDOC y UBL; las sugerencias de líneas se buscan solo en tu navegador.",
       "sealOffHint": "El documento se guarda sin cifrar, como hasta ahora.",
       "aiConsent": "Enviar este texto a la IA: irá una sola vez al servidor y al proveedor de IA y no se guardará",
       "aiConsentHint": "El servidor no guarda ni registra el texto. Lo que devuelva la IA se cifra en tu navegador al guardar. El consentimiento vale solo para esta ejecución."
     },
     "actions": {
-      "blocked": "No disponible en el Modo confidencial: el servidor no puede leer un documento cifrado. Desactiva el adjunto PDF/ISDOC en los ajustes de correo o envía un enlace.",
-      "pdfUnavailable": "El PDF no está disponible en el Modo confidencial. Puedes imprimir el detalle desde el navegador (Ctrl+P).",
+      "blocked": "No se pudieron abrir los textos cifrados. Desbloquea la caja fuerte con la clave correcta y vuelve a intentarlo.",
       "sendHint": "El documento está cifrado, así que el servidor no puede crear el PDF ni el ISDOC. Según tus ajustes, el enlace sale ya y el PDF desde tu navegador, o solo sale el enlace.",
       "linkCopied": "Enlace con clave copiado",
       "keyLink": "Enlace del cliente con clave",
@@ -14369,8 +14391,13 @@
       "unlockFirst": "Sin desbloquear no se pueden adjuntar archivos cifrados.",
       "decryptFailed": "No se pudo descifrar un adjunto.",
       "passFiles": "{n, plural, one {Adjuntar # archivo cifrado} other {Adjuntar # archivos cifrados}}",
-      "passFilesHint": "Tu navegador los descifra y pasan una sola vez por el servidor, a este correo. El servidor no los guarda y los borra tras la entrega.",
-      "passFilesWaiting": "Este documento espera a que un navegador cree el PDF, y los adjuntos no pueden esperar en el servidor. Envía el correo sin ellos o configura el modo confidencial para enviar el enlace de inmediato."
+      "passFilesHint": "Tu navegador los descifra y pasan una sola vez por el servidor, dentro de este correo. El servidor no los guarda ni los registra.",
+      "passFilesWaiting": "Este documento espera a que un navegador cree el PDF, y los adjuntos no pueden esperar en el servidor. Marca también «Adjuntar PDF/ISDOC» para enviarlo todo a la vez, o envía el correo sin ellos.",
+      "pdfLocal": "El PDF lo crea tu navegador, el servidor no ve los textos cifrados.",
+      "isdocLocal": "El ISDOC lo crea tu navegador, el servidor no ve los textos cifrados.",
+      "attachOnce": "Adjuntar PDF/ISDOC – el archivo pasa una vez por el servidor para enviarlo y no se guarda",
+      "attachOnceHint": "Tu navegador crea el PDF y el ISDOC. El servidor los envía al cliente en este correo y no los guarda ni los registra.",
+      "ublLocal": "El UBL lo crea tu navegador, el servidor no ve los textos cifrados."
     },
     "categories": {
       "recommended": "Recomendado",
@@ -14380,12 +14407,15 @@
         "title": "Descripciones de líneas y notas",
         "description": "Lo que suministraste y las notas del documento. Importes, fechas y referencias siguen legibles.",
         "loses": [
-          "PDF, ISDOC, UBL y Peppol creados por el servidor",
-          "Adjunto PDF/ISDOC en los correos",
+          "Envío por Peppol",
           "Búsqueda por texto y sugerencias de líneas en el servidor (tras desbloquear, las hace tu navegador)",
           "Autocompletado con IA sin un clic expreso (el texto pasa una vez por el servidor hacia la IA, solo cuando lo confirmas, y no se guarda)",
           "Enlace público: tu cliente ve el texto completo solo con el enlace con clave del detalle del documento. Un enlace sin clave (p. ej. de un recordatorio automático) lo muestra solo en un dispositivo donde el cliente abrió antes el enlace completo",
           "Textos legibles en las exportaciones contables del servidor (Pohoda, Money y CSV muestran «[Důvěrný obsah]»; la exportación con textos descifrados la crea tu navegador)"
+        ],
+        "changes": [
+          "Tu navegador crea el PDF, el ISDOC y el UBL",
+          "Adjunto PDF/ISDOC en los correos: tu navegador crea el archivo, pasa una vez por el servidor y no se guarda"
         ]
       },
       "attachments": {
@@ -14432,7 +14462,8 @@
           "Recordatorios con importe y pagos QR creados por el servidor"
         ]
       },
-      "howTitle": "Cómo funciona:"
+      "howTitle": "Cómo funciona:",
+      "changesTitle": "Funciona de otra forma:"
     },
     "enable": {
       "offTitle": "El Modo confidencial está desactivado",
@@ -14785,5 +14816,28 @@
       "Publicaremos el código de cifrado (un solo archivo sin dependencias) en un repositorio propio de GitHub, para comparar los hashes con tu propio build.",
       "Está prevista una revisión independiente del código."
     ]
+  },
+  "stepUp": {
+    "title": "Confirme que es usted",
+    "loading": "Cargando…",
+    "intro": {
+      "totp": "Antes de cambios de seguridad volvemos a preguntar. Introduzca el código de su aplicación de autenticación o un código de recuperación.",
+      "password": "Antes de cambios de seguridad volvemos a preguntar. Introduzca la contraseña de su cuenta.",
+      "sign_in": "Antes de cambios de seguridad volvemos a preguntar. Su cuenta no tiene contraseña, así que basta con un inicio de sesión reciente. Si el suyo es más antiguo, vuelva a iniciar sesión."
+    },
+    "code": "Código de la aplicación o código de recuperación",
+    "password": "Contraseña",
+    "twoFactorHint": "Con la verificación en dos pasos haría falta un código del teléfono y la contraseña sola no bastaría.",
+    "twoFactorLink": "Activar la verificación en dos pasos",
+    "note": "La confirmación dura 5 minutos en este navegador.",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "errors": {
+      "invalid_code": "El código no coincide. Inténtelo de nuevo.",
+      "wrong_current": "La contraseña no coincide.",
+      "reauth_required": "Vuelva a iniciar sesión y repita el cambio.",
+      "too_many_attempts": "Demasiados intentos. Inténtelo dentro de unos minutos.",
+      "generic": "La confirmación ha fallado."
+    }
   }
 }

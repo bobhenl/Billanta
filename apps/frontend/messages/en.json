@@ -7425,13 +7425,23 @@
         "buyer_details_cancelled": "closed the customer details request for",
         "profile_order": "created by ordering from the public profile:",
         "link_renamed": "renamed the public link",
-        "send_waiting_pdf": "queued for sending with the PDF"
+        "send_waiting_pdf": "queued for sending with the PDF",
+        "locked": "locked",
+        "unlocked": "unlocked",
+        "made_private": "made private",
+        "made_shared": "shared with the team"
       },
       "tenant": {
         "updated": "edited the company details",
         "logo_uploaded": "uploaded the logo",
         "logo_removed": "removed the logo",
-        "number_formats_updated": "changed document numbering"
+        "number_formats_updated": "changed document numbering",
+        "vault_wrap_removed": "removed a vault unlock method",
+        "vault_password_replaced": "changed the vault password",
+        "vault_seal_new_off": "turned off encryption of new documents",
+        "vault_recovery_replaced": "replaced the vault recovery code",
+        "vault_enabled": "turned on Confidential mode",
+        "vault_categories_changed": "changed the Confidential mode categories"
       },
       "bank_account": {
         "created": "added the bank account",
@@ -7441,7 +7451,8 @@
       "contact": {
         "created": "added the contact",
         "updated": "edited the contact",
-        "deleted": "deleted the contact"
+        "deleted": "deleted the contact",
+        "visibility_changed": "changed the owner and visibility of"
       },
       "member": {
         "invited": "invited",
@@ -7539,7 +7550,14 @@
       "skippedRows": "Skipped rows",
       "numberFormat": "Number format",
       "nextNumber": "Next number",
-      "publicSlug": "Link name"
+      "publicSlug": "Link name",
+      "stepUp": "Confirmed with",
+      "vaultWrap": "Vault unlock method",
+      "sealNew": "Encrypt new documents",
+      "isPrivate": "Private",
+      "ownerUserId": "Belongs to",
+      "contactScope": "Sees clients",
+      "vaultCategories": "Categories turned off"
     },
     "values": {
       "invoice": "Invoice",
@@ -7554,7 +7572,12 @@
       "owner": "Owner",
       "admin": "Admin",
       "accountant": "Accountant",
-      "viewer": "Read-only"
+      "viewer": "Read-only",
+      "totp": "App code",
+      "recovery": "Recovery code",
+      "password": "Password",
+      "recent_sign_in": "Recent sign-in",
+      "passkey": "Passkey"
     },
     "cleared": "cleared",
     "filters": {
@@ -14344,7 +14367,7 @@
       "lead": "Encrypt – only you and members with the key will see the content, the server cannot read it.",
       "what": "Line descriptions and notes (above items, below items and internal) are encrypted.",
       "keeps": "Reports and dashboards keep working: amounts, dates and variable symbols stay unencrypted.",
-      "loses": "For encrypted documents the server cannot create a PDF or ISDOC or attach them to an email. Text search runs only in your browser after unlock.",
+      "loses": "For encrypted documents only your browser creates the PDF, ISDOC and UBL. The server attaches them to an email only when the file from your browser passes through it once, and it does not store it. Text search runs only in your browser after unlock.",
       "locked": "Locked documents are skipped.",
       "done": "{n, plural, one {# document encrypted} other {# documents encrypted}}.",
       "nothing": "There was nothing to encrypt.",
@@ -14357,14 +14380,13 @@
       "unlock": "Unlock",
       "sealFailed": "The document could not be encrypted. Nothing was saved.",
       "sealToggle": "Encrypt this document",
-      "sealOnHint": "Only you and members with the key will see line descriptions and notes. PDF and ISDOC will not be available; item suggestions are matched in your browser only.",
+      "sealOnHint": "Only you and members with the key will see line descriptions and notes. Your browser creates the PDF, ISDOC and UBL; item suggestions are matched in your browser only.",
       "sealOffHint": "The document is saved without encryption, as before.",
       "aiConsent": "Send this text to AI – it goes to the server and the AI provider once and is not stored",
       "aiConsentHint": "The server does not store or log the text. Whatever AI returns is encrypted in your browser when you save. The consent covers this one run only."
     },
     "actions": {
-      "blocked": "Unavailable in Confidential mode: the server cannot read an encrypted document. Turn off the PDF/ISDOC attachment in email settings, or send a link.",
-      "pdfUnavailable": "PDF is unavailable in Confidential mode. You can print the detail from your browser (Ctrl+P).",
+      "blocked": "The encrypted texts could not be opened. Unlock the vault with the right key and try again.",
       "sendHint": "This document is encrypted, so the server cannot make the PDF or ISDOC itself. Depending on your Confidential mode settings, the link goes now and the PDF from your browser, or only the link goes.",
       "linkCopied": "Link with key copied",
       "keyLink": "Client link with key",
@@ -14374,8 +14396,13 @@
       "unlockFirst": "Encrypted attachments cannot be added without unlocking.",
       "decryptFailed": "An attachment could not be decrypted.",
       "passFiles": "{n, plural, one {Attach # encrypted file} other {Attach # encrypted files}}",
-      "passFilesHint": "Your browser decrypts them and they pass through the server once, into this email. The server does not keep them and deletes them after delivery.",
-      "passFilesWaiting": "This document waits for a browser to make the PDF, and the attachments must not wait on the server. Send the e-mail without them, or set Confidential mode to send the link right away."
+      "passFilesHint": "Your browser decrypts them and they pass through the server once, into this email. The server does not store or log them.",
+      "passFilesWaiting": "This document waits for a browser to make the PDF, and the attachments must not wait on the server. Also tick Attach PDF/ISDOC to send everything at once, or send the email without them.",
+      "pdfLocal": "Your browser creates the PDF, the server never sees the encrypted texts.",
+      "isdocLocal": "Your browser creates the ISDOC, the server never sees the encrypted texts.",
+      "attachOnce": "Attach PDF/ISDOC – the file passes through the server once to be sent and is not stored",
+      "attachOnceHint": "Your browser creates the PDF and ISDOC. The server passes them to the customer in this one email and does not store or log them.",
+      "ublLocal": "Your browser creates the UBL, the server never sees the encrypted texts."
     },
     "categories": {
       "recommended": "Recommended",
@@ -14385,12 +14412,15 @@
         "title": "Line descriptions and notes",
         "description": "What you supplied and the notes on the document. Amounts, dates and symbols stay readable.",
         "loses": [
-          "PDF, ISDOC, UBL and Peppol created by the server",
-          "PDF/ISDOC attachment in emails",
+          "Sending over Peppol",
           "Text search and item suggestions on the server (your browser handles them after unlock)",
           "AI prefill without an explicit click (the text passes the server to AI once, only when you confirm, and is not stored)",
           "Public link: your client sees the full text only through the link with the key from the document detail. A link without the key (e.g. from an automatic reminder) shows it only on a device where the client opened the full link before",
           "Readable texts in the server’s accountant exports (Pohoda, Money and CSV show “[Důvěrný obsah]”; your browser builds the export with decrypted texts)"
+        ],
+        "changes": [
+          "Your browser creates the PDF, ISDOC and UBL",
+          "PDF/ISDOC email attachment: your browser creates the file, it passes through the server once and is not stored"
         ]
       },
       "attachments": {
@@ -14437,7 +14467,8 @@
           "Reminders with amounts and QR payments created by the server"
         ]
       },
-      "howTitle": "How it works:"
+      "howTitle": "How it works:",
+      "changesTitle": "Works differently:"
     },
     "enable": {
       "offTitle": "Confidential mode is off",
@@ -14797,5 +14828,28 @@
       "We will publish the encryption code (one file with no dependencies) in its own GitHub repository, so the hashes can be compared with your own build.",
       "An independent review of the code is planned."
     ]
+  },
+  "stepUp": {
+    "title": "Confirm it is you",
+    "loading": "Loading…",
+    "intro": {
+      "totp": "We ask again before security changes. Enter the code from your authenticator app, or a recovery code.",
+      "password": "We ask again before security changes. Enter your account password.",
+      "sign_in": "We ask again before security changes. Your account has no password, so a recent sign-in is enough. If yours is older, sign in again."
+    },
+    "code": "App code or recovery code",
+    "password": "Password",
+    "twoFactorHint": "With two-factor authentication, this would need a code from your phone, and the password alone would not be enough.",
+    "twoFactorLink": "Turn on two-factor authentication",
+    "note": "The confirmation lasts 5 minutes in this browser.",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "errors": {
+      "invalid_code": "The code does not match. Try again.",
+      "wrong_current": "The password does not match.",
+      "reauth_required": "Please sign in again and repeat the change.",
+      "too_many_attempts": "Too many attempts. Try again in a few minutes.",
+      "generic": "The confirmation failed."
+    }
   }
 }

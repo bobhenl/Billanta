@@ -37,23 +37,21 @@ async function openTexts(key: VaultKey, invoiceId: string): Promise<OpenedInvoic
 
 /** One waiting e-mail: the PDF from this browser when it can render one, else the confirmed pass-through. */
 async function sendOne(key: VaultKey, item: VaultEmail) {
-  const texts = await openTexts(key, item.invoiceId);
-  const pdf = await renderSealedInvoicePdf(item.invoiceId, texts);
-  if (pdf) {
+  if (browserRendersPdf) {
     const form = new FormData();
-    form.set('pdf', pdf, 'invoice.pdf');
+    form.set('pdf', await renderSealedInvoicePdf(key, item.invoiceId), 'invoice.pdf');
     return sendVaultEmailPdf(item.id, form);
   }
-  return sendVaultEmailTexts(item.id, texts);
+  return sendVaultEmailTexts(item.id, await openTexts(key, item.invoiceId));
 }
 
 /**
  * "Důvěrný režim" outbox: e-mails of encrypted documents the server sent
  * without their PDF, or held whole, until a member with the key is here.
- * Shows "N e-mailů čeká na odeslání s PDF" and sends them on a click. While
- * the PDF can only be printed on the server, every send is that click: the
- * dialog says the texts pass through once. Only with a browser renderer and
- * "Odesílat PDF automaticky" does it go without asking.
+ * Shows "N e-mailů čeká na odeslání s PDF" and sends them on a click, with
+ * the PDF drawn in this browser (only the finished file passes through).
+ * With "Odesílat PDF automaticky" it goes without asking. The texts
+ * pass-through stays as the fallback for when `browserRendersPdf` is off.
  */
 export function VaultEmailOutbox({ canSend }: { canSend: boolean }) {
   const t = useTranslations('vault.outbox');

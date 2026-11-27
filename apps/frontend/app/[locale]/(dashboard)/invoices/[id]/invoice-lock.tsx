@@ -5,6 +5,7 @@ import { Lock, LockOpen, UserRoundCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { PasswordInput } from '@/components/password-input';
+import { useStepUp } from '@/components/step-up';
 import { toast } from '@/components/toaster';
 import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
@@ -92,11 +93,13 @@ export function InvoicePrivacy({ id, isPrivate, canChange }: { id: string; isPri
   const t = useTranslations('doc.privacy');
   const router = useRouter();
   const [pending, start] = useTransition();
+  const { withStepUp, stepUpDialog } = useStepUp();
   if (!canChange && !isPrivate) return null;
 
   function toggle(next: boolean) {
     start(async () => {
-      const res = await setInvoicePrivate(id, next);
+      const res = await withStepUp(() => setInvoicePrivate(id, next));
+      if (!res) return;
       if (!res.ok) {
         toast({ text: res.error.includes('visibility_owner_only') ? t('ownerOnly') : t('failed'), tone: 'err' });
         return;
@@ -108,6 +111,7 @@ export function InvoicePrivacy({ id, isPrivate, canChange }: { id: string; isPri
 
   return (
     <div id="invoice-privacy" className="mb-3 scroll-mt-20 text-sm">
+      {stepUpDialog}
       {canChange ? (
         <label className="inline-flex items-start gap-2">
           <input type="checkbox" className="mt-0.5 accent-primary" checked={isPrivate} disabled={pending} onChange={(e) => toggle(e.target.checked)} />
@@ -134,11 +138,14 @@ export function InvoiceLockBar({ id, locked, canLock, canPrivate = false }: { id
   const t = useTranslations('doc.lock');
   const router = useRouter();
   const [pending, start] = useTransition();
+  const { withStepUp, stepUpDialog } = useStepUp();
   if (!locked && !canLock) return null;
 
   function toggle() {
     start(async () => {
-      const res = await setInvoiceLock(id, !locked);
+      // Taking the lock off needs a step-up; putting it on does not.
+      const res = await withStepUp(() => setInvoiceLock(id, !locked));
+      if (!res) return;
       if (!res.ok) {
         toast({ text: t('errors.generic'), tone: 'err' });
         return;
@@ -157,6 +164,7 @@ export function InvoiceLockBar({ id, locked, canLock, canPrivate = false }: { id
 
   return (
     <div className="mb-3">
+      {stepUpDialog}
       <div className="flex flex-wrap items-center gap-2 text-sm">
         {locked && (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 font-semibold text-primary">

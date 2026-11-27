@@ -7418,13 +7418,23 @@
         "buyer_details_cancelled": "zamknął/zamknęła prośbę o dane klienta do",
         "profile_order": "utworzono przez zamówienie z profilu publicznego:",
         "link_renamed": "zmienił(a) nazwę publicznego linku",
-        "send_waiting_pdf": "dodał(a) do wysłania z PDF"
+        "send_waiting_pdf": "dodał(a) do wysłania z PDF",
+        "locked": "zablokował(a)",
+        "unlocked": "odblokował(a)",
+        "made_private": "ustawił(a) jako prywatny",
+        "made_shared": "udostępnił(a) zespołowi"
       },
       "tenant": {
         "updated": "edytował(a) dane firmy",
         "logo_uploaded": "wgrał(a) logo",
         "logo_removed": "usunął/usunęła logo",
-        "number_formats_updated": "zmienił(a) numerację dokumentów"
+        "number_formats_updated": "zmienił(a) numerację dokumentów",
+        "vault_wrap_removed": "usunął/usunęła sposób odblokowania sejfu",
+        "vault_password_replaced": "zmienił(a) hasło do sejfu",
+        "vault_seal_new_off": "wyłączył(a) szyfrowanie nowych dokumentów",
+        "vault_recovery_replaced": "wymienił(a) kod odzyskiwania sejfu",
+        "vault_enabled": "włączył(a) tryb poufny",
+        "vault_categories_changed": "zmienił(a) kategorie trybu poufnego"
       },
       "bank_account": {
         "created": "dodał(a) konto bankowe",
@@ -7434,7 +7444,8 @@
       "contact": {
         "created": "dodał(a) kontakt",
         "updated": "edytował(a) kontakt",
-        "deleted": "usunął/usunęła kontakt"
+        "deleted": "usunął/usunęła kontakt",
+        "visibility_changed": "zmienił(a) opiekuna i widoczność kontaktu"
       },
       "member": {
         "invited": "zaprosił(a)",
@@ -7532,7 +7543,14 @@
       "skippedRows": "Pominięte wiersze",
       "numberFormat": "Format numeru",
       "nextNumber": "Następny numer",
-      "publicSlug": "Nazwa linku"
+      "publicSlug": "Nazwa linku",
+      "stepUp": "Potwierdzono przez",
+      "vaultWrap": "Sposób odblokowania sejfu",
+      "sealNew": "Szyfruj nowe dokumenty",
+      "isPrivate": "Prywatny",
+      "ownerUserId": "Należy do",
+      "contactScope": "Widzi klientów",
+      "vaultCategories": "Wyłączone kategorie"
     },
     "values": {
       "invoice": "Faktura",
@@ -7547,7 +7565,12 @@
       "owner": "Właściciel",
       "admin": "Administrator",
       "accountant": "Księgowa",
-      "viewer": "Tylko do odczytu"
+      "viewer": "Tylko do odczytu",
+      "totp": "Kod z aplikacji",
+      "recovery": "Kod odzyskiwania",
+      "password": "Hasło",
+      "recent_sign_in": "Niedawne logowanie",
+      "passkey": "Passkey"
     },
     "cleared": "wyczyszczono",
     "filters": {
@@ -14340,7 +14363,7 @@
       "lead": "Zaszyfruj – treść zobaczysz tylko Ty i członkowie z kluczem, serwer jej nie odczyta.",
       "what": "Szyfrowane są opisy pozycji i notatki (nad pozycjami, pod pozycjami i wewnętrzne).",
       "keeps": "Raporty i pulpity działają dalej: kwoty, daty i tytuły płatności pozostają niezaszyfrowane.",
-      "loses": "Dla zaszyfrowanych dokumentów serwer nie utworzy PDF ani ISDOC i nie dołączy ich do e-maila. Wyszukiwanie tekstowe działa po odblokowaniu tylko w Twojej przeglądarce.",
+      "loses": "Dla zaszyfrowanych dokumentów PDF, ISDOC i UBL tworzy tylko Twoja przeglądarka. Serwer dołącza je do e-maila tylko wtedy, gdy plik z przeglądarki raz przez niego przejdzie, i go nie zapisuje. Wyszukiwanie tekstowe działa po odblokowaniu tylko w Twojej przeglądarce.",
       "locked": "Zablokowane dokumenty są pomijane.",
       "done": "{n, plural, one {Zaszyfrowano # dokument} few {Zaszyfrowano # dokumenty} other {Zaszyfrowano # dokumentów}}.",
       "nothing": "Nie było czego szyfrować.",
@@ -14353,14 +14376,13 @@
       "unlock": "Odblokuj",
       "sealFailed": "Nie udało się zaszyfrować dokumentu. Nic nie zapisano.",
       "sealToggle": "Zaszyfruj ten dokument",
-      "sealOnHint": "Opisy pozycji i notatki zobaczysz tylko Ty i członkowie z kluczem. PDF i ISDOC nie będą dostępne, podpowiedzi pozycji są wyszukiwane tylko w Twojej przeglądarce.",
+      "sealOnHint": "Opisy pozycji i notatki zobaczysz tylko Ty i członkowie z kluczem. PDF, ISDOC i UBL utworzy Twoja przeglądarka, podpowiedzi pozycji są wyszukiwane tylko w Twojej przeglądarce.",
       "sealOffHint": "Dokument zapisze się bez szyfrowania, jak dotąd.",
       "aiConsent": "Wyślij ten tekst do AI – jednorazowo trafi na serwer i do dostawcy AI, nie zostanie zapisany",
       "aiConsentHint": "Serwer nie zapisuje tekstu ani nie umieszcza go w logach. To, co zwróci AI, zostanie zaszyfrowane w Twojej przeglądarce przy zapisie. Zgoda dotyczy tylko tego jednego uruchomienia."
     },
     "actions": {
-      "blocked": "Niedostępne w Trybie poufnym: serwer nie odczyta zaszyfrowanego dokumentu. Wyłącz załącznik PDF/ISDOC w ustawieniach e-maili albo wyślij link.",
-      "pdfUnavailable": "PDF jest niedostępny w Trybie poufnym. Szczegóły możesz wydrukować z przeglądarki (Ctrl+P).",
+      "blocked": "Nie udało się otworzyć zaszyfrowanych tekstów. Odblokuj sejf właściwym kluczem i spróbuj ponownie.",
       "sendHint": "Dokument jest zaszyfrowany, więc serwer sam nie utworzy PDF ani ISDOC. Zależnie od ustawień link wyjdzie od razu, a PDF z Twojej przeglądarki, albo wyjdzie tylko link.",
       "linkCopied": "Skopiowano link z kluczem",
       "keyLink": "Link dla klienta z kluczem",
@@ -14370,8 +14392,13 @@
       "unlockFirst": "Bez odblokowania nie można dołączyć zaszyfrowanych załączników.",
       "decryptFailed": "Nie udało się odszyfrować załącznika.",
       "passFiles": "{n, plural, one {Dołącz # zaszyfrowany załącznik} few {Dołącz # zaszyfrowane załączniki} many {Dołącz # zaszyfrowanych załączników} other {Dołącz # zaszyfrowanego załącznika}}",
-      "passFilesHint": "Przeglądarka je odszyfruje i jednorazowo przejdą przez serwer do tego e-maila. Serwer ich nie zapisuje i usuwa je po doręczeniu.",
-      "passFilesWaiting": "Ten dokument czeka, aż przeglądarka utworzy PDF, a załączniki nie mogą czekać na serwerze. Wyślij e-mail bez nich albo ustaw w trybie poufnym natychmiastowe wysyłanie linku."
+      "passFilesHint": "Przeglądarka je odszyfruje i jednorazowo przejdą przez serwer do e-maila. Serwer ich nie zapisuje ani nie loguje.",
+      "passFilesWaiting": "Ten dokument czeka, aż przeglądarka utworzy PDF, a załączniki nie mogą czekać na serwerze. Zaznacz też dołączenie PDF/ISDOC, a wszystko wyjdzie naraz, albo wyślij e-mail bez załączników.",
+      "pdfLocal": "PDF utworzy Twoja przeglądarka, serwer nie zobaczy zaszyfrowanych tekstów.",
+      "isdocLocal": "ISDOC utworzy Twoja przeglądarka, serwer nie zobaczy zaszyfrowanych tekstów.",
+      "attachOnce": "Dołącz PDF/ISDOC – plik jednorazowo przejdzie przez serwer do wysyłki i nie zostanie zapisany",
+      "attachOnceHint": "PDF i ISDOC utworzy Twoja przeglądarka. Serwer przekaże je klientowi w tym jednym e-mailu, nie zapisze ich ani nie zaloguje.",
+      "ublLocal": "UBL utworzy Twoja przeglądarka, serwer nie zobaczy zaszyfrowanych tekstów."
     },
     "categories": {
       "recommended": "Zalecane",
@@ -14381,12 +14408,15 @@
         "title": "Opisy pozycji i notatki",
         "description": "Co dostarczyłeś i notatki na dokumencie. Kwoty, daty i symbole pozostają czytelne.",
         "loses": [
-          "PDF, ISDOC, UBL i Peppol tworzone przez serwer",
-          "Załącznik PDF/ISDOC w e-mailach",
+          "Wysyłka przez Peppol",
           "Wyszukiwanie tekstowe i podpowiedzi pozycji na serwerze (po odblokowaniu zajmie się tym Twoja przeglądarka)",
           "Wypełnianie przez AI bez wyraźnego kliknięcia (tekst jednorazowo przejdzie przez serwer do AI, tylko gdy to potwierdzisz, i nie zostanie zapisany)",
           "Link publiczny: klient widzi pełną treść tylko w linku z kluczem ze szczegółów dokumentu. Link bez klucza (np. z automatycznego przypomnienia) pokaże ją tylko na urządzeniu, na którym klient wcześniej otworzył pełny link",
           "Czytelne teksty w eksportach dla księgowej z serwera (Pohoda, Money i CSV mają „[Důvěrný obsah]”; eksport z odszyfrowanymi tekstami tworzy Twoja przeglądarka)"
+        ],
+        "changes": [
+          "PDF, ISDOC i UBL tworzy Twoja przeglądarka",
+          "Załącznik PDF/ISDOC w e-mailach: plik tworzy Twoja przeglądarka, raz przechodzi przez serwer i nie jest zapisywany"
         ]
       },
       "attachments": {
@@ -14433,7 +14463,8 @@
           "Przypomnienia z kwotą i płatności QR tworzone przez serwer"
         ]
       },
-      "howTitle": "Jak to działa:"
+      "howTitle": "Jak to działa:",
+      "changesTitle": "Działa inaczej:"
     },
     "enable": {
       "offTitle": "Tryb poufny jest wyłączony",
@@ -14786,5 +14817,28 @@
       "Kod szyfrujący (jeden plik bez zależności) opublikujemy w osobnym repozytorium na GitHubie, żeby dało się porównać skróty z własnym buildem.",
       "Niezależny przegląd kodu jest planowany."
     ]
+  },
+  "stepUp": {
+    "title": "Potwierdź, że to Ty",
+    "loading": "Ładowanie…",
+    "intro": {
+      "totp": "Przed zmianami zabezpieczeń pytamy ponownie. Wpisz kod z aplikacji uwierzytelniającej lub kod odzyskiwania.",
+      "password": "Przed zmianami zabezpieczeń pytamy ponownie. Wpisz hasło do swojego konta.",
+      "sign_in": "Przed zmianami zabezpieczeń pytamy ponownie. Twoje konto nie ma hasła, więc wystarczy niedawne logowanie. Jeśli jest starsze, zaloguj się ponownie."
+    },
+    "code": "Kod z aplikacji lub kod odzyskiwania",
+    "password": "Hasło",
+    "twoFactorHint": "Z weryfikacją dwuetapową potrzebny byłby tu kod z telefonu, a samo hasło by nie wystarczyło.",
+    "twoFactorLink": "Włącz weryfikację dwuetapową",
+    "note": "Potwierdzenie jest ważne 5 minut w tej przeglądarce.",
+    "cancel": "Anuluj",
+    "confirm": "Potwierdź",
+    "errors": {
+      "invalid_code": "Kod się nie zgadza. Spróbuj ponownie.",
+      "wrong_current": "Hasło się nie zgadza.",
+      "reauth_required": "Zaloguj się ponownie i powtórz zmianę.",
+      "too_many_attempts": "Zbyt wiele prób. Spróbuj za kilka minut.",
+      "generic": "Potwierdzenie się nie powiodło."
+    }
   }
 }

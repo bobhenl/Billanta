@@ -5,6 +5,7 @@ import { Lock, UserRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { InfoHint } from '@/components/info-hint';
+import { useStepUp } from '@/components/step-up';
 import { toast } from '@/components/toaster';
 import { inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
@@ -38,6 +39,7 @@ export function ContactVisibilityCard({
   const t = useTranslations('contacts.detail.visibility');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const { withStepUp, stepUpDialog } = useStepUp();
   const ownerName = members.find((m) => m.userId === ownerUserId)?.name ?? null;
 
   // Nothing to say to someone who can't change it and the client is the company's.
@@ -45,7 +47,8 @@ export function ContactVisibilityCard({
 
   const save = (change: { ownerUserId?: string | null; isPrivate?: boolean }) =>
     startTransition(async () => {
-      const result = await setContactVisibility(contactId, change);
+      const result = await withStepUp(() => setContactVisibility(contactId, change));
+      if (!result) return router.refresh();
       if (result.ok) toast({ text: t('saved'), tone: 'ok' });
       else toast({ text: ERRORS.has(result.error) ? t(`errors.${result.error}`) : `${t('failed')}: ${result.error}`, tone: 'err' });
       router.refresh();
@@ -53,6 +56,7 @@ export function ContactVisibilityCard({
 
   return (
     <section id="contact-visibility" className="scroll-mt-20 rounded-xl border border-border bg-card p-4 text-sm">
+      {stepUpDialog}
       <InfoHint hint={t('hint')}>
         <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('title')}</h2>
       </InfoHint>

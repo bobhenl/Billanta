@@ -21,6 +21,7 @@ import {
   type Access,
   type StoredPerms
 } from '@/lib/team-presets';
+import { useStepUp } from '@/components/step-up';
 import { changeMemberRole, inviteMember, removeMember, revokeInvitation, type MemberPermissions, type TeamRole } from '../actions';
 import { copyText } from '@/lib/clipboard';
 import type { PublicAccountant } from '@/lib/accountant-directory';
@@ -333,6 +334,7 @@ export function TeamManager({
   const [editing, setEditing] = useState<{ id: string; name: string; access: Access; scope: ContactScope; scopeWas: ContactScope } | null>(null);
   const [createdLink, setCreatedLink] = useState<{ url: string; emailSent: boolean } | null>(null);
   const [removing, setRemoving] = useState<TeamData['members'][number] | null>(null);
+  const { withStepUp, stepUpDialog } = useStepUp();
 
   // The plan's seat limit gets a sentence of its own; other codes stay as they are.
   const failText = (error?: string) =>
@@ -342,9 +344,11 @@ export function TeamManager({
     setEditing({ id: m.id, name: m.name || m.email, access, scope, scopeWas: scope });
   };
 
+  // Changes around who sees which clients ask for a step-up when the backend wants one.
   const run = (fn: () => Promise<{ ok: boolean; error?: string }>, done: string, after?: () => void) =>
     startTransition(async () => {
-      const result = await fn();
+      const result = await withStepUp(fn);
+      if (!result) return;
       toast(result.ok ? { text: done, tone: 'ok' } : { text: failText(result.error), tone: 'err' });
       if (result.ok) after?.();
       router.refresh();
@@ -376,6 +380,7 @@ export function TeamManager({
 
   return (
     <div className="mt-6 space-y-5">
+      {stepUpDialog}
       <section className="rounded-xl border border-border bg-card">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
           <InfoHint hint={t('membersHint')} className="min-w-0">

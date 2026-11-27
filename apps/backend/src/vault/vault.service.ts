@@ -3,6 +3,7 @@ import { and, asc, desc, eq, gt, gte, inArray, isNull, lt, or, sql } from "drizz
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { AuditService } from "../audit/audit.service";
+import { assertStepUp, stepUpChange } from "../auth/step-up";
 import { planAllows } from "../billing/plan-access";
 import { loadPlanSummary } from "../billing/plan.guard";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
@@ -124,14 +125,28 @@ export class VaultService {
     return this.status(db, tenantId, user.id);
   }
 
-  /** The caller's own vault password (replaces the old one) or a new passkey. */
-  async addWrap(db: TenantDb, tenantId: string, userId: string, dto: MemberWrapDto["wrap"]) {
+  /**
+   * The caller's own vault password or a new passkey. Replacing a password
+   * needs a step-up: the server cannot tell a real wrap from garbage, so a
+   * bad one would take the old way in away.
+   */
+  async addWrap(db: TenantDb, tenantId: string, user: AuthenticatedUser, dto: MemberWrapDto["wrap"]) {
+    const userId = user.id;
     await this.requireVault(db, tenantId);
     if (dto.kind === "password") {
+      const [old] = await db
+        .select({ id: schema.vaultKeyWraps.id })
+        .from(schema.vaultKeyWraps)
+        .where(and(eq(schema.vaultKeyWraps.tenantId, tenantId), eq(schema.vaultKeyWraps.userId, userId), eq(schema.vaultKeyWraps.kind, "password")))
+        .limit(1);
+      const stepUp = old ? assertStepUp(user) : null;
       await db
         .delete(schema.vaultKeyWraps)
         .where(and(eq(schema.vaultKeyWraps.tenantId, tenantId), eq(schema.vaultKeyWraps.userId, userId), eq(schema.vaultKeyWraps.kind, "password")));
       await db.insert(schema.vaultKeyWraps).values({ tenantId, userId, ...dto });
+      if (stepUp) {
+        await this.audit?.record(db, tenantId, { entityType: "tenant", entityId: tenantId, action: "vault_password_replaced", changes: [stepUpChange(stepUp)] });
+      }
     } else {
       const own = await db
         .select({ id: schema.vaultKeyWraps.id })
@@ -143,13 +158,22 @@ export class VaultService {
     return this.status(db, tenantId, userId);
   }
 
-  /** Removes one of the caller's own wraps; the recovery wrap is replaced, never removed. */
-  async removeWrap(db: TenantDb, tenantId: string, userId: string, id: string) {
+  /** Removes one of the caller's own wraps (step-up first); the recovery wrap is replaced, never removed. */
+  async removeWrap(db: TenantDb, tenantId: string, user: AuthenticatedUser, id: string) {
+    const userId = user.id;
+    const stepUp = assertStepUp(user);
     const removed = await db
       .delete(schema.vaultKeyWraps)
       .where(and(eq(schema.vaultKeyWraps.id, id), eq(schema.vaultKeyWraps.tenantId, tenantId), eq(schema.vaultKeyWraps.userId, userId)))
-      .returning({ id: schema.vaultKeyWraps.id });
+      .returning({ id: schema.vaultKeyWraps.id, kind: schema.vaultKeyWraps.kind, label: schema.vaultKeyWraps.label });
     if (!removed.length) throw new NotFoundException("vault_wrap_not_found");
+    await this.audit?.record(db, tenantId, {
+      entityType: "tenant",
+      entityId: tenantId,
+      entityLabel: removed[0].label,
+      action: "vault_wrap_removed",
+      changes: [{ field: "vaultWrap", from: removed[0].kind, to: null }, stepUpChange(stepUp)],
+    });
     return this.status(db, tenantId, userId);
   }
 
@@ -157,9 +181,11 @@ export class VaultService {
   async replaceRecovery(db: TenantDb, tenantId: string, user: AuthenticatedUser, dto: RecoveryWrapDto) {
     if (user.role !== "owner" && user.role !== "admin") throw new ForbiddenException("forbidden");
     await this.requireVault(db, tenantId);
+    // The old code stops working, and the server cannot check the new wrap.
+    const stepUp = assertStepUp(user);
     await db.delete(schema.vaultKeyWraps).where(and(eq(schema.vaultKeyWraps.tenantId, tenantId), eq(schema.vaultKeyWraps.kind, "recovery")));
     await db.insert(schema.vaultKeyWraps).values({ tenantId, userId: null, ...dto.recovery, iterations: null });
-    await this.audit?.record(db, tenantId, { entityType: "tenant", entityId: tenantId, action: "vault_recovery_replaced" });
+    await this.audit?.record(db, tenantId, { entityType: "tenant", entityId: tenantId, action: "vault_recovery_replaced", changes: [stepUpChange(stepUp)] });
     return this.status(db, tenantId, user.id);
   }
 
@@ -177,6 +203,10 @@ export class VaultService {
       const plan = await loadPlanSummary(db, tenantId);
       if (plan && !planAllows(plan, "confidential_mode")) throw confidentialPlanRequired();
     }
+    // Switching encryption of new documents off, or dropping a category, weakens the mode.
+    const sealOff = dto.sealNew === false && vault.sealNew;
+    const dropped = categories ? vault.categories.filter((c) => !(categories as string[]).includes(c)) : [];
+    const stepUp = sealOff || dropped.length ? assertStepUp(user) : null;
     await db
       .update(schema.tenantVaults)
       .set({
@@ -187,7 +217,22 @@ export class VaultService {
         updatedAt: new Date(),
       })
       .where(eq(schema.tenantVaults.tenantId, tenantId));
-    if (categories) await this.audit?.record(db, tenantId, { entityType: "tenant", entityId: tenantId, action: "vault_categories_changed" });
+    if (sealOff) {
+      await this.audit?.record(db, tenantId, {
+        entityType: "tenant",
+        entityId: tenantId,
+        action: "vault_seal_new_off",
+        changes: [{ field: "sealNew", from: true, to: false }, stepUpChange(stepUp!)],
+      });
+    }
+    if (categories) {
+      await this.audit?.record(db, tenantId, {
+        entityType: "tenant",
+        entityId: tenantId,
+        action: "vault_categories_changed",
+        ...(dropped.length ? { changes: [{ field: "vaultCategories", from: dropped.join(","), to: null }, stepUpChange(stepUp!)] } : {}),
+      });
+    }
     return this.status(db, tenantId, user.id);
   }
 
