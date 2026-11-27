@@ -109,7 +109,7 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
               <span className="amount">{formatMoney(amount, tx.currency, locale)}</span>
             </h1>
             <p className="break-words text-sm text-muted-foreground">
-              {tx.counterpartyName ?? t('unknownCounterparty')}
+              {tx.counterpartyName ?? tx.message ?? t('unknownCounterparty')}
               {tx.fee && Number(tx.fee) > 0 && <span className="ml-2">· {t('fee', { amount: formatMoney(Number(tx.fee), tx.currency, locale) })}</span>}
             </p>
           </div>
