@@ -38,6 +38,8 @@ import { TimeTrackingController } from "./time-tracking/time-tracking.controller
 import { TimeTrackingModule } from "./time-tracking/time-tracking.module";
 import { CardPaymentsModule } from "./card-payments/card-payments.module";
 import { CardPaymentsSettingsController } from "./card-payments/card-payments.controller";
+import { EetController } from "./eet/eet.controller";
+import { EetModule } from "./eet/eet.module";
 import { InvoicesController } from "./invoices/invoices.controller";
 import { InvoicesModule } from "./invoices/invoices.module";
 import { MeModule } from "./me/me.module";
@@ -137,6 +139,8 @@ import { ReferralsModule } from "./referrals/referrals.module";
     TimeTrackingModule,
     // Card payments from the invoice link through the company's own Stripe.
     CardPaymentsModule,
+    // EET 2.0: settings, certificate and the 5-minute resend (docs/eet.md).
+    EetModule,
     DashboardModule,
     ExportsModule,
     // Report "Po zdanění": the company's tax model and net income per partner.
@@ -262,6 +266,7 @@ export class AppModule implements NestModule {
         ApiKeysController,
         ChannelLinksController,
         CardPaymentsSettingsController,
+        EetController,
         AuditController,
         ReferralsController,
         PromoCodesController,

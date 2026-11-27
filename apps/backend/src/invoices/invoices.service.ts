@@ -31,6 +31,7 @@ import { InvoiceAttachmentsService } from "./invoice-attachments.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import { AuditService } from "../audit/audit.service";
 import { AiService, type InvoiceSuggestion } from "../ai/ai.service";
+import { EetService, type EetPaymentResult } from "../eet/eet.service";
 import { transcribeVoiceNote } from "../ai/voice-transcription";
 import type { NotificationEvent } from "../notifications/notification-prefs";
 import type { CreateInvoiceDto, ListInvoicesQuery, UpdateInvoiceDto } from "./dto/create-invoice.dto";
@@ -321,6 +322,7 @@ export class InvoicesService {
     @Optional() private readonly notifications?: NotificationsService,
     @Optional() private readonly audit?: AuditService,
     @Optional() private readonly ai?: AiService,
+    @Optional() private readonly eet?: EetService,
   ) {}
 
   /** One line in the document's history (Settings → Historie změn). */
@@ -933,8 +935,19 @@ export class InvoicesService {
    * ("částečně uhrazeno") until the sum reaches the total. `fee` and
    * `receivedCzk` add up over partial payments, so the detail can show the
    * net margin after provider fees and currency conversion.
+   *
+   * `opts.eet` only from the "Mark as paid" route: a payment entered by hand
+   * may be a kontaktní platba for EET 2.0, while bank matching, card checkout
+   * and demo seeding never are. The result then carries `eet`.
    */
-  async markPaid(db: TenantDb, id: string, paidAt?: Date, amount?: number, net: { fee?: number; receivedCzk?: number } = {}) {
+  async markPaid(
+    db: TenantDb,
+    id: string,
+    paidAt?: Date,
+    amount?: number,
+    net: { fee?: number; receivedCzk?: number } = {},
+    opts: { eet?: boolean } = {},
+  ): Promise<(InvoiceRow & { eet?: EetPaymentResult }) | undefined> {
     const invoice = await this.requireInvoice(db, id);
     if (invoice.status !== "issued") {
       throw new BadRequestException("Only an issued, unpaid document can be marked as paid");
@@ -963,6 +976,10 @@ export class InvoicesService {
       await this.log(db, updated, full ? "marked_paid" : "partial_payment", [
         { field: "amountPaid", from: Number(invoice.amountPaid), to: Number(updated.amountPaid) },
       ]);
+    }
+    if (updated && opts.eet && this.eet) {
+      const eet = await this.eet.recordInvoicePayment(db, invoice, updated, { receivedCzk: net.receivedCzk, paidAt });
+      return { ...updated, eetPok: eet.recorded && eet.status === "confirmed" && eet.pok ? eet.pok : updated.eetPok, eet };
     }
     return updated;
   }
@@ -1251,7 +1268,8 @@ export class InvoicesService {
     return { id, isPrivate };
   }
 
-  async markUnpaid(db: TenantDb, id: string) {
+  /** `opts.eet`: from the "Undo payment" route, sales recorded in EET are reversed with a negative record. */
+  async markUnpaid(db: TenantDb, id: string, opts: { eet?: boolean } = {}): Promise<(InvoiceRow & { eet?: EetPaymentResult }) | undefined> {
     const invoice = await this.requireInvoice(db, id);
     if (invoice.status !== "paid") throw new BadRequestException("The document is not marked as paid");
     // Sealed payments go with it, as a plain amount_paid goes back to 0.
@@ -1278,6 +1296,10 @@ export class InvoicesService {
       .where(eq(schema.invoices.id, id))
       .returning();
     await this.log(db, updated, "marked_unpaid");
+    if (updated && opts.eet && this.eet) {
+      const eet = await this.eet.recordInvoiceReversal(db, updated);
+      return { ...updated, eetPok: eet.recorded && eet.status === "confirmed" ? null : updated.eetPok, eet };
+    }
     return updated;
   }
 

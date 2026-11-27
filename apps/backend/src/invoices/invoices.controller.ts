@@ -433,7 +433,7 @@ export class InvoicesController {
     if (fee !== undefined && !(fee >= 0 && fee < 1e9)) throw new BadRequestException("Invalid fee");
     const receivedCzk = body?.received_czk == null ? undefined : Number(body.received_czk);
     if (receivedCzk !== undefined && !(receivedCzk > 0 && receivedCzk < 1e11)) throw new BadRequestException("Invalid received_czk");
-    return this.invoicesService.markPaid(req.tenantDb!, id, paidAt && !isNaN(paidAt.getTime()) ? paidAt : undefined, amount, { fee, receivedCzk });
+    return this.invoicesService.markPaid(req.tenantDb!, id, paidAt && !isNaN(paidAt.getTime()) ? paidAt : undefined, amount, { fee, receivedCzk }, { eet: true });
   }
 
   @Get(":id/sealed-payments")
@@ -516,7 +516,7 @@ export class InvoicesController {
   @UseGuards(CombinedAuthGuard)
   @ApiOperation({ summary: "Undo a payment" })
   markUnpaid(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
-    return this.invoicesService.markUnpaid(req.tenantDb!, id);
+    return this.invoicesService.markUnpaid(req.tenantDb!, id, { eet: true });
   }
 
   @Post(":id/public-link/rotate")

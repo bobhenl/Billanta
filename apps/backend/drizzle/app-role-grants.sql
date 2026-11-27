@@ -97,3 +97,6 @@ REVOKE EXECUTE ON FUNCTION
   demo_tenants_lock(),
   classroom_class_open(uuid), classroom_sync_class(uuid), trial_email_key(text)
 FROM faktur_app;
+-- EET records (0123) are evidence of a reported sale: a mistake is corrected
+-- with a negative record (§ 8 of the EET act), never by deleting the row.
+REVOKE DELETE ON eet_records FROM faktur_app;
