@@ -35,6 +35,9 @@ export interface MatchCandidateInvoice {
    *  (`invoices` has no stored total column) minus `amount_paid` from
    *  earlier partial payments. See `bank-reconciliation.service.ts`. */
   amountDue: number;
+  /** Confidential mode "amounts": the server does not know the total, so
+   *  `amountDue` is meaningless and only the VS can point at the invoice. */
+  amountsSealed?: boolean;
 }
 
 export interface TransactionForMatching {
@@ -48,7 +51,9 @@ export type MatchOutcome =
   | { type: "matched"; invoiceId: string; matchedBy: "variable_symbol" | "amount_and_due_date" }
   | { type: "unmatched"; reason: "no_candidate" | "ambiguous" }
   /** The VS names one invoice, but the payment does not settle it exactly. */
-  | { type: "unmatched"; reason: "amount_mismatch"; invoiceId: string };
+  | { type: "unmatched"; reason: "amount_mismatch"; invoiceId: string }
+  /** The VS names an invoice with sealed amounts: a human confirms it, the server can't check the sum. */
+  | { type: "unmatched"; reason: "sealed_amount"; invoiceId: string };
 
 export function findInvoiceMatch(
   transaction: TransactionForMatching,
@@ -67,6 +72,7 @@ export function findInvoiceMatch(
     }
     const [invoice] = vsMatches;
     if (invoice) {
+      if (invoice.amountsSealed) return { type: "unmatched", reason: "sealed_amount", invoiceId: invoice.id };
       if (invoice.currency === transaction.currency && amountsEqual(invoice.amountDue, transaction.amount)) {
         return { type: "matched", invoiceId: invoice.id, matchedBy: "variable_symbol" };
       }
@@ -77,6 +83,7 @@ export function findInvoiceMatch(
   // 2. Fallback: exact amount + currency match, due date within the window.
   const windowMs = AMOUNT_DATE_MATCH_WINDOW_DAYS * 24 * 60 * 60 * 1000;
   const amountMatches = candidates.filter((c) => {
+    if (c.amountsSealed) return false;
     if (c.currency !== transaction.currency) return false;
     if (!c.dueDate) return false;
     if (!amountsEqual(c.amountDue, transaction.amount)) return false;

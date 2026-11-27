@@ -22,6 +22,8 @@ type PortalDocumentRow = {
   reverse_charge: boolean;
   client_response: "accepted" | "rejected" | null;
   line_items: { quantity: string; unitPrice: string; vatRate: string | null; discountPercent: string | null }[];
+  /** Category "amounts": the portal has no key for them, so it shows no sums for this document. */
+  amounts_sealed?: boolean | null;
 };
 
 export interface ClientPortalDocument {
@@ -33,10 +35,11 @@ export interface ClientPortalDocument {
   issueDate: string | null;
   dueDate: string | null;
   currency: string;
-  total: number;
+  /** Null when the amounts are sealed (Důvěrný režim): the portal has no key for them. */
+  total: number | null;
   amountPaid: number;
-  /** Still to pay; 0 for quotes, credit notes, paid and cancelled documents. */
-  balance: number;
+  /** Still to pay; 0 for quotes, credit notes, paid and cancelled documents; null when sealed. */
+  balance: number | null;
   overdue: boolean;
   clientResponse: "accepted" | "rejected" | null;
 }
@@ -74,10 +77,11 @@ export class ClientPortalService {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const documents = rows.map((r): ClientPortalDocument => {
-      const total = computeInvoiceTotal(r.line_items, { reverseCharge: r.reverse_charge });
+      const sealed = r.amounts_sealed === true;
+      const total = sealed ? null : computeInvoiceTotal(r.line_items, { reverseCharge: r.reverse_charge });
       const amountPaid = Number(r.amount_paid ?? 0);
       const payable = (r.document_type === "invoice" || r.document_type === "proforma") && r.status === "issued";
-      const balance = payable ? Math.max(0, Math.round((total - amountPaid) * 100) / 100) : 0;
+      const balance = total == null ? null : payable ? Math.max(0, Math.round((total - amountPaid) * 100) / 100) : 0;
       return {
         token: invoiceLinkOf(linkTenant, { publicKey: r.public_key, publicSlug: r.public_slug, publicToken: r.public_token, invoiceNumber: r.invoice_number }),
         number: r.invoice_number,
@@ -89,14 +93,16 @@ export class ClientPortalService {
         total,
         amountPaid,
         balance,
-        overdue: balance > 0 && r.due_date != null && new Date(r.due_date) < today,
+        // A sealed unpaid document past its due date is overdue too, whatever it owes.
+        overdue: (balance == null ? payable : balance > 0) && r.due_date != null && new Date(r.due_date) < today,
         clientResponse: r.client_response,
       };
     });
 
     const byCurrency = new Map<string, { currency: string; amount: number; overdue: number }>();
     for (const d of documents) {
-      if (d.balance <= 0) continue;
+      // Sealed amounts stay out of the sums (the page lists them without one).
+      if (d.balance == null || d.balance <= 0) continue;
       const acc = byCurrency.get(d.currency) ?? { currency: d.currency, amount: 0, overdue: 0 };
       acc.amount += d.balance;
       if (d.overdue) acc.overdue += d.balance;

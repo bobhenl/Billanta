@@ -13,6 +13,7 @@ import type { Expense } from '@/lib/expense-ui';
 import { cn } from '@/lib/utils';
 import { TransactionActions } from './transaction-actions';
 import { ConfidentialText } from '@/components/vault/confidential-text';
+import { RowTotal } from '@/components/vault/sealed-amounts';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -145,7 +146,7 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
                     <div className="font-semibold">{matched.invoiceNumber ?? t('detail.draft')}</div>
                     <div className="text-xs text-muted-foreground"><ConfidentialText value={matched.contactName} compact /></div>
                   </div>
-                  <span className="font-semibold tabular-nums"><span className="amount">{formatMoney(matched.total, matched.currency, locale)}</span></span>
+                  <span className="font-semibold tabular-nums"><RowTotal value={matched.total} cipher={matched.encAmounts} currency={matched.currency} /></span>
                 </Link>
               ) : (
                 <p className="mt-2 text-sm text-muted-foreground">{t('detail.invoiceGone')}</p>
@@ -185,7 +186,7 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
                         )}
                         {paid && <div className="mt-0.5 text-xs text-muted-foreground">{t('detail.paidHint')}</div>}
                       </div>
-                      <span className="font-semibold tabular-nums"><span className="amount">{formatMoney(invoice.total, invoice.currency, locale)}</span></span>
+                      <span className="font-semibold tabular-nums"><RowTotal value={invoice.total} cipher={invoice.encAmounts} currency={invoice.currency} /></span>
                       <TransactionActions id={tx.id} status={tx.status} matchInvoiceId={invoice.id} matchPaid={paid} secondary={draftFirst} />
                     </li>
                   ))}

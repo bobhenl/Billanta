@@ -9,6 +9,7 @@ import { VatStatusBadge } from '@/components/vat-status-badge';
 import { isSealed } from '@faktur/cz-compliance';
 import { ConfidentialJoin, ConfidentialLink } from '@/components/vault/confidential-join';
 import { ConfidentialText } from '@/components/vault/confidential-text';
+import { MoneySum } from '@/components/vault/sealed-amounts';
 import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import { formatDate, formatMoney, type InvoiceRow } from '@/lib/invoice-ui';
 import { EXPENSE_STATE_CLASSES, expenseState, type ExpensePage } from '@/lib/expense-ui';
@@ -69,11 +70,17 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
 
   // Per-currency stats over real (non-cancelled, non-quote) documents.
   const billable = invoices.filter((i) => i.status !== 'cancelled' && i.status !== 'draft' && i.documentType !== 'quote' && i.documentType !== 'proforma');
-  const byCurrency = new Map<string, { total: number; open: number }>();
+  // Sealed amounts (Důvěrný režim) have no server total: the browser adds them after unlock.
+  const byCurrency = new Map<string, { total: number; open: number; sealed: string[]; sealedOpen: string[] }>();
   for (const inv of billable) {
-    const s = byCurrency.get(inv.currency) ?? { total: 0, open: 0 };
-    s.total += inv.total;
-    if (!inv.paidAt) s.open += inv.total;
+    const s = byCurrency.get(inv.currency) ?? { total: 0, open: 0, sealed: [], sealedOpen: [] };
+    if (inv.total == null || inv.encAmounts) {
+      s.sealed.push(inv.encAmounts ?? '');
+      if (!inv.paidAt) s.sealedOpen.push(inv.encAmounts ?? '');
+    } else {
+      s.total += inv.total;
+      if (!inv.paidAt) s.open += inv.total;
+    }
     byCurrency.set(inv.currency, s);
   }
   const overdue = invoices.filter((i) => i.isOverdue).length;
@@ -90,8 +97,16 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
     .join(', ');
   const stats = [
     ...[...byCurrency.entries()].flatMap(([currency, s]) => [
-      { label: t('stats.invoiced', { currency }), value: formatMoney(s.total, currency, locale), tone: 'text-primary' },
-      { label: t('stats.open', { currency }), value: formatMoney(s.open, currency, locale), tone: s.open > 0 ? 'text-warning' : '' }
+      {
+        label: t('stats.invoiced', { currency }),
+        value: s.sealed.length ? <MoneySum plain={s.total} sealed={s.sealed} currency={currency} /> : formatMoney(s.total, currency, locale),
+        tone: 'text-primary'
+      },
+      {
+        label: t('stats.open', { currency }),
+        value: s.sealedOpen.length ? <MoneySum plain={s.open} sealed={s.sealedOpen} currency={currency} /> : formatMoney(s.open, currency, locale),
+        tone: s.open > 0 || s.sealedOpen.length > 0 ? 'text-warning' : ''
+      }
     ]),
     // A customer with nothing invoiced yet gets no row of zeros and dashes.
     ...(billable.length ? [{ label: t('stats.overdue'), value: String(overdue), tone: overdue > 0 ? 'text-destructive' : '', count: true }] : []),
@@ -139,7 +154,7 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
           {stats.map((s) => (
             <div key={s.label} className="min-w-0 rounded-xl border border-border bg-card p-3 sm:p-4">
               <div title={s.label} className="truncate text-xs text-muted-foreground">{s.label}</div>
-              <div title={s.value} className={cn('mt-1 truncate text-lg font-extrabold tabular-nums sm:text-2xl', s.tone, !('count' in s) && 'amount')}>{s.value}</div>
+              <div title={typeof s.value === 'string' ? s.value : undefined} className={cn('mt-1 truncate text-lg font-extrabold tabular-nums sm:text-2xl', s.tone, !('count' in s) && 'amount')}>{s.value}</div>
             </div>
           ))}
         </div>

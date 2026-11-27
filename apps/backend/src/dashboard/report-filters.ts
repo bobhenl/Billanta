@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { isRemindableDocument } from "../invoices/invoice-reminders.util";
 
 /** Statuses the report filter offers; "unpaid" = issued, not paid yet; "overdue" = unpaid past due. */
 export const REPORT_STATUSES = ["paid", "unpaid", "overdue", "cancelled"] as const;
@@ -40,43 +39,5 @@ export function parseReportFilters(query: Record<string, unknown>): ReportFilter
   return reportFiltersSchema.parse(raw);
 }
 
-/** What a document needs for the filters to judge it. */
-export interface FilterableDoc {
-  documentType: string;
-  status: string;
-  currency: string;
-  language: string;
-  contactId: string | null;
-  dueDate: Date | null;
-}
-
-const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
-
-/** Same rule as `isOverdue` in invoices.service: unpaid and due before today. */
-export function isOverdueDoc(doc: Pick<FilterableDoc, "status" | "dueDate" | "documentType">, today: Date): boolean {
-  return doc.status === "issued" && isRemindableDocument(doc.documentType) && doc.dueDate != null && doc.dueDate < startOfDay(today);
-}
-
-export function matchesFilters(doc: FilterableDoc, filters: ReportFilters, today = new Date()): boolean {
-  if (filters.currency && doc.currency !== filters.currency) return false;
-  if (filters.language && doc.language !== filters.language) return false;
-  if (filters.contactId && doc.contactId !== filters.contactId) return false;
-  if (filters.documentType && doc.documentType !== filters.documentType) return false;
-  switch (filters.status) {
-    case "paid":
-      return doc.status === "paid";
-    case "unpaid":
-      return doc.status === "issued";
-    case "overdue":
-      return isOverdueDoc(doc, today);
-    case "cancelled":
-      return doc.status === "cancelled";
-    default:
-      return true;
-  }
-}
-
-/** True when a filter narrows the documents themselves (expenses only follow the currency). */
-export function hasDocumentFilters(filters: ReportFilters): boolean {
-  return !!(filters.language || filters.contactId || filters.documentType || filters.status);
-}
+// Shared with the browser's rerun of the period report (cz-compliance report-stats).
+export { hasDocumentFilters, isOverdueDoc, matchesFilters, type FilterableDoc } from "@faktur/cz-compliance";

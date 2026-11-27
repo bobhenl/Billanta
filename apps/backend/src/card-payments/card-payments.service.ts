@@ -7,6 +7,7 @@ import { decryptSecret, encryptSecret } from "../backup-destinations/encryption.
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
 import { computeInvoiceTotal, round2 } from "../invoices/invoice-total.util";
+import { amountsSealed } from "../vault/sealed-amounts";
 import { InvoicesService } from "../invoices/invoices.service";
 import { resolveInvoiceToken } from "../public-links/resolve";
 
@@ -267,6 +268,8 @@ export class CardPaymentsService {
   private async amountDue(db: TenantDb, invoiceId: string): Promise<{ amount: number; currency: string; label: string } | null> {
     const [invoice] = await db.select().from(schema.invoices).where(eq(schema.invoices.id, invoiceId));
     if (!invoice || invoice.status !== "issued" || invoice.documentType === "quote" || invoice.documentType === "credit_note") return null;
+    // Sealed amounts: the server can't know what to charge (the sum here would be 0 anyway).
+    if (amountsSealed(invoice)) return null;
     const items = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, invoiceId));
     const rest = round2(round2(computeInvoiceTotal(items, { reverseCharge: invoice.reverseCharge })) - Number(invoice.amountPaid));
     if (rest <= 0) return null;

@@ -27,7 +27,15 @@ interface SavedTemplate {
   noteAbove: string | null;
   noteBelow: string | null;
   language?: DocLanguage | null;
-  lineItems: { description: string; quantity: number | string; unit?: string | null; unitPrice: number | string; vatRate: number | string | null; discountPercent?: number | string | null }[];
+  lineItems: {
+    description: string;
+    quantity: number | string;
+    unit?: string | null;
+    unitPrice: number | string;
+    vatRate: number | string | null;
+    discountPercent?: number | string | null;
+    encAmounts?: string | null;
+  }[];
 }
 
 /**
@@ -82,7 +90,9 @@ async function loadTemplate(params: {
             unit: item.unit ?? null,
             unitPrice: Number(item.unitPrice),
             vatRate: item.vatRate == null ? null : Number(item.vatRate),
-            discountPercent: Number(item.discountPercent ?? 0)
+            discountPercent: Number(item.discountPercent ?? 0),
+            // Sealed amounts: the confidential form opens them before the numbers show.
+            encAmounts: item.encAmounts ?? null
           }))
         }
       };

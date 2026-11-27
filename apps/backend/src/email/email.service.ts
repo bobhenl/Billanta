@@ -11,8 +11,11 @@ import type { BrandCredit } from "../invoices/brand-credit";
 export interface SendInvoiceEmailParams {
   to: string;
   invoiceNumber: string;
-  /** Pre-formatted for display, e.g. "1815.00 CZK" — see `invoice-total.util.ts`. */
-  amount: string;
+  /**
+   * Pre-formatted for display, e.g. "1815.00 CZK" — see `invoice-total.util.ts`.
+   * Null when the amounts are encrypted (Důvěrný režim): the e-mail then has no amount row.
+   */
+  amount: string | null;
   dueDate: Date | null;
   /** The /i/ path segment from `invoiceLinkOf` (readable prefix + key), used to build the client-portal link. */
   publicLink: string;
@@ -595,7 +598,7 @@ function renderInvoiceEmailHtml(params: {
   heading: string;
   intro: string;
   invoiceNumber: string;
-  amount: string;
+  amount: string | null;
   dueDate: Date | null;
   variableSymbol?: string | null;
   /** The QR goes along as the inline `cid:payment-qr` attachment. */
@@ -628,10 +631,14 @@ function renderInvoiceEmailHtml(params: {
               <td style="padding:6px 0; color:#666;">${params.creditNote ? l.documentNumber : l.invoiceNumber}</td>
               <td style="padding:6px 0; text-align:right;"><strong>${escapeHtml(params.invoiceNumber)}</strong></td>
             </tr>
-            <tr>
+            ${
+              params.amount == null
+                ? ""
+                : `<tr>
               <td style="padding:6px 0; color:#666;">${l.amount}</td>
               <td style="padding:6px 0; text-align:right;"><strong>${escapeHtml(params.amount)}</strong></td>
-            </tr>
+            </tr>`
+            }
             ${
               params.creditNote
                 ? ""
@@ -690,7 +697,7 @@ function placeholderValues(params: SendInvoiceEmailParams): Record<string, strin
   return {
     ...params.custom?.vars,
     number: params.invoiceNumber,
-    amount: params.amount,
+    amount: params.amount ?? "",
     due_date: params.dueDate
       ? params.dueDate.toLocaleDateString(EMAIL_LABELS[emailLangOf(params.language)].dateLocale, { year: "numeric", month: "2-digit", day: "2-digit" })
       : "",

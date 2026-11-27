@@ -28,6 +28,7 @@ import {
   type ContactResolution,
 } from "./buyer-details.util";
 import { computeInvoiceTotal, computeVatBreakdown, formatInvoiceAmount, round2 } from "./invoice-total.util";
+import { amountsSealed, refuseSealedAmounts } from "../vault/sealed-amounts";
 import { InvoicesService } from "./invoices.service";
 import { CONTACT_SEALABLE, contactIsSealed, contactLabel, plainName } from "../vault/sealed-contacts";
 
@@ -106,6 +107,8 @@ export class BuyerDetailsService {
     const block = requestBlock(invoice);
     if (block === "not_draft") throw new BadRequestException("Only a draft can be sent to the customer to fill in their details");
     if (block) throw new BadRequestException("A credit note always has the customer of its invoice");
+    // The form shows the customer the items and the total, which the server can't read when sealed.
+    refuseSealedAmounts(invoice);
 
     // 12 base62 characters (~71 bits); the unique index on the column backs it up.
     const token = newBuyerDetailsToken();
@@ -217,6 +220,8 @@ export class BuyerDetailsService {
       const invoice = await this.loadInvoice(db, target.invoice_id);
       const block = submitBlock(invoice, token);
       if (!invoice || (block && block !== "submitted")) throw new NotFoundException("Link not found");
+      // Sealed after the request went out: the page would show the placeholder's zeros.
+      if (amountsSealed(invoice)) throw new NotFoundException("Link not found");
       const [tenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, target.tenant_id)).limit(1);
       const items = await db
         .select()

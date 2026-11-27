@@ -8,6 +8,7 @@ import { getHomeRate } from "../exports/home-rates";
 import { ReportRates } from "../exports/uniform-rate";
 import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
 import { applyBuyerSnapshot } from "../invoices/party-snapshot";
+import { amountsSealed } from "../vault/sealed-amounts";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 import { computeNetIncome, type IncomeItem } from "./net-income";
 import { netIncomeTips } from "./net-income-tips";
@@ -116,7 +117,13 @@ export class NetIncomeService {
       /** The creator's partner when they claim their own invoices; used when partnerShares is null. */
       claimedShares: Shares | null;
     }[] = [];
+    // Sealed amounts would count as 0 income; they are listed for the browser instead.
+    const sealedIds: string[] = [];
     for (const { invoice, contact } of rows) {
+      if (amountsSealed(invoice)) {
+        sealedIds.push(invoice.id);
+        continue;
+      }
       const totals = computeVatBreakdown(
         items.filter((i) => i.invoiceId === invoice.id),
         { reverseCharge: invoice.reverseCharge },
@@ -195,6 +202,8 @@ export class NetIncomeService {
       invoices,
       extraIncome,
       missingRates,
+      /** Paid documents of the period with sealed amounts, left out of `result`. */
+      sealed: { count: sealedIds.length, ids: sealedIds },
     };
   }
 }

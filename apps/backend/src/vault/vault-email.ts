@@ -14,13 +14,16 @@ export const VAULT_PDF_MAX_BYTES = 5 * 1024 * 1024;
 
 /**
  * Whether the server cannot print the document: any of its printed texts is
- * ciphertext, the item texts or (category "contacts") the buyer's name and address.
+ * ciphertext, the item texts or (category "contacts") the buyer's name and
+ * address, or (category "amounts") its amounts.
  */
 export function documentIsSealed(
-  invoice: { noteAbove: string | null; noteBelow: string | null } & DocumentBuyer,
+  invoice: { noteAbove: string | null; noteBelow: string | null; encAmounts?: string | null } & DocumentBuyer,
   items: { description: string }[],
   contact?: BuyerFields | null,
 ): boolean {
+  // Category "amounts" too: the server would print zeros where the amounts go.
+  if (isSealed(invoice.encAmounts)) return true;
   return [...printedTexts(invoice, items), ...documentBuyerTexts(invoice, contact)].some((t) => isSealed(t));
 }
 

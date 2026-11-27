@@ -95,6 +95,56 @@ export interface InvoicePdfModel {
   };
   credit: { text: string; url: string } | null;
   watermark: { stamp: string; footer: string } | null;
+  /**
+   * Present when the amounts are sealed (category "amounts"): the table and
+   * totals then hold placeholders, and `fillSealedPdfAmounts` writes the real
+   * numbers from the opened envelopes. The renderer refuses a model that
+   * still has it, so a placeholder 0 never prints as the amount.
+   */
+  sealedAmounts?: SealedPdfAmounts;
+}
+
+/** JSON-safe payment-code inputs without the amount, which only the browser knows. */
+export type SealedPdfQrPlan =
+  | {
+      kind: 'spayd';
+      label: string;
+      params: { iban: string; currency: string; variableSymbol?: string; dueDate?: string; message?: string };
+    }
+  | {
+      kind: 'pay_by_square';
+      label: string;
+      params: {
+        iban: string;
+        bic?: string;
+        currency: string;
+        variableSymbol?: string;
+        dueDate?: string;
+        message?: string;
+        invoiceId?: string;
+        beneficiaryName: string;
+        beneficiaryStreet?: string;
+        beneficiaryCity?: string;
+      };
+    };
+
+export interface SealedPdfAmounts {
+  currency: string;
+  reverseCharge: boolean;
+  /** One envelope per table row, in the table's order. */
+  items: string[];
+  units: (string | null)[];
+  /** VAT payer: the VAT column shows even when every rate is 0. */
+  vatPayer: boolean;
+  /** Not a quote and not cancelled: a positive total then asks for payment. */
+  mayAskForPayment: boolean;
+  quote: boolean;
+  paid: boolean;
+  labels: { base: string; vat: string; total: string; totalToPay: string; totalQuote: string };
+  /** Foreign currency: the rate line as printed and the labels of the two home-currency lines. */
+  fx: { rateLine: string; rate: number; home: string; vatInHome: string; totalInHome: string } | null;
+  /** The payment code to draw once the amount is known; null when the document gets none. */
+  qr: SealedPdfQrPlan | null;
 }
 
 /** A TrueType font as a path (Node) or its bytes (browser). */
@@ -199,6 +249,7 @@ function startDoc(PDFDocument: PdfDocumentClass, options: object, fonts: PdfFont
  */
 export async function renderInvoicePdf(PDFDocument: PdfDocumentClass, model: InvoicePdfModel, fonts: PdfFonts | null): Promise<Uint8Array> {
   if ([...sealableModelTexts(model), ...customerTexts(model)].some(holdsEnvelope)) throw new Error('confidential_content');
+  if (model.sealedAmounts) throw new Error('confidential_content');
   const { doc, finished, regular, bold } = startDoc(
     PDFDocument,
     {

@@ -69,3 +69,34 @@ describe("DashboardService.summary unpaid tiles", () => {
     expect(summary.overdue).toHaveLength(0);
   });
 });
+
+describe("DashboardService.summary with sealed amounts", () => {
+  const envelope = `enc:v1:AAAAAAAAAAAAAAAA:${"Q".repeat(24)}`;
+  const placeholder = (invoiceId: string) => ({ invoiceId, quantity: "1", unitPrice: "0", vatRate: null as unknown as string, discountPercent: null });
+
+  it("sends what the browser needs to merge them, with the date rules decided here", async () => {
+    const lastYear = new Date(new Date().getFullYear() - 1, 5, 1);
+    const summary = await summaryOf(
+      [
+        invoiceRow("s", { encAmounts: envelope, contactId: "k1", amountPaid: "0" }),
+        invoiceRow("old", { encAmounts: envelope, status: "paid", issueDate: lastYear, dueDate: lastYear }),
+        invoiceRow("p", { contactId: "k2" }),
+      ],
+      [placeholder("s"), placeholder("old"), line("p")],
+    );
+    expect(summary.kpi.revenueYear).toBe(1000);
+    expect(summary.sealed.ids).toEqual(["s", "old"]);
+    expect(summary.sealed.docs).toMatchObject([
+      { id: "s", encAmounts: envelope, contactId: "k1", unpaid: true, overdue: true, taxDoc: true, inMonth: true, inYear: true },
+      { id: "old", unpaid: false, overdue: false, inMonth: false, inYear: false },
+    ]);
+    // Every customer of the year, so the browser can re-rank the top five.
+    expect(summary.sealed.customers).toEqual([{ contactId: "k2", name: "–", total: 1000, count: 1 }]);
+  });
+
+  it("sends nothing extra without sealed documents", async () => {
+    const summary = await summaryOf([invoiceRow("p", {})], [line("p")]);
+    expect(summary.sealed).toEqual({ count: 0, ids: [] });
+  });
+});
+

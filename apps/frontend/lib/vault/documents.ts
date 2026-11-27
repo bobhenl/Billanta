@@ -1,4 +1,7 @@
 import {
+  decodeItemAmounts,
+  fillSealedIsdocAmounts,
+  fillSealedPdfAmounts,
   generateIsdocXml,
   generateUblInvoiceXml,
   isSealed,
@@ -10,6 +13,7 @@ import {
   type UblOptions,
   type VaultKey
 } from '@faktur/cz-compliance';
+import { sealedQrPng } from './amounts';
 
 /**
  * Důvěrný režim: the PDF and ISDOC of a sealed invoice are made here, in the
@@ -63,6 +67,16 @@ function pdfFonts(base = '/api/files/invoices/pdf-fonts') {
   return load;
 }
 
+/**
+ * Category "amounts": the real numbers into the model, from the item
+ * envelopes `openItem` opens (the vault key, or the client's link key).
+ */
+async function withAmounts(model: InvoicePdfModel, openItem: (cipher: string) => Promise<string>): Promise<InvoicePdfModel> {
+  if (!model.sealedAmounts) return model;
+  const items = await Promise.all(model.sealedAmounts.items.map(async (cipher) => decodeItemAmounts(await openItem(cipher))));
+  return (await fillSealedPdfAmounts(model, items, sealedQrPng)).model;
+}
+
 async function drawPdf(model: InvoicePdfModel, fontBase?: string): Promise<Uint8Array> {
   // pdfkit is large; only someone downloading a sealed invoice loads it.
   const [{ default: PDFDocument }, f] = await Promise.all([import('pdfkit/js/pdfkit.standalone'), pdfFonts(fontBase)]);
@@ -71,7 +85,8 @@ async function drawPdf(model: InvoicePdfModel, fontBase?: string): Promise<Uint8
 
 export async function renderSealedPdf(key: VaultKey, invoiceId: string): Promise<RenderedDocument> {
   const { filename, model } = await getJson<{ filename: string; model: InvoicePdfModel }>(`invoices/${invoiceId}/pdf-model`);
-  const pdf = await drawPdf(await openInvoicePdfModel(model, (value) => open(key, value)));
+  const opener = (value: string) => open(key, value);
+  const pdf = await drawPdf(await withAmounts(await openInvoicePdfModel(model, opener), opener));
   return { filename, blob: new Blob([pdf as BlobPart], { type: 'application/pdf' }) };
 }
 
@@ -84,7 +99,7 @@ export async function renderClientPdf(token: string, openItem: (cipher: string) 
   const res = await fetch(`/api/public/invoices/${encodeURIComponent(token)}/pdf-model`, { cache: 'no-store' });
   if (!res.ok) throw new DocumentError('download_failed');
   const { filename, model } = (await res.json()) as { filename: string; model: InvoicePdfModel };
-  const pdf = await drawPdf(await openInvoicePdfModel(model, openItem), '/api/public/pdf-fonts');
+  const pdf = await drawPdf(await withAmounts(await openInvoicePdfModel(model, openItem), openItem), '/api/public/pdf-fonts');
   return { filename, blob: new Blob([pdf as BlobPart], { type: 'application/pdf' }) };
 }
 
@@ -104,15 +119,35 @@ async function openInput(key: VaultKey, input: IsdocInvoiceInput): Promise<Isdoc
   return { ...input, lineItems, customer };
 }
 
+/** Category "amounts": the item envelopes in the input's line order (null when the amounts are plain). */
+type SealedInputAmounts = { items: string[]; reverseCharge: boolean; depositIsTotal?: boolean } | null | undefined;
+
+async function inputWithAmounts(key: VaultKey, input: IsdocInvoiceInput, sealed: SealedInputAmounts): Promise<IsdocInvoiceInput> {
+  const opened = await openInput(key, input);
+  if (!sealed) return opened;
+  const items = await Promise.all(sealed.items.map(async (cipher) => decodeItemAmounts(await open(key, cipher))));
+  return fillSealedIsdocAmounts(opened, items, { reverseCharge: sealed.reverseCharge, depositIsTotal: sealed.depositIsTotal });
+}
+
 export async function renderSealedIsdoc(key: VaultKey, invoiceId: string): Promise<RenderedDocument> {
-  const { filename, input } = await getJson<{ filename: string; input: IsdocInvoiceInput }>(`invoices/${invoiceId}/isdoc-input`);
-  const xml = generateIsdocXml(await openInput(key, input));
+  const { filename, input, sealedAmounts } = await getJson<{ filename: string; input: IsdocInvoiceInput; sealedAmounts?: SealedInputAmounts }>(
+    `invoices/${invoiceId}/isdoc-input`
+  );
+  const xml = generateIsdocXml(await inputWithAmounts(key, input, sealedAmounts));
   return { filename, blob: new Blob([xml], { type: 'application/xml' }) };
 }
 
 export async function renderSealedUbl(key: VaultKey, invoiceId: string): Promise<RenderedDocument> {
-  const { filename, input, options } = await getJson<{ filename: string; input: IsdocInvoiceInput; options: UblOptions }>(`invoices/${invoiceId}/ubl-input`);
-  const xml = generateUblInvoiceXml(await openInput(key, input), options);
+  const { filename, input, options, sealedAmounts } = await getJson<{
+    filename: string;
+    input: IsdocInvoiceInput;
+    options: UblOptions;
+    sealedAmounts?: SealedInputAmounts;
+  }>(`invoices/${invoiceId}/ubl-input`);
+  const filled = await inputWithAmounts(key, input, sealedAmounts);
+  // The final invoice of a paid proforma: the server could not know the prepaid sum.
+  const deposit = filled.totals.paidDepositsAmount;
+  const xml = generateUblInvoiceXml(filled, deposit ? { ...options, prepaidAmount: deposit } : options);
   return { filename, blob: new Blob([xml], { type: 'application/xml' }) };
 }
 

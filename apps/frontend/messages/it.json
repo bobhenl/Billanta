@@ -470,7 +470,8 @@
     },
     "dragToReorder": "Trascina per riordinare",
     "exportsCta": "Esportazioni per il commercialista",
-    "emptyHintReadOnly": "Non ci sono ancora documenti. Quando l'azienda emetterà la prima fattura, qui vedrà ricavi, un grafico e clienti."
+    "emptyHintReadOnly": "Non ci sono ancora documenti. Quando l'azienda emetterà la prima fattura, qui vedrà ricavi, un grafico e clienti.",
+    "sealedNote": "{count, plural, one {# documento con importi cifrati non è incluso} other {# documenti con importi cifrati non sono inclusi}} nei totali."
   },
   "invoices": {
     "hover": {
@@ -783,7 +784,8 @@
       "openedPreview": "Anteprima: la chiave del link ha aperto i testi. Non è stata salvata in questo browser.",
       "forget": "Dimentica la chiave in questo browser",
       "forgotten": "La chiave è stata eliminata da questo browser. Il testo completo è nel link dell’e-mail originale."
-    }
+    },
+    "confidentialAmount": "Importo riservato"
   },
   "expenses": {
     "title": "Spese",
@@ -4773,7 +4775,10 @@
       "empty_input": "Descriva cosa fatturare.",
       "symbol_invalid": "I simboli possono contenere solo cifre (VS e SS fino a 10, KS fino a 4).",
       "reason_required": "Indichi il motivo della modifica.",
-      "ai_credits_exhausted": "I crediti AI di questo mese sono finiti. I nuovi arrivano il 1°; un piano superiore ne ha di più, oppure usi la Sua chiave."
+      "ai_credits_exhausted": "I crediti AI di questo mese sono finiti. I nuovi arrivano il 1°; un piano superiore ne ha di più, oppure usi la Sua chiave.",
+      "amounts_plaintext": "Il documento non è stato salvato: gli importi non erano cifrati. Riprova.",
+      "amounts_sealed": "Gli importi del documento sono cifrati, quindi il server non può farlo.",
+      "amounts_partly_paid": "Un documento pagato in parte non si può cifrare. Cifralo dopo il pagamento completo."
     },
     "copy": {
       "title": "Precompila da un’altra fattura",
@@ -7313,7 +7318,8 @@
     },
     "flatTaxLink": "Conviene la tassazione forfettaria? →",
     "taxReturnLink": "Riepilogo per la dichiarazione dei redditi",
-    "netIncomeLink": "Al netto delle imposte"
+    "netIncomeLink": "Al netto delle imposte",
+    "sealedNote": "{count, plural, one {# documento con importi cifrati non è incluso} other {# documenti con importi cifrati non sono inclusi}} nei totali."
   },
   "siteSearch": {
     "title": "Cerca nel sito",
@@ -14388,7 +14394,8 @@
       "sealOnHint": "Descrizioni delle righe e note le vedrete solo tu e i membri con la chiave. PDF, ISDOC e UBL li crea il tuo browser; i suggerimenti di righe si cercano solo nel tuo browser.",
       "sealOffHint": "Il documento viene salvato senza cifratura, come prima.",
       "aiConsent": "Invia questo testo all’IA – andrà una sola volta al server e al fornitore di IA e non verrà salvato",
-      "aiConsentHint": "Il server non salva né registra il testo. Ciò che l’IA restituisce viene cifrato nel tuo browser al salvataggio. Il consenso vale solo per questa esecuzione."
+      "aiConsentHint": "Il server non salva né registra il testo. Ciò che l’IA restituisce viene cifrato nel tuo browser al salvataggio. Il consenso vale solo per questa esecuzione.",
+      "amountsPartlyPaid": "Gli importi cifrati non si possono salvare con un pagamento parziale. Cancella l’importo pagato e, a pagamento avvenuto, segna il documento come pagato."
     },
     "actions": {
       "blocked": "Impossibile aprire i testi cifrati. Sblocca la cassaforte con la chiave giusta e riprova.",
@@ -14465,12 +14472,24 @@
       },
       "amounts": {
         "title": "Importi",
-        "description": "Prezzi, IVA e totali dei documenti.",
+        "description": "Quantità, prezzi unitari, aliquote IVA, sconti e totali dei documenti. Il numero del documento, il simbolo variabile (VS), la scadenza, la valuta e lo stato restano leggibili.",
         "loses": [
-          "Abbinamento automatico dei pagamenti bancari",
-          "Report IVA, comunicazioni di controllo ed export IVA",
-          "Dashboard, reddito netto e grafici",
-          "Solleciti con importo e pagamenti QR creati dal server"
+          "Abbinamento automatico dei pagamenti per importo: un pagamento con il VS di un documento cifrato attende la tua conferma manuale",
+          "Pagamenti parziali: un documento cifrato può essere segnato solo come pagato per intero, senza commissioni né importo accreditato",
+          "Esportazioni per il commercialista, dichiarazioni e riepiloghi IVA dal server: rifiutano i documenti con importi cifrati e li elencano",
+          "Invio tramite Peppol, suggerimenti dell’IA con importi e pagamento con carta",
+          "La dashboard, il reddito netto e i report contano solo i documenti non cifrati e indicano quanti ne hanno esclusi",
+          "Solleciti, riepilogo settimanale e totali scaduti nelle e-mail non riportano l’importo"
+        ],
+        "how": [
+          "Ogni riga viene cifrata nel tuo browser come un tutt’uno: quantità, prezzo, aliquota IVA e sconto. I totali del documento hanno una propria busta. Tutto con la chiave del documento, così anche il link per il cliente li apre.",
+          "Il server salva zeri al posto delle cifre, quindi nessuna delle sue somme contiene un importo reale.",
+          "I documenti creati dall’IA (Telegram, WhatsApp) hanno importi leggibili finché non li salvi nell’editor.",
+          "I documenti precedenti restano leggibili finché non li cifri con il pulsante Cifra gli importi esistenti."
+        ],
+        "changes": [
+          "PDF, ISDOC, UBL e pagamento QR li crea il tuo browser, e nel link per il cliente il browser del cliente",
+          "Le fatture ricorrenti copiano gli importi cifrati senza modificarli"
         ]
       },
       "howTitle": "Come funziona:",
@@ -14728,7 +14747,31 @@
       "nothing": "Non c’era nulla da cifrare.",
       "failed": "La cifratura non è riuscita. I contatti già cifrati restano cifrati."
     },
-    "emailSealed": "L’e-mail del cliente è cifrata, quindi il server non vi invia nulla. Invia la fattura dalla tua posta o copia il link per il cliente."
+    "emailSealed": "L’e-mail del cliente è cifrata, quindi il server non vi invia nulla. Invia la fattura dalla tua posta o copia il link per il cliente.",
+    "sealAmounts": {
+      "button": "Cifra gli importi esistenti",
+      "title": "Cifra gli importi esistenti",
+      "what": "Il browser carica i documenti i cui importi sono leggibili sul server, cifra quantità, prezzi, aliquote IVA, sconti e totali e li salva di nuovo. Sul server al loro posto restano degli zeri.",
+      "keeps": "Numero del documento, VS, scadenza, valuta e stato restano leggibili, quindi trovi ancora i pagamenti tramite VS.",
+      "loses": "Il server non creerà più PDF, ISDOC né esportazioni per il commercialista per questi documenti e non li conterà nei report. Un documento pagato resta pagato.",
+      "resumable": "I documenti bloccati e quelli pagati in parte vengono saltati. Se chiudi la finestra, la prossima volta si riprende da dove ti eri fermato.",
+      "cancel": "Indietro",
+      "confirm": "Cifra",
+      "progress": "Cifratura… {n}",
+      "done": "{n, plural, one {Importi di # documento cifrati} other {Importi di # documenti cifrati}}.",
+      "nothing": "Non c’era nulla da cifrare.",
+      "failed": "La cifratura non è riuscita. I documenti già cifrati restano cifrati.",
+      "partlyPaid": "{n, plural, one {# documento pagato in parte è rimasto leggibile} other {# documenti pagati in parte sono rimasti leggibili}}. Si potranno cifrare dopo il pagamento completo."
+    },
+    "amounts": {
+      "paidSealed": "Gli importi del documento sono cifrati, quindi si può registrare solo il pagamento dell’intero importo. Il server non salva commissioni né importo accreditato.",
+      "leftOut": "Esclusi {count, plural, one {# documento} other {# documenti}} con importi cifrati – sblocca la cassaforte",
+      "exportLocked": "I documenti con importi cifrati entrano nel file solo dopo lo sblocco della cassaforte.",
+      "exportUnreadable": "Nessun file creato: {count, plural, one {# documento non si può aprire} other {# documenti non si possono aprire}} con questa chiave. Un documento mancante renderebbe il file errato.",
+      "creditNoteLocked": "La nota di credito di una fattura con importi cifrati si prepara dopo lo sblocco della cassaforte.",
+      "creditNoteUnreadable": "Gli importi della fattura non si possono aprire con questa chiave, quindi la nota di credito non è stata creata.",
+      "bulkSealed": "Questo modello ha importi cifrati. Non serve per la fatturazione massiva, solo per una singola fattura."
+    }
   },
   "vaultPublic": {
     "integrity": {

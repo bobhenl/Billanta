@@ -11,6 +11,8 @@ import { toast } from '@/components/toaster';
 import { cn } from '@/lib/utils';
 import { FeatureBadge } from '@/components/plan-lock';
 import { planRequiredIn, type FeatureUsage } from '@/lib/usage';
+import { useVault } from '@/components/vault/vault-provider';
+import { isAmountsSealedRefusal, saveText, sealedVatFiling } from '@/lib/vault/sealed-exports';
 
 const FILES = [
   { key: 'dp3', path: 'dphdp3.xml' },
@@ -27,14 +29,18 @@ const FILES_SK = [
 const SK_OFFICIAL_URL = 'https://www.financnasprava.sk/sk/podnikatelia/dane/dan-z-pridanej-hodnoty';
 /** `X-Vat-Warnings` (URI-encoded JSON `[{ code, document }]`) grouped by code. */
 function vatWarnings(header: string | null): Map<string, string[]> {
-  const out = new Map<string, string[]>();
-  if (!header) return out;
+  if (!header) return new Map();
   try {
-    const list = JSON.parse(decodeURIComponent(header)) as { code: string; document: string }[];
-    for (const w of list) out.set(w.code, [...(out.get(w.code) ?? []), w.document]);
+    return groupWarnings(JSON.parse(decodeURIComponent(header)) as { code: string; document: string }[]);
   } catch {
     // A malformed header must not break the download that already happened.
+    return new Map();
   }
+}
+
+function groupWarnings(list: { code: string; document: string }[]): Map<string, string[]> {
+  const out = new Map<string, string[]>();
+  for (const w of list) out.set(w.code, [...(out.get(w.code) ?? []), w.document]);
   return out;
 }
 
@@ -63,6 +69,8 @@ export function VatFilings({
   const common = useTranslations('settings.exports.vat');
   const locale = useLocale();
   const tPlan = useTranslations('planLimits');
+  const tSealed = useTranslations('vault.amounts');
+  const { key: vaultKey, requestUnlock } = useVault();
   const now = new Date();
   const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
   const [mode, setMode] = useState<'month' | 'quarter'>('month');
@@ -74,32 +82,68 @@ export function VatFilings({
   const [warnings, setWarnings] = useState<string[]>([]);
   const years = Array.from({ length: 6 }, (_, i) => String(now.getFullYear() - i));
   // An identified person's tax period is always the calendar month.
-  const query = mode === 'month' || identified ? `year=${year}&month=${month}` : `year=${year}&quarter=${quarter}`;
+  const monthly = mode === 'month' || identified;
+  const query = monthly ? `year=${year}&month=${month}` : `year=${year}&quarter=${quarter}`;
+  // The server's file name for the same period (exports.controller.ts).
+  const label = monthly ? `${year}-${month.padStart(2, '0')}` : `${year}-Q${quarter}`;
+
+  const nothingToReport = (key: string) => (identified && key === 'dp3' ? common('identified.nothingToReport') : t('nothingToReport'));
+
+  async function explain(key: string, res: Response) {
+    const plan = res.status === 403 ? planRequiredIn(await res.text()) : null;
+    if (plan) {
+      toast({ text: tPlan('planRequired', { plan: tPlan(`plans.${plan}`) }), tone: 'info' });
+      return;
+    }
+    const reason =
+      res.status === 404
+        ? nothingToReport(key)
+        : res.status === 400
+          ? t('missingDic')
+          : res.status === 503
+            ? t('rateUnavailable')
+            : common('failed');
+    toast({ text: reason, tone: res.status === 404 ? 'info' : 'err' });
+  }
+
+  /** Some documents have sealed amounts: the file is built here from what the server knows plus what this key opens. */
+  async function downloadSealed(key: string, path: string) {
+    const k = vaultKey ?? (await requestUnlock());
+    if (!k) {
+      toast({ text: tSealed('exportLocked'), tone: 'info' });
+      return;
+    }
+    const filing = path.replace(/\.xml$/, '').replace('/', '-');
+    const res = await fetch(`/api/files/exports/vat-inputs?filing=${filing}&${query}`);
+    if (!res.ok) return explain(key, res);
+    const out = await sealedVatFiling(k, await res.json());
+    if (out.missing > 0) {
+      toast({ text: tSealed('exportUnreadable', { count: out.missing }), tone: 'err' });
+      return;
+    }
+    if (out.body == null) {
+      toast({ text: nothingToReport(key), tone: 'info' });
+      return;
+    }
+    saveText(`${path.replace(/^sk\//, '').replace(/\.xml$/, '')}-${label}.xml`, out.body, 'application/xml;charset=utf-8');
+    showWarnings(groupWarnings(out.warnings));
+  }
+
+  function showWarnings(grouped: Map<string, string[]>) {
+    setWarnings(
+      [...grouped].map(([code, documents]) =>
+        t.has(`warnings.${code}`) ? t(`warnings.${code}`, { documents: documents.join(', ') }) : documents.join(', ')
+      )
+    );
+  }
 
   async function download(key: string, path: string) {
     setBusy(key);
     setWarnings([]);
     try {
       const res = await fetch(`/api/files/exports/${path}?${query}`);
-      if (!res.ok) {
-        const plan = res.status === 403 ? planRequiredIn(await res.text()) : null;
-        if (plan) {
-          toast({ text: tPlan('planRequired', { plan: tPlan(`plans.${plan}`) }), tone: 'info' });
-          return;
-        }
-        const reason =
-          res.status === 404
-            ? identified && key === 'dp3'
-              ? common('identified.nothingToReport')
-              : t('nothingToReport')
-            : res.status === 400
-              ? t('missingDic')
-              : res.status === 503
-                ? t('rateUnavailable')
-                : common('failed');
-        toast({ text: reason, tone: res.status === 404 ? 'info' : 'err' });
-        return;
-      }
+      if (await isAmountsSealedRefusal(res)) return await downloadSealed(key, path);
+      if (!res.ok) return await explain(key, res);
       const blob = await res.blob();
       const name = /filename="([^"]+)"/.exec(res.headers.get('content-disposition') ?? '')?.[1] ?? path;
       const url = URL.createObjectURL(blob);
@@ -109,11 +153,7 @@ export function VatFilings({
       a.click();
       URL.revokeObjectURL(url);
       // The file downloads anyway; EPO would reject it until these are fixed.
-      setWarnings(
-        [...vatWarnings(res.headers.get('x-vat-warnings'))].map(([code, documents]) =>
-          t.has(`warnings.${code}`) ? t(`warnings.${code}`, { documents: documents.join(', ') }) : documents.join(', ')
-        )
-      );
+      showWarnings(vatWarnings(res.headers.get('x-vat-warnings')));
     } catch {
       toast({ text: common('failed'), tone: 'err' });
     } finally {

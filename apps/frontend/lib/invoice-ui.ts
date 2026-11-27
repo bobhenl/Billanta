@@ -41,9 +41,12 @@ export interface InvoiceRow {
   contactName: string | null;
   contactIco: string | null;
   contactColor?: string | null;
-  totalWithoutVat: number;
-  totalVat: number;
-  total: number;
+  /** Null when the amounts are sealed (category "amounts"): the browser opens `encAmounts`. */
+  totalWithoutVat: number | null;
+  totalVat: number | null;
+  total: number | null;
+  /** Category "amounts": the totals envelope; the totals above are then null. */
+  encAmounts?: string | null;
   isOverdue: boolean;
   /** Locked by an owner/admin; until the viewer re-authenticates the customer and notes come back empty. */
   locked?: boolean;
@@ -172,6 +175,8 @@ export interface InvoiceDetail {
     buyerDetailsRequired?: ('email' | 'phone' | 'ico' | 'dic')[] | null;
     buyerDetailsOutcome?: BuyerDetailsOutcome | null;
     customFields?: { label: string; value: string; kind?: 'text' | 'amount' | 'percent'; internal?: boolean }[] | null;
+    /** Category "amounts": the document's totals envelope. */
+    encAmounts?: string | null;
   };
   /** The live contact (link, e-mail for sending). */
   contact: InvoiceParty | null;
@@ -190,7 +195,11 @@ export interface InvoiceDetail {
     vatRate: string | null;
     discountPercent: string;
     lineTotalWithoutVat: number;
+    /** Category "amounts": the item's real numbers; the plain ones are then the placeholder. */
+    encAmounts?: string | null;
   }[];
+  /** Category "amounts": `totals` and the line totals are placeholders, the browser opens the real ones. */
+  amountsSealed?: boolean;
   totals: {
     totalWithoutVat: number;
     totalVat: number;

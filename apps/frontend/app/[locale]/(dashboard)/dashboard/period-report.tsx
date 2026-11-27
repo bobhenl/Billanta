@@ -15,6 +15,7 @@ import { EXPENSE_KPIS, REPORT_KPIS, recommendReportKpis, reportKpisOf, type Repo
 import { fetchPeriodStats, saveDashboardConfig } from './actions';
 import { ChartKindSwitch, Donut, PeriodChart, type ChartKind } from './report-charts';
 import { REPORT_DOC_TYPES, REPORT_STATUSES, type PeriodStats, type ReportFilters } from './types';
+import { useMergedStats } from '@/components/vault/sealed-reports';
 
 const CHART_KIND_KEY = 'billanta.reports.chartKind';
 
@@ -44,7 +45,9 @@ export function PeriodReport({
 }) {
   const t = useTranslations('reports');
   const locale = useLocale();
-  const [stats, setStats] = useState(initial);
+  const [serverStats, setStats] = useState(initial);
+  // Sealed amounts: after unlock the report is rerun here with their opened totals.
+  const { stats, missing: sealedMissing } = useMergedStats(serverStats);
   const [preset, setPreset] = useState<PeriodPreset | 'custom'>(initialPreset);
   const [range, setRange] = useState(() => presetRange(initialPreset, new Date(), initial.earliest));
   const [filters, setFilters] = useState<ReportFilters>({});
@@ -164,6 +167,7 @@ export function PeriodReport({
             {loading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" aria-hidden="true" />}
           </h2>
           <p className="text-xs text-muted-foreground">{t('hint')}</p>
+          {sealedMissing > 0 && <p className="mt-1 text-xs text-muted-foreground">{t('sealedNote', { count: sealedMissing })}</p>}
         </div>
         {compact ? (
           <Link href="/reports" className="text-xs font-semibold text-primary hover:underline">

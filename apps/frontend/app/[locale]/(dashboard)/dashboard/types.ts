@@ -1,3 +1,4 @@
+import type { SealedStatsInputs, SealedSummaryDoc } from '@faktur/cz-compliance';
 import type { DocumentType, InvoiceStatus } from '@/lib/invoice-ui';
 
 /** KPI cards the backend computes (`DASHBOARD_WIDGETS`), in the default order. */
@@ -68,9 +69,23 @@ export interface DashboardDoc {
   currency: string;
   contactName: string | null;
   contactColor?: string | null;
-  total: number;
+  /** Null with sealed amounts (Důvěrný režim): the browser opens `encAmounts`. */
+  total: number | null;
+  encAmounts?: string | null;
   isOverdue: boolean;
 }
+
+/**
+ * Documents with sealed amounts, left out of every server sum (missing on an
+ * older backend). `docs` and `customers` (dashboard) or `inputs` (report)
+ * let the browser merge them after unlock.
+ */
+export type SealedSummary = {
+  count: number;
+  ids: string[];
+  docs?: SealedSummaryDoc[];
+  customers?: { contactId: string; name: string; total: number; count: number }[];
+};
 
 export interface DashboardSummary {
   currency: string;
@@ -97,6 +112,7 @@ export interface DashboardSummary {
   /** Optional so an older backend without it still renders. */
   dueSoon?: DashboardDoc[];
   topCustomers: { contactId: string; name: string; total: number; count: number }[];
+  sealed?: SealedSummary;
 }
 
 export interface PeriodTotals {
@@ -132,6 +148,7 @@ export type ReportFilters = {
 
 /** `GET /dashboard/stats`: one period against the same-length period before it. */
 export interface PeriodStats {
+  sealed?: SealedSummary & { inputs?: SealedStatsInputs };
   currency: string;
   from: string;
   to: string;

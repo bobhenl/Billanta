@@ -502,7 +502,8 @@ export class InvoicesController {
     summary: "New draft from this document: quote→invoice/proforma, proforma→final invoice, invoice→credit note",
   })
   convert(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: ConvertInvoiceDto) {
-    return this.invoicesService.convert(req.tenantDb!, req.user!.tenantId, id, dto.to);
+    const sealed = dto.enc_amounts && dto.item_enc_amounts ? { encAmounts: dto.enc_amounts, items: dto.item_enc_amounts } : undefined;
+    return this.invoicesService.convert(req.tenantDb!, req.user!.tenantId, id, dto.to, sealed);
   }
 
   /**

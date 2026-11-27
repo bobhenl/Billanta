@@ -470,7 +470,8 @@
     },
     "dragToReorder": "Zum Umsortieren ziehen",
     "exportsCta": "Exporte für die Buchhaltung",
-    "emptyHintReadOnly": "Es gibt noch keine Belege. Sobald das Unternehmen seine erste Rechnung ausstellt, sehen Sie hier Umsatz, Diagramm und Kunden."
+    "emptyHintReadOnly": "Es gibt noch keine Belege. Sobald das Unternehmen seine erste Rechnung ausstellt, sehen Sie hier Umsatz, Diagramm und Kunden.",
+    "sealedNote": "{count, plural, one {# Beleg mit verschlüsselten Beträgen ist} other {# Belege mit verschlüsselten Beträgen sind}} nicht in den Summen enthalten."
   },
   "invoices": {
     "hover": {
@@ -783,7 +784,8 @@
       "openedPreview": "Vorschau: Der Schlüssel aus dem Link hat die Texte geöffnet. Er wurde in diesem Browser nicht gespeichert.",
       "forget": "Schlüssel in diesem Browser vergessen",
       "forgotten": "Der Schlüssel ist aus diesem Browser gelöscht. Der volle Wortlaut steht im Link aus der ursprünglichen E-Mail."
-    }
+    },
+    "confidentialAmount": "Vertraulicher Betrag"
   },
   "expenses": {
     "title": "Ausgaben",
@@ -4773,7 +4775,10 @@
       "empty_input": "Beschreiben Sie, was Sie in Rechnung stellen möchten.",
       "symbol_invalid": "Symbole dürfen nur Ziffern enthalten (VS und SS bis 10, KS bis 4).",
       "reason_required": "Geben Sie einen Grund für die Änderung an.",
-      "ai_credits_exhausted": "Die KI-Credits für diesen Monat sind aufgebraucht. Neue gibt es am 1., ein höherer Tarif hat mehr, oder nutzen Sie Ihren eigenen Schlüssel."
+      "ai_credits_exhausted": "Die KI-Credits für diesen Monat sind aufgebraucht. Neue gibt es am 1., ein höherer Tarif hat mehr, oder nutzen Sie Ihren eigenen Schlüssel.",
+      "amounts_plaintext": "Der Beleg wurde nicht gespeichert: Die Beträge waren nicht verschlüsselt. Bitte versuchen Sie es erneut.",
+      "amounts_sealed": "Die Beträge des Belegs sind verschlüsselt, daher kann der Server das nicht ausführen.",
+      "amounts_partly_paid": "Ein teilweise bezahlter Beleg kann nicht verschlüsselt werden. Verschlüsseln Sie ihn nach vollständiger Zahlung."
     },
     "copy": {
       "title": "Aus einer anderen Rechnung vorausfüllen",
@@ -7314,7 +7319,8 @@
     },
     "flatTaxLink": "Lohnt sich die Pauschalsteuer? →",
     "taxReturnLink": "Übersicht für die Steuererklärung",
-    "netIncomeLink": "Nach Steuern"
+    "netIncomeLink": "Nach Steuern",
+    "sealedNote": "{count, plural, one {# Beleg mit verschlüsselten Beträgen ist} other {# Belege mit verschlüsselten Beträgen sind}} nicht in den Summen enthalten."
   },
   "siteSearch": {
     "title": "Website durchsuchen",
@@ -14389,7 +14395,8 @@
       "sealOnHint": "Positionsbeschreibungen und Notizen sehen nur Sie und Mitglieder mit Schlüssel. PDF, ISDOC und UBL erstellt Ihr Browser, Positionsvorschläge werden nur in Ihrem Browser gesucht.",
       "sealOffHint": "Der Beleg wird wie bisher unverschlüsselt gespeichert.",
       "aiConsent": "Diesen Text an die KI senden – er geht einmalig an den Server und den KI-Anbieter und wird nicht gespeichert",
-      "aiConsentHint": "Der Server speichert und protokolliert den Text nicht. Was die KI zurückgibt, wird beim Speichern in Ihrem Browser verschlüsselt. Die Zustimmung gilt nur für diesen einen Lauf."
+      "aiConsentHint": "Der Server speichert und protokolliert den Text nicht. Was die KI zurückgibt, wird beim Speichern in Ihrem Browser verschlüsselt. Die Zustimmung gilt nur für diesen einen Lauf.",
+      "amountsPartlyPaid": "Verschlüsselte Beträge können nicht mit einer Teilzahlung gespeichert werden. Löschen Sie den bezahlten Betrag und markieren Sie den Beleg nach der Zahlung als bezahlt."
     },
     "actions": {
       "blocked": "Die verschlüsselten Texte ließen sich nicht öffnen. Entsperren Sie den Tresor mit dem richtigen Schlüssel und versuchen Sie es erneut.",
@@ -14466,12 +14473,24 @@
       },
       "amounts": {
         "title": "Beträge",
-        "description": "Preise, MwSt. und Belegsummen.",
+        "description": "Mengen, Einzelpreise, MwSt.-Sätze, Rabatte und Belegsummen. Belegnummer, Verwendungszweck (VS), Fälligkeit, Währung und Status bleiben lesbar.",
         "loses": [
-          "Automatische Zuordnung von Bankzahlungen",
-          "MwSt.-Berichte, Kontrollmeldung und MwSt.-Exporte",
-          "Dashboards, Nettoeinkommen und Diagramme",
-          "Mahnungen mit Betrag und vom Server erstellte QR-Zahlungen"
+          "Automatische Zahlungszuordnung nach Betrag: Eine Zahlung mit dem VS eines verschlüsselten Belegs wartet auf Ihre manuelle Bestätigung",
+          "Teilzahlungen: Ein verschlüsselter Beleg kann nur als vollständig bezahlt markiert werden, ohne Gebühren und gutgeschriebenen Betrag",
+          "Exporte für die Buchhaltung, Steuererklärungen und MwSt.-Übersichten vom Server: Belege mit verschlüsselten Beträgen werden abgelehnt und aufgelistet",
+          "Versand über Peppol, KI-Vorschläge mit Beträgen und Kartenzahlung",
+          "Dashboard, Nettoeinkommen und Berichte zählen nur unverschlüsselte Belege und zeigen, wie viele ausgelassen wurden",
+          "Mahnungen, die Wochenübersicht und überfällige Summen in E-Mails nennen keinen Betrag"
+        ],
+        "how": [
+          "Jede Position wird in Ihrem Browser als Ganzes verschlüsselt: Menge, Preis, MwSt.-Satz und Rabatt. Die Belegsummen bekommen einen eigenen Umschlag. Alles unter dem Belegschlüssel, damit auch der Kundenlink sie öffnet.",
+          "Der Server speichert statt der Zahlen Nullen, daher enthält keine seiner Summen einen echten Betrag.",
+          "Belege aus der KI (Telegram, WhatsApp) haben lesbare Beträge, bis Sie sie im Editor speichern.",
+          "Frühere Belege bleiben lesbar, bis Sie sie mit der Schaltfläche Vorhandene Beträge verschlüsseln verschlüsseln."
+        ],
+        "changes": [
+          "PDF, ISDOC, UBL und die QR-Zahlung erstellt Ihr Browser, beim Kundenlink der Browser des Kunden",
+          "Wiederkehrende Rechnungen kopieren die verschlüsselten Beträge unverändert"
         ]
       },
       "howTitle": "So funktioniert es:",
@@ -14729,7 +14748,31 @@
       "nothing": "Es gab nichts zu verschlüsseln.",
       "failed": "Verschlüsselung fehlgeschlagen. Bereits verschlüsselte Kontakte bleiben verschlüsselt."
     },
-    "emailSealed": "Die E-Mail des Kunden ist verschlüsselt, der Server schickt nichts dorthin. Senden Sie die Rechnung selbst oder kopieren Sie den Kundenlink."
+    "emailSealed": "Die E-Mail des Kunden ist verschlüsselt, der Server schickt nichts dorthin. Senden Sie die Rechnung selbst oder kopieren Sie den Kundenlink.",
+    "sealAmounts": {
+      "button": "Vorhandene Beträge verschlüsseln",
+      "title": "Vorhandene Beträge verschlüsseln",
+      "what": "Der Browser lädt die Belege, deren Beträge auf dem Server lesbar sind, verschlüsselt Mengen, Preise, MwSt.-Sätze, Rabatte und Summen und speichert sie zurück. Auf dem Server bleiben an ihrer Stelle Nullen.",
+      "keeps": "Belegnummer, VS, Fälligkeit, Währung und Status bleiben lesbar, Zahlungen finden Sie also weiterhin über den VS.",
+      "loses": "Der Server erstellt für diese Belege dann weder PDF noch ISDOC noch Buchhaltungsexporte und zählt sie nicht in Berichten. Ein bezahlter Beleg bleibt bezahlt.",
+      "resumable": "Gesperrte und teilweise bezahlte Belege werden übersprungen. Wenn Sie das Fenster schließen, geht es beim nächsten Mal dort weiter, wo Sie aufgehört haben.",
+      "cancel": "Zurück",
+      "confirm": "Verschlüsseln",
+      "progress": "Verschlüssele… {n}",
+      "done": "{n, plural, one {Beträge von # Beleg verschlüsselt} other {Beträge von # Belegen verschlüsselt}}.",
+      "nothing": "Es gab nichts zu verschlüsseln.",
+      "failed": "Die Verschlüsselung ist fehlgeschlagen. Bereits verschlüsselte Belege bleiben verschlüsselt.",
+      "partlyPaid": "{n, plural, one {# teilweise bezahlter Beleg blieb lesbar} other {# teilweise bezahlte Belege blieben lesbar}}. Sie lassen sich nach vollständiger Zahlung verschlüsseln."
+    },
+    "amounts": {
+      "paidSealed": "Die Beträge des Belegs sind verschlüsselt, daher kann nur eine vollständige Zahlung erfasst werden. Gebühren und gutgeschriebenen Betrag speichert der Server nicht.",
+      "leftOut": "Ohne {count, plural, one {# Beleg} other {# Belege}} mit verschlüsselten Beträgen – Tresor entsperren",
+      "exportLocked": "Belege mit verschlüsselten Beträgen kommen erst nach dem Entsperren des Tresors in die Datei.",
+      "exportUnreadable": "Keine Datei erstellt: {count, plural, one {# Beleg lässt} other {# Belege lassen}} sich mit diesem Schlüssel nicht öffnen. Ein fehlender Beleg würde die Datei verfälschen.",
+      "creditNoteLocked": "Eine Gutschrift zu einer Rechnung mit verschlüsselten Beträgen wird erst nach dem Entsperren des Tresors erstellt.",
+      "creditNoteUnreadable": "Die Beträge der Rechnung lassen sich mit diesem Schlüssel nicht öffnen, daher wurde keine Gutschrift erstellt.",
+      "bulkSealed": "Diese Vorlage hat verschlüsselte Beträge. Sie eignet sich nicht für Sammelrechnungen, nur für eine einzelne Rechnung."
+    }
   },
   "vaultPublic": {
     "integrity": {

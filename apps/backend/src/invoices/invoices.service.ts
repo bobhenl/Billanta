@@ -4,6 +4,7 @@ import { peppolRelevant } from "./peppol-relevance";
 import { BadRequestException, ConflictException, ForbiddenException, HttpException, Injectable, NotFoundException, Optional, UnprocessableEntityException } from "@nestjs/common";
 import {
   checkInvoiceRequirements,
+  documentKeyWrap,
   generateIsdocXml,
   generateUblInvoiceXml,
   validatePeppolInvoice,
@@ -69,6 +70,7 @@ import { invoicePrivacyWidens, mayChangeInvoicePrivacy, visibilityError } from "
 import { countIssuedDocument } from "../billing/plan-limits";
 import { countsAsDocument } from "../billing/usage";
 import { assertSealingAllowed, plainOrNull, printedTexts, textFilterVerdict } from "../vault/sealed";
+import { AMOUNTS_PLAINTEXT, amountPaidOnSeal, amountsSealed, assertAmountsReadable, assertAmountsWrite, refuseSealedAmounts } from "../vault/sealed-amounts";
 
 // TODO: once packages/cz-compliance is ready, ARES-resolve
 // counterparty_ico / counterparty_name_raw into a real `contacts` row here
@@ -85,6 +87,46 @@ type InvoiceRow = typeof schema.invoices.$inferSelect;
 
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
 type LineItemInput = NonNullable<UpdateInvoiceDto["line_items"]>[number];
+
+/**
+ * Category "amounts": the item envelopes in the input's line order, for the
+ * browser to fill in the numbers. `depositIsTotal`: the final invoice of a
+ * paid proforma, which `proformaDeposit` would credit with its paid sum. A
+ * sealed one records no paid sum (it would be the total in plain), so the
+ * browser puts the opened total there instead.
+ */
+type SealedInputAmounts = { items: string[]; reverseCharge: boolean; depositIsTotal: boolean };
+export function sealedInputAmounts(
+  invoice: Pick<InvoiceRow, "encAmounts" | "reverseCharge" | "documentType" | "status">,
+  lineItems: Pick<LineItemRow, "encAmounts">[],
+  related: { documentType: string; status?: string | null } | null | undefined,
+): SealedInputAmounts | null {
+  if (!amountsSealed(invoice)) return null;
+  return {
+    items: lineItems.map((i) => i.encAmounts ?? ""),
+    reverseCharge: invoice.reverseCharge,
+    depositIsTotal: invoice.status === "paid" && proformaDeposit({ documentType: invoice.documentType, amountPaid: "1" }, related) > 0,
+  };
+}
+
+/**
+ * The browser's envelopes for a credit note of a sealed invoice: one per item
+ * and all under the invoice's document key, so the client link of the
+ * invoice opens the credit note too and nothing sealed with another key (or
+ * the company key) slips in. The server cannot check the negation itself;
+ * the draft is reviewed and issued by a person like any other.
+ */
+export function assertSealedCreditNote(
+  source: Pick<InvoiceRow, "encAmounts">,
+  items: Pick<LineItemRow, "encAmounts">[],
+  sealed: { encAmounts: string; items: string[] },
+): void {
+  if (sealed.items.length !== items.length) throw new BadRequestException("amounts_mismatch");
+  const wrap = documentKeyWrap(source.encAmounts);
+  if (!wrap || [sealed.encAmounts, ...sealed.items].some((e) => documentKeyWrap(e) !== wrap)) {
+    throw new BadRequestException("document_key_mismatch");
+  }
+}
 
 /** The line a payment draft gets when the payment says nothing about what was paid for. */
 export const PAYMENT_DRAFT_PLACEHOLDER = "Platba PayPal";
@@ -110,6 +152,7 @@ function lineItemValues(tenantId: string, invoiceId: string, items: LineItemInpu
     unitPrice: item.unit_price.toString(),
     vatRate: item.vat_rate != null ? item.vat_rate.toString() : null,
     discountPercent: (item.discount_percent ?? 0).toString(),
+    encAmounts: item.enc_amounts ?? null,
     sortOrder: index,
   }));
 }
@@ -361,7 +404,10 @@ export class InvoicesService {
     const buyer = applyBuyerSnapshot(contact, invoice.buyerSnapshot);
     const vars = {
       ...templateValues(tenant, invoice, buyer),
-      ...documentVars(invoice.customFields, breakdown, invoice.amountPaid, templateVarsOf(liveTenant?.templateVars), (n) => formatInvoiceAmount(n, invoice.currency)).formatted,
+      // A sealed document's sums here are placeholders: {amount} and friends print as "–".
+      ...documentVars(invoice.customFields, breakdown, invoice.amountPaid, templateVarsOf(liveTenant?.templateVars), (n) =>
+        amountsSealed(invoice) ? "–" : formatInvoiceAmount(n, invoice.currency),
+      ).formatted,
     };
     // Sender name and reply-to stay the company's current ones.
     return { ...emailCustomizationOf(prefs, kind, liveTenant, buyer.legalName, vars), attachments };
@@ -522,6 +568,7 @@ export class InvoicesService {
           });
 
     const list = itemRows.map(({ invoice, contactName, contactIco, contactColor }) => {
+      const sealed = amountsSealed(invoice);
       const totals = computeVatBreakdown(itemsByInvoice.get(invoice.id) ?? [], {
         reverseCharge: invoice.reverseCharge,
       });
@@ -530,22 +577,25 @@ export class InvoicesService {
         contactName,
         contactIco,
         contactColor,
-        totalWithoutVat: totals.totalWithoutVat,
-        totalVat: totals.totalVat,
-        total: totals.totalWithVat,
+        // Sealed amounts: null, not the placeholder's 0; the browser opens `encAmounts`.
+        totalWithoutVat: sealed ? null : totals.totalWithoutVat,
+        totalVat: sealed ? null : totals.totalVat,
+        total: sealed ? null : totals.totalWithVat,
         isOverdue: isOverdue(invoice),
         ...(pending.has(invoice.id) ? { sealedPending: pending.get(invoice.id)! } : {}),
       };
     });
     // Totals come from the line items, so the amount range applies here.
     const { amount_min: min, amount_max: max, net_min: netMin, net_max: netMax, due_min: dueMin } = query;
-    const within = (value: number, lo?: number, hi?: number) => (lo === undefined || value >= lo) && (hi === undefined || value <= hi);
+    // A sealed total matches no amount bound: the server can't tell.
+    const within = (value: number | null, lo?: number, hi?: number) =>
+      value == null ? lo === undefined && hi === undefined : (lo === undefined || value >= lo) && (hi === undefined || value <= hi);
     return list.filter(
       (r) =>
-        within(Number(r.total), min, max) &&
-        within(Number(r.totalWithoutVat), netMin, netMax) &&
+        within(r.total, min, max) &&
+        within(r.totalWithoutVat, netMin, netMax) &&
         (dueMin === undefined ||
-          (["issued", "draft", "pending_review"].includes(r.status) && Number(r.total) - Number(r.amountPaid) >= dueMin)),
+          (r.total != null && ["issued", "draft", "pending_review"].includes(r.status) && Number(r.total) - Number(r.amountPaid) >= dueMin)),
     );
   }
 
@@ -607,6 +657,7 @@ export class InvoicesService {
     const contact = dto.contact_id ? await this.requireContact(db, dto.contact_id) : null;
     const related = await this.checkRelated(db, dto.document_type, dto.related_invoice_id);
     await assertSealingAllowed(db, tenantId, sealableValues(dto));
+    await assertAmountsWrite(db, tenantId, { encAmounts: dto.enc_amounts ?? null, amountPaid: dto.amount_paid, items: lineItemValues(tenantId, "", dto.line_items) }, null);
 
     // No db.transaction here: `db` is the request's own transaction (tenant
     // context is SET LOCAL inside it), so the inserts are already atomic.
@@ -619,6 +670,7 @@ export class InvoicesService {
         // An API caller that leaves it out gets the customer's own contact person, like the form.
         ...(dto.buyer_contact_person === undefined && { buyerContactPerson: contact?.contactPerson ?? null }),
         issueDate: dto.issue_date ?? new Date(),
+        encAmounts: dto.enc_amounts ?? null,
         status: "draft",
         source,
         rawAiPayload: dto.source_ai ? { prefilledByAi: true } : null,
@@ -677,6 +729,18 @@ export class InvoicesService {
     ]);
 
     const values = invoiceFieldValues(dto);
+    // Category "amounts": the envelopes travel with the items, and the server
+    // never sums a sealed document (vault/sealed-amounts.ts).
+    if (dto.line_items) {
+      await assertAmountsWrite(db, tenantId, { encAmounts: dto.enc_amounts ?? null, amountPaid: dto.amount_paid, items: lineItemValues(tenantId, id, dto.line_items) }, invoice);
+      values.encAmounts = dto.enc_amounts ?? null;
+      if (!amountsSealed(invoice) && amountsSealed(values)) {
+        const paid = amountPaidOnSeal(invoice);
+        if (paid !== null) values.amountPaid = paid;
+      }
+    } else if (dto.enc_amounts !== undefined || (amountsSealed(invoice) && Number(dto.amount_paid ?? 0) !== 0)) {
+      throw new BadRequestException(AMOUNTS_PLAINTEXT);
+    }
     // Another customer picked without a contact person in the request: the
     // old customer's person must not stay on the document.
     if (dto.contact_id !== undefined && (dto.contact_id ?? null) !== invoice.contactId && dto.buyer_contact_person === undefined) {
@@ -704,7 +768,8 @@ export class InvoicesService {
       const newTotal = round2(
         computeInvoiceTotal(newItems as unknown as typeof oldItems, { reverseCharge: values.reverseCharge ?? invoice.reverseCharge }),
       );
-      if (oldTotal !== newTotal) {
+      // A sealed side sums to 0 here: no total to compare, and none to log.
+      if (oldTotal !== newTotal && !amountsSealed(invoice) && !amountsSealed(values)) {
         changes.push({ field: "total", from: oldTotal, to: newTotal });
         // A paid document stays paid in full at its new total.
         if (invoice.status === "paid") values.amountPaid = newTotal.toFixed(2);
@@ -837,6 +902,8 @@ export class InvoicesService {
         lineTotalWithoutVat: round2(lineBase(item)),
       })),
       totals,
+      /** Category "amounts": `totals` and the line totals are placeholders, the browser opens the real ones. */
+      amountsSealed: amountsSealed(invoice),
       parent: relatedRows.find((r) => r.id === invoice.relatedInvoiceId) ?? null,
       children: relatedRows.filter((r) => r.relatedInvoiceId === id),
     };
@@ -855,6 +922,7 @@ export class InvoicesService {
       throw new BadRequestException("Only an issued, unpaid document can be marked as paid");
     }
     if (invoice.documentType === "quote") throw new BadRequestException("A quote is not paid");
+    if (amountsSealed(invoice)) return this.markSealedPaid(db, invoice, paidAt, amount, net);
     const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, id));
     const total = round2(computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge }));
     const paidSoFar = round2(Number(invoice.amountPaid) + (amount ?? total));
@@ -877,6 +945,25 @@ export class InvoicesService {
       await this.log(db, updated, full ? "marked_paid" : "partial_payment", [
         { field: "amountPaid", from: Number(invoice.amountPaid), to: Number(updated.amountPaid) },
       ]);
+    }
+    return updated;
+  }
+
+  /**
+   * Paid in full is all the server records for sealed amounts: it knows no
+   * total to compare a partial payment with, and a paid sum, fee or received
+   * amount stored in plain would give the total away.
+   */
+  private async markSealedPaid(db: TenantDb, invoice: InvoiceRow, paidAt?: Date, amount?: number, net: { fee?: number; receivedCzk?: number } = {}) {
+    if (amount != null || net.fee || net.receivedCzk) throw new ConflictException("amounts_sealed");
+    const [updated] = await db
+      .update(schema.invoices)
+      .set({ status: "paid", paidAt: paidAt ?? new Date(), updatedAt: new Date() })
+      .where(and(eq(schema.invoices.id, invoice.id), eq(schema.invoices.status, "issued")))
+      .returning();
+    if (updated) {
+      this.ping(updated, "invoice_paid", `Faktura ${updated.invoiceNumber ?? ""} je zaplacená`.replace("  ", " "));
+      await this.log(db, updated, "marked_paid");
     }
     return updated;
   }
@@ -999,8 +1086,19 @@ export class InvoicesService {
    *   - invoice → credit note (same items with negated quantities, to be
    *     trimmed down to what is actually being corrected).
    * The source document is linked via `relatedInvoiceId` and left as is.
+   *
+   * With sealed amounts the server cannot negate anything, so the credit note
+   * comes with `sealed`: the envelopes the browser negated and sealed again
+   * under the invoice's document key. The other conversions copy the
+   * envelopes as they are.
    */
-  async convert(db: TenantDb, tenantId: string, id: string, to: "invoice" | "credit_note" | "proforma") {
+  async convert(
+    db: TenantDb,
+    tenantId: string,
+    id: string,
+    to: "invoice" | "credit_note" | "proforma",
+    sealed?: { encAmounts: string; items: string[] },
+  ) {
     const source = await this.requireInvoice(db, id);
     const allowed: Record<InvoiceRow["documentType"], string[]> = {
       quote: ["invoice", "proforma"],
@@ -1016,12 +1114,18 @@ export class InvoicesService {
       throw new BadRequestException("Issue the document first");
     }
     if (!source.contactId) throw new BadRequestException("The document has no customer");
+    // A credit note negates the amounts, which the server cannot do inside an
+    // envelope: without the browser's negated envelopes it is refused.
+    if (to === "credit_note" && !sealed) refuseSealedAmounts(source);
+    if (sealed && (to !== "credit_note" || !amountsSealed(source))) throw new BadRequestException("amounts_not_sealed");
 
     const items = await db
       .select()
       .from(schema.invoiceLineItems)
       .where(eq(schema.invoiceLineItems.invoiceId, id))
       .orderBy(asc(schema.invoiceLineItems.sortOrder));
+
+    if (sealed) assertSealedCreditNote(source, items, sealed);
 
     const [tenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
     const dueDays = tenant?.defaultDueDays ?? 14;
@@ -1062,6 +1166,9 @@ export class InvoicesService {
         reverseCharge: source.reverseCharge,
         reverseChargeCode: source.reverseChargeCode,
         bankAccountId: source.bankAccountId,
+        // Sealed amounts are copied as they are (or negated by the browser for
+        // a credit note): same document key, so the draft opens with the vault key.
+        encAmounts: sealed?.encAmounts ?? source.encAmounts,
         status: "draft",
         source: "manual",
       })
@@ -1073,12 +1180,14 @@ export class InvoicesService {
           tenantId,
           invoiceId: draft.id,
           description: item.description,
-          quantity: to === "credit_note" ? (-Number(item.quantity)).toString() : item.quantity,
+          // A sealed item's plain quantity is the placeholder 1; its envelope holds the negated one.
+          quantity: to === "credit_note" && !sealed ? (-Number(item.quantity)).toString() : item.quantity,
           unit: item.unit,
           code: item.code,
           unitPrice: item.unitPrice,
           vatRate: item.vatRate,
           discountPercent: item.discountPercent,
+          encAmounts: sealed ? sealed.items[index] : item.encAmounts,
           sortOrder: index,
         })),
       );
@@ -1118,7 +1227,7 @@ export class InvoicesService {
         lastUsed: schema.invoiceLineItems.createdAt,
       })
       .from(schema.invoiceLineItems)
-      .where(sql`${schema.invoiceLineItems.description} NOT LIKE 'enc:v1:%' AND trim(${schema.invoiceLineItems.description}) <> ''`)
+      .where(sql`${schema.invoiceLineItems.description} NOT LIKE 'enc:v1:%' AND trim(${schema.invoiceLineItems.description}) <> '' AND ${schema.invoiceLineItems.encAmounts} IS NULL`)
       .orderBy(desc(schema.invoiceLineItems.createdAt))
       .limit(2000);
     const seen = new Set<string>();
@@ -1148,7 +1257,13 @@ export class InvoicesService {
       })
       .from(schema.invoiceLineItems)
       // Encrypted descriptions can't be suggested, and must not match as base64.
-      .where(and(ilike(schema.invoiceLineItems.description, `%${escaped}%`), sql`${schema.invoiceLineItems.description} NOT LIKE 'enc:v1:%'`))
+      .where(
+        and(
+          ilike(schema.invoiceLineItems.description, `%${escaped}%`),
+          sql`${schema.invoiceLineItems.description} NOT LIKE 'enc:v1:%'`,
+          isNull(schema.invoiceLineItems.encAmounts),
+        ),
+      )
       .orderBy(schema.invoiceLineItems.description, desc(schema.invoiceLineItems.createdAt))
       .limit(30);
     return rows
@@ -1207,7 +1322,9 @@ export class InvoicesService {
       language: invoice.language,
       reverseCharge: invoice.reverseCharge,
       reverseChargeCode: invoice.reverseChargeCode,
+      encAmounts: invoice.encAmounts,
       items: items.map((item) => ({
+        encAmounts: item.encAmounts,
         description: item.description,
         quantity: Number(item.quantity),
         unit: item.unit,
@@ -1580,15 +1697,19 @@ export class InvoicesService {
     opts: { sealed: boolean },
   ): Promise<SendInvoiceEmailParams> {
     const total = computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge });
+    // Sealed amounts: number, due date and link only; the amount and its QR are on the page.
+    const sealedAmounts = amountsSealed(invoice);
     return {
       corrected,
       to: contact.email ?? "",
       invoiceNumber: invoice.invoiceNumber ?? invoice.id,
       // Once something is paid the e-mail asks for the rest, like the PDF's "Zbývá uhradit".
-      amount: formatInvoiceAmount(Number(invoice.amountPaid ?? 0) > 0 ? amountLeftToPay(total, invoice.amountPaid) : total, invoice.currency),
+      amount: sealedAmounts
+        ? null
+        : formatInvoiceAmount(Number(invoice.amountPaid ?? 0) > 0 ? amountLeftToPay(total, invoice.amountPaid) : total, invoice.currency),
       dueDate: invoice.dueDate,
       variableSymbol: invoice.documentType === "credit_note" ? null : invoice.variableSymbol,
-      paymentQr: tenantId ? await this.paymentQrFor(db, tenantId, invoice.id) : null,
+      paymentQr: tenantId && !sealedAmounts ? await this.paymentQrFor(db, tenantId, invoice.id) : null,
       ...(await this.emailLinks(db, invoice, contact)),
       language: invoice.language,
       documentType: invoice.documentType,
@@ -1718,16 +1839,17 @@ export class InvoicesService {
     const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, id));
     // After a partial payment the reminder asks only for what is left.
     const left = amountLeftToPay(computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge }), invoice.amountPaid);
+    const sealedAmounts = amountsSealed(invoice);
     await assertCanSendEmail(db, invoice.tenantId);
     await this.emailService.sendPaymentReminderEmail(
       {
         to: contact.email,
         invoiceNumber: invoice.invoiceNumber ?? invoice.id,
-        amount: formatInvoiceAmount(left, invoice.currency),
+        amount: sealedAmounts ? null : formatInvoiceAmount(left, invoice.currency),
         dueDate: invoice.dueDate,
         // Works for an encrypted document too: none of this is its text.
         variableSymbol: invoice.variableSymbol,
-        paymentQr: tenantId ? await this.paymentQrFor(db, tenantId, invoice.id) : null,
+        paymentQr: tenantId && !sealedAmounts ? await this.paymentQrFor(db, tenantId, invoice.id) : null,
         ...(await this.emailLinks(db, invoice, contact)),
         reminderCount: invoice.reminderCount + 1,
         language: invoice.language,
@@ -1796,11 +1918,23 @@ export class InvoicesService {
         amountPaid: schema.invoices.amountPaid,
         reverseCharge: schema.invoices.reverseCharge,
         internalNote: schema.invoices.internalNote,
+        encAmounts: schema.invoices.encAmounts,
         country: schema.tenants.country,
       })
       .from(schema.invoices)
       .innerJoin(schema.tenants, eq(schema.tenants.id, schema.invoices.tenantId))
       .where(eq(schema.invoices.id, invoiceId));
+    // Sealed amounts: only a person confirms such a match (auto-match leaves it for review), and it
+    // only marks the document paid. No paid sum, fee or note with the amount is stored in plain.
+    if (amountsSealed(current)) {
+      const [paid] = await db
+        .update(schema.invoices)
+        .set({ status: "paid", paidAt: received?.paidAt ?? new Date(), updatedAt: new Date() })
+        .where(and(eq(schema.invoices.id, invoiceId), eq(schema.invoices.tenantId, tenantId), eq(schema.invoices.status, "issued")))
+        .returning();
+      if (paid) await this.log(db, paid, "paid_from_bank");
+      return paid ?? null;
+    }
     const home = tenantHomeCurrencyOf(current);
     // PayPal's own conversion counts the same way as the bank's.
     const net = received?.net && received.net.currency.toUpperCase() === home && received.net.amount > 0 ? received.net.amount : null;
@@ -1999,7 +2133,7 @@ export class InvoicesService {
   private async issueRate(
     db: TenantDb,
     tenantId: string,
-    invoice: Pick<InvoiceRow, "currency" | "exchangeRate" | "taxableSupplyDate" | "reverseCharge">,
+    invoice: Pick<InvoiceRow, "currency" | "exchangeRate" | "taxableSupplyDate" | "reverseCharge" | "encAmounts">,
     lineItems: (typeof schema.invoiceLineItems.$inferSelect)[],
     issueDate: Date,
   ): Promise<{ exchangeRate: string | null; exchangeRateMode: StoredRateMode | null; exchangeRateDate: string | null }> {
@@ -2017,7 +2151,8 @@ export class InvoicesService {
     const { mode, source } = resolveRateMode({
       setting: settings.mode,
       vatStatus: tenant?.vatStatus ?? "non_payer",
-      totalVat: computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge }).totalVat,
+      // Sealed amounts: the VAT is unknown here, so the conversion line is never left out for it.
+      totalVat: amountsSealed(invoice) ? 1 : computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge }).totalVat,
       manualRate,
       manualIsCnb: manualRate != null && isCnbRate(manualRate, official?.rate),
       home,
@@ -2160,6 +2295,8 @@ export class InvoicesService {
       invoiceId,
       true,
     );
+    // Sealed amounts: the browser draws it (invoicePdfModel); a server PDF would print zeros.
+    assertAmountsReadable(invoice);
     const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
     const content = await this.invoicePdfService.generate(invoice, contact, tenant, lineItems, totals, related);
     return { filename: `${invoiceFileBase(invoice)}.pdf`, content };
@@ -2175,6 +2312,7 @@ export class InvoicesService {
       tenantId,
       invoiceId,
     );
+    assertAmountsReadable(invoice);
     const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
     const input = buildIsdocInvoiceInput(invoice, contact, tenant, lineItems, totals);
     const deposit = proformaDeposit(invoice, related);
@@ -2194,7 +2332,11 @@ export class InvoicesService {
   }
 
   /** The ISDOC input with envelopes as they are, for the browser to finish (see `invoicePdfModel`). */
-  async invoiceIsdocInput(db: TenantDb, tenantId: string, invoiceId: string): Promise<{ filename: string; input: IsdocInvoiceInput }> {
+  async invoiceIsdocInput(
+    db: TenantDb,
+    tenantId: string,
+    invoiceId: string,
+  ): Promise<{ filename: string; input: IsdocInvoiceInput; sealedAmounts: SealedInputAmounts | null }> {
     const { invoice, contact, tenant, lineItems, related } = await this.loadIssuedInvoiceForDocument(db, tenantId, invoiceId);
     const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
     const input = buildIsdocInvoiceInputSealed(invoice, contact, tenant, lineItems, totals);
@@ -2202,6 +2344,7 @@ export class InvoicesService {
     return {
       filename: `${invoiceFileBase(invoice)}.isdoc`,
       input: deposit ? { ...input, totals: { ...input.totals, paidDepositsAmount: deposit } } : input,
+      sealedAmounts: sealedInputAmounts(invoice, lineItems, related),
     };
   }
 
@@ -2218,9 +2361,13 @@ export class InvoicesService {
   }
 
   /** The UBL input with envelopes as they are, for the browser to finish (see `invoicePdfModel`). */
-  async invoiceUblInput(db: TenantDb, tenantId: string, invoiceId: string): Promise<{ filename: string; input: IsdocInvoiceInput; options: UblOptions }> {
-    const { invoice, input, options } = await this.ublInput(db, tenantId, invoiceId, true);
-    return { filename: `${invoiceFileBase(invoice)}.xml`, input, options };
+  async invoiceUblInput(
+    db: TenantDb,
+    tenantId: string,
+    invoiceId: string,
+  ): Promise<{ filename: string; input: IsdocInvoiceInput; options: UblOptions; sealedAmounts: SealedInputAmounts | null }> {
+    const { invoice, input, options, lineItems, related } = await this.ublInput(db, tenantId, invoiceId, true);
+    return { filename: `${invoiceFileBase(invoice)}.xml`, input, options, sealedAmounts: sealedInputAmounts(invoice, lineItems, related) };
   }
 
   private async ublInput(db: TenantDb, tenantId: string, invoiceId: string, keepSealed = false) {
@@ -2232,6 +2379,7 @@ export class InvoicesService {
     if (invoice.documentType !== "invoice" && invoice.documentType !== "credit_note") {
       throw new BadRequestException("ubl_invoice_only");
     }
+    if (!keepSealed) assertAmountsReadable(invoice);
     const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
     const input = (keepSealed ? buildIsdocInvoiceInputSealed : buildIsdocInvoiceInput)(invoice, contact, tenant, lineItems, totals);
     // An invoice's related document is the proforma it came from, which is
@@ -2248,7 +2396,7 @@ export class InvoicesService {
       paymentMethod: invoice.paymentMethod,
       paymentMethodLabel: invoice.paymentMethodLabel,
     };
-    return { invoice, input, options };
+    return { invoice, input, options, lineItems, related };
   }
 
   /**

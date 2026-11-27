@@ -356,7 +356,7 @@ export function CommandPalette({ hidden = [] }: { hidden?: string[] }) {
           id: `inv:${i.id}`,
           group: 'invoices' as const,
           label: `${i.number ?? t('palette.draft')} · ${i.contact ?? '–'}`,
-          hint: `${money(i.total, i.currency)} · ${t.has(`invoices.status.${i.status}`) ? t(`invoices.status.${i.status}`) : i.status}`,
+          hint: `${i.total == null ? t('vault.text.locked') : money(i.total, i.currency)} · ${t.has(`invoices.status.${i.status}`) ? t(`invoices.status.${i.status}`) : i.status}`,
           icon: FileText,
           run: () => go(`/invoices/${i.id}`)
         }))

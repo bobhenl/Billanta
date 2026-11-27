@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { eq } from "drizzle-orm";
 import type { Response } from "express";
 import { z } from "zod";
+import { refuseSealedSet } from "../vault/sealed-amounts";
 import * as schema from "../../drizzle/schema";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
@@ -58,6 +59,16 @@ function parseVatPeriod(query: Record<string, string>): ExportPeriod & { vat: Va
   }
   throw new BadRequestException("Pass either ?month= or ?quarter=");
 }
+
+/** `?filing=` of vat-inputs: the file names of the XML routes. */
+const VAT_INPUT_FILINGS = new Map<string, { country: "CZ"; kind: "dp3" | "kh1" | "shv" } | { country: "SK"; kind: "dph" | "kv" | "sv" }>([
+  ["dphdp3", { country: "CZ", kind: "dp3" }],
+  ["dphkh1", { country: "CZ", kind: "kh1" }],
+  ["dphshv", { country: "CZ", kind: "shv" }],
+  ["sk-dphv25", { country: "SK", kind: "dph" }],
+  ["sk-kvdph", { country: "SK", kind: "kv" }],
+  ["sk-svdph", { country: "SK", kind: "sv" }],
+]);
 
 const periodQuerySchema = z.object({
   // YYYY-MM (one month), or from/to as YYYY-MM-DD (to inclusive).
@@ -165,6 +176,17 @@ export class ExportsController {
     this.send(res, body, "text/csv; charset=utf-8", `faktury-${period.label}.csv`);
   }
 
+  @Get("invoices-csv-inputs")
+  @ApiOperation({
+    summary:
+      "Confidential mode: the rows of invoices.csv as JSON, documents with sealed amounts carrying their envelope instead of totals, so the browser builds the CSV",
+  })
+  async invoicesCsvInputs(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>) {
+    const period = parsePeriod(query);
+    const { filters, dateBy } = parseInvoiceExportQuery(query);
+    return this.exportsService.invoicesCsvInputs(req.tenantDb!, period, filters, dateBy);
+  }
+
   @Get("expenses.csv")
   @ApiOperation({ summary: "Expenses of a period as CSV" })
   async expensesCsv(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>, @Res() res: Response) {
@@ -203,6 +225,7 @@ export class ExportsController {
   @ApiOperation({ summary: "The same year estimate as a CSV sheet" })
   async annualCsv(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>, @Res() res: Response) {
     const s = await this.loadAnnual(req, query);
+    refuseSealedSet(s.sealed);
     // The sheet follows Czech rules (DPFO, ČSSZ); the card offers its own CSV for a Slovak company.
     if (s.country !== "CZ") throw new BadRequestException("country_not_supported");
     const n = (v: number | null) => (v == null ? "" : v.toFixed(2).replace(".", ","));
@@ -318,6 +341,7 @@ export class ExportsController {
         rates: ReportRates.fromPrefs(tenant?.invoiceFormPrefs, new Date(), tenantHomeCurrencyOf(tenant)),
         homeCurrency: tenantHomeCurrencyOf(tenant),
       });
+      refuseSealedSet(s.sealed);
       const b = computeTaxReturnBasis({
         country,
         year,
@@ -396,6 +420,8 @@ export class ExportsController {
 
   private async loadFilings(req: TenantScopedRequest, q: z.infer<typeof filingsQuerySchema>) {
     const summary = await this.loadAnnual(req, q);
+    // Filings prefilled without the sealed income would understate it.
+    refuseSealedSet(summary.sealed);
     const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
     if (!tenant) throw new NotFoundException("tenant_not_found");
     // DPFO, přehled ČSSZ and ZP are Czech filings; a Slovak company's amounts are in euros.
@@ -460,17 +486,57 @@ export class ExportsController {
     return this.vatSk(req, res, "sv", parseVatPeriod(query));
   }
 
+  @Get("vat-inputs")
+  @ApiOperation({
+    summary:
+      "Confidential mode: what a VAT filing is built from (?filing=dphdp3|dphkh1|dphshv|sk-dphv25|sk-kvdph|sk-svdph plus the period), sealed documents with their envelope and rate, so the browser builds the XML",
+  })
+  async vatInputs(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>) {
+    const filing = VAT_INPUT_FILINGS.get(query.filing ?? "");
+    if (!filing) throw new BadRequestException("invalid_filing");
+    const period = parseVatPeriod(query);
+    const tenant = filing.country === "SK" ? await this.skTenant(req) : await this.czTenant(req, filing.kind, period.vat);
+    let inputs;
+    try {
+      inputs = await this.exportsService.vatInputs(req.tenantDb!, filing, period, period.vat, tenant);
+    } catch (err) {
+      if (err instanceof VatRateUnavailableError) throw new ServiceUnavailableException(err.message);
+      throw err;
+    }
+    // The file is built in the browser, so the plan counts it here.
+    await this.spend(req, "vat_filings");
+    return inputs;
+  }
+
+  /** The company, if it may file Slovak VAT forms: they identify the payer by the IČ DPH (SK + 10 digits). */
+  private async skTenant(req: TenantScopedRequest) {
+    const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
+    if (!tenant?.dic || !/^SK\d{10}$/i.test(tenant.dic.replace(/\s/g, ""))) {
+      throw new BadRequestException("sk_vat_id_required");
+    }
+    return tenant;
+  }
+
+  /** The company, if it may file this Czech VAT form for this period. */
+  private async czTenant(req: TenantScopedRequest, kind: "dp3" | "kh1" | "shv", vat: VatPeriod) {
+    const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
+    if (!tenant?.dic) throw new BadRequestException("Company has no DIČ – VAT filings need it");
+    if (tenant.vatStatus === "identified") {
+      // Only payers file kontrolní hlášení (§ 101c ZDPH); an identified
+      // person's tax period is always the calendar month (§ 99a needs a payer).
+      if (kind === "kh1") throw new BadRequestException("identified_no_control_statement");
+      if (kind === "dp3" && !("month" in vat)) throw new BadRequestException("identified_monthly_only");
+    }
+    return tenant;
+  }
+
   private async vatSk(
     req: TenantScopedRequest,
     res: Response,
     kind: "dph" | "kv" | "sv",
     period: ExportPeriod & { vat: VatPeriod; label: string },
   ) {
-    const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
-    // The Slovak forms identify the payer by the IČ DPH (SK + 10 digits).
-    if (!tenant?.dic || !/^SK\d{10}$/i.test(tenant.dic.replace(/\s/g, ""))) {
-      throw new BadRequestException("sk_vat_id_required");
-    }
+    const tenant = await this.skTenant(req);
     let body: string | null;
     try {
       body = await this.exportsService.vatReturnSk(req.tenantDb!, kind, period, period.vat, tenant);
@@ -490,14 +556,7 @@ export class ExportsController {
     kind: "dp3" | "kh1" | "shv",
     period: ExportPeriod & { vat: VatPeriod; label: string },
   ) {
-    const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
-    if (!tenant?.dic) throw new BadRequestException("Company has no DIČ – VAT filings need it");
-    if (tenant.vatStatus === "identified") {
-      // Only payers file kontrolní hlášení (§ 101c ZDPH); an identified
-      // person's tax period is always the calendar month (§ 99a needs a payer).
-      if (kind === "kh1") throw new BadRequestException("identified_no_control_statement");
-      if (kind === "dp3" && !("month" in period.vat)) throw new BadRequestException("identified_monthly_only");
-    }
+    const tenant = await this.czTenant(req, kind, period.vat);
     let body: string | null;
     let warnings: VatExportWarning[];
     try {

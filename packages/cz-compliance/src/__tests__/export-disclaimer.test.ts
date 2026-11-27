@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { EXPORT_DISCLAIMER, withXmlDisclaimer } from "./disclaimer";
+import { EXPORT_DISCLAIMER, withXmlDisclaimer } from "../export-disclaimer.js";
 
 describe("withXmlDisclaimer", () => {
   it("puts the comment between the prolog and the root element", () => {

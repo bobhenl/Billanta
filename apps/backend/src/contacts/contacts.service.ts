@@ -251,7 +251,7 @@ export class ContactsService {
 
     const inv = schema.invoices;
     const li = schema.invoiceLineItems;
-    const buckets: ContactSummaryBucket[] = await db
+    const rows: (ContactSummaryBucket & { amountsSealed: boolean })[] = await db
       .select({
         invoiceId: inv.id,
         currency: inv.currency,
@@ -263,6 +263,7 @@ export class ContactsService {
         reverseCharge: inv.reverseCharge,
         vatRate: li.vatRate,
         base: sql<string | null>`sum(${li.quantity} * ${li.unitPrice} * (1 - ${li.discountPercent} / 100))`,
+        amountsSealed: sql<boolean>`(${inv.encAmounts} IS NOT NULL)`,
       })
       .from(inv)
       .leftJoin(li, eq(li.invoiceId, inv.id))
@@ -275,8 +276,11 @@ export class ContactsService {
         ),
       )
       .groupBy(inv.id, li.vatRate);
+    // Sealed amounts would sum as 0; they are left out and listed for the browser instead.
+    const buckets = rows.filter((r) => !r.amountsSealed);
+    const sealedIds = [...new Set(rows.filter((r) => r.amountsSealed).map((r) => r.invoiceId))];
 
-    return { ...contact, ...summarizeContactInvoices(buckets) };
+    return { ...contact, ...summarizeContactInvoices(buckets), sealed: { count: sealedIds.length, ids: sealedIds } };
   }
 
   /** Turns the customer's portal link on (or issues a new one, revoking the old), or off with `enabled: false`. */

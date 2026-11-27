@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { burdenOf, displayCustomField, evalFormula, fieldKey, resolveVars } from "./custom-fields";
+import { burdenOf, displayCustomField, evalFormula, fieldKey, resolveVars } from "../custom-fields.js";
 
 const totals = { totalWithoutVat: 10_000, totalVat: 2_100, totalWithVat: 12_100 };
 const fmt = (n: number) => n.toFixed(2);
@@ -24,7 +24,7 @@ describe("evalFormula", () => {
 
 describe("resolveVars", () => {
   it("exposes tax, social and health that add up to the net", () => {
-    const v = resolveVars([], totals);
+    const v = resolveVars([], totals) as Record<"base" | "tax" | "social" | "health" | "net" | "insurance", number>;
     const b = burdenOf(10_000);
     expect(v.tax).toBe(b.tax);
     expect(v.base - v.tax - v.social - v.health).toBeCloseTo(v.net, 2);

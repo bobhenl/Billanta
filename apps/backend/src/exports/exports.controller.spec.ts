@@ -14,6 +14,7 @@ function setup(tenant: Record<string, unknown> = TENANT) {
     moneyS3Xml: vi.fn(async () => "<money/>"),
     vatReturn: vi.fn(async () => ({ body: "<dp3/>", warnings: [] })),
     vatReturnSk: vi.fn(async () => "<dphv25/>"),
+    vatInputs: vi.fn(async () => ({ issued: [] })),
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const chain: any = { from: () => chain, where: () => Promise.resolve([tenant]) };
@@ -77,6 +78,48 @@ describe("ExportsController plan gates", () => {
     const { controller, service, req, res } = setup();
     service.vatReturn.mockResolvedValue({ body: null as never, warnings: [] });
     await expect(controller.shv(req as never, { year: "2026", month: "3" }, res as never)).rejects.toBeInstanceOf(NotFoundException);
+    expect(limits.spendFeature).not.toHaveBeenCalled();
+  });
+});
+
+describe("ExportsController vat-inputs (sealed amounts, built in the browser)", () => {
+  it("counts the filing on the plan, since the file never passes the server", async () => {
+    const { controller, service, req } = setup();
+    await controller.vatInputs(req as never, { filing: "dphkh1", year: "2026", month: "3" });
+    expect(service.vatInputs).toHaveBeenCalledWith(req.tenantDb, { country: "CZ", kind: "kh1" }, expect.anything(), { year: 2026, month: 3 }, TENANT);
+    expect(limits.spendFeature).toHaveBeenCalledWith(req.tenantDb, "t1", "vat_filings");
+  });
+
+  it("hands out nothing when the plan refuses", async () => {
+    limits.spendFeature.mockImplementation(async () => {
+      throw refusal;
+    });
+    const { controller, req } = setup();
+    await expect(controller.vatInputs(req as never, { filing: "dphdp3", year: "2026", month: "3" })).rejects.toBe(refusal);
+  });
+
+  it("refuses an unknown filing", async () => {
+    const { controller, req } = setup();
+    for (const filing of ["", "pohoda", "__proto__", "constructor"]) {
+      await expect(controller.vatInputs(req as never, { filing, year: "2026", month: "3" })).rejects.toMatchObject({ status: 400 });
+    }
+  });
+
+  it("applies the same checks as the XML routes", async () => {
+    const identified = setup({ ...TENANT, vatStatus: "identified" });
+    await expect(identified.controller.vatInputs(identified.req as never, { filing: "dphkh1", year: "2026", month: "3" })).rejects.toMatchObject({
+      response: { message: "identified_no_control_statement" },
+    });
+    await expect(identified.controller.vatInputs(identified.req as never, { filing: "dphdp3", year: "2026", quarter: "1" })).rejects.toMatchObject({
+      response: { message: "identified_monthly_only" },
+    });
+    const czech = setup();
+    await expect(czech.controller.vatInputs(czech.req as never, { filing: "sk-kvdph", year: "2026", month: "3" })).rejects.toMatchObject({
+      response: { message: "sk_vat_id_required" },
+    });
+    expect(identified.service.vatInputs).not.toHaveBeenCalled();
+    expect(czech.service.vatInputs).not.toHaveBeenCalled();
+    // A refused filing is not counted on the plan.
     expect(limits.spendFeature).not.toHaveBeenCalled();
   });
 });

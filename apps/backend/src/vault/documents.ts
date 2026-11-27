@@ -1,6 +1,7 @@
 import { lockBlocks } from "../invoices/invoice-lock";
 import { computeVatBreakdown } from "../invoices/invoice-total.util";
 import { applyBuyerSnapshot } from "../invoices/party-snapshot";
+import { amountsSealed } from "./sealed-amounts";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
 import type * as schema from "../../drizzle/schema";
 
@@ -18,7 +19,9 @@ export function vaultDocumentView(
   items: LineItemRow[],
 ) {
   const buyer = contact ? applyBuyerSnapshot(contact, invoice.buyerSnapshot) : null;
-  const totals = computeVatBreakdown(items, { reverseCharge: invoice.reverseCharge });
+  // Sealed amounts: the plain columns hold the placeholder, so the totals are null, never a 0 to print.
+  const sealed = amountsSealed(invoice);
+  const totals = sealed ? null : computeVatBreakdown(items, { reverseCharge: invoice.reverseCharge });
   return {
     id: invoice.id,
     documentType: invoice.documentType,
@@ -35,10 +38,12 @@ export function vaultDocumentView(
     noteAbove: invoice.noteAbove,
     noteBelow: invoice.noteBelow,
     internalNote: invoice.internalNote,
-    totalWithoutVat: totals.totalWithoutVat,
-    totalVat: totals.totalVat,
-    total: totals.totalWithVat,
+    totalWithoutVat: totals?.totalWithoutVat ?? null,
+    totalVat: totals?.totalVat ?? null,
+    total: totals?.totalWithVat ?? null,
     createdAt: invoice.createdAt,
+    // Category "amounts": the browser opens these instead of the totals above.
+    encAmounts: invoice.encAmounts ?? null,
     items: [...items]
       .sort((a, b) => a.sortOrder - b.sortOrder)
       .map((l) => ({
@@ -49,6 +54,7 @@ export function vaultDocumentView(
         unitPrice: Number(l.unitPrice),
         vatRate: l.vatRate == null ? null : Number(l.vatRate),
         discountPercent: Number(l.discountPercent),
+        encAmounts: l.encAmounts ?? null,
         createdAt: l.createdAt,
       })),
   };

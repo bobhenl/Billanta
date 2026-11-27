@@ -25,7 +25,9 @@ interface SealableDraft {
   noteAbove?: string | null;
   noteBelow?: string | null;
   internalNote?: string | null;
-  items?: { description: string }[] | null;
+  /** Category "amounts": the totals envelope; the items carry their own. */
+  encAmounts?: string | null;
+  items?: { description: string; encAmounts?: string | null }[] | null;
 }
 
 const sealText = async (key: VaultKey, value: string | null | undefined) => (value && value.trim() && !isSealed(value) ? seal(key, value) : value);
@@ -33,10 +35,16 @@ const sealPrinted = async (doc: DocumentKey, value: string | null | undefined) =
   value && value.trim() && !isSealed(value) ? sealWithDocumentKey(doc, value) : value;
 const openText = async (key: VaultKey, value: string | null | undefined) => (value && isSealed(value) ? open(key, value) : value);
 
-/** The printed texts, the ones the client sees. */
+/** The printed texts, the ones the client sees (sealed amounts included, they share the document key). */
 export function printedTexts(draft: SealableDraft | null | undefined): (string | null | undefined)[] {
   if (!draft) return [];
-  return [draft.noteAbove, draft.noteBelow, ...(draft.items ?? []).map((i) => i.description)];
+  return [
+    draft.noteAbove,
+    draft.noteBelow,
+    ...(draft.items ?? []).map((i) => i.description),
+    draft.encAmounts,
+    ...(draft.items ?? []).map((i) => i.encAmounts)
+  ];
 }
 
 /**
@@ -108,6 +116,9 @@ export interface SealedDocument {
   /** The encrypted fields of the buyer snapshot (contacts category). The client sees them printed. */
   buyer?: Partial<Record<BuyerField, string>>;
   buyerContactPerson?: string | null;
+  /** Category "amounts": the totals envelope and each item's, in `items` order. */
+  encAmounts?: string | null;
+  itemAmounts?: { id: string; encAmounts: string }[];
 }
 
 /** Ciphertext only: what "Připravit odkaz pro klienta" sends to the server. Never a key. */
@@ -117,6 +128,8 @@ export interface RekeyPayload {
   items: { id: string; description: string }[];
   buyer?: Partial<Record<BuyerField, string>>;
   buyerContactPerson?: string;
+  encAmounts?: string;
+  itemAmounts?: { id: string; encAmounts: string }[];
 }
 
 /**
@@ -127,7 +140,15 @@ export interface RekeyPayload {
  */
 export async function clientLinkKey(key: VaultKey, doc: SealedDocument): Promise<{ docKey: DocumentKey; rekey: RekeyPayload | null } | null> {
   const buyer = Object.entries(doc.buyer ?? {}) as [BuyerField, string][];
-  const sealed = [doc.noteAbove, doc.noteBelow, doc.buyerContactPerson, ...doc.items.map((i) => i.description), ...buyer.map(([, v]) => v)].filter(isSealed);
+  const sealed = [
+    doc.noteAbove,
+    doc.noteBelow,
+    doc.buyerContactPerson,
+    ...doc.items.map((i) => i.description),
+    ...buyer.map(([, v]) => v),
+    doc.encAmounts,
+    ...(doc.itemAmounts ?? []).map((i) => i.encAmounts)
+  ].filter(isSealed);
   if (!sealed.length) return null;
   const wraps = new Set(sealed.map(documentKeyWrap));
   // A buyer sealed with the contact (company key) has no document key, so the notes' or items' key wins.
@@ -147,5 +168,11 @@ export async function clientLinkKey(key: VaultKey, doc: SealedDocument): Promise
   if (Object.keys(buyerRekey).length) rekey.buyer = buyerRekey;
   const person = await reseal(doc.buyerContactPerson ?? null);
   if (person) rekey.buyerContactPerson = person;
+  const totals = await reseal(doc.encAmounts ?? null);
+  if (totals) rekey.encAmounts = totals;
+  const itemAmounts = (
+    await Promise.all((doc.itemAmounts ?? []).map(async (i) => ({ id: i.id, encAmounts: await reseal(i.encAmounts) })))
+  ).filter((i): i is { id: string; encAmounts: string } => Boolean(i.encAmounts));
+  if (itemAmounts.length) rekey.itemAmounts = itemAmounts;
   return { docKey, rekey };
 }

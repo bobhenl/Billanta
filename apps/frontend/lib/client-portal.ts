@@ -10,9 +10,10 @@ export interface ClientPortalDocument {
   issueDate: string | null;
   dueDate: string | null;
   currency: string;
-  total: number;
+  /** Null with sealed amounts (Důvěrný režim): the client sees them on the document's own link. */
+  total: number | null;
   amountPaid: number;
-  balance: number;
+  balance: number | null;
   overdue: boolean;
   clientResponse: 'accepted' | 'rejected' | null;
 }

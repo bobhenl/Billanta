@@ -8,6 +8,7 @@ import {
   generateSpaydString,
   paymentQrScheme,
   qrInvoiceForSpayd,
+  type SealedPdfQrPlan,
 } from "@faktur/cz-compliance";
 import { generatePayBySquareString } from "@faktur/cz-compliance/pay-by-square";
 import {
@@ -26,7 +27,16 @@ import { PayerNote } from "./payer-note";
 import { CardPayButton } from "./card-pay-button";
 import { PaymentDetails, type PaymentDetailRow } from "./payment-details";
 import { PrintButton } from "./print-button";
-import { SealedItemText, SealedNotice, SealedPdfButton, SealedTextsProvider } from "./sealed-texts";
+import {
+  SealedItemAmountText,
+  SealedItemText,
+  SealedNotice,
+  SealedPayment,
+  SealedPdfButton,
+  SealedTextsProvider,
+  SealedTotalText,
+  SealedVatLines,
+} from "./sealed-texts";
 import { InfoHint } from "@/components/info-hint";
 import { buttonClass } from "@/lib/ui-classes";
 import { cn } from "@/lib/utils";
@@ -138,7 +148,11 @@ export default async function PublicInvoicePage({
   // Card payments go through the supplier's OWN Stripe account (Settings →
   // Způsoby úhrady → Platba kartou); `invoice.cardPayment` says whether to
   // offer the button – see apps/backend/src/card-payments.
-  const remainingToPay = Math.max(0, Math.round((invoice.total - (invoice.amountPaid ?? 0)) * 100) / 100);
+  // "Důvěrný režim" amounts: the server sent no totals; the browser computes them with the link's key.
+  const amountsSealed = Boolean(invoice.amountsSealed);
+  const total = invoice.total ?? 0;
+  const vatTotal = invoice.vatTotal ?? 0;
+  const remainingToPay = Math.max(0, Math.round((total - (invoice.amountPaid ?? 0)) * 100) / 100);
   let qrCodeSvg: string | null = null;
   let qrBySquare = false;
   const supplier = invoice.supplier;
@@ -156,15 +170,11 @@ export default async function PublicInvoicePage({
   // total), a paid or a cancelled document has nothing to pay, so no QR.
   const amountToPay = remainingToPay;
   const paid = invoice.status === "paid";
-  const showPayment = !invoice.quote && !paid && invoice.status !== "cancelled" && remainingToPay > 0;
+  const showPayment = !invoice.quote && !paid && invoice.status !== "cancelled" && (amountsSealed || remainingToPay > 0);
+  const qrScheme = iban ? paymentQrScheme({ payeeIban: iban, currency: invoice.currency, buyerCountry: invoice.buyerCountry }) : null;
   // Slovak payers get PAY by square, same rule as the PDF (paymentQrScheme).
   // It validates the IBAN; on failure we fall back to SPAYD like the PDF does.
-  if (
-    iban &&
-    showPayment &&
-    isTransfer &&
-    paymentQrScheme({ payeeIban: iban, currency: invoice.currency, buyerCountry: invoice.buyerCountry }) === "pay_by_square"
-  ) {
+  if (iban && showPayment && isTransfer && !amountsSealed && qrScheme === "pay_by_square") {
     try {
       const bysquare = generatePayBySquareString({
         iban,
@@ -182,7 +192,7 @@ export default async function PublicInvoicePage({
       qrCodeSvg = null;
     }
   }
-  if (iban && showPayment && isTransfer && !qrCodeSvg) {
+  if (iban && showPayment && isTransfer && !amountsSealed && !qrCodeSvg) {
     const spayd = generateSpaydString({
       iban,
       amount: amountToPay,
@@ -198,13 +208,13 @@ export default async function PublicInvoicePage({
               generateQrInvoiceString({
                 invoiceNumber: invoice.invoiceNumber,
                 issueDate: new Date(invoice.issueDate),
-                totalAmount: invoice.total,
+                totalAmount: total,
                 currency: invoice.currency,
                 dueDate: invoice.dueDate
                   ? new Date(invoice.dueDate)
                   : undefined,
                 variableSymbol: invoice.variableSymbol ?? undefined,
-                documentType: invoice.vatTotal > 0 ? 9 : 0,
+                documentType: vatTotal > 0 ? 9 : 0,
                 iban,
                 // Left out with the credit switched off, like on the PDF.
                 software: invoice.brandCredit ? SITE_NAME : undefined,
@@ -221,10 +231,11 @@ export default async function PublicInvoicePage({
     invoice.status === "issued" && showPayment && Boolean(invoice.dueDate) && (invoice.dueDate ?? "") < new Date().toISOString().slice(0, 10);
   const partlyPaid = invoice.status === "issued" && (invoice.amountPaid ?? 0) > 0;
   // A paid document says what was paid and that nothing is left, like the PDF.
-  const showPaidLines = !invoice.quote && (partlyPaid || paid) && invoice.total > 0;
-  const paidShown = paid ? invoice.total : (invoice.amountPaid ?? 0);
+  const showPaidLines = !invoice.quote && (partlyPaid || paid) && total > 0;
+  const paidShown = paid ? total : (invoice.amountPaid ?? 0);
   const remainingShown = paid ? 0 : remainingToPay;
-  const showVat = invoice.vatTotal > 0 || invoice.lineItems.some((i) => (i.vatRate ?? 0) > 0);
+  // Sealed items carry no plain rate, so the column stays and fills in once opened.
+  const showVat = amountsSealed || vatTotal > 0 || invoice.lineItems.some((i) => (i.vatRate ?? 0) > 0);
   // "Issued" says nothing to a payer: the amount block already reads "Amount due".
   const badge: { label: string; className: string } | null = overdue
     ? { label: t("overdue"), className: "bg-destructive/10 text-destructive" }
@@ -245,19 +256,57 @@ export default async function PublicInvoicePage({
           ...(accountNumber ? [{ label: t("pay.account"), value: accountNumber, strong: true }] : []),
           ...(iban ? [{ label: t("pay.iban"), value: iban.replace(/(.{4})(?=.)/g, "$1 "), copy: iban }] : []),
           ...(invoice.variableSymbol ? [{ label: t("variableSymbolLabel"), value: invoice.variableSymbol, strong: true }] : []),
-          { label: t("pay.amount"), value: currencyFormatter.format(amountToPay), copy: plainAmount, strong: true },
+          // A sealed amount joins the rows in the browser (SealedPayment).
+          ...(amountsSealed ? [] : [{ label: t("pay.amount"), value: currencyFormatter.format(amountToPay), copy: plainAmount, strong: true }]),
         ]
       : [];
+  // The QR of a sealed document is drawn in the browser once the amount is known, from the same data the server would use.
+  const sealedQrPlan: SealedPdfQrPlan | null =
+    amountsSealed && iban && isTransfer && qrScheme
+      ? qrScheme === "pay_by_square"
+        ? {
+            kind: "pay_by_square",
+            label: "",
+            params: {
+              iban,
+              currency: invoice.currency,
+              variableSymbol: invoice.variableSymbol ?? undefined,
+              dueDate: invoice.dueDate?.slice(0, 10),
+              message: invoice.invoiceNumber ?? undefined,
+              invoiceId: invoice.invoiceNumber ?? undefined,
+              beneficiaryName: supplier?.companyName ?? "",
+            },
+          }
+        : {
+            kind: "spayd",
+            label: "",
+            params: {
+              iban,
+              currency: invoice.currency,
+              variableSymbol: invoice.variableSymbol ?? undefined,
+              dueDate: invoice.dueDate?.slice(0, 10),
+              message: invoice.invoiceNumber ?? undefined,
+            },
+          }
+      : null;
 
   // "Důvěrný režim": the texts arrive as ciphertext and open in the browser with the key from the link (sealed-texts.tsx).
   // An encrypted buyer goes after the items: the page never shows it, but the browser-drawn PDF prints it.
   const sealedBuyer = invoice.sealedBuyer ?? [];
-  const sealedItems = [...invoice.lineItems.map((item) => (item.confidential && item.sealed ? item.sealed : null)), ...sealedBuyer];
-  const sealed = invoice.lineItems.some((item) => item.confidential) || sealedBuyer.length > 0;
+  // Sealed amounts go last, one per item, so the texts keep their indexes.
+  const sealedItems = [
+    ...invoice.lineItems.map((item) => (item.confidential && item.sealed ? item.sealed : null)),
+    ...sealedBuyer,
+    ...(amountsSealed ? invoice.lineItems.map((item) => item.sealedAmounts ?? null) : []),
+  ];
+  const amountSlots = amountsSealed
+    ? { offset: invoice.lineItems.length + sealedBuyer.length, count: invoice.lineItems.length, reverseCharge: Boolean(invoice.reverseCharge) }
+    : null;
+  const sealed = invoice.lineItems.some((item) => item.confidential) || sealedBuyer.length > 0 || amountsSealed;
   const sealedKeyIds = [...new Set(sealedItems.flatMap((item) => (item?.keyId ? [item.keyId] : [])))];
 
   return (
-    <SealedTextsProvider items={sealedItems} preview={Boolean(preview)}>
+    <SealedTextsProvider items={sealedItems} preview={Boolean(preview)} amounts={amountSlots}>
     <div className="mx-auto max-w-3xl px-4 py-6 sm:py-14 print:py-0" data-print-sheet>
       {invoice.demo && <PublicDemoNotice />}
 
@@ -321,7 +370,11 @@ export default async function PublicInvoicePage({
                 : t("totalShortLabel")}
           </p>
           <p className="mt-0.5 text-3xl font-extrabold tracking-tight tabular-nums">
-            {currencyFormatter.format(showPayment ? amountToPay : invoice.total)}
+            {amountsSealed ? (
+              <SealedTotalText part={showPayment ? "due" : "total"} currency={invoice.currency} amountPaid={invoice.amountPaid ?? 0} />
+            ) : (
+              currencyFormatter.format(showPayment ? amountToPay : total)
+            )}
           </p>
           {invoice.dueDate && (invoice.quote || showPayment) && (
             <p className={`mt-1 text-sm font-semibold ${overdue ? "text-destructive" : "text-foreground"}`}>
@@ -375,12 +428,21 @@ export default async function PublicInvoicePage({
                 {invoice.paymentInstructions
                   .replaceAll("{number}", invoice.invoiceNumber ?? "")
                   .replaceAll("{vs}", invoice.variableSymbol ?? "")
-                  .replaceAll("{amount}", currencyFormatter.format(invoice.total))
-                  .replaceAll("{remaining}", currencyFormatter.format(remainingToPay))}
+                  .replaceAll("{amount}", amountsSealed ? "–" : currencyFormatter.format(total))
+                  .replaceAll("{remaining}", amountsSealed ? "–" : currencyFormatter.format(remainingToPay))}
               </p>
             )}
 
-            {paymentRows.length > 0 ? (
+            {amountsSealed && paymentRows.length > 0 ? (
+              <SealedPayment
+                rows={paymentRows}
+                plan={sealedQrPlan}
+                amountPaid={invoice.amountPaid ?? 0}
+                currency={invoice.currency}
+                amountLabel={t("pay.amount")}
+                hint={<p className="max-w-[16rem] text-center text-xs text-muted-foreground">{t("paymentInstructions")}</p>}
+              />
+            ) : paymentRows.length > 0 ? (
               <div className="mt-4 grid gap-4 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-start">
                 {/* On a phone the QR is on the screen it would be scanned with, so the copyable details come first there. */}
                 {qrCodeSvg && (
@@ -432,26 +494,48 @@ export default async function PublicInvoicePage({
                       {item.confidential ? <SealedItemText index={index} /> : <span className="break-words">{item.description}</span>}
                       {/* On a phone the quantity, unit price and VAT columns fold into one line under the name. */}
                       <span className="mt-0.5 block text-xs text-muted-foreground tabular-nums sm:hidden">
-                        {item.quantity} × {currencyFormatter.format(item.unitPrice)}
-                        {showVat && item.vatRate != null ? ` · ${t("columns.vatRate")} ${percentFormatter.format(item.vatRate)} %` : ""}
+                        {item.sealedAmounts ? (
+                          <SealedItemAmountText index={index} part="summary" currency={invoice.currency} />
+                        ) : (
+                          <>
+                            {item.quantity} × {currencyFormatter.format(item.unitPrice)}
+                            {showVat && item.vatRate != null ? ` · ${t("columns.vatRate")} ${percentFormatter.format(item.vatRate)} %` : ""}
+                          </>
+                        )}
                       </span>
-                      {(item.discountPercent ?? 0) !== 0 && (
+                      {!item.sealedAmounts && (item.discountPercent ?? 0) !== 0 && (
                         <span className="mt-0.5 block text-xs text-muted-foreground tabular-nums">
                           {t("columns.discount")} {percentFormatter.format(item.discountPercent ?? 0)} %
                         </span>
                       )}
                     </td>
-                    <td className="hidden px-4 py-2.5 text-right tabular-nums sm:table-cell">{item.quantity}</td>
+                    <td className="hidden px-4 py-2.5 text-right tabular-nums sm:table-cell">
+                      {item.sealedAmounts ? <SealedItemAmountText index={index} part="quantity" currency={invoice.currency} /> : item.quantity}
+                    </td>
                     <td className="hidden whitespace-nowrap px-4 py-2.5 text-right tabular-nums sm:table-cell">
-                      {currencyFormatter.format(item.unitPrice)}
+                      {item.sealedAmounts ? (
+                        <SealedItemAmountText index={index} part="unitPrice" currency={invoice.currency} />
+                      ) : (
+                        currencyFormatter.format(item.unitPrice)
+                      )}
                     </td>
                     {showVat && (
                       <td className="hidden whitespace-nowrap px-4 py-2.5 text-right tabular-nums sm:table-cell">
-                        {item.vatRate != null ? `${percentFormatter.format(item.vatRate)} %` : ""}
+                        {item.sealedAmounts ? (
+                          <SealedItemAmountText index={index} part="vat" currency={invoice.currency} />
+                        ) : item.vatRate != null ? (
+                          `${percentFormatter.format(item.vatRate)} %`
+                        ) : (
+                          ""
+                        )}
                       </td>
                     )}
                     <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums sm:px-4">
-                      {currencyFormatter.format(item.quantity * item.unitPrice * (1 - (item.discountPercent ?? 0) / 100))}
+                      {item.sealedAmounts ? (
+                        <SealedItemAmountText index={index} part="line" currency={invoice.currency} />
+                      ) : (
+                        currencyFormatter.format(item.quantity * item.unitPrice * (1 - (item.discountPercent ?? 0) / 100))
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -460,21 +544,26 @@ export default async function PublicInvoicePage({
           </div>
 
           <div className="ml-auto mt-3 max-w-[280px] space-y-1.5 text-sm">
-            {invoice.vatTotal > 0 && (
+            {amountsSealed && (
+              <SealedVatLines currency={invoice.currency} subtotalLabel={t("subtotalLabel")} vatLabel={t("vatTotalLabel")} />
+            )}
+            {vatTotal > 0 && (
               <>
                 <div className="flex justify-between gap-4 text-muted-foreground">
                   <span>{t("subtotalLabel")}</span>
-                  <span className="tabular-nums">{currencyFormatter.format(invoice.subtotal)}</span>
+                  <span className="tabular-nums">{currencyFormatter.format(invoice.subtotal ?? 0)}</span>
                 </div>
                 <div className="flex justify-between gap-4 text-muted-foreground">
                   <span>{t("vatTotalLabel")}</span>
-                  <span className="tabular-nums">{currencyFormatter.format(invoice.vatTotal)}</span>
+                  <span className="tabular-nums">{currencyFormatter.format(vatTotal)}</span>
                 </div>
               </>
             )}
-            <div className={`flex justify-between gap-4 font-semibold ${invoice.vatTotal > 0 ? "border-t border-border pt-1.5" : ""}`}>
+            <div className={`flex justify-between gap-4 font-semibold ${vatTotal > 0 || amountsSealed ? "border-t border-border pt-1.5" : ""}`}>
               <span>{t(invoice.quote ? "quoteTotalLabel" : "totalShortLabel")}</span>
-              <span className="tabular-nums">{currencyFormatter.format(invoice.total)}</span>
+              <span className="tabular-nums">
+                {amountsSealed ? <SealedTotalText part="total" currency={invoice.currency} /> : currencyFormatter.format(total)}
+              </span>
             </div>
             {showPaidLines && (
               <>

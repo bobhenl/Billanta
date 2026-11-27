@@ -9,7 +9,7 @@ import { toast } from '@/components/toaster';
 import { useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import type { Contact } from '../new/types';
-import type { SavedTemplateRow } from '../templates/template-gallery';
+import { templateSealed, type SavedTemplateRow } from '../templates/template-gallery';
 import { bulkInvoice } from '../templates/actions';
 
 const MAX_CONTACTS = 200;
@@ -25,6 +25,7 @@ export function BulkForm({
 }) {
   const t = useTranslations('bulk');
   const tDoc = useTranslations('doc');
+  const tSealed = useTranslations('vault.amounts');
   const locale = useLocale();
   const router = useRouter();
   const [templateId, setTemplateId] = useState(initialTemplateId ?? templates[0]?.id ?? '');
@@ -75,6 +76,7 @@ export function BulkForm({
   const submit = () => {
     setError(null);
     if (!template) return setError(t('errors.template'));
+    if (templateSealed(template.lineItems)) return setError(tSealed('bulkSealed'));
     if (selected.size === 0) return setError(t('errors.contacts'));
     if (selected.size > MAX_CONTACTS) return setError(t('errors.tooMany', { max: MAX_CONTACTS }));
     start(async () => {
@@ -164,11 +166,13 @@ export function BulkForm({
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
           <p className="text-sm">
-            {t.rich('summary', {
-              count: selected.size,
-              total: money.format(net * selected.size),
-              b: (chunks) => <strong>{chunks}</strong>
-            })}
+            {template && templateSealed(template.lineItems)
+              ? tSealed('bulkSealed')
+              : t.rich('summary', {
+                  count: selected.size,
+                  total: money.format(net * selected.size),
+                  b: (chunks) => <strong>{chunks}</strong>
+                })}
           </p>
           <button type="button" className={cn(buttonClass.primary, 'w-full sm:w-auto')} disabled={busy || selected.size === 0 || !template} onClick={submit}>
             {busy && <Loader2 className="h-4 w-4 animate-spin" />}

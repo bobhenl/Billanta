@@ -1,5 +1,6 @@
 'use client';
 
+import { MoneySum, SealedTotal } from '@/components/vault/sealed-amounts';
 import type { HomeCurrency } from '@faktur/cz-compliance';
 import { Fragment, useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import {
@@ -50,11 +51,11 @@ import { menuPosition, type MenuPosition } from '@/lib/menu-position';
 import type { TaxPartner } from '@/lib/net-income';
 import { type PartnerColor, partnerColors, partnerTags } from '../reports/net-income/shares-picker';
 import { AmountHover, ContactHover } from './invoice-hover-cards';
+import { useConvertDocument } from '@/components/vault/use-convert';
 import { ConfidentialText } from '@/components/vault/confidential-text';
 import { useOpenedFields } from '@/components/vault/opened-contacts';
 import {
   cancelInvoice,
-  convertInvoice,
   deleteInvoice,
   issueInvoice,
   markInvoicePaid,
@@ -150,7 +151,7 @@ function sortValue(row: InvoiceRow, key: SortKey, partners: TaxPartner[]): strin
     case 'overdue':
       return row.isOverdue && row.dueDate ? Date.now() - Date.parse(row.dueDate) : null;
     case 'amountDue':
-      return row.status === 'issued' ? row.total - Number(row.amountPaid ?? 0) : null;
+      return row.status === 'issued' && row.total != null ? row.total - Number(row.amountPaid ?? 0) : null;
     case 'number':
       return row.invoiceNumber;
     case 'type':
@@ -299,10 +300,14 @@ export function InvoicesTable({
   }, [rows, sort, locale, named]);
 
   const totalsByCurrency = useMemo(() => {
-    const map = new Map<string, number>();
+    // A sealed document has no server total: the footer adds it once this tab has opened it.
+    const map = new Map<string, { plain: number; sealed: string[] }>();
     for (const row of rows) {
       if (row.status === 'cancelled' || row.documentType === 'quote') continue;
-      map.set(row.currency, (map.get(row.currency) ?? 0) + row.total);
+      const entry = map.get(row.currency) ?? { plain: 0, sealed: [] };
+      if (row.encAmounts || row.total == null) entry.sealed.push(row.encAmounts ?? '');
+      else entry.plain += row.total;
+      map.set(row.currency, entry);
     }
     return [...map.entries()];
   }, [rows]);
@@ -360,8 +365,16 @@ export function InvoicesTable({
       case 'variableSymbol':
         return <span className="font-mono text-xs text-muted-foreground">{row.variableSymbol ?? '–'}</span>;
       case 'totalWithoutVat':
+        if (row.encAmounts || row.totalWithoutVat == null) return <span className="tabular-nums text-muted-foreground"><SealedTotal cipher={row.encAmounts} currency={row.currency} field="totalWithoutVat" compact /></span>;
         return <span className="tabular-nums text-muted-foreground"><span className="amount">{formatMoney(row.totalWithoutVat, row.currency, locale)}</span></span>;
       case 'total':
+        // Sealed amounts: opened here; the hover breakdown comes from the opened totals.
+        if (row.encAmounts || row.total == null)
+          return (
+            <span className="font-semibold tabular-nums">
+              <AmountHover row={row} home={home}><SealedTotal cipher={row.encAmounts} currency={row.currency} compact /></AmountHover>
+            </span>
+          );
         return (
           <span className="font-semibold tabular-nums">
             <AmountHover row={row} home={home}><span className="amount">{formatMoney(row.total, row.currency, locale)}</span></AmountHover>
@@ -670,7 +683,7 @@ export function InvoicesTable({
                   {totalsByCurrency.map(([currency, sum], i) => (
                     <span key={currency} className="font-bold tabular-nums">
                       {i > 0 && ' · '}
-                      <span className="amount">{formatMoney(sum, currency, locale)}</span>
+                      <MoneySum plain={sum.plain} sealed={sum.sealed} currency={currency} />
                     </span>
                   ))}
                 </td>
@@ -739,6 +752,7 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
   const t = useTranslations('doc');
   const tVaultRoot = useTranslations('vault');
   const router = useRouter();
+  const convert = useConvertDocument();
   const [pos, setPos] = useState<MenuPosition | null>(null);
   const [pending, startTransition] = useTransition();
   const button = useRef<HTMLButtonElement>(null);
@@ -817,7 +831,7 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
       icon: Repeat2,
       label: t(`actions.convertTo.${to}`),
       write: true,
-      onSelect: () => act(() => convertInvoice(row.id, to), t('done.converted'), (doc) => router.push(`/invoices/${doc.id}`))
+      onSelect: () => act(() => convert(row.id, to), t('done.converted'), (doc) => router.push(`/invoices/${doc.id}`))
     })),
     ...(row.status === 'issued'
       ? [

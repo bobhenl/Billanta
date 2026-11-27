@@ -28,6 +28,8 @@ export interface PublicInvoiceLineItem {
   confidential?: true;
   /** Its ciphertext for the browser to open with the link's key; keyId null means the client can never open it. */
   sealed?: { cipher: string; keyId: string | null };
+  /** Category "amounts": the item's numbers as client ciphertext; the plain ones are then the placeholder. */
+  sealedAmounts?: { cipher: string; keyId: string | null };
 }
 
 export interface PublicInvoiceSupplier {
@@ -51,9 +53,13 @@ export interface PublicInvoice {
   currency: string;
   status: PublicInvoiceStatus;
   lineItems: PublicInvoiceLineItem[];
-  subtotal: number;
-  vatTotal: number;
-  total: number;
+  /** Null when the amounts are sealed (`amountsSealed`): the browser computes them from the items' `sealedAmounts`. */
+  subtotal: number | null;
+  vatTotal: number | null;
+  total: number | null;
+  amountsSealed?: boolean;
+  /** Reverse charge, for the browser's own totals of sealed amounts. */
+  reverseCharge?: boolean;
   amountPaid?: number;
   /** Built-in key plus the custom label/instructions (Settings → Způsoby úhrady). */
   paymentMethod?: string;

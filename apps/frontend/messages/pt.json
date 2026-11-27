@@ -470,7 +470,8 @@
     },
     "dragToReorder": "Arrastar para reordenar",
     "exportsCta": "Exportações para o contabilista",
-    "emptyHintReadOnly": "Ainda não há documentos. Quando a empresa emitir a primeira fatura, verá aqui receitas, um gráfico e clientes."
+    "emptyHintReadOnly": "Ainda não há documentos. Quando a empresa emitir a primeira fatura, verá aqui receitas, um gráfico e clientes.",
+    "sealedNote": "{count, plural, one {# documento com valores cifrados não está incluído} other {# documentos com valores cifrados não estão incluídos}} nos totais."
   },
   "invoices": {
     "hover": {
@@ -783,7 +784,8 @@
       "openedPreview": "Pré-visualização: a chave do link abriu os textos. Não foi guardada neste navegador.",
       "forget": "Esquecer a chave neste navegador",
       "forgotten": "A chave foi apagada deste navegador. O texto completo está no link do e-mail original."
-    }
+    },
+    "confidentialAmount": "Valor confidencial"
   },
   "expenses": {
     "title": "Despesas",
@@ -4773,7 +4775,10 @@
       "empty_input": "Descreva o que pretende faturar.",
       "symbol_invalid": "Os símbolos só podem conter algarismos (VS e SS até 10, KS até 4).",
       "reason_required": "Indique o motivo da alteração.",
-      "ai_credits_exhausted": "Os créditos de IA deste mês acabaram. Chegam novos no dia 1; um plano superior tem mais, ou use a sua própria chave."
+      "ai_credits_exhausted": "Os créditos de IA deste mês acabaram. Chegam novos no dia 1; um plano superior tem mais, ou use a sua própria chave.",
+      "amounts_plaintext": "O documento não foi guardado: os valores não estavam cifrados. Tente novamente.",
+      "amounts_sealed": "Os valores do documento estão cifrados, por isso o servidor não pode fazer isto.",
+      "amounts_partly_paid": "Um documento parcialmente pago não pode ser cifrado. Cifre-o depois de pago na totalidade."
     },
     "copy": {
       "title": "Preencher a partir de outra fatura",
@@ -7313,7 +7318,8 @@
     },
     "flatTaxLink": "Compensa o imposto fixo? →",
     "taxReturnLink": "Resumo para a declaração de impostos",
-    "netIncomeLink": "Após impostos"
+    "netIncomeLink": "Após impostos",
+    "sealedNote": "{count, plural, one {# documento com valores cifrados não está incluído} other {# documentos com valores cifrados não estão incluídos}} nos totais."
   },
   "siteSearch": {
     "title": "Pesquisar no site",
@@ -14388,7 +14394,8 @@
       "sealOnHint": "Só você e os membros com a chave verão as descrições e notas. O seu navegador cria o PDF, ISDOC e UBL; as sugestões de linhas são procuradas apenas no seu navegador.",
       "sealOffHint": "O documento é guardado sem cifra, como até agora.",
       "aiConsent": "Enviar este texto para a IA – vai uma única vez para o servidor e para o fornecedor de IA e não é guardado",
-      "aiConsentHint": "O servidor não guarda nem regista o texto. O que a IA devolver é cifrado no seu navegador ao guardar. O consentimento vale apenas para esta execução."
+      "aiConsentHint": "O servidor não guarda nem regista o texto. O que a IA devolver é cifrado no seu navegador ao guardar. O consentimento vale apenas para esta execução.",
+      "amountsPartlyPaid": "Os valores cifrados não podem ser guardados com um pagamento parcial. Apague o valor pago e marque o documento como pago quando for pago."
     },
     "actions": {
       "blocked": "Não foi possível abrir os textos cifrados. Desbloqueie o cofre com a chave certa e tente novamente.",
@@ -14465,12 +14472,24 @@
       },
       "amounts": {
         "title": "Valores",
-        "description": "Preços, IVA e totais dos documentos.",
+        "description": "Quantidades, preços unitários, taxas de IVA, descontos e totais dos documentos. O número do documento, o símbolo variável (VS), o vencimento, a moeda e o estado continuam legíveis.",
         "loses": [
-          "Correspondência automática de pagamentos bancários",
-          "Relatórios de IVA, declaração de controlo e exportações de IVA",
-          "Painéis, rendimento líquido e gráficos",
-          "Lembretes com valor e pagamentos QR criados pelo servidor"
+          "Correspondência automática de pagamentos por valor: um pagamento com o VS de um documento cifrado aguarda a sua confirmação manual",
+          "Pagamentos parciais: um documento cifrado só pode ser marcado como pago na totalidade, sem comissões nem valor creditado",
+          "Exportações para o contabilista, declarações e relatórios de IVA do servidor: recusam documentos com valores cifrados e listam-nos",
+          "Envio via Peppol, sugestões de IA com valores e pagamento com cartão",
+          "O painel, o rendimento líquido e os relatórios contam apenas documentos não cifrados e indicam quantos deixaram de fora",
+          "Os lembretes, o resumo semanal e os totais em atraso nos e-mails não indicam o valor"
+        ],
+        "how": [
+          "Cada linha é cifrada no seu navegador como um todo: quantidade, preço, taxa de IVA e desconto. Os totais do documento têm o seu próprio envelope. Tudo com a chave do documento, por isso a ligação do cliente também os abre.",
+          "O servidor guarda zeros em vez dos números, pelo que nenhuma das suas somas contém um valor real.",
+          "Os documentos criados por IA (Telegram, WhatsApp) têm valores legíveis até os guardar no editor.",
+          "Os documentos anteriores continuam legíveis até os cifrar com o botão Cifrar valores existentes."
+        ],
+        "changes": [
+          "O PDF, ISDOC, UBL e o pagamento QR são criados pelo seu navegador e, na ligação do cliente, pelo navegador do cliente",
+          "As faturas recorrentes copiam os valores cifrados sem alterações"
         ]
       },
       "howTitle": "Como funciona:",
@@ -14728,7 +14747,31 @@
       "nothing": "Não havia nada para cifrar.",
       "failed": "A cifragem falhou. Os contactos já cifrados continuam cifrados."
     },
-    "emailSealed": "O e-mail do cliente está cifrado, por isso o servidor não envia nada para ele. Envie a fatura do seu próprio e-mail ou copie o link para o cliente."
+    "emailSealed": "O e-mail do cliente está cifrado, por isso o servidor não envia nada para ele. Envie a fatura do seu próprio e-mail ou copie o link para o cliente.",
+    "sealAmounts": {
+      "button": "Cifrar valores existentes",
+      "title": "Cifrar valores existentes",
+      "what": "O navegador carrega os documentos cujos valores são legíveis no servidor, cifra quantidades, preços, taxas de IVA, descontos e totais e volta a guardá-los. No servidor ficam zeros no seu lugar.",
+      "keeps": "O número do documento, o VS, o vencimento, a moeda e o estado continuam legíveis, por isso continua a encontrar os pagamentos pelo VS.",
+      "loses": "O servidor deixa de criar PDF, ISDOC ou exportações para o contabilista destes documentos e não os conta nos relatórios. Um documento pago continua pago.",
+      "resumable": "Os documentos bloqueados e os parcialmente pagos são ignorados. Se fechar a janela, da próxima vez continua onde parou.",
+      "cancel": "Voltar",
+      "confirm": "Cifrar",
+      "progress": "A cifrar… {n}",
+      "done": "{n, plural, one {Valores de # documento cifrados} other {Valores de # documentos cifrados}}.",
+      "nothing": "Não havia nada para cifrar.",
+      "failed": "A cifragem falhou. Os documentos já cifrados continuam cifrados.",
+      "partlyPaid": "{n, plural, one {# documento parcialmente pago continuou legível} other {# documentos parcialmente pagos continuaram legíveis}}. Podem ser cifrados depois de pagos na totalidade."
+    },
+    "amounts": {
+      "paidSealed": "Os valores do documento estão cifrados, por isso só é possível registar o pagamento total. O servidor não guarda comissões nem o valor creditado.",
+      "leftOut": "Sem {count, plural, one {# documento} other {# documentos}} com valores cifrados – desbloqueie o cofre",
+      "exportLocked": "Os documentos com valores cifrados só entram no ficheiro depois de desbloquear o cofre.",
+      "exportUnreadable": "Nenhum ficheiro criado: {count, plural, one {# documento não pode ser aberto} other {# documentos não podem ser abertos}} com esta chave. Um documento em falta tornaria o ficheiro incorreto.",
+      "creditNoteLocked": "A nota de crédito de uma fatura com valores cifrados é preparada depois de desbloquear o cofre.",
+      "creditNoteUnreadable": "Os valores da fatura não podem ser abertos com esta chave, por isso a nota de crédito não foi criada.",
+      "bulkSealed": "Este modelo tem valores cifrados. Não serve para faturação em massa, apenas para uma fatura individual."
+    }
   },
   "vaultPublic": {
     "integrity": {

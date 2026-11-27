@@ -470,7 +470,8 @@
     },
     "dragToReorder": "Húzza az átrendezéshez",
     "exportsCta": "Exportok a könyvelőnek",
-    "emptyHintReadOnly": "Még nincsenek dokumentumok. Amint a cég kiállítja első számláját, itt láthatja a bevételeket, a grafikont és a vevőket."
+    "emptyHintReadOnly": "Még nincsenek dokumentumok. Amint a cég kiállítja első számláját, itt láthatja a bevételeket, a grafikont és a vevőket.",
+    "sealedNote": "{count, plural, one {# titkosított összegű bizonylat} other {# titkosított összegű bizonylat}} nem szerepel az összesítésben."
   },
   "invoices": {
     "hover": {
@@ -783,7 +784,8 @@
       "openedPreview": "Előnézet: a szövegeket a link kulcsa nyitotta meg. Ebben a böngészőben nem lett elmentve.",
       "forget": "Kulcs elfelejtése ebben a böngészőben",
       "forgotten": "A kulcs törölve ebből a böngészőből. A teljes szöveg az eredeti e-mailben kapott linkben van."
-    }
+    },
+    "confidentialAmount": "Bizalmas összeg"
   },
   "expenses": {
     "title": "Költségek",
@@ -4773,7 +4775,10 @@
       "empty_input": "Írja le, mit szeretne számlázni.",
       "symbol_invalid": "A szimbólumok csak számjegyeket tartalmazhatnak (VS és SS legfeljebb 10, KS legfeljebb 4).",
       "reason_required": "Adja meg a módosítás okát.",
-      "ai_credits_exhausted": "Az e havi MI-kreditek elfogytak. Újak 1-jén jönnek, egy magasabb csomagban több van, vagy használja a saját kulcsát."
+      "ai_credits_exhausted": "Az e havi MI-kreditek elfogytak. Újak 1-jén jönnek, egy magasabb csomagban több van, vagy használja a saját kulcsát.",
+      "amounts_plaintext": "A bizonylat nem mentődött el: az összegek nem voltak titkosítva. Próbálja újra.",
+      "amounts_sealed": "A bizonylat összegei titkosítva vannak, ezért a szerver ezt nem tudja elvégezni.",
+      "amounts_partly_paid": "Részben kifizetett bizonylat nem titkosítható. Titkosítsa a teljes kifizetés után."
     },
     "copy": {
       "title": "Előkitöltés másik számlából",
@@ -7313,7 +7318,8 @@
     },
     "flatTaxLink": "Megéri az átalányadó? →",
     "taxReturnLink": "Adóbevallás összesítője",
-    "netIncomeLink": "Adózás után"
+    "netIncomeLink": "Adózás után",
+    "sealedNote": "{count, plural, one {# titkosított összegű bizonylat} other {# titkosított összegű bizonylat}} nem szerepel az összesítésben."
   },
   "siteSearch": {
     "title": "Keresés a weboldalon",
@@ -14388,7 +14394,8 @@
       "sealOnHint": "A tételleírásokat és megjegyzéseket csak Ön és a kulccsal rendelkező tagok látják. A PDF-et, az ISDOC-ot és az UBL-t a böngészője készíti, a tételjavaslatokat csak a böngészője keresi.",
       "sealOffHint": "A bizonylat a korábbiakhoz hasonlóan titkosítás nélkül mentődik.",
       "aiConsent": "A szöveg elküldése az AI-nak – egyszer eljut a szerverre és az AI-szolgáltatóhoz, nem kerül mentésre",
-      "aiConsentHint": "A szerver nem tárolja és nem naplózza a szöveget. Amit az AI visszaad, mentéskor a böngészőjében titkosítódik. A hozzájárulás csak erre az egy futtatásra érvényes."
+      "aiConsentHint": "A szerver nem tárolja és nem naplózza a szöveget. Amit az AI visszaad, mentéskor a böngészőjében titkosítódik. A hozzájárulás csak erre az egy futtatásra érvényes.",
+      "amountsPartlyPaid": "Titkosított összegek nem menthetők részfizetéssel. Törölje a kifizetett összeget, és fizetés után jelölje a bizonylatot kifizetettnek."
     },
     "actions": {
       "blocked": "A titkosított szövegeket nem sikerült megnyitni. Oldja fel a széfet a megfelelő kulccsal, és próbálja újra.",
@@ -14465,12 +14472,24 @@
       },
       "amounts": {
         "title": "Összegek",
-        "description": "Árak, ÁFA és bizonylatösszegek.",
+        "description": "Mennyiségek, egységárak, ÁFA-kulcsok, kedvezmények és a bizonylatok végösszegei. A bizonylatszám, a változó szimbólum (VS), a határidő, a pénznem és az állapot olvasható marad.",
         "loses": [
-          "Banki befizetések automatikus párosítása",
-          "ÁFA-kimutatások, összesítő jelentés és ÁFA-exportok",
-          "Irányítópultok, nettó jövedelem és grafikonok",
-          "Összeget tartalmazó emlékeztetők és a szerver által készített QR-fizetés"
+          "Automatikus fizetéspárosítás összeg alapján: egy titkosított bizonylat VS-ével érkező fizetés az Ön kézi megerősítésére vár",
+          "Részfizetések: titkosított bizonylatot csak teljesen kifizetettként lehet jelölni, díjak és jóváírt összeg nélkül",
+          "Könyvelői exportok, bevallások és ÁFA-kimutatások a szerverről: a titkosított összegű bizonylatokat elutasítják és felsorolják",
+          "Küldés Peppolon, MI-javaslatok összegekkel és kártyás fizetés",
+          "Az irányítópult, a nettó jövedelem és a kimutatások csak a nem titkosított bizonylatokat számolják, és jelzik, hányat hagytak ki",
+          "A felszólítások, a heti összefoglaló és a lejárt összegek az e-mailekben nem tartalmaznak összeget"
+        ],
+        "how": [
+          "Minden tétel egyben titkosul a böngészőjében: mennyiség, ár, ÁFA-kulcs és kedvezmény. A bizonylat végösszegei saját borítékot kapnak. Mind a bizonylat kulcsával, így az ügyfél linkje is megnyitja őket.",
+          "A szerver a számok helyett nullákat tárol, így egyik összege sem tartalmaz valódi összeget.",
+          "Az MI-ből érkező bizonylatok (Telegram, WhatsApp) összegei olvashatók, amíg el nem menti őket a szerkesztőben.",
+          "A korábbi bizonylatok olvashatók maradnak, amíg nem titkosítja őket a Meglévő összegek titkosítása gombbal."
+        ],
+        "changes": [
+          "A PDF-et, az ISDOC-ot, az UBL-t és a QR-fizetést a böngészője készíti, az ügyfél linkjén az ügyfél böngészője",
+          "Az ismétlődő számlák változatlanul másolják a titkosított összegeket"
         ]
       },
       "howTitle": "Hogyan működik:",
@@ -14728,7 +14747,31 @@
       "nothing": "Nem volt mit titkosítani.",
       "failed": "A titkosítás nem sikerült. A már titkosított partnerek titkosítva maradnak."
     },
-    "emailSealed": "Az ügyfél e-mail címe titkosítva van, a szerver nem küld rá semmit. Küldje a számlát saját postafiókból, vagy másolja az ügyféllinket."
+    "emailSealed": "Az ügyfél e-mail címe titkosítva van, a szerver nem küld rá semmit. Küldje a számlát saját postafiókból, vagy másolja az ügyféllinket.",
+    "sealAmounts": {
+      "button": "Meglévő összegek titkosítása",
+      "title": "Meglévő összegek titkosítása",
+      "what": "A böngésző betölti azokat a bizonylatokat, amelyek összegei olvashatók a szerveren, titkosítja a mennyiségeket, árakat, ÁFA-kulcsokat, kedvezményeket és végösszegeket, majd visszamenti őket. A szerveren a helyükön nullák maradnak.",
+      "keeps": "A bizonylatszám, a VS, a határidő, a pénznem és az állapot olvasható marad, így a fizetéseket VS alapján továbbra is megtalálja.",
+      "loses": "A szerver ezután ezekhez a bizonylatokhoz nem készít PDF-et, ISDOC-ot vagy könyvelői exportot, és nem számolja őket a kimutatásokban. A kifizetett bizonylat kifizetett marad.",
+      "resumable": "A zárolt és részben kifizetett bizonylatok kimaradnak. Ha bezárja az ablakot, legközelebb ott folytatódik, ahol abbahagyta.",
+      "cancel": "Vissza",
+      "confirm": "Titkosítás",
+      "progress": "Titkosítás… {n}",
+      "done": "{n, plural, one {# bizonylat összegei titkosítva} other {# bizonylat összegei titkosítva}}.",
+      "nothing": "Nem volt mit titkosítani.",
+      "failed": "A titkosítás nem sikerült. A már titkosított bizonylatok titkosítva maradnak.",
+      "partlyPaid": "{n, plural, one {# részben kifizetett bizonylat olvasható maradt} other {# részben kifizetett bizonylat olvasható maradt}}. Teljes kifizetés után titkosíthatók."
+    },
+    "amounts": {
+      "paidSealed": "A bizonylat összegei titkosítva vannak, ezért csak a teljes összeg kifizetése rögzíthető. Díjakat és jóváírt összeget a szerver nem tárol.",
+      "leftOut": "{count, plural, one {# titkosított összegű bizonylat} other {# titkosított összegű bizonylat}} nélkül – oldja fel a széfet",
+      "exportLocked": "A titkosított összegű bizonylatok csak a széf feloldása után kerülhetnek a fájlba.",
+      "exportUnreadable": "A fájl nem készült el: {count, plural, one {# bizonylat} other {# bizonylat}} nem nyitható meg ezzel a kulccsal. Egy hiányzó bizonylat meghamisítaná a fájlt.",
+      "creditNoteLocked": "A titkosított összegű számla jóváírása a széf feloldása után készül el.",
+      "creditNoteUnreadable": "A számla összegei nem nyithatók meg ezzel a kulccsal, ezért jóváírás nem készült.",
+      "bulkSealed": "Ennek a sablonnak titkosított összegei vannak. Tömeges számlázásra nem, csak egyedi számlához használható."
+    }
   },
   "vaultPublic": {
     "integrity": {

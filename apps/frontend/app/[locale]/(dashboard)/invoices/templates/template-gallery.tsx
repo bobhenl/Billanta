@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { ConfidentialText } from '@/components/vault/confidential-text';
+import { SealedItemsNet } from '@/components/vault/sealed-amounts';
 import { Clock, FileText, Home, LayoutTemplate, MoreHorizontal, Package, Pencil, Plus, Repeat, Trash2, Users, Wallet, type LucideIcon } from 'lucide-react';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { EmptyState } from '@/components/empty-state';
@@ -25,7 +26,15 @@ export interface SavedTemplateRow {
   contactName: string | null;
   usageCount: number;
   lastUsedAt: string | null;
-  lineItems: { description: string; quantity: number | string; unitPrice: number | string; vatRate: number | string | null; discountPercent?: number | string | null }[];
+  lineItems: {
+    description: string;
+    quantity: number | string;
+    unitPrice: number | string;
+    vatRate: number | string | null;
+    discountPercent?: number | string | null;
+    /** Category "amounts": saved from a sealed invoice, the plain numbers are the placeholder. */
+    encAmounts?: string | null;
+  }[];
 }
 
 const PRESET_ICONS: Record<TemplatePreset['icon'], LucideIcon> = {
@@ -43,6 +52,9 @@ const TYPE_TONE: Record<DocumentType, string> = {
   quote: 'bg-success/15 text-success',
   credit_note: 'bg-destructive/10 text-destructive'
 };
+
+/** The template was saved from an invoice with sealed amounts. */
+export const templateSealed = (items: SavedTemplateRow['lineItems']) => items.some((i) => i.encAmounts);
 
 /** Net total of a template's items (one invoice from it, before VAT). */
 function templateNet(items: SavedTemplateRow['lineItems']) {
@@ -169,7 +181,13 @@ export function TemplateGallery({ saved, presets }: { saved: SavedTemplateRow[];
                       <span className={cn('rounded-full px-2 py-0.5 text-[11px] font-bold', TYPE_TONE[row.documentType])}>{tDoc(`type.${row.documentType}`)}</span>
                     )}
                     <span className="text-right">
-                      <span className="block font-extrabold tabular-nums">{money.format(templateNet(row.lineItems))}</span>
+                      <span className="block font-extrabold tabular-nums">
+                        {templateSealed(row.lineItems) ? (
+                          <SealedItemsNet ciphers={row.lineItems.map((i) => i.encAmounts)} currency={row.currency || 'CZK'} />
+                        ) : (
+                          money.format(templateNet(row.lineItems))
+                        )}
+                      </span>
                       <span className="block text-[11px] text-muted-foreground">
                         {row.usageCount > 0 && row.lastUsedAt
                           ? t('usage', { count: row.usageCount, when: format.relativeTime(new Date(row.lastUsedAt)) })

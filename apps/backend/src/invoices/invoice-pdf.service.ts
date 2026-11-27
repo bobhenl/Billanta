@@ -17,6 +17,8 @@ import {
   type HomeCurrency,
   type InvoicePdfModel,
   type PdfFonts,
+  type SealedPdfAmounts,
+  type SealedPdfQrPlan,
 } from "@faktur/cz-compliance";
 import { generatePayBySquareString } from "@faktur/cz-compliance/pay-by-square";
 import PDFDocument from "pdfkit";
@@ -30,6 +32,7 @@ import { rateLineLabel } from "./exchange-rate-mode";
 import { BRAND_NAME, brandCreditFor, brandCreditUrl, CREDIT_LABELS, siteUrl } from "./brand-credit";
 import { tenantCountry, tenantHomeCurrencyOf } from "../tenants/home-currency";
 import { assertServerReadable, printedTexts } from "../vault/sealed";
+import { amountsSealed, assertAmountsReadable } from "../vault/sealed-amounts";
 import { documentBuyerTexts } from "../vault/vault-email";
 
 type InvoiceRow = typeof schema.invoices.$inferSelect;
@@ -347,6 +350,8 @@ export class InvoicePdfService {
     // The browser draws those from buildModel with the vault key. An encrypted buyer
     // (category "contacts") too: buildModel leaves its name and address as envelopes.
     assertServerReadable(...printedTexts(invoice, lineItems), ...documentBuyerTexts(invoice, contact));
+    // Category "amounts": the plain columns hold placeholders, so a server PDF would print zeros.
+    assertAmountsReadable(invoice);
     const model = await this.buildModel(invoice, contact, tenant, lineItems, totals, related);
     const pdf = await renderInvoicePdf(PDFDocument, model, FONTS);
     return Buffer.from(pdf.buffer, pdf.byteOffset, pdf.byteLength);
@@ -375,10 +380,13 @@ export class InvoicePdfService {
     const t = second && second !== lang ? bilingualLabels(L[lang], L[second]) : L[lang];
 
     const payable = asksForPayment(invoice, totals);
+    const sealedAmounts = amountsSealed(invoice);
     // A demo's fictional bank account must not end up in anyone's banking app.
     const qrMode = pdfQrModeOf(tenant.invoiceFormPrefs);
+    const wantsQr = invoice.documentType !== "quote" && !tenant.isDemo && !draft && qrMode !== "off";
+    // Sealed amounts: a link code needs no amount; a payment code waits for the browser (sealedQrPlan).
     const qr =
-      invoice.documentType !== "quote" && !tenant.isDemo && !draft && qrMode !== "off"
+      wantsQr && (!sealedAmounts || qrMode === "link")
         ? await this.buildQrCode(invoice, contact, tenant, totals, payable, qrMode === "auto_link" ? "auto" : qrMode, lang)
         : null;
     // The web page as a second code: the customer opens it with a phone camera, the bank app keeps the first one.
@@ -392,7 +400,10 @@ export class InvoicePdfService {
     const credit = brandCreditFor(tenant, lang, "pdf");
 
     // Settings → Proměnné: `{vs}`, `{due_date}`, the company's own `{…}` in the notes.
-    const docVars = documentVars(invoice.customFields, totals, invoice.amountPaid, templateVarsOf(tenant.templateVars), (n) => `${this.formatNumber(n)} ${invoice.currency}`);
+    // Sealed amounts: the sums here are placeholders, so {amount}, {vat}… print as "–".
+    const docVars = documentVars(invoice.customFields, totals, invoice.amountPaid, templateVarsOf(tenant.templateVars), (n) =>
+      sealedAmounts ? "–" : `${this.formatNumber(n)} ${invoice.currency}`,
+    );
     const vars = { ...templateValues(tenant, invoice, contact), ...docVars.formatted };
     // A non-VAT payer charges no VAT, so a "0%" column and a VAT summary of zeros only confuse the reader.
     const showVat = tenant.dicVatPayer || totals.byRate.some((entry) => entry.vatAmount !== 0);
@@ -469,6 +480,72 @@ export class InvoicePdfService {
       },
       credit: credit ? { text: `${credit.label} · ${siteUrl().replace(/^https?:\/\//, "")}`, url: credit.url } : null,
       watermark: variant ? { stamp: demoWatermarkText(lang, variant), footer: demoFooterText(lang, variant) } : null,
+      ...(sealedAmounts
+        ? {
+            sealedAmounts: {
+              currency: invoice.currency,
+              reverseCharge: invoice.reverseCharge,
+              items: lineItems.map((i) => i.encAmounts ?? ""),
+              units: lineItems.map((i) => i.unit ?? null),
+              vatPayer: tenant.dicVatPayer,
+              mayAskForPayment: invoice.documentType !== "quote" && invoice.status !== "cancelled",
+              quote: invoice.documentType === "quote",
+              paid: invoice.status === "paid",
+              labels: { base: t.base, vat: t.vat, total: t.total, totalToPay: t.totalToPay, totalQuote: t.totalQuote },
+              fx: this.sealedFx(t, invoice, tenantHomeCurrencyOf(tenant)),
+              qr: wantsQr && qrMode !== "link" && invoice.status !== "paid" ? this.sealedQrPlan(t, invoice, contact, tenant) : null,
+            },
+          }
+        : {}),
+    };
+  }
+
+  /**
+   * The payment code of a document with sealed amounts, without the amount:
+   * the browser adds it after unlock and draws the code. No QR Faktura goes
+   * inside (it would need the totals and VAT lines here).
+   */
+  private sealedQrPlan(t: (typeof L)[Lang], invoice: InvoiceRow, contact: ContactRow, tenant: TenantRow): SealedPdfQrPlan | null {
+    const iban = this.iban(tenant);
+    if (!iban || invoice.paymentMethod !== "bank_transfer" || invoice.status === "cancelled") return null;
+    const dueDate = pdfQrDueDateOf(tenant.invoiceFormPrefs) && invoice.dueDate ? invoice.dueDate.toISOString().slice(0, 10) : undefined;
+    const common = {
+      iban,
+      currency: invoice.currency,
+      variableSymbol: invoice.variableSymbol ?? undefined,
+      dueDate,
+      message: invoice.invoiceNumber ?? undefined,
+    };
+    if (paymentQrScheme({ payeeIban: iban, currency: invoice.currency, buyerCountry: contact.addressCountry }) === "pay_by_square") {
+      return {
+        kind: "pay_by_square",
+        label: t.qrPayBySquare,
+        params: {
+          ...common,
+          bic: tenant.bankAccountSwift ?? undefined,
+          invoiceId: invoice.invoiceNumber ?? undefined,
+          beneficiaryName: tenant.legalName,
+          beneficiaryStreet: tenant.addressStreet ?? undefined,
+          beneficiaryCity: tenant.addressCity ?? undefined,
+        },
+      };
+    }
+    return { kind: "spayd", label: t.qr.toUpperCase(), params: common };
+  }
+
+  /** The home-currency lines of a sealed foreign-currency document, without their amounts. */
+  private sealedFx(t: (typeof L)[Lang], invoice: InvoiceRow, home: HomeCurrency): SealedPdfAmounts["fx"] {
+    const rate = invoice.exchangeRate ? Number(invoice.exchangeRate) : null;
+    const rateLabel = rateLineLabel(t, invoice, invoice.taxableSupplyDate ?? invoice.issueDate ?? null);
+    if (invoice.currency === home || !rate || !rateLabel) return null;
+    const perEuro = home === "EUR";
+    const rateText = (perEuro ? 1 / rate : rate).toLocaleString("cs-CZ", { maximumFractionDigits: 4 });
+    return {
+      rateLine: `${rateLabel} ${rateText} ${perEuro ? `${invoice.currency}/${home}` : `${home}/${invoice.currency}`}`,
+      rate,
+      home,
+      vatInHome: t.vatInHome.replaceAll("{currency}", home),
+      totalInHome: t.totalInHome.replaceAll("{currency}", home),
     };
   }
 
@@ -580,6 +657,8 @@ export class InvoicePdfService {
    * nothing is to be paid by transfer.
    */
   async paymentQr(invoice: InvoiceRow, contact: ContactRow, tenant: TenantRow, totals: InvoiceVatBreakdown): Promise<Buffer | null> {
+    // Sealed amounts: the server knows no amount to put in the code.
+    if (amountsSealed(invoice)) return null;
     if (!invoice.invoiceNumber || tenant.isDemo || pdfQrModeOf(tenant.invoiceFormPrefs) === "off") return null;
     const lang: Lang = invoice.language === "sk" || invoice.language === "en" ? invoice.language : "cs";
     const qr = await this.buildQrCode(invoice, contact, tenant, totals, asksForPayment(invoice, totals), "payment_only", lang);

@@ -470,7 +470,8 @@
     },
     "dragToReorder": "Sleep om te herschikken",
     "exportsCta": "Exports voor de boekhouder",
-    "emptyHintReadOnly": "Er zijn nog geen documenten. Zodra het bedrijf zijn eerste factuur uitgeeft, zie je hier omzet, een grafiek en klanten."
+    "emptyHintReadOnly": "Er zijn nog geen documenten. Zodra het bedrijf zijn eerste factuur uitgeeft, zie je hier omzet, een grafiek en klanten.",
+    "sealedNote": "{count, plural, one {# document met versleutelde bedragen is} other {# documenten met versleutelde bedragen zijn}} niet meegeteld in de totalen."
   },
   "invoices": {
     "hover": {
@@ -783,7 +784,8 @@
       "openedPreview": "Voorbeeld: de sleutel uit de link heeft de teksten geopend. Hij is niet in deze browser opgeslagen.",
       "forget": "Sleutel in deze browser vergeten",
       "forgotten": "De sleutel is uit deze browser verwijderd. De volledige tekst staat in de link uit de oorspronkelijke e-mail."
-    }
+    },
+    "confidentialAmount": "Vertrouwelijk bedrag"
   },
   "expenses": {
     "title": "Kosten",
@@ -4773,7 +4775,10 @@
       "empty_input": "Beschrijf wat je wilt factureren.",
       "symbol_invalid": "Symbolen mogen alleen cijfers bevatten (VS en SS max. 10, KS max. 4).",
       "reason_required": "Vul een reden voor de wijziging in.",
-      "ai_credits_exhausted": "De AI-credits van deze maand zijn op. Op de 1e komen er nieuwe; een hoger abonnement heeft er meer, of gebruik je eigen sleutel."
+      "ai_credits_exhausted": "De AI-credits van deze maand zijn op. Op de 1e komen er nieuwe; een hoger abonnement heeft er meer, of gebruik je eigen sleutel.",
+      "amounts_plaintext": "Het document is niet opgeslagen: de bedragen waren niet versleuteld. Probeer het opnieuw.",
+      "amounts_sealed": "De bedragen van het document zijn versleuteld, dus de server kan dit niet doen.",
+      "amounts_partly_paid": "Een deels betaald document kan niet worden versleuteld. Versleutel het zodra het volledig betaald is."
     },
     "copy": {
       "title": "Invullen vanuit een andere factuur",
@@ -7313,7 +7318,8 @@
     },
     "flatTaxLink": "Loont de forfaitaire belasting? →",
     "taxReturnLink": "Samenvatting voor de belastingaangifte",
-    "netIncomeLink": "Na belastingen"
+    "netIncomeLink": "Na belastingen",
+    "sealedNote": "{count, plural, one {# document met versleutelde bedragen is} other {# documenten met versleutelde bedragen zijn}} niet meegeteld in de totalen."
   },
   "siteSearch": {
     "title": "Zoeken op de site",
@@ -14388,7 +14394,8 @@
       "sealOnHint": "Alleen jij en leden met de sleutel zien regelomschrijvingen en notities. Je browser maakt de pdf, ISDOC en UBL; regelsuggesties worden alleen in je browser gezocht.",
       "sealOffHint": "Het document wordt zoals voorheen onversleuteld opgeslagen.",
       "aiConsent": "Deze tekst naar AI sturen – hij gaat één keer naar de server en de AI-aanbieder en wordt niet opgeslagen",
-      "aiConsentHint": "De server slaat de tekst niet op en logt hem niet. Wat AI teruggeeft, wordt bij het opslaan in je browser versleuteld. De toestemming geldt alleen voor deze ene keer."
+      "aiConsentHint": "De server slaat de tekst niet op en logt hem niet. Wat AI teruggeeft, wordt bij het opslaan in je browser versleuteld. De toestemming geldt alleen voor deze ene keer.",
+      "amountsPartlyPaid": "Versleutelde bedragen kunnen niet met een deelbetaling worden opgeslagen. Wis het betaalde bedrag en markeer het document als betaald zodra het betaald is."
     },
     "actions": {
       "blocked": "De versleutelde teksten konden niet worden geopend. Ontgrendel de kluis met de juiste sleutel en probeer het opnieuw.",
@@ -14465,12 +14472,24 @@
       },
       "amounts": {
         "title": "Bedragen",
-        "description": "Prijzen, btw en documenttotalen.",
+        "description": "Aantallen, stukprijzen, btw-tarieven, kortingen en documenttotalen. Documentnummer, variabel symbool (VS), vervaldatum, valuta en status blijven leesbaar.",
         "loses": [
-          "Automatisch koppelen van bankbetalingen",
-          "Btw-rapporten, controleaangifte en btw-exports",
-          "Dashboards, netto-inkomen en grafieken",
-          "Herinneringen met bedrag en QR-betalingen gemaakt door de server"
+          "Automatisch koppelen van betalingen op bedrag: een betaling met het VS van een versleuteld document wacht op je handmatige bevestiging",
+          "Deelbetalingen: een versleuteld document kan alleen als volledig betaald worden gemarkeerd, zonder kosten en bijgeschreven bedrag",
+          "Exports voor de boekhouder, aangiften en btw-overzichten van de server: ze weigeren documenten met versleutelde bedragen en noemen ze",
+          "Verzenden via Peppol, AI-suggesties met bedragen en kaartbetaling",
+          "Het dashboard, het netto-inkomen en de rapporten tellen alleen onversleutelde documenten en melden hoeveel ze hebben overgeslagen",
+          "Herinneringen, het weekoverzicht en achterstallige totalen in e-mails noemen geen bedrag"
+        ],
+        "how": [
+          "Elke regel wordt in je browser als geheel versleuteld: aantal, prijs, btw-tarief en korting. De documenttotalen krijgen een eigen envelop. Alles met de documentsleutel, zodat ook de klantlink ze opent.",
+          "De server slaat nullen op in plaats van de getallen, dus geen enkele som van de server bevat een echt bedrag.",
+          "Documenten uit AI (Telegram, WhatsApp) hebben leesbare bedragen tot je ze in de editor opslaat.",
+          "Eerdere documenten blijven leesbaar tot je ze versleutelt met de knop Bestaande bedragen versleutelen."
+        ],
+        "changes": [
+          "PDF, ISDOC, UBL en de QR-betaling maakt je browser, en via de klantlink de browser van de klant",
+          "Terugkerende facturen kopiëren de versleutelde bedragen ongewijzigd"
         ]
       },
       "howTitle": "Zo werkt het:",
@@ -14728,7 +14747,31 @@
       "nothing": "Er was niets te versleutelen.",
       "failed": "Versleutelen is mislukt. Al versleutelde contacten blijven versleuteld."
     },
-    "emailSealed": "Het e-mailadres van de klant is versleuteld, dus de server stuurt er niets naartoe. Verstuur de factuur vanuit je eigen mail of kopieer de klantlink."
+    "emailSealed": "Het e-mailadres van de klant is versleuteld, dus de server stuurt er niets naartoe. Verstuur de factuur vanuit je eigen mail of kopieer de klantlink.",
+    "sealAmounts": {
+      "button": "Bestaande bedragen versleutelen",
+      "title": "Bestaande bedragen versleutelen",
+      "what": "De browser laadt de documenten waarvan de bedragen op de server leesbaar zijn, versleutelt aantallen, prijzen, btw-tarieven, kortingen en totalen en slaat ze weer op. Op de server blijven er nullen voor in de plaats.",
+      "keeps": "Documentnummer, VS, vervaldatum, valuta en status blijven leesbaar, dus betalingen vind je nog steeds op VS.",
+      "loses": "De server maakt voor deze documenten dan geen PDF, ISDOC of boekhoudexports meer en telt ze niet mee in rapporten. Een betaald document blijft betaald.",
+      "resumable": "Vergrendelde en deels betaalde documenten worden overgeslagen. Sluit je het venster, dan gaat het de volgende keer verder waar je was gebleven.",
+      "cancel": "Terug",
+      "confirm": "Versleutelen",
+      "progress": "Versleutelen… {n}",
+      "done": "{n, plural, one {Bedragen van # document versleuteld} other {Bedragen van # documenten versleuteld}}.",
+      "nothing": "Er was niets te versleutelen.",
+      "failed": "Versleutelen is mislukt. Al versleutelde documenten blijven versleuteld.",
+      "partlyPaid": "{n, plural, one {# deels betaald document is leesbaar gebleven} other {# deels betaalde documenten zijn leesbaar gebleven}}. Ze kunnen worden versleuteld zodra ze volledig betaald zijn."
+    },
+    "amounts": {
+      "paidSealed": "De bedragen van het document zijn versleuteld, daarom kan alleen een volledige betaling worden vastgelegd. Kosten en het bijgeschreven bedrag slaat de server niet op.",
+      "leftOut": "Zonder {count, plural, one {# document} other {# documenten}} met versleutelde bedragen – ontgrendel de kluis",
+      "exportLocked": "Documenten met versleutelde bedragen komen pas in het bestand nadat de kluis is ontgrendeld.",
+      "exportUnreadable": "Geen bestand gemaakt: {count, plural, one {# document kan} other {# documenten kunnen}} niet met deze sleutel worden geopend. Een ontbrekend document zou het bestand onjuist maken.",
+      "creditNoteLocked": "Een creditnota voor een factuur met versleutelde bedragen wordt gemaakt nadat de kluis is ontgrendeld.",
+      "creditNoteUnreadable": "De bedragen van de factuur kunnen niet met deze sleutel worden geopend, dus er is geen creditnota gemaakt.",
+      "bulkSealed": "Deze sjabloon heeft versleutelde bedragen. Hij is niet bruikbaar voor bulkfacturatie, alleen voor één factuur."
+    }
   },
   "vaultPublic": {
     "integrity": {

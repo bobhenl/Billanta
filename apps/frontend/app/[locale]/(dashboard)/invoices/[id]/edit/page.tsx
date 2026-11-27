@@ -43,9 +43,19 @@ interface DetailResponse {
     exchangeRate: string | null;
     bankAccountId: string | null;
     amountPaid: string | null;
+    encAmounts?: string | null;
   };
   contact: Contact | null;
-  items: { description: string; quantity: string; unit: string | null; code: string | null; unitPrice: string; vatRate: string | null; discountPercent: string | null }[];
+  items: {
+    description: string;
+    quantity: string;
+    unit: string | null;
+    code: string | null;
+    unitPrice: string;
+    vatRate: string | null;
+    discountPercent: string | null;
+    encAmounts?: string | null;
+  }[];
 }
 
 const EDITABLE = new Set(['draft', 'pending_review']);
@@ -109,8 +119,10 @@ export default async function EditInvoicePage(props: {
       code: item.code,
       unitPrice: Number(item.unitPrice),
       vatRate: item.vatRate == null ? null : Number(item.vatRate),
-      discountPercent: Number(item.discountPercent ?? 0)
-    }))
+      discountPercent: Number(item.discountPercent ?? 0),
+      encAmounts: item.encAmounts ?? null
+    })),
+    encAmounts: invoice.encAmounts ?? null
   };
 
   return (

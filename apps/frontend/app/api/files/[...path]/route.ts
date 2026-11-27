@@ -18,7 +18,9 @@ const ALLOWED = [
   /^tenants\/me\/logo$/,
   /^contacts\/export\.csv$/,
   /^classroom\/classes\/[0-9a-fA-F-]{36}\/progress\.csv$/,
-  /^exports\/(invoices\.csv|expenses\.csv|pohoda\.xml|money-s3\.xml|dphdp3\.xml|dphkh1\.xml|dphshv\.xml|sk\/dphv25\.xml|sk\/kvdph\.xml|sk\/svdph\.xml|annual-summary|annual-summary\.csv|annual-filings|tax-return-basis\.csv|tax-return-basis\.pdf)$/
+  /^exports\/(invoices\.csv|expenses\.csv|pohoda\.xml|money-s3\.xml|dphdp3\.xml|dphkh1\.xml|dphshv\.xml|sk\/dphv25\.xml|sk\/kvdph\.xml|sk\/svdph\.xml|annual-summary|annual-summary\.csv|annual-filings|tax-return-basis\.csv|tax-return-basis\.pdf)$/,
+  // Důvěrný režim: what the browser builds the CSV and the VAT filings from when amounts are sealed.
+  /^exports\/(invoices-csv-inputs|vat-inputs)$/
 ];
 
 // Downloads that carry personal data (rodné číslo) in the body rather than the URL.

@@ -574,7 +574,9 @@ GRANT EXECUTE ON FUNCTION get_public_invoice_view(uuid) TO faktur_app;
 -- are sensitive — they're exactly what already appears on the invoice
 -- PDF/ISDOC export the client would otherwise receive by email.
 -- discount_percent was added in migration 0092 so the page's total matches
--- the PDF; the row type changed, hence the DROP.
+-- the PDF; the row type changed, hence the DROP. enc_amounts (migration
+-- 0115, Důvěrný režim "amounts") is the item's sealed amounts: ciphertext
+-- the client's browser opens with the key from the link, never the numbers.
 DROP FUNCTION IF EXISTS get_public_invoice_line_items(uuid);
 CREATE OR REPLACE FUNCTION get_public_invoice_line_items(p_public_token uuid)
 RETURNS TABLE (
@@ -583,7 +585,8 @@ RETURNS TABLE (
   unit_price numeric(14,4),
   vat_rate numeric(5,2),
   sort_order integer,
-  discount_percent numeric(5,2)
+  discount_percent numeric(5,2),
+  enc_amounts text
 )
 LANGUAGE sql
 SECURITY DEFINER
@@ -595,7 +598,8 @@ AS $$
     ili.unit_price,
     ili.vat_rate,
     ili.sort_order,
-    ili.discount_percent
+    ili.discount_percent,
+    ili.enc_amounts
   FROM invoice_line_items ili
   JOIN invoices i ON i.id = ili.invoice_id
   WHERE i.public_token = p_public_token
@@ -1744,7 +1748,8 @@ RETURNS TABLE (
   amount_paid numeric,
   reverse_charge boolean,
   client_response varchar(16),
-  line_items jsonb
+  line_items jsonb,
+  amounts_sealed boolean
 )
 LANGUAGE sql
 SECURITY DEFINER
@@ -1766,7 +1771,9 @@ AS $$
     coalesce((
       SELECT jsonb_agg(jsonb_build_object('quantity', li.quantity, 'unitPrice', li.unit_price, 'vatRate', li.vat_rate, 'discountPercent', li.discount_percent))
       FROM invoice_line_items li WHERE li.invoice_id = i.id
-    ), '[]'::jsonb)
+    ), '[]'::jsonb),
+    -- Důvěrný režim "amounts": the portal shows no sums for these (they would read 0).
+    i.enc_amounts IS NOT NULL
   FROM contacts c
   JOIN tenants t ON t.id = c.tenant_id AND t.suspended_at IS NULL
   JOIN invoices i ON i.contact_id = c.id AND i.tenant_id = c.tenant_id

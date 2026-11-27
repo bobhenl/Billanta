@@ -764,6 +764,13 @@
       "when": 1793601850000,
       "tag": "0113_passkey_step_up",
       "breakpoints": true
+    },
+    {
+      "idx": 110,
+      "version": "7",
+      "when": 1793601900000,
+      "tag": "0115_vault_amounts",
+      "breakpoints": true
     }
   ]
 }

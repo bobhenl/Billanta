@@ -25,11 +25,13 @@ import {
   EnableVaultDto,
   MemberWrapDto,
   PasskeyStepUpDto,
+  PlainAmountsQueryDto,
   PlainAttachmentsQueryDto,
   PlainContactsQueryDto,
   PlainInvoicesQueryDto,
   RecoveryWrapDto,
   RekeyInvoiceDto,
+  SealAmountsDto,
   SealContactsDto,
   SealInvoicesDto,
   VaultDocumentsQueryDto,
@@ -130,6 +132,19 @@ export class VaultController {
   @ApiOperation({ summary: "Store the envelopes the browser made of plain contacts" })
   sealContacts(@Req() req: TenantScopedRequest, @Body() dto: SealContactsDto) {
     return this.vault.sealContacts(req.tenantDb!, req.user!.tenantId, dto);
+  }
+
+  @Get("invoices/plain-amounts")
+  @ApiOperation({ summary: "Documents with plain amounts, for the browser to encrypt" })
+  plainAmounts(@Req() req: TenantScopedRequest, @Query() query: PlainAmountsQueryDto) {
+    return this.vault.plainAmounts(req.tenantDb!, req.user!.tenantId, query);
+  }
+
+  @Post("invoices/seal-amounts")
+  @RequirePlan("confidential_mode")
+  @ApiOperation({ summary: "Store the envelopes the browser made of plain amounts" })
+  sealAmounts(@Req() req: TenantScopedRequest, @Body() dto: SealAmountsDto) {
+    return this.vault.sealAmounts(req.tenantDb!, req.user!.tenantId, dto);
   }
 
   @Get("attachments/plain")

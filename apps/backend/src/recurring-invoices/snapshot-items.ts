@@ -4,6 +4,8 @@ export type LineItemSnapshot = {
   quantity: number;
   unitPrice: number;
   vatRate?: number | null;
+  /** Sealed amounts (`enc:v1:…`); quantity, price and rate then hold the placeholder. */
+  encAmounts?: string | null;
 };
 
 /**
@@ -21,6 +23,8 @@ export function lineItemsFromSnapshot(snapshot: LineItemSnapshot[] | null | unde
     quantity: item.quantity.toString(),
     unitPrice: item.unitPrice.toString(),
     vatRate: item.vatRate != null ? item.vatRate.toString() : null,
+    // Copied as the same envelope, like the description: the draft opens with the same key.
+    encAmounts: item.encAmounts ?? null,
     sortOrder: index,
   }));
 }

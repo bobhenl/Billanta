@@ -2,6 +2,7 @@
 
 import { isSealed, open, type VaultKey } from '@faktur/cz-compliance';
 import { fetchVaultDocuments } from './actions';
+import { openItemAmounts } from './amounts';
 import { subscribeVaultKeys } from './session';
 import type { VaultDocument } from './types';
 
@@ -15,7 +16,7 @@ export interface SealedIndexEntry {
   /** Opened notes only; plain ones the server already searched. */
   notes: string[];
   /** Opened item lines only, with what a suggestion needs. */
-  items: { description: string; code: string | null; unit: string | null; unitPrice: number; vatRate: number | null; createdAt: string }[];
+  items: { description: string; code: string | null; unit: string | null; unitPrice: number | null; vatRate: number | null; createdAt: string }[];
 }
 
 export interface SealedIndex {
@@ -67,7 +68,10 @@ async function build(key: VaultKey): Promise<SealedIndex> {
     const items: SealedIndexEntry['items'] = [];
     for (const item of doc.items) {
       const description = await openOrNull(key, item.description);
-      if (description !== null) items.push({ description, code: item.code, unit: item.unit, unitPrice: item.unitPrice, vatRate: item.vatRate, createdAt: item.createdAt });
+      if (description === null) continue;
+      // A sealed item's plain price is the placeholder 0: suggest the opened one, or none.
+      const amounts = isSealed(item.encAmounts) ? await openItemAmounts(key, item.encAmounts!).catch(() => null) : item;
+      items.push({ description, code: item.code, unit: item.unit, unitPrice: amounts?.unitPrice ?? null, vatRate: amounts?.vatRate ?? null, createdAt: item.createdAt });
     }
     entries.set(doc.id, { id: doc.id, notes, items });
   }

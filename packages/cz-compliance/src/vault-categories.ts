@@ -9,7 +9,7 @@ export const VAULT_CATEGORIES = [
   { id: 'texts', available: true, default: true },
   { id: 'attachments', available: true, default: false },
   { id: 'contacts', available: true, default: false },
-  { id: 'amounts', available: false, default: false },
+  { id: 'amounts', available: true, default: false },
 ] as const;
 
 export type VaultCategory = (typeof VAULT_CATEGORIES)[number]['id'];

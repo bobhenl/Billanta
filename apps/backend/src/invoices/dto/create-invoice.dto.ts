@@ -1,7 +1,7 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 import { REVERSE_CHARGE_CODE_VALUES } from "@faktur/cz-compliance";
-import { sealableText } from "../../vault/sealed";
+import { sealableText, sealedEnvelope } from "../../vault/sealed";
 
 const lineItemSchema = z.object({
   // Plain, or sealed in the browser (Důvěrný režim, vault/sealed.ts).
@@ -18,6 +18,9 @@ const lineItemSchema = z.object({
   unit_price: z.coerce.number(),
   vat_rate: z.coerce.number().min(0).max(100).nullish(),
   discount_percent: z.coerce.number().min(0).max(100).default(0),
+  // Category "amounts": quantity, price, rate and discount sealed in the
+  // browser; the plain fields then carry SEALED_ITEM_PLACEHOLDER.
+  enc_amounts: sealedEnvelope(400).nullish(),
 });
 
 const optionalText = (max: number) => z.string().trim().max(max).nullish();
@@ -89,6 +92,8 @@ export const invoiceFieldsSchema = z.object({
   // codes EPO accepts today.
   reverse_charge_code: z.enum(REVERSE_CHARGE_CODE_VALUES).nullish(),
   line_items: z.array(lineItemSchema).min(1).max(200),
+  // The document's sealed totals; travels with line_items (vault/sealed-amounts.ts).
+  enc_amounts: sealedEnvelope(4000).nullish(),
 });
 
 /**
@@ -117,9 +122,16 @@ export const updateInvoiceSchema = invoiceFieldsSchema.partial().extend({
 
 export class UpdateInvoiceDto extends createZodDto(updateInvoiceSchema) {}
 
-export const convertInvoiceSchema = z.object({
-  to: z.enum(["invoice", "credit_note", "proforma"]),
-});
+export const convertInvoiceSchema = z
+  .object({
+    to: z.enum(["invoice", "credit_note", "proforma"]),
+    // Důvěrný režim: a credit note of an invoice with sealed amounts. The
+    // browser opened the invoice's envelopes, negated the quantities and
+    // sealed them again under the invoice's document key, in item order.
+    enc_amounts: sealedEnvelope(4000).optional(),
+    item_enc_amounts: z.array(sealedEnvelope(400)).max(200).optional(),
+  })
+  .refine((d) => (d.enc_amounts === undefined) === (d.item_enc_amounts === undefined), { message: "amounts_mismatch" });
 
 export class ConvertInvoiceDto extends createZodDto(convertInvoiceSchema) {}
 

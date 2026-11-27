@@ -59,4 +59,11 @@ describe("vaultDocumentView", () => {
     expect(view.contactName).toBe("Novák s.r.o. (na dokladu)");
     expect(view.total).toBe(4840);
   });
+
+  it("gives no totals for sealed amounts, so a placeholder never exports as 0", () => {
+    const placeholder = { ...item("Práce", 0), quantity: "1", unitPrice: "0", vatRate: null, encAmounts: envelope };
+    const view = vaultDocumentView({ ...invoice, encAmounts: envelope } as never, null, [placeholder] as never);
+    expect(view).toMatchObject({ total: null, totalVat: null, totalWithoutVat: null, encAmounts: envelope });
+    expect(view.items[0]!.encAmounts).toBe(envelope);
+  });
 });

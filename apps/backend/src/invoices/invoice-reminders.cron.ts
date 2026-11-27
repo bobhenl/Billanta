@@ -5,6 +5,7 @@ import { NotificationsService } from "../notifications/notifications.service";
 import { InvoiceRemindersRepository } from "./invoice-reminders.repository";
 import { InvoicesService } from "./invoices.service";
 import { computeInvoiceTotal, formatInvoiceAmount } from "./invoice-total.util";
+import { amountsSealed } from "../vault/sealed-amounts";
 import { amountLeftToPay, isRemindableDocument } from "./invoice-reminders.util";
 
 /**
@@ -51,22 +52,24 @@ export class InvoiceRemindersCron {
         // The query already filters these; a reminder for a credit note or quote would ask for money that is not owed.
         if (!isRemindableDocument(invoice.documentType)) continue;
         // After a partial payment the reminder asks only for what is left.
+        // Sealed amounts (Důvěrný režim): the server can't tell what is left, so the reminder names no sum.
+        const sealed = amountsSealed(invoice);
         const left = amountLeftToPay(computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge }), invoice.amountPaid);
-        if (left <= 0) continue;
+        if (!sealed && left <= 0) continue;
 
         try {
           // Suspended/paused companies and ones over today's cap get nothing sent; retried tomorrow.
           await this.repository.assertCanSend(tenantId);
           // The payment QR is a bonus: without it the reminder still goes out.
           const invoices = this.invoices;
-          const paymentQr = invoices
+          const paymentQr = invoices && !sealed
             ? await this.repository.withTenant(tenantId, (db) => invoices.paymentQrFor(db, tenantId, invoice.id)).catch(() => null)
             : null;
           await this.emailService.sendPaymentReminderEmail(
             {
               to: contactEmail,
               invoiceNumber: invoice.invoiceNumber ?? invoice.id,
-              amount: formatInvoiceAmount(left, invoice.currency),
+              amount: sealed ? null : formatInvoiceAmount(left, invoice.currency),
               dueDate: invoice.dueDate,
               // Amount, due date, VS, QR and the link all work for an encrypted document: none of it is its text.
               variableSymbol: invoice.variableSymbol,
