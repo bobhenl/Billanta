@@ -5330,7 +5330,9 @@
         "noIban": "il conto non ha un IBAN",
         "skDicMissing": "manca il DIČ slovacco (10 cifre), da cui si ricava l’indirizzo Peppol 0245",
         "precedingMissing": "la nota di credito non fa riferimento alla fattura originale che rettifica"
-      }
+      },
+      "sealedTitle": "Questo documento non può essere inviato tramite Peppol",
+      "sealed": "Contiene dati cifrati nel tuo browser. La legge richiede che la fattura elettronica inviata (XML) resti archiviata sul server in forma leggibile, cosa impossibile per un documento cifrato. Invialo via e-mail o con un link; tramite Peppol passano solo documenti senza dati cifrati."
     },
     "requirements": {
       "title": "Compili i dati obbligatori prima dell’emissione",
@@ -14414,7 +14416,7 @@
         "title": "Descrizioni delle righe e note",
         "description": "Ciò che hai fornito e le note del documento. Importi, date e riferimenti restano leggibili.",
         "loses": [
-          "Invio tramite Peppol",
+          "Invio tramite Peppol: un documento con testo cifrato non può essere inviato tramite Peppol, perché la legge richiede che l’XML inviato resti archiviato sul server in forma leggibile",
           "Ricerca testuale e suggerimenti di righe sul server (dopo lo sblocco li gestisce il tuo browser)",
           "Compilazione con IA senza un clic esplicito (il testo passa una volta dal server all’IA, solo quando confermi, e non viene salvato)",
           "Link pubblico: il cliente vede il testo completo solo con il link con chiave dal dettaglio del documento. Un link senza chiave (ad es. da un sollecito automatico) lo mostra solo su un dispositivo dove il cliente ha già aperto il link completo",
@@ -14450,7 +14452,8 @@
           "L’abbinamento dei pagamenti bancari per nome del pagatore non vede i nomi cifrati (per simbolo variabile funziona ancora)",
           "E-mail del contatto cifrata: il server non vi invia nulla, la fattura la mandi dalla tua posta o con un link",
           "Il server non può creare da solo il PDF o l’ISDOC di un documento con cliente cifrato",
-          "I solleciti contengono solo numero del documento, importo e link"
+          "I solleciti contengono solo numero del documento, importo e link",
+          "Invio tramite Peppol: un documento con un cliente cifrato non può essere inviato tramite Peppol (l’XML inviato deve restare archiviato sul server in forma leggibile)"
         ],
         "how": [
           "Nome, via, città, CAP, referente, telefono e nota interna vengono cifrati nel tuo browser prima di arrivare al server.",

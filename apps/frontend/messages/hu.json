@@ -5330,7 +5330,9 @@
         "noIban": "a bankszámlához nincs IBAN",
         "skDicMissing": "hiányzik a szlovák DIČ (10 számjegy), ebből képződik a 0245-ös Peppol-cím",
         "precedingMissing": "a jóváíró számla nem hivatkozik az általa helyesbített eredeti számlára"
-      }
+      },
+      "sealedTitle": "Ez a bizonylat nem küldhető Peppolon",
+      "sealed": "A böngészőjében titkosított adatokat tartalmaz. A törvény előírja, hogy az elküldött e-számla (XML) olvashatóan archiválva maradjon a szerveren, ez pedig titkosított bizonylatnál nem lehetséges. Küldje el e-mailben vagy linkkel; Peppolon csak titkosított adatok nélküli bizonylat mehet."
     },
     "requirements": {
       "title": "Kiállítás előtt töltse ki a kötelező adatokat",
@@ -14414,7 +14416,7 @@
         "title": "Tételleírások és megjegyzések",
         "description": "Amit szállított, és a bizonylat megjegyzései. Az összegek, dátumok és azonosítók olvashatók maradnak.",
         "loses": [
-          "Küldés Peppolon keresztül",
+          "Küldés Peppolon keresztül: titkosított szöveget tartalmazó bizonylat nem küldhető Peppolon, mert a törvény előírja, hogy az elküldött XML olvashatóan archiválva maradjon a szerveren",
           "Szöveges keresés és tételjavaslatok a szerveren (feloldás után ezt a böngészője végzi)",
           "AI-kitöltés kifejezett kattintás nélkül (a szöveg csak jóváhagyás után, egyszer megy át a szerveren az AI-hoz, és nem kerül mentésre)",
           "Nyilvános link: ügyfele a teljes szöveget csak a bizonylat részleteiből kapott kulcsos linken látja. A kulcs nélküli link (pl. automatikus emlékeztetőből) csak olyan eszközön mutatja, ahol az ügyfél korábban megnyitotta a teljes linket",
@@ -14450,7 +14452,8 @@
           "A banki befizetések név szerinti párosítása nem látja a titkosított neveket (változó szimbólum alapján továbbra is működik)",
           "Titkosított partner e-mail: a szerver nem küld rá semmit, a számlát saját postafiókból vagy linkkel küldi",
           "Titkosított ügyféllel a szerver nem tud PDF-et és ISDOC-ot készíteni",
-          "Az emlékeztetők csak a bizonylatszámot, az összeget és a linket tartalmazzák"
+          "Az emlékeztetők csak a bizonylatszámot, az összeget és a linket tartalmazzák",
+          "Küldés Peppolon keresztül: titkosított vevőjű bizonylat nem küldhető Peppolon (az elküldött XML-nek olvashatóan archiválva kell maradnia a szerveren)"
         ],
         "how": [
           "A név, utca, város, irányítószám, kapcsolattartó, telefon és belső jegyzet a böngészőjében titkosítódik, mielőtt a szerverre kerül.",

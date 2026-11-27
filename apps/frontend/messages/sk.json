@@ -5338,7 +5338,9 @@
         "noIban": "účet nemá IBAN",
         "skDicMissing": "chýba slovenské DIČ (10 číslic), z ktorého sa tvorí adresa Peppol 0245",
         "precedingMissing": "dobropis neodkazuje na pôvodnú faktúru, ktorú opravuje"
-      }
+      },
+      "sealedTitle": "Tento doklad cez Peppol neodíde",
+      "sealed": "Obsahuje údaje zašifrované vo vašom prehliadači. Zákon vyžaduje, aby odoslaná e-faktúra (XML) zostala čitateľne archivovaná na serveri, a pri zašifrovanom doklade to nejde. Pošlite ho e-mailom alebo odkazom; cez Peppol ide len doklad bez zašifrovaných údajov."
     },
     "requirements": {
       "title": "Pred vystavením doplňte povinné údaje",
@@ -14323,7 +14325,7 @@
         "title": "Popisy položiek a poznámky",
         "description": "Čo ste dodali a poznámky na doklade. Sumy, dátumy a symboly zostávajú čitateľné.",
         "loses": [
-          "Odoslanie cez Peppol",
+          "Odoslanie cez Peppol: doklad so zašifrovaným textom cez Peppol neodíde, pretože zákon vyžaduje, aby odoslané XML zostalo čitateľne archivované na serveri",
           "Hľadanie podľa textu a návrhy položiek na serveri (po odomknutí ich zvládne váš prehliadač)",
           "AI predvyplnenie bez výslovného kliknutia (text jednorazovo prejde serverom k AI, len keď to potvrdíte, a neuloží sa)",
           "Verejný odkaz: celé znenie vidí klient iba v odkaze s kľúčom z detailu dokladu. Odkaz bez kľúča (napr. z automatickej upomienky) ho ukáže iba v zariadení, kde klient predtým otvoril celý odkaz",
@@ -14359,7 +14361,8 @@
           "Párovanie bankových platieb podľa mena platiteľa nepozná zašifrované mená (podľa VS ďalej funguje)",
           "Zašifrovaný e-mail kontaktu: server mu nič nepošle, faktúru odošlete z vlastnej pošty alebo odkazom",
           "PDF a ISDOC so zašifrovaným odberateľom server sám nevytvorí",
-          "Upomienky obsahujú len číslo dokladu, sumu a odkaz"
+          "Upomienky obsahujú len číslo dokladu, sumu a odkaz",
+          "Odoslanie cez Peppol: doklad so zašifrovaným odberateľom cez Peppol neodíde (odoslané XML musí zostať čitateľne archivované na serveri)"
         ],
         "how": [
           "Názov, ulica, mesto, PSČ, kontaktná osoba, telefón a interná poznámka sa zašifrujú vo vašom prehliadači, ešte kým odídu na server.",

@@ -2282,13 +2282,30 @@ export class InvoicesService {
 
     let peppol: (PeppolIssue & { scheme: "peppol" })[] = [];
     const eDocument = invoice.documentType === "invoice" || invoice.documentType === "credit_note";
-    if (invoice.invoiceNumber && eDocument && contact && peppolRelevant(contact) && lineItems.length) {
+    const peppolBound = invoice.invoiceNumber && eDocument && contact && peppolRelevant(contact) && lineItems.length;
+    if (peppolBound && documentIsSealed(invoice, lineItems, liveContact)) {
+      // The rules would read envelopes. What matters is that it can't go at all (see `documentSealed`).
+      peppol = [{ rule: "", field: "document", code: "sealed", severity: "error", scheme: "peppol" }];
+    } else if (peppolBound) {
       const { issues } = await this.checkInvoiceUbl(db, tenantId, invoiceId);
       // The law check already reports what both would say about names and addresses.
       const seen = new Set(law.map((i) => `${i.field}:${i.code}`));
       peppol = issues.filter((i) => !seen.has(`${i.field}:${i.code}`)).map((i) => ({ ...i, scheme: "peppol" as const }));
     }
     return { issues: [...law, ...peppol] };
+  }
+
+  /**
+   * Whether the document carries text encrypted in the browser (Důvěrný
+   * režim). Such a document never goes over Peppol: the law wants the sent
+   * XML archived in readable form, and the server cannot read it.
+   */
+  async documentSealed(db: TenantDb, invoiceId: string): Promise<boolean> {
+    const [invoice] = await db.select().from(schema.invoices).where(eq(schema.invoices.id, invoiceId)).limit(1);
+    if (!invoice) throw new NotFoundException(`Invoice ${invoiceId} not found`);
+    const [contact] = invoice.contactId ? await db.select().from(schema.contacts).where(eq(schema.contacts.id, invoice.contactId)).limit(1) : [];
+    const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, invoiceId));
+    return documentIsSealed(invoice, lineItems, contact);
   }
 
   /** Peppol pre-flight for the UBL export: what an access point would reject or flag. */

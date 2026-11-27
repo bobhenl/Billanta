@@ -5331,7 +5331,9 @@
         "noIban": "konto nie ma numeru IBAN",
         "skDicMissing": "brak słowackiego DIČ (10 cyfr); na jego podstawie tworzony jest adres Peppol 0245",
         "precedingMissing": "faktura korygująca nie odwołuje się do korygowanej faktury pierwotnej"
-      }
+      },
+      "sealedTitle": "Tego dokumentu nie można wysłać przez Peppol",
+      "sealed": "Zawiera dane zaszyfrowane w Twojej przeglądarce. Prawo wymaga, aby wysłana e-faktura (XML) pozostała czytelnie zarchiwizowana na serwerze, a przy zaszyfrowanym dokumencie nie jest to możliwe. Wyślij go e-mailem lub linkiem; przez Peppol idą tylko dokumenty bez zaszyfrowanych danych."
     },
     "requirements": {
       "title": "Przed wystawieniem uzupełnij obowiązkowe dane",
@@ -14415,7 +14417,7 @@
         "title": "Opisy pozycji i notatki",
         "description": "Co dostarczyłeś i notatki na dokumencie. Kwoty, daty i symbole pozostają czytelne.",
         "loses": [
-          "Wysyłka przez Peppol",
+          "Wysyłka przez Peppol: dokumentu z zaszyfrowanym tekstem nie można wysłać przez Peppol, bo prawo wymaga, aby wysłany XML pozostał czytelnie zarchiwizowany na serwerze",
           "Wyszukiwanie tekstowe i podpowiedzi pozycji na serwerze (po odblokowaniu zajmie się tym Twoja przeglądarka)",
           "Wypełnianie przez AI bez wyraźnego kliknięcia (tekst jednorazowo przejdzie przez serwer do AI, tylko gdy to potwierdzisz, i nie zostanie zapisany)",
           "Link publiczny: klient widzi pełną treść tylko w linku z kluczem ze szczegółów dokumentu. Link bez klucza (np. z automatycznego przypomnienia) pokaże ją tylko na urządzeniu, na którym klient wcześniej otworzył pełny link",
@@ -14451,7 +14453,8 @@
           "Dopasowanie płatności bankowych po nazwie płatnika nie widzi zaszyfrowanych nazw (po symbolu zmiennym nadal działa)",
           "Zaszyfrowany e-mail kontaktu: serwer nic na niego nie wyśle, fakturę wysyłasz z własnej poczty lub linkiem",
           "Serwer sam nie utworzy PDF ani ISDOC dokumentu z zaszyfrowanym klientem",
-          "Przypomnienia zawierają tylko numer dokumentu, kwotę i link"
+          "Przypomnienia zawierają tylko numer dokumentu, kwotę i link",
+          "Wysyłka przez Peppol: dokumentu z zaszyfrowanym nabywcą nie można wysłać przez Peppol (wysłany XML musi pozostać czytelnie zarchiwizowany na serwerze)"
         ],
         "how": [
           "Nazwa, ulica, miasto, kod pocztowy, osoba kontaktowa, telefon i notatka są szyfrowane w Twojej przeglądarce, zanim trafią na serwer.",

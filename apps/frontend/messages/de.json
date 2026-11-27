@@ -5331,7 +5331,9 @@
         "noIban": "das Konto hat keine IBAN",
         "skDicMissing": "die slowakische DIČ (Steuernummer, 10 Ziffern) fehlt; aus ihr wird die Peppol-Adresse 0245 gebildet",
         "precedingMissing": "die Gutschrift verweist nicht auf die ursprüngliche Rechnung, die sie korrigiert"
-      }
+      },
+      "sealedTitle": "Dieser Beleg kann nicht über Peppol gesendet werden",
+      "sealed": "Er enthält Daten, die in Ihrem Browser verschlüsselt wurden. Das Gesetz verlangt, dass die gesendete E-Rechnung (XML) lesbar auf dem Server archiviert bleibt, und das ist bei einem verschlüsselten Beleg nicht möglich. Senden Sie ihn per E-Mail oder Link; über Peppol gehen nur Belege ohne verschlüsselte Daten."
     },
     "requirements": {
       "title": "Füllen Sie vor dem Ausstellen die Pflichtangaben aus",
@@ -14415,7 +14417,7 @@
         "title": "Positionsbeschreibungen und Notizen",
         "description": "Was Sie geliefert haben und die Notizen auf dem Beleg. Beträge, Daten und Symbole bleiben lesbar.",
         "loses": [
-          "Versand über Peppol",
+          "Versand über Peppol: Ein Beleg mit verschlüsseltem Text kann nicht über Peppol gesendet werden, weil das Gesetz verlangt, dass das gesendete XML lesbar auf dem Server archiviert bleibt",
           "Textsuche und Positionsvorschläge auf dem Server (nach dem Entsperren übernimmt das Ihr Browser)",
           "KI-Vorausfüllen ohne ausdrücklichen Klick (der Text geht nur nach Ihrer Bestätigung einmalig über den Server zur KI und wird nicht gespeichert)",
           "Öffentlicher Link: Ihr Kunde sieht den vollen Wortlaut nur über den Link mit Schlüssel aus der Belegansicht. Ein Link ohne Schlüssel (z. B. aus einer automatischen Mahnung) zeigt ihn nur auf einem Gerät, auf dem der Kunde vorher den vollständigen Link geöffnet hat",
@@ -14451,7 +14453,8 @@
           "Die Zuordnung von Bankzahlungen nach Zahlername erkennt verschlüsselte Namen nicht (nach Verwendungszweck-Nummer weiterhin)",
           "Verschlüsselte Kontakt-E-Mail: Der Server schickt nichts dorthin, Sie senden die Rechnung selbst oder per Link",
           "PDF und ISDOC mit verschlüsseltem Kunden kann der Server nicht selbst erstellen",
-          "Mahnungen enthalten nur Belegnummer, Betrag und Link"
+          "Mahnungen enthalten nur Belegnummer, Betrag und Link",
+          "Versand über Peppol: Ein Beleg mit verschlüsseltem Kunden kann nicht über Peppol gesendet werden (das gesendete XML muss lesbar auf dem Server archiviert bleiben)"
         ],
         "how": [
           "Name, Straße, Ort, PLZ, Ansprechpartner, Telefon und interne Notiz werden in Ihrem Browser verschlüsselt, bevor sie an den Server gehen.",

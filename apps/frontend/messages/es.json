@@ -5330,7 +5330,9 @@
         "noIban": "la cuenta no tiene IBAN",
         "skDicMissing": "falta el DIČ eslovaco (10 dígitos); a partir de él se genera la dirección Peppol 0245",
         "precedingMissing": "la factura rectificativa no hace referencia a la factura original que corrige"
-      }
+      },
+      "sealedTitle": "Este documento no se puede enviar por Peppol",
+      "sealed": "Contiene datos cifrados en tu navegador. La ley exige que la factura electrónica enviada (XML) quede archivada en el servidor de forma legible, y eso no es posible con un documento cifrado. Envíalo por correo electrónico o con un enlace; por Peppol solo se envían documentos sin datos cifrados."
     },
     "requirements": {
       "title": "Rellene los datos obligatorios antes de emitir",
@@ -14414,7 +14416,7 @@
         "title": "Descripciones de líneas y notas",
         "description": "Lo que suministraste y las notas del documento. Importes, fechas y referencias siguen legibles.",
         "loses": [
-          "Envío por Peppol",
+          "Envío por Peppol: un documento con texto cifrado no puede enviarse por Peppol, porque la ley exige que el XML enviado quede archivado en el servidor de forma legible",
           "Búsqueda por texto y sugerencias de líneas en el servidor (tras desbloquear, las hace tu navegador)",
           "Autocompletado con IA sin un clic expreso (el texto pasa una vez por el servidor hacia la IA, solo cuando lo confirmas, y no se guarda)",
           "Enlace público: tu cliente ve el texto completo solo con el enlace con clave del detalle del documento. Un enlace sin clave (p. ej. de un recordatorio automático) lo muestra solo en un dispositivo donde el cliente abrió antes el enlace completo",
@@ -14450,7 +14452,8 @@
           "La conciliación de pagos bancarios por nombre del pagador no ve los nombres cifrados (por símbolo variable sigue funcionando)",
           "E-mail de contacto cifrado: el servidor no le envía nada, la factura la envías desde tu correo o con un enlace",
           "El servidor no puede crear por sí solo el PDF ni el ISDOC de un documento con cliente cifrado",
-          "Los recordatorios incluyen solo el número del documento, el importe y el enlace"
+          "Los recordatorios incluyen solo el número del documento, el importe y el enlace",
+          "Envío por Peppol: un documento con un cliente cifrado no puede enviarse por Peppol (el XML enviado debe quedar archivado en el servidor de forma legible)"
         ],
         "how": [
           "El nombre, la calle, la ciudad, el código postal, la persona de contacto, el teléfono y la nota interna se cifran en tu navegador antes de llegar al servidor.",

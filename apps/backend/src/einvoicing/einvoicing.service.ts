@@ -113,6 +113,7 @@ export class EInvoicingService {
   async sendInvoice(db: TenantDb, tenantId: string, invoiceId: string) {
     const sender = await this.getParticipant(db);
     if (sender?.status !== "registered") throw new BadRequestException("einvoice_participant_not_registered");
+    if (await this.invoices.documentSealed(db, invoiceId)) throw new ConflictException("einvoice_sealed_document");
 
     const { issues } = await this.invoices.checkInvoiceUbl(db, tenantId, invoiceId);
     const errors = issues.filter((i) => i.severity === "error");

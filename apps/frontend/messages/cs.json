@@ -5338,7 +5338,9 @@
         "noIban": "účet nemá IBAN",
         "skDicMissing": "chybí slovenské DIČ (10 číslic), ze kterého se tvoří adresa Peppol 0245",
         "precedingMissing": "dobropis neodkazuje na původní fakturu, kterou opravuje"
-      }
+      },
+      "sealedTitle": "Tento doklad přes Peppol neodejde",
+      "sealed": "Obsahuje údaje zašifrované ve vašem prohlížeči. Zákon vyžaduje, aby odeslaná e-faktura (XML) zůstala čitelně archivovaná na serveru, a to u zašifrovaného dokladu nejde. Pošlete ho e-mailem nebo odkazem; přes Peppol jde jen doklad bez zašifrovaných údajů."
     },
     "requirements": {
       "title": "Před vystavením doplňte povinné údaje",
@@ -14419,7 +14421,7 @@
         "title": "Popisy položek a poznámky",
         "description": "Co jste dodali a poznámky na dokladu. Částky, data a symboly zůstávají čitelné.",
         "loses": [
-          "Odeslání přes Peppol",
+          "Odeslání přes Peppol: doklad se zašifrovaným textem přes Peppol neodejde, protože zákon vyžaduje, aby odeslané XML zůstalo čitelně archivované na serveru",
           "Hledání podle textu a návrhy položek na serveru (po odemčení je zvládne váš prohlížeč)",
           "AI předvyplnění bez výslovného kliknutí (text jednorázově projde serverem k AI, jen když to potvrdíte, a neuloží se)",
           "Veřejný odkaz: plné znění vidí klient jen v odkazu s klíčem z detailu dokladu. Odkaz bez klíče (např. z automatické upomínky) ho ukáže jen v zařízení, kde klient dřív otevřel celý odkaz",
@@ -14455,7 +14457,8 @@
           "Párování bankovních plateb podle jména plátce nezná zašifrovaná jména (podle VS dál funguje)",
           "Zašifrovaný e-mail kontaktu: server mu nic nepošle, fakturu odešlete z vlastní pošty nebo odkazem",
           "PDF a ISDOC se zašifrovaným odběratelem server sám nevytvoří",
-          "Upomínky obsahují jen číslo dokladu, částku a odkaz"
+          "Upomínky obsahují jen číslo dokladu, částku a odkaz",
+          "Odeslání přes Peppol: doklad se zašifrovaným odběratelem přes Peppol neodejde (odeslané XML musí zůstat čitelně archivované na serveru)"
         ],
         "how": [
           "Název, ulice, město, PSČ, kontaktní osoba, telefon a interní poznámka se zašifrují ve vašem prohlížeči, ještě než odejdou na server.",

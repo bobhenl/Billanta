@@ -5330,7 +5330,9 @@
         "noIban": "contul nu are IBAN",
         "skDicMissing": "lipsește DIČ-ul slovac (10 cifre); din el se construiește adresa Peppol 0245",
         "precedingMissing": "factura de stornare nu face referire la factura originală pe care o corectează"
-      }
+      },
+      "sealedTitle": "Acest document nu poate fi trimis prin Peppol",
+      "sealed": "Conține date criptate în browserul dumneavoastră. Legea cere ca factura electronică trimisă (XML) să rămână arhivată lizibil pe server, iar la un document criptat acest lucru nu este posibil. Trimiteți-l prin e-mail sau printr-un link; prin Peppol pleacă doar documentele fără date criptate."
     },
     "requirements": {
       "title": "Completați datele obligatorii înainte de emitere",
@@ -14414,7 +14416,7 @@
         "title": "Descrierile pozițiilor și notele",
         "description": "Ce ați livrat și notele de pe document. Sumele, datele și referințele rămân lizibile.",
         "loses": [
-          "Trimiterea prin Peppol",
+          "Trimiterea prin Peppol: un document cu text criptat nu poate fi trimis prin Peppol, pentru că legea cere ca XML-ul trimis să rămână arhivat lizibil pe server",
           "Căutarea după text și sugestiile de poziții pe server (după deblocare, le face browserul dvs.)",
           "Completarea cu AI fără un clic explicit (textul trece o singură dată prin server către AI, doar când confirmați, și nu se salvează)",
           "Link public: clientul vede textul complet doar prin linkul cu cheie din detaliul documentului. Un link fără cheie (de ex. dintr-un memento automat) îl arată doar pe un dispozitiv pe care clientul a deschis înainte linkul complet",
@@ -14450,7 +14452,8 @@
           "Potrivirea plăților bancare după numele plătitorului nu vede numele criptate (după simbolul variabil merge în continuare)",
           "E-mail de contact criptat: serverul nu trimite nimic la el, factura o trimiteți din propriul e-mail sau prin link",
           "Serverul nu poate crea singur PDF-ul sau ISDOC-ul unui document cu client criptat",
-          "Mementourile conțin doar numărul documentului, suma și linkul"
+          "Mementourile conțin doar numărul documentului, suma și linkul",
+          "Trimiterea prin Peppol: un document cu un client criptat nu poate fi trimis prin Peppol (XML-ul trimis trebuie să rămână arhivat lizibil pe server)"
         ],
         "how": [
           "Numele, strada, orașul, codul poștal, persoana de contact, telefonul și nota internă sunt criptate în browserul dvs. înainte să ajungă pe server.",

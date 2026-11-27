@@ -5330,7 +5330,9 @@
         "noIban": "de rekening heeft geen IBAN",
         "skDicMissing": "het Slowaakse DIČ (10 cijfers) ontbreekt; het Peppol-adres 0245 wordt daaruit opgebouwd",
         "precedingMissing": "de creditnota verwijst niet naar de oorspronkelijke factuur die ze corrigeert"
-      }
+      },
+      "sealedTitle": "Dit document kan niet via Peppol worden verzonden",
+      "sealed": "Het bevat gegevens die in je browser zijn versleuteld. De wet eist dat de verzonden e-factuur (XML) leesbaar op de server gearchiveerd blijft, en dat kan niet bij een versleuteld document. Verstuur het per e-mail of via een link; via Peppol gaan alleen documenten zonder versleutelde gegevens."
     },
     "requirements": {
       "title": "Vul de verplichte gegevens in voordat je uitgeeft",
@@ -14414,7 +14416,7 @@
         "title": "Regelomschrijvingen en notities",
         "description": "Wat je hebt geleverd en de notities op het document. Bedragen, datums en kenmerken blijven leesbaar.",
         "loses": [
-          "Verzenden via Peppol",
+          "Verzenden via Peppol: een document met versleutelde tekst kan niet via Peppol, omdat de wet eist dat de verzonden XML leesbaar op de server gearchiveerd blijft",
           "Zoeken op tekst en regelsuggesties op de server (na ontgrendelen doet je browser dat)",
           "Vooraf invullen met AI zonder uitdrukkelijke klik (de tekst gaat alleen na je bevestiging één keer via de server naar AI en wordt niet opgeslagen)",
           "Openbare link: uw klant ziet de volledige tekst alleen via de link met sleutel uit het documentdetail. Een link zonder sleutel (bijv. uit een automatische herinnering) toont hem alleen op een apparaat waar de klant de volledige link eerder heeft geopend",
@@ -14450,7 +14452,8 @@
           "Bankbetalingen koppelen op naam van de betaler ziet versleutelde namen niet (op betalingskenmerk werkt het nog)",
           "Versleuteld e-mailadres: de server stuurt er niets naartoe, je verstuurt de factuur vanuit je eigen mail of via een link",
           "De server kan de pdf of ISDOC van een document met een versleutelde klant niet zelf maken",
-          "Herinneringen bevatten alleen het documentnummer, het bedrag en de link"
+          "Herinneringen bevatten alleen het documentnummer, het bedrag en de link",
+          "Verzenden via Peppol: een document met een versleutelde klant kan niet via Peppol (de verzonden XML moet leesbaar op de server gearchiveerd blijven)"
         ],
         "how": [
           "Naam, straat, plaats, postcode, contactpersoon, telefoon en interne notitie worden in je browser versleuteld voordat ze naar de server gaan.",

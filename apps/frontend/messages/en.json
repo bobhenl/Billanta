@@ -5338,7 +5338,9 @@
         "noIban": "the account has no IBAN",
         "skDicMissing": "the Slovak DIČ (10 digits) is missing; the Peppol address 0245 is built from it",
         "precedingMissing": "the credit note does not reference the original invoice it corrects"
-      }
+      },
+      "sealedTitle": "This document can’t be sent over Peppol",
+      "sealed": "It contains data encrypted in your browser. The law requires the sent e-invoice (XML) to stay archived on the server in readable form, which isn’t possible for an encrypted document. Send it by email or link; only documents without encrypted data go over Peppol."
     },
     "requirements": {
       "title": "Fill in the mandatory details before issuing",
@@ -14419,7 +14421,7 @@
         "title": "Line descriptions and notes",
         "description": "What you supplied and the notes on the document. Amounts, dates and symbols stay readable.",
         "loses": [
-          "Sending over Peppol",
+          "Sending over Peppol: a document with encrypted text can’t go over Peppol, because the law requires the sent XML to stay archived on the server in readable form",
           "Text search and item suggestions on the server (your browser handles them after unlock)",
           "AI prefill without an explicit click (the text passes the server to AI once, only when you confirm, and is not stored)",
           "Public link: your client sees the full text only through the link with the key from the document detail. A link without the key (e.g. from an automatic reminder) shows it only on a device where the client opened the full link before",
@@ -14455,7 +14457,8 @@
           "Bank payment matching by payer name does not see encrypted names (matching by variable symbol still works)",
           "Encrypted contact email: the server sends nothing to it, so you send the invoice from your own mailbox or by link",
           "The server cannot create the PDF or ISDOC of a document with an encrypted customer",
-          "Reminders contain only the document number, amount and link"
+          "Reminders contain only the document number, amount and link",
+          "Sending over Peppol: a document with an encrypted customer can’t go over Peppol (the sent XML must stay archived on the server in readable form)"
         ],
         "how": [
           "The name, street, city, ZIP code, contact person, phone and internal note are encrypted in your browser before they go to the server.",

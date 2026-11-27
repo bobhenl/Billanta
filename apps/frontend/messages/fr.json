@@ -5330,7 +5330,9 @@
         "noIban": "le compte n’a pas d’IBAN",
         "skDicMissing": "le DIČ slovaque (10 chiffres) est manquant ; l’adresse Peppol 0245 est construite à partir de celui-ci",
         "precedingMissing": "l’avoir ne fait pas référence à la facture d’origine qu’il corrige"
-      }
+      },
+      "sealedTitle": "Ce document ne peut pas être envoyé via Peppol",
+      "sealed": "Il contient des données chiffrées dans votre navigateur. La loi exige que la facture électronique envoyée (XML) reste archivée lisiblement sur le serveur, ce qui est impossible pour un document chiffré. Envoyez-le par e-mail ou par lien ; seuls les documents sans données chiffrées passent par Peppol."
     },
     "requirements": {
       "title": "Renseignez les mentions obligatoires avant l’émission",
@@ -14414,7 +14416,7 @@
         "title": "Descriptions de lignes et notes",
         "description": "Ce que vous avez fourni et les notes du document. Montants, dates et références restent lisibles.",
         "loses": [
-          "Envoi via Peppol",
+          "Envoi via Peppol : un document avec du texte chiffré ne peut pas partir via Peppol, car la loi exige que le XML envoyé reste archivé lisiblement sur le serveur",
           "Recherche de texte et suggestions de lignes côté serveur (après déverrouillage, votre navigateur s’en charge)",
           "Pré-remplissage par IA sans clic explicite (le texte passe une fois par le serveur vers l’IA, seulement quand vous confirmez, et n’est pas enregistré)",
           "Lien public : votre client voit le texte complet uniquement via le lien avec clé du détail du document. Un lien sans clé (par ex. d’une relance automatique) ne l’affiche que sur un appareil où le client a déjà ouvert le lien complet",
@@ -14450,7 +14452,8 @@
           "Le rapprochement des paiements bancaires par nom du payeur ne voit pas les noms chiffrés (par symbole variable, il fonctionne toujours)",
           "E-mail de contact chiffré : le serveur n’y envoie rien, vous envoyez la facture depuis votre messagerie ou par lien",
           "Le serveur ne peut pas créer seul le PDF ou l’ISDOC d’un document dont le client est chiffré",
-          "Les relances ne contiennent que le numéro du document, le montant et le lien"
+          "Les relances ne contiennent que le numéro du document, le montant et le lien",
+          "Envoi via Peppol : un document avec un client chiffré ne peut pas partir via Peppol (le XML envoyé doit rester archivé lisiblement sur le serveur)"
         ],
         "how": [
           "Le nom, la rue, la ville, le code postal, l’interlocuteur, le téléphone et la note interne sont chiffrés dans votre navigateur avant d’aller sur le serveur.",

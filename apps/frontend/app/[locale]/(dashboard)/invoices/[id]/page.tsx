@@ -143,6 +143,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
     !invoice.buyerDetailsToken &&
     lawIssues.some((i) => i.code === 'customerMissing');
   const peppolIssues = checkIssues.filter((i) => i.scheme === 'peppol');
+  const peppolSealed = peppolIssues.some((i) => i.code === 'sealed');
   const money = (n: number) => formatMoney(n, invoice.currency, locale);
   // The customer has an older copy: edited in place after the last send.
   const editedAt = lastEdit?.items[0]?.createdAt;
@@ -390,7 +391,12 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           )}
         </Banner>
       )}
-      {peppolIssues.length > 0 && (
+      {peppolSealed ? (
+        // Důvěrný režim: no rule list, the document can't go over Peppol at all.
+        <Banner tone="info" className="mt-4" title={t('peppol.sealedTitle')}>
+          <p className="text-muted-foreground">{t('peppol.sealed')}</p>
+        </Banner>
+      ) : peppolIssues.length > 0 && (
         <Banner tone={peppolIssues.some((i) => i.severity === 'error') ? 'warn' : 'info'} className="mt-4">
           {/* Not the `title` prop: Banner wraps that in a <p>, which can't hold the hint's block markup. */}
           <InfoHint hint={t('peppol.intro')}>
