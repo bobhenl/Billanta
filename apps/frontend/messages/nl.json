@@ -1807,7 +1807,7 @@
         },
         "confidential": {
           "title": "Vertrouwelijke modus",
-          "description": "Documentteksten versleutelen in de browser"
+          "description": "Documenten, bijlagen, contacten en bedragen versleutelen in de browser"
         }
       },
       "managedByAdmins": "Bedrijfsgegevens, het team, het abonnement en andere bedrijfsinstellingen worden beheerd door de eigenaar of een beheerder."
@@ -14566,7 +14566,7 @@
     },
     "settings": {
       "title": "Vertrouwelijke modus",
-      "description": "Documentteksten versleutelen in je browser.",
+      "description": "Documenten, bijlagen, contacten en bedragen versleutelen in je browser.",
       "loadError": "De instellingen konden niet worden geladen.",
       "failed": "Dat lukte niet. Probeer het opnieuw.",
       "onTitle": "De Vertrouwelijke modus staat aan",
@@ -14857,11 +14857,11 @@
   "securityPage": {
     "seoTitle": "Vertrouwelijke modus: wat de server ziet en wat niet",
     "eyebrow": "Beveiliging",
-    "title": "Vertrouwelijke modus: documentteksten die de server niet kan lezen",
-    "lead": "Regelomschrijvingen en notities worden in je browser versleuteld. De server krijgt alleen een versleutelde tekenreeks en heeft er geen sleutel voor. Hier kun je het zelf proberen en controleren.",
+    "title": "Vertrouwelijke modus: documentgegevens die de server niet leest",
+    "lead": "Je kunt documentteksten, bijlagen, contacten en bedragen direct in je browser versleutelen, elk deel apart. De server krijgt alleen versleutelde gegevens en heeft er geen sleutel voor. Hier kun je het zelf proberen en controleren.",
     "featuresLink": "Alle functies",
     "demoTitle": "Probeer het",
-    "demoLead": "Zonder inloggen. De pagina versleutelt je zin met dezelfde code als de app en stuurt hem echt naar de server. Je ziet naast elkaar wat je typte, wat er verstuurd werd en wat de server kreeg.",
+    "demoLead": "Zonder inloggen. De pagina versleutelt je zin met dezelfde code als de app en stuurt hem echt naar de server. Je ziet naast elkaar wat je typte, wat er verstuurd is en wat de server kreeg. Contacten en bedragen versleutelt de app op dezelfde manier.",
     "howTitle": "Hoe het werkt",
     "howSteps": [
       {
@@ -14869,46 +14869,93 @@
         "body": "Bij het inschakelen maakt de browser een willekeurige AES-256-sleutel. De server krijgt alleen kopieën, vergrendeld met je wachtwoord, passkey of herstelcode."
       },
       {
-        "title": "Versleuteld voor verzending",
-        "body": "Een omschrijving of notitie wordt versleuteld voordat ze de browser verlaat. De server bewaart een tekenreeks enc:v1:… en doet er niets mee."
+        "title": "Versleuteld voor het verzenden",
+        "body": "Een tekst, een contact of een bedrag wordt versleuteld voordat het de browser verlaat. Elke bijlage krijgt een eigen sleutel. De server slaat alleen een versleutelde tekenreeks (enc:v1:…) op en doet er niets mee."
       },
       {
         "title": "Alleen bij jou ontsleuteld",
         "body": "Na ontgrendelen houdt de browser de sleutel zo vast dat de pagina hem kan gebruiken, maar de inhoud niet kan lezen."
       }
     ],
-    "hiddenTitle": "Wat de server niet ziet",
-    "hidden": [
-      "Regelomschrijvingen",
-      "Tekst boven en onder de regels",
-      "Interne notities",
-      "De sleutel en het wachtwoord dat hem ontgrendelt"
+    "categoriesTitle": "Wat je kunt versleutelen",
+    "categoriesLead": "De vier delen zet je apart aan in de instellingen, ook later. Elk deel zet alleen de functies uit die die gegevens op de server zouden moeten lezen. De precieze lijst zie je in de instellingen voordat je het aanzet.",
+    "categories": [
+      {
+        "title": "Teksten en notities",
+        "body": "Regelomschrijvingen, de tekst boven en onder de regels en interne notities."
+      },
+      {
+        "title": "Bijlagen en bonnetjes",
+        "body": "Bestanden bij documenten en bonnetjes bij uitgaven. Elk bestand heeft een eigen sleutel, ook naam en type zijn versleuteld. De server kent alleen de grootte en de uploaddatum."
+      },
+      {
+        "title": "Contacten",
+        "body": "Naam, adres, contactpersoon, telefoon en notitie. Het e-mailadres alleen als je wilt: Billanta stuurt die klant dan niets, en je verstuurt het document zelf of via een link. Bedrijfsnummer, btw-nummer en land blijven leesbaar. Het register krijgt alleen het bedrijfsnummer, en het antwoord wordt niet opgeslagen."
+      },
+      {
+        "title": "Bedragen",
+        "body": "Prijzen, aantallen, btw-tarieven, kortingen, totalen en betalingen. De server slaat in plaats daarvan nullen op, dus geen van zijn sommen bevat een echt bedrag."
+      }
     ],
-    "visibleTitle": "Wat de server ziet en waarom",
+    "hiddenTitle": "Wat de server niet ziet (in de delen die aanstaan)",
+    "hidden": [
+      "Regelomschrijvingen en notities",
+      "Inhoud, naam en type van bijlagen en bonnetjes",
+      "Namen, adressen, telefoonnummers en notities van contacten, en e-mailadressen als je dat kiest",
+      "Prijzen, aantallen, btw, totalen en betalingen",
+      "De sleutel en het wachtwoord waarmee hij wordt ontgrendeld"
+    ],
+    "visibleTitle": "Wat de server altijd ziet en waarom",
     "visible": [
-      "Bedragen en btw – voor berekeningen, aangiftes en het koppelen van betalingen",
-      "Factuur- en vervaldatums – voor herinneringen",
-      "Documentnummer en betalingskenmerk",
-      "De klant en zijn e-mail – zodat het document verstuurd kan worden"
+      "Documentnummer en betalingskenmerk – voor de nummering en het koppelen van betalingen",
+      "Factuur- en vervaldatum – voor herinneringen",
+      "Valuta en status van het document",
+      "Bedrijfsnummer, btw-nummer en land van het contact – voor registers en de btw-controle",
+      "Het e-mailadres van het contact, als je het niet versleutelt – zodat het document verstuurd kan worden",
+      "Grootte en uploaddatum van bestanden",
+      "Alles uit de delen die je niet hebt aangezet"
+    ],
+    "browserTitle": "Wat in je browser ontstaat",
+    "browserLead": "Bestanden en berekeningen die de versleutelde gegevens nodig hebben, stelt alleen een browser met ontgrendelde modus samen.",
+    "browser": [
+      "PDF, ISDOC, UBL en de QR-code voor betaling",
+      "De CSV-export van documenten voor je boekhouder",
+      "Btw-aangifte, controleopgave en opgaaf intracommunautaire prestaties (voor Tsjechische en Slowaakse bedrijven)",
+      "Zoeken in versleutelde teksten en contacten",
+      "De link voor de klant draagt de sleutel na het teken #. Dat deel van het adres sturen browsers nooit naar de server, dus alleen de browser van de klant opent het document."
+    ],
+    "changesTitle": "Wat anders werkt",
+    "changes": [
+      "Herinneringen bevatten alleen het documentnummer, de vervaldatum en de link, geen versleutelde gegevens.",
+      "Een betaling met het juiste kenmerk krijg je voorgesteld om te koppelen, en jij bevestigt hem. De server kan geen bedragen vergelijken.",
+      "Als je het e-mailadres van een contact versleutelt, stuurt Billanta hem niets. Je verstuurt het document vanuit je eigen mailbox of via een link."
     ],
     "cspTitle": "De browser bepaalt waar de pagina gegevens heen mag sturen",
     "cspBody": "De app, documentlinks en deze pagina worden geleverd met een Content-Security-Policy-header die connect-src 'self' bevat. De browser weigert dan zelf elk verzoek van zo'n pagina naar een andere server, ook als een script het probeert. Ontsleutelde tekst kan via die weg niet weg.",
     "cspHow": "Iedereen kan de header lezen: klik in de browsertools (F12, tabblad Netwerk) op het eerste verzoek, de pagina zelf, en zoek Content-Security-Policy in de antwoordheaders.",
+    "protectTitle": "Minder bescherming vraagt een extra controle",
+    "protect": [
+      "De versleuteling van een deel uitzetten, een ontgrendelmethode verwijderen of het kluiswachtwoord of de herstelcode vervangen kan alleen na een verse controle: een code voor tweestapsverificatie, je wachtwoord of een passkey.",
+      "Inloggen en tweestapsverificatie ontgrendelen de kluis niet. Alleen het kluiswachtwoord, een passkey of de herstelcode opent de sleutel.",
+      "Op je eigen apparaat kun je de ontgrendeling laten onthouden. De sleutel staat zo in de browser dat hij niet te lezen of te kopiëren is. De knop Vergrendelen of uitloggen verwijdert hem."
+    ],
     "limitsTitle": "Waar de grenzen liggen",
+    "limitsLead": "Sommige dingen werken niet voor versleutelde documenten, omdat de server de gegevens zou moeten lezen. Andere grenzen komen voort uit hoe het web werkt.",
     "limits": [
+      "Verzenden via Peppol: de wet eist dat de verzonden XML leesbaar gearchiveerd blijft op de server.",
+      "Kaartbetaling, deelbetalingen en AI-voorstellen met bedragen, voor documenten met versleutelde bedragen.",
+      "Sommige exports die de server maakt (bijvoorbeeld Pohoda en Money S3): ze bevatten de versleutelde gegevens niet en weigeren documenten met versleutelde bedragen.",
+      "AI krijgt een versleutelde tekst of bon alleen na je uitdrukkelijke bevestiging. Die gaat één keer via de server en wordt niet opgeslagen.",
       "Onze server levert de code van de app. Als hij gecompromitteerd was, kon hij andere code leveren. Code en hashes publiceren maakt zo'n wijziging zichtbaar, maar voorkomt hem niet vanzelf.",
-      "Als je een versleuteld document met pdf mailt, gaan de teksten één keer via de server, omdat de e-mail daarvandaan vertrekt. De app zegt het vooraf, en de server bewaart en logt ze niet. Stuur je alleen de link, dan krijgt de server de teksten nooit.",
-      "De modus versleutelt geen bedragen, datums, nummers of klanten, zie hierboven.",
-      "Voor versleutelde documenten maakt de server geen ISDOC of andere machineleesbare formaten.",
+      "Als je een versleuteld document per e-mail met pdf verstuurt, gaat het bestand één keer via de server, omdat de e-mail daarvandaan vertrekt. De app zegt dat vooraf, en de server slaat het niet op en logt het niet. Stuur je alleen de link, dan krijgt de server de versleutelde gegevens helemaal niet.",
       "De regel connect-src geldt voor een rechtstreeks geladen pagina. Ga je zonder herladen van de openbare site naar de app, dan geldt tot het herladen de regel van de vorige pagina.",
-      "Wie toegang heeft tot je ontgrendelde browser, ziet de teksten. De modus beschermt tegen de server, niet tegen iemand achter je computer.",
-      "Als je zowel het wachtwoord als de herstelcode vergeet en geen passkey hebt, kan niemand de teksten herstellen, ook wij niet."
+      "Wie toegang heeft tot je ontgrendelde browser, ziet de gegevens. De modus beschermt tegen de server, niet tegen iemand achter je computer.",
+      "Als je zowel het wachtwoord als de herstelcode vergeet en geen passkey hebt, kan niemand de versleutelde gegevens herstellen, ook wij niet."
     ],
     "verifyTitle": "Codecontrole",
     "verifyLead": "Bij elke build schrijven we de SHA-256-hashes van de versleutelingscode in een openbaar bestand. Je browser kan ze hier opnieuw berekenen.",
     "planned": [
-      "We publiceren de versleutelingscode (één bestand zonder afhankelijkheden) in een eigen GitHub-repository, zodat de hashes met een eigen build te vergelijken zijn.",
-      "Een onafhankelijke beoordeling van de code is gepland."
+      "We publiceren de versleutelingscode (één bestand zonder afhankelijkheden) in een eigen GitHub-repository, zodat de hashes met een eigen build te vergelijken zijn."
     ]
   },
   "stepUp": {

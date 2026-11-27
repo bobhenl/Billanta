@@ -111,13 +111,18 @@ async function buildIndex(locale: string): Promise<Entry[]> {
     entry('page', '/blog', m.blog.seoTitle, m.blog.lead)
   ];
 
-  // Confidential mode: the page, plus its live demo, what the server sees and the code check on their own.
+  // Confidential mode: the page, plus its live demo, the categories, what the server sees, what the
+  // browser builds, the step-up rules, the limits and the code check on their own.
   const sec = m.securityPage;
   entries.push(
-    entry('page', '/security/confidential', sec.seoTitle, sec.lead, `${sec.eyebrow} ${flat(sec.howSteps)} ${sec.limitsTitle} ${flat(sec.limits)}`),
+    entry('page', '/security/confidential', sec.seoTitle, sec.lead, `${sec.eyebrow} ${flat(sec.howSteps)}`),
     entry('page', '/security/confidential#demo', `${sec.demoTitle}: ${sec.title}`, sec.demoLead),
+    entry('page', '/security/confidential#categories', sec.categoriesTitle, sec.categoriesLead, `${flat(sec.categories)} ${sec.title}`),
     entry('page', '/security/confidential#server', sec.visibleTitle, flat(sec.visible), `${sec.hiddenTitle} ${flat(sec.hidden)} ${sec.title}`),
+    entry('page', '/security/confidential#browser', sec.browserTitle, sec.browserLead, `${flat(sec.browser)} ${sec.changesTitle} ${flat(sec.changes)} ${sec.title}`),
     entry('page', '/security/confidential#csp', sec.cspTitle, sec.cspBody, `${sec.cspHow} ${sec.title}`),
+    entry('page', '/security/confidential#protect', sec.protectTitle, flat(sec.protect), sec.title),
+    entry('page', '/security/confidential#limits', sec.limitsTitle, sec.limitsLead, `${flat(sec.limits)} ${sec.title}`),
     entry('page', '/security/confidential#verify', sec.verifyTitle, sec.verifyLead, `${flat(sec.planned)} ${sec.title}`)
   );
 

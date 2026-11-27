@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Check, EyeOff, ShieldCheck, TriangleAlert } from 'lucide-react';
+import { Check, EyeOff, FileText, KeyRound, Paperclip, Coins, MonitorSmartphone, ShieldCheck, TriangleAlert, UserRound } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { CheckList, NumberedSteps, PageIntro } from '@/components/learn-page';
 import { LiveCsp } from '@/components/vault/live-csp';
@@ -19,15 +19,19 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 /**
- * How Confidential mode keeps texts away from the server, shown rather than
+ * How Confidential mode keeps data away from the server, shown rather than
  * claimed: a live demo that really posts an envelope (components/vault/
  * vault-demo.tsx), the page's own CSP header read back live, the build
- * hash manifest, and the limits in plain words.
+ * hash manifest, and the limits in plain words. The four categories
+ * (texts, attachments, contacts, amounts) match vault.categories in the
+ * settings; keep the two in step when a category changes.
  *
  * Only a WebPage node: the visible trail would be two rungs (home, this
  * page), which earns nothing, so there is no breadcrumb here or in the
  * markup.
  */
+const CATEGORY_ICONS = [FileText, Paperclip, UserRound, Coins];
+
 export default async function ConfidentialSecurityPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
@@ -48,6 +52,23 @@ export default async function ConfidentialSecurityPage({ params }: { params: Pro
 
       <h2 className="mt-12 text-xl font-bold tracking-tight">{t('howTitle')}</h2>
       <NumberedSteps steps={t.raw('howSteps') as { title: string; body: string }[]} />
+
+      <h2 id="categories" className="mt-12 scroll-mt-20 text-xl font-bold tracking-tight">{t('categoriesTitle')}</h2>
+      <p className="mt-2 max-w-3xl text-sm text-muted-foreground">{t('categoriesLead')}</p>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        {(t.raw('categories') as { title: string; body: string }[]).map(({ title, body }, i) => {
+          const Icon = CATEGORY_ICONS[i] ?? FileText;
+          return (
+            <div key={title} className="rounded-xl border border-border bg-card p-5">
+              <h3 className="flex items-center gap-2 font-bold">
+                <Icon className="h-4 w-4 text-primary" aria-hidden="true" />
+                {title}
+              </h3>
+              <p className="mt-2 text-sm text-muted-foreground">{body}</p>
+            </div>
+          );
+        })}
+      </div>
 
       <div id="server" className="mt-12 grid scroll-mt-20 gap-4 md:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-5">
@@ -70,15 +91,40 @@ export default async function ConfidentialSecurityPage({ params }: { params: Pro
         </div>
       </div>
 
+      <h2 id="browser" className="mt-12 flex scroll-mt-20 items-center gap-2 text-xl font-bold tracking-tight">
+        <MonitorSmartphone className="h-5 w-5 text-primary" aria-hidden="true" />
+        {t('browserTitle')}
+      </h2>
+      <p className="mt-2 max-w-3xl text-sm text-muted-foreground">{t('browserLead')}</p>
+      <CheckList className="mt-4 max-w-3xl" items={t.raw('browser') as string[]} />
+
+      <h2 className="mt-12 text-xl font-bold tracking-tight">{t('changesTitle')}</h2>
+      <ul className="mt-4 max-w-3xl list-disc space-y-2 pl-5 text-sm">
+        {(t.raw('changes') as string[]).map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+
       <h2 id="csp" className="mt-12 scroll-mt-20 text-xl font-bold tracking-tight">{t('cspTitle')}</h2>
       <p className="mt-2 max-w-3xl text-sm">{t('cspBody')}</p>
       <p className="mt-2 max-w-3xl text-sm text-muted-foreground">{t('cspHow')}</p>
       <LiveCsp />
 
-      <h2 className="mt-12 flex items-center gap-2 text-xl font-bold tracking-tight">
+      <h2 id="protect" className="mt-12 flex scroll-mt-20 items-center gap-2 text-xl font-bold tracking-tight">
+        <KeyRound className="h-5 w-5 text-primary" aria-hidden="true" />
+        {t('protectTitle')}
+      </h2>
+      <ul className="mt-4 max-w-3xl list-disc space-y-2 pl-5 text-sm">
+        {(t.raw('protect') as string[]).map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+
+      <h2 id="limits" className="mt-12 flex scroll-mt-20 items-center gap-2 text-xl font-bold tracking-tight">
         <TriangleAlert className="h-5 w-5 text-warning" aria-hidden="true" />
         {t('limitsTitle')}
       </h2>
+      <p className="mt-2 max-w-3xl text-sm text-muted-foreground">{t('limitsLead')}</p>
       <ul className="mt-4 max-w-3xl list-disc space-y-2 pl-5 text-sm">
         {(t.raw('limits') as string[]).map((item) => (
           <li key={item}>{item}</li>

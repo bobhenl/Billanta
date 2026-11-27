@@ -1808,7 +1808,7 @@
         },
         "confidential": {
           "title": "Confidential mode",
-          "description": "Encrypt document texts in the browser"
+          "description": "Encrypt documents, attachments, contacts and amounts in the browser"
         }
       },
       "managedByAdmins": "Company details, the team, the subscription and other company settings are managed by the owner or an admin."
@@ -14571,7 +14571,7 @@
     },
     "settings": {
       "title": "Confidential mode",
-      "description": "Encrypt document texts in your browser.",
+      "description": "Encrypt documents, attachments, contacts and amounts in your browser.",
       "loadError": "The settings could not be loaded.",
       "failed": "That did not work. Please try again.",
       "onTitle": "Confidential mode is on",
@@ -14869,11 +14869,11 @@
   "securityPage": {
     "seoTitle": "Confidential mode: what the server sees and what it does not",
     "eyebrow": "Security",
-    "title": "Confidential mode: document texts the server cannot read",
-    "lead": "Item descriptions and notes are encrypted in your browser. The server gets only an encrypted string and has no key for it. You can try it and check it yourself here.",
+    "title": "Confidential mode: document data the server cannot read",
+    "lead": "You can encrypt document texts, attachments, contacts and amounts right in your browser, each part on its own. The server gets only encrypted data and has no key for it. You can try it and check it yourself here.",
     "featuresLink": "All features",
     "demoTitle": "Try it",
-    "demoLead": "No sign-in needed. The page encrypts your sentence with the same code as the app and really sends it to the server. You see side by side what you typed, what was sent and what the server got.",
+    "demoLead": "No sign-in needed. The page encrypts your sentence with the same code as the app and really sends it to the server. You see side by side what you typed, what was sent and what the server got. The app encrypts contacts and amounts the same way.",
     "howTitle": "How it works",
     "howSteps": [
       {
@@ -14882,45 +14882,92 @@
       },
       {
         "title": "Encrypted before it is sent",
-        "body": "An item description or a note is encrypted before it leaves the browser. The server stores an enc:v1:… string and does nothing with it."
+        "body": "A text, a contact or an amount is encrypted before it leaves the browser. Each attachment gets its own key. The server stores only an encrypted string (enc:v1:…) and does nothing with it."
       },
       {
         "title": "Decrypted only on your side",
         "body": "After unlocking, the browser holds the key so that the page can use it but cannot read its contents."
       }
     ],
-    "hiddenTitle": "What the server does not see",
+    "categoriesTitle": "What you can encrypt",
+    "categoriesLead": "You switch on the four parts separately in the settings, now or later. Each one turns off only the features that would have to read that data on the server. The settings show the exact list before you switch a part on.",
+    "categories": [
+      {
+        "title": "Texts and notes",
+        "body": "Item descriptions, the text above and below the items and internal notes."
+      },
+      {
+        "title": "Attachments and receipts",
+        "body": "Files on documents and receipts on expenses. Each file has its own key, and its name and type are encrypted too. The server knows only the size and the upload date."
+      },
+      {
+        "title": "Contacts",
+        "body": "Name, address, contact person, phone and note. The e-mail only if you want: Billanta then sends that client nothing, and you send the document yourself or by link. Company ID, VAT ID and country stay readable. The business register gets only the company ID, and the answer is not stored."
+      },
+      {
+        "title": "Amounts",
+        "body": "Prices, quantities, VAT rates, discounts, totals and payments. The server stores zeros instead, so none of its sums contains a real amount."
+      }
+    ],
+    "hiddenTitle": "What the server does not see (in the parts you switch on)",
     "hidden": [
-      "Item descriptions",
-      "Text above and below the items",
-      "Internal notes",
+      "Item descriptions and notes",
+      "The content, names and types of attachments and receipts",
+      "Names, addresses, phones and notes of contacts, and e-mails if you choose",
+      "Prices, quantities, VAT, totals and payments",
       "The key or the password that unlocks it"
     ],
-    "visibleTitle": "What the server sees and why",
+    "visibleTitle": "What the server always sees and why",
     "visible": [
-      "Amounts and VAT – for calculations, tax returns and matching payments",
+      "Document number and payment reference – for numbering and matching payments",
       "Issue and due dates – for reminders",
-      "Document number and payment reference",
-      "The customer and their e-mail – so the document can be sent"
+      "Currency and document status",
+      "The contact's company ID, VAT ID and country – for registers and VAT checks",
+      "The contact's e-mail, unless you encrypt it – so the document can be sent",
+      "File sizes and upload dates",
+      "Everything in the parts you have not switched on"
+    ],
+    "browserTitle": "What is built in your browser",
+    "browserLead": "Files and calculations that need the encrypted data are put together only by a browser with the mode unlocked.",
+    "browser": [
+      "PDF, ISDOC, UBL and the payment QR code",
+      "The CSV export of documents for your accountant",
+      "VAT return, control statement and EC sales list",
+      "Search in encrypted texts and contacts",
+      "The client link carries the key after the # sign. Browsers never send that part of the address to the server, so only the client's browser opens the document."
+    ],
+    "changesTitle": "What works differently",
+    "changes": [
+      "Reminders contain only the document number, due date and link, no encrypted data.",
+      "A payment with a matching payment reference is offered for matching, and you confirm it. The server cannot compare amounts.",
+      "If you encrypt a contact's e-mail, Billanta sends that contact nothing. You send the document from your own mailbox or by link."
     ],
     "cspTitle": "The browser controls where the page may send data",
     "cspBody": "The app, document links and this page are served with a Content-Security-Policy header that contains connect-src 'self'. The browser itself then refuses any request from such a page to another server, even if a script tried. Decrypted text cannot leave that way.",
     "cspHow": "Anyone can read the header: in your browser tools (F12, Network tab) click the first request, the page itself, and find Content-Security-Policy in the response headers.",
+    "protectTitle": "Weakening protection needs another check",
+    "protect": [
+      "Switching off encryption for a part, removing an unlock method or replacing the vault password or recovery code works only after a fresh check: a two-factor code, your password or a passkey.",
+      "Signing in or two-factor authentication does not unlock the vault. Only the vault password, a passkey or the recovery code opens the key.",
+      "On your own device you can have the unlock remembered. The key is stored in the browser in a way that cannot be read or copied. The Lock button or signing out removes it."
+    ],
     "limitsTitle": "Where the limits are",
+    "limitsLead": "Some things do not work for encrypted documents, because the server would have to read the data. Other limits come from how the web works.",
     "limits": [
+      "Sending via Peppol: the law requires the sent XML to stay archived on the server in readable form.",
+      "Card payments, partial payments and AI suggestions with amounts, for documents with encrypted amounts.",
+      "Some exports the server builds (for example Pohoda and Money S3): they leave out encrypted data and refuse documents with encrypted amounts.",
+      "AI gets an encrypted text or receipt only after you confirm it explicitly. It passes through the server once and is not stored.",
       "Our server delivers the app code. If it were compromised, it could deliver different code. Publishing the code and the hashes makes such a change detectable, but does not prevent it by itself.",
-      "When you e-mail an encrypted document with its PDF, its texts pass through the server once, because that is where e-mail is sent from. The app tells you first, and the server does not store or log them. If you send only the link, the server never gets the texts.",
-      "The mode does not encrypt amounts, dates, numbers or customers, see above.",
-      "For encrypted documents the server makes no ISDOC or other machine-readable formats.",
+      "When you e-mail an encrypted document with its PDF, the file passes through the server once, because that is where e-mail is sent from. The app tells you first, and the server does not store or log it. If you send only the link, the server never gets the encrypted data.",
       "The connect-src rule applies to a page loaded directly. If you move into the app from the public site without a reload, the rule of the page you came from applies until you reload.",
-      "Anyone with access to your unlocked browser can see the texts. The mode protects against the server, not against someone at your computer.",
-      "If you forget both the password and the recovery code and have no passkey, nobody can recover the texts, not even us."
+      "Anyone with access to your unlocked browser can see the data. The mode protects against the server, not against someone at your computer.",
+      "If you forget both the password and the recovery code and have no passkey, nobody can recover the encrypted data, not even us."
     ],
     "verifyTitle": "Code check",
     "verifyLead": "Every build writes the SHA-256 hashes of the encryption code into a public file. Your browser can recompute them right here.",
     "planned": [
-      "We will publish the encryption code (one file with no dependencies) in its own GitHub repository, so the hashes can be compared with your own build.",
-      "An independent review of the code is planned."
+      "We will publish the encryption code (one file with no dependencies) in its own GitHub repository, so the hashes can be compared with your own build."
     ]
   },
   "stepUp": {

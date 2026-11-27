@@ -1807,7 +1807,7 @@
         },
         "confidential": {
           "title": "Modul confidențial",
-          "description": "Criptarea textelor documentelor în browser"
+          "description": "Criptarea documentelor, atașamentelor, contactelor și sumelor în browser"
         }
       },
       "managedByAdmins": "Datele firmei, echipa, abonamentul și celelalte setări ale firmei sunt administrate de proprietar sau de un administrator."
@@ -14566,7 +14566,7 @@
     },
     "settings": {
       "title": "Modul confidențial",
-      "description": "Criptarea textelor documentelor în browserul dvs.",
+      "description": "Criptarea documentelor, atașamentelor, contactelor și sumelor în browserul dvs.",
       "loadError": "Setările nu au putut fi încărcate.",
       "failed": "Nu a mers. Încercați din nou.",
       "onTitle": "Modul confidențial este activat",
@@ -14857,11 +14857,11 @@
   "securityPage": {
     "seoTitle": "Modul confidențial: ce vede serverul și ce nu",
     "eyebrow": "Securitate",
-    "title": "Modul confidențial: texte de documente pe care serverul nu le poate citi",
-    "lead": "Descrierile pozițiilor și notele se criptează în browserul dvs. Serverul primește doar un șir criptat și nu are cheia lui. Aici puteți încerca și verifica singur.",
+    "title": "Modul confidențial: datele documentelor pe care serverul nu le citește",
+    "lead": "Textele documentelor, atașamentele, contactele și sumele le puteți cripta direct în browserul dvs., fiecare parte separat. Serverul primește doar date criptate și nu are cheia lor. Aici puteți încerca și verifica singur.",
     "featuresLink": "Toate funcțiile",
     "demoTitle": "Încercați",
-    "demoLead": "Fără autentificare. Pagina vă criptează propoziția cu același cod ca aplicația și chiar o trimite la server. Vedeți una lângă alta ce ați scris, ce a plecat și ce a primit serverul.",
+    "demoLead": "Fără autentificare. Pagina criptează propoziția dvs. cu același cod ca aplicația și chiar o trimite serverului. Vedeți una lângă alta ce ați scris, ce a plecat și ce a primit serverul. Contactele și sumele aplicația le criptează la fel.",
     "howTitle": "Cum funcționează",
     "howSteps": [
       {
@@ -14870,45 +14870,92 @@
       },
       {
         "title": "Criptat înainte de trimitere",
-        "body": "O descriere sau o notă se criptează înainte să părăsească browserul. Serverul stochează un șir enc:v1:… și nu face nimic cu el."
+        "body": "Un text, un contact sau o sumă se criptează înainte să părăsească browserul. Fiecare atașament primește propria cheie. Serverul stochează doar un șir criptat (enc:v1:…) și nu face nimic cu el."
       },
       {
         "title": "Decriptat doar la dvs.",
         "body": "După deblocare, browserul ține cheia astfel încât pagina o poate folosi, dar nu îi poate citi conținutul."
       }
     ],
-    "hiddenTitle": "Ce nu vede serverul",
+    "categoriesTitle": "Ce puteți cripta",
+    "categoriesLead": "Cele patru părți le porniți separat în setări, și mai târziu. Fiecare oprește doar funcțiile care ar trebui să citească acele date pe server. Lista exactă o arată setările înainte de pornire.",
+    "categories": [
+      {
+        "title": "Texte și note",
+        "body": "Descrierile pozițiilor, textul de deasupra și de sub poziții și notele interne."
+      },
+      {
+        "title": "Atașamente și bonuri",
+        "body": "Fișierele documentelor și bonurile cheltuielilor. Fiecare fișier are propria cheie, iar numele și tipul lui sunt și ele criptate. Serverul știe doar dimensiunea și data încărcării."
+      },
+      {
+        "title": "Contacte",
+        "body": "Nume, adresă, persoană de contact, telefon și notă. E-mailul doar dacă doriți: atunci Billanta nu trimite nimic acelui client, iar documentul îl trimiteți singur sau prin link. Codul firmei, codul de TVA și țara rămân lizibile. Registrul primește doar codul firmei, iar răspunsul nu se stochează."
+      },
+      {
+        "title": "Sume",
+        "body": "Prețuri, cantități, cote de TVA, reduceri, totaluri și plăți. Serverul stochează în locul lor zerouri, așa că niciun total al lui nu conține o sumă reală."
+      }
+    ],
+    "hiddenTitle": "Ce nu vede serverul (în părțile pornite)",
     "hidden": [
-      "Descrierile pozițiilor",
-      "Textul de deasupra și de sub poziții",
-      "Notele interne",
+      "Descrierile pozițiilor și notele",
+      "Conținutul, numele și tipurile atașamentelor și bonurilor",
+      "Numele, adresele, telefoanele și notele contactelor, la alegere și e-mailurile",
+      "Prețuri, cantități, TVA, totaluri și plăți",
       "Cheia și parola care o deblochează"
     ],
-    "visibleTitle": "Ce vede serverul și de ce",
+    "visibleTitle": "Ce vede serverul mereu și de ce",
     "visible": [
-      "Sume și TVA – pentru calcule, declarații și potrivirea plăților",
-      "Datele de emitere și scadență – pentru remindere",
-      "Numărul documentului și referința de plată",
-      "Clientul și e-mailul lui – ca documentul să poată fi trimis"
+      "Numărul documentului și referința plății – pentru numerotare și potrivirea plăților",
+      "Data emiterii și scadența – pentru remindere",
+      "Moneda și starea documentului",
+      "Codul firmei, codul de TVA și țara contactului – pentru registre și verificarea TVA",
+      "E-mailul contactului, dacă nu îl criptați – ca documentul să poată fi trimis",
+      "Dimensiunea și data încărcării fișierelor",
+      "Tot ce ține de părțile pe care nu le-ați pornit"
+    ],
+    "browserTitle": "Ce se creează în browserul dvs.",
+    "browserLead": "Fișierele și calculele care au nevoie de datele criptate le asamblează doar un browser cu modul deblocat.",
+    "browser": [
+      "PDF, ISDOC, UBL și codul QR de plată",
+      "Exportul CSV al documentelor pentru contabil",
+      "Declarația de TVA, declarația de control și declarația recapitulativă (pentru firme din Cehia și Slovacia)",
+      "Căutarea în textele și contactele criptate",
+      "Linkul pentru client poartă cheia după semnul #. Browserele nu trimit niciodată această parte a adresei serverului, așa că documentul îl deschide doar browserul clientului."
+    ],
+    "changesTitle": "Ce funcționează altfel",
+    "changes": [
+      "Reminderele conțin doar numărul documentului, scadența și linkul, fără date criptate.",
+      "O plată cu referința potrivită vă este propusă pentru potrivire, iar dvs. o confirmați. Serverul nu poate compara sumele.",
+      "Dacă criptați e-mailul unui contact, Billanta nu îi trimite nimic. Documentul îl trimiteți din propria căsuță de e-mail sau prin link."
     ],
     "cspTitle": "Browserul controlează unde poate trimite date pagina",
     "cspBody": "Aplicația, linkurile de documente și această pagină sunt servite cu un antet Content-Security-Policy care conține connect-src 'self'. Browserul refuză atunci singur orice cerere a unei astfel de pagini către alt server, chiar dacă un script ar încerca. Textul decriptat nu poate pleca pe această cale.",
     "cspHow": "Oricine poate citi antetul: în instrumentele browserului (F12, fila Rețea) faceți clic pe prima cerere, pagina însăși, și căutați Content-Security-Policy în anteturile răspunsului.",
+    "protectTitle": "Slăbirea protecției cere o nouă verificare",
+    "protect": [
+      "Oprirea criptării unei părți, eliminarea unei metode de deblocare sau înlocuirea parolei seifului ori a codului de recuperare se poate face doar după o verificare proaspătă: cu un cod de autentificare în doi pași, cu parola sau cu un passkey.",
+      "Autentificarea și verificarea în doi pași nu deblochează seiful. Cheia o deschid doar parola seifului, un passkey sau codul de recuperare.",
+      "Pe propriul dispozitiv puteți păstra deblocarea. Cheia este stocată în browser astfel încât nu poate fi citită sau copiată. Butonul Blochează sau deconectarea o elimină."
+    ],
     "limitsTitle": "Unde sunt limitele",
+    "limitsLead": "La documentele criptate unele lucruri nu merg, pentru că serverul ar trebui să citească datele. Alte limite vin din felul în care funcționează webul.",
     "limits": [
+      "Trimiterea prin Peppol: legea cere ca XML-ul trimis să rămână arhivat lizibil pe server.",
+      "Plata cu cardul, plățile parțiale și sugestiile AI cu sume, la documentele cu sume criptate.",
+      "Unele exporturi create de server (de exemplu Pohoda și Money S3): nu conțin datele criptate și refuză documentele cu sume criptate.",
+      "AI primește un text sau un bon criptat doar după confirmarea dvs. explicită. Trece o dată prin server și nu se stochează.",
       "Codul aplicației este livrat de serverul nostru. Dacă ar fi compromis, ar putea livra alt cod. Publicarea codului și a amprentelor face o astfel de schimbare detectabilă, dar nu o împiedică de la sine.",
-      "Când trimiteți pe e-mail un document criptat cu PDF, textele lui trec o dată prin server, pentru că e-mailul pleacă de acolo. Aplicația vă spune dinainte, iar serverul nu le păstrează și nu le scrie în jurnale. Dacă trimiteți doar linkul, serverul nu primește deloc textele.",
-      "Modul nu criptează sumele, datele, numerele sau clienții, vedeți mai sus.",
-      "Pentru documentele criptate serverul nu creează ISDOC sau alte formate pentru mașini.",
+      "Când trimiteți un document criptat pe e-mail cu PDF, fișierul trece o dată prin server, pentru că e-mailul pleacă de acolo. Aplicația vă spune dinainte, iar serverul nu îl stochează și nu îl scrie în jurnal. Dacă trimiteți doar linkul, serverul nu primește deloc datele criptate.",
       "Regula connect-src se aplică unei pagini încărcate direct. Dacă treceți în aplicație de pe site-ul public fără reîncărcare, până la reîncărcare se aplică regula paginii anterioare.",
-      "Cine are acces la browserul dvs. deblocat vede textele. Modul protejează față de server, nu față de cineva de la calculatorul dvs.",
-      "Dacă uitați și parola, și codul de recuperare și nu aveți passkey, nimeni nu poate recupera textele, nici noi."
+      "Cine are acces la browserul dvs. deblocat vede datele. Modul vă protejează de server, nu de cineva de lângă calculatorul dvs.",
+      "Dacă uitați și parola, și codul de recuperare și nu aveți passkey, nimeni nu poate recupera datele criptate, nici noi."
     ],
     "verifyTitle": "Verificarea codului",
     "verifyLead": "La fiecare build scriem amprentele SHA-256 ale codului de criptare într-un fișier public. Browserul dvs. le poate recalcula chiar aici.",
     "planned": [
-      "Vom publica codul de criptare (un singur fișier fără dependențe) într-un depozit GitHub separat, ca amprentele să poată fi comparate cu propriul build.",
-      "O verificare independentă a codului este planificată."
+      "Vom publica codul de criptare (un singur fișier fără dependențe) într-un depozit GitHub separat, ca amprentele să poată fi comparate cu propriul build."
     ]
   },
   "stepUp": {

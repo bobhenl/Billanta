@@ -1807,7 +1807,7 @@
         },
         "confidential": {
           "title": "Tryb poufny",
-          "description": "Szyfrowanie tekstów dokumentów w przeglądarce"
+          "description": "Szyfrowanie dokumentów, załączników, kontaktów i kwot w przeglądarce"
         }
       },
       "managedByAdmins": "Danymi firmy, zespołem, subskrypcją i innymi ustawieniami firmy zarządza właściciel lub administrator."
@@ -14567,7 +14567,7 @@
     },
     "settings": {
       "title": "Tryb poufny",
-      "description": "Szyfrowanie tekstów dokumentów w przeglądarce.",
+      "description": "Szyfrowanie dokumentów, załączników, kontaktów i kwot w przeglądarce.",
       "loadError": "Nie udało się wczytać ustawień.",
       "failed": "Nie udało się. Spróbuj ponownie.",
       "onTitle": "Tryb poufny jest włączony",
@@ -14858,11 +14858,11 @@
   "securityPage": {
     "seoTitle": "Tryb poufny: co widzi serwer, a czego nie",
     "eyebrow": "Bezpieczeństwo",
-    "title": "Tryb poufny: teksty dokumentów, których serwer nie przeczyta",
-    "lead": "Opisy pozycji i notatki są szyfrowane w Twojej przeglądarce. Serwer dostaje tylko zaszyfrowany ciąg i nie ma do niego klucza. Tutaj możesz to sam wypróbować i sprawdzić.",
+    "title": "Tryb poufny: dane dokumentów, których serwer nie przeczyta",
+    "lead": "Teksty dokumentów, załączniki, kontakty i kwoty możesz szyfrować bezpośrednio w przeglądarce, każdą część osobno. Serwer dostaje tylko zaszyfrowane dane i nie ma do nich klucza. Tutaj możesz to sam wypróbować i sprawdzić.",
     "featuresLink": "Wszystkie funkcje",
     "demoTitle": "Wypróbuj",
-    "demoLead": "Bez logowania. Strona szyfruje Twoje zdanie tym samym kodem co aplikacja i naprawdę wysyła je na serwer. Obok siebie zobaczysz, co wpisałeś, co zostało wysłane i co dostał serwer.",
+    "demoLead": "Bez logowania. Strona szyfruje Twoje zdanie tym samym kodem co aplikacja i naprawdę wysyła je na serwer. Obok siebie zobaczysz, co wpisałeś, co zostało wysłane i co dostał serwer. Kontakty i kwoty aplikacja szyfruje tak samo.",
     "howTitle": "Jak to działa",
     "howSteps": [
       {
@@ -14871,45 +14871,92 @@
       },
       {
         "title": "Szyfrowane przed wysłaniem",
-        "body": "Opis pozycji lub notatka jest szyfrowana, zanim opuści przeglądarkę. Serwer zapisuje ciąg enc:v1:… i nic z nim nie robi."
+        "body": "Tekst, kontakt lub kwota jest szyfrowana, zanim opuści przeglądarkę. Każdy załącznik dostaje własny klucz. Serwer zapisuje tylko zaszyfrowany ciąg (enc:v1:…) i nic z nim nie robi."
       },
       {
         "title": "Odszyfrowane tylko u Ciebie",
         "body": "Po odblokowaniu przeglądarka trzyma klucz tak, że strona może go używać, ale nie może odczytać jego zawartości."
       }
     ],
-    "hiddenTitle": "Czego serwer nie widzi",
+    "categoriesTitle": "Co możesz zaszyfrować",
+    "categoriesLead": "Cztery części włączasz w ustawieniach osobno, także później. Każda wyłącza tylko funkcje, które musiałyby czytać te dane na serwerze. Dokładną listę ustawienia pokażą przed włączeniem.",
+    "categories": [
+      {
+        "title": "Teksty i notatki",
+        "body": "Opisy pozycji, tekst nad i pod pozycjami oraz notatki wewnętrzne."
+      },
+      {
+        "title": "Załączniki i paragony",
+        "body": "Pliki przy dokumentach i paragony przy wydatkach. Każdy plik ma własny klucz, zaszyfrowana jest też jego nazwa i typ. Serwer zna tylko rozmiar i datę przesłania."
+      },
+      {
+        "title": "Kontakty",
+        "body": "Nazwa, adres, osoba kontaktowa, telefon i notatka. E-mail tylko wtedy, gdy chcesz: Billanta nic wtedy temu klientowi nie wyśle, a dokument wyślesz sam lub linkiem. Numer firmy, NIP i kraj pozostają czytelne. Rejestr firm dostaje tylko numer firmy, a odpowiedź nie jest zapisywana."
+      },
+      {
+        "title": "Kwoty",
+        "body": "Ceny, ilości, stawki VAT, rabaty, sumy i płatności. Serwer zapisuje zamiast nich zera, więc żadna jego suma nie zawiera prawdziwej kwoty."
+      }
+    ],
+    "hiddenTitle": "Czego serwer nie widzi (we włączonych częściach)",
     "hidden": [
-      "Opisów pozycji",
-      "Tekstu nad i pod pozycjami",
-      "Notatek wewnętrznych",
+      "Opisów pozycji i notatek",
+      "Treści, nazw i typów załączników i paragonów",
+      "Nazw, adresów, telefonów i notatek kontaktów, na życzenie także e-maili",
+      "Cen, ilości, VAT, sum i płatności",
       "Klucza ani hasła, które go odblokowuje"
     ],
-    "visibleTitle": "Co serwer widzi i dlaczego",
+    "visibleTitle": "Co serwer widzi zawsze i dlaczego",
     "visible": [
-      "Kwoty i VAT – do obliczeń, deklaracji i dopasowania płatności",
+      "Numer dokumentu i tytuł przelewu – do numeracji i dopasowania płatności",
       "Daty wystawienia i płatności – do przypomnień",
-      "Numer dokumentu i tytuł przelewu",
-      "Klienta i jego e-mail – żeby dokument mógł zostać wysłany"
+      "Walutę i status dokumentu",
+      "Numer firmy, NIP i kraj kontaktu – do rejestrów i weryfikacji VAT",
+      "E-mail kontaktu, jeśli go nie zaszyfrujesz – żeby dokument mógł zostać wysłany",
+      "Rozmiar i datę przesłania plików",
+      "Wszystko z części, których nie włączyłeś"
+    ],
+    "browserTitle": "Co powstaje w Twojej przeglądarce",
+    "browserLead": "Pliki i obliczenia, które potrzebują zaszyfrowanych danych, składa dopiero przeglądarka z odblokowanym trybem.",
+    "browser": [
+      "PDF, ISDOC, UBL i kod QR do płatności",
+      "Eksport dokumentów w CSV dla księgowej",
+      "Deklaracja VAT, raport kontrolny i informacja podsumowująca (dla firm w Czechach i na Słowacji)",
+      "Wyszukiwanie w zaszyfrowanych tekstach i kontaktach",
+      "Link dla klienta niesie klucz po znaku #. Tej części adresu przeglądarki nigdy nie wysyłają na serwer, więc dokument otwiera dopiero przeglądarka klienta."
+    ],
+    "changesTitle": "Co działa inaczej",
+    "changes": [
+      "Przypomnienia zawierają tylko numer dokumentu, termin płatności i link, bez zaszyfrowanych danych.",
+      "Płatność z pasującym tytułem przelewu aplikacja zaproponuje do dopasowania, a Ty ją potwierdzisz. Serwer nie może porównać kwot.",
+      "Gdy zaszyfrujesz e-mail kontaktu, Billanta nic mu nie wyśle. Dokument wyślesz z własnej poczty lub linkiem."
     ],
     "cspTitle": "Przeglądarka pilnuje, dokąd strona może wysyłać dane",
     "cspBody": "Aplikacja, linki do dokumentów i ta strona są wysyłane z nagłówkiem Content-Security-Policy, który zawiera connect-src 'self'. Przeglądarka sama odrzuca wtedy każde żądanie takiej strony do innego serwera, nawet gdyby próbował tego jakiś skrypt. Odszyfrowany tekst nie wyjdzie tą drogą.",
     "cspHow": "Nagłówek może przeczytać każdy: w narzędziach przeglądarki (F12, karta Sieć) kliknij pierwsze żądanie, czyli samą stronę, i w nagłówkach odpowiedzi znajdź Content-Security-Policy.",
+    "protectTitle": "Osłabienie ochrony wymaga dodatkowego potwierdzenia",
+    "protect": [
+      "Wyłączenie szyfrowania części, usunięcie sposobu odblokowania albo wymiana hasła sejfu lub kodu odzyskiwania działa tylko po świeżym potwierdzeniu: kodem uwierzytelniania dwuskładnikowego, hasłem lub passkey.",
+      "Logowanie ani uwierzytelnianie dwuskładnikowe nie odblokowuje sejfu. Klucz otwiera tylko hasło sejfu, passkey lub kod odzyskiwania.",
+      "Na własnym urządzeniu możesz zapamiętać odblokowanie. Klucz jest zapisany w przeglądarce tak, że nie da się go odczytać ani skopiować. Usuwa go przycisk Zablokuj lub wylogowanie."
+    ],
     "limitsTitle": "Gdzie są granice",
+    "limitsLead": "Przy zaszyfrowanych dokumentach niektóre rzeczy nie działają, bo serwer musiałby czytać dane. Inne granice wynikają z tego, jak działa sieć.",
     "limits": [
+      "Wysyłka przez Peppol: prawo wymaga, aby wysłany XML pozostał czytelnie zarchiwizowany na serwerze.",
+      "Płatność kartą, płatności częściowe i propozycje AI z kwotami przy dokumentach z zaszyfrowanymi kwotami.",
+      "Niektóre eksporty tworzone przez serwer (na przykład Pohoda i Money S3): nie zawierają zaszyfrowanych danych i odrzucają dokumenty z zaszyfrowanymi kwotami.",
+      "AI dostaje zaszyfrowany tekst lub paragon tylko po Twoim wyraźnym potwierdzeniu. Raz przechodzi przez serwer i nie jest zapisywany.",
       "Kod aplikacji dostarcza nasz serwer. Gdyby został przejęty, mógłby dostarczyć inny kod. Publikacja kodu i skrótów pozwala taką zmianę wykryć, ale sama jej nie zapobiega.",
-      "Gdy wysyłasz zaszyfrowany dokument e-mailem z PDF, jego teksty raz przechodzą przez serwer, bo stamtąd wychodzi e-mail. Aplikacja mówi o tym wcześniej, a serwer ich nie zapisuje ani nie loguje. Gdy wysyłasz tylko link, serwer w ogóle nie dostaje tekstów.",
-      "Tryb nie szyfruje kwot, dat, numerów ani klientów, zobacz wyżej.",
-      "Dla zaszyfrowanych dokumentów serwer nie tworzy ISDOC ani innych formatów maszynowych.",
+      "Gdy wysyłasz zaszyfrowany dokument e-mailem z PDF, plik raz przechodzi przez serwer, bo stamtąd wychodzi e-mail. Aplikacja mówi o tym wcześniej, a serwer go nie zapisuje ani nie loguje. Gdy wysyłasz tylko link, serwer w ogóle nie dostaje zaszyfrowanych danych.",
       "Reguła connect-src dotyczy strony załadowanej bezpośrednio. Gdy przejdziesz do aplikacji z publicznej strony bez przeładowania, do odświeżenia obowiązuje reguła poprzedniej strony.",
-      "Kto ma dostęp do Twojej odblokowanej przeglądarki, zobaczy teksty. Tryb chroni przed serwerem, nie przed kimś przy Twoim komputerze.",
-      "Jeśli zapomnisz hasło i kod odzyskiwania i nie masz passkey, nikt nie odzyska tekstów, także my."
+      "Kto ma dostęp do Twojej odblokowanej przeglądarki, zobaczy dane. Tryb chroni przed serwerem, a nie przed kimś przy Twoim komputerze.",
+      "Jeśli zapomnisz i hasło, i kod odzyskiwania i nie masz passkey, nikt nie odzyska zaszyfrowanych danych, nawet my."
     ],
     "verifyTitle": "Weryfikacja kodu",
     "verifyLead": "Przy każdym buildzie zapisujemy skróty SHA-256 kodu szyfrującego w publicznym pliku. Twoja przeglądarka może je przeliczyć tutaj.",
     "planned": [
-      "Kod szyfrujący (jeden plik bez zależności) opublikujemy w osobnym repozytorium na GitHubie, żeby dało się porównać skróty z własnym buildem.",
-      "Niezależny przegląd kodu jest planowany."
+      "Kod szyfrujący (jeden plik bez zależności) opublikujemy w osobnym repozytorium na GitHubie, żeby dało się porównać skróty z własnym buildem."
     ]
   },
   "stepUp": {
