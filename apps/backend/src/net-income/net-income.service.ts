@@ -123,6 +123,14 @@ export class NetIncomeService {
     const rateOf = async (currency: string, exchangeRate: unknown, paidAt: Date) =>
       (await rates.rate(currency, Number(exchangeRate) || null, paidAt, period.year)) ?? (await getHomeRate("CZK", currency, paidAt));
 
+    // Each day's CNB list is its own request; a year of foreign invoices fetched one by one took
+    // seconds on a cold cache. Ask for them all at once; the loop below then reads the cache.
+    await Promise.all(
+      rows
+        .filter(({ invoice }) => invoice.currency !== "CZK" && (amountsSealed(invoice) || !(Number(invoice.receivedCzk) > 0)))
+        .map(({ invoice }) => rateOf(invoice.currency, invoice.exchangeRate, invoice.paidAt!).catch(() => null)),
+    );
+
     let missingRates = 0;
     const invoices: NetIncomeInvoice[] = [];
     // Sealed amounts would count as 0 income; they go to the browser with their envelope instead.

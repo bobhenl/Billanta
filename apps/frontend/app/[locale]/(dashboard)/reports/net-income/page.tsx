@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { ArrowLeft, ChevronLeft, ChevronRight, Lock, Wallet } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Banner } from '@/components/banner';
@@ -47,25 +48,6 @@ export default async function NetIncomePage({ searchParams }: { searchParams: Pr
     );
   }
 
-  let report: NetIncomeReport;
-  try {
-    report = await apiFetch<NetIncomeReport>(`/api/v1/net-income?${periodQuery(period)}`);
-  } catch (error) {
-    if (error instanceof NotSignedInError) redirect({ href: '/login', locale });
-    const forbidden = error instanceof ApiError && error.status === 403;
-    const unsupported = error instanceof ApiError && error.body.includes('country_not_supported');
-    return (
-      <Banner tone={error instanceof NoTenantError || unsupported || forbidden ? 'info' : 'err'} className="mt-6">
-        {t(error instanceof NoTenantError ? 'noTenant' : unsupported ? 'notSupported' : forbidden ? 'noAccess.body' : 'loadError')}
-      </Banner>
-    );
-  }
-
-  // Partners can be linked to team members; without the list the editor just hides that choice.
-  const members: PartnerMember[] = await apiFetch<{ members: { userId: string; name: string | null; email: string }[] }>('/api/v1/team')
-    .then((team) => team.members.map((m) => ({ userId: m.userId, label: m.name || m.email })))
-    .catch(() => []);
-
   const label = periodLabel(period, locale, t('quarterLabel', { q: period.n, year: period.year }));
   const href = (p: Period) => `/reports/net-income?${periodQuery(p)}`;
   const arrow = 'flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:bg-accent hover:text-primary';
@@ -110,27 +92,64 @@ export default async function NetIncomePage({ searchParams }: { searchParams: Pr
         </div>
       </div>
 
-      {report.sealed?.count ? (
-        // Důvěrný režim: this browser opens the sealed amounts and builds the full report.
-        <SealedNetIncome
-          key={periodQuery(period)}
-          report={report}
-          query={periodQuery(period)}
-          kind={period.kind}
-          canEdit={access ? canManage(access.role) : false}
-          canSplit={canWrite(access, 'invoices')}
-          members={members}
-        />
-      ) : (
-        <NetIncomeView
-          key={periodQuery(period)}
-          report={report}
-          kind={period.kind}
-          canEdit={access ? canManage(access.role) : false}
-          canSplit={canWrite(access, 'invoices')}
-          members={members}
-        />
-      )}
+      {/* Keyed by the period: switching it shows the placeholder at once instead of the old report frozen until the new one arrives. */}
+      <Suspense key={periodQuery(period)} fallback={<ReportPlaceholder />}>
+        <Report period={period} access={access} />
+      </Suspense>
+    </div>
+  );
+}
+
+async function Report({ period, access }: { period: Period; access: Awaited<ReturnType<typeof fetchMyAccess>> | null }) {
+  const t = await getTranslations('netIncome');
+  const locale = await getLocale();
+  // The report and the team list don't depend on each other.
+  const [result, members] = await Promise.all([
+    apiFetch<NetIncomeReport>(`/api/v1/net-income?${periodQuery(period)}`).then(
+      (report) => ({ report }),
+      (error: unknown) => ({ error })
+    ),
+    // Partners can be linked to team members; without the list the editor just hides that choice.
+    apiFetch<{ members: { userId: string; name: string | null; email: string }[] }>('/api/v1/team')
+      .then((team): PartnerMember[] => team.members.map((m) => ({ userId: m.userId, label: m.name || m.email })))
+      .catch((): PartnerMember[] => [])
+  ]);
+  if ('error' in result) {
+    const { error } = result;
+    if (error instanceof NotSignedInError) redirect({ href: '/login', locale });
+    const forbidden = error instanceof ApiError && error.status === 403;
+    const unsupported = error instanceof ApiError && error.body.includes('country_not_supported');
+    return (
+      <Banner tone={error instanceof NoTenantError || unsupported || forbidden ? 'info' : 'err'} className="mt-6">
+        {t(error instanceof NoTenantError ? 'noTenant' : unsupported ? 'notSupported' : forbidden ? 'noAccess.body' : 'loadError')}
+      </Banner>
+    );
+  }
+  const { report } = result;
+  return report.sealed?.count ? (
+    // Důvěrný režim: this browser opens the sealed amounts and builds the full report.
+    <SealedNetIncome
+      report={report}
+      query={periodQuery(period)}
+      kind={period.kind}
+      canEdit={access ? canManage(access.role) : false}
+      canSplit={canWrite(access, 'invoices')}
+      members={members}
+    />
+  ) : (
+    <NetIncomeView report={report} kind={period.kind} canEdit={access ? canManage(access.role) : false} canSplit={canWrite(access, 'invoices')} members={members} />
+  );
+}
+
+function ReportPlaceholder() {
+  return (
+    <div className="mt-6 animate-pulse space-y-4" aria-busy="true">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="h-20 rounded-xl bg-secondary" />
+        ))}
+      </div>
+      <div className="h-64 rounded-xl bg-secondary" />
     </div>
   );
 }
