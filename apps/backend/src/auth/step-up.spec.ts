@@ -119,37 +119,50 @@ describe("removing an invoice lock", () => {
   });
 });
 
-describe("switching an invoice's privacy", () => {
-  const invoice = { id: "i1", tenantId: "t1", invoiceNumber: "2026001", documentType: "invoice", createdByUserId: SELLER, isPrivate: true };
+describe("changing an invoice's lock", () => {
+  const invoice = { id: "i1", tenantId: "t1", invoiceNumber: "2026001", documentType: "invoice", createdByUserId: SELLER, accessLock: "private", accessLockUserId: OWNER };
   const service = (log = audit()) => new InvoicesService({} as never, {} as never, undefined, undefined, log as never);
 
-  it("is refused without a fresh step-up and writes nothing", async () => {
-    const db = fakeDb([[invoice]]);
-    await expect(service().setPrivate(db as never, "i1", false, owner as never)).rejects.toMatchObject(refused);
-    expect(db.writes).toHaveLength(0);
+  it("is refused without a fresh step-up when it lets more people in, and writes nothing", async () => {
+    for (const level of [null, "admin", "accountant"] as const) {
+      const db = fakeDb([[invoice]]);
+      await expect(service().setAccessLock(db as never, "i1", level, owner as never)).rejects.toMatchObject(refused);
+      expect(db.writes).toHaveLength(0);
+    }
   });
 
   it("goes through with one, audited", async () => {
     const log = audit();
     const db = fakeDb([[invoice]]);
-    await expect(service(log).setPrivate(db as never, "i1", false, stepped as never)).resolves.toEqual({ id: "i1", isPrivate: false });
+    await expect(service(log).setAccessLock(db as never, "i1", null, stepped as never)).resolves.toEqual({ id: "i1", accessLock: null });
     expect(log.record).toHaveBeenCalledWith(db, "t1", expect.objectContaining({ action: "made_shared", changes: expect.arrayContaining([stepUpLine]) }));
   });
 
-  it("needs none to make a shared invoice private, which only hides it", async () => {
+  it("needs none to lock an invoice or tighten a lock, which only hides it", async () => {
     const log = audit();
-    const db = fakeDb([[{ ...invoice, isPrivate: false }]]);
-    await expect(service(log).setPrivate(db as never, "i1", true, owner as never)).resolves.toEqual({ id: "i1", isPrivate: true });
-    expect(log.record).toHaveBeenCalledWith(db, "t1", expect.objectContaining({ action: "made_private", changes: [{ field: "isPrivate", from: false, to: true }] }));
+    const db = fakeDb([[{ ...invoice, accessLock: null, accessLockUserId: null }]]);
+    await expect(service(log).setAccessLock(db as never, "i1", "private", owner as never)).resolves.toEqual({ id: "i1", accessLock: "private" });
+    expect(log.record).toHaveBeenCalledWith(
+      db,
+      "t1",
+      expect.objectContaining({
+        action: "made_private",
+        changes: [
+          { field: "accessLock", from: null, to: "private" },
+          { field: "accessLockUserId", from: null, to: OWNER },
+        ],
+      }),
+    );
+    await expect(service().setAccessLock(fakeDb([[{ ...invoice, accessLock: "accountant" }]]) as never, "i1", "admin", owner as never)).resolves.toBeDefined();
   });
 });
 
-describe("a client's owner and privacy", () => {
-  const contact = { id: "c1", tenantId: "t1", legalName: "Tajný klient s.r.o.", ownerUserId: SELLER, isPrivate: true };
+describe("a client's owner and lock", () => {
+  const contact = { id: "c1", tenantId: "t1", legalName: "Tajný klient s.r.o.", ownerUserId: SELLER, accessLock: "private", accessLockUserId: SELLER };
 
   it("are refused without a fresh step-up and nothing is written", async () => {
     const db = fakeDb([[contact]]);
-    await expect(new ContactsService({} as never, audit() as never).setVisibility(db as never, owner as never, "c1", { isPrivate: false })).rejects.toMatchObject(
+    await expect(new ContactsService({} as never, audit() as never).setVisibility(db as never, owner as never, "c1", { accessLock: null })).rejects.toMatchObject(
       refused,
     );
     expect(db.writes).toHaveLength(0);
@@ -158,21 +171,21 @@ describe("a client's owner and privacy", () => {
   it("change with one, audited", async () => {
     const log = audit();
     const db = fakeDb([[contact], [{ id: "m1" }]]);
-    await new ContactsService({} as never, log as never).setVisibility(db as never, stepped as never, "c1", { isPrivate: false });
-    expect(db.writes[0]).toMatchObject({ op: "update", value: { isPrivate: false } });
+    await new ContactsService({} as never, log as never).setVisibility(db as never, stepped as never, "c1", { accessLock: null });
+    expect(db.writes[0]).toMatchObject({ op: "update", value: { accessLock: null, accessLockUserId: null } });
     expect(log.record).toHaveBeenCalledWith(db, "t1", expect.objectContaining({ action: "visibility_changed", changes: expect.arrayContaining([stepUpLine]) }));
   });
 
   it("refuses handing a client to another member without a step-up", async () => {
-    const shared = { ...contact, ownerUserId: null, isPrivate: false };
+    const shared = { ...contact, ownerUserId: null, accessLock: null, accessLockUserId: null };
     const db = fakeDb([[shared], [{ id: "m1" }]]);
     await expect(new ContactsService({} as never, audit() as never).setVisibility(db as never, owner as never, "c1", { ownerUserId: SELLER })).rejects.toMatchObject(refused);
     expect(db.writes).toHaveLength(0);
   });
 
-  it("needs none to make a client private or take its owner away, which only hides it", async () => {
-    const shared = { ...contact, isPrivate: false };
-    for (const dto of [{ isPrivate: true }, { ownerUserId: null }, { ownerUserId: OWNER }]) {
+  it("needs none to lock a client or take its owner away, which only hides it", async () => {
+    const shared = { ...contact, accessLock: null, accessLockUserId: null };
+    for (const dto of [{ accessLock: "private" as const }, { ownerUserId: null }, { ownerUserId: OWNER }]) {
       const log = audit();
       const db = fakeDb([[shared], [{ id: "m1" }]]);
       await new ContactsService({} as never, log as never).setVisibility(db as never, owner as never, "c1", dto);
@@ -182,37 +195,50 @@ describe("a client's owner and privacy", () => {
   });
 });
 
-describe("a member's contact scope", () => {
-  const member = { id: "m1", userId: SELLER, role: "accountant", contactScope: "own", permissions: null };
+describe("a member's scopes", () => {
+  const member = { id: "m1", userId: SELLER, role: "accountant", contactScope: "own", invoiceScope: "edit_own", expenseScope: "all", permissions: null };
 
-  it("is refused without a fresh step-up, also through the side doors", async () => {
+  it("are refused without a fresh step-up, also through the side doors", async () => {
     const service = new TeamService({} as never, {} as never, undefined, audit() as never);
     const db = fakeDb([[member]]);
-    await expect(service.updateMember(db as never, owner as never, "m1", "accountant", null, "all")).rejects.toMatchObject(refused);
+    await expect(service.updateMember(db as never, owner as never, "m1", "accountant", null, { contacts: "all" })).rejects.toMatchObject(refused);
+    await expect(service.updateMember(fakeDb([[member]]) as never, owner as never, "m1", "accountant", null, { invoices: "all" })).rejects.toMatchObject(refused);
     await expect(service.updateMember(fakeDb([[member]]) as never, owner as never, "m1", "admin", null)).rejects.toMatchObject(refused);
     await expect(service.removeMember(fakeDb([[member]]) as never, owner as never, "m1")).rejects.toMatchObject(refused);
     expect(db.writes).toHaveLength(0);
   });
 
-  it("changes with one, audited", async () => {
+  it("change with one, audited", async () => {
     const log = audit();
     const db = fakeDb([[member], [{ email: "s@example.cz" }]]);
-    await new TeamService({} as never, {} as never, undefined, log as never).updateMember(db as never, stepped as never, "m1", "accountant", null, "all");
+    await new TeamService({} as never, {} as never, undefined, log as never).updateMember(db as never, stepped as never, "m1", "accountant", null, { contacts: "all" });
     expect(db.writes[0]).toMatchObject({ op: "update", value: { contactScope: "all" } });
     expect(log.record).toHaveBeenCalledWith(db, "t1", expect.objectContaining({ changes: expect.arrayContaining([stepUpLine]) }));
   });
 
-  it("needs none to limit a member to their own clients", async () => {
+  it("need none to limit a member", async () => {
     const log = audit();
     const db = fakeDb([[{ ...member, contactScope: "all" }], [{ email: "s@example.cz" }]]);
-    await expect(new TeamService({} as never, {} as never, undefined, log as never).updateMember(db as never, owner as never, "m1", "accountant", null, "own")).resolves.toEqual({ ok: true });
-    expect(db.writes[0]).toMatchObject({ op: "update", value: { contactScope: "own" } });
-    expect(log.record).toHaveBeenCalledWith(db, "t1", expect.objectContaining({ changes: [{ field: "contactScope", from: "all", to: "own" }] }));
+    await expect(
+      new TeamService({} as never, {} as never, undefined, log as never).updateMember(db as never, owner as never, "m1", "accountant", null, { contacts: "own", invoices: "own" }),
+    ).resolves.toEqual({ ok: true });
+    expect(db.writes[0]).toMatchObject({ op: "update", value: { contactScope: "own", invoiceScope: "own" } });
+    expect(log.record).toHaveBeenCalledWith(
+      db,
+      "t1",
+      expect.objectContaining({
+        changes: [
+          { field: "contactScope", from: "all", to: "own" },
+          { field: "invoiceScope", from: "edit_own", to: "own" },
+        ],
+      }),
+    );
   });
 
-  it("is not touched by other team changes, which need no step-up", async () => {
+  it("are not touched by other team changes, which need no step-up", async () => {
     const service = new TeamService({} as never, {} as never, undefined, audit() as never);
-    await expect(service.updateMember(fakeDb([[{ ...member, contactScope: "all" }], [{ email: "s@example.cz" }]]) as never, owner as never, "m1", "viewer", null)).resolves.toEqual({
+    const unlimited = { ...member, contactScope: "all", invoiceScope: "all" };
+    await expect(service.updateMember(fakeDb([[unlimited], [{ email: "s@example.cz" }]]) as never, owner as never, "m1", "viewer", null)).resolves.toEqual({
       ok: true,
     });
   });

@@ -799,6 +799,13 @@
       "when": 1793602300000,
       "tag": "0120_vat_filing_reminders",
       "breakpoints": true
+    },
+    {
+      "idx": 116,
+      "version": "7",
+      "when": 1793602500000,
+      "tag": "0122_record_scope_and_locks",
+      "breakpoints": true
     }
   ]
 }

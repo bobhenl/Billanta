@@ -1,6 +1,6 @@
-import { BadRequestException, Body, Controller, HttpCode, NotFoundException, Post, ServiceUnavailableException, Get, Query, Req, Res, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, ConflictException, Controller, HttpCode, NotFoundException, Post, ServiceUnavailableException, Get, Query, Req, Res, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import type { Response } from "express";
 import { z } from "zod";
 import { refuseSealedSet } from "../vault/sealed-amounts";
@@ -365,6 +365,7 @@ export class ExportsController {
   private async taxReturnInputsOf(req: TenantScopedRequest, query: unknown): Promise<{ inputs: TaxReturnInputs; sealed: { count: number; ids: string[] } }> {
     const parsed = taxReturnQuerySchema.safeParse(query);
     if (!parsed.success) throw new BadRequestException("invalid_tax_return_query");
+    await this.assertCompleteView(req);
     const { year, rate } = parsed.data;
     const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
     const country = tenantCountry(tenant);
@@ -467,6 +468,7 @@ export class ExportsController {
   }
 
   private async filingFigures(req: TenantScopedRequest, q: z.infer<typeof filingsQuerySchema>) {
+    await this.assertCompleteView(req);
     const summary = await this.loadAnnual(req, q);
     const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
     if (!tenant) throw new NotFoundException("tenant_not_found");
@@ -558,6 +560,7 @@ export class ExportsController {
   async vatInputs(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>) {
     const filing = VAT_INPUT_FILINGS.get(query.filing ?? "");
     if (!filing) throw new BadRequestException("invalid_filing");
+    await this.assertCompleteView(req);
     const period = parseVatPeriod(query);
     const tenant = filing.country === "SK" ? await this.skTenant(req) : await this.czTenant(req, filing.kind, period.vat);
     let inputs;
@@ -600,6 +603,7 @@ export class ExportsController {
     kind: "dph" | "kv" | "sv",
     period: ExportPeriod & { vat: VatPeriod; label: string },
   ) {
+    await this.assertCompleteView(req);
     const tenant = await this.skTenant(req);
     let body: string | null;
     try {
@@ -620,6 +624,7 @@ export class ExportsController {
     kind: "dp3" | "kh1" | "shv",
     period: ExportPeriod & { vat: VatPeriod; label: string },
   ) {
+    await this.assertCompleteView(req);
     const tenant = await this.czTenant(req, kind, period.vat);
     let body: string | null;
     let warnings: VatExportWarning[];
@@ -647,6 +652,18 @@ export class ExportsController {
    * built first, so a 400/404 (no DIČ, nothing to report) costs no taste
    * use. The on-screen figures (the JSON routes) stay open on every plan.
    */
+  /**
+   * A filing is the whole company's. Built from what a limited member sees
+   * (own records only, or with something locked away from them) it would
+   * come out short without saying so, so it is refused instead: 409
+   * filing_needs_full_view. The answer is one yes or no for the company and
+   * tells nothing about which record or how much (app_view_complete).
+   */
+  private async assertCompleteView(req: TenantScopedRequest) {
+    const [row] = await req.tenantDb!.execute<{ complete: boolean }>(sql`SELECT app_view_complete() AS complete`);
+    if (!row?.complete) throw new ConflictException("filing_needs_full_view");
+  }
+
   private async spend(req: TenantScopedRequest, feature: PlanFeature) {
     await spendFeature(req.tenantDb!, req.user!.tenantId, feature);
   }

@@ -39,45 +39,56 @@ function requireManager(user: AuthenticatedUser) {
   }
 }
 
-/**
- * Which clients a member sees is the company owner's call alone. Admins
- * manage the team, so they may not lift a limit the owner set, neither by
- * switching the scope nor by making a limited member an admin (admins
- * always see the whole company) or by removing and re-inviting them.
- * The trigger in migrations/0111 holds the same line in the database.
- */
-export function scopeChangeRefused(
-  actorRole: string,
-  member: { role: string; contactScope: string },
-  next: { role?: string; contactScope?: string; removed?: boolean },
-): boolean {
-  return actorRole !== "owner" && touchesContactScope(member, next);
+/** The areas a member's scope is set for, with their tenant_memberships columns. */
+export const SCOPE_AREAS = { contacts: "contactScope", invoices: "invoiceScope", expenses: "expenseScope" } as const;
+export type ScopeArea = keyof typeof SCOPE_AREAS;
+export type MemberScopes = Record<ScopeArea, schema.RecordScope>;
+type ScopedMember = { role: string } & Record<(typeof SCOPE_AREAS)[ScopeArea], string>;
+type ScopeChange = { role?: string; scopes?: Partial<MemberScopes>; removed?: boolean };
+
+// How much a scope lets the member do, from the least.
+const SCOPE_REACH: Record<string, number> = { own: 0, edit_own: 1, all: 2 };
+
+export function scopesOf(member: ScopedMember): MemberScopes {
+  return { contacts: member.contactScope, invoices: member.invoiceScope, expenses: member.expenseScope } as MemberScopes;
+}
+
+/** The areas whose scope `next` actually changes. */
+export function changedScopes(member: ScopedMember, next: Partial<MemberScopes> | undefined): ScopeArea[] {
+  const now = scopesOf(member);
+  return (Object.keys(SCOPE_AREAS) as ScopeArea[]).filter((a) => next?.[a] !== undefined && next[a] !== now[a]);
 }
 
 /**
- * Whether a change moves the line of which clients a member sees: the scope
+ * What a member sees and edits is the company owner's call alone. Admins
+ * manage the team, so they may not lift a limit the owner set, neither by
+ * switching a scope nor by making a limited member an admin (admins always
+ * see the whole company) or by removing and re-inviting them. The trigger
+ * in migrations/0122 holds the same line in the database.
+ */
+export function scopeChangeRefused(actorRole: string, member: ScopedMember, next: ScopeChange): boolean {
+  return actorRole !== "owner" && touchesScopes(member, next);
+}
+
+/**
+ * Whether a change moves the line of what a member sees or edits: a scope
  * itself, or one of the side doors around it. Only the owner may do it.
  */
-export function touchesContactScope(
-  member: { role: string; contactScope: string },
-  next: { role?: string; contactScope?: string; removed?: boolean },
-): boolean {
-  if (next.contactScope !== undefined && next.contactScope !== member.contactScope) return true;
-  return widensContactScope(member, next);
+export function touchesScopes(member: ScopedMember, next: ScopeChange): boolean {
+  return changedScopes(member, next.scopes).length > 0 || widensScopes(member, next);
 }
 
 /**
- * Whether the change lets a limited member see more clients: the scope
- * opened to all, or a side door (made admin, removed to be invited back
+ * Whether the change lets a limited member see or edit more: a scope
+ * opened up, or a side door (made admin, removed to be invited back
  * unlimited). That needs a step-up (src/auth/step-up.ts); limiting a member
- * to their own clients does not.
+ * does not.
  */
-export function widensContactScope(
-  member: { role: string; contactScope: string },
-  next: { role?: string; contactScope?: string; removed?: boolean },
-): boolean {
-  if (member.contactScope !== "own") return false;
-  return next.contactScope === "all" || next.removed === true || (next.role === "admin" && member.role !== "admin");
+export function widensScopes(member: ScopedMember, next: ScopeChange): boolean {
+  const now = scopesOf(member);
+  const limited = Object.values(now).some((s) => s !== "all");
+  if (limited && (next.removed === true || (next.role === "admin" && member.role !== "admin"))) return true;
+  return changedScopes(member, next.scopes).some((a) => SCOPE_REACH[next.scopes![a]!]! > SCOPE_REACH[now[a]]!);
 }
 
 type PreviewRow = { company_name: string; role: string; email: string; expired: boolean; accepted: boolean; permissions: unknown };
@@ -109,6 +120,8 @@ export class TeamService {
         role: schema.tenantMemberships.role,
         permissions: schema.tenantMemberships.permissions,
         contactScope: schema.tenantMemberships.contactScope,
+        invoiceScope: schema.tenantMemberships.invoiceScope,
+        expenseScope: schema.tenantMemberships.expenseScope,
         createdAt: schema.tenantMemberships.createdAt,
       })
       .from(schema.tenantMemberships)
@@ -231,25 +244,26 @@ export class TeamService {
     membershipId: string,
     role: "admin" | "accountant" | "viewer",
     permissions?: StoredPermissions | null,
-    contactScope?: "all" | "own",
+    scopes?: Partial<MemberScopes>,
   ) {
     requireManager(user);
     const member = await this.requireMember(db, membershipId);
     if (member.role === "owner") throw new BadRequestException("The owner's role cannot be changed");
-    if (scopeChangeRefused(user.role, member, { role, contactScope })) throw new ForbiddenException("owner_only");
-    const stepUp = widensContactScope(member, { role, contactScope }) ? assertStepUp(user) : null;
+    if (scopeChangeRefused(user.role, member, { role, scopes })) throw new ForbiddenException("owner_only");
+    const stepUp = widensScopes(member, { role, scopes }) ? assertStepUp(user) : null;
     // Turning an accountant into a member (or back) moves them between allowances.
     if ((member.role === "accountant") !== (role === "accountant")) await this.assertSeatFree(db, user.tenantId, { membershipId }, role);
+    const changed = changedScopes(member, scopes);
     await db
       .update(schema.tenantMemberships)
-      .set({ role, permissions: role === "admin" ? null : permissions ?? null, ...(contactScope ? { contactScope } : {}) })
+      .set({ role, permissions: role === "admin" ? null : permissions ?? null, ...Object.fromEntries(changed.map((a) => [SCOPE_AREAS[a], scopes![a]])) })
       .where(eq(schema.tenantMemberships.id, membershipId));
     const changes = [
       ...(member.role !== role ? [{ field: "role", from: member.role, to: role }] : []),
       ...(JSON.stringify(member.permissions ?? null) !== JSON.stringify(role === "admin" ? null : permissions ?? null)
         ? [{ field: "permissions", from: null, to: null }]
         : []),
-      ...(contactScope && contactScope !== member.contactScope ? [{ field: "contactScope", from: member.contactScope, to: contactScope }] : []),
+      ...changed.map((a) => ({ field: SCOPE_AREAS[a], from: member[SCOPE_AREAS[a]], to: scopes![a] })),
       ...(stepUp ? [stepUpChange(stepUp)] : []),
     ];
     if (changes.length > 0) {
@@ -271,7 +285,7 @@ export class TeamService {
     if (member.role === "owner") throw new BadRequestException("The owner cannot be removed");
     // Leaving is always possible; showing a limited member out (to invite them back unlimited) is not.
     if (member.userId !== user.id && scopeChangeRefused(user.role, member, { removed: true })) throw new ForbiddenException("owner_only");
-    const stepUp = member.userId !== user.id && widensContactScope(member, { removed: true }) ? assertStepUp(user) : null;
+    const stepUp = member.userId !== user.id && widensScopes(member, { removed: true }) ? assertStepUp(user) : null;
     const label = await this.memberEmail(db, member.userId);
     await db.delete(schema.tenantMemberships).where(eq(schema.tenantMemberships.id, membershipId));
     await this.audit?.record(db, user.tenantId, {

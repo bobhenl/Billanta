@@ -35,7 +35,7 @@ import { AuditService } from "../audit/audit.service";
 import { withIdempotencyKey } from "../common/idempotency";
 import { DbService } from "../db/db.service";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
-import { contactVisibilityWidens, mayChangeContactVisibility, visibilityError } from "../tenancy/visibility";
+import { contactOwnerWidens, lockWidens, mayChangeContactOwner, mayChangeLock, visibilityError } from "../tenancy/visibility";
 import { CONTACT_SEALABLE, assertContactWrite, contactIsSealed, contactLabel, redactSealedContact } from "../vault/sealed-contacts";
 import { summarizeContactInvoices, type ContactSummaryBucket } from "./contact-summary.util";
 import { contactsToCsv, mapContactRows, type CsvContact, type CsvSkip } from "./contacts-csv.util";
@@ -660,16 +660,26 @@ export class ContactsService {
   }
 
   /**
-   * "Patří" and "Soukromý": who the client belongs to and whether only that
-   * person and the company owner see it (with its documents, see the
-   * member_visibility policies). Only the company owner or the client's
-   * current owner may change it; 403 `visibility_owner_only` otherwise.
+   * "Patří" and the padlock: who the client belongs to and who else sees it
+   * (with its documents, see the member_visibility policies). The owner is
+   * the company owner's or the client's current owner's to change, a lock its
+   * holder's (tenancy/visibility.ts); 403 `visibility_owner_only` otherwise.
    */
-  async setVisibility(db: TenantDb, user: AuthenticatedUser, id: string, dto: { ownerUserId?: string | null; isPrivate?: boolean }) {
+  async setVisibility(
+    db: TenantDb,
+    user: AuthenticatedUser,
+    id: string,
+    dto: { ownerUserId?: string | null; accessLock?: schema.AccessLockLevel | null },
+  ) {
     const [before] = await db.select().from(schema.contacts).where(eq(schema.contacts.id, id)).limit(1);
     if (!before) throw new NotFoundException(`Contact ${id} not found`);
-    if (!mayChangeContactVisibility(user, before)) throw new ForbiddenException("visibility_owner_only");
-    if (dto.ownerUserId) {
+    const ownerChanges = dto.ownerUserId !== undefined && dto.ownerUserId !== before.ownerUserId;
+    const lockChanges = dto.accessLock !== undefined && dto.accessLock !== before.accessLock;
+    if (ownerChanges && !mayChangeContactOwner(user, before)) throw new ForbiddenException("visibility_owner_only");
+    if (lockChanges && !mayChangeLock(user, { person: before.ownerUserId, accessLock: before.accessLock, accessLockUserId: before.accessLockUserId })) {
+      throw new ForbiddenException("visibility_owner_only");
+    }
+    if (ownerChanges && dto.ownerUserId) {
       const [member] = await db
         .select({ id: schema.tenantMemberships.id })
         .from(schema.tenantMemberships)
@@ -677,16 +687,21 @@ export class ContactsService {
         .limit(1);
       if (!member) throw new BadRequestException("owner_not_member");
     }
+    const lock = lockChanges ? (dto.accessLock ?? null) : before.accessLock;
+    // A new lock is held by whoever sets it. A client handed over keeps its
+    // lock, now held by its new owner, so the lock goes where the client goes.
+    let holder = lockChanges ? (lock ? user.id : null) : before.accessLockUserId;
+    if (ownerChanges && lock && !lockChanges && holder === before.ownerUserId) holder = dto.ownerUserId ?? user.id;
     const set = {
-      ...(dto.ownerUserId !== undefined && { ownerUserId: dto.ownerUserId }),
-      ...(dto.isPrivate !== undefined && { isPrivate: dto.isPrivate }),
+      ...(ownerChanges && { ownerUserId: dto.ownerUserId ?? null }),
+      ...(lock !== before.accessLock && { accessLock: lock }),
+      ...(holder !== before.accessLockUserId && { accessLockUserId: holder }),
     };
-    const changes = (Object.keys(set) as (keyof typeof set)[])
-      .filter((field) => set[field] !== before[field])
-      .map((field) => ({ field, from: before[field], to: set[field] }));
+    const changes = (Object.keys(set) as (keyof typeof set)[]).map((field) => ({ field, from: before[field], to: set[field] }));
     if (changes.length === 0) return before;
     // Hiding a client from people needs nothing more; showing it to more people needs a step-up.
-    const stepUp = contactVisibilityWidens(before, set, user.id) ? assertStepUp(user) : null;
+    const widens = (ownerChanges && contactOwnerWidens(before, dto.ownerUserId, user.id)) || lockWidens(before.accessLock, lock);
+    const stepUp = widens ? assertStepUp(user) : null;
     let row: typeof before | undefined;
     try {
       [row] = await db

@@ -8,7 +8,7 @@ import { ExportsController } from "./exports.controller";
 
 const TENANT = { id: "t1", dic: "CZ12345678", vatStatus: "payer", country: "CZ" };
 
-function setup(tenant: Record<string, unknown> = TENANT) {
+function setup(tenant: Record<string, unknown> = TENANT, complete = true) {
   const service = {
     pohodaXml: vi.fn(async () => "<pohoda/>"),
     moneyS3Xml: vi.fn(async () => "<money/>"),
@@ -20,7 +20,7 @@ function setup(tenant: Record<string, unknown> = TENANT) {
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const chain: any = { from: () => chain, where: () => Promise.resolve([tenant]) };
-  const req = { tenantDb: { select: () => chain }, user: { tenantId: "t1" } };
+  const req = { tenantDb: { select: () => chain, execute: vi.fn(async () => [{ complete }]) }, user: { tenantId: "t1" } };
   const res = { setHeader: vi.fn(), send: vi.fn() };
   return { controller: new ExportsController(service as never), service, req, res };
 }
@@ -144,6 +144,29 @@ describe("ExportsController vat-inputs (sealed amounts, built in the browser)", 
     expect(czech.service.vatInputs).not.toHaveBeenCalled();
     // A refused filing is not counted on the plan.
     expect(limits.spendFeature).not.toHaveBeenCalled();
+  });
+});
+
+describe("ExportsController filings for a member who sees only part of the company", () => {
+  it("are refused before anything is computed or spent", async () => {
+    const { controller, service, req, res } = setup(TENANT, false);
+    const refused = { status: 409, message: "filing_needs_full_view" };
+    await expect(controller.dp3(req as never, { year: "2026", month: "3" }, res as never)).rejects.toMatchObject(refused);
+    await expect(controller.vatInputs(req as never, { filing: "dphkh1", year: "2026", month: "3" })).rejects.toMatchObject(refused);
+    await expect(controller.taxReturnBasisCsv(req as never, { year: "2025" }, res as never)).rejects.toMatchObject(refused);
+    const sk = setup({ ...TENANT, dic: "SK2020123456", country: "SK" }, false);
+    await expect(sk.controller.skDph(sk.req as never, { year: "2026", month: "3" }, sk.res as never)).rejects.toMatchObject(refused);
+    expect(service.vatReturn).not.toHaveBeenCalled();
+    expect(service.vatInputs).not.toHaveBeenCalled();
+    expect(service.annualSummary).not.toHaveBeenCalled();
+    expect(limits.spendFeature).not.toHaveBeenCalled();
+    expect(res.send).not.toHaveBeenCalled();
+  });
+
+  it("leave the accounting exports alone, which are lists rather than filings", async () => {
+    const { controller, res, req } = setup(TENANT, false);
+    await controller.pohoda(req as never, { month: "2026-03" }, res as never);
+    expect(res.send).toHaveBeenCalledTimes(1);
   });
 });
 

@@ -66,7 +66,7 @@ import { appendNoteLine } from "../bank-reconciliation/payment-note";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
 import { lockBlocks } from "./invoice-lock";
-import { invoicePrivacyWidens, mayChangeInvoicePrivacy, visibilityError } from "../tenancy/visibility";
+import { lockWidens, mayChangeLock, visibilityError } from "../tenancy/visibility";
 import { countIssuedDocument } from "../billing/plan-limits";
 import { countsAsDocument } from "../billing/usage";
 import { assertSealingAllowed, plainOrNull, printedTexts, textFilterVerdict } from "../vault/sealed";
@@ -683,8 +683,8 @@ export class InvoicesService {
         status: "draft",
         source,
         rawAiPayload: dto.source_ai ? { prefilledByAi: true } : null,
-        // A credit note or advance settlement of a private invoice names the same client: it stays private too.
-        ...(related?.isPrivate && { isPrivate: true }),
+        // A credit note or advance settlement of a locked invoice names the same client: it keeps the lock.
+        ...(related?.accessLock && { accessLock: related.accessLock, accessLockUserId: related.accessLockUserId }),
       })
       .returning();
 
@@ -1229,26 +1229,31 @@ export class InvoicesService {
   }
 
   /**
-   * "Soukromá faktura": seen only by the company owner and whoever created
-   * it, with its items, files and matched payments (member_visibility).
-   * Only those two may switch it; 403 `visibility_owner_only` otherwise.
+   * The padlock: who besides the holder and the company owner sees the
+   * document, with its items, files and matched payments (member_visibility).
+   * null lifts it. Locked by its creator or a manager, then changed only by
+   * the holder or the company owner; 403 `visibility_owner_only` otherwise.
    */
-  async setPrivate(db: TenantDb, id: string, isPrivate: boolean, user: AuthenticatedUser) {
+  async setAccessLock(db: TenantDb, id: string, level: schema.AccessLockLevel | null, user: AuthenticatedUser) {
     const invoice = await this.requireInvoice(db, id);
-    if (!mayChangeInvoicePrivacy(user, invoice)) throw new ForbiddenException("visibility_owner_only");
-    if (invoice.isPrivate === isPrivate) return { id, isPrivate };
-    // Sharing it needs a step-up; making it private only hides it.
-    const stepUp = invoicePrivacyWidens(invoice, isPrivate) ? assertStepUp(user) : null;
+    if (!mayChangeLock(user, { person: invoice.createdByUserId, accessLock: invoice.accessLock, accessLockUserId: invoice.accessLockUserId })) {
+      throw new ForbiddenException("visibility_owner_only");
+    }
+    if (invoice.accessLock === level) return { id, accessLock: level };
+    // Showing it to more people needs a step-up; locking it only hides it.
+    const stepUp = lockWidens(invoice.accessLock, level) ? assertStepUp(user) : null;
+    const holder = level ? user.id : null;
     try {
-      await db.update(schema.invoices).set({ isPrivate }).where(eq(schema.invoices.id, id));
+      await db.update(schema.invoices).set({ accessLock: level, accessLockUserId: holder }).where(eq(schema.invoices.id, id));
     } catch (error) {
       throw visibilityError(error);
     }
-    await this.log(db, invoice, isPrivate ? "made_private" : "made_shared", [
-      { field: "isPrivate", from: invoice.isPrivate, to: isPrivate },
+    await this.log(db, invoice, level ? "made_private" : "made_shared", [
+      { field: "accessLock", from: invoice.accessLock, to: level },
+      ...(holder !== invoice.accessLockUserId ? [{ field: "accessLockUserId", from: invoice.accessLockUserId, to: holder }] : []),
       ...(stepUp ? [stepUpChange(stepUp)] : []),
     ]);
-    return { id, isPrivate };
+    return { id, accessLock: level };
   }
 
   async markUnpaid(db: TenantDb, id: string) {

@@ -54,6 +54,7 @@ import { assertInvoiceOpen, maskLockedRow } from "./invoice-lock";
 import { BUYER_DETAILS_FIELDS } from "./buyer-details.util";
 import { BuyerDetailsService } from "./buyer-details.service";
 import { customSlugSchema } from "../public-links/public-link";
+import { SetAccessLockDto } from "../tenancy/access-lock.dto";
 
 const MAX_IMPORT_CSV_BYTES = 5 * 1024 * 1024;
 
@@ -103,7 +104,6 @@ class BitfakturaImportDto extends createZodDto(
 class PublicSlugDto extends createZodDto(z.object({ slug: customSlugSchema })) {}
 
 class SetInvoiceLockDto extends createZodDto(z.object({ locked: z.boolean() })) {}
-class SetInvoicePrivateDto extends createZodDto(z.object({ isPrivate: z.boolean() })) {}
 
 const verdictSchema = z.enum(["unpaid", "partly_paid", "paid"]);
 /** One payment of a sealed document; the sum is an envelope, `state` the browser's verdict with it. */
@@ -403,16 +403,18 @@ export class InvoicesController {
     return this.invoicesService.setLock(req.tenantDb!, id, dto.locked, req.user!);
   }
 
-  @Patch(":id/private")
+  @Patch(":id/access-lock")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: "Mark an invoice private (company owner or its creator)",
+    summary: "Lock who sees an invoice (level: private | admin | accountant | null)",
     description:
-      "A private invoice, with its items, attachments and matched payments, is seen only by the company owner and " +
-      "the member who created it. Anyone else gets 403 visibility_owner_only. Audited.",
+      "A locked invoice, with its items, attachments and matched payments, is seen only by the lock's holder, the " +
+      "company owner and the roles the level lets in (admin: admins; accountant: everyone but viewers). Set by its " +
+      "creator or an admin, then changed only by the holder or the company owner (403 visibility_owner_only). " +
+      "Widening needs a step-up. Audited.",
   })
-  setPrivate(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: SetInvoicePrivateDto) {
-    return this.invoicesService.setPrivate(req.tenantDb!, id, dto.isPrivate, req.user!);
+  setAccessLock(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: SetAccessLockDto) {
+    return this.invoicesService.setAccessLock(req.tenantDb!, id, dto.level, req.user!);
   }
 
   @Post(":id/mark-paid")

@@ -1,7 +1,11 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { ForbiddenException, Injectable, NotFoundException, Optional } from "@nestjs/common";
 import { count, desc, eq } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
+import { AuditService } from "../audit/audit.service";
+import { assertStepUp, stepUpChange } from "../auth/step-up";
+import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
+import { lockWidens, mayChangeLock, visibilityError } from "../tenancy/visibility";
 import type { CreateExpenseDto } from "./dto/create-expense.dto";
 import type { ListExpensesQueryDto } from "./dto/list-expenses-query.dto";
 import type { UpdateExpenseDto } from "./dto/update-expense.dto";
@@ -10,6 +14,8 @@ type TenantDb = PostgresJsDatabase<typeof schema>;
 
 @Injectable()
 export class ExpensesService {
+  constructor(@Optional() private readonly audit?: AuditService) {}
+
   async list(db: TenantDb, query: ListExpensesQueryDto) {
     // RLS on `expenses` already restricts this to the current tenant — no
     // manual `WHERE tenant_id = ...` needed (same pattern as
@@ -125,5 +131,33 @@ export class ExpensesService {
   async remove(db: TenantDb, id: string): Promise<void> {
     await this.findOne(db, id);
     await db.delete(schema.expenses).where(eq(schema.expenses.id, id));
+  }
+
+  /** The padlock, with the same rules as InvoicesService.setAccessLock. */
+  async setAccessLock(db: TenantDb, id: string, level: schema.AccessLockLevel | null, user: AuthenticatedUser) {
+    const expense = await this.findOne(db, id);
+    if (!mayChangeLock(user, { person: expense.createdByUserId, accessLock: expense.accessLock, accessLockUserId: expense.accessLockUserId })) {
+      throw new ForbiddenException("visibility_owner_only");
+    }
+    if (expense.accessLock === level) return { id, accessLock: level };
+    const stepUp = lockWidens(expense.accessLock, level) ? assertStepUp(user) : null;
+    const holder = level ? user.id : null;
+    try {
+      await db.update(schema.expenses).set({ accessLock: level, accessLockUserId: holder }).where(eq(schema.expenses.id, id));
+    } catch (error) {
+      throw visibilityError(error);
+    }
+    await this.audit?.record(db, expense.tenantId, {
+      entityType: "expense",
+      entityId: id,
+      entityLabel: expense.documentNumber ?? expense.description.slice(0, 80),
+      action: level ? "made_private" : "made_shared",
+      changes: [
+        { field: "accessLock", from: expense.accessLock, to: level },
+        ...(holder !== expense.accessLockUserId ? [{ field: "accessLockUserId", from: expense.accessLockUserId, to: holder }] : []),
+        ...(stepUp ? [stepUpChange(stepUp)] : []),
+      ],
+    });
+    return { id, accessLock: level };
   }
 }
