@@ -579,3 +579,21 @@ describe("InvoicePdfService Důvěrný režim (sealed texts)", () => {
     expect(lines.some((l) => l.startsWith("enc:v1:"))).toBe(false);
   });
 });
+
+describe("InvoicePdfService EET", () => {
+  const build = (overrides: Partial<InvoiceRow>) => {
+    const lineItems = makeLineItems();
+    return new InvoicePdfService().buildModel(makeInvoice(overrides), makeContact(), makeTenant(), lineItems, computeVatBreakdown(lineItems));
+  };
+
+  it("prints the POK of a sale recorded in EET next to the payment details", async () => {
+    const pok = "0f7e5c39-8a6b-4f2d-9c11-2e3a4b5c6d7e-ff";
+    const model = await build({ paymentMethod: "cash", status: "paid", eetPok: pok });
+    expect(model.rows.right).toContainEqual(["POK (EET)", pok]);
+  });
+
+  it("prints no POK line for a document without one", async () => {
+    const model = await build({ paymentMethod: "cash", status: "paid" });
+    expect(model.rows.right.some(([label]) => label.includes("POK"))).toBe(false);
+  });
+});

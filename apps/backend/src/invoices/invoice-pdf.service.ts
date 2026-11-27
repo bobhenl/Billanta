@@ -118,6 +118,7 @@ const L = {
     vs: "Variabilní symbol",
     ks: "Konstantní symbol",
     ss: "Specifický symbol",
+    eetPok: "POK (EET)",
     order: "Objednávka",
     issuePlace: "Místo vystavení",
     issuedBy: "Vystavil",
@@ -183,6 +184,7 @@ const L = {
     vs: "Variabilný symbol",
     ks: "Konštantný symbol",
     ss: "Špecifický symbol",
+    eetPok: "POK (EET)",
     order: "Objednávka",
     issuePlace: "Miesto vystavenia",
     issuedBy: "Vystavil",
@@ -247,6 +249,7 @@ const L = {
     vs: "Variable symbol",
     ks: "Constant symbol",
     ss: "Specific symbol",
+    eetPok: "EET POK",
     order: "Order",
     issuePlace: "Place of issue",
     issuedBy: "Issued by",
@@ -825,6 +828,8 @@ export class InvoicePdfService {
       if (invoice.variableSymbol) right.push([t.vs, invoice.variableSymbol]);
       if (invoice.constantSymbol) right.push([t.ks, invoice.constantSymbol]);
       if (invoice.specificSymbol) right.push([t.ss, invoice.specificSymbol]);
+      // The POK the Financial Administration confirmed the cash or card sale with (src/eet/).
+      if (invoice.eetPok) right.push([t.eetPok, invoice.eetPok]);
     }
     return { left, right };
   }
