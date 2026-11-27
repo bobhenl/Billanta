@@ -15,6 +15,8 @@ export class CreateInvitationDto extends createZodDto(createInvitationSchema) {}
 export const updateMemberSchema = z.object({
   role: z.enum(["admin", "accountant", "viewer"]),
   permissions: permissionsSchema.nullable().optional(),
+  // Which clients the member sees: the whole company or only their own. Owner only (TeamService).
+  contactScope: z.enum(["all", "own"]).optional(),
 });
 
 export class UpdateMemberDto extends createZodDto(updateMemberSchema) {}

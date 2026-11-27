@@ -1359,7 +1359,25 @@
         "manage": "Link bearbeiten"
       },
       "contactPerson": "Ansprechpartner",
-      "person": "Privatperson"
+      "person": "Privatperson",
+      "visibility": {
+        "title": "Wer den Kunden sieht",
+        "hint": "Einen privaten Kunden und seine Belege sehen nur der Firmeninhaber und das Mitglied, dem der Kunde gehört. Andere finden ihn weder in Listen noch im Verlauf.",
+        "owner": "Gehört",
+        "nobody": "Der ganzen Firma (niemandem bestimmten)",
+        "formerMember": "Ehemaliges Teammitglied",
+        "private": "Privat – nur für den Firmeninhaber und die Person, der der Kunde gehört",
+        "privateHint": "Andere finden ihn nicht in Kontakten, Rechnungen, Benachrichtigungen oder im Änderungsverlauf.",
+        "ownedBy": "Gehört: {name}",
+        "ownerOnly": "Nur der Firmeninhaber oder die Person, der der Kunde gehört, kann das ändern.",
+        "saved": "Gespeichert",
+        "failed": "Speichern fehlgeschlagen",
+        "errors": {
+          "visibility_owner_only": "Nur der Firmeninhaber oder die Person, der der Kunde gehört, kann das ändern.",
+          "visibility_would_hide": "Damit würden Sie den Kunden selbst nicht mehr sehen. Einen privaten Kunden übergeben kann nur der Firmeninhaber.",
+          "owner_not_member": "Diese Person ist nicht mehr im Team."
+        }
+      }
     },
     "csv": {
       "import": "CSV importieren",
@@ -1424,7 +1442,8 @@
       "violet": "Violett",
       "pink": "Rosa",
       "slate": "Grau"
-    }
+    },
+    "privateBadge": "Privater Kunde"
   },
   "settings": {
     "title": "Einstellungen",
@@ -2149,7 +2168,16 @@
         "ownerOnly": "Nur Inhaber",
         "adminsOnly": "Nur Inhaber und Administratoren"
       },
-      "fillFromPreset": "Ausfüllen aus"
+      "fillFromPreset": "Ausfüllen aus",
+      "contactScope": {
+        "label": "Sieht Kunden",
+        "all": "Ganze Firma",
+        "own": "Nur eigene",
+        "hint": "Nur eigene = nur die Kunden, die Sie der Person zuweisen (Gehört), und Belege, die sie selbst erstellt hat.",
+        "ownerOnly": "Nur der Firmeninhaber kann das ändern.",
+        "summary": "nur eigene Kunden",
+        "refused": "Nur der Firmeninhaber kann das ändern."
+      }
     },
     "exports": {
       "title": "Exporte für die Buchhaltung",
@@ -5348,15 +5376,26 @@
       "relock": "Wieder verbergen",
       "lockedToast": "Details verborgen",
       "unlockedToast": "Details werden ohne Passwort angezeigt",
-      "teamHint": "Das schützt vor Blicken auf einen nicht gesperrten oder geteilten Computer, nicht vor Kollegen: Jedes Teammitglied macht sie mit seinem eigenen Passwort sichtbar. Wenn nur bestimmte Personen eine Rechnung sehen sollen, legen Sie beim Kunden fest, wer Zugriff hat.",
+      "teamHint": "Das schützt vor Blicken auf einen nicht gesperrten oder geteilten Computer, nicht vor Kollegen: Jedes Teammitglied macht sie mit seinem eigenen Passwort sichtbar. Wenn nur bestimmte Personen eine Rechnung sehen sollen, markieren Sie sie als privat oder legen Sie fest, wem der Kunde gehört.",
       "teamLink": "Festlegen, wer im Team was sieht",
       "errors": {
         "wrong_current": "Falsches Passwort.",
         "reauth_required": "Ihr Konto hat kein Passwort. Melden Sie sich ab und wieder an und versuchen Sie es erneut.",
         "too_many_attempts": "Zu viele Versuche. Versuchen Sie es in ein paar Minuten erneut.",
         "generic": "Das hat nicht geklappt. Bitte versuchen Sie es erneut."
-      }
-    }
+      },
+      "privacyLink": "Als privat markieren"
+    },
+    "privacy": {
+      "label": "Private Rechnung",
+      "hint": "Nur der Firmeninhaber und wer sie erstellt hat sehen sie, samt Positionen, Anhängen und Zahlungen.",
+      "badge": "Private Rechnung",
+      "ownerOnly": "Nur der Firmeninhaber oder wer die Rechnung erstellt hat, kann das ändern.",
+      "failed": "Änderung fehlgeschlagen",
+      "madePrivate": "Die Rechnung ist privat",
+      "madeShared": "Das Team sieht die Rechnung wieder"
+    },
+    "privateRow": "Private Rechnung"
   },
   "invite": {
     "title": "Einladung ins Team",

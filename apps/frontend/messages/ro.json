@@ -1359,7 +1359,25 @@
         "manage": "Editați linkul"
       },
       "contactPerson": "Persoană de contact",
-      "person": "Persoană fizică"
+      "person": "Persoană fizică",
+      "visibility": {
+        "title": "Cine vede clientul",
+        "hint": "Un client privat și documentele lui sunt văzute doar de proprietarul firmei și de membrul căruia îi aparține clientul. Ceilalți nu îl găsesc nici în liste, nici în istoric.",
+        "owner": "Aparține",
+        "nobody": "Întregii firme (nimănui anume)",
+        "formerMember": "Fost membru al echipei",
+        "private": "Privat – îl văd doar proprietarul firmei și cel căruia îi aparține clientul",
+        "privateHint": "Ceilalți nu îl găsesc în contacte, facturi, notificări sau istoricul modificărilor.",
+        "ownedBy": "Aparține: {name}",
+        "ownerOnly": "Doar proprietarul firmei sau cel căruia îi aparține clientul poate schimba asta.",
+        "saved": "Salvat",
+        "failed": "Salvarea a eșuat",
+        "errors": {
+          "visibility_owner_only": "Doar proprietarul firmei sau cel căruia îi aparține clientul poate schimba asta.",
+          "visibility_would_hide": "Astfel nici dvs. nu ați mai vedea clientul. Doar proprietarul firmei poate preda un client privat.",
+          "owner_not_member": "Persoana aleasă nu mai face parte din echipă."
+        }
+      }
     },
     "csv": {
       "import": "Importați CSV",
@@ -1424,7 +1442,8 @@
       "violet": "Violet",
       "pink": "Roz",
       "slate": "Gri"
-    }
+    },
+    "privateBadge": "Client privat"
   },
   "settings": {
     "title": "Setări",
@@ -2149,7 +2168,16 @@
         "ownerOnly": "Doar proprietarul",
         "adminsOnly": "Doar proprietarul și administratorii"
       },
-      "fillFromPreset": "Completează după"
+      "fillFromPreset": "Completează după",
+      "contactScope": {
+        "label": "Vede clienții",
+        "all": "Toată firma",
+        "own": "Doar pe ai săi",
+        "hint": "Doar pe ai săi = doar clienții pe care i-i atribuiți (Aparține) și documentele emise de el.",
+        "ownerOnly": "Doar proprietarul firmei poate schimba asta.",
+        "summary": "doar clienții proprii",
+        "refused": "Doar proprietarul firmei poate schimba asta."
+      }
     },
     "exports": {
       "title": "Exporturi pentru contabil",
@@ -5347,15 +5375,26 @@
       "relock": "Ascunde din nou",
       "lockedToast": "Detalii ascunse",
       "unlockedToast": "Detaliile se afișează fără parolă",
-      "teamHint": "Aceasta protejează de privirile asupra unui calculator neblocat sau partajat, nu de colegi: fiecare membru al echipei le dezvăluie cu propria parolă. Dacă factura trebuie să o vadă doar anumite persoane, setați la client cine are acces.",
+      "teamHint": "Protejează împotriva privirilor pe un calculator deblocat sau comun, nu împotriva colegilor: fiecare membru al echipei le dezvăluie cu propria parolă. Dacă o factură trebuie văzută doar de anumite persoane, marcați-o ca privată sau setați cui îi aparține clientul.",
       "teamLink": "Setează cine din echipă ce vede",
       "errors": {
         "wrong_current": "Parolă greșită.",
         "reauth_required": "Contul dvs. nu are parolă. Deconectați-vă și conectați-vă din nou, apoi încercați iar.",
         "too_many_attempts": "Prea multe încercări. Încercați peste câteva minute.",
         "generic": "Nu a funcționat. Încercați din nou."
-      }
-    }
+      },
+      "privacyLink": "Marchează ca privată"
+    },
+    "privacy": {
+      "label": "Factură privată",
+      "hint": "O văd doar proprietarul firmei și cel care a emis-o, inclusiv articolele, atașamentele și plățile.",
+      "badge": "Factură privată",
+      "ownerOnly": "Doar proprietarul firmei sau cel care a emis factura poate schimba asta.",
+      "failed": "Schimbarea a eșuat",
+      "madePrivate": "Factura este privată",
+      "madeShared": "Echipa vede din nou factura"
+    },
+    "privateRow": "Factură privată"
   },
   "invite": {
     "title": "Invitație în echipă",

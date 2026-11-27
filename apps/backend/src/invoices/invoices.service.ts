@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { peppolRelevant } from "./peppol-relevance";
-import { BadRequestException, ConflictException, HttpException, Injectable, NotFoundException, Optional, UnprocessableEntityException } from "@nestjs/common";
+import { BadRequestException, ConflictException, ForbiddenException, HttpException, Injectable, NotFoundException, Optional, UnprocessableEntityException } from "@nestjs/common";
 import {
   checkInvoiceRequirements,
   generateIsdocXml,
@@ -61,6 +61,7 @@ import { appendNoteLine } from "../bank-reconciliation/payment-note";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
 import { lockBlocks } from "./invoice-lock";
+import { mayChangeInvoicePrivacy, visibilityError } from "../tenancy/visibility";
 import { countIssuedDocument } from "../billing/plan-limits";
 import { countsAsDocument } from "../billing/usage";
 import { assertSealingAllowed, plainOrNull, printedTexts, textFilterVerdict } from "../vault/sealed";
@@ -600,7 +601,7 @@ export class InvoicesService {
     const missing = customerRequiredError("save_draft", dto.contact_id);
     if (missing) throw new BadRequestException(missing);
     const contact = dto.contact_id ? await this.requireContact(db, dto.contact_id) : null;
-    await this.checkRelated(db, dto.document_type, dto.related_invoice_id);
+    const related = await this.checkRelated(db, dto.document_type, dto.related_invoice_id);
     await assertSealingAllowed(db, tenantId, sealableValues(dto));
 
     // No db.transaction here: `db` is the request's own transaction (tenant
@@ -617,6 +618,8 @@ export class InvoicesService {
         status: "draft",
         source,
         rawAiPayload: dto.source_ai ? { prefilledByAi: true } : null,
+        // A credit note or advance settlement of a private invoice names the same client: it stays private too.
+        ...(related?.isPrivate && { isPrivate: true }),
       })
       .returning();
 
@@ -885,6 +888,24 @@ export class InvoicesService {
       .returning();
     await this.log(db, updated, locked ? "locked" : "unlocked");
     return { id, locked };
+  }
+
+  /**
+   * "Soukromá faktura": seen only by the company owner and whoever created
+   * it, with its items, files and matched payments (member_visibility).
+   * Only those two may switch it; 403 `visibility_owner_only` otherwise.
+   */
+  async setPrivate(db: TenantDb, id: string, isPrivate: boolean, user: AuthenticatedUser) {
+    const invoice = await this.requireInvoice(db, id);
+    if (!mayChangeInvoicePrivacy(user, invoice)) throw new ForbiddenException("visibility_owner_only");
+    if (invoice.isPrivate === isPrivate) return { id, isPrivate };
+    try {
+      await db.update(schema.invoices).set({ isPrivate }).where(eq(schema.invoices.id, id));
+    } catch (error) {
+      throw visibilityError(error);
+    }
+    await this.log(db, invoice, isPrivate ? "made_private" : "made_shared", [{ field: "isPrivate", from: invoice.isPrivate, to: isPrivate }]);
+    return { id, isPrivate };
   }
 
   async markUnpaid(db: TenantDb, id: string) {

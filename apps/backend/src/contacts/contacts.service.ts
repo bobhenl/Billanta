@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { BadRequestException, ConflictException, Injectable, NotFoundException, Optional } from "@nestjs/common";
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException, Optional } from "@nestjs/common";
 import { clientPortalLinkOf, newShortKey } from "../public-links/public-link";
 import { assertPlanFeature } from "../billing/plan-limits";
 import {
@@ -33,6 +33,8 @@ import * as schema from "../../drizzle/schema";
 import { AuditService } from "../audit/audit.service";
 import { withIdempotencyKey } from "../common/idempotency";
 import { DbService } from "../db/db.service";
+import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
+import { mayChangeContactVisibility, visibilityError } from "../tenancy/visibility";
 import { summarizeContactInvoices, type ContactSummaryBucket } from "./contact-summary.util";
 import { contactsToCsv, mapContactRows, type CsvContact, type CsvSkip } from "./contacts-csv.util";
 import { readTableFile, TableFileError } from "../common/table-file";
@@ -639,6 +641,46 @@ export class ContactsService {
       await this.audit?.record(db, row.tenantId, { entityType: "contact", entityId: id, entityLabel: row.legalName, action: "updated", changes });
     }
     return row;
+  }
+
+  /**
+   * "Patří" and "Soukromý": who the client belongs to and whether only that
+   * person and the company owner see it (with its documents, see the
+   * member_visibility policies). Only the company owner or the client's
+   * current owner may change it; 403 `visibility_owner_only` otherwise.
+   */
+  async setVisibility(db: TenantDb, user: AuthenticatedUser, id: string, dto: { ownerUserId?: string | null; isPrivate?: boolean }) {
+    const [before] = await db.select().from(schema.contacts).where(eq(schema.contacts.id, id)).limit(1);
+    if (!before) throw new NotFoundException(`Contact ${id} not found`);
+    if (!mayChangeContactVisibility(user, before)) throw new ForbiddenException("visibility_owner_only");
+    if (dto.ownerUserId) {
+      const [member] = await db
+        .select({ id: schema.tenantMemberships.id })
+        .from(schema.tenantMemberships)
+        .where(eq(schema.tenantMemberships.userId, dto.ownerUserId))
+        .limit(1);
+      if (!member) throw new BadRequestException("owner_not_member");
+    }
+    const set = {
+      ...(dto.ownerUserId !== undefined && { ownerUserId: dto.ownerUserId }),
+      ...(dto.isPrivate !== undefined && { isPrivate: dto.isPrivate }),
+    };
+    const changes = (Object.keys(set) as (keyof typeof set)[])
+      .filter((field) => set[field] !== before[field])
+      .map((field) => ({ field, from: before[field], to: set[field] }));
+    if (changes.length === 0) return before;
+    let row: typeof before | undefined;
+    try {
+      [row] = await db
+        .update(schema.contacts)
+        .set({ ...set, updatedAt: new Date() })
+        .where(eq(schema.contacts.id, id))
+        .returning();
+    } catch (error) {
+      throw visibilityError(error);
+    }
+    await this.audit?.record(db, before.tenantId, { entityType: "contact", entityId: id, entityLabel: before.legalName, action: "visibility_changed", changes });
+    return row ?? before;
   }
 
   /**

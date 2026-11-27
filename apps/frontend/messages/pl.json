@@ -1359,7 +1359,25 @@
         "manage": "Edytuj link"
       },
       "contactPerson": "Osoba kontaktowa",
-      "person": "Osoba prywatna"
+      "person": "Osoba prywatna",
+      "visibility": {
+        "title": "Kto widzi klienta",
+        "hint": "Prywatnego klienta i jego dokumenty widzi tylko właściciel firmy i członek, do którego klient należy. Inni nie znajdą go na listach ani w historii.",
+        "owner": "Należy do",
+        "nobody": "Całej firmy (nikogo konkretnego)",
+        "formerMember": "Były członek zespołu",
+        "private": "Prywatny – widzi go tylko właściciel firmy i osoba, do której klient należy",
+        "privateHint": "Inni nie znajdą go w kontaktach, fakturach, powiadomieniach ani historii zmian.",
+        "ownedBy": "Należy do: {name}",
+        "ownerOnly": "Zmienić to może tylko właściciel firmy lub osoba, do której klient należy.",
+        "saved": "Zapisano",
+        "failed": "Nie udało się zapisać",
+        "errors": {
+          "visibility_owner_only": "Zmienić to może tylko właściciel firmy lub osoba, do której klient należy.",
+          "visibility_would_hide": "Sam przestałbyś widzieć tego klienta. Przekazać prywatnego klienta może tylko właściciel firmy.",
+          "owner_not_member": "Ta osoba nie należy już do zespołu."
+        }
+      }
     },
     "csv": {
       "import": "Importuj CSV",
@@ -1424,7 +1442,8 @@
       "violet": "Fioletowy",
       "pink": "Różowy",
       "slate": "Szary"
-    }
+    },
+    "privateBadge": "Prywatny klient"
   },
   "settings": {
     "title": "Ustawienia",
@@ -2149,7 +2168,16 @@
         "ownerOnly": "Tylko właściciel",
         "adminsOnly": "Tylko właściciel i administratorzy"
       },
-      "fillFromPreset": "Wypełnij według"
+      "fillFromPreset": "Wypełnij według",
+      "contactScope": {
+        "label": "Widzi klientów",
+        "all": "Cała firma",
+        "own": "Tylko swoich",
+        "hint": "Tylko swoich = tylko klientów, których mu przypiszesz (Należy do), i dokumenty, które sam wystawił.",
+        "ownerOnly": "Zmienić to może tylko właściciel firmy.",
+        "summary": "tylko swoich klientów",
+        "refused": "To może zmienić tylko właściciel firmy."
+      }
     },
     "exports": {
       "title": "Eksporty dla księgowej",
@@ -5348,15 +5376,26 @@
       "relock": "Ukryj ponownie",
       "lockedToast": "Szczegóły ukryte",
       "unlockedToast": "Szczegóły są widoczne bez hasła",
-      "teamHint": "Chroni przed spojrzeniem na niezablokowany lub wspólny komputer, a nie przed współpracownikami: każdy członek zespołu odkrywa je własnym hasłem. Jeśli fakturę mają widzieć tylko wybrane osoby, ustaw przy kliencie, kto ma do niego dostęp.",
+      "teamHint": "Chroni przed spojrzeniem na niezablokowany lub wspólny komputer, a nie przed współpracownikami: każdy członek zespołu odkrywa je własnym hasłem. Jeśli fakturę mają widzieć tylko wybrane osoby, oznacz ją jako prywatną albo ustaw, do kogo należy klient.",
       "teamLink": "Ustaw, kto w zespole co widzi",
       "errors": {
         "wrong_current": "Złe hasło.",
         "reauth_required": "Twoje konto nie ma hasła. Wyloguj się i zaloguj ponownie, a potem spróbuj jeszcze raz.",
         "too_many_attempts": "Zbyt wiele prób. Spróbuj za kilka minut.",
         "generic": "Nie udało się. Spróbuj ponownie."
-      }
-    }
+      },
+      "privacyLink": "Oznacz jako prywatną"
+    },
+    "privacy": {
+      "label": "Prywatna faktura",
+      "hint": "Widzi ją tylko właściciel firmy i osoba, która ją wystawiła, razem z pozycjami, załącznikami i płatnościami.",
+      "badge": "Prywatna faktura",
+      "ownerOnly": "Zmienić to może tylko właściciel firmy lub osoba, która wystawiła fakturę.",
+      "failed": "Nie udało się zmienić",
+      "madePrivate": "Faktura jest prywatna",
+      "madeShared": "Zespół znowu widzi fakturę"
+    },
+    "privateRow": "Prywatna faktura"
   },
   "invite": {
     "title": "Zaproszenie do zespołu",

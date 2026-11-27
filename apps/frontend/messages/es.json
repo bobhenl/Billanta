@@ -1359,7 +1359,25 @@
         "manage": "Editar enlace"
       },
       "contactPerson": "Persona de contacto",
-      "person": "Particular"
+      "person": "Particular",
+      "visibility": {
+        "title": "Quién ve este cliente",
+        "hint": "Un cliente privado y sus documentos solo los ven el propietario de la empresa y el miembro al que pertenece. Los demás no lo encuentran en las listas ni en el historial.",
+        "owner": "Pertenece a",
+        "nobody": "Toda la empresa (nadie en concreto)",
+        "formerMember": "Antiguo miembro del equipo",
+        "private": "Privado – solo lo ven el propietario de la empresa y la persona a la que pertenece el cliente",
+        "privateHint": "Los demás no lo encuentran en contactos, facturas, notificaciones ni en el historial de cambios.",
+        "ownedBy": "Pertenece a: {name}",
+        "ownerOnly": "Solo el propietario de la empresa o la persona a la que pertenece el cliente puede cambiarlo.",
+        "saved": "Guardado",
+        "failed": "No se pudo guardar",
+        "errors": {
+          "visibility_owner_only": "Solo el propietario de la empresa o la persona a la que pertenece el cliente puede cambiarlo.",
+          "visibility_would_hide": "Usted mismo dejaría de ver este cliente. Solo el propietario de la empresa puede pasar un cliente privado a otra persona.",
+          "owner_not_member": "Esa persona ya no está en el equipo."
+        }
+      }
     },
     "csv": {
       "import": "Importar CSV",
@@ -1424,7 +1442,8 @@
       "violet": "Violeta",
       "pink": "Rosa",
       "slate": "Gris"
-    }
+    },
+    "privateBadge": "Cliente privado"
   },
   "settings": {
     "title": "Ajustes",
@@ -2149,7 +2168,16 @@
         "ownerOnly": "Solo el propietario",
         "adminsOnly": "Solo el propietario y los administradores"
       },
-      "fillFromPreset": "Rellenar desde"
+      "fillFromPreset": "Rellenar desde",
+      "contactScope": {
+        "label": "Ve clientes",
+        "all": "Toda la empresa",
+        "own": "Solo los suyos",
+        "hint": "Solo los suyos = solo los clientes que le asigne (Pertenece a) y los documentos que haya creado.",
+        "ownerOnly": "Solo el propietario de la empresa puede cambiarlo.",
+        "summary": "solo sus clientes",
+        "refused": "Solo el propietario de la empresa puede cambiarlo."
+      }
     },
     "exports": {
       "title": "Exportaciones para el contable",
@@ -5347,15 +5375,26 @@
       "relock": "Volver a ocultar",
       "lockedToast": "Detalles ocultos",
       "unlockedToast": "Los detalles se muestran sin contraseña",
-      "teamHint": "Protege frente a miradas en un ordenador desbloqueado o compartido, no frente a los compañeros: cada miembro del equipo los muestra con su propia contraseña. Si solo ciertas personas deben ver una factura, indica en el cliente quién tiene acceso.",
+      "teamHint": "Protege de miradas en un ordenador desbloqueado o compartido, no de los compañeros: cada miembro del equipo las muestra con su propia contraseña. Si una factura solo deben verla ciertas personas, márquela como privada o indique a quién pertenece el cliente.",
       "teamLink": "Definir quién ve qué en el equipo",
       "errors": {
         "wrong_current": "Contraseña incorrecta.",
         "reauth_required": "Tu cuenta no tiene contraseña. Cierra sesión, vuelve a entrar e inténtalo de nuevo.",
         "too_many_attempts": "Demasiados intentos. Inténtalo en unos minutos.",
         "generic": "No ha funcionado. Inténtalo de nuevo."
-      }
-    }
+      },
+      "privacyLink": "Marcar como privada"
+    },
+    "privacy": {
+      "label": "Factura privada",
+      "hint": "Solo la ven el propietario de la empresa y quien la creó, con sus líneas, adjuntos y pagos.",
+      "badge": "Factura privada",
+      "ownerOnly": "Solo el propietario de la empresa o quien creó la factura puede cambiarlo.",
+      "failed": "No se pudo cambiar",
+      "madePrivate": "La factura es privada",
+      "madeShared": "El equipo vuelve a ver la factura"
+    },
+    "privateRow": "Factura privada"
   },
   "invite": {
     "title": "Invitación al equipo",

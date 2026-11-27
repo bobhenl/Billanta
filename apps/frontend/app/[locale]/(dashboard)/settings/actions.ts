@@ -113,8 +113,9 @@ export async function revokeInvitation(id: string) {
   return run<unknown>(`/api/v1/team/invitations/${encodeURIComponent(id)}`, 'DELETE');
 }
 
-export async function changeMemberRole(id: string, role: Exclude<TeamRole, 'owner'>, permissions: MemberPermissions = null) {
-  return run<unknown>(`/api/v1/team/members/${encodeURIComponent(id)}`, 'PATCH', { role, permissions });
+/** `contactScope` is owner-only on the API (403 owner_only), so leave it out unless it changes. */
+export async function changeMemberRole(id: string, role: Exclude<TeamRole, 'owner'>, permissions: MemberPermissions = null, contactScope?: 'all' | 'own') {
+  return run<unknown>(`/api/v1/team/members/${encodeURIComponent(id)}`, 'PATCH', { role, permissions, ...(contactScope && { contactScope }) });
 }
 
 export async function removeMember(id: string) {

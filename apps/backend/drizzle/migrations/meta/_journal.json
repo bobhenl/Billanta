@@ -729,6 +729,13 @@
       "when": 1793601400000,
       "tag": "0110_vault_email_queue",
       "breakpoints": true
+    },
+    {
+      "idx": 105,
+      "version": "7",
+      "when": 1793601500000,
+      "tag": "0111_private_invoices",
+      "breakpoints": true
     }
   ]
 }

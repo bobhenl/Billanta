@@ -36,7 +36,7 @@ export default async function TeamPage() {
   return (
     <div className="mx-auto max-w-3xl">
       <SettingsHeader title={t('title')} description={t('description')} />
-      <TeamManager team={team} canManage={canManage(role)} currentUserId={session?.user?.id ?? ''} accountants={accountants} />
+      <TeamManager team={team} canManage={canManage(role)} isOwner={role === 'owner'} currentUserId={session?.user?.id ?? ''} accountants={accountants} />
     </div>
   );
 }

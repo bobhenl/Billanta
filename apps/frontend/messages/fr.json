@@ -1359,7 +1359,25 @@
         "manage": "Modifier le lien"
       },
       "contactPerson": "Personne de contact",
-      "person": "Particulier"
+      "person": "Particulier",
+      "visibility": {
+        "title": "Qui voit ce client",
+        "hint": "Un client privé et ses documents ne sont visibles que par le propriétaire de l’entreprise et le membre à qui il appartient. Les autres ne le trouvent ni dans les listes ni dans l’historique.",
+        "owner": "Appartient à",
+        "nobody": "Toute l’entreprise (personne en particulier)",
+        "formerMember": "Ancien membre de l’équipe",
+        "private": "Privé – visible seulement par le propriétaire de l’entreprise et la personne à qui le client appartient",
+        "privateHint": "Les autres ne le trouvent pas dans les contacts, factures, notifications ni l’historique des modifications.",
+        "ownedBy": "Appartient à : {name}",
+        "ownerOnly": "Seul le propriétaire de l’entreprise ou la personne à qui le client appartient peut modifier cela.",
+        "saved": "Enregistré",
+        "failed": "Échec de l’enregistrement",
+        "errors": {
+          "visibility_owner_only": "Seul le propriétaire de l’entreprise ou la personne à qui le client appartient peut modifier cela.",
+          "visibility_would_hide": "Vous ne verriez plus ce client vous-même. Seul le propriétaire de l’entreprise peut confier un client privé à quelqu’un d’autre.",
+          "owner_not_member": "Cette personne ne fait plus partie de l’équipe."
+        }
+      }
     },
     "csv": {
       "import": "Importer un CSV",
@@ -1424,7 +1442,8 @@
       "violet": "Violet",
       "pink": "Rose",
       "slate": "Gris"
-    }
+    },
+    "privateBadge": "Client privé"
   },
   "settings": {
     "title": "Paramètres",
@@ -2149,7 +2168,16 @@
         "ownerOnly": "Propriétaire uniquement",
         "adminsOnly": "Propriétaire et administrateurs uniquement"
       },
-      "fillFromPreset": "Remplir depuis"
+      "fillFromPreset": "Remplir depuis",
+      "contactScope": {
+        "label": "Voit les clients",
+        "all": "Toute l’entreprise",
+        "own": "Seulement les siens",
+        "hint": "Seulement les siens = seulement les clients que vous lui attribuez (Appartient à) et les documents qu’il a lui-même créés.",
+        "ownerOnly": "Seul le propriétaire de l’entreprise peut modifier cela.",
+        "summary": "ses clients seulement",
+        "refused": "Seul le propriétaire de l’entreprise peut modifier cela."
+      }
     },
     "exports": {
       "title": "Exports pour le comptable",
@@ -5347,15 +5375,26 @@
       "relock": "Masquer à nouveau",
       "lockedToast": "Détails masqués",
       "unlockedToast": "Les détails s'affichent sans mot de passe",
-      "teamHint": "Cela protège des regards sur un ordinateur non verrouillé ou partagé, pas des collègues : chaque membre de l'équipe les affiche avec son propre mot de passe. Si seules certaines personnes doivent voir une facture, définissez sur le client qui y a accès.",
+      "teamHint": "Cela protège des regards sur un ordinateur non verrouillé ou partagé, pas des collègues : chaque membre de l’équipe les affiche avec son propre mot de passe. Si seules certaines personnes doivent voir une facture, marquez-la comme privée ou indiquez à qui appartient le client.",
       "teamLink": "Définir qui voit quoi dans l'équipe",
       "errors": {
         "wrong_current": "Mot de passe incorrect.",
         "reauth_required": "Votre compte n'a pas de mot de passe. Déconnectez-vous puis reconnectez-vous, puis réessayez.",
         "too_many_attempts": "Trop de tentatives. Réessayez dans quelques minutes.",
         "generic": "Cela n'a pas fonctionné. Veuillez réessayer."
-      }
-    }
+      },
+      "privacyLink": "Marquer comme privée"
+    },
+    "privacy": {
+      "label": "Facture privée",
+      "hint": "Visible seulement par le propriétaire de l’entreprise et la personne qui l’a créée, avec ses lignes, pièces jointes et paiements.",
+      "badge": "Facture privée",
+      "ownerOnly": "Seul le propriétaire de l’entreprise ou la personne qui a créé la facture peut modifier cela.",
+      "failed": "Échec de la modification",
+      "madePrivate": "La facture est privée",
+      "madeShared": "L’équipe voit de nouveau la facture"
+    },
+    "privateRow": "Facture privée"
   },
   "invite": {
     "title": "Invitation dans l’équipe",

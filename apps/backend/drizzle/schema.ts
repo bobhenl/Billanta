@@ -709,6 +709,8 @@ export const invoices = pgTable(
     // Lists, totals and exports still count it.
     lockedAt: timestamp("locked_at", { withTimezone: true }),
     lockedBy: uuid("locked_by"),
+    // Seen only by the company owner and createdByUserId (0111, member_visibility in rls-policies.sql).
+    isPrivate: boolean("is_private").notNull().default(false),
     // Kept by the payment provider (PayPal, Stripe, Wise…), in the invoice currency.
     paymentFees: numeric("payment_fees", { precision: 14, scale: 2 }).notNull().default("0"),
     // What actually landed on the account, in CZK; null = not recorded.

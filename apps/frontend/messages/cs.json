@@ -1360,7 +1360,25 @@
         "manage": "Upravit odkaz"
       },
       "contactPerson": "Kontaktní osoba",
-      "person": "Soukromá osoba"
+      "person": "Soukromá osoba",
+      "visibility": {
+        "title": "Kdo klienta vidí",
+        "hint": "Soukromého klienta a jeho doklady vidí jen vlastník firmy a člen, kterému klient patří. Ostatní ho v seznamech ani v historii nenajdou.",
+        "owner": "Patří",
+        "nobody": "Celé firmě (nikomu zvlášť)",
+        "formerMember": "Bývalý člen týmu",
+        "private": "Soukromý – vidí jen vlastník firmy a ten, komu klient patří",
+        "privateHint": "Ostatní ho nenajdou v kontaktech, fakturách, upozorněních ani historii změn.",
+        "ownedBy": "Patří: {name}",
+        "ownerOnly": "Měnit to může jen vlastník firmy nebo ten, komu klient patří.",
+        "saved": "Uloženo",
+        "failed": "Nepodařilo se uložit",
+        "errors": {
+          "visibility_owner_only": "Měnit to může jen vlastník firmy nebo ten, komu klient patří.",
+          "visibility_would_hide": "Tím byste klienta sami přestali vidět. Předat soukromého klienta může jen vlastník firmy.",
+          "owner_not_member": "Vybraný člověk už není v týmu."
+        }
+      }
     },
     "csv": {
       "import": "Import CSV",
@@ -1425,7 +1443,8 @@
       "violet": "Fialová",
       "pink": "Růžová",
       "slate": "Šedá"
-    }
+    },
+    "privateBadge": "Soukromý klient"
   },
   "settings": {
     "title": "Nastavení",
@@ -2150,7 +2169,16 @@
         "ownerOnly": "Jen vlastník",
         "adminsOnly": "Jen vlastník a administrátoři"
       },
-      "fillFromPreset": "Vyplnit podle"
+      "fillFromPreset": "Vyplnit podle",
+      "contactScope": {
+        "label": "Vidí klienty",
+        "all": "Celá firma",
+        "own": "Jen své",
+        "hint": "Jen své = jen klienti, které mu přiřadíte (Patří), a doklady, které sám vystavil.",
+        "ownerOnly": "Měnit to může jen vlastník firmy.",
+        "summary": "jen své klienty",
+        "refused": "Tohle může změnit jen vlastník firmy."
+      }
     },
     "exports": {
       "title": "Exporty pro účetní",
@@ -5354,16 +5382,27 @@
       "relock": "Znovu skrýt",
       "lockedToast": "Detaily jsou skryté",
       "unlockedToast": "Detaily se zobrazují bez hesla",
-      "teamHint": "Chrání před cizím pohledem na nezamčeném nebo sdíleném počítači, ne před kolegy: každý člen týmu si je odkryje svým vlastním heslem. Pokud má fakturu vidět jen někdo z týmu, nastavte u klienta, kdo k němu má přístup.",
+      "teamHint": "Chrání před cizím pohledem na nezamčeném nebo sdíleném počítači, ne před kolegy: každý člen týmu si je odkryje svým vlastním heslem. Pokud má fakturu vidět jen někdo z týmu, označte ji jako soukromou, nebo u klienta nastavte, komu patří.",
       "teamLink": "Nastavit, kdo z týmu co vidí",
       "errors": {
         "wrong_current": "Heslo nesedí.",
         "reauth_required": "Váš účet nemá heslo. Odhlaste se a znovu přihlaste, pak to zkuste znovu.",
         "too_many_attempts": "Příliš mnoho pokusů. Zkuste to za pár minut.",
         "generic": "Nepovedlo se to. Zkuste to znovu."
-      }
+      },
+      "privacyLink": "Označit jako soukromou"
     },
-    "partnerDefaultShares": "výchozí podíly"
+    "partnerDefaultShares": "výchozí podíly",
+    "privacy": {
+      "label": "Soukromá faktura",
+      "hint": "Vidí ji jen vlastník firmy a ten, kdo ji vystavil, i s položkami, přílohami a platbami.",
+      "badge": "Soukromá faktura",
+      "ownerOnly": "Měnit to může jen vlastník firmy nebo ten, kdo fakturu vystavil.",
+      "failed": "Nepodařilo se změnit",
+      "madePrivate": "Faktura je soukromá",
+      "madeShared": "Fakturu zase vidí tým"
+    },
+    "privateRow": "Soukromá faktura"
   },
   "invite": {
     "title": "Pozvánka do týmu",

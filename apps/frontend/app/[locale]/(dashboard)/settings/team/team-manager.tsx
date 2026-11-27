@@ -35,6 +35,8 @@ export interface TeamData {
     image: string | null;
     role: TeamRole;
     permissions?: StoredPerms | null;
+    /** 'own' = sees only the clients assigned to them (tenant_memberships.contact_scope). */
+    contactScope?: ContactScope;
     createdAt: string;
   }[];
   invitations: {
@@ -49,6 +51,7 @@ export interface TeamData {
 }
 
 type AssignableRole = Exclude<TeamRole, 'owner'>;
+type ContactScope = 'all' | 'own';
 const LEVELS: PermissionLevel[] = ['none', 'read', 'write'];
 const LEVEL_CLASSES: Record<PermissionLevel, string> = {
   none: 'text-muted-foreground line-through',
@@ -72,11 +75,38 @@ const reaches = (have: PermissionLevel, need: 'read' | 'write') => (need === 're
 const levelsOf = (area: PermissionArea): PermissionLevel[] => (area === 'settings' ? ['read', 'write'] : LEVELS);
 
 /**
- * Which clients a member sees ("Klienti: celá firma / jen přiřazení",
- * `tenant_memberships.contact_scope`) will be a row right under Kontakty,
- * passed in here. Empty until that lands.
+ * "Vidí klienty: celá firma / jen své", right under Kontakty. Only the
+ * company owner may change it (the API refuses anyone else), so an admin
+ * sees it read-only with the reason.
  */
-const CONTACT_SCOPE_ROW: Partial<Record<PermissionArea, ReactNode>> | undefined = undefined;
+function contactScopeRow(value: ContactScope, onChange: (next: ContactScope) => void, isOwner: boolean, disabled?: boolean): Partial<Record<PermissionArea, ReactNode>> {
+  return { contacts: <ContactScopeRow value={value} onChange={onChange} locked={!isOwner} disabled={disabled} /> };
+}
+
+function ContactScopeRow({ value, onChange, locked, disabled }: { value: ContactScope; onChange: (next: ContactScope) => void; locked: boolean; disabled?: boolean }) {
+  const t = useTranslations('settings.team.contactScope');
+  return (
+    <tr className="bg-muted/20">
+      <td colSpan={LEVELS.length + 1} className="px-2 pb-2.5 pt-1.5 sm:px-3">
+        <fieldset className="pl-5">
+          <legend className="text-[13px] font-medium">{t('label')}</legend>
+          <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+            {(['all', 'own'] as const).map((s) => (
+              <label key={s} className={cn('flex items-center gap-2 text-[13px]', locked && 'text-muted-foreground')}>
+                <input type="radio" name="contact-scope" className="accent-primary" checked={value === s} disabled={disabled || locked} onChange={() => onChange(s)} />
+                {t(s)}
+              </label>
+            ))}
+          </div>
+          <p className="mt-1 flex items-start gap-1 text-[11px] text-muted-foreground">
+            {locked && <Lock className="mt-0.5 h-3 w-3 shrink-0" />}
+            {t(locked ? 'ownerOnly' : 'hint')}
+          </p>
+        </fieldset>
+      </td>
+    </tr>
+  );
+}
 
 /** Settings pages that are never handed out: shown locked so the owner sees why they are missing. */
 const LOCKED_SETTINGS = ['backup', 'billing'] as const;
@@ -228,9 +258,10 @@ function PermissionGrid({
  * edit, a count when only some of the area's actions are allowed. Settings
  * shows up only once a section is granted (reading them is open to all).
  */
-function AccessSummary({ role, permissions }: { role: TeamRole; permissions?: StoredPerms | null }) {
+function AccessSummary({ role, permissions, contactScope }: { role: TeamRole; permissions?: StoredPerms | null; contactScope?: ContactScope }) {
   const t = useTranslations('settings.team');
   if (role === 'owner' || role === 'admin') return null;
+  const ownOnly = contactScope === 'own' && <span className="text-warning">{t('contactScope.summary')}</span>;
   const access = effective(role, permissions);
   const allowed = allowedActions(access);
   return (
@@ -262,6 +293,7 @@ function AccessSummary({ role, permissions }: { role: TeamRole; permissions?: St
           </span>
         );
       })}
+      {ownOnly}
     </p>
   );
 }
@@ -279,11 +311,14 @@ const DIRECTORY_PRESETS = new Set(['accountant', 'auditor']);
 export function TeamManager({
   team,
   canManage,
+  isOwner = false,
   currentUserId,
   accountants
 }: {
   team: TeamData;
   canManage: boolean;
+  /** Only the owner decides who sees which clients. */
+  isOwner?: boolean;
   currentUserId: string;
   accountants: PublicAccountant[];
 }) {
@@ -295,12 +330,17 @@ export function TeamManager({
   const [email, setEmail] = useState('');
   const [preset, setPreset] = useState('accountant');
   const [customAccess, setCustomAccess] = useState<Access>(effective('accountant', null));
-  const [editing, setEditing] = useState<{ id: string; name: string; access: Access } | null>(null);
+  const [editing, setEditing] = useState<{ id: string; name: string; access: Access; scope: ContactScope; scopeWas: ContactScope } | null>(null);
   const [createdLink, setCreatedLink] = useState<{ url: string; emailSent: boolean } | null>(null);
   const [removing, setRemoving] = useState<TeamData['members'][number] | null>(null);
 
   // The plan's seat limit gets a sentence of its own; other codes stay as they are.
-  const failText = (error?: string) => (error?.includes('seat_limit') ? t('seatLimit') : `${t('failed')}: ${error}`);
+  const failText = (error?: string) =>
+    error?.includes('seat_limit') ? t('seatLimit') : error?.includes('owner_only') ? t('contactScope.refused') : `${t('failed')}: ${error}`;
+  const editMember = (m: TeamData['members'][number], access: Access) => {
+    const scope = m.contactScope ?? 'all';
+    setEditing({ id: m.id, name: m.name || m.email, access, scope, scopeWas: scope });
+  };
 
   const run = (fn: () => Promise<{ ok: boolean; error?: string }>, done: string, after?: () => void) =>
     startTransition(async () => {
@@ -372,7 +412,7 @@ export function TeamManager({
                   <p className="break-all text-xs text-muted-foreground">
                     {m.email} · {t('since', { date: formatDate(m.createdAt, locale) ?? '' })}
                   </p>
-                  <AccessSummary role={m.role} permissions={m.permissions} />
+                  <AccessSummary role={m.role} permissions={m.permissions} contactScope={m.contactScope} />
                 </div>
                 {editable ? (
                   <>
@@ -385,7 +425,7 @@ export function TeamManager({
                         const key = e.target.value;
                         const current = effective(m.role, m.permissions);
                         if (key === 'custom') {
-                          setEditing({ id: m.id, name: m.name || m.email, access: current });
+                          editMember(m, current);
                           return;
                         }
                         const { role, permissions } = assignmentFor(key, current);
@@ -405,7 +445,7 @@ export function TeamManager({
                         className={buttonClass.ghost}
                         aria-label={t('editPermissions')}
                         title={t('editPermissions')}
-                        onClick={() => setEditing({ id: m.id, name: m.name || m.email, access: effective(m.role, m.permissions) })}
+                        onClick={() => editMember(m, effective(m.role, m.permissions))}
                       >
                         <SlidersHorizontal className="h-4 w-4" />
                       </button>
@@ -571,7 +611,6 @@ export function TeamManager({
                   setCustomAccess(next);
                   setPreset(presetKeyOf(next));
                 }}
-                extraRows={CONTACT_SCOPE_ROW}
               />
             )}
             {DIRECTORY_PRESETS.has(preset) && (
@@ -603,7 +642,9 @@ export function TeamManager({
               onClick={() => {
                 if (!editing) return;
                 const { role, permissions } = toAssignment(editing.access);
-                run(() => changeMemberRole(editing.id, role, permissions), t('roleChanged'), () => setEditing(null));
+                // Sent only when changed, so an admin can still edit the rest.
+                const scope = editing.scope !== editing.scopeWas ? editing.scope : undefined;
+                run(() => changeMemberRole(editing.id, role, permissions, scope), t('roleChanged'), () => setEditing(null));
               }}
             >
               {t('save')}
@@ -639,7 +680,7 @@ export function TeamManager({
               value={editing.access}
               onChange={(access) => setEditing({ ...editing, access })}
               disabled={pending}
-              extraRows={CONTACT_SCOPE_ROW}
+              extraRows={contactScopeRow(editing.scope, (scope) => setEditing({ ...editing, scope }), isOwner, pending)}
             />
           </div>
         )}
