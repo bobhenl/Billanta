@@ -14520,7 +14520,7 @@
         "loses": [
           "L'abbinamento automatico sul server: dopo lo sblocco il tuo browser propone gli abbinamenti e tu li confermi",
           "I pagamenti li calcola solo il tuo browser: per un documento cifrato il server conosce solo la data del pagamento e lo stato, non l'importo né la commissione",
-          "L'invio tramite Peppol e i suggerimenti IA con importi. Il pagamento con carta solo sul documento dove lo consenti esplicitamente – l'importo da pagare arriva allora leggibile a Billanta e Stripe",
+          "L'invio tramite Peppol e i suggerimenti IA con importi. Il pagamento con carta solo sul documento dove lo consenti esplicitamente – l'importo da pagare arriva allora leggibile a Billanta e Stripe. Dopo lo sblocco il tuo browser cifra l'importo pagato tra i pagamenti e Billanta cancella importo e commissione",
           "Solleciti, riepilogo settimanale e totali scaduti nelle e-mail non riportano l’importo"
         ],
         "how": [
@@ -14849,7 +14849,9 @@
         "label": "Consenti pagamento con carta",
         "hint": "Il cliente potrà pagare {amount} con carta dal link. Questo solo importo viene salvato in chiaro e lo vedranno Billanta e Stripe.",
         "on": "Il pagamento con carta è attivo per {amount}. Questo importo è salvato in chiaro e lo vedono Billanta e Stripe. Il prossimo pagamento lo disattiva."
-      }
+      },
+      "cardWaiting": "con carta, in attesa di cifratura",
+      "cardSealed": "{n, plural, one {Un pagamento con carta è stato cifrato e aggiunto ai pagamenti.} other {# pagamenti con carta sono stati cifrati e aggiunti ai pagamenti.}}"
     },
     "bankMatch": {
       "title": "Abbinamenti proposti per documenti cifrati",

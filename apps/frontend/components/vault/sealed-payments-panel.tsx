@@ -8,8 +8,17 @@ import { toast } from '@/components/toaster';
 import { useRouter } from '@/i18n/navigation';
 import { formatDate, formatMoney } from '@/lib/invoice-ui';
 import { buttonClass, inputClass } from '@/lib/ui-classes';
-import { addSealedPayment, deleteSealedPayment, fetchSealedPayments, setSealedCardAmount, type SealedPaymentRow } from '@/lib/vault/actions';
+import {
+  addSealedPayment,
+  deleteSealedPayment,
+  fetchCardPaymentsToSeal,
+  fetchSealedPayments,
+  setSealedCardAmount,
+  type CardPaymentToSeal,
+  type SealedPaymentRow
+} from '@/lib/vault/actions';
 import { openDocumentAmounts, openPaymentWith, sealPayment } from '@/lib/vault/amounts';
+import { cardPaymentAmounts, sealCardPayments } from '@/lib/vault/card-payments';
 import { useVault } from './vault-provider';
 
 type Opened = { row: SealedPaymentRow; amounts: PaymentAmounts };
@@ -44,6 +53,8 @@ export function SealedPaymentsPanel({
   const { key, requestUnlock } = useVault();
   const [total, setTotal] = useState<number | null>(null);
   const [payments, setPayments] = useState<Opened[] | null>(null);
+  // Card payments the server still holds in plain; sealed here on opening when the member may edit.
+  const [waiting, setWaiting] = useState<CardPaymentToSeal[]>([]);
   const [failed, setFailed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [amount, setAmount] = useState('');
@@ -54,24 +65,35 @@ export function SealedPaymentsPanel({
     if (!key) return;
     try {
       const totals = await openDocumentAmounts(key, encAmounts);
+      let card = await fetchCardPaymentsToSeal(invoiceId);
+      if (canEdit && card.ok && card.value.length) {
+        const { sealed } = await sealCardPayments(key, card.value);
+        if (sealed) {
+          card = await fetchCardPaymentsToSeal(invoiceId);
+          router.refresh();
+        }
+      }
       const rows = await fetchSealedPayments(invoiceId);
       if (!rows.ok) throw new Error(rows.error);
       const opened = await Promise.all(rows.value.map(async (row) => ({ row, amounts: await openPaymentWith((c) => open(key, c), row.encAmount) })));
       setTotal(totals.totalWithVat);
       setPayments(opened);
+      setWaiting(card.ok ? card.value : []);
       setFailed(false);
     } catch {
       // One envelope this key cannot open would make the rest due wrong, so nothing is shown.
       setFailed(true);
     }
-  }, [key, encAmounts, invoiceId]);
+  }, [key, encAmounts, invoiceId, canEdit, router]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
   const money = (n: number) => formatMoney(n, currency, locale);
-  const balance: SealedBalance | null = total != null && payments ? sealedBalance(total, payments.map((p) => p.amounts)) : null;
+  // A card payment still waiting to be sealed counts like any other.
+  const counted = payments ? [...payments.map((p) => p.amounts), ...waiting.map(cardPaymentAmounts)] : null;
+  const balance: SealedBalance | null = total != null && counted ? sealedBalance(total, counted) : null;
 
   useEffect(() => {
     if (balance && !amount) setAmount(balance.remaining > 0 ? String(balance.remaining) : '');
@@ -108,7 +130,7 @@ export function SealedPaymentsPanel({
       if (!wrap) throw new Error('document_key_missing');
       const docKey = await unwrapDocumentKey(key, wrap);
       const payment: PaymentAmounts = { amount: value, fee: feeValue, receivedHome: null };
-      const next = sealedBalance(total!, [...payments.map((p) => p.amounts), payment]);
+      const next = sealedBalance(total!, [...(counted ?? []), payment]);
       const result = await addSealedPayment(invoiceId, {
         encAmount: await sealPayment(docKey, payment),
         paidAt,
@@ -181,6 +203,19 @@ export function SealedPaymentsPanel({
                   <Trash2 className="h-4 w-4" aria-hidden="true" />
                 </button>
               )}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {waiting.length > 0 && (
+        <ul className="mt-2 divide-y divide-border">
+          {waiting.map((item) => (
+            <li key={item.id} className="py-1.5">
+              <span className="amount font-semibold">{money(Number(item.amount))}</span>
+              {item.fee != null && Number(item.fee) > 0 && <span className="text-muted-foreground"> · {t('feeShort', { amount: money(Number(item.fee)) })}</span>}
+              {item.paidAt && <span className="text-muted-foreground"> · {formatDate(item.paidAt, locale)}</span>}
+              <span className="text-muted-foreground"> · {t('cardWaiting')}</span>
             </li>
           ))}
         </ul>

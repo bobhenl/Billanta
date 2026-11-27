@@ -14429,7 +14429,7 @@
         "loses": [
           "Automatické párovanie platieb na serveri: po odomknutí trezoru navrhne páry váš prehliadač a vy ich potvrdíte",
           "Úhrady počíta len váš prehliadač: server pri zašifrovanom doklade pozná len dátum úhrady a stav, nie sumu ani poplatok",
-          "Odoslanie cez Peppol a AI návrhy so sumami. Platba kartou len pri doklade, kde ju výslovne povolíte – suma na zaplatenie potom pôjde čitateľne do Billanty a Stripe",
+          "Odoslanie cez Peppol a AI návrhy so sumami. Platba kartou len pri doklade, kde ju výslovne povolíte – suma na zaplatenie potom pôjde čitateľne do Billanty a Stripe. Po odomknutí trezoru váš prehliadač zaplatenú sumu zašifruje k úhradám a Billanta sumu aj poplatok vymaže",
           "Upomienky, týždenný súhrn a súčty po splatnosti v e-mailoch sumu neuvedú"
         ],
         "how": [
@@ -14765,7 +14765,9 @@
         "label": "Povoliť platbu kartou",
         "hint": "Klient potom v odkaze zaplatí kartou {amount}. Táto jedna suma sa uloží nezašifrovane a uvidí ju Billanta a Stripe.",
         "on": "Platba kartou je zapnutá na {amount}. Táto suma je uložená nezašifrovane a vidí ju Billanta a Stripe. Ďalšia úhrada ju vypne."
-      }
+      },
+      "cardWaiting": "kartou, čaká na zašifrovanie",
+      "cardSealed": "{n, plural, one {Platba kartou je zašifrovaná a pridaná k úhradám.} few {# platby kartou sú zašifrované a pridané k úhradám.} other {# platieb kartou je zašifrovaných a pridaných k úhradám.}}"
     },
     "bankMatch": {
       "title": "Návrhy párovania zašifrovaných dokladov",

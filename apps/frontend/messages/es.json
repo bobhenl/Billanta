@@ -14520,7 +14520,7 @@
         "loses": [
           "La conciliación automática en el servidor: tras desbloquear, su navegador sugiere conciliaciones y usted las confirma",
           "Los pagos solo los calcula su navegador: en un documento cifrado el servidor solo conoce la fecha del pago y el estado, no el importe ni la comisión",
-          "El envío por Peppol y las sugerencias de IA con importes. El pago con tarjeta solo en el documento donde lo permita expresamente – el importe a pagar llega entonces legible a Billanta y Stripe",
+          "El envío por Peppol y las sugerencias de IA con importes. El pago con tarjeta solo en el documento donde lo permita expresamente – el importe a pagar llega entonces legible a Billanta y Stripe. Tras desbloquear, su navegador cifra el importe pagado en los pagos y Billanta borra el importe y la comisión",
           "Los recordatorios, el resumen semanal y los totales vencidos en los correos no incluyen el importe"
         ],
         "how": [
@@ -14849,7 +14849,9 @@
         "label": "Permitir pago con tarjeta",
         "hint": "El cliente podrá pagar {amount} con tarjeta desde el enlace. Este único importe se guarda sin cifrar y lo verán Billanta y Stripe.",
         "on": "El pago con tarjeta está activado por {amount}. Este importe está guardado sin cifrar y lo ven Billanta y Stripe. El siguiente pago lo desactiva."
-      }
+      },
+      "cardWaiting": "con tarjeta, pendiente de cifrar",
+      "cardSealed": "{n, plural, one {Un pago con tarjeta se ha cifrado y añadido a los pagos.} other {# pagos con tarjeta se han cifrado y añadido a los pagos.}}"
     },
     "bankMatch": {
       "title": "Conciliaciones sugeridas para documentos cifrados",

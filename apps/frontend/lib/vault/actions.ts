@@ -202,6 +202,33 @@ export async function setSealedCardAmount(invoiceId: string, amount: number | nu
   return result;
 }
 
+/**
+ * A card payment of a sealed document that waits for this browser: Stripe
+ * charged a plain amount, so the server keeps it (and the fee) in plain
+ * until the payment is sealed under the document key.
+ */
+export interface CardPaymentToSeal {
+  id: string;
+  invoiceId: string;
+  invoiceNumber: string | null;
+  encAmounts: string;
+  amount: string;
+  fee: string | null;
+  currency: string;
+  paidAt: string | null;
+}
+
+/** One document's waiting card payments, or the whole company's. */
+export async function fetchCardPaymentsToSeal(invoiceId?: string) {
+  return call<CardPaymentToSeal[]>(invoiceId ? `/api/v1/invoices/${invoiceId}/card-payments/to-seal` : '/api/v1/invoices/sealed/card-payments');
+}
+
+/** Only the envelope leaves the tab; the server then forgets the plain numbers. A repeat is harmless. */
+export async function sealCardPayment(invoiceId: string, cardPaymentId: string, encAmount: string) {
+  if (!isSealed(encAmount)) return { ok: false as const, error: 'amounts_plaintext' };
+  return call<{ sealed: boolean }>(`/api/v1/invoices/${invoiceId}/card-payments/${cardPaymentId}/seal`, json('POST', { enc_amount: encAmount }));
+}
+
 /** An issued sealed document still waiting for money, for bank matching in the browser. */
 export interface OpenSealedDocument {
   id: string;

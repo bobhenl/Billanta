@@ -2138,6 +2138,14 @@ CREATE POLICY member_visibility ON invoice_sealed_payments AS RESTRICTIVE
     ELSE EXISTS (SELECT 1 FROM invoices i WHERE i.id = invoice_sealed_payments.invoice_id)
   END);
 
+-- And card payments, which the dashboard lists while they wait to be sealed (0118).
+DROP POLICY IF EXISTS member_visibility ON card_payment_sessions;
+CREATE POLICY member_visibility ON card_payment_sessions AS RESTRICTIVE
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE EXISTS (SELECT 1 FROM invoices i WHERE i.id = card_payment_sessions.invoice_id)
+  END);
+
 -- Receipts follow their expense the same way (0112).
 DROP POLICY IF EXISTS member_visibility ON expense_attachments;
 CREATE POLICY member_visibility ON expense_attachments AS RESTRICTIVE

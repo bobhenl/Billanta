@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import type Stripe from "stripe";
-import { CardPaymentsService, feeOf, fromMinor, toMinor } from "./card-payments.service";
+import type { SQL } from "drizzle-orm";
+import { PgDialect } from "drizzle-orm/pg-core";
+import * as schema from "../../drizzle/schema";
+import { CardPaymentsService, cardPaymentRecord, feeOf, fromMinor, toMinor } from "./card-payments.service";
 
 const session = (balance: Partial<Stripe.BalanceTransaction> | null) =>
   ({
@@ -64,5 +67,75 @@ describe("CardPaymentsService.connect", () => {
     await make(stripe).connect(tenantDb as never, "t", "rk_test_" + "b".repeat(24));
     expect(stripe.checkout.sessions.list).toHaveBeenCalled();
     expect(tenantDb.update).toHaveBeenCalled();
+  });
+});
+
+describe("cardPaymentRecord", () => {
+  it("keeps the charged amount on a sealed document's payment, waiting to be sealed", () => {
+    expect(cardPaymentRecord(1210, 18.15, true)).toEqual({ fee: "18.15", amount: "1210.00", sealState: "pending" });
+  });
+
+  it("stores just the fee for a readable document, whose payment goes into amount_paid", () => {
+    expect(cardPaymentRecord(1210, null, false)).toEqual({ fee: null });
+  });
+});
+
+describe("a paid card checkout of a sealed document", () => {
+  const ENC = "enc:v1:AAAAAAAAAAAAAAAA:QUJD:" + "A".repeat(16) + ":" + "A".repeat(64);
+  const row = { id: "s1", invoiceId: "inv1", sessionId: "cs_test_1", amount: "1210.00", currency: "CZK", status: "open" } as never;
+  const paidSession = {
+    metadata: { invoice_id: "inv1" },
+    status: "complete",
+    payment_status: "paid",
+    amount_total: 121000,
+    payment_intent: { latest_charge: { balance_transaction: { fee: 1815, currency: "czk", exchange_rate: null } } },
+  };
+
+  /** The session row as Postgres keeps it: the claim only takes an open one. */
+  function setup(encAmounts: string | null) {
+    const state = { status: "open" as string, sets: [] as Record<string, unknown>[] };
+    const db = {
+      select: () => ({ from: (t: unknown) => ({ where: async () => (t === schema.invoices ? [{ encAmounts }] : []) }) }),
+      update: () => ({
+        set: (set: Record<string, unknown>) => ({
+          where: (where: SQL) => ({
+            returning: async () => {
+              if (new PgDialect().sqlToQuery(where).params.includes("open") && state.status !== "open") return [];
+              state.status = String(set.status);
+              state.sets.push(set);
+              return [{ id: "s1" }];
+            },
+          }),
+        }),
+      }),
+    };
+    const invoices = { markPaid: vi.fn(async () => ({})) };
+    const stripe = { checkout: { sessions: { retrieve: vi.fn(async () => paidSession) } } };
+    const service = new CardPaymentsService({} as never, invoices as never, () => stripe as never);
+    const check = () => (service as unknown as { check: (...a: unknown[]) => Promise<string> }).check(db, stripe, row);
+    return { state, invoices, check };
+  }
+
+  it("books the document paid without a sum and keeps the payment waiting to be sealed", async () => {
+    const { state, invoices, check } = setup(ENC);
+    expect(await check()).toBe("paid");
+    expect(invoices.markPaid).toHaveBeenCalledWith(expect.anything(), "inv1", expect.any(Date));
+    expect(state.sets).toEqual([expect.objectContaining({ status: "paid", amount: "1210.00", fee: "18.15", sealState: "pending" })]);
+  });
+
+  it("records it once when the return page, the sweep or a retry ask again", async () => {
+    const { state, invoices, check } = setup(ENC);
+    await check();
+    expect(await check()).toBe("paid");
+    expect(await check()).toBe("paid");
+    expect(state.sets).toHaveLength(1);
+    expect(invoices.markPaid).toHaveBeenCalledTimes(1);
+  });
+
+  it("leaves a readable document's payment out of the queue", async () => {
+    const { state, invoices, check } = setup(null);
+    await check();
+    expect(state.sets[0]).not.toHaveProperty("sealState");
+    expect(invoices.markPaid).toHaveBeenCalledWith(expect.anything(), "inv1", expect.any(Date), 1210, { fee: 18.15 });
   });
 });

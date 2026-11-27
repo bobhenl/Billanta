@@ -778,6 +778,13 @@
       "when": 1793602100000,
       "tag": "0117_vault_payments",
       "breakpoints": true
+    },
+    {
+      "idx": 112,
+      "version": "7",
+      "when": 1793602200000,
+      "tag": "0118_vault_card_payments",
+      "breakpoints": true
     }
   ]
 }

@@ -14521,7 +14521,7 @@
         "loses": [
           "Automatische Zahlungszuordnung auf dem Server: nach dem Entsperren schlägt Ihr Browser Zuordnungen vor und Sie bestätigen sie",
           "Zahlungen rechnet nur Ihr Browser: bei einem verschlüsselten Beleg kennt der Server nur Zahlungsdatum und Status, nicht Betrag oder Gebühr",
-          "Versand über Peppol und KI-Vorschläge mit Beträgen. Kartenzahlung nur bei einem Beleg, bei dem Sie sie ausdrücklich erlauben – der zu zahlende Betrag geht dann lesbar an Billanta und Stripe",
+          "Versand über Peppol und KI-Vorschläge mit Beträgen. Kartenzahlung nur bei einem Beleg, bei dem Sie sie ausdrücklich erlauben – der zu zahlende Betrag geht dann lesbar an Billanta und Stripe. Nach dem Entsperren verschlüsselt Ihr Browser den gezahlten Betrag in die Zahlungen, und Billanta löscht Betrag und Gebühr",
           "Mahnungen, die Wochenübersicht und überfällige Summen in E-Mails nennen keinen Betrag"
         ],
         "how": [
@@ -14850,7 +14850,9 @@
         "label": "Kartenzahlung erlauben",
         "hint": "Der Kunde kann dann über den Link {amount} per Karte zahlen. Dieser eine Betrag wird unverschlüsselt gespeichert, Billanta und Stripe sehen ihn.",
         "on": "Kartenzahlung ist für {amount} aktiv. Dieser Betrag ist unverschlüsselt gespeichert, Billanta und Stripe sehen ihn. Die nächste Zahlung schaltet sie ab."
-      }
+      },
+      "cardWaiting": "per Karte, wartet auf Verschlüsselung",
+      "cardSealed": "{n, plural, one {Eine Kartenzahlung wurde verschlüsselt und zu den Zahlungen hinzugefügt.} other {# Kartenzahlungen wurden verschlüsselt und zu den Zahlungen hinzugefügt.}}"
     },
     "bankMatch": {
       "title": "Zuordnungsvorschläge für verschlüsselte Belege",

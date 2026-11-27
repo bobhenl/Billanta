@@ -1742,13 +1742,21 @@ export const cardPaymentSessions = pgTable("card_payment_sessions", {
   invoiceId: uuid("invoice_id").notNull().references(() => invoices.id, { onDelete: "cascade" }),
   provider: varchar("provider", { length: 16 }).notNull().default("stripe"),
   sessionId: text("session_id").notNull(),
-  amount: numeric("amount", { precision: 14, scale: 2 }).notNull(),
+  /** Null only once a sealed document's card payment is sealed or dropped (0118). */
+  amount: numeric("amount", { precision: 14, scale: 2 }),
   currency: varchar("currency", { length: 3 }).notNull(),
   status: varchar("status", { length: 16 }).$type<"open" | "paid" | "expired">().notNull().default("open"),
   /** Kept by Stripe, in the invoice currency (null when unknown). */
   fee: numeric("fee", { precision: 14, scale: 2 }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   paidAt: timestamp("paid_at", { withTimezone: true }),
+  /**
+   * Paid on a document with sealed amounts (0118): 'pending' keeps the plain
+   * amount and fee until a browser with the key seals them into
+   * invoice_sealed_payments ('sealed'); 'dropped' after mark-unpaid.
+   */
+  sealState: text("seal_state").$type<"pending" | "sealed" | "dropped">(),
+  sealedPaymentId: uuid("sealed_payment_id").references((): AnyPgColumn => invoiceSealedPayments.id, { onDelete: "set null" }),
 });
 
 export const timeEntries = pgTable("time_entries", {
