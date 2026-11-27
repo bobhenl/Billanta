@@ -6,7 +6,7 @@ import { Banner } from '@/components/banner';
 import { Link, redirect } from '@/i18n/navigation';
 import { apiFetch, ApiError, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { parsePeriod, periodQuery, shiftPeriod, switchKind, type NetIncomeReport, type PartnerMember, type Period, type PeriodKind } from '@/lib/net-income';
-import { canManage, canWrite, fetchMyAccess } from '@/lib/tenant';
+import { canManage, canWrite, fetchMyAccess, fetchTaxModelAccess } from '@/lib/tenant';
 import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 import { NetIncomeView } from './net-income-view';
@@ -30,10 +30,10 @@ export default async function NetIncomePage({ searchParams }: { searchParams: Pr
   const locale = await getLocale();
   const period = parsePeriod(await searchParams);
 
-  // Each partner's income and taxes are for owners and admins only (the backend refuses everyone else too).
-  // Without access info the request below still gets the backend's answer.
+  // Each partner's income and taxes are for owners, admins and members linked to a partner (the backend
+  // refuses everyone else too). Without access info the request below still gets the backend's answer.
   const access = await fetchMyAccess().catch(() => null);
-  if (access && !canManage(access.role)) {
+  if (access && !canManage(access.role) && !(await fetchTaxModelAccess())) {
     return (
       <div className="mx-auto mt-6 max-w-lg rounded-xl border border-border bg-card p-6 text-center">
         <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-secondary text-muted-foreground">

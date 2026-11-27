@@ -14127,8 +14127,8 @@
       "partner_limit": "Ďalších spoločníkov umožňuje vyšší tarif. Zadarmo 1, Start 2, Plus 3, Firma 10."
     },
     "noAccess": {
-      "title": "Len pre majiteľov a administrátorov",
-      "body": "Prehľad Po zdanení ukazuje príjmy a dane jednotlivých spoločníkov, preto ho vidí len majiteľ a administrátori firmy."
+      "title": "Len pre majiteľov, administrátorov a spoločníkov",
+      "body": "Prehľad Po zdanení ukazuje príjmy a dane jednotlivých spoločníkov, preto ho vidí len majiteľ, administrátori a členovia tímu, ktorých niekto priradil k spoločníkovi v nastaveniach prehľadu."
     },
     "split": "Rozdelenie",
     "onePersonNote": "Daň je vypočítaná raz z celku a rozdelená podľa podielov.",

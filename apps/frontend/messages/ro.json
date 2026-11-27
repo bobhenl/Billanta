@@ -14215,8 +14215,8 @@
       "partner_limit": "Mai mulți asociați necesită un plan superior. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
-      "title": "Doar pentru proprietari și administratori",
-      "body": "Raportul după impozite arată venitul și impozitele fiecărui partener, așa că îl pot vedea doar proprietarul firmei și administratorii."
+      "title": "Doar pentru proprietari, administratori și parteneri",
+      "body": "Raportul după impozite arată venitul și impozitele fiecărui partener, așa că îl pot vedea doar proprietarul firmei, administratorii și membrii echipei legați de un partener în setările raportului."
     },
     "split": "Împărțire",
     "onePersonNote": "Impozitul este calculat o dată pe total și împărțit după cote.",

@@ -14215,8 +14215,8 @@
       "partner_limit": "Más socios requieren un plan superior. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
-      "title": "Solo para propietarios y administradores",
-      "body": "El informe después de impuestos muestra los ingresos y los impuestos de cada socio, por lo que solo pueden verlo el propietario y los administradores de la empresa."
+      "title": "Solo para propietarios, administradores y socios",
+      "body": "El informe después de impuestos muestra los ingresos y los impuestos de cada socio, por lo que solo pueden verlo el propietario, los administradores y los miembros del equipo vinculados a un socio en la configuración del informe."
     },
     "split": "Reparto",
     "onePersonNote": "El impuesto se calcula una vez sobre el total y se reparte según las participaciones.",

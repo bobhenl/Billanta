@@ -14216,8 +14216,8 @@
       "partner_limit": "Weitere Partner brauchen einen höheren Tarif. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
-      "title": "Nur für Inhaber und Administratoren",
-      "body": "Der Bericht nach Steuern zeigt die Einnahmen und Steuern jedes Partners, daher sehen ihn nur der Inhaber und die Administratoren des Unternehmens."
+      "title": "Nur für Inhaber, Administratoren und Partner",
+      "body": "Der Bericht nach Steuern zeigt die Einnahmen und Steuern jedes Partners, daher sehen ihn nur der Inhaber, die Administratoren und Teammitglieder, die in den Berichtseinstellungen mit einem Partner verknüpft sind."
     },
     "split": "Aufteilung",
     "onePersonNote": "Die Steuer wird einmal auf die Summe berechnet und nach den Anteilen geteilt.",

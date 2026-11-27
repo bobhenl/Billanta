@@ -14215,8 +14215,8 @@
       "partner_limit": "Davantage d'associés nécessitent une offre supérieure. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
-      "title": "Réservé aux propriétaires et administrateurs",
-      "body": "Le rapport après impôts affiche les revenus et les impôts de chaque associé : seuls le propriétaire et les administrateurs de l’entreprise peuvent le consulter."
+      "title": "Réservé aux propriétaires, administrateurs et associés",
+      "body": "Le rapport après impôts affiche les revenus et les impôts de chaque associé : seuls le propriétaire, les administrateurs et les membres de l’équipe liés à un associé dans les réglages du rapport peuvent le consulter."
     },
     "split": "Répartition",
     "onePersonNote": "L’impôt est calculé une fois sur le total et réparti selon les parts.",

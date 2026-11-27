@@ -14223,8 +14223,8 @@
       "partner_limit": "Další společníky umožňuje vyšší tarif. Zdarma 1, Start 2, Plus 3, Firma 10."
     },
     "noAccess": {
-      "title": "Jen pro majitele a administrátory",
-      "body": "Report Po zdanění ukazuje příjmy a daně jednotlivých společníků, proto ho vidí jen majitel a administrátoři firmy."
+      "title": "Jen pro majitele, administrátory a společníky",
+      "body": "Report Po zdanění ukazuje příjmy a daně jednotlivých společníků, proto ho vidí jen majitel, administrátoři a členové týmu propojení se společníkem v nastavení reportu."
     },
     "split": "Rozdělení",
     "onePersonNote": "Daň je spočítaná jednou z celku a rozdělená podle podílů.",

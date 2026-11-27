@@ -14215,8 +14215,8 @@
       "partner_limit": "Több társhoz magasabb csomag kell. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
-      "title": "Csak tulajdonosoknak és adminisztrátoroknak",
-      "body": "Az adózás utáni kimutatás az egyes partnerek bevételét és adóit mutatja, ezért csak a cég tulajdonosa és adminisztrátorai láthatják."
+      "title": "Csak tulajdonosoknak, adminisztrátoroknak és partnereknek",
+      "body": "Az adózás utáni kimutatás az egyes partnerek bevételét és adóit mutatja, ezért csak a cég tulajdonosa, adminisztrátorai és a kimutatás beállításaiban egy partnerhez kapcsolt csapattagok láthatják."
     },
     "split": "Megosztás",
     "onePersonNote": "Az adó egyszer számolódik az összegre, majd a részesedések szerint oszlik meg.",

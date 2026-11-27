@@ -1,4 +1,5 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
+import { isLinkedPartner, linkedPartnerMay } from "./linked-partner";
 import { meetsRequirement, requirementFor } from "./permissions";
 import type { TenantScopedRequest } from "./tenant-context.middleware";
 
@@ -20,7 +21,8 @@ export const under = (path: string, prefix: string) => path === prefix || path.s
 
 /**
  * Owners and admins only, reads included: the "Po zdanění" report shows each
- * partner's income and taxes, which other members must not see.
+ * partner's income and taxes, which other members must not see. A member
+ * linked to one of the partners gets part of it back (`linkedPartnerMay`).
  */
 const OWNER_ADMIN_PREFIXES = ["v1/net-income", "v1/tenants/me/tax-model"];
 const ownerAdminOnly = (path: string) => OWNER_ADMIN_PREFIXES.some((p) => under(path, p)) || /^v1\/invoices\/[^/]+\/(partner-shares|lock)$/.test(path);
@@ -80,7 +82,7 @@ export const roleMayWrite = (role: string, method: string, path: string) => role
  */
 @Injectable()
 export class RoleAccessGuard implements CanActivate {
-  canActivate(context: ExecutionContext): boolean {
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> {
     if (context.getType() !== "http") return true;
     const req = context.switchToHttp().getRequest<TenantScopedRequest>();
     const role = req.user?.role;
@@ -89,8 +91,15 @@ export class RoleAccessGuard implements CanActivate {
     // Every tenant route lives under `v1/`; anything else means the URL was
     // not parsed the way the router parsed it, so refuse rather than guess.
     if (under(path, "v1") && roleMayAccess(role, req.method, path, req.user?.permissions, (req as { body?: unknown }).body)) return true;
-    throw new ForbiddenException(
-      role === "viewer" ? "Your role is read-only in this company" : "Your access in this company doesn't allow this",
-    );
+    const refuse = () =>
+      new ForbiddenException(role === "viewer" ? "Your role is read-only in this company" : "Your access in this company doesn't allow this");
+    // Only the partner routes pay for the tax model lookup, in the request's own tenant transaction.
+    if (under(path, "v1") && linkedPartnerMay(role, req.method, path, req.user?.permissions)) {
+      return isLinkedPartner(req.tenantDb, req.user!.tenantId, req.user!.id).then((linked) => {
+        if (linked) return true;
+        throw refuse();
+      });
+    }
+    throw refuse();
   }
 }

@@ -14215,8 +14215,8 @@
       "partner_limit": "Più soci richiedono un piano superiore. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
-      "title": "Solo per proprietari e amministratori",
-      "body": "Il report al netto delle imposte mostra il reddito e le imposte di ogni socio, quindi possono vederlo solo il proprietario e gli amministratori dell’azienda."
+      "title": "Solo per proprietari, amministratori e soci",
+      "body": "Il report al netto delle imposte mostra il reddito e le imposte di ogni socio, quindi possono vederlo solo il proprietario, gli amministratori e i membri del team collegati a un socio nelle impostazioni del report."
     },
     "split": "Ripartizione",
     "onePersonNote": "L’imposta è calcolata una volta sul totale e divisa secondo le quote.",

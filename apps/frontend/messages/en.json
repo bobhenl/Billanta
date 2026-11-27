@@ -14223,8 +14223,8 @@
       "partner_limit": "More partners need a higher plan. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
-      "title": "For owners and admins only",
-      "body": "The after-tax report shows each partner’s income and taxes, so only the company’s owner and admins can see it."
+      "title": "For owners, admins and partners only",
+      "body": "The after-tax report shows each partner’s income and taxes, so only the company’s owner, admins and team members linked to a partner in the report settings can see it."
     },
     "split": "Split",
     "onePersonNote": "The tax is worked out once on the total and divided by the shares.",
