@@ -14763,7 +14763,10 @@
       "paidSealed": "Kwoty dokumentu są zaszyfrowane, dlatego można zapisać tylko zapłatę całej kwoty. Serwer nie przechowuje opłat ani zaksięgowanej kwoty.",
       "leftOut": "Bez {count, plural, one {# dokumentu} few {# dokumentów} many {# dokumentów} other {# dokumentu}} z zaszyfrowanymi kwotami – odblokuj sejf",
       "exportLocked": "Dokumenty z zaszyfrowanymi kwotami trafią do pliku dopiero po odblokowaniu sejfu.",
-      "exportUnreadable": "Plik nie powstał: {count, plural, one {# dokumentu} few {# dokumentów} many {# dokumentów} other {# dokumentu}} nie da się otworzyć tym kluczem. Brakujący dokument zafałszowałby plik."
+      "exportUnreadable": "Plik nie powstał: {count, plural, one {# dokumentu} few {# dokumentów} many {# dokumentów} other {# dokumentu}} nie da się otworzyć tym kluczem. Brakujący dokument zafałszowałby plik.",
+      "creditNoteLocked": "Faktura korygująca do faktury z zaszyfrowanymi kwotami powstanie dopiero po odblokowaniu sejfu.",
+      "creditNoteUnreadable": "Kwot faktury nie da się otworzyć tym kluczem, więc korekta nie powstała.",
+      "bulkSealed": "Ten szablon ma zaszyfrowane kwoty. Nie nadaje się do fakturowania zbiorczego, tylko do pojedynczej faktury."
     }
   },
   "vaultPublic": {

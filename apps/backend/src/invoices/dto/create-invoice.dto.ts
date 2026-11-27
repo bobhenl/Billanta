@@ -122,9 +122,16 @@ export const updateInvoiceSchema = invoiceFieldsSchema.partial().extend({
 
 export class UpdateInvoiceDto extends createZodDto(updateInvoiceSchema) {}
 
-export const convertInvoiceSchema = z.object({
-  to: z.enum(["invoice", "credit_note", "proforma"]),
-});
+export const convertInvoiceSchema = z
+  .object({
+    to: z.enum(["invoice", "credit_note", "proforma"]),
+    // Důvěrný režim: a credit note of an invoice with sealed amounts. The
+    // browser opened the invoice's envelopes, negated the quantities and
+    // sealed them again under the invoice's document key, in item order.
+    enc_amounts: sealedEnvelope(4000).optional(),
+    item_enc_amounts: z.array(sealedEnvelope(400)).max(200).optional(),
+  })
+  .refine((d) => (d.enc_amounts === undefined) === (d.item_enc_amounts === undefined), { message: "amounts_mismatch" });
 
 export class ConvertInvoiceDto extends createZodDto(convertInvoiceSchema) {}
 

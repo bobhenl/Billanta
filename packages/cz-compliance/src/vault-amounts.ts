@@ -183,12 +183,27 @@ function vatCategory(percent: number): VatRateType {
 }
 
 /**
+ * A credit note of a sealed invoice: the same items with negated quantities
+ * (as the server does for a plain one) and their totals, ready to be sealed
+ * again under the invoice's document key.
+ */
+export function creditNoteAmounts(items: ItemAmounts[], options: { reverseCharge?: boolean } = {}): { items: ItemAmounts[]; totals: DocumentAmounts } {
+  const negated = items.map((i) => ({ ...i, quantity: -i.quantity }));
+  return { items: negated, totals: amountTotals(negated, options) };
+}
+
+/**
  * The ISDOC / UBL input of a sealed document with the real amounts from the
  * opened items (the server built it with the placeholders). Same rules as
  * the server's builder: a discount goes into the unit price, reverse charge
- * means 0 %.
+ * means 0 %. `depositIsTotal`: the final invoice of a paid proforma, whose
+ * paid deposits (ISDOC) or prepaid amount (UBL) is its whole total.
  */
-export function fillSealedIsdocAmounts(input: IsdocInvoiceInput, items: ItemAmounts[], options: { reverseCharge?: boolean } = {}): IsdocInvoiceInput {
+export function fillSealedIsdocAmounts(
+  input: IsdocInvoiceInput,
+  items: ItemAmounts[],
+  options: { reverseCharge?: boolean; depositIsTotal?: boolean } = {},
+): IsdocInvoiceInput {
   if (items.length !== input.lineItems.length) throw new Error('amounts_mismatch');
   const totals = amountTotals(items, options);
   return {
@@ -206,6 +221,7 @@ export function fillSealedIsdocAmounts(input: IsdocInvoiceInput, items: ItemAmou
     }),
     totals: {
       ...input.totals,
+      ...(options.depositIsTotal ? { paidDepositsAmount: totals.totalWithVat } : {}),
       totalWithoutVat: totals.totalWithoutVat,
       totalVat: totals.totalVat,
       totalWithVat: totals.totalWithVat,

@@ -14774,7 +14774,10 @@
       "paidSealed": "The document's amounts are encrypted, so only a payment in full can be recorded. The server keeps no fees or credited amount.",
       "leftOut": "Excludes {count, plural, one {# document} other {# documents}} with encrypted amounts – unlock the vault",
       "exportLocked": "Documents with encrypted amounts can only go into the file once the vault is unlocked.",
-      "exportUnreadable": "No file was made: {count, plural, one {# document} other {# documents}} cannot be opened with this key. A missing document would make the file wrong."
+      "exportUnreadable": "No file was made: {count, plural, one {# document} other {# documents}} cannot be opened with this key. A missing document would make the file wrong.",
+      "creditNoteLocked": "A credit note for an invoice with encrypted amounts is prepared once the vault is unlocked.",
+      "creditNoteUnreadable": "The invoice's amounts cannot be opened with this key, so no credit note was made.",
+      "bulkSealed": "This template has encrypted amounts. It cannot be used for bulk invoicing, only for a single invoice."
     }
   },
   "vaultPublic": {

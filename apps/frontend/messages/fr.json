@@ -14762,7 +14762,10 @@
       "paidSealed": "Les montants du document sont chiffrés, seul un paiement intégral peut donc être enregistré. Le serveur ne conserve ni frais ni montant crédité.",
       "leftOut": "Sans {count, plural, one {# document} other {# documents}} aux montants chiffrés – déverrouillez le coffre",
       "exportLocked": "Les documents aux montants chiffrés n'entrent dans le fichier qu'après le déverrouillage du coffre.",
-      "exportUnreadable": "Aucun fichier créé : {count, plural, one {# document ne peut pas être ouvert} other {# documents ne peuvent pas être ouverts}} avec cette clé. Un document manquant fausserait le fichier."
+      "exportUnreadable": "Aucun fichier créé : {count, plural, one {# document ne peut pas être ouvert} other {# documents ne peuvent pas être ouverts}} avec cette clé. Un document manquant fausserait le fichier.",
+      "creditNoteLocked": "L'avoir d'une facture aux montants chiffrés est préparé après le déverrouillage du coffre.",
+      "creditNoteUnreadable": "Les montants de la facture ne peuvent pas être ouverts avec cette clé, aucun avoir n'a donc été créé.",
+      "bulkSealed": "Ce modèle a des montants chiffrés. Il ne sert pas à la facturation groupée, seulement à une facture individuelle."
     }
   },
   "vaultPublic": {

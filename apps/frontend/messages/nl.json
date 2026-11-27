@@ -14762,7 +14762,10 @@
       "paidSealed": "De bedragen van het document zijn versleuteld, daarom kan alleen een volledige betaling worden vastgelegd. Kosten en het bijgeschreven bedrag slaat de server niet op.",
       "leftOut": "Zonder {count, plural, one {# document} other {# documenten}} met versleutelde bedragen – ontgrendel de kluis",
       "exportLocked": "Documenten met versleutelde bedragen komen pas in het bestand nadat de kluis is ontgrendeld.",
-      "exportUnreadable": "Geen bestand gemaakt: {count, plural, one {# document kan} other {# documenten kunnen}} niet met deze sleutel worden geopend. Een ontbrekend document zou het bestand onjuist maken."
+      "exportUnreadable": "Geen bestand gemaakt: {count, plural, one {# document kan} other {# documenten kunnen}} niet met deze sleutel worden geopend. Een ontbrekend document zou het bestand onjuist maken.",
+      "creditNoteLocked": "Een creditnota voor een factuur met versleutelde bedragen wordt gemaakt nadat de kluis is ontgrendeld.",
+      "creditNoteUnreadable": "De bedragen van de factuur kunnen niet met deze sleutel worden geopend, dus er is geen creditnota gemaakt.",
+      "bulkSealed": "Deze sjabloon heeft versleutelde bedragen. Hij is niet bruikbaar voor bulkfacturatie, alleen voor één factuur."
     }
   },
   "vaultPublic": {

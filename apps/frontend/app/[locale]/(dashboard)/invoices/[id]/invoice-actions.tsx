@@ -29,6 +29,7 @@ import { useCanDo, useCanWrite } from '@/components/access-provider';
 import { fetchDecrypted } from '@/lib/vault/files';
 import { ClientLinkNotice, useClientLinkKey } from '@/components/vault/client-link';
 import { copyText } from '@/lib/clipboard';
+import { useConvertDocument } from '@/components/vault/use-convert';
 import { useVault } from '@/components/vault/vault-provider';
 import { DocumentError, renderSealedIsdoc, renderSealedPdf, renderSealedUbl, saveDocument, sendWithSealedFiles } from '@/lib/vault/documents';
 import { CONVERSIONS, type DocumentType, type InvoiceStatus } from '@/lib/invoice-ui';
@@ -36,7 +37,6 @@ import { cn } from '@/lib/utils';
 import type { SealedDocument } from '@/lib/vault/content';
 import {
   cancelInvoice,
-  convertInvoice,
   deleteInvoice,
   issueInvoice,
   markInvoicePaid,
@@ -125,6 +125,7 @@ export function InvoiceActions({
   // Off by default: passing the files through the server is the member's explicit choice for this e-mail.
   const [passFiles, setPassFiles] = useState(false);
 
+  const convert = useConvertDocument();
   const clientKey = useClientLinkKey(id, sealedDoc);
   // Built here, never sent: the server-sent e-mail carries the same link without the #key.
   const [origin, setOrigin] = useState('');
@@ -379,7 +380,7 @@ export function InvoiceActions({
                 type="button"
                 className={menuItem}
                 disabled={pending}
-                onClick={() => act(() => convertInvoice(id, to), t('done.converted'), (doc) => router.push(`/invoices/${doc.id}`))}
+                onClick={() => act(() => convert(id, to), t('done.converted'), (doc) => router.push(`/invoices/${doc.id}`))}
               >
                 <Repeat2 className="h-4 w-4" />
                 {t(`actions.convertTo.${to}`)}
@@ -629,7 +630,7 @@ export function InvoiceActions({
                 type="button"
                 className={buttonClass.primary}
                 disabled={pending}
-                onClick={() => act(() => convertInvoice(id, 'credit_note'), t('done.converted'), (doc) => router.push(`/invoices/${doc.id}`))}
+                onClick={() => act(() => convert(id, 'credit_note'), t('done.converted'), (doc) => router.push(`/invoices/${doc.id}`))}
               >
                 <Repeat2 className="h-4 w-4" />
                 {t('actions.convertTo.credit_note')}
@@ -699,7 +700,7 @@ export function InvoiceActions({
                 type="button"
                 className={buttonClass.secondary}
                 disabled={pending}
-                onClick={() => act(() => convertInvoice(id, 'credit_note'), t('done.converted'), (doc) => router.push(`/invoices/${doc.id}`))}
+                onClick={() => act(() => convert(id, 'credit_note'), t('done.converted'), (doc) => router.push(`/invoices/${doc.id}`))}
               >
                 {t('actions.convertTo.credit_note')}
               </button>

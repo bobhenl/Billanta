@@ -14762,7 +14762,10 @@
       "paidSealed": "Sumele documentului sunt criptate, de aceea se poate înregistra doar plata integrală. Serverul nu păstrează comisioane sau suma creditată.",
       "leftOut": "Fără {count, plural, one {# document} few {# documente} other {# de documente}} cu sume criptate – deblocați seiful",
       "exportLocked": "Documentele cu sume criptate intră în fișier doar după deblocarea seifului.",
-      "exportUnreadable": "Fișierul nu a fost creat: {count, plural, one {# document nu poate fi deschis} few {# documente nu pot fi deschise} other {# de documente nu pot fi deschise}} cu această cheie. Un document lipsă ar face fișierul greșit."
+      "exportUnreadable": "Fișierul nu a fost creat: {count, plural, one {# document nu poate fi deschis} few {# documente nu pot fi deschise} other {# de documente nu pot fi deschise}} cu această cheie. Un document lipsă ar face fișierul greșit.",
+      "creditNoteLocked": "Factura de stornare pentru o factură cu sume criptate se pregătește după deblocarea seifului.",
+      "creditNoteUnreadable": "Sumele facturii nu pot fi deschise cu această cheie, așa că stornarea nu a fost creată.",
+      "bulkSealed": "Acest șablon are sume criptate. Nu poate fi folosit pentru facturare în masă, doar pentru o singură factură."
     }
   },
   "vaultPublic": {

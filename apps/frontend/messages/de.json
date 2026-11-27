@@ -14763,7 +14763,10 @@
       "paidSealed": "Die Beträge des Belegs sind verschlüsselt, daher kann nur eine vollständige Zahlung erfasst werden. Gebühren und gutgeschriebenen Betrag speichert der Server nicht.",
       "leftOut": "Ohne {count, plural, one {# Beleg} other {# Belege}} mit verschlüsselten Beträgen – Tresor entsperren",
       "exportLocked": "Belege mit verschlüsselten Beträgen kommen erst nach dem Entsperren des Tresors in die Datei.",
-      "exportUnreadable": "Keine Datei erstellt: {count, plural, one {# Beleg lässt} other {# Belege lassen}} sich mit diesem Schlüssel nicht öffnen. Ein fehlender Beleg würde die Datei verfälschen."
+      "exportUnreadable": "Keine Datei erstellt: {count, plural, one {# Beleg lässt} other {# Belege lassen}} sich mit diesem Schlüssel nicht öffnen. Ein fehlender Beleg würde die Datei verfälschen.",
+      "creditNoteLocked": "Eine Gutschrift zu einer Rechnung mit verschlüsselten Beträgen wird erst nach dem Entsperren des Tresors erstellt.",
+      "creditNoteUnreadable": "Die Beträge der Rechnung lassen sich mit diesem Schlüssel nicht öffnen, daher wurde keine Gutschrift erstellt.",
+      "bulkSealed": "Diese Vorlage hat verschlüsselte Beträge. Sie eignet sich nicht für Sammelrechnungen, nur für eine einzelne Rechnung."
     }
   },
   "vaultPublic": {

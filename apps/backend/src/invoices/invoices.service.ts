@@ -4,6 +4,7 @@ import { peppolRelevant } from "./peppol-relevance";
 import { BadRequestException, ConflictException, ForbiddenException, HttpException, Injectable, NotFoundException, Optional, UnprocessableEntityException } from "@nestjs/common";
 import {
   checkInvoiceRequirements,
+  documentKeyWrap,
   generateIsdocXml,
   generateUblInvoiceXml,
   validatePeppolInvoice,
@@ -87,11 +88,44 @@ type InvoiceRow = typeof schema.invoices.$inferSelect;
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
 type LineItemInput = NonNullable<UpdateInvoiceDto["line_items"]>[number];
 
-/** Category "amounts": the item envelopes in the input's line order, for the browser to fill in the numbers. */
-type SealedInputAmounts = { items: string[]; reverseCharge: boolean };
-function sealedInputAmounts(invoice: Pick<InvoiceRow, "encAmounts" | "reverseCharge">, lineItems: Pick<LineItemRow, "encAmounts">[]): SealedInputAmounts | null {
+/**
+ * Category "amounts": the item envelopes in the input's line order, for the
+ * browser to fill in the numbers. `depositIsTotal`: the final invoice of a
+ * paid proforma, which `proformaDeposit` would credit with its paid sum. A
+ * sealed one records no paid sum (it would be the total in plain), so the
+ * browser puts the opened total there instead.
+ */
+type SealedInputAmounts = { items: string[]; reverseCharge: boolean; depositIsTotal: boolean };
+export function sealedInputAmounts(
+  invoice: Pick<InvoiceRow, "encAmounts" | "reverseCharge" | "documentType" | "status">,
+  lineItems: Pick<LineItemRow, "encAmounts">[],
+  related: { documentType: string; status?: string | null } | null | undefined,
+): SealedInputAmounts | null {
   if (!amountsSealed(invoice)) return null;
-  return { items: lineItems.map((i) => i.encAmounts ?? ""), reverseCharge: invoice.reverseCharge };
+  return {
+    items: lineItems.map((i) => i.encAmounts ?? ""),
+    reverseCharge: invoice.reverseCharge,
+    depositIsTotal: invoice.status === "paid" && proformaDeposit({ documentType: invoice.documentType, amountPaid: "1" }, related) > 0,
+  };
+}
+
+/**
+ * The browser's envelopes for a credit note of a sealed invoice: one per item
+ * and all under the invoice's document key, so the client link of the
+ * invoice opens the credit note too and nothing sealed with another key (or
+ * the company key) slips in. The server cannot check the negation itself;
+ * the draft is reviewed and issued by a person like any other.
+ */
+export function assertSealedCreditNote(
+  source: Pick<InvoiceRow, "encAmounts">,
+  items: Pick<LineItemRow, "encAmounts">[],
+  sealed: { encAmounts: string; items: string[] },
+): void {
+  if (sealed.items.length !== items.length) throw new BadRequestException("amounts_mismatch");
+  const wrap = documentKeyWrap(source.encAmounts);
+  if (!wrap || [sealed.encAmounts, ...sealed.items].some((e) => documentKeyWrap(e) !== wrap)) {
+    throw new BadRequestException("document_key_mismatch");
+  }
 }
 
 /** The line a payment draft gets when the payment says nothing about what was paid for. */
@@ -1051,8 +1085,19 @@ export class InvoicesService {
    *   - invoice → credit note (same items with negated quantities, to be
    *     trimmed down to what is actually being corrected).
    * The source document is linked via `relatedInvoiceId` and left as is.
+   *
+   * With sealed amounts the server cannot negate anything, so the credit note
+   * comes with `sealed`: the envelopes the browser negated and sealed again
+   * under the invoice's document key. The other conversions copy the
+   * envelopes as they are.
    */
-  async convert(db: TenantDb, tenantId: string, id: string, to: "invoice" | "credit_note" | "proforma") {
+  async convert(
+    db: TenantDb,
+    tenantId: string,
+    id: string,
+    to: "invoice" | "credit_note" | "proforma",
+    sealed?: { encAmounts: string; items: string[] },
+  ) {
     const source = await this.requireInvoice(db, id);
     const allowed: Record<InvoiceRow["documentType"], string[]> = {
       quote: ["invoice", "proforma"],
@@ -1068,14 +1113,18 @@ export class InvoicesService {
       throw new BadRequestException("Issue the document first");
     }
     if (!source.contactId) throw new BadRequestException("The document has no customer");
-    // A credit note negates the amounts, which the server cannot do inside an envelope.
-    if (to === "credit_note") refuseSealedAmounts(source);
+    // A credit note negates the amounts, which the server cannot do inside an
+    // envelope: without the browser's negated envelopes it is refused.
+    if (to === "credit_note" && !sealed) refuseSealedAmounts(source);
+    if (sealed && (to !== "credit_note" || !amountsSealed(source))) throw new BadRequestException("amounts_not_sealed");
 
     const items = await db
       .select()
       .from(schema.invoiceLineItems)
       .where(eq(schema.invoiceLineItems.invoiceId, id))
       .orderBy(asc(schema.invoiceLineItems.sortOrder));
+
+    if (sealed) assertSealedCreditNote(source, items, sealed);
 
     const [tenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
     const dueDays = tenant?.defaultDueDays ?? 14;
@@ -1116,8 +1165,9 @@ export class InvoicesService {
         reverseCharge: source.reverseCharge,
         reverseChargeCode: source.reverseChargeCode,
         bankAccountId: source.bankAccountId,
-        // Sealed amounts are copied as they are: same document key, so the draft opens with the vault key.
-        encAmounts: source.encAmounts,
+        // Sealed amounts are copied as they are (or negated by the browser for
+        // a credit note): same document key, so the draft opens with the vault key.
+        encAmounts: sealed?.encAmounts ?? source.encAmounts,
         status: "draft",
         source: "manual",
       })
@@ -1129,13 +1179,14 @@ export class InvoicesService {
           tenantId,
           invoiceId: draft.id,
           description: item.description,
-          quantity: to === "credit_note" ? (-Number(item.quantity)).toString() : item.quantity,
+          // A sealed item's plain quantity is the placeholder 1; its envelope holds the negated one.
+          quantity: to === "credit_note" && !sealed ? (-Number(item.quantity)).toString() : item.quantity,
           unit: item.unit,
           code: item.code,
           unitPrice: item.unitPrice,
           vatRate: item.vatRate,
           discountPercent: item.discountPercent,
-          encAmounts: item.encAmounts,
+          encAmounts: sealed ? sealed.items[index] : item.encAmounts,
           sortOrder: index,
         })),
       );
@@ -2312,7 +2363,7 @@ export class InvoicesService {
     return {
       filename: `${invoiceFileBase(invoice)}.isdoc`,
       input: deposit ? { ...input, totals: { ...input.totals, paidDepositsAmount: deposit } } : input,
-      sealedAmounts: sealedInputAmounts(invoice, lineItems),
+      sealedAmounts: sealedInputAmounts(invoice, lineItems, related),
     };
   }
 
@@ -2334,8 +2385,8 @@ export class InvoicesService {
     tenantId: string,
     invoiceId: string,
   ): Promise<{ filename: string; input: IsdocInvoiceInput; options: UblOptions; sealedAmounts: SealedInputAmounts | null }> {
-    const { invoice, input, options, lineItems } = await this.ublInput(db, tenantId, invoiceId, true);
-    return { filename: `${invoiceFileBase(invoice)}.xml`, input, options, sealedAmounts: sealedInputAmounts(invoice, lineItems) };
+    const { invoice, input, options, lineItems, related } = await this.ublInput(db, tenantId, invoiceId, true);
+    return { filename: `${invoiceFileBase(invoice)}.xml`, input, options, sealedAmounts: sealedInputAmounts(invoice, lineItems, related) };
   }
 
   private async ublInput(db: TenantDb, tenantId: string, invoiceId: string, keepSealed = false) {
@@ -2364,7 +2415,7 @@ export class InvoicesService {
       paymentMethod: invoice.paymentMethod,
       paymentMethodLabel: invoice.paymentMethodLabel,
     };
-    return { invoice, input, options, lineItems };
+    return { invoice, input, options, lineItems, related };
   }
 
   /**

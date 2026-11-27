@@ -14762,7 +14762,10 @@
       "paidSealed": "A bizonylat összegei titkosítva vannak, ezért csak a teljes összeg kifizetése rögzíthető. Díjakat és jóváírt összeget a szerver nem tárol.",
       "leftOut": "{count, plural, one {# titkosított összegű bizonylat} other {# titkosított összegű bizonylat}} nélkül – oldja fel a széfet",
       "exportLocked": "A titkosított összegű bizonylatok csak a széf feloldása után kerülhetnek a fájlba.",
-      "exportUnreadable": "A fájl nem készült el: {count, plural, one {# bizonylat} other {# bizonylat}} nem nyitható meg ezzel a kulccsal. Egy hiányzó bizonylat meghamisítaná a fájlt."
+      "exportUnreadable": "A fájl nem készült el: {count, plural, one {# bizonylat} other {# bizonylat}} nem nyitható meg ezzel a kulccsal. Egy hiányzó bizonylat meghamisítaná a fájlt.",
+      "creditNoteLocked": "A titkosított összegű számla jóváírása a széf feloldása után készül el.",
+      "creditNoteUnreadable": "A számla összegei nem nyithatók meg ezzel a kulccsal, ezért jóváírás nem készült.",
+      "bulkSealed": "Ennek a sablonnak titkosított összegei vannak. Tömeges számlázásra nem, csak egyedi számlához használható."
     }
   },
   "vaultPublic": {

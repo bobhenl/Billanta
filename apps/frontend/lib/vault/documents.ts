@@ -120,13 +120,13 @@ async function openInput(key: VaultKey, input: IsdocInvoiceInput): Promise<Isdoc
 }
 
 /** Category "amounts": the item envelopes in the input's line order (null when the amounts are plain). */
-type SealedInputAmounts = { items: string[]; reverseCharge: boolean } | null | undefined;
+type SealedInputAmounts = { items: string[]; reverseCharge: boolean; depositIsTotal?: boolean } | null | undefined;
 
 async function inputWithAmounts(key: VaultKey, input: IsdocInvoiceInput, sealed: SealedInputAmounts): Promise<IsdocInvoiceInput> {
   const opened = await openInput(key, input);
   if (!sealed) return opened;
   const items = await Promise.all(sealed.items.map(async (cipher) => decodeItemAmounts(await open(key, cipher))));
-  return fillSealedIsdocAmounts(opened, items, { reverseCharge: sealed.reverseCharge });
+  return fillSealedIsdocAmounts(opened, items, { reverseCharge: sealed.reverseCharge, depositIsTotal: sealed.depositIsTotal });
 }
 
 export async function renderSealedIsdoc(key: VaultKey, invoiceId: string): Promise<RenderedDocument> {
@@ -144,7 +144,10 @@ export async function renderSealedUbl(key: VaultKey, invoiceId: string): Promise
     options: UblOptions;
     sealedAmounts?: SealedInputAmounts;
   }>(`invoices/${invoiceId}/ubl-input`);
-  const xml = generateUblInvoiceXml(await inputWithAmounts(key, input, sealedAmounts), options);
+  const filled = await inputWithAmounts(key, input, sealedAmounts);
+  // The final invoice of a paid proforma: the server could not know the prepaid sum.
+  const deposit = filled.totals.paidDepositsAmount;
+  const xml = generateUblInvoiceXml(filled, deposit ? { ...options, prepaidAmount: deposit } : options);
   return { filename, blob: new Blob([xml], { type: 'application/xml' }) };
 }
 

@@ -204,6 +204,32 @@ export function SealedTotalsBlock({ cipher, currency }: { cipher: string | null 
   );
 }
 
+/**
+ * The net of sealed items (a saved template has no totals envelope of its
+ * own): the sum of the opened item bases, a lock until every one opens.
+ */
+export function SealedItemsNet({ ciphers, currency }: { ciphers: (string | null | undefined)[]; currency: string }) {
+  const locale = useLocale();
+  const { key } = useVault();
+  const list = ciphers.filter((c): c is string => isSealed(c));
+  const signature = list.join('|');
+  const [state, setState] = useState<{ net: number | null; failed: boolean }>({ net: null, failed: false });
+  useEffect(() => {
+    if (!key || !list.length) return setState({ net: null, failed: false });
+    let live = true;
+    Promise.all(list.map((c) => openItemAmounts(key, c)))
+      .then((items) => live && setState({ net: items.reduce((sum, i) => sum + itemBase(i), 0), failed: false }))
+      .catch(() => live && setState({ net: null, failed: true }));
+    return () => {
+      live = false;
+    };
+    // `signature` stands for the list.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key, signature]);
+  if (state.net === null) return <Locked failed={state.failed} compact />;
+  return <span className="amount">{formatMoney(Math.round(state.net * 100) / 100, currency, locale)}</span>;
+}
+
 /** One number of a sealed line item, or the mobile summary line. */
 export function SealedItemAmount({
   cipher,

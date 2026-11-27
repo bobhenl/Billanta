@@ -51,11 +51,11 @@ import { menuPosition, type MenuPosition } from '@/lib/menu-position';
 import type { TaxPartner } from '@/lib/net-income';
 import { type PartnerColor, partnerColors, partnerTags } from '../reports/net-income/shares-picker';
 import { AmountHover, ContactHover } from './invoice-hover-cards';
+import { useConvertDocument } from '@/components/vault/use-convert';
 import { ConfidentialText } from '@/components/vault/confidential-text';
 import { useOpenedFields } from '@/components/vault/opened-contacts';
 import {
   cancelInvoice,
-  convertInvoice,
   deleteInvoice,
   issueInvoice,
   markInvoicePaid,
@@ -752,6 +752,7 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
   const t = useTranslations('doc');
   const tVaultRoot = useTranslations('vault');
   const router = useRouter();
+  const convert = useConvertDocument();
   const [pos, setPos] = useState<MenuPosition | null>(null);
   const [pending, startTransition] = useTransition();
   const button = useRef<HTMLButtonElement>(null);
@@ -830,7 +831,7 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
       icon: Repeat2,
       label: t(`actions.convertTo.${to}`),
       write: true,
-      onSelect: () => act(() => convertInvoice(row.id, to), t('done.converted'), (doc) => router.push(`/invoices/${doc.id}`))
+      onSelect: () => act(() => convert(row.id, to), t('done.converted'), (doc) => router.push(`/invoices/${doc.id}`))
     })),
     ...(row.status === 'issued'
       ? [

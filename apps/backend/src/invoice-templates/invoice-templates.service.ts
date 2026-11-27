@@ -1,9 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { asc, desc, eq, inArray } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { InvoicesService } from "../invoices/invoices.service";
 import { assertSealingAllowed, isSealed } from "../vault/sealed";
+import { AMOUNTS_SEALED, amountsSealed } from "../vault/sealed-amounts";
 import type {
   BulkInvoiceDto,
   CreateInvoiceTemplateDto,
@@ -25,6 +26,17 @@ export interface TemplateLineItem {
   unitPrice: number;
   vatRate: number | null;
   discountPercent: number;
+  /**
+   * Category "amounts": the item's envelope copied from the invoice the
+   * template was saved from (the plain fields hold the placeholder). The
+   * form opens it with the vault key and seals a new document of its own.
+   */
+  encAmounts?: string | null;
+}
+
+/** The template's amounts are sealed (any item carries an envelope). */
+export function templateAmountsSealed(items: TemplateLineItem[]): boolean {
+  return items.some((i) => isSealed(i.encAmounts));
 }
 
 type LineItemInput = NonNullable<UpdateInvoiceTemplateDto["line_items"]>[number];
@@ -130,6 +142,8 @@ export class InvoiceTemplatesService {
           unitPrice: Number(i.unitPrice),
           vatRate: i.vatRate != null ? Number(i.vatRate) : null,
           discountPercent: Number(i.discountPercent ?? 0),
+          // Without it a template of a sealed invoice would keep only the placeholder: price 0.
+          ...(amountsSealed(invoice) && isSealed(i.encAmounts) ? { encAmounts: i.encAmounts } : {}),
         })),
       })
       .returning();
@@ -163,6 +177,8 @@ export class InvoiceTemplatesService {
     const template = await this.findOne(db, id);
     const items = (template.lineItems as TemplateLineItem[]) ?? [];
     if (items.length === 0) throw new BadRequestException("The template has no line items");
+    // Each draft needs its totals sealed, which only the browser can do.
+    if (templateAmountsSealed(items)) throw new ConflictException(AMOUNTS_SEALED);
 
     const contactIds = [...new Set(dto.contact_ids)];
     const found = await db

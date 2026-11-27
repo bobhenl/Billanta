@@ -132,8 +132,21 @@ export async function resolveBuyerDetailsPending(id: string, contactId: string) 
   return run<{ ok: true }>(`/api/v1/invoices/${id}/buyer-details-pending`, json('POST', { contactId }));
 }
 
-export async function convertInvoice(id: string, to: 'invoice' | 'proforma' | 'credit_note') {
-  return run<{ id: string }>(`/api/v1/invoices/${id}/convert`, json('POST', { to }));
+/** `sealed`: a credit note of a sealed invoice, negated and sealed again in the browser (lib/vault/credit-note.ts). */
+export async function convertInvoice(
+  id: string,
+  to: 'invoice' | 'proforma' | 'credit_note',
+  sealed?: { enc_amounts: string; item_enc_amounts: string[] }
+) {
+  return run<{ id: string }>(`/api/v1/invoices/${id}/convert`, json('POST', { to, ...sealed }));
+}
+
+/** The document's envelopes, in item order, for a credit note built in the browser. */
+export async function creditNoteSource(id: string) {
+  return run<{ reverseCharge: boolean; encAmounts: string | null; items: { encAmounts: string | null }[] }>(
+    `/api/v1/invoices/${id}/duplicate`,
+    { method: 'GET' }
+  );
 }
 
 export async function deleteInvoice(id: string) {

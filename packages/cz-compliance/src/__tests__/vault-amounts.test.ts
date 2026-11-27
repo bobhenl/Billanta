@@ -3,6 +3,7 @@ import {
   AVAILABLE_VAULT_CATEGORIES,
   SEALED_ITEM_PLACEHOLDER,
   amountTotals,
+  creditNoteAmounts,
   decodeDocumentAmounts,
   decodeItemAmounts,
   encodeDocumentAmounts,
@@ -72,6 +73,29 @@ describe('vault amounts', () => {
   it('charges no VAT under reverse charge', () => {
     const t = amountTotals([{ quantity: 1, unitPrice: 100, vatRate: 21, discountPercent: 0 }], { reverseCharge: true });
     expect(t).toMatchObject({ totalVat: 0, totalWithVat: 100, byRate: [{ vatRatePercent: 0 }] });
+  });
+
+  it('credits the final invoice of a paid proforma with its whole opened total', () => {
+    const input = {
+      lineItems: [{ description: 'x', quantity: 1, unitPriceWithoutVat: 0, vatRate: 'zero', vatRatePercent: 0 }],
+      totals: { totalWithoutVat: 0, totalVat: 0, totalWithVat: 0, vatRecapitulation: [], paidDepositsAmount: 0 },
+    } as unknown as IsdocInvoiceInput;
+    const item = { quantity: 2, unitPrice: 100, vatRate: 21, discountPercent: 0 };
+    expect(fillSealedIsdocAmounts(input, [item], { depositIsTotal: true }).totals.paidDepositsAmount).toBe(242);
+    expect(fillSealedIsdocAmounts(input, [item]).totals.paidDepositsAmount).toBe(0);
+  });
+
+  it('negates the items of a credit note and leaves the invoice items alone', () => {
+    const items = [
+      { quantity: 2, unitPrice: 100, vatRate: 21, discountPercent: 10 },
+      { quantity: 1, unitPrice: 50, vatRate: 12, discountPercent: 0 },
+    ];
+    const note = creditNoteAmounts(items);
+    expect(note.items.map((i) => i.quantity)).toEqual([-2, -1]);
+    expect(note.items[0]).toMatchObject({ unitPrice: 100, vatRate: 21, discountPercent: 10 });
+    expect(items[0].quantity).toBe(2);
+    expect(note.totals).toMatchObject({ totalWithoutVat: -230, totalVat: -43.8, totalWithVat: -273.8 });
+    expect(creditNoteAmounts(items, { reverseCharge: true }).totals).toMatchObject({ totalVat: 0, totalWithVat: -230 });
   });
 });
 

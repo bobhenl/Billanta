@@ -14678,7 +14678,10 @@
       "paidSealed": "Sumy dokladu sú zašifrované, preto sa dá zaznamenať len úhrada celej sumy. Poplatky ani pripísanú sumu server neukladá.",
       "leftOut": "Bez {count, plural, one {# dokladu} few {# dokladov} other {# dokladov}} so zašifrovanými sumami – odomknite trezor",
       "exportLocked": "Doklady so zašifrovanými sumami sa dajú pridať do súboru až po odomknutí trezora.",
-      "exportUnreadable": "Súbor nevznikol: {count, plural, one {# doklad} few {# doklady} other {# dokladov}} sa nedá týmto kľúčom otvoriť. Chýbajúci doklad by súbor skreslil."
+      "exportUnreadable": "Súbor nevznikol: {count, plural, one {# doklad} few {# doklady} other {# dokladov}} sa nedá týmto kľúčom otvoriť. Chýbajúci doklad by súbor skreslil.",
+      "creditNoteLocked": "Dobropis k faktúre so zašifrovanými sumami sa pripraví až po odomknutí trezora.",
+      "creditNoteUnreadable": "Sumy faktúry sa nedajú týmto kľúčom otvoriť, dobropis preto nevznikol.",
+      "bulkSealed": "Šablóna má zašifrované sumy. Hromadne z nej faktúry nevystavíte, použite ju pre jednotlivú faktúru."
     }
   },
   "vaultPublic": {

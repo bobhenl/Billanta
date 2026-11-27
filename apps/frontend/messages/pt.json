@@ -14762,7 +14762,10 @@
       "paidSealed": "Os valores do documento estão cifrados, por isso só é possível registar o pagamento total. O servidor não guarda comissões nem o valor creditado.",
       "leftOut": "Sem {count, plural, one {# documento} other {# documentos}} com valores cifrados – desbloqueie o cofre",
       "exportLocked": "Os documentos com valores cifrados só entram no ficheiro depois de desbloquear o cofre.",
-      "exportUnreadable": "Nenhum ficheiro criado: {count, plural, one {# documento não pode ser aberto} other {# documentos não podem ser abertos}} com esta chave. Um documento em falta tornaria o ficheiro incorreto."
+      "exportUnreadable": "Nenhum ficheiro criado: {count, plural, one {# documento não pode ser aberto} other {# documentos não podem ser abertos}} com esta chave. Um documento em falta tornaria o ficheiro incorreto.",
+      "creditNoteLocked": "A nota de crédito de uma fatura com valores cifrados é preparada depois de desbloquear o cofre.",
+      "creditNoteUnreadable": "Os valores da fatura não podem ser abertos com esta chave, por isso a nota de crédito não foi criada.",
+      "bulkSealed": "Este modelo tem valores cifrados. Não serve para faturação em massa, apenas para uma fatura individual."
     }
   },
   "vaultPublic": {
