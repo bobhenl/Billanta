@@ -1,5 +1,5 @@
 import { ConflictException, ForbiddenException, Injectable, NotFoundException, Optional } from "@nestjs/common";
-import { and, asc, desc, eq, inArray, isNull, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, gte, inArray, isNull, lt, or, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { AuditService } from "../audit/audit.service";
@@ -8,8 +8,9 @@ import { loadPlanSummary } from "../billing/plan.guard";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
 import { documentKeyWrap } from "@faktur/cz-compliance";
 import { isSealed, rekeyWrites } from "./sealed";
+import { openablePage, vaultDocumentView } from "./documents";
 import { assertInvoiceOpen } from "../invoices/invoice-lock";
-import type { EnableVaultDto, MemberWrapDto, PlainInvoicesQueryDto, RecoveryWrapDto, RekeyInvoiceDto, SealInvoicesDto, VaultSettingsDto } from "./dto/vault.dto";
+import type { EnableVaultDto, MemberWrapDto, PlainInvoicesQueryDto, RecoveryWrapDto, RekeyInvoiceDto, SealInvoicesDto, VaultDocumentsQueryDto, VaultSettingsDto } from "./dto/vault.dto";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 type WrapRow = typeof schema.vaultKeyWraps.$inferSelect;
@@ -193,6 +194,52 @@ export class VaultService {
         documentKeyWrap:
           [r.noteAbove, r.noteBelow, ...items.filter((it) => it.invoiceId === r.id).map((it) => it.description)].map(documentKeyWrap).find(Boolean) ?? null,
       })),
+    };
+  }
+
+  /**
+   * Documents with their texts as stored, a page at a time, ordered by id.
+   * The browser opens the envelopes after unlock for its own search, item
+   * suggestions and the readable export; nothing here can open them.
+   */
+  async documents(db: TenantDb, tenantId: string, user: AuthenticatedUser, query: VaultDocumentsQueryDto) {
+    await this.requireVault(db, tenantId);
+    const i = schema.invoices;
+    const sealedText = (column: unknown) => sql`${column} LIKE 'enc:v1:%'`;
+    const hasSealed = or(
+      sealedText(i.noteAbove),
+      sealedText(i.noteBelow),
+      sealedText(i.internalNote),
+      sql`EXISTS (SELECT 1 FROM ${schema.invoiceLineItems} li WHERE li.invoice_id = ${i.id} AND li.description LIKE 'enc:v1:%')`,
+    );
+    const rows = await db
+      .select({ invoice: i, legalName: schema.contacts.legalName, ico: schema.contacts.ico })
+      .from(i)
+      .leftJoin(schema.contacts, eq(schema.contacts.id, i.contactId))
+      .where(
+        and(
+          query.after ? gt(i.id, query.after) : undefined,
+          query.from ? gte(i.issueDate, new Date(`${query.from}T00:00:00Z`)) : undefined,
+          query.to ? lt(i.issueDate, new Date(Date.parse(`${query.to}T00:00:00Z`) + 86_400_000)) : undefined,
+          query.sealed_only === "true" ? hasSealed : undefined,
+        ),
+      )
+      .orderBy(asc(i.id))
+      .limit(query.limit + 1);
+    const { open, skippedLocked, next } = openablePage(
+      rows.map((r) => ({ ...r, id: r.invoice.id, lockedAt: r.invoice.lockedAt })),
+      query.limit,
+      user,
+    );
+    const items = open.length
+      ? await db.select().from(schema.invoiceLineItems).where(inArray(schema.invoiceLineItems.invoiceId, open.map((r) => r.id)))
+      : [];
+    return {
+      documents: open.map((r) =>
+        vaultDocumentView(r.invoice, r.invoice.contactId && r.legalName != null ? { legalName: r.legalName, ico: r.ico } : null, items.filter((it) => it.invoiceId === r.id)),
+      ),
+      skippedLocked,
+      next,
     };
   }
 

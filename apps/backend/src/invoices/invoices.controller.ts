@@ -177,7 +177,8 @@ export class InvoicesController {
   @Get("item-suggestions")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "Line-item typeahead from this tenant's previous invoices" })
-  itemSuggestions(@Req() req: TenantScopedRequest, @Query("q") q = "") {
+  itemSuggestions(@Req() req: TenantScopedRequest, @Query("q") q = "", @Query("recent") recent?: string) {
+    if (recent === "1") return this.invoicesService.recentItemSuggestions(req.tenantDb!);
     return this.invoicesService.itemSuggestions(req.tenantDb!, q);
   }
 

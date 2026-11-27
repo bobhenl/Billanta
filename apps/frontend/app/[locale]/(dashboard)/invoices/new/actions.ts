@@ -69,12 +69,25 @@ export async function suggestItems(query: string): Promise<ItemSuggestion[]> {
   }
 }
 
-export async function suggestInvoice(text: string): Promise<{ ok: true; result: SuggestionResult } | { ok: false; error: string }> {
+/**
+ * The latest plain item texts, without a query: a document being encrypted
+ * filters them in the browser, so what is typed there is never sent.
+ */
+export async function recentItems(): Promise<ItemSuggestion[]> {
+  try {
+    return await apiFetch('/api/v1/invoices/item-suggestions?recent=1');
+  } catch {
+    return [];
+  }
+}
+
+/** `confidential`: from an encrypted document, sent once on the member's tick; the backend keeps no copy and the SDK logs nothing. */
+export async function suggestInvoice(text: string, options: { confidential?: boolean } = {}): Promise<{ ok: true; result: SuggestionResult } | { ok: false; error: string }> {
   try {
     const result = await apiFetch<SuggestionResult>('/api/v1/ai/invoice-suggestion', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text })
+      body: JSON.stringify(options.confidential ? { text, confidential: true } : { text })
     });
     return { ok: true, result };
   } catch (error) {

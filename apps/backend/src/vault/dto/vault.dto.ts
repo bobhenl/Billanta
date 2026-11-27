@@ -60,6 +60,21 @@ export const plainInvoicesQuerySchema = z.object({
 });
 export class PlainInvoicesQueryDto extends createZodDto(plainInvoicesQuerySchema) {}
 
+const isoDay = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+
+/** Pages of documents for the browser's own search, suggestions and readable export. */
+export const vaultDocumentsQuerySchema = z.object({
+  /** Id of the last document of the previous page. */
+  after: z.string().uuid().optional(),
+  limit: z.coerce.number().int().min(1).max(200).default(100),
+  /** Only documents holding ciphertext (search and suggestions); "false" for the export. */
+  sealed_only: z.enum(["true", "false"]).default("true"),
+  /** Issue date range, both inclusive. */
+  from: isoDay.optional(),
+  to: isoDay.optional(),
+});
+export class VaultDocumentsQueryDto extends createZodDto(vaultDocumentsQuerySchema) {}
+
 /**
  * "Zašifrovat": the browser sends back the texts it encrypted. Every value
  * must be an envelope; the server cannot check it holds the same text, so

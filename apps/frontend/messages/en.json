@@ -14287,7 +14287,7 @@
       "lead": "Encrypt – only you and members with the key will see the content, the server cannot read it.",
       "what": "Line descriptions and notes (above items, below items and internal) are encrypted.",
       "keeps": "Reports and dashboards keep working: amounts, dates and variable symbols stay unencrypted.",
-      "loses": "For encrypted documents the server cannot create a PDF or ISDOC, attach them to an email or find them by text search.",
+      "loses": "For encrypted documents the server cannot create a PDF or ISDOC or attach them to an email. Text search runs only in your browser after unlock.",
       "locked": "Locked documents are skipped.",
       "done": "{n, plural, one {# document encrypted} other {# documents encrypted}}.",
       "nothing": "There was nothing to encrypt.",
@@ -14298,11 +14298,12 @@
       "lockedLead": "Unlock it to edit. It opens only in your browser.",
       "otherKey": "This document is encrypted with a key this company does not have.",
       "unlock": "Unlock",
-      "aiUnavailable": "AI prefill is unavailable in Confidential mode while encrypting – the text would have to go to the server.",
       "sealFailed": "The document could not be encrypted. Nothing was saved.",
       "sealToggle": "Encrypt this document",
-      "sealOnHint": "Only you and members with the key will see line descriptions and notes. PDF, ISDOC and item suggestions will not be available.",
-      "sealOffHint": "The document is saved without encryption, as before."
+      "sealOnHint": "Only you and members with the key will see line descriptions and notes. PDF and ISDOC will not be available; item suggestions are matched in your browser only.",
+      "sealOffHint": "The document is saved without encryption, as before.",
+      "aiConsent": "Send this text to AI – it goes to the server and the AI provider once and is not stored",
+      "aiConsentHint": "The server does not store or log the text. Whatever AI returns is encrypted in your browser when you save. The consent covers this one run only."
     },
     "actions": {
       "blocked": "Unavailable in Confidential mode: the server cannot read an encrypted document. Turn off the PDF/ISDOC attachment in email settings, or send a link.",
@@ -14322,10 +14323,10 @@
         "loses": [
           "PDF, ISDOC, UBL and Peppol created by the server",
           "PDF/ISDOC attachment in emails",
-          "Search by item and note text, item suggestions",
-          "AI document prefill",
+          "Text search and item suggestions on the server (your browser handles them after unlock)",
+          "AI prefill without an explicit click (the text passes the server to AI once, only when you confirm, and is not stored)",
           "Public link: your client sees the full text only through the link with the key from the document detail. A link without the key (e.g. from an automatic reminder) shows it only on a device where the client opened the full link before",
-          "Line descriptions in accountant exports (Pohoda, Money, CSV)"
+          "Readable texts in the server’s accountant exports (Pohoda, Money and CSV show “[Důvěrný obsah]”; your browser builds the export with decrypted texts)"
         ]
       },
       "attachments": {
@@ -14460,6 +14461,54 @@
       "prepareButton": "Prepare the client link",
       "shareOnly": "Send it to your client only. Anyone with the full link can read the encrypted texts too.",
       "serverEmail": "The e-mail the server sends has the link without the key. Your client sees the amounts there but not the encrypted texts, unless they opened the link with the key in the same browser before. To let them read the texts, send them the link above yourself."
+    },
+    "search": {
+      "lockedHint": "{n, plural, one {# document has encrypted texts the server cannot search.} other {# documents have encrypted texts the server cannot search.}} Unlock and your browser will search them.",
+      "unlock": "Unlock and search",
+      "searching": "Searching encrypted texts in your browser…",
+      "included": "Results include encrypted texts, searched only in your browser.",
+      "failed": "Could not search the encrypted texts. The results cover readable texts only.",
+      "skippedLocked": "{n, plural, one {# locked document was not searched.} other {# locked documents were not searched.}}"
+    },
+    "export": {
+      "title": "Export with decrypted texts",
+      "lead": "Documents from the selected period, including line descriptions and notes. The file is built in your browser and saved straight to your computer; the server never sees it. Treat it as a sensitive document.",
+      "csv": "Download CSV",
+      "json": "Download JSON",
+      "working": "Decrypting…",
+      "done": "{n, plural, one {Saved # document.} other {Saved # documents.}}",
+      "failed": "Could not prepare the export. Please try again.",
+      "needsUnlock": "You will be asked to unlock Confidential mode first.",
+      "skippedLocked": "{n, plural, one {# locked document is missing from the export.} other {# locked documents are missing from the export.}}",
+      "unreadable": "[Cannot decrypt]",
+      "unreadableCount": "{n, plural, one {# text could not be decrypted.} other {# texts could not be decrypted.}}",
+      "accountingNote": "The accountant exports above (CSV, Pohoda, Money S3) are built by the server, so they show “[Důvěrný obsah]” in place of encrypted texts. Amounts, VAT, dates and customers in them are complete.",
+      "columns": {
+        "documentType": "Document type",
+        "invoiceNumber": "Number",
+        "status": "Status",
+        "issueDate": "Issue date",
+        "taxableSupplyDate": "Taxable supply date",
+        "dueDate": "Due date",
+        "paidAt": "Paid",
+        "contactName": "Customer",
+        "contactIco": "Company ID",
+        "variableSymbol": "Variable symbol",
+        "currency": "Currency",
+        "totalWithoutVat": "Net",
+        "totalVat": "VAT",
+        "total": "Total",
+        "noteAbove": "Text above items",
+        "noteBelow": "Text below items",
+        "internalNote": "Internal note",
+        "itemDescription": "Item",
+        "itemCode": "Item code",
+        "quantity": "Quantity",
+        "unit": "Unit",
+        "unitPrice": "Unit price",
+        "vatRate": "VAT rate %",
+        "discountPercent": "Discount %"
+      }
     }
   }
 }

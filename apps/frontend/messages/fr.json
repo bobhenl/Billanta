@@ -14282,7 +14282,7 @@
       "lead": "Chiffrer – seuls vous et les membres disposant de la clé verront le contenu, le serveur ne peut pas le lire.",
       "what": "Les descriptions de lignes et les notes (au-dessus, en dessous des lignes et internes) sont chiffrées.",
       "keeps": "Les rapports et tableaux de bord continuent de fonctionner : montants, dates et références de paiement restent en clair.",
-      "loses": "Pour les documents chiffrés, le serveur ne peut ni créer de PDF ou d'ISDOC, ni les joindre à un e-mail, ni les trouver par recherche de texte.",
+      "loses": "Pour les documents chiffrés, le serveur ne peut ni créer de PDF ou d’ISDOC, ni les joindre à un e-mail. La recherche de texte se fait uniquement dans votre navigateur après déverrouillage.",
       "locked": "Les documents verrouillés sont ignorés.",
       "done": "{n, plural, one {# document chiffré} other {# documents chiffrés}}.",
       "nothing": "Il n'y avait rien à chiffrer.",
@@ -14293,11 +14293,12 @@
       "lockedLead": "Déverrouillez-le pour le modifier. Il ne s'ouvre que dans votre navigateur.",
       "otherKey": "Ce document est chiffré avec une clé que cette entreprise ne possède pas.",
       "unlock": "Déverrouiller",
-      "aiUnavailable": "Le pré-remplissage par IA n'est pas disponible en Mode confidentiel pendant le chiffrement – le texte devrait partir vers le serveur.",
       "sealFailed": "Impossible de chiffrer le document. Rien n'a été enregistré.",
       "sealToggle": "Chiffrer ce document",
-      "sealOnHint": "Seuls vous et les membres disposant de la clé verront les descriptions de lignes et les notes. PDF, ISDOC et suggestions de lignes ne seront pas disponibles.",
-      "sealOffHint": "Le document est enregistré sans chiffrement, comme avant."
+      "sealOnHint": "Seuls vous et les membres disposant de la clé verront les descriptions de lignes et les notes. PDF et ISDOC ne seront pas disponibles ; les suggestions de lignes sont cherchées uniquement dans votre navigateur.",
+      "sealOffHint": "Le document est enregistré sans chiffrement, comme avant.",
+      "aiConsent": "Envoyer ce texte à l’IA – il part une seule fois vers le serveur et le fournisseur d’IA, sans être enregistré",
+      "aiConsentHint": "Le serveur n’enregistre pas le texte et ne le journalise pas. Ce que l’IA renvoie est chiffré dans votre navigateur à l’enregistrement. L’accord ne vaut que pour cette exécution."
     },
     "actions": {
       "blocked": "Indisponible en Mode confidentiel : le serveur ne peut pas lire un document chiffré. Désactivez la pièce jointe PDF/ISDOC dans les réglages des e-mails ou envoyez un lien.",
@@ -14317,10 +14318,10 @@
         "loses": [
           "PDF, ISDOC, UBL et Peppol créés par le serveur",
           "Pièce jointe PDF/ISDOC dans les e-mails",
-          "Recherche dans le texte des lignes et des notes, suggestions de lignes",
-          "Pré-remplissage des documents par IA",
+          "Recherche de texte et suggestions de lignes côté serveur (après déverrouillage, votre navigateur s’en charge)",
+          "Pré-remplissage par IA sans clic explicite (le texte passe une fois par le serveur vers l’IA, seulement quand vous confirmez, et n’est pas enregistré)",
           "Lien public : votre client voit le texte complet uniquement via le lien avec clé du détail du document. Un lien sans clé (par ex. d’une relance automatique) ne l’affiche que sur un appareil où le client a déjà ouvert le lien complet",
-          "Descriptions de lignes dans les exports pour le comptable (Pohoda, Money, CSV)"
+          "Textes lisibles dans les exports comptables du serveur (Pohoda, Money et CSV affichent « [Důvěrný obsah] » ; l’export avec textes déchiffrés est créé par votre navigateur)"
         ]
       },
       "attachments": {
@@ -14448,6 +14449,54 @@
       "prepareButton": "Préparer le lien client",
       "shareOnly": "Envoyez-le uniquement à votre client. Quiconque a le lien complet peut aussi lire les textes chiffrés.",
       "serverEmail": "L’e-mail envoyé par le serveur contient le lien sans la clé. Votre client y voit les montants, mais pas les textes chiffrés, sauf s’il a déjà ouvert le lien avec la clé dans le même navigateur. Pour qu’il les lise, envoyez-lui vous-même le lien ci-dessus."
+    },
+    "search": {
+      "lockedHint": "{n, plural, one {# document contient des textes chiffrés que le serveur ne peut pas rechercher.} many {# documents contiennent des textes chiffrés que le serveur ne peut pas rechercher.} other {# documents contiennent des textes chiffrés que le serveur ne peut pas rechercher.}} Déverrouillez et votre navigateur les cherchera.",
+      "unlock": "Déverrouiller et chercher",
+      "searching": "Recherche dans les textes chiffrés dans votre navigateur…",
+      "included": "Les résultats incluent les textes chiffrés, recherchés uniquement dans votre navigateur.",
+      "failed": "Impossible de rechercher les textes chiffrés. Les résultats ne couvrent que les textes lisibles.",
+      "skippedLocked": "{n, plural, one {# document verrouillé n’a pas été recherché.} many {# documents verrouillés n’ont pas été recherchés.} other {# documents verrouillés n’ont pas été recherchés.}}"
+    },
+    "export": {
+      "title": "Export avec textes déchiffrés",
+      "lead": "Les documents de la période choisie, avec descriptions de lignes et notes. Le fichier est créé dans votre navigateur et enregistré directement sur votre ordinateur ; le serveur ne le voit pas. Traitez-le comme un document sensible.",
+      "csv": "Télécharger CSV",
+      "json": "Télécharger JSON",
+      "working": "Déchiffrement…",
+      "done": "{n, plural, one {# document enregistré.} many {# documents enregistrés.} other {# documents enregistrés.}}",
+      "failed": "Impossible de préparer l’export. Réessayez.",
+      "needsUnlock": "Avant l’export, il vous sera demandé de déverrouiller le Mode confidentiel.",
+      "skippedLocked": "{n, plural, one {# document verrouillé manque dans l’export.} many {# documents verrouillés manquent dans l’export.} other {# documents verrouillés manquent dans l’export.}}",
+      "unreadable": "[Impossible à déchiffrer]",
+      "unreadableCount": "{n, plural, one {# texte n’a pas pu être déchiffré.} many {# textes n’ont pas pu être déchiffrés.} other {# textes n’ont pas pu être déchiffrés.}}",
+      "accountingNote": "Les exports comptables ci-dessus (CSV, Pohoda, Money S3) sont créés par le serveur : ils affichent « [Důvěrný obsah] » à la place des textes chiffrés. Montants, TVA, dates et clients y sont complets.",
+      "columns": {
+        "documentType": "Type de document",
+        "invoiceNumber": "Numéro",
+        "status": "Statut",
+        "issueDate": "Date d’émission",
+        "taxableSupplyDate": "Date de la prestation",
+        "dueDate": "Échéance",
+        "paidAt": "Payé",
+        "contactName": "Client",
+        "contactIco": "IČO",
+        "variableSymbol": "Symbole variable",
+        "currency": "Devise",
+        "totalWithoutVat": "Montant HT",
+        "totalVat": "TVA",
+        "total": "Total",
+        "noteAbove": "Texte au-dessus des lignes",
+        "noteBelow": "Texte sous les lignes",
+        "internalNote": "Note interne",
+        "itemDescription": "Ligne",
+        "itemCode": "Code de ligne",
+        "quantity": "Quantité",
+        "unit": "Unité",
+        "unitPrice": "Prix unitaire",
+        "vatRate": "Taux de TVA %",
+        "discountPercent": "Remise %"
+      }
     }
   }
 }

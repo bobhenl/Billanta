@@ -53,6 +53,8 @@ export interface InvoiceRow {
   buyerDetailsSubmittedAt?: string | null;
   /** Own "Po zdanění" split {partnerId: weight}; null = the tax model's default shares. */
   partnerShares?: Record<string, number> | null;
+  /** Důvěrný režim: the note / item filter may match encrypted texts here, which only the browser can check. */
+  sealedPending?: ('note' | 'item')[];
 }
 
 export interface BuyerDetailsOutcome {

@@ -58,7 +58,7 @@ export class AiController {
       "Uses the tenant's AI mode: its own Anthropic key (unlimited), or Billanta's key, which spends one of the plan's monthly AI credits (403 ai_credits_exhausted when none are left).",
   })
   suggestInvoice(@Req() req: TenantScopedRequest, @Body() dto: InvoiceSuggestionDto) {
-    return this.aiService.suggestInvoice(req.tenantDb!, req.user!.tenantId, dto.text);
+    return this.aiService.suggestInvoice(req.tenantDb!, req.user!.tenantId, dto.text, { confidential: dto.confidential });
   }
 
   @Post("receipt")

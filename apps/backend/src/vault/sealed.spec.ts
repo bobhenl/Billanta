@@ -2,7 +2,7 @@ import { BadRequestException, ConflictException, ForbiddenException } from "@nes
 import { sealedMaxLength } from "@faktur/cz-compliance";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { loadPlanSummary } from "../billing/plan.guard";
-import { assertSealingAllowed, rekeyWrites, sealingAllowed, assertServerReadable, plainOrNull, redactSealedInvoice, redactSealedItem, sealableText, SEALED_PLACEHOLDER } from "./sealed";
+import { assertSealingAllowed, rekeyWrites, sealingAllowed, assertServerReadable, plainOrNull, redactSealedInvoice, redactSealedItem, sealableText, SEALED_PLACEHOLDER, textFilterVerdict } from "./sealed";
 
 vi.mock("../billing/plan.guard", () => ({ loadPlanSummary: vi.fn() }));
 
@@ -120,5 +120,21 @@ describe("rekeyWrites", () => {
   it("refuses two document keys, or an envelope without one", () => {
     expect(() => rekeyWrites([{ incoming: docEnvelope(wrapA), stored: envelope(24) }, { incoming: docEnvelope(wrapB), stored: envelope(24) }])).toThrow(BadRequestException);
     expect(() => rekeyWrites([{ incoming: envelope(24), stored: envelope(24) }])).toThrow(BadRequestException);
+  });
+});
+
+describe("textFilterVerdict", () => {
+  it("matches on a plain hit, with or without ciphertext beside it", () => {
+    expect(textFilterVerdict(true, ["Konzultace"], false)).toBe("match");
+    expect(textFilterVerdict(true, [envelope(24)], true)).toBe("match");
+  });
+
+  it("leaves a document with ciphertext to the browser only when asked to", () => {
+    expect(textFilterVerdict(false, ["Konzultace", envelope(24)], true)).toBe("pending");
+    expect(textFilterVerdict(false, ["Konzultace", envelope(24)], false)).toBe("miss");
+  });
+
+  it("never counts plain text or a look-alike as something to check", () => {
+    expect(textFilterVerdict(false, ["Konzultace", null, "enc:v1: poznámka"], true)).toBe("miss");
   });
 });

@@ -62,7 +62,7 @@ import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
 import { lockBlocks } from "./invoice-lock";
 import { countIssuedDocument } from "../billing/plan-limits";
 import { countsAsDocument } from "../billing/usage";
-import { assertSealingAllowed, plainOrNull, printedTexts } from "../vault/sealed";
+import { assertSealingAllowed, plainOrNull, printedTexts, textFilterVerdict } from "../vault/sealed";
 
 // TODO: once packages/cz-compliance is ready, ARES-resolve
 // counterparty_ico / counterparty_name_raw into a real `contacts` row here
@@ -453,14 +453,27 @@ export class InvoicesService {
     const note = query.note?.trim();
     const customField = query.custom_field?.trim();
     const customValue = parseCustomValue(query.custom_value);
+    // Důvěrný režim: documents whose encrypted texts might match come back marked, for the browser to check.
+    const candidates = query.sealed === "candidates";
+    const pending = new Map<string, ("note" | "item")[]>();
+    const passes = (id: string, part: "note" | "item", plainHit: boolean, texts: unknown[]) => {
+      const verdict = textFilterVerdict(plainHit, texts, candidates);
+      if (verdict === "pending") pending.set(id, [...(pending.get(id) ?? []), part]);
+      return verdict !== "miss";
+    };
     const rows = allRows.filter(
       (r) =>
         (!q || fuzzyScore(q, [r.invoice.invoiceNumber, r.contactName, r.contactIco, r.invoice.variableSymbol, r.invoice.orderNumber]) > 0) &&
-        (!note ||
-          // Encrypted notes are left out: fuzzy matching would find words in random base64.
-          fuzzyScore(note, [plainOrNull(r.invoice.internalNote), plainOrNull(r.invoice.noteAbove), plainOrNull(r.invoice.noteBelow), r.invoice.clientResponseNote]) > 0) &&
         (!customField || fuzzyScore(customField, (r.invoice.customFields ?? []).flatMap((f) => [f.label, f.value])) > 0) &&
-        (!customValue || hasCustomValue(r.invoice.customFields, customValue)),
+        (!customValue || hasCustomValue(r.invoice.customFields, customValue)) &&
+        (!note ||
+          passes(
+            r.invoice.id,
+            "note",
+            // Encrypted notes are left out: fuzzy matching would find words in random base64.
+            fuzzyScore(note, [plainOrNull(r.invoice.internalNote), plainOrNull(r.invoice.noteAbove), plainOrNull(r.invoice.noteBelow), r.invoice.clientResponseNote]) > 0,
+            [r.invoice.internalNote, r.invoice.noteAbove, r.invoice.noteBelow],
+          )),
     );
     // A null split means the company's default shares, so the partner filter needs the tax model.
     const partnerId = query.partner;
@@ -490,7 +503,13 @@ export class InvoicesService {
             const lines = itemsByInvoice.get(r.invoice.id) ?? [];
             return (
               (query.vat_rate === undefined || lines.some((l) => l.vatRate !== null && Number(l.vatRate) === query.vat_rate)) &&
-              (!item || lines.some((l) => fuzzyScore(item, [plainOrNull(l.description), l.code]) > 0))
+              (!item ||
+                passes(
+                  r.invoice.id,
+                  "item",
+                  lines.some((l) => fuzzyScore(item, [plainOrNull(l.description), l.code]) > 0),
+                  lines.map((l) => l.description),
+                ))
             );
           });
 
@@ -507,6 +526,7 @@ export class InvoicesService {
         totalVat: totals.totalVat,
         total: totals.totalWithVat,
         isOverdue: isOverdue(invoice),
+        ...(pending.has(invoice.id) ? { sealedPending: pending.get(invoice.id)! } : {}),
       };
     });
     // Totals come from the line items, so the amount range applies here.
@@ -1045,6 +1065,37 @@ export class InvoicesService {
     return enumerableCustomFields(rows.map((r) => r.customFields));
   }
 
+  /**
+   * Plain descriptions used lately, without a query: while a document is
+   * being encrypted, what is typed must not reach the server, so the browser
+   * filters this list itself (with the encrypted history it opened).
+   */
+  async recentItemSuggestions(db: TenantDb) {
+    const rows = await db
+      .select({
+        description: schema.invoiceLineItems.description,
+        unitPrice: schema.invoiceLineItems.unitPrice,
+        vatRate: schema.invoiceLineItems.vatRate,
+        unit: schema.invoiceLineItems.unit,
+        lastUsed: schema.invoiceLineItems.createdAt,
+      })
+      .from(schema.invoiceLineItems)
+      .where(sql`${schema.invoiceLineItems.description} NOT LIKE 'enc:v1:%' AND trim(${schema.invoiceLineItems.description}) <> ''`)
+      .orderBy(desc(schema.invoiceLineItems.createdAt))
+      .limit(2000);
+    const seen = new Set<string>();
+    return rows
+      .filter((r) => !seen.has(r.description) && seen.add(r.description))
+      .slice(0, 300)
+      .map(({ description, unitPrice, vatRate, unit, lastUsed }) => ({
+        description,
+        unit,
+        unitPrice: Number(unitPrice),
+        vatRate: vatRate == null ? null : Number(vatRate),
+        lastUsed: lastUsed.toISOString(),
+      }));
+  }
+
   async itemSuggestions(db: TenantDb, rawQuery: string) {
     const q = rawQuery.trim();
     if (q.length < 2) return [];
@@ -1065,11 +1116,13 @@ export class InvoicesService {
     return rows
       .sort((a, b) => b.lastUsed.getTime() - a.lastUsed.getTime())
       .slice(0, 8)
-      .map(({ description, unitPrice, vatRate, unit }) => ({
+      .map(({ description, unitPrice, vatRate, unit, lastUsed }) => ({
         description,
         unit,
         unitPrice: Number(unitPrice),
         vatRate: vatRate == null ? null : Number(vatRate),
+        // Lets the browser rank these together with suggestions from encrypted items.
+        lastUsed: lastUsed.toISOString(),
       }));
   }
 

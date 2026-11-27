@@ -50,6 +50,19 @@ export function plainOrNull(value: string | null | undefined): string | null {
   return value == null || isSealed(value) ? null : value;
 }
 
+/**
+ * A text filter (item or note search) on one document. The server matches
+ * the plain texts; encrypted ones it cannot read. With `candidates` the
+ * browser asked to decide those itself: a document that missed on its plain
+ * texts but holds ciphertext comes back "pending", and the browser opens the
+ * texts after unlock and keeps or drops it. Ciphertext never counts as a
+ * match here, so a locked vault never shows a false hit.
+ */
+export function textFilterVerdict(plainHit: boolean, values: unknown[], candidates: boolean): "match" | "pending" | "miss" {
+  if (plainHit) return "match";
+  return candidates && values.some((v) => isSealed(v)) ? "pending" : "miss";
+}
+
 export function plainOr<T extends string | null | undefined>(value: T, placeholder: string): T | string {
   return isSealed(value) ? placeholder : value;
 }

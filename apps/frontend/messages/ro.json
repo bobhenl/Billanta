@@ -14282,7 +14282,7 @@
       "lead": "Criptați – conținutul îl veți vedea doar dvs. și membrii cu cheie, serverul nu îl poate citi.",
       "what": "Se criptează descrierile pozițiilor și notele (deasupra, sub poziții și interne).",
       "keeps": "Rapoartele și tablourile de bord funcționează în continuare: sumele, datele și referințele de plată rămân necriptate.",
-      "loses": "Pentru documentele criptate, serverul nu poate crea PDF sau ISDOC, nu le poate atașa la e-mail și nu le găsește la căutarea după text.",
+      "loses": "Pentru documentele criptate, serverul nu poate crea PDF sau ISDOC și nu le poate atașa la e-mail. Căutarea după text se face doar în browserul dvs., după deblocare.",
       "locked": "Documentele blocate sunt sărite.",
       "done": "{n, plural, one {# document criptat} few {# documente criptate} other {# de documente criptate}}.",
       "nothing": "Nu era nimic de criptat.",
@@ -14293,11 +14293,12 @@
       "lockedLead": "Deblocați-l pentru a-l edita. Se deschide doar în browserul dvs.",
       "otherKey": "Acest document este criptat cu o cheie pe care această firmă nu o are.",
       "unlock": "Deblocați",
-      "aiUnavailable": "Completarea cu AI nu este disponibilă în Modul confidențial în timpul criptării – textul ar trebui să ajungă la server.",
       "sealFailed": "Documentul nu a putut fi criptat. Nu s-a salvat nimic.",
       "sealToggle": "Criptați acest document",
-      "sealOnHint": "Descrierile pozițiilor și notele le veți vedea doar dvs. și membrii cu cheie. PDF, ISDOC și sugestiile de poziții nu vor fi disponibile.",
-      "sealOffHint": "Documentul se salvează fără criptare, ca până acum."
+      "sealOnHint": "Descrierile pozițiilor și notele le veți vedea doar dvs. și membrii cu cheie. PDF și ISDOC nu vor fi disponibile; sugestiile de poziții se caută doar în browserul dvs.",
+      "sealOffHint": "Documentul se salvează fără criptare, ca până acum.",
+      "aiConsent": "Trimiteți acest text la AI – ajunge o singură dată la server și la furnizorul AI și nu se salvează",
+      "aiConsentHint": "Serverul nu salvează și nu înregistrează textul. Ce returnează AI se criptează în browserul dvs. la salvare. Acordul este valabil doar pentru această rulare."
     },
     "actions": {
       "blocked": "Indisponibil în Modul confidențial: serverul nu poate citi un document criptat. Dezactivați atașamentul PDF/ISDOC în setările e-mail sau trimiteți un link.",
@@ -14317,10 +14318,10 @@
         "loses": [
           "PDF, ISDOC, UBL și Peppol create de server",
           "Atașamentul PDF/ISDOC în e-mailuri",
-          "Căutarea după textul pozițiilor și notelor, sugestiile de poziții",
-          "Completarea documentelor cu AI",
+          "Căutarea după text și sugestiile de poziții pe server (după deblocare, le face browserul dvs.)",
+          "Completarea cu AI fără un clic explicit (textul trece o singură dată prin server către AI, doar când confirmați, și nu se salvează)",
           "Link public: clientul vede textul complet doar prin linkul cu cheie din detaliul documentului. Un link fără cheie (de ex. dintr-un memento automat) îl arată doar pe un dispozitiv pe care clientul a deschis înainte linkul complet",
-          "Descrierile pozițiilor în exporturile pentru contabil (Pohoda, Money, CSV)"
+          "Texte lizibile în exporturile contabile ale serverului (Pohoda, Money și CSV afișează „[Důvěrný obsah]”; exportul cu texte decriptate îl creează browserul dvs.)"
         ]
       },
       "attachments": {
@@ -14448,6 +14449,54 @@
       "prepareButton": "Pregătiți linkul pentru client",
       "shareOnly": "Trimiteți-l doar clientului. Cine are linkul complet poate citi și textele criptate.",
       "serverEmail": "E-mailul trimis de server conține linkul fără cheie. Clientul vede acolo sumele, dar nu și textele criptate, decât dacă a deschis înainte linkul cu cheie în același browser. Ca să le vadă, trimiteți-i chiar dvs. linkul de mai sus."
+    },
+    "search": {
+      "lockedHint": "{n, plural, one {# document are texte criptate pe care serverul nu le poate căuta.} few {# documente au texte criptate pe care serverul nu le poate căuta.} other {# de documente au texte criptate pe care serverul nu le poate căuta.}} După deblocare, le caută browserul dvs.",
+      "unlock": "Deblocați și căutați",
+      "searching": "Se caută în textele criptate în browserul dvs.…",
+      "included": "Rezultatele includ și textele criptate, căutate doar în browserul dvs.",
+      "failed": "Nu s-a putut căuta în textele criptate. Rezultatele acoperă doar textele lizibile.",
+      "skippedLocked": "{n, plural, one {# document blocat nu a fost căutat.} few {# documente blocate nu au fost căutate.} other {# de documente blocate nu au fost căutate.}}"
+    },
+    "export": {
+      "title": "Export cu texte decriptate",
+      "lead": "Documentele din perioada aleasă, cu descrierile pozițiilor și notele. Fișierul se creează în browserul dvs. și se salvează direct pe computer; serverul nu îl vede. Tratați-l ca pe un document confidențial.",
+      "csv": "Descărcați CSV",
+      "json": "Descărcați JSON",
+      "working": "Se decriptează…",
+      "done": "{n, plural, one {S-a salvat # document.} few {S-au salvat # documente.} other {S-au salvat # de documente.}}",
+      "failed": "Exportul nu a putut fi pregătit. Încercați din nou.",
+      "needsUnlock": "Înainte de export vi se va cere să deblocați Modul confidențial.",
+      "skippedLocked": "{n, plural, one {Lipsește # document blocat din export.} few {Lipsesc # documente blocate din export.} other {Lipsesc # de documente blocate din export.}}",
+      "unreadable": "[Nu se poate decripta]",
+      "unreadableCount": "{n, plural, one {# text nu a putut fi decriptat.} few {# texte nu au putut fi decriptate.} other {# de texte nu au putut fi decriptate.}}",
+      "accountingNote": "Exporturile pentru contabil de mai sus (CSV, Pohoda, Money S3) le creează serverul, de aceea conțin „[Důvěrný obsah]” în locul textelor criptate. Sumele, TVA, datele și clienții sunt complete.",
+      "columns": {
+        "documentType": "Tip document",
+        "invoiceNumber": "Număr",
+        "status": "Stare",
+        "issueDate": "Data emiterii",
+        "taxableSupplyDate": "Data livrării",
+        "dueDate": "Scadență",
+        "paidAt": "Plătit",
+        "contactName": "Client",
+        "contactIco": "IČO",
+        "variableSymbol": "Simbol variabil",
+        "currency": "Monedă",
+        "totalWithoutVat": "Bază",
+        "totalVat": "TVA",
+        "total": "Total",
+        "noteAbove": "Text deasupra pozițiilor",
+        "noteBelow": "Text sub poziții",
+        "internalNote": "Notă internă",
+        "itemDescription": "Poziție",
+        "itemCode": "Cod poziție",
+        "quantity": "Cantitate",
+        "unit": "Unitate",
+        "unitPrice": "Preț unitar",
+        "vatRate": "Cotă TVA %",
+        "discountPercent": "Reducere %"
+      }
     }
   }
 }

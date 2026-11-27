@@ -4,7 +4,7 @@ import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { planAllows } from "../billing/plan-access";
 import { loadPlanSummary, RequirePlan } from "../billing/plan.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
-import { EnableVaultDto, MemberWrapDto, PlainInvoicesQueryDto, RecoveryWrapDto, RekeyInvoiceDto, SealInvoicesDto, VaultSettingsDto } from "./dto/vault.dto";
+import { EnableVaultDto, MemberWrapDto, PlainInvoicesQueryDto, RecoveryWrapDto, RekeyInvoiceDto, SealInvoicesDto, VaultDocumentsQueryDto, VaultSettingsDto } from "./dto/vault.dto";
 import { confidentialPlanRequired } from "./sealed";
 import { VaultService } from "./vault.service";
 
@@ -63,6 +63,12 @@ export class VaultController {
   @ApiOperation({ summary: "Unlocked documents that still hold plain text, for the browser to encrypt" })
   plainInvoices(@Req() req: TenantScopedRequest, @Query() query: PlainInvoicesQueryDto) {
     return this.vault.plainInvoices(req.tenantDb!, req.user!.tenantId, query);
+  }
+
+  @Get("invoices/documents")
+  @ApiOperation({ summary: "Documents with their texts as stored (ciphertext stays ciphertext), for search, suggestions and export in the browser" })
+  documents(@Req() req: TenantScopedRequest, @Query() query: VaultDocumentsQueryDto) {
+    return this.vault.documents(req.tenantDb!, req.user!.tenantId, req.user!, query);
   }
 
   @Post("invoices/seal")
