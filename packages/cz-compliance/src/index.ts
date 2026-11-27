@@ -52,3 +52,5 @@ export * from './invoice-pdf-amounts.js';
 export * from './fill-template.js';
 export * from './invoice-pdf.js';
 export * from './confidential-files.js';
+export * from './report-stats.js';
+export * from './sealed-reports.js';

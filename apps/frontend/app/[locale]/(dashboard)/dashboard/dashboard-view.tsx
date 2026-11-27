@@ -36,6 +36,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { DragHandle, moveBy, useDragSort } from '@/components/drag-sort';
 import { InfoHint } from '@/components/info-hint';
 import { SealedTotal } from '@/components/vault/sealed-amounts';
+import { useMergedSummary } from '@/components/vault/sealed-reports';
 import { Modal, buttonClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { Link, useRouter } from '@/i18n/navigation';
@@ -190,7 +191,7 @@ function normalize(config: DashboardConfig | null): DashboardConfig {
 }
 
 export function DashboardView({
-  summary,
+  summary: serverSummary,
   initialConfig,
   firstName,
   profile = DEFAULT_PROFILE,
@@ -226,6 +227,8 @@ export function DashboardView({
 }) {
   const t = useTranslations('dashboard');
   const locale = useLocale();
+  // Sealed amounts join the sums once this tab has opened them.
+  const { summary, missing: sealedMissing } = useMergedSummary(serverSummary);
   const [stored, setStored] = useState(() => normalize(initialConfig));
   const [savedKeys, setSavedKeys] = useState<string[] | undefined>(initialConfig?.savedKeys);
   const recommendation = useMemo(() => forRole(recommendDashboard(usage), abilities), [usage, abilities]);
@@ -318,7 +321,7 @@ export function DashboardView({
         </div>
       )}
       {summary.foreignCurrencyCount > 0 && <p className="mt-2 text-xs text-muted-foreground">{t('foreignNote', { count: summary.foreignCurrencyCount })}</p>}
-      {(summary.sealed?.count ?? 0) > 0 && <p className="mt-2 text-xs text-muted-foreground">{t('sealedNote', { count: summary.sealed!.count })}</p>}
+      {sealedMissing > 0 && <p className="mt-2 text-xs text-muted-foreground">{t('sealedNote', { count: sealedMissing })}</p>}
 
       {tiles.length > 0 && (
         // One swipeable row on a phone: wrapped, the shortcuts took up a whole screen.

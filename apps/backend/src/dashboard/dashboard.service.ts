@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { homeCurrencyOf } from "@faktur/cz-compliance";
+import { homeCurrencyOf, type SealedSummaryDoc } from "@faktur/cz-compliance";
 import { and, count, desc, eq, gte, inArray, isNull, min, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
@@ -9,8 +9,8 @@ import { isOverdue } from "../invoices/invoices.service";
 import { amountLeftToPay } from "../invoices/invoice-reminders.util";
 import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
 import { amountsSealed } from "../vault/sealed-amounts";
-import { earliestDay, filterOptions, localDay, periodBreakdown, periodTotals, type StatsDoc, type StatsExpense } from "./period-stats";
-import { hasDocumentFilters, matchesFilters, type ReportFilters } from "./report-filters";
+import { earliestDay, localDay, periodReport, type StatsDoc, type StatsExpense } from "./period-stats";
+import { hasDocumentFilters, type ReportFilters } from "./report-filters";
 import { tenantHomeCurrency } from "../tenants/home-currency";
 import { summarizeUsage, type Usage } from "./usage";
 import { vatActivity, type VatActivity } from "./vat-activity";
@@ -134,6 +134,7 @@ export class DashboardService {
     const enriched: ((typeof invoices)[number]["invoice"] & { contactName: string | null; contactColor: string | null; total: number | null; isOverdue: boolean })[] = [];
     // Documents with sealed amounts: they add 0 to every sum here, the browser adds them after unlock.
     const sealedIds: string[] = [];
+    const sealedDocs: SealedSummaryDoc[] = [];
     const dueSoon: typeof enriched = [];
     const customers = new Map<string, { contactId: string; name: string; total: number; count: number }>();
 
@@ -173,6 +174,22 @@ export class DashboardService {
       }
       if (sealed) {
         sealedIds.push(invoice.id);
+        const date = invoice.taxableSupplyDate ?? invoice.issueDate ?? invoice.createdAt;
+        // The date rules are decided here, so the browser only adds the opened totals.
+        sealedDocs.push({
+          id: invoice.id,
+          encAmounts: invoice.encAmounts!,
+          contactId: invoice.contactId,
+          contactName,
+          amountPaid: Number(invoice.amountPaid ?? 0),
+          unpaid: invoice.status === "issued" && invoice.documentType !== "credit_note",
+          overdue,
+          dueSoon: dueSoon.includes(row),
+          taxDoc: isTaxDoc,
+          inMonth: date >= monthStart,
+          inYear: date >= yearStart,
+          month: monthKey(date),
+        });
         // The counts are no secret; only the sums wait for the browser.
         if (invoice.status === "issued" && invoice.documentType !== "credit_note") {
           kpi.unpaidCount++;
@@ -245,7 +262,12 @@ export class DashboardService {
         .slice(0, 5)
         .map((c) => ({ ...c, total: round2(c.total) })),
       /** Home-currency documents with sealed amounts, left out of the KPIs, the chart and the top customers. */
-      sealed: { count: sealedIds.length, ids: sealedIds },
+      sealed: {
+        count: sealedIds.length,
+        ids: sealedIds,
+        // After unlock the browser merges these (`mergeSealedSummary`); all customers, so the top five can change.
+        ...(sealedIds.length ? { docs: sealedDocs, customers: [...customers.values()].map((c) => ({ ...c, total: round2(c.total) })) } : {}),
+      },
     };
   }
 
@@ -290,32 +312,36 @@ export class DashboardService {
 
     // Sealed amounts would count as 0 in every total; they are listed for the browser instead.
     const sealedRows = rows.filter((r) => amountsSealed(r.invoice));
-    const allDocs: StatsDoc[] = rows.filter((r) => !amountsSealed(r.invoice)).map(({ invoice, contactName }) => {
-      const totals = computeVatBreakdown(byInvoice.get(invoice.id) ?? [], { reverseCharge: invoice.reverseCharge });
+    const statsDoc = ({ invoice, contactName }: (typeof rows)[number]): Omit<StatsDoc, "base" | "vat" | "total"> => ({
+      documentType: invoice.documentType,
+      status: invoice.status,
+      currency: invoice.currency,
+      language: invoice.language,
+      date: invoice.taxableSupplyDate ?? invoice.issueDate ?? invoice.createdAt,
+      issueDate: invoice.issueDate,
+      dueDate: invoice.dueDate,
+      paidAt: invoice.paidAt,
+      contactId: invoice.contactId,
+      contactName,
+      exchangeRate: invoice.exchangeRate == null ? null : Number(invoice.exchangeRate),
+      amountPaid: Number(invoice.amountPaid ?? 0),
+    });
+    // Everything but the amounts, so the browser can rerun the report with the opened totals (`periodReport`).
+    const sealedDocs = sealedRows.map((r) => ({ ...statsDoc(r), id: r.invoice.id, encAmounts: r.invoice.encAmounts! }));
+    const allDocs: StatsDoc[] = rows.filter((r) => !amountsSealed(r.invoice)).map((row) => {
+      const totals = computeVatBreakdown(byInvoice.get(row.invoice.id) ?? [], { reverseCharge: row.invoice.reverseCharge });
       return {
-        documentType: invoice.documentType,
-        status: invoice.status,
-        currency: invoice.currency,
-        language: invoice.language,
-        date: invoice.taxableSupplyDate ?? invoice.issueDate ?? invoice.createdAt,
-        issueDate: invoice.issueDate,
-        dueDate: invoice.dueDate,
-        paidAt: invoice.paidAt,
-        contactId: invoice.contactId,
-        contactName,
-        exchangeRate: invoice.exchangeRate == null ? null : Number(invoice.exchangeRate),
-        amountPaid: Number(invoice.amountPaid ?? 0),
+        ...statsDoc(row),
         base: totals.totalWithoutVat,
         vat: totals.totalVat,
         total: totals.totalWithVat,
       };
     });
     if (rates.annual) {
-      for (const d of allDocs) if (d.currency !== home) d.exchangeRate = await rates.rate(d.currency, d.exchangeRate, d.date);
+      for (const d of [...allDocs, ...sealedDocs]) if (d.currency !== home) d.exchangeRate = await rates.rate(d.currency, d.exchangeRate, d.date);
     }
     const today = new Date();
-    const docs = allDocs.filter((d) => matchesFilters(d, filters, today));
-    const earliest = earliestDay([...allDocs.map((d) => d.date), firstExpense?.date ? new Date(firstExpense.date) : null]);
+    const earliest = earliestDay([...allDocs.map((d) => d.date), ...sealedDocs.map((d) => d.date), firstExpense?.date ? new Date(firstExpense.date) : null]);
     if (opts.allTime) start = earliest && earliest < end ? earliest : new Date(end.getTime() - DAY_MS);
     const previousFrom = prevStart ?? new Date(start.getTime() - (end.getTime() - start.getTime()));
     // Expense amounts are stored including VAT; revenue is compared without it.
@@ -341,12 +367,17 @@ export class DashboardService {
       filters,
       /** False when a customer / type / status / language filter is on: expenses then stay unfiltered. */
       expensesFiltered: !hasDocumentFilters(filters),
-      options: filterOptions(allDocs),
-      current: periodTotals(docs, expenses, start, end, currency, today, home),
-      previous: periodTotals(docs, expenses, previousFrom, start, currency, today, home),
-      ...periodBreakdown(docs, expenses, start, end, currency, today, home),
-      /** Issued or paid documents with sealed amounts, all of them (the browser filters by period). */
-      sealed: { count: sealedRows.length, ids: sealedRows.map((r) => r.invoice.id) },
+      ...periodReport(allDocs, expenses, { from: start, to: end, previousFrom, currency, home, filters, today }),
+      /**
+       * Issued or paid documents with sealed amounts, all of them. With any,
+       * also the report's inputs: after unlock the browser opens the totals
+       * and reruns `periodReport` over both lists.
+       */
+      sealed: {
+        count: sealedRows.length,
+        ids: sealedRows.map((r) => r.invoice.id),
+        ...(sealedRows.length ? { inputs: { home, previousFrom: previousFrom.toISOString(), docs: allDocs, sealedDocs, expenses } } : {}),
+      },
     };
   }
 
