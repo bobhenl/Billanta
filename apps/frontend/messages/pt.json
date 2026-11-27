@@ -14217,8 +14217,8 @@
       "partner_limit": "Mais sócios exigem um plano superior. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
-      "title": "Apenas para proprietários e administradores",
-      "body": "O relatório após impostos mostra o rendimento e os impostos de cada sócio, por isso só o proprietário e os administradores da empresa o podem ver."
+      "title": "Apenas para proprietários, administradores e sócios",
+      "body": "O relatório após impostos mostra o rendimento e os impostos de cada sócio, por isso só o proprietário, os administradores e os membros da equipa associados a um sócio nas definições do relatório o podem ver."
     },
     "split": "Divisão",
     "onePersonNote": "O imposto é calculado uma vez sobre o total e dividido pelas quotas.",

@@ -17,7 +17,7 @@ import { InfoHint } from '@/components/info-hint';
 import { fetchAuditLog, type AuditPage } from '@/lib/audit';
 import { NetEstimate } from '@/components/net-estimate';
 import { displayCustomField, documentVars } from '@/lib/custom-fields';
-import { canManage, fetchCanWrite, fetchMyRole, fetchTenant, taxCountryOf, type BuyerDetailsField } from '@/lib/tenant';
+import { canManage, fetchCanWrite, fetchMyRole, fetchTaxModelAccess, fetchTenant, taxCountryOf, type BuyerDetailsField } from '@/lib/tenant';
 import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import {
   buyerDetailsState,
@@ -40,7 +40,6 @@ import { auth } from '@/auth';
 import { BuyerDetailsRequest } from './buyer-details-request';
 import { PublicLinkPanel } from './public-link-panel';
 import { PartnerSplit } from './partner-split';
-import type { TaxModel } from '@/lib/net-income';
 
 /** A rule reference such as "§29/1c ZDPH", linked to the law text when lawUrl knows it. */
 function LawRef({ rule }: { rule?: string }) {
@@ -122,12 +121,8 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   // Same rule as the API (mayChangeInvoicePrivacy): the company owner or whoever created it.
   const myId = (await auth())?.user?.id;
   const canPrivate = myRole === 'owner' || (!!myId && invoice.createdByUserId === myId);
-  // The partner split is owner/admin data like the "Po zdanění" report itself (the backend refuses others).
-  const partners = canLock
-    ? await apiFetch<{ model: TaxModel | null }>('/api/v1/tenants/me/tax-model')
-        .then((r) => r.model?.partners ?? [])
-        .catch(() => [])
-    : [];
+  // The partner split is "Po zdanění" data: owners, admins and linked partners (the backend refuses others).
+  const partners = (await fetchTaxModelAccess())?.model?.partners ?? [];
   // The buyer as printed on the document (issue-date snapshot); older backends send only `contact`.
   const buyer = detail.buyer ?? contact;
   // Mandatory-content check (CZ/SK law; Peppol for an issued invoice to a foreign buyer).
@@ -313,7 +308,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           {!amountsSealed && home === 'CZK' && invoice.documentType !== 'credit_note' && totals.totalWithoutVat > 0 && <NetEstimate base={totals.totalWithoutVat} currency={invoice.currency} czkRate={rate} fees={netFees} fxLoss={fxLoss} />}
           {/* Only what the report counts: invoices and credit notes. */}
           {partners.length >= 2 && (invoice.documentType === 'invoice' || invoice.documentType === 'credit_note') && (
-            <PartnerSplit id={invoice.id} number={invoice.invoiceNumber ?? title} partners={partners} initial={invoice.partnerShares ?? null} />
+            <PartnerSplit id={invoice.id} number={invoice.invoiceNumber ?? title} partners={partners} initial={invoice.partnerShares ?? null} readOnly={!canEdit} />
           )}
         </div>
       </div>

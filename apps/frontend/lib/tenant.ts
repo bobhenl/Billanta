@@ -2,6 +2,7 @@ import { cache } from 'react';
 import { homeCurrencyOf, type HomeCurrency, type VatStatus } from '@faktur/cz-compliance';
 import type { TemplateVar } from './template-vars';
 import type { BankAccount } from './bank-account';
+import type { TaxModel } from './net-income';
 import { apiFetch, fetchMyCompanies } from './api-client';
 import { taxCountryOf } from './tax-country';
 
@@ -157,6 +158,15 @@ export async function fetchMyRole(): Promise<string | null> {
 }
 
 export const canManage = (role: string | null) => role === 'owner' || role === 'admin';
+
+/**
+ * The tax model of "Po zdanění", or null when this member may not see it.
+ * Owners, admins and members linked to a partner may; only the backend knows
+ * the link, so a refusal is the answer rather than an error.
+ */
+export const fetchTaxModelAccess = cache(async (): Promise<{ model: TaxModel | null } | null> =>
+  apiFetch<{ model: TaxModel | null }>('/api/v1/tenants/me/tax-model').catch(() => null)
+);
 
 export { PERMISSION_AREAS, APP_MODULES } from './access';
 export type { PermissionArea, PermissionLevel, AppModule, PermissionAction } from './access';

@@ -3,7 +3,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { Banner } from '@/components/banner';
 import { Link, redirect } from '@/i18n/navigation';
 import { apiFetch, NoTenantError, NotSignedInError } from '@/lib/api-client';
-import { canManage, fetchHomeCurrency, fetchMyAccess } from '@/lib/tenant';
+import { canManage, fetchHomeCurrency, fetchMyAccess, fetchTaxModelAccess } from '@/lib/tenant';
 import { PERIOD_PRESETS, presetRange, type PeriodPreset } from '@/lib/period-presets';
 import { inAppCalculatorPath } from '@/lib/public-tools';
 import { isLegalEntityName } from '@/lib/tax-deadlines';
@@ -50,6 +50,9 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
     );
   }
 
+  // Only the backend knows who is linked to a partner; owners and admins skip the request.
+  const seesNetIncome = !!access && (canManage(access.role) || (await fetchTaxModelAccess()) !== null);
+
   const link =
     'inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-full border border-border bg-card px-3 text-sm font-semibold text-primary transition-colors hover:bg-accent';
 
@@ -65,8 +68,8 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
               {t('flatTaxLink')}
             </Link>
           )}
-          {/* Per-partner after-tax numbers are for owners and admins only. */}
-          {access && canManage(access.role) && (
+          {/* Per-partner after-tax numbers are for owners, admins and members linked to a partner. */}
+          {seesNetIncome && (
             <Link href="/reports/net-income" className={link}>
               {t('netIncomeLink')}
             </Link>

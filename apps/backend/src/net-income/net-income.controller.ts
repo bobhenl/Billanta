@@ -26,7 +26,7 @@ function periodOf(query: Record<string, string>): NetIncomePeriod {
 class TaxModelDto extends createZodDto(taxModelSchema) {}
 class PartnerSharesDto extends createZodDto(z.object({ shares: sharesSchema.nullable() })) {}
 
-/** Report "Po zdanění" (owner and admin only, RoleAccessGuard). */
+/** Report "Po zdanění" (owners, admins and members linked to a partner, RoleAccessGuard). */
 @ApiTags("net-income")
 @Controller("v1/net-income")
 @UseGuards(JwtAuthGuard)
@@ -40,7 +40,7 @@ export class NetIncomeController {
     return this.service.report(req.tenantDb!, req.user!.tenantId, periodOf(query));
   }
 
-  // Under v1/net-income, so the same owner/admin rule of RoleAccessGuard applies.
+  // Under v1/net-income, so the same rule of RoleAccessGuard applies.
   @Get("inputs")
   @ApiOperation({
     summary:
@@ -51,7 +51,7 @@ export class NetIncomeController {
   }
 }
 
-/** The tax model is company administration: under v1/tenants, so only owners and admins may change it. */
+/** The tax model is company administration: only owners and admins change it, linked partners may read it (RoleAccessGuard). */
 @ApiTags("net-income")
 @Controller("v1/tenants/me/tax-model")
 @UseGuards(JwtAuthGuard)

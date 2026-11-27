@@ -14217,8 +14217,8 @@
       "partner_limit": "Meer vennoten vragen een hoger abonnement. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
-      "title": "Alleen voor eigenaren en beheerders",
-      "body": "Het rapport na belasting toont de inkomsten en belastingen van elke partner, daarom kunnen alleen de eigenaar en de beheerders van het bedrijf het zien."
+      "title": "Alleen voor eigenaren, beheerders en partners",
+      "body": "Het rapport na belasting toont de inkomsten en belastingen van elke partner, daarom kunnen alleen de eigenaar, de beheerders en teamleden die in de rapportinstellingen aan een partner gekoppeld zijn het zien."
     },
     "split": "Verdeling",
     "onePersonNote": "De belasting is één keer over het totaal berekend en naar de aandelen verdeeld.",

@@ -6,9 +6,9 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import type { HomeCurrency } from '@faktur/cz-compliance';
 import { apiFetch, ApiError, NoTenantError, NotSignedInError } from '@/lib/api-client';
-import { canManage, fetchCanWrite, fetchHomeCurrency, fetchMyRole, fetchUsage } from '@/lib/tenant';
+import { fetchCanWrite, fetchHomeCurrency, fetchTaxModelAccess, fetchUsage } from '@/lib/tenant';
 import { DocumentsMeter } from '@/components/plan-lock';
-import type { TaxModel, TaxPartner } from '@/lib/net-income';
+import type { TaxPartner } from '@/lib/net-income';
 import { DOCUMENT_TYPES, type InvoiceRow } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
 import { CONTACT_COLORS, isContactColor } from '@/lib/contact-colors';
@@ -246,16 +246,8 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
       fetchHomeCurrency(),
       fetchCanWrite('invoices'),
       apiFetch<{ label: string; values: string[] }[]>('/api/v1/invoices/custom-field-options').catch(() => []),
-      // The partner split is owner/admin data like the "Po zdanění" report (the backend refuses others).
-      fetchMyRole()
-        .catch(() => null)
-        .then((role) =>
-          canManage(role)
-            ? apiFetch<{ model: TaxModel | null }>('/api/v1/tenants/me/tax-model')
-                .then((r) => r.model?.partners ?? [])
-                .catch(() => [])
-            : []
-        )
+      // The partner split is "Po zdanění" data: owners, admins and linked partners (the backend refuses others).
+      fetchTaxModelAccess().then((r) => r?.model?.partners ?? [])
     ]);
   } catch (err) {
     if (err instanceof NotSignedInError) redirect({ href: '/login', locale });

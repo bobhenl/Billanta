@@ -14218,8 +14218,8 @@
       "partner_limit": "Więcej wspólników wymaga wyższego planu. Free 1, Start 2, Plus 3, Business 10."
     },
     "noAccess": {
-      "title": "Tylko dla właścicieli i administratorów",
-      "body": "Raport po opodatkowaniu pokazuje przychody i podatki każdego wspólnika, dlatego widzą go tylko właściciel firmy i administratorzy."
+      "title": "Tylko dla właścicieli, administratorów i wspólników",
+      "body": "Raport po opodatkowaniu pokazuje przychody i podatki każdego wspólnika, dlatego widzą go tylko właściciel firmy, administratorzy i członkowie zespołu powiązani ze wspólnikiem w ustawieniach raportu."
     },
     "split": "Podział",
     "onePersonNote": "Podatek jest liczony raz od całości i dzielony według udziałów.",
