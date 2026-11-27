@@ -71,3 +71,5 @@ export * from './net-income.js';
 export * from './payment-audit.js';
 export * from './cz-tax-offices.js';
 export * from './cz-social-offices.js';
+export * from './eet-fields.js';
+export * from './eet-response.js';

@@ -6,6 +6,7 @@ import { CombinedAuthGuard } from "../auth/combined-auth.guard";
 import { SubscriptionActiveGuard } from "../billing/require-active-subscription.guard";
 import { WelcomeTrialModule } from "../billing/welcome-trial.module";
 import { EmailModule } from "../email/email.module";
+import { EetModule } from "../eet/eet.module";
 import { InvoiceAttachmentsService } from "./invoice-attachments.service";
 import { InvoiceImportService } from "./invoice-import.service";
 import { InvoicePdfService } from "./invoice-pdf.service";
@@ -27,7 +28,8 @@ import { BuyerDetailsService } from "./buyer-details.service";
   // rather than assumed available globally.
   // AiModule: voice notes from the dashboard become drafts through AiService.suggestInvoice.
   // WelcomeTrialModule: an import that fills in the company's IČO can start the trial.
-  imports: [EmailModule, AuthModule, ApiKeysModule, AiModule, WelcomeTrialModule],
+  // EetModule: a cash payment entered with "Mark as paid" is recorded in EET 2.0.
+  imports: [EmailModule, AuthModule, ApiKeysModule, AiModule, WelcomeTrialModule, EetModule],
   // VaultEmailQueueController: e-mails of encrypted documents waiting for a browser's PDF.
   controllers: [InvoicesController, VaultEmailQueueController],
   // SubscriptionActiveGuard (blueprint §5 plan gating) is re-provided

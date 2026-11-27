@@ -1812,6 +1812,10 @@
         "confidential": {
           "title": "Tryb poufny",
           "description": "Szyfrowanie dokumentów, załączników, kontaktów i kwot w przeglądarce"
+        },
+        "eet": {
+          "title": "EET",
+          "description": "Ewidencja sprzedaży gotówkowej (EET 2.0)"
         }
       },
       "managedByAdmins": "Danymi firmy, zespołem, subskrypcją i innymi ustawieniami firmy zarządza właściciel lub administrator."
@@ -3686,6 +3690,88 @@
       "body": "Z rolą „{role}” nie możesz zmieniać tych ustawień firmy. Jeśli trzeba je zmienić, poproś właściciela firmy lub administratora.",
       "bodyGeneric": "Twoja rola w tej firmie nie ma dostępu do tego ustawienia. Poproś właściciela firmy lub administratora.",
       "back": "Wróć do ustawień"
+    },
+    "eet": {
+      "title": "EET 2.0",
+      "lead": "Ewidencja sprzedaży opłaconej gotówką lub kartą na miejscu.",
+      "loadError": "Nie udało się wczytać ustawień EET.",
+      "saved": "Zapisano",
+      "scope": "EET 2.0 obowiązuje od 1 stycznia 2027 r. Billanta zaewidencjonuje płatność, gdy oznaczysz fakturę jako opłaconą gotówką (lub kartą na miejscu, jeśli włączysz to poniżej). Przelewy, pobranie i płatności kartą online nie są ewidencjonowane.",
+      "certificate": {
+        "title": "Pokladní certifikát",
+        "eic": "EIČ",
+        "validity": "Ważny",
+        "validRange": "{from} – {to}",
+        "issuer": "Wystawca",
+        "none": "Nie przesłano jeszcze certyfikatu. Wygenerujesz go w aplikacji DIS+ na portalu podatkowym.",
+        "eicMismatch": "EIČ w certyfikacie nie zgadza się z DIČ firmy. Sprawdź, czy to certyfikat tej firmy.",
+        "file": "Plik certyfikatu (.p12)",
+        "password": "Hasło do certyfikatu",
+        "upload": "Prześlij",
+        "replace": "Zastąp",
+        "uploaded": "Certyfikat przesłany",
+        "storage": "Certyfikat i hasło przechowujemy zaszyfrowane i nigdy ich nie pokazujemy z powrotem. Służą tylko do podpisywania ewidencjonowanej sprzedaży.",
+        "remove": "Usuń certyfikat (wyłącza EET)"
+      },
+      "register": {
+        "title": "Evidenční jednotka i kasa",
+        "idJednotky": "Numer evidenční jednotka",
+        "idJednotkyHint": "Nadaje go DIS+ przy rejestracji punktu lub innej jednostki.",
+        "idPokl": "Oznaczenie kasy",
+        "idPoklHint": "Własne oznaczenie, do 20 znaków: litery bez polskich znaków, cyfry, spacja i . , : ; / # - _",
+        "save": "Zapisz"
+      },
+      "sending": {
+        "title": "Wysyłanie",
+        "cardInPerson": "Przyjmuję płatności kartą na miejscu",
+        "cardInPersonHint": "Płatność kartą na twoim terminalu jest płatnością kontaktową i podlega ewidencji. Płatność kartą online nie.",
+        "environment": "Środowisko",
+        "playground": "Testowe (Playground)",
+        "production": "Produkcyjne",
+        "environmentHint": "W środowisku testowym nic nie jest naprawdę ewidencjonowane. Przełącz na produkcyjne, gdy będziesz mieć certyfikat z DIS+.",
+        "enabled": "Ewidencjonuj sprzedaż",
+        "enabledHint": "Wymaga przesłanego certyfikatu, numeru evidenční jednotka i oznaczenia kasy."
+      },
+      "records": {
+        "title": "Wysłane rekordy",
+        "overdueWarning": "Bez potwierdzenia po 48 godzinach: {count, plural, one {# rekord} few {# rekordy} many {# rekordów} other {# rekordu}}. Spróbuj wysłać je ponownie.",
+        "empty": "Nie wysłano jeszcze żadnej sprzedaży.",
+        "status": {
+          "confirmed": "Potwierdzono",
+          "pending": "Czeka na odpowiedź",
+          "overdue": "Po 48 h",
+          "rejected": "Odrzucono"
+        },
+        "invoice": "Dokument",
+        "resend": "Wyślij ponownie",
+        "confirmedNow": "Sprzedaż jest potwierdzona",
+        "stillPending": "Jeszcze brak odpowiedzi. Spróbujemy ponownie automatycznie.",
+        "errors": {
+          "timeout": "Odpowiedź nie przyszła na czas",
+          "network": "Nie udało się połączyć z serwerem EET",
+          "soap_fault": "Serwer EET zwrócił błąd",
+          "other": "Błąd: {code}"
+        }
+      },
+      "errors": {
+        "save_failed": "Nie udało się zapisać.",
+        "certificate_missing": "Najpierw prześlij pokladní certifikát.",
+        "eet_not_configured": "Podaj numer evidenční jednotka i oznaczenie kasy.",
+        "certificate_expired": "Certyfikat wygasł. Wygeneruj nowy w DIS+.",
+        "eet_cz_only": "EET dotyczy tylko firm w Czechach.",
+        "eet_not_for_demo": "W firmie demonstracyjnej nie można włączyć EET.",
+        "invalid_id_jednotky": "DIS+ nie nadaje takiego numeru. Sprawdź go.",
+        "invalid_id_pokl": "Oznaczenie kasy może mieć do 20 znaków: litery bez polskich znaków, cyfry, spację i . , : ; / # - _",
+        "wrong_password": "Hasło do certyfikatu się nie zgadza.",
+        "invalid_p12": "Plik nie jest prawidłowym certyfikatem .p12.",
+        "no_certificate": "W pliku brakuje certyfikatu.",
+        "no_key": "W pliku brakuje klucza prywatnego.",
+        "unsupported_algorithm": "Nie potrafimy odczytać tego formatu .p12. Wygeneruj certyfikat w DIS+ ponownie.",
+        "certificate_not_eet": "To nie jest pokladní certifikát dla EET.",
+        "eet_record_not_pending": "Rekord jest już załatwiony.",
+        "eet_record_not_found": "Nie znaleziono rekordu.",
+        "invalid_body": "Nieprawidłowe dane."
+      }
     }
   },
   "billing": {
@@ -5091,7 +5177,8 @@
       "orderNumber": "Numer zamówienia",
       "paidAt": "Opłacono",
       "sentAt": "Wysłano",
-      "internalNote": "Notatka wewnętrzna"
+      "internalNote": "Notatka wewnętrzna",
+      "eetPok": "POK EET"
     },
     "items": {
       "description": "Pozycja",

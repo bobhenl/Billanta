@@ -1812,6 +1812,10 @@
         "confidential": {
           "title": "Bizalmas mód",
           "description": "Bizonylatok, mellékletek, partnerek és összegek titkosítása a böngészőben"
+        },
+        "eet": {
+          "title": "EET",
+          "description": "Készpénzes eladások nyilvántartása (EET 2.0)"
         }
       },
       "managedByAdmins": "A cégadatokat, a csapatot, az előfizetést és a többi cégbeállítást a tulajdonos vagy egy adminisztrátor kezeli."
@@ -3686,6 +3690,88 @@
       "body": "„{role}” szerepkörrel nem módosíthatja ezeket a cégbeállításokat. Ha módosításra van szükség, forduljon a cég tulajdonosához vagy egy adminisztrátorhoz.",
       "bodyGeneric": "Az Ön szerepkörének ebben a cégben nincs hozzáférése ehhez a beállításhoz. Forduljon a cég tulajdonosához vagy egy adminisztrátorhoz.",
       "back": "Vissza a beállításokhoz"
+    },
+    "eet": {
+      "title": "EET 2.0",
+      "lead": "A készpénzzel vagy helyben kártyával fizetett eladások nyilvántartása.",
+      "loadError": "Az EET-beállításokat nem sikerült betölteni.",
+      "saved": "Mentve",
+      "scope": "Az EET 2.0 2027. január 1-jétől érvényes. A Billanta akkor rögzít egy fizetést, amikor egy számlát készpénzzel fizetettnek jelöl (vagy helyben kártyával, ha ezt lent bekapcsolja). Az átutalást, az utánvétet és az online kártyás fizetést nem rögzíti.",
+      "certificate": {
+        "title": "Pokladní certifikát",
+        "eic": "EIČ",
+        "validity": "Érvényes",
+        "validRange": "{from} – {to}",
+        "issuer": "Kiállító",
+        "none": "Még nem töltött fel tanúsítványt. Az adóportál DIS+ alkalmazásában hozhatja létre.",
+        "eicMismatch": "A tanúsítványban szereplő EIČ nem egyezik a cég DIČ-jével. Ellenőrizze, hogy ennek a cégnek a tanúsítványa-e.",
+        "file": "Tanúsítványfájl (.p12)",
+        "password": "A tanúsítvány jelszava",
+        "upload": "Feltöltés",
+        "replace": "Csere",
+        "uploaded": "A tanúsítvány feltöltve",
+        "storage": "A tanúsítványt és a jelszavát titkosítva tároljuk, és soha nem mutatjuk meg újra. Csak a rögzített eladások aláírására szolgálnak.",
+        "remove": "Tanúsítvány törlése (kikapcsolja az EET-t)"
+      },
+      "register": {
+        "title": "Evidenční jednotka és pénztár",
+        "idJednotky": "Az evidenční jednotka száma",
+        "idJednotkyHint": "A DIS+ adja ki egy üzlethelyiség vagy más egység regisztrálásakor.",
+        "idPokl": "A pénztár jelölése",
+        "idPoklHint": "Saját jelölés, legfeljebb 20 karakter: ékezet nélküli betűk, számjegyek, szóköz és . , : ; / # - _",
+        "save": "Mentés"
+      },
+      "sending": {
+        "title": "Küldés",
+        "cardInPerson": "Helyben fogadok el kártyás fizetést",
+        "cardInPersonHint": "A saját terminálján fizetett kártya személyes fizetés, ezért rögzíteni kell. Az online kártyás fizetést nem.",
+        "environment": "Környezet",
+        "playground": "Teszt (Playground)",
+        "production": "Éles",
+        "environmentHint": "A tesztkörnyezetben semmi sem kerül valóban rögzítésre. Váltson élesre, amint megvan a DIS+ tanúsítványa.",
+        "enabled": "Eladások rögzítése",
+        "enabledHint": "Feltöltött tanúsítvány, az evidenční jednotka száma és a pénztár jelölése kell hozzá."
+      },
+      "records": {
+        "title": "Elküldött rekordok",
+        "overdueWarning": "48 óra után sincs visszaigazolás: {count, plural, one {# rekord} other {# rekord}}. Próbálja meg újra elküldeni.",
+        "empty": "Még nem küldtünk el eladást.",
+        "status": {
+          "confirmed": "Visszaigazolva",
+          "pending": "Válaszra vár",
+          "overdue": "48 órán túl",
+          "rejected": "Elutasítva"
+        },
+        "invoice": "Bizonylat",
+        "resend": "Újraküldés",
+        "confirmedNow": "Az eladás visszaigazolva",
+        "stillPending": "Még nincs válasz. Automatikusan újra megpróbáljuk.",
+        "errors": {
+          "timeout": "A válasz nem érkezett meg időben",
+          "network": "Nem sikerült kapcsolódni az EET-szerverhez",
+          "soap_fault": "Az EET-szerver hibát jelzett",
+          "other": "Hiba: {code}"
+        }
+      },
+      "errors": {
+        "save_failed": "A mentés nem sikerült.",
+        "certificate_missing": "Először töltse fel a pokladní certifikát-ot.",
+        "eet_not_configured": "Adja meg az evidenční jednotka számát és a pénztár jelölését.",
+        "certificate_expired": "A tanúsítvány lejárt. Hozzon létre újat a DIS+-ban.",
+        "eet_cz_only": "Az EET csak csehországi cégekre vonatkozik.",
+        "eet_not_for_demo": "Bemutató cégben az EET nem kapcsolható be.",
+        "invalid_id_jednotky": "Ilyen számot a DIS+ nem ad ki. Ellenőrizze.",
+        "invalid_id_pokl": "A pénztár jelölése legfeljebb 20 karakter lehet: ékezet nélküli betűk, számjegyek, szóköz és . , : ; / # - _",
+        "wrong_password": "A tanúsítvány jelszava nem egyezik.",
+        "invalid_p12": "A fájl nem érvényes .p12 tanúsítvány.",
+        "no_certificate": "A fájlból hiányzik a tanúsítvány.",
+        "no_key": "A fájlból hiányzik a privát kulcs.",
+        "unsupported_algorithm": "Ezt a .p12 formátumot nem tudjuk beolvasni. Hozza létre újra a tanúsítványt a DIS+-ban.",
+        "certificate_not_eet": "Ez nem EET-hez való pokladní certifikát.",
+        "eet_record_not_pending": "A rekord már le van zárva.",
+        "eet_record_not_found": "A rekord nem található.",
+        "invalid_body": "Érvénytelen adatok."
+      }
     }
   },
   "billing": {
@@ -5091,7 +5177,8 @@
       "orderNumber": "Megrendelésszám",
       "paidAt": "Fizetés dátuma",
       "sentAt": "Elküldve",
-      "internalNote": "Belső megjegyzés"
+      "internalNote": "Belső megjegyzés",
+      "eetPok": "EET POK"
     },
     "items": {
       "description": "Tétel",

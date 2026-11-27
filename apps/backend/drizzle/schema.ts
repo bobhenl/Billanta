@@ -244,6 +244,19 @@ export const tenants = pgTable("tenants", {
   stripeSecretKeyEncrypted: text("stripe_secret_key_encrypted"),
   stripeAccountName: text("stripe_account_name"),
   cardPaymentsEnabled: boolean("card_payments_enabled").notNull().default(false),
+  // EET 2.0 (0123, `src/eet/`, docs/eet.md): opt-in. The pokladní certifikát
+  // (.p12 and its password as one JSON) is AES-256-GCM like the AI key and never
+  // returned; only its public details are. Production has to be chosen explicitly.
+  eetEnabled: boolean("eet_enabled").notNull().default(false),
+  eetEnvironment: varchar("eet_environment", { length: 16 }).$type<"playground" | "production">().notNull().default("playground"),
+  eetIdJednotky: varchar("eet_id_jednotky", { length: 9 }),
+  eetIdPokl: varchar("eet_id_pokl", { length: 20 }),
+  // Card payments taken at the counter or by the courier are kontaktní platby (§ 5), online ones are not.
+  eetCardInPerson: boolean("eet_card_in_person").notNull().default(false),
+  eetCertificateEncrypted: text("eet_certificate_encrypted"),
+  eetCertificateInfo: jsonb("eet_certificate_info").$type<{ commonName: string | null; serialNumber: string; validFrom: string; validTo: string; issuer: string; fingerprint256: string }>(),
+  // Last pořadové číslo dokladu handed out (unique per id_pokl, § 6 odst. 1 písm. d).
+  eetLastPoradCis: integer("eet_last_porad_cis").notNull().default(0),
   // --- Company profile & invoice defaults (Settings -> Company) ---
   email: text("email"),
   phone: varchar("phone", { length: 32 }),
@@ -751,6 +764,8 @@ export const invoices = pgTable(
     // this one document (Stripe needs a number). Null = no card payment.
     cardAmount: numeric("card_amount", { precision: 14, scale: 2 }),
     paidAt: timestamp("paid_at", { withTimezone: true }),
+    // POK of the latest confirmed EET record of this document (0123); the history is in eet_records.
+    eetPok: varchar("eet_pok", { length: 39 }),
     // Locked by an owner/admin: opening it needs a fresh re-auth (src/invoices/invoice-lock.ts).
     // Lists, totals and exports still count it.
     lockedAt: timestamp("locked_at", { withTimezone: true }),
@@ -1799,6 +1814,45 @@ export const cardPaymentSessions = pgTable("card_payment_sessions", {
   sealState: text("seal_state").$type<"pending" | "sealed" | "dropped">(),
   sealedPaymentId: uuid("sealed_payment_id").references((): AnyPgColumn => invoiceSealedPayments.id, { onDelete: "set null" }),
 });
+
+/**
+ * One evidovaná tržba (0123, `src/eet/`): a kontaktní platba of an invoice,
+ * or its reversal with a negative amount (§ 8). The <Data> values are stored
+ * exactly as sent, because a § 20 resend must repeat them unchanged. Kept as
+ * evidence: the app may not delete rows (app-role-grants.sql).
+ */
+export const eetRecords = pgTable(
+  "eet_records",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
+    invoiceId: uuid("invoice_id").references(() => invoices.id, { onDelete: "set null" }),
+    kind: varchar("kind", { length: 8 }).$type<"sale" | "refund">().notNull(),
+    environment: varchar("environment", { length: 16 }).$type<"playground" | "production">().notNull(),
+    eicPopl: varchar("eic_popl", { length: 12 }).notNull(),
+    idJednotky: varchar("id_jednotky", { length: 9 }).notNull(),
+    idPokl: varchar("id_pokl", { length: 20 }).notNull(),
+    poradCis: varchar("porad_cis", { length: 25 }).notNull(),
+    datTrzby: varchar("dat_trzby", { length: 25 }).notNull(),
+    celkTrzba: numeric("celk_trzba", { precision: 14, scale: 2 }).notNull(),
+    // pending: no answer yet, resent by EetCron; overdue: still none after 48 h (§ 20).
+    status: varchar("status", { length: 16 }).$type<"pending" | "confirmed" | "rejected" | "overdue">().notNull().default("pending"),
+    pok: varchar("pok", { length: 39 }),
+    // The answer carried test="true" (playground or a production test message).
+    test: boolean("test"),
+    attempts: integer("attempts").notNull().default(0),
+    // Stable code: EET error (eet_error_<kod>), timeout, network, soap_fault…
+    lastError: varchar("last_error", { length: 64 }),
+    warnings: jsonb("warnings").$type<{ code: number; text: string }[]>().notNull().default([]),
+    transactionId: varchar("transaction_id", { length: 64 }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    lastAttemptAt: timestamp("last_attempt_at", { withTimezone: true }),
+    confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
+  },
+  (table) => ({
+    poradCisUnique: uniqueIndex("eet_records_porad_cis_uniq").on(table.tenantId, table.idPokl, table.poradCis),
+  }),
+);
 
 export const timeEntries = pgTable("time_entries", {
   id: uuid("id").primaryKey().defaultRandom(),

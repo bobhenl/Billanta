@@ -157,6 +157,8 @@ export interface InvoiceDetail {
     exchangeRate: string | null;
     paymentFees?: string;
     receivedCzk?: string | null;
+    /** POK of the sale recorded in EET 2.0 (cash, or a card in person); null without one. */
+    eetPok?: string | null;
     /** Split between the tax model's partners ("Po zdanění"); null = the default shares. */
     partnerShares?: Record<string, number> | null;
     bankAccountId: string | null;

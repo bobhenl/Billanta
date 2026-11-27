@@ -1812,6 +1812,10 @@
         "confidential": {
           "title": "Modul confidențial",
           "description": "Criptarea documentelor, atașamentelor, contactelor și sumelor în browser"
+        },
+        "eet": {
+          "title": "EET",
+          "description": "Evidența vânzărilor în numerar (EET 2.0)"
         }
       },
       "managedByAdmins": "Datele firmei, echipa, abonamentul și celelalte setări ale firmei sunt administrate de proprietar sau de un administrator."
@@ -3686,6 +3690,88 @@
       "body": "Cu rolul „{role}” nu puteți modifica aceste setări ale firmei. Dacă trebuie schimbate, adresați-vă proprietarului firmei sau unui administrator.",
       "bodyGeneric": "Rolul dumneavoastră în această firmă nu are acces la această setare. Adresați-vă proprietarului firmei sau unui administrator.",
       "back": "Înapoi la setări"
+    },
+    "eet": {
+      "title": "EET 2.0",
+      "lead": "Evidența vânzărilor plătite în numerar sau cu cardul pe loc.",
+      "loadError": "Setările EET nu au putut fi încărcate.",
+      "saved": "Salvat",
+      "scope": "EET 2.0 se aplică de la 1 ianuarie 2027. Billanta înregistrează o plată când marcați o factură ca plătită în numerar (sau cu cardul pe loc, dacă activați asta mai jos). Transferurile, rambursul și plățile online cu cardul nu se înregistrează.",
+      "certificate": {
+        "title": "Pokladní certifikát",
+        "eic": "EIČ",
+        "validity": "Valabil",
+        "validRange": "{from} – {to}",
+        "issuer": "Emis de",
+        "none": "Încă nu ați încărcat un certificat. Îl generați în aplicația DIS+ de pe portalul fiscal.",
+        "eicMismatch": "EIČ din certificat nu se potrivește cu DIČ al firmei. Verificați că este certificatul acestei firme.",
+        "file": "Fișierul certificatului (.p12)",
+        "password": "Parola certificatului",
+        "upload": "Încarcă",
+        "replace": "Înlocuiește",
+        "uploaded": "Certificat încărcat",
+        "storage": "Certificatul și parola sunt stocate criptat și nu mai sunt afișate niciodată. Servesc doar la semnarea vânzărilor înregistrate.",
+        "remove": "Șterge certificatul (dezactivează EET)"
+      },
+      "register": {
+        "title": "Evidenční jednotka și casa",
+        "idJednotky": "Numărul evidenční jednotka",
+        "idJednotkyHint": "Îl atribuie DIS+ când înregistrați un punct de lucru sau altă unitate.",
+        "idPokl": "Denumirea casei",
+        "idPoklHint": "Denumirea dvs., cel mult 20 de caractere: litere fără diacritice, cifre, spațiu și . , : ; / # - _",
+        "save": "Salvează"
+      },
+      "sending": {
+        "title": "Trimitere",
+        "cardInPerson": "Accept plăți cu cardul pe loc",
+        "cardInPersonHint": "O plată cu cardul la terminalul dvs. este o plată de contact și se înregistrează. O plată online cu cardul, nu.",
+        "environment": "Mediu",
+        "playground": "Test (Playground)",
+        "production": "Producție",
+        "environmentHint": "În mediul de test nu se înregistrează nimic cu adevărat. Treceți la producție când aveți un certificat din DIS+.",
+        "enabled": "Înregistrează vânzările",
+        "enabledHint": "Necesită un certificat încărcat, numărul evidenční jednotka și denumirea casei."
+      },
+      "records": {
+        "title": "Înregistrări trimise",
+        "overdueWarning": "Fără confirmare după 48 de ore: {count, plural, one {# înregistrare} few {# înregistrări} other {# de înregistrări}}. Încercați să le trimiteți din nou.",
+        "empty": "Încă nu a fost trimisă nicio vânzare.",
+        "status": {
+          "confirmed": "Confirmat",
+          "pending": "Așteaptă răspuns",
+          "overdue": "Peste 48 h",
+          "rejected": "Respins"
+        },
+        "invoice": "Document",
+        "resend": "Trimite din nou",
+        "confirmedNow": "Vânzarea este confirmată",
+        "stillPending": "Încă niciun răspuns. Vom încerca din nou automat.",
+        "errors": {
+          "timeout": "Răspunsul nu a sosit la timp",
+          "network": "Nu s-a putut face conexiunea cu serverul EET",
+          "soap_fault": "Serverul EET a returnat o eroare",
+          "other": "Eroare: {code}"
+        }
+      },
+      "errors": {
+        "save_failed": "Salvarea a eșuat.",
+        "certificate_missing": "Încărcați mai întâi pokladní certifikát.",
+        "eet_not_configured": "Completați numărul evidenční jednotka și denumirea casei.",
+        "certificate_expired": "Certificatul a expirat. Generați unul nou în DIS+.",
+        "eet_cz_only": "EET este doar pentru firmele din Cehia.",
+        "eet_not_for_demo": "EET nu poate fi activat într-o firmă demo.",
+        "invalid_id_jednotky": "DIS+ nu atribuie acest număr. Verificați-l.",
+        "invalid_id_pokl": "Denumirea casei poate avea cel mult 20 de caractere: litere fără diacritice, cifre, spațiu și . , : ; / # - _",
+        "wrong_password": "Parola certificatului nu se potrivește.",
+        "invalid_p12": "Fișierul nu este un certificat .p12 valid.",
+        "no_certificate": "Fișierului îi lipsește certificatul.",
+        "no_key": "Fișierului îi lipsește cheia privată.",
+        "unsupported_algorithm": "Nu putem citi acest format .p12. Generați din nou certificatul în DIS+.",
+        "certificate_not_eet": "Acesta nu este un pokladní certifikát pentru EET.",
+        "eet_record_not_pending": "Înregistrarea este deja rezolvată.",
+        "eet_record_not_found": "Înregistrarea nu a fost găsită.",
+        "invalid_body": "Date nevalide."
+      }
     }
   },
   "billing": {
@@ -5091,7 +5177,8 @@
       "orderNumber": "Număr comandă",
       "paidAt": "Plătită la",
       "sentAt": "Trimisă",
-      "internalNote": "Notă internă"
+      "internalNote": "Notă internă",
+      "eetPok": "POK EET"
     },
     "items": {
       "description": "Articol",

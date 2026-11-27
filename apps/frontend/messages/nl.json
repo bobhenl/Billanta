@@ -1812,6 +1812,10 @@
         "confidential": {
           "title": "Vertrouwelijke modus",
           "description": "Documenten, bijlagen, contacten en bedragen versleutelen in de browser"
+        },
+        "eet": {
+          "title": "EET",
+          "description": "Registratie van contante verkopen (EET 2.0)"
         }
       },
       "managedByAdmins": "Bedrijfsgegevens, het team, het abonnement en andere bedrijfsinstellingen worden beheerd door de eigenaar of een beheerder."
@@ -3686,6 +3690,88 @@
       "body": "Met de rol “{role}” kun je deze bedrijfsinstellingen niet wijzigen. Moeten ze worden aangepast, vraag het dan aan de eigenaar of een beheerder van het bedrijf.",
       "bodyGeneric": "Je rol in dit bedrijf heeft geen toegang tot deze instelling. Vraag het aan de eigenaar of een beheerder van het bedrijf.",
       "back": "Terug naar instellingen"
+    },
+    "eet": {
+      "title": "EET 2.0",
+      "lead": "Registratie van verkopen die contant of ter plaatse met een kaart worden betaald.",
+      "loadError": "De EET-instellingen konden niet worden geladen.",
+      "saved": "Opgeslagen",
+      "scope": "EET 2.0 geldt vanaf 1 januari 2027. Billanta registreert een betaling wanneer u een factuur als contant betaald markeert (of ter plaatse met een kaart, als u dat hieronder aanzet). Overschrijvingen, rembours en online kaartbetalingen worden niet geregistreerd.",
+      "certificate": {
+        "title": "Pokladní certifikát",
+        "eic": "EIČ",
+        "validity": "Geldig",
+        "validRange": "{from} – {to}",
+        "issuer": "Uitgegeven door",
+        "none": "U hebt nog geen certificaat geüpload. U maakt het aan in de app DIS+ op het belastingportaal.",
+        "eicMismatch": "De EIČ in het certificaat komt niet overeen met de DIČ van het bedrijf. Controleer of het het certificaat van dit bedrijf is.",
+        "file": "Certificaatbestand (.p12)",
+        "password": "Wachtwoord van het certificaat",
+        "upload": "Uploaden",
+        "replace": "Vervangen",
+        "uploaded": "Certificaat geüpload",
+        "storage": "Het certificaat en het wachtwoord worden versleuteld opgeslagen en nooit meer getoond. Ze dienen alleen om geregistreerde verkopen te ondertekenen.",
+        "remove": "Certificaat verwijderen (zet EET uit)"
+      },
+      "register": {
+        "title": "Evidenční jednotka en kassa",
+        "idJednotky": "Nummer van de evidenční jednotka",
+        "idJednotkyHint": "DIS+ kent het toe wanneer u een vestiging of andere eenheid registreert.",
+        "idPokl": "Naam van de kassa",
+        "idPoklHint": "Uw eigen naam, maximaal 20 tekens: letters zonder accenten, cijfers, spatie en . , : ; / # - _",
+        "save": "Opslaan"
+      },
+      "sending": {
+        "title": "Verzenden",
+        "cardInPerson": "Ik neem kaartbetalingen ter plaatse aan",
+        "cardInPersonHint": "Een kaartbetaling op uw terminal is een betaling ter plaatse en wordt geregistreerd. Een online kaartbetaling niet.",
+        "environment": "Omgeving",
+        "playground": "Test (Playground)",
+        "production": "Productie",
+        "environmentHint": "In de testomgeving wordt niets echt geregistreerd. Schakel over naar productie zodra u een certificaat uit DIS+ hebt.",
+        "enabled": "Verkopen registreren",
+        "enabledHint": "Vereist een geüpload certificaat, het nummer van de evidenční jednotka en de naam van de kassa."
+      },
+      "records": {
+        "title": "Verzonden records",
+        "overdueWarning": "Na 48 uur geen bevestiging: {count, plural, one {# record} other {# records}}. Probeer ze opnieuw te verzenden.",
+        "empty": "Er is nog geen verkoop verzonden.",
+        "status": {
+          "confirmed": "Bevestigd",
+          "pending": "Wacht op antwoord",
+          "overdue": "Meer dan 48 u",
+          "rejected": "Geweigerd"
+        },
+        "invoice": "Document",
+        "resend": "Opnieuw verzenden",
+        "confirmedNow": "De verkoop is bevestigd",
+        "stillPending": "Nog geen antwoord. We proberen het automatisch opnieuw.",
+        "errors": {
+          "timeout": "Het antwoord kwam niet op tijd",
+          "network": "Geen verbinding met de EET-server",
+          "soap_fault": "De EET-server gaf een fout terug",
+          "other": "Fout: {code}"
+        }
+      },
+      "errors": {
+        "save_failed": "Opslaan mislukt.",
+        "certificate_missing": "Upload eerst het pokladní certifikát.",
+        "eet_not_configured": "Vul het nummer van de evidenční jednotka en de naam van de kassa in.",
+        "certificate_expired": "Het certificaat is verlopen. Maak een nieuw aan in DIS+.",
+        "eet_cz_only": "EET is alleen voor bedrijven in Tsjechië.",
+        "eet_not_for_demo": "In een demobedrijf kan EET niet worden aangezet.",
+        "invalid_id_jednotky": "DIS+ kent dit nummer niet toe. Controleer het.",
+        "invalid_id_pokl": "De naam van de kassa mag maximaal 20 tekens hebben: letters zonder accenten, cijfers, spatie en . , : ; / # - _",
+        "wrong_password": "Het wachtwoord van het certificaat klopt niet.",
+        "invalid_p12": "Het bestand is geen geldig .p12-certificaat.",
+        "no_certificate": "Het bestand bevat geen certificaat.",
+        "no_key": "Het bestand bevat geen privésleutel.",
+        "unsupported_algorithm": "Dit .p12-formaat kunnen we niet lezen. Maak het certificaat opnieuw aan in DIS+.",
+        "certificate_not_eet": "Dit is geen pokladní certifikát voor EET.",
+        "eet_record_not_pending": "Het record is al afgehandeld.",
+        "eet_record_not_found": "Record niet gevonden.",
+        "invalid_body": "Ongeldige gegevens."
+      }
     }
   },
   "billing": {
@@ -5091,7 +5177,8 @@
       "orderNumber": "Bestelnummer",
       "paidAt": "Betaald op",
       "sentAt": "Verzonden",
-      "internalNote": "Interne notitie"
+      "internalNote": "Interne notitie",
+      "eetPok": "EET POK"
     },
     "items": {
       "description": "Omschrijving",

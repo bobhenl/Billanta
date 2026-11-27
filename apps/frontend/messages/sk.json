@@ -1813,6 +1813,10 @@
         "confidential": {
           "title": "Dôverný režim",
           "description": "Šifrovanie dokladov, príloh, kontaktov a súm v prehliadači"
+        },
+        "eet": {
+          "title": "EET",
+          "description": "Česká evidencia tržieb 2.0 pre platby v hotovosti"
         }
       },
       "managedByAdmins": "Údaje firmy, tím, predplatné a ďalšie nastavenia firmy spravuje vlastník alebo administrátor."
@@ -3693,6 +3697,88 @@
       "body": "S rolou „{role}“ sa tieto nastavenia firmy nedajú meniť. Ak ich potrebujete upraviť, požiadajte vlastníka alebo administrátora firmy.",
       "bodyGeneric": "Vaša rola v tejto firme k tomuto nastaveniu nemá prístup. Požiadajte vlastníka alebo administrátora firmy.",
       "back": "Späť do nastavení"
+    },
+    "eet": {
+      "title": "EET 2.0",
+      "lead": "Česká evidencia tržieb platených v hotovosti alebo kartou na mieste.",
+      "loadError": "Nastavenia EET sa nepodarilo načítať.",
+      "saved": "Uložené",
+      "scope": "EET 2.0 platí v Česku od 1. 1. 2027. Billanta zaeviduje platbu, keď faktúru označíte ako uhradenú v hotovosti (alebo kartou na mieste, ak to nižšie zapnete). Platby prevodom, dobierkou a online kartou sa neevidujú.",
+      "certificate": {
+        "title": "Pokladničný certifikát (pokladní certifikát)",
+        "eic": "EIČ",
+        "validity": "Platnosť",
+        "validRange": "{from} – {to}",
+        "issuer": "Vydal",
+        "none": "Zatiaľ ste nenahrali žiadny certifikát. Vygenerujete si ho v aplikácii DIS+ na českom daňovom portáli.",
+        "eicMismatch": "EIČ v certifikáte nesedí s DIČ firmy. Skontrolujte, či ide o certifikát tejto firmy.",
+        "file": "Súbor certifikátu (.p12)",
+        "password": "Heslo k certifikátu",
+        "upload": "Nahrať",
+        "replace": "Nahradiť",
+        "uploaded": "Certifikát je nahraný",
+        "storage": "Certifikát aj heslo ukladáme zašifrované a nikdy ich nezobrazíme späť. Slúžia len na podpis evidovaných tržieb.",
+        "remove": "Zmazať certifikát (vypne EET)"
+      },
+      "register": {
+        "title": "Evidenčná jednotka a pokladnica",
+        "idJednotky": "Číslo evidenčnej jednotky",
+        "idJednotkyHint": "Pridelí ho DIS+ pri registrácii prevádzky alebo inej jednotky.",
+        "idPokl": "Označenie pokladnice",
+        "idPoklHint": "Vaše vlastné označenie, najviac 20 znakov: písmená bez diakritiky, číslice, medzera a . , : ; / # - _",
+        "save": "Uložiť"
+      },
+      "sending": {
+        "title": "Odosielanie",
+        "cardInPerson": "Platby kartou prijímam na mieste",
+        "cardInPersonHint": "Platba kartou na vašom termináli je kontaktná platba a eviduje sa. Online platba kartou nie.",
+        "environment": "Prostredie",
+        "playground": "Testovacie (Playground)",
+        "production": "Ostré",
+        "environmentHint": "V testovacom prostredí sa naozaj nič neeviduje. Na ostré prepnite, keď budete mať certifikát z DIS+.",
+        "enabled": "Evidovať tržby",
+        "enabledHint": "Vyžaduje nahraný certifikát, číslo evidenčnej jednotky a označenie pokladnice."
+      },
+      "records": {
+        "title": "Odoslané záznamy",
+        "overdueWarning": "Bez potvrdenia ani po 48 hodinách: {count, plural, one {# záznam} few {# záznamy} other {# záznamov}}. Skúste ich odoslať znova.",
+        "empty": "Zatiaľ nebola odoslaná žiadna tržba.",
+        "status": {
+          "confirmed": "Potvrdené",
+          "pending": "Čaká na odpoveď",
+          "overdue": "Po lehote 48 h",
+          "rejected": "Odmietnuté"
+        },
+        "invoice": "Doklad",
+        "resend": "Odoslať znova",
+        "confirmedNow": "Tržba je potvrdená",
+        "stillPending": "Odpoveď zatiaľ neprišla. Skúsime to znova automaticky.",
+        "errors": {
+          "timeout": "Odpoveď neprišla včas",
+          "network": "Nepodarilo sa spojiť so serverom EET",
+          "soap_fault": "Server EET vrátil chybu",
+          "other": "Chyba: {code}"
+        }
+      },
+      "errors": {
+        "save_failed": "Uloženie sa nepodarilo.",
+        "certificate_missing": "Najprv nahrajte pokladničný certifikát.",
+        "eet_not_configured": "Vyplňte číslo evidenčnej jednotky a označenie pokladnice.",
+        "certificate_expired": "Platnosť certifikátu skončila. Vygenerujte si v DIS+ nový.",
+        "eet_cz_only": "EET je len pre firmy v Česku.",
+        "eet_not_for_demo": "V ukážkovej firme sa EET zapnúť nedá.",
+        "invalid_id_jednotky": "Také číslo evidenčnej jednotky DIS+ neprideľuje. Skontrolujte ho.",
+        "invalid_id_pokl": "Označenie pokladnice môže mať najviac 20 znakov: písmená bez diakritiky, číslice, medzeru a . , : ; / # - _",
+        "wrong_password": "Heslo k certifikátu nesedí.",
+        "invalid_p12": "Súbor nie je platný certifikát .p12.",
+        "no_certificate": "V súbore chýba certifikát.",
+        "no_key": "V súbore chýba súkromný kľúč.",
+        "unsupported_algorithm": "Tento formát .p12 nevieme prečítať. Vygenerujte certifikát v DIS+ znova.",
+        "certificate_not_eet": "Toto nie je pokladničný certifikát pre EET.",
+        "eet_record_not_pending": "Záznam je už vybavený.",
+        "eet_record_not_found": "Záznam sa nenašiel.",
+        "invalid_body": "Neplatné údaje."
+      }
     }
   },
   "billing": {
@@ -5098,7 +5184,8 @@
       "orderNumber": "Číslo objednávky",
       "paidAt": "Dátum úhrady",
       "sentAt": "Odoslané",
-      "internalNote": "Interná poznámka"
+      "internalNote": "Interná poznámka",
+      "eetPok": "POK (EET)"
     },
     "items": {
       "description": "Položka",

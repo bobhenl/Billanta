@@ -2301,6 +2301,17 @@ CREATE POLICY member_visibility ON card_payment_sessions AS RESTRICTIVE
     ELSE EXISTS (SELECT 1 FROM invoices i WHERE i.id = card_payment_sessions.invoice_id)
   END);
 
+-- EET records follow their invoice (0123); one whose invoice is gone only to 'all'.
+DROP POLICY IF EXISTS member_visibility ON eet_records;
+CREATE POLICY member_visibility ON eet_records AS RESTRICTIVE
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE CASE
+      WHEN invoice_id IS NOT NULL THEN EXISTS (SELECT 1 FROM invoices i WHERE i.id = eet_records.invoice_id)
+      ELSE (SELECT app_view_mode()) = 'all'
+    END
+  END);
+
 -- Receipts follow their expense the same way (0112).
 DROP POLICY IF EXISTS member_visibility ON expense_attachments;
 CREATE POLICY member_visibility ON expense_attachments AS RESTRICTIVE
@@ -2429,3 +2440,22 @@ DROP POLICY IF EXISTS tenant_isolation ON vat_filing_reminders;
 CREATE POLICY tenant_isolation ON vat_filing_reminders
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+-- Migration 0123: EET 2.0 records (src/eet/).
+ALTER TABLE eet_records ENABLE ROW LEVEL SECURITY;
+ALTER TABLE eet_records FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON eet_records;
+CREATE POLICY tenant_isolation ON eet_records
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+-- Companies with unanswered EET records, for EetCron (same shape as list_tenant_ids).
+CREATE OR REPLACE FUNCTION list_eet_pending_tenant_ids()
+RETURNS SETOF uuid
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT DISTINCT r.tenant_id FROM eet_records r JOIN tenants t ON t.id = r.tenant_id
+  WHERE r.status IN ('pending', 'overdue') AND NOT t.is_demo;
+$$;
+REVOKE ALL ON FUNCTION list_eet_pending_tenant_ids() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION list_eet_pending_tenant_ids() TO faktur_app;

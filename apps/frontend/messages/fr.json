@@ -1812,6 +1812,10 @@
         "confidential": {
           "title": "Mode confidentiel",
           "description": "Chiffrer les documents, pièces jointes, contacts et montants dans le navigateur"
+        },
+        "eet": {
+          "title": "EET",
+          "description": "Enregistrement des ventes en espèces (EET 2.0)"
         }
       },
       "managedByAdmins": "Les informations de l’entreprise, l’équipe, l’abonnement et les autres paramètres de l’entreprise sont gérés par le propriétaire ou un administrateur."
@@ -3686,6 +3690,88 @@
       "body": "Avec le rôle « {role} », vous ne pouvez pas modifier ces paramètres de l’entreprise. S’ils doivent être changés, adressez-vous au propriétaire de l’entreprise ou à un administrateur.",
       "bodyGeneric": "Votre rôle dans cette entreprise ne donne pas accès à ce paramètre. Adressez-vous au propriétaire de l’entreprise ou à un administrateur.",
       "back": "Retour aux paramètres"
+    },
+    "eet": {
+      "title": "EET 2.0",
+      "lead": "Enregistrement des ventes payées en espèces ou par carte sur place.",
+      "loadError": "Impossible de charger les réglages EET.",
+      "saved": "Enregistré",
+      "scope": "EET 2.0 s'applique à partir du 1er janvier 2027. Billanta enregistre un paiement quand vous marquez une facture comme payée en espèces (ou par carte sur place, si vous l'activez ci-dessous). Les virements, le contre-remboursement et les paiements par carte en ligne ne sont pas enregistrés.",
+      "certificate": {
+        "title": "Pokladní certifikát",
+        "eic": "EIČ",
+        "validity": "Validité",
+        "validRange": "{from} – {to}",
+        "issuer": "Émis par",
+        "none": "Vous n'avez pas encore importé de certificat. Vous le générez dans l'application DIS+ du portail fiscal.",
+        "eicMismatch": "L'EIČ du certificat ne correspond pas au DIČ de l'entreprise. Vérifiez qu'il s'agit du certificat de cette entreprise.",
+        "file": "Fichier du certificat (.p12)",
+        "password": "Mot de passe du certificat",
+        "upload": "Importer",
+        "replace": "Remplacer",
+        "uploaded": "Certificat importé",
+        "storage": "Le certificat et son mot de passe sont stockés chiffrés et ne sont jamais réaffichés. Ils servent uniquement à signer les ventes enregistrées.",
+        "remove": "Supprimer le certificat (désactive EET)"
+      },
+      "register": {
+        "title": "Evidenční jednotka et caisse",
+        "idJednotky": "Numéro de l'evidenční jednotka",
+        "idJednotkyHint": "DIS+ l'attribue lors de l'enregistrement d'un établissement ou d'une autre unité.",
+        "idPokl": "Nom de la caisse",
+        "idPoklHint": "Votre propre nom, 20 caractères au plus : lettres sans accents, chiffres, espace et . , : ; / # - _",
+        "save": "Enregistrer"
+      },
+      "sending": {
+        "title": "Envoi",
+        "cardInPerson": "J'accepte les paiements par carte sur place",
+        "cardInPersonHint": "Un paiement par carte sur votre terminal est un paiement en présence du client et il est enregistré. Un paiement par carte en ligne ne l'est pas.",
+        "environment": "Environnement",
+        "playground": "Test (Playground)",
+        "production": "Production",
+        "environmentHint": "Rien n'est vraiment enregistré dans l'environnement de test. Passez en production dès que vous avez un certificat de DIS+.",
+        "enabled": "Enregistrer les ventes",
+        "enabledHint": "Nécessite un certificat importé, le numéro de l'evidenční jednotka et le nom de la caisse."
+      },
+      "records": {
+        "title": "Enregistrements envoyés",
+        "overdueWarning": "Sans confirmation après 48 heures : {count, plural, one {# enregistrement} other {# enregistrements}}. Réessayez de les envoyer.",
+        "empty": "Aucune vente n'a encore été envoyée.",
+        "status": {
+          "confirmed": "Confirmé",
+          "pending": "En attente de réponse",
+          "overdue": "Plus de 48 h",
+          "rejected": "Refusé"
+        },
+        "invoice": "Document",
+        "resend": "Renvoyer",
+        "confirmedNow": "La vente est confirmée",
+        "stillPending": "Pas encore de réponse. Nous réessaierons automatiquement.",
+        "errors": {
+          "timeout": "La réponse n'est pas arrivée à temps",
+          "network": "Impossible de joindre le serveur EET",
+          "soap_fault": "Le serveur EET a renvoyé une erreur",
+          "other": "Erreur: {code}"
+        }
+      },
+      "errors": {
+        "save_failed": "L'enregistrement a échoué.",
+        "certificate_missing": "Importez d'abord le pokladní certifikát.",
+        "eet_not_configured": "Renseignez le numéro de l'evidenční jednotka et le nom de la caisse.",
+        "certificate_expired": "Le certificat a expiré. Générez-en un nouveau dans DIS+.",
+        "eet_cz_only": "EET concerne uniquement les entreprises en Tchéquie.",
+        "eet_not_for_demo": "EET ne peut pas être activé dans une entreprise de démonstration.",
+        "invalid_id_jednotky": "DIS+ n'attribue pas ce numéro. Vérifiez-le.",
+        "invalid_id_pokl": "Le nom de la caisse peut avoir 20 caractères au plus : lettres sans accents, chiffres, espace et . , : ; / # - _",
+        "wrong_password": "Le mot de passe du certificat ne correspond pas.",
+        "invalid_p12": "Le fichier n'est pas un certificat .p12 valide.",
+        "no_certificate": "Le fichier ne contient pas de certificat.",
+        "no_key": "Le fichier ne contient pas de clé privée.",
+        "unsupported_algorithm": "Nous ne savons pas lire ce format .p12. Générez de nouveau le certificat dans DIS+.",
+        "certificate_not_eet": "Ce n'est pas un pokladní certifikát pour EET.",
+        "eet_record_not_pending": "L'enregistrement est déjà traité.",
+        "eet_record_not_found": "Enregistrement introuvable.",
+        "invalid_body": "Données non valides."
+      }
     }
   },
   "billing": {
@@ -5091,7 +5177,8 @@
       "orderNumber": "Numéro de commande",
       "paidAt": "Payée le",
       "sentAt": "Envoyée",
-      "internalNote": "Note interne"
+      "internalNote": "Note interne",
+      "eetPok": "POK EET"
     },
     "items": {
       "description": "Ligne",

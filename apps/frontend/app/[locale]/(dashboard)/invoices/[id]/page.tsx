@@ -238,6 +238,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
     [t('fields.specificSymbol'), invoice.specificSymbol],
     [t('fields.orderNumber'), invoice.orderNumber],
     [t('fields.paidAt'), formatDate(invoice.paidAt, locale)],
+    [t('fields.eetPok'), invoice.eetPok ?? null],
     [t('fields.sentAt'), formatDate(invoice.sentAt, locale)]
   ];
   // How many times the customer opened the shared link: one row instead of a card of its own.
@@ -726,7 +727,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                 .map(([label, value]) => (
                   <div key={label} className="flex justify-between gap-3">
                     <dt className="text-muted-foreground">{label}</dt>
-                    <dd className="text-right font-medium tabular-nums">{value}</dd>
+                    <dd className="min-w-0 text-right font-medium tabular-nums [overflow-wrap:anywhere]">{value}</dd>
                   </div>
                 ))}
               {(invoice.customFields ?? []).map((f, i) => (
