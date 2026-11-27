@@ -25,9 +25,11 @@ import {
   EnableVaultDto,
   MemberWrapDto,
   PlainAttachmentsQueryDto,
+  PlainContactsQueryDto,
   PlainInvoicesQueryDto,
   RecoveryWrapDto,
   RekeyInvoiceDto,
+  SealContactsDto,
   SealInvoicesDto,
   VaultDocumentsQueryDto,
   VaultSettingsDto,
@@ -102,6 +104,19 @@ export class VaultController {
   @ApiOperation({ summary: "Store texts the browser encrypted (text columns only)" })
   seal(@Req() req: TenantScopedRequest, @Body() dto: SealInvoicesDto) {
     return this.vault.seal(req.tenantDb!, req.user!.tenantId, dto);
+  }
+
+  @Get("contacts/plain")
+  @ApiOperation({ summary: "Plain contacts and buyer snapshots, for the browser to encrypt" })
+  plainContacts(@Req() req: TenantScopedRequest, @Query() query: PlainContactsQueryDto) {
+    return this.vault.plainContacts(req.tenantDb!, req.user!.tenantId, query);
+  }
+
+  @Post("contacts/seal")
+  @RequirePlan("confidential_mode")
+  @ApiOperation({ summary: "Store the envelopes the browser made of plain contacts" })
+  sealContacts(@Req() req: TenantScopedRequest, @Body() dto: SealContactsDto) {
+    return this.vault.sealContacts(req.tenantDb!, req.user!.tenantId, dto);
   }
 
   @Get("attachments/plain")

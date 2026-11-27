@@ -23,6 +23,7 @@ import { emailLocaleOf, type EmailLocale } from "./email-render";
 import { EmailOutboxService, unsubscribeFor } from "./email-outbox.service";
 import { isoWeekKey } from "./outbox-policy";
 import { digestIsEmpty, renderWeeklyDigest, type DigestData, type DigestInvoice } from "./weekly-digest";
+import { plainName } from "../vault/sealed-contacts";
 
 type Db = PostgresJsDatabase<typeof schema>;
 
@@ -186,7 +187,7 @@ export class WeeklyDigestCron {
         items.filter((i) => i.invoiceId === invoice.id),
         { reverseCharge: invoice.reverseCharge },
       ).totalWithVat;
-      const base = { number: invoice.invoiceNumber ?? "–", customer: customer ?? null, url: url(invoice.id) };
+      const base = { number: invoice.invoiceNumber ?? "–", customer: plainName(customer), url: url(invoice.id) };
       if (invoice.status === "issued") {
         const outstanding = round2(total - Number(invoice.amountPaid ?? 0));
         if (outstanding <= 0) continue;

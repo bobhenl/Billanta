@@ -12,6 +12,10 @@ export const aresLookupSchema = z.object({
   ico: z.string().regex(/^\d{8}$/, "IČO must be 8 digits"),
   // The form's country picks the register to ask first (SK → RPO); the AI service sends none.
   country: z.string().length(2).optional(),
+  // Důvěrný režim ("contacts"): answer the lookup and forget it. Nothing is
+  // written to ares_cache or the RPO memory cache and nothing is logged; the
+  // browser seals the result before it saves the contact.
+  transient: z.boolean().optional(),
 });
 
 export class AresLookupDto extends createZodDto(aresLookupSchema) {}

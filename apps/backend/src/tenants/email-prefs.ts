@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { plainName } from "../vault/sealed-contacts";
 
 /**
  * Settings → E-maily: how the invoice and reminder emails to customers look.
@@ -64,7 +65,8 @@ export function emailCustomizationOf(
     bcc: prefs.bccMe ? (tenant?.email ?? null) : null,
     accent: prefs.accent,
     companyName: tenant?.companyName,
-    customerName,
+    // An encrypted name (Důvěrný režim): the greeting goes without it.
+    customerName: plainName(customerName) ?? undefined,
   };
 }
 

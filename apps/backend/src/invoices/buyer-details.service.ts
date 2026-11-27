@@ -29,6 +29,7 @@ import {
 } from "./buyer-details.util";
 import { computeInvoiceTotal, computeVatBreakdown, formatInvoiceAmount, round2 } from "./invoice-total.util";
 import { InvoicesService } from "./invoices.service";
+import { CONTACT_SEALABLE, contactIsSealed, contactLabel, plainName } from "../vault/sealed-contacts";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 type InvoiceRow = typeof schema.invoices.$inferSelect;
@@ -255,8 +256,9 @@ export class BuyerDetailsService {
         submitted: block === "submitted",
         // Only what the company already used to address this customer; never the saved address or IDs.
         prefill: {
-          name: contact?.legalName ?? null,
-          email: invoice.buyerDetailsEmail ?? contact?.email ?? null,
+          // An encrypted name or e-mail (Důvěrný režim) is never handed to the public form.
+          name: plainName(contact?.legalName),
+          email: invoice.buyerDetailsEmail ?? plainName(contact?.email),
           country: contact?.addressCountry ?? null,
           isPerson: contact?.isPerson ?? false,
         },
@@ -315,12 +317,17 @@ export class BuyerDetailsService {
     } else {
       contactId = resolution.contactId;
       const before = (match ?? attached)!;
+      // An encrypted contact keeps its sealed columns: the customer's plain
+      // answer must not overwrite them (only IČO, DIČ, country … are filled).
+      if (contactIsSealed(before)) {
+        for (const k of CONTACT_SEALABLE) delete (resolution.patch as Record<string, unknown>)[k];
+      }
       if (Object.keys(resolution.patch).length > 0) {
         await this.updateContact(db, contactId, resolution.patch);
         await this.audit?.record(db, tenantId, {
           entityType: "contact",
           entityId: contactId,
-          entityLabel: before.legalName,
+          entityLabel: contactLabel(before.legalName),
           action: "updated",
           changes: this.audit.diff(before as unknown as Record<string, unknown>, resolution.patch as Record<string, unknown>),
         });
@@ -359,7 +366,7 @@ export class BuyerDetailsService {
       resolution,
       details,
       requestedBy: invoice.buyerDetailsRequestedBy,
-      previousContactName: attached && attached.id !== contactId ? attached.legalName : null,
+      previousContactName: attached && attached.id !== contactId ? contactLabel(attached.legalName) : null,
     };
   }
 

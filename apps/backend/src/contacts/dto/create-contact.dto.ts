@@ -1,11 +1,22 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
+import { isSealed, sealableText } from "../../vault/sealed";
 
 /** Colour label palette (Invoice Ninja / Fakturoid style tagging of customers). */
 export const CONTACT_COLORS = ["red", "orange", "amber", "green", "teal", "sky", "indigo", "violet", "pink", "slate"] as const;
 
+/**
+ * A plain e-mail, or an `enc:v1:` envelope when the user chose to encrypt it
+ * too (Důvěrný režim, "contacts"). The server never sends to a sealed one.
+ */
+export const contactEmail = z.string().refine((v) => (isSealed(v) ? sealableText(320).safeParse(v).success : z.string().email().safeParse(v).success), {
+  message: "Invalid email",
+});
+
 export const createContactSchema = z.object({
-  legalName: z.string().min(1),
+  // Name, address, contact person, phone and note may arrive as envelopes
+  // (src/vault/sealed-contacts.ts decides whether that is allowed).
+  legalName: sealableText(1000).pipe(z.string().min(1)),
   ico: z
     .string()
     .regex(/^\d{8}$/, "IČO must be 8 digits")
@@ -15,15 +26,15 @@ export const createContactSchema = z.object({
   // long comment on `contacts.email` in drizzle/schema.ts) — invoice-sending
   // and overdue-reminder emails check for this explicitly rather than
   // assuming it's set.
-  email: z.string().email().optional(),
-  phone: z.string().trim().max(40).nullish(),
+  email: contactEmail.optional(),
+  phone: sealableText(40).nullish(),
   // "Kontaktní osoba": prefilled on new invoices for this customer and printed there.
-  contactPerson: z.string().trim().max(255).nullish(),
+  contactPerson: sealableText(255).nullish(),
   // Filled in when the contact is created from an ARES hit (invoice form's
   // customer search), so the invoice has a full address from the start.
-  addressStreet: z.string().nullish(),
-  addressCity: z.string().nullish(),
-  addressPostalCode: z.string().max(10).nullish(),
+  addressStreet: sealableText(1000).nullish(),
+  addressCity: sealableText(1000).nullish(),
+  addressPostalCode: sealableText(10).nullish(),
   addressCountry: z.string().length(2).optional(),
   isVatPayer: z.boolean().nullish(),
   // Private individual — no IČO/DIČ expected.
@@ -31,7 +42,7 @@ export const createContactSchema = z.object({
   aresVerified: z.boolean().optional(),
   color: z.enum(CONTACT_COLORS).nullish(),
   // Private, never printed on documents.
-  internalNote: z.string().max(4000).nullish(),
+  internalNote: sealableText(4000).nullish(),
   // An IČO that is already saved: "return" hands back that contact (picking
   // the same ARES hit twice), "conflict" answers 409 so the caller can let
   // the user decide (offline drafts syncing later).

@@ -26,6 +26,7 @@ import { rateLineLabel } from "./exchange-rate-mode";
 import { BRAND_NAME, brandCreditFor, brandCreditUrl, CREDIT_LABELS, siteUrl, type BrandCredit } from "./brand-credit";
 import { tenantCountry, tenantHomeCurrencyOf } from "../tenants/home-currency";
 import { assertServerReadable, printedTexts } from "../vault/sealed";
+import { documentBuyerTexts } from "../vault/vault-email";
 
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 type ContactRow = typeof schema.contacts.$inferSelect;
@@ -352,7 +353,8 @@ export class InvoicePdfService {
     related: RelatedDocument = null,
   ): Promise<Buffer> {
     // Důvěrný režim: the server can't read the text, and must not print ciphertext instead.
-    assertServerReadable(...printedTexts(invoice, lineItems));
+    // TODO(vault-client-pdf): render an encrypted buyer in the browser once that branch lands.
+    assertServerReadable(...printedTexts(invoice, lineItems), ...documentBuyerTexts(invoice, contact));
     const lang: Lang = invoice.language === "sk" || invoice.language === "en" ? invoice.language : "cs";
     // An unissued draft is a preview: a placeholder number, no payment QR (its VS
     // comes with the number) and a stamp on every page.

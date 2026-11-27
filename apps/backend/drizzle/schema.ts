@@ -505,7 +505,8 @@ export const contacts = pgTable("contacts", {
   contactPerson: text("contact_person"),
   addressStreet: text("address_street"),
   addressCity: text("address_city"),
-  addressPostalCode: varchar("address_postal_code", { length: 10 }),
+  // text since 0114: a sealed ZIP code (Důvěrný režim) is longer than 10.
+  addressPostalCode: text("address_postal_code"),
   addressCountry: varchar("address_country", { length: 2 }).notNull().default("CZ"),
   aresVerifiedAt: timestamp("ares_verified_at", { withTimezone: true }),
   // Nullable tri-state on purpose: null = "unknown/unverified", never

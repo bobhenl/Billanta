@@ -35,6 +35,7 @@ import { withIdempotencyKey } from "../common/idempotency";
 import { DbService } from "../db/db.service";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
 import { mayChangeContactVisibility, visibilityError } from "../tenancy/visibility";
+import { CONTACT_SEALABLE, assertContactWrite, contactIsSealed, contactLabel, redactSealedContact } from "../vault/sealed-contacts";
 import { summarizeContactInvoices, type ContactSummaryBucket } from "./contact-summary.util";
 import { contactsToCsv, mapContactRows, type CsvContact, type CsvSkip } from "./contacts-csv.util";
 import { readTableFile, TableFileError } from "../common/table-file";
@@ -344,6 +345,7 @@ export class ContactsService {
       }
       if (existing.length > 0) return existing;
     }
+    await assertContactWrite(db, tenantId, dto, null);
     return db
       .insert(schema.contacts)
       .values({
@@ -368,7 +370,9 @@ export class ContactsService {
   }
 
   async exportCsv(db: TenantDb): Promise<string> {
-    return contactsToCsv(await this.list(db));
+    // The server cannot open an encrypted contact; its columns export as the
+    // placeholder (the browser export has the real values).
+    return contactsToCsv((await this.list(db)).map(redactSealedContact));
   }
 
   /**
@@ -391,7 +395,9 @@ export class ContactsService {
 
     const existing = await db.select({ id: schema.contacts.id, ico: schema.contacts.ico, legalName: schema.contacts.legalName }).from(schema.contacts);
     const byIco = new Map(existing.filter((c) => c.ico).map((c) => [c.ico!, c.id]));
-    const byName = new Map(existing.map((c) => [c.legalName.trim().toLowerCase(), c.id]));
+    // A sealed name matches nothing; such a contact is only found by its IČO.
+    const byName = new Map(existing.filter((c) => !contactIsSealed(c)).map((c) => [c.legalName.trim().toLowerCase(), c.id]));
+    const sealedIds = new Set(existing.filter((c) => contactIsSealed(c)).map((c) => c.id));
 
     let created = 0;
     let updated = 0;
@@ -399,7 +405,11 @@ export class ContactsService {
     for (const { contact } of mapped.contacts) {
       const id = contact.ico ? byIco.get(contact.ico) : byName.get(contact.legalName.toLowerCase());
       if (id) {
-        const set = Object.fromEntries(Object.entries(contact).filter(([, v]) => v !== null)) as Partial<CsvContact>;
+        // Plain text from a spreadsheet must not overwrite an encrypted contact:
+        // only its readable columns (IČO, DIČ, country …) are updated.
+        const set = Object.fromEntries(
+          Object.entries(contact).filter(([k, v]) => v !== null && !(sealedIds.has(id) && (CONTACT_SEALABLE as readonly string[]).includes(k))),
+        ) as Partial<CsvContact>;
         await db.update(schema.contacts).set({ ...set, updatedAt: new Date() }).where(eq(schema.contacts.id, id));
         if (!touched.has(id)) updated++;
         touched.add(id);
@@ -557,14 +567,14 @@ export class ContactsService {
    * first (RPO for SK, ARES otherwise; the other one as a fallback, since
    * CZ and SK IČOs share the format). 404 when neither knows it.
    */
-  async lookupById(ico: string, country?: string | null): Promise<AresContactPrefill> {
-    if ((country ?? "").toUpperCase() !== "SK") return this.aresLookup(ico);
-    const sk = await this.rpoLookup(ico).catch(() => null);
+  async lookupById(ico: string, country?: string | null, transient = false): Promise<AresContactPrefill> {
+    if ((country ?? "").toUpperCase() !== "SK") return this.aresLookup(ico, transient);
+    const sk = await this.rpoLookup(ico, transient).catch(() => null);
     if (sk) return sk;
     // ARES only: aresLookup's own RPO fallback would ask RPO a second time.
-    const cz = await this.aresSubject(ico);
+    const cz = await this.aresSubject(ico, transient);
     if (cz) return mapAresSubjectToContactPrefill(cz);
-    throw new NotFoundException(`No ARES/RPO subject found for IČO "${ico}"`);
+    throw new NotFoundException(transient ? "registry_not_found" : `No ARES/RPO subject found for IČO "${ico}"`);
   }
 
   /**
@@ -626,6 +636,7 @@ export class ContactsService {
     }
     const set = Object.fromEntries(Object.entries(fields).filter(([, v]) => v !== undefined));
     const [before] = await db.select().from(schema.contacts).where(eq(schema.contacts.id, id)).limit(1);
+    if (before) await assertContactWrite(db, before.tenantId, fields, before);
     const [row] = await db
       .update(schema.contacts)
       .set({
@@ -638,7 +649,7 @@ export class ContactsService {
     if (!row) throw new NotFoundException(`Contact ${id} not found`);
     const changes = before ? (this.audit?.diff(before as Record<string, unknown>, set) ?? []) : [];
     if (changes.length > 0) {
-      await this.audit?.record(db, row.tenantId, { entityType: "contact", entityId: id, entityLabel: row.legalName, action: "updated", changes });
+      await this.audit?.record(db, row.tenantId, { entityType: "contact", entityId: id, entityLabel: contactLabel(row.legalName), action: "updated", changes });
     }
     return row;
   }
@@ -679,7 +690,7 @@ export class ContactsService {
     } catch (error) {
       throw visibilityError(error);
     }
-    await this.audit?.record(db, before.tenantId, { entityType: "contact", entityId: id, entityLabel: before.legalName, action: "visibility_changed", changes });
+    await this.audit?.record(db, before.tenantId, { entityType: "contact", entityId: id, entityLabel: contactLabel(before.legalName), action: "visibility_changed", changes });
     return row ?? before;
   }
 
@@ -695,7 +706,7 @@ export class ContactsService {
         .where(eq(schema.contacts.id, id))
         .returning({ id: schema.contacts.id, tenantId: schema.contacts.tenantId, name: schema.contacts.legalName });
       if (deleted.length === 0) throw new NotFoundException(`Contact ${id} not found`);
-      await this.audit?.record(db, deleted[0].tenantId, { entityType: "contact", entityId: id, entityLabel: deleted[0].name, action: "deleted" });
+      await this.audit?.record(db, deleted[0].tenantId, { entityType: "contact", entityId: id, entityLabel: contactLabel(deleted[0].name), action: "deleted" });
     } catch (error) {
       const code = (error as { code?: string; cause?: { code?: string } }).code ?? (error as { cause?: { code?: string } }).cause?.code;
       if (code === "23503") throw new ConflictException({ error: "contact_in_use" });
@@ -721,19 +732,24 @@ export class ContactsService {
    * as-is and becomes a 500, which is the honest outcome: we don't know
    * whether the IČO exists or not).
    */
-  async aresLookup(ico: string): Promise<AresContactPrefill> {
-    const subject = await this.aresSubject(ico);
+  async aresLookup(ico: string, transient = false): Promise<AresContactPrefill> {
+    const subject = await this.aresSubject(ico, transient);
     if (!subject) {
       // Not a Czech company – maybe a Slovak one (RPO). An RPO outage still reads as "not found".
-      const sk = await this.rpoLookup(ico).catch(() => null);
+      const sk = await this.rpoLookup(ico, transient).catch(() => null);
       if (sk) return sk;
-      throw new NotFoundException(`No ARES subject found for IČO "${ico}"`);
+      // A transient lookup keeps the IČO out of the error text too, so no log line carries it.
+      throw new NotFoundException(transient ? "registry_not_found" : `No ARES subject found for IČO "${ico}"`);
     }
     return mapAresSubjectToContactPrefill(subject);
   }
 
-  /** ARES by IČO through `ares_cache` (see `aresLookup`); null when ARES does not know it. */
-  private async aresSubject(ico: string): Promise<AresSubject | null> {
+  /**
+   * ARES by IČO through `ares_cache` (see `aresLookup`); null when ARES does
+   * not know it. `transient` (an encrypted contact, Důvěrný režim) may use a
+   * fresh cached row but never writes one, so the lookup leaves no trace.
+   */
+  private async aresSubject(ico: string, transient = false): Promise<AresSubject | null> {
     const cached = await this.dbService.db
       .select()
       .from(schema.aresCache)
@@ -749,7 +765,7 @@ export class ContactsService {
     } else {
       subject = await getSubjectByIco(ico);
 
-      if (subject) {
+      if (subject && !transient) {
         // Upsert: a stale row gets refreshed in place; a first-ever lookup
         // inserts. `ico` is the table's primary key (drizzle/schema.ts), so
         // `onConflictDoUpdate` targeting it is race-safe against two
@@ -772,10 +788,11 @@ export class ContactsService {
    * exists. Kept in memory like ARES rows are in `ares_cache`, since a live
    * RPO call costs seconds; an outage throws and is not remembered.
    */
-  private async rpoLookup(ico: string): Promise<AresContactPrefill | null> {
+  private async rpoLookup(ico: string, transient = false): Promise<AresContactPrefill | null> {
     const cached = this.rpoByIco.get(ico);
     if (cached && cached.at > Date.now() - (cached.hit ? ARES_CACHE_TTL_MS : RPO_MISS_TTL_MS)) return cached.hit;
     const hit = await this.skCompanyByIco(ico);
+    if (transient) return hit;
     if (this.rpoByIco.size >= REGISTRY_SEARCH_MAX) {
       const oldest = this.rpoByIco.keys().next().value;
       if (oldest !== undefined) this.rpoByIco.delete(oldest);
@@ -805,3 +822,4 @@ export class ContactsService {
     return subject && !subject.terminatedAt ? mapRpoSubjectToContactPrefill(subject) : null;
   }
 }
+

@@ -19,7 +19,8 @@ import { exchangeRateSettingsOf, isCnbRate, resolveRateMode, type StoredRateMode
 import * as schema from "../../drizzle/schema";
 import { withIdempotencyKey } from "../common/idempotency";
 import { buildInvoiceEmail, EmailService, type EmailAttachment, type EmailCustomization, type SendInvoiceEmailParams } from "../email/email.service";
-import { documentIsSealed, sealedSendPlan, withOpenedTexts, type OpenedTexts } from "../vault/vault-email";
+import { documentIsSealed, sealedSendPlan, withOpenedBuyer, withOpenedTexts, type OpenedTexts } from "../vault/vault-email";
+import { emailIsSealed } from "../vault/sealed-contacts";
 import { emailCustomizationOf, emailPrefsOf } from "../tenants/email-prefs";
 import { templateValues, templateVarsOf } from "../tenants/template-vars";
 import { InvoiceAttachmentsService } from "./invoice-attachments.service";
@@ -74,8 +75,8 @@ import { assertSealingAllowed, plainOrNull, printedTexts, textFilterVerdict } fr
 type TenantDb = PostgresJsDatabase<typeof schema>;
 
 /** The fields the browser may send as ciphertext (Důvěrný režim). */
-function sealableValues(dto: Pick<UpdateInvoiceDto, "note_above" | "note_below" | "internal_note" | "line_items">): unknown[] {
-  return [dto.note_above, dto.note_below, dto.internal_note, ...(dto.line_items ?? []).map((i) => i.description)];
+function sealableValues(dto: Pick<UpdateInvoiceDto, "note_above" | "note_below" | "internal_note" | "line_items" | "buyer_contact_person">): unknown[] {
+  return [dto.note_above, dto.note_below, dto.internal_note, dto.buyer_contact_person, ...(dto.line_items ?? []).map((i) => i.description)];
 }
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 
@@ -670,6 +671,7 @@ export class InvoicesService {
     await assertSealingAllowed(db, tenantId, sealableValues(dto), async () => [
       ...printedTexts(invoice, []),
       invoice.internalNote,
+      invoice.buyerContactPerson,
       ...(await db.select({ description: schema.invoiceLineItems.description }).from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, id))).map((i) => i.description),
     ]);
 
@@ -1489,6 +1491,9 @@ export class InvoicesService {
     if (!contact?.email) {
       throw new BadRequestException("This invoice's contact has no email address on file");
     }
+    // The user encrypted this contact's e-mail (Důvěrný režim): the server
+    // cannot address it. The browser sends from the user's own mail instead.
+    if (emailIsSealed(contact)) throw new ConflictException("contact_email_sealed");
 
     const lineItems = await db
       .select()
@@ -1502,7 +1507,7 @@ export class InvoicesService {
     // Důvěrný režim: the server cannot render the PDF of an encrypted document.
     // Instead of failing, the e-mail goes out with the link and the PDF waits
     // for a member's browser, or the whole e-mail waits (vault/vault-email.ts).
-    const sealed = documentIsSealed(invoice, lineItems);
+    const sealed = documentIsSealed(invoice, lineItems, contact);
     const plan = sealed ? sealedSendPlan(await this.vaultEmailMode(db), await this.attachesPdf(db, invoice.tenantId)) : null;
 
     await assertCanSendEmail(db, invoice.tenantId);
@@ -1642,13 +1647,14 @@ export class InvoicesService {
     const doc = await this.loadIssuedInvoiceForDocument(db, tenantId, invoiceId);
     const opened = (() => {
       try {
-        return withOpenedTexts(doc.invoice, doc.lineItems, texts);
+        const withTexts = withOpenedTexts(doc.invoice, doc.lineItems, texts);
+        return { ...withOpenedBuyer(withTexts.invoice, doc.contact, texts), items: withTexts.items };
       } catch {
         throw new BadRequestException("texts_missing");
       }
     })();
     const totals = computeVatBreakdown(opened.items, { reverseCharge: opened.invoice.reverseCharge });
-    return this.invoicePdfService.generate(opened.invoice, doc.contact, doc.tenant, opened.items, totals, doc.related);
+    return this.invoicePdfService.generate(opened.invoice, opened.contact, doc.tenant, opened.items, totals, doc.related);
   }
 
   private async emailLinks(db: TenantDb, invoice: typeof schema.invoices.$inferSelect, contact: typeof schema.contacts.$inferSelect) {

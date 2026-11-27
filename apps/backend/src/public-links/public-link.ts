@@ -155,5 +155,7 @@ export function clientPortalLinkOf(
   const custom = customSlugOf(contact.portalSlug);
   if (custom) return join(custom, contact.portalKey);
   const mode = publicLinkPrefixOf(tenant?.invoiceFormPrefs);
-  return join(mode === "none" ? "" : slugify(contact.legalName, PREFIX_MAX), contact.portalKey);
+  // An encrypted name (Důvěrný režim) never goes into a URL, not even as a slug.
+  const name = contact.legalName?.startsWith("enc:v1:") ? null : contact.legalName;
+  return join(mode === "none" ? "" : slugify(name, PREFIX_MAX), contact.portalKey);
 }

@@ -8,6 +8,7 @@ import * as schema from "../../drizzle/schema";
 import type { InvoiceVatBreakdown } from "./invoice-total.util";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 import { assertServerReadable, printedTexts } from "../vault/sealed";
+import { documentBuyerTexts } from "../vault/vault-email";
 
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 type ContactRow = typeof schema.contacts.$inferSelect;
@@ -93,7 +94,8 @@ export function buildIsdocInvoiceInput(
   totals: InvoiceVatBreakdown,
 ): IsdocInvoiceInput {
   // ISDOC, UBL and Peppol carry the item texts; encrypted ones can only be exported in the browser.
-  assertServerReadable(...printedTexts(invoice, lineItems));
+  // The same for an encrypted buyer (category "contacts"). TODO(vault-client-pdf): browser export.
+  assertServerReadable(...printedTexts(invoice, lineItems), ...documentBuyerTexts(invoice, contact));
   if (!invoice.invoiceNumber || !invoice.issueDate || !invoice.dueDate) {
     throw new Error(
       "buildIsdocInvoiceInput: invoice is missing invoiceNumber/issueDate/dueDate – has it been issued?",

@@ -11,14 +11,19 @@ import { MAX_ATTACHMENT_BYTES } from "../invoices/invoice-attachments.service";
 import { confidentialPlanRequired, isSealed, rekeyWrites } from "./sealed";
 import { assertFileSealingAllowed, classifyUpload, ENCRYPTED_FILENAME, ENCRYPTED_MIME, type UploadedFileLike } from "./sealed-files";
 import { openablePage, vaultDocumentView } from "./documents";
+import { SEALED_BUYER_SNAPSHOT_FIELDS, SEALED_CONTACT_FIELDS } from "@faktur/cz-compliance";
+import { SEALED_PLACEHOLDER } from "./sealed";
+import { assertContactShape, assertContactsCategory } from "./sealed-contacts";
 import { assertInvoiceOpen } from "../invoices/invoice-lock";
 import type {
   EnableVaultDto,
   MemberWrapDto,
   PlainAttachmentsQueryDto,
+  PlainContactsQueryDto,
   PlainInvoicesQueryDto,
   RecoveryWrapDto,
   RekeyInvoiceDto,
+  SealContactsDto,
   SealInvoicesDto,
   VaultDocumentsQueryDto,
   VaultSettingsDto,
@@ -382,6 +387,125 @@ export class VaultService {
       sealed++;
     }
     return { sealed };
+  }
+
+  /**
+   * What "Zašifrovat stávající kontakty" still has to do, a page at a time:
+   * plain contacts first, then the documents of encrypted contacts whose
+   * buyer snapshot or contact person is still plain. Only plain values are
+   * sent. Locked documents are left out like their texts; so are documents
+   * without a contact. `remaining` counts both kinds.
+   */
+  async plainContacts(db: TenantDb, tenantId: string, query: PlainContactsQueryDto) {
+    const vault = await this.requireVault(db, tenantId);
+    if (!vault.categories.includes("contacts")) throw new ForbiddenException("vault_category_off");
+    const c = schema.contacts;
+    const i = schema.invoices;
+    const plainContact = notSealed(c.legalName);
+    const plainBuyer = and(
+      isNull(i.lockedAt),
+      sql`${i.contactId} IS NOT NULL`,
+      or(...SEALED_BUYER_SNAPSHOT_FIELDS.map((k) => notSealed(sql`(${i.buyerSnapshot} ->> ${k})`)), notSealed(i.buyerContactPerson)),
+    );
+    const [[{ contacts } = { contacts: 0 }], [{ invoices } = { invoices: 0 }]] = await Promise.all([
+      db.select({ contacts: sql<number>`count(*)::int` }).from(c).where(plainContact),
+      db.select({ invoices: sql<number>`count(*)::int` }).from(i).where(plainBuyer),
+    ]);
+    const contactRows = await db.select().from(c).where(plainContact).orderBy(asc(c.createdAt), asc(c.id)).limit(query.limit);
+    // Documents only once their contact is encrypted: the snapshot must not be sealed before the contact is.
+    const invoiceRows =
+      contactRows.length < query.limit
+        ? await db
+            .select({ id: i.id, invoiceNumber: i.invoiceNumber, buyerSnapshot: i.buyerSnapshot, buyerContactPerson: i.buyerContactPerson })
+            .from(i)
+            .innerJoin(c, eq(c.id, i.contactId))
+            .where(and(plainBuyer, sql`${c.legalName} LIKE 'enc:v1:%'`))
+            .orderBy(asc(i.createdAt), asc(i.id))
+            .limit(query.limit - contactRows.length)
+        : [];
+    const plain = (v: unknown) => (typeof v === "string" && v !== "" && !isSealed(v) ? v : undefined);
+    return {
+      remaining: contacts + invoices,
+      contacts: contactRows.map((r) => ({
+        id: r.id,
+        ...Object.fromEntries(SEALED_CONTACT_FIELDS.map((k) => [k, plain(r[k])])),
+        // A sealed e-mail stays as it is; a plain one stays plain (the user decides per contact).
+      })),
+      invoices: invoiceRows.map((r) => {
+        const snap = (r.buyerSnapshot ?? {}) as Record<string, unknown>;
+        return {
+          id: r.id,
+          invoiceNumber: r.invoiceNumber,
+          buyer: Object.fromEntries(SEALED_BUYER_SNAPSHOT_FIELDS.map((k) => [k, plain(snap[k])])),
+          buyerContactPerson: plain(r.buyerContactPerson),
+        };
+      }),
+    };
+  }
+
+  /**
+   * Writes the envelopes back. A contact changes only while its name is
+   * still plain (a retry or a second tab can't overwrite an encrypted one),
+   * and only when every plain sealable column comes back sealed, so the
+   * contact is never half-encrypted. A document's snapshot value changes
+   * only while it is plain. Not `updated_at`: nothing reads differently.
+   */
+  async sealContacts(db: TenantDb, tenantId: string, dto: SealContactsDto) {
+    await this.requireVault(db, tenantId);
+    await assertContactsCategory(db, tenantId);
+    const c = schema.contacts;
+    let contacts = 0;
+    for (const given of dto.contacts) {
+      const [row] = await db.select().from(c).where(eq(c.id, given.id)).limit(1);
+      if (!row || isSealed(row.legalName)) continue;
+      const set: Record<string, string> = {};
+      for (const k of SEALED_CONTACT_FIELDS) {
+        const value = given[k];
+        if (value && row[k] != null && row[k] !== "" && !isSealed(row[k])) set[k] = value;
+      }
+      assertContactShape({ ...row, ...set });
+      const updated = await db
+        .update(c)
+        .set(set)
+        .where(and(eq(c.id, row.id), sql`${c.legalName} NOT LIKE 'enc:v1:%'`))
+        .returning({ id: c.id });
+      if (!updated.length) continue;
+      await this.audit?.record(db, tenantId, { entityType: "contact", entityId: row.id, entityLabel: SEALED_PLACEHOLDER, action: "sealed" });
+      contacts++;
+    }
+    const i = schema.invoices;
+    let invoices = 0;
+    for (const given of dto.invoices) {
+      const [row] = await db
+        .select({ id: i.id, invoiceNumber: i.invoiceNumber, buyerSnapshot: i.buyerSnapshot, buyerContactPerson: i.buyerContactPerson, contactName: c.legalName })
+        .from(i)
+        .innerJoin(c, eq(c.id, i.contactId))
+        .where(and(eq(i.id, given.id), isNull(i.lockedAt)))
+        .limit(1);
+      if (!row || !isSealed(row.contactName)) continue;
+      const snap = { ...((row.buyerSnapshot ?? {}) as Record<string, unknown>) };
+      let changed = false;
+      for (const k of SEALED_BUYER_SNAPSHOT_FIELDS) {
+        const value = given.buyer[k];
+        if (value && typeof snap[k] === "string" && snap[k] !== "" && !isSealed(snap[k])) {
+          snap[k] = value;
+          changed = true;
+        }
+      }
+      if (SEALED_BUYER_SNAPSHOT_FIELDS.some((k) => typeof snap[k] === "string" && snap[k] !== "" && !isSealed(snap[k]))) {
+        throw new BadRequestException("contact_plaintext");
+      }
+      const person = given.buyerContactPerson && row.buyerContactPerson && !isSealed(row.buyerContactPerson) ? given.buyerContactPerson : undefined;
+      if (row.buyerContactPerson && !isSealed(row.buyerContactPerson) && !person) throw new BadRequestException("contact_plaintext");
+      if (!changed && !person) continue;
+      await db
+        .update(i)
+        .set({ ...(changed ? { buyerSnapshot: snap as typeof row.buyerSnapshot } : {}), ...(person ? { buyerContactPerson: person } : {}) })
+        .where(eq(i.id, row.id));
+      await this.audit?.record(db, tenantId, { entityType: "invoice", entityId: row.id, entityLabel: row.invoiceNumber, action: "sealed" });
+      invoices++;
+    }
+    return { sealed: contacts + invoices, contacts, invoices };
   }
 
   /**

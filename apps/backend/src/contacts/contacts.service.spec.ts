@@ -133,6 +133,41 @@ function serviceWithEmptyCache() {
   return new ContactsService({ db: { select, insert } } as unknown as DbService);
 }
 
+describe("ContactsService transient registry lookup (Důvěrný režim)", () => {
+  beforeEach(() => {
+    for (const m of [getSubjectByIcoMock, getRpoSubjectByIcoMock]) m.mockReset();
+    getRuzSubjectByIcoMock.mockReset().mockResolvedValue(null);
+  });
+
+  it("answers from ARES without writing ares_cache", async () => {
+    const select = vi.fn().mockReturnValue(makeSelectChain([]));
+    const { insert } = makeInsertChain();
+    getSubjectByIcoMock.mockResolvedValue(SUBJECT);
+    const service = new ContactsService({ db: { select, insert } } as unknown as DbService);
+
+    const hit = await service.lookupById("27604977", "CZ", true);
+
+    expect(hit.legalName).toBe("Novák Consulting s.r.o.");
+    expect(insert).not.toHaveBeenCalled();
+  });
+
+  it("does not remember an RPO answer, and keeps the IČO out of a not-found error", async () => {
+    getRpoSubjectByIcoMock.mockResolvedValue(RPO_SUBJECT);
+    const service = serviceWithEmptyCache();
+    await service.lookupById("35763469", "SK", true);
+    await service.lookupById("35763469", "SK", true);
+    expect(getRpoSubjectByIcoMock).toHaveBeenCalledTimes(2);
+
+    getRpoSubjectByIcoMock.mockResolvedValue(null);
+    getSubjectByIcoMock.mockResolvedValue(null);
+    const error = await serviceWithEmptyCache()
+      .lookupById("12345678", "CZ", true)
+      .catch((e: Error) => e);
+    expect(error).toBeInstanceOf(NotFoundException);
+    expect((error as Error).message).toBe("registry_not_found");
+  });
+});
+
 describe("ContactsService registry order", () => {
   beforeEach(() => {
     for (const m of [getSubjectByIcoMock, getRpoSubjectByIcoMock, searchRpoSubjectsMock, searchSubjectsTypeaheadMock]) m.mockReset();

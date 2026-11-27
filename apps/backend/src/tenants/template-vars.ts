@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type * as schema from "../../drizzle/schema";
 import { clientPortalLinkOf, invoiceLinkOf, type LinkTenant } from "../public-links/public-link";
+import { plainName } from "../vault/sealed-contacts";
 
 /**
  * Settings → Proměnné: `{placeholders}` usable in the customer emails
@@ -138,7 +139,8 @@ export function templateValues(
   }
   if (contact) {
     const portal = clientPortalLinkOf(tenant, contact);
-    Object.assign(builtins, { customer: contact.legalName, customer_ico: contact.ico ?? "", portal_link: portal ? clientPortalUrlOf(portal) : "" });
+    // An encrypted name (Důvěrný režim) leaves {customer} empty rather than printing ciphertext.
+    Object.assign(builtins, { customer: plainName(contact.legalName) ?? "", customer_ico: contact.ico ?? "", portal_link: portal ? clientPortalUrlOf(portal) : "" });
   }
   return { ...own, ...builtins };
 }

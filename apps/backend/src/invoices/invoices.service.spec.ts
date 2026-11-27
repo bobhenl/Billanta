@@ -225,6 +225,23 @@ describe("InvoicesService.sendInvoice", () => {
     expect(emailService.sendInvoiceEmail).not.toHaveBeenCalled();
   });
 
+  it("refuses to e-mail a contact whose address the user encrypted (409 contact_email_sealed)", async () => {
+    const invoice = makeInvoice();
+    const contact = makeContact({ legalName: `enc:v1:AAAAAAAAAAAAAAAA:${"Q".repeat(30)}`, email: `enc:v1:AAAAAAAAAAAAAAAA:${"R".repeat(30)}` });
+    const select = vi
+      .fn()
+      .mockReturnValueOnce(makeSelectChain([invoice]))
+      .mockReturnValueOnce(makeSelectChain([contact]));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = { select, update: vi.fn() } as any;
+
+    const error = await service.sendInvoice(db, "inv-1").catch((e: Error) => e);
+    expect(error).toBeInstanceOf(ConflictException);
+    expect((error as Error).message).toBe("contact_email_sealed");
+    expect(emailService.sendInvoiceEmail).not.toHaveBeenCalled();
+    expect(emailService.sendNow).not.toHaveBeenCalled();
+  });
+
   it("never marks sent_at if queueing the email throws", async () => {
     const invoice = makeInvoice();
     const contact = makeContact();

@@ -189,6 +189,6 @@ export class ContactsController {
       "Returns 404 if the IČO doesn't resolve to a registered subject.",
   })
   aresLookup(@Body() dto: AresLookupDto) {
-    return this.contactsService.lookupById(dto.ico, dto.country);
+    return this.contactsService.lookupById(dto.ico, dto.country, dto.transient === true);
   }
 }

@@ -1,4 +1,10 @@
+import { SEALED_BUYER_SNAPSHOT_FIELDS } from "@faktur/cz-compliance";
+import { applyBuyerSnapshot } from "../invoices/party-snapshot";
 import { isSealed, printedTexts } from "./sealed";
+import { buyerTexts } from "./sealed-contacts";
+
+type BuyerFields = { legalName?: string | null; addressStreet?: string | null; addressCity?: string | null; addressPostalCode?: string | null; email?: string | null };
+type DocumentBuyer = { buyerSnapshot?: unknown; buyerContactPerson?: string | null };
 
 /** `tenant_vaults.email_mode`: what sending an encrypted document does about its PDF. */
 export const VAULT_EMAIL_MODES = ["link_now", "wait", "link_only"] as const;
@@ -7,9 +13,22 @@ export type VaultEmailMode = (typeof VAULT_EMAIL_MODES)[number];
 /** The PDF a browser renders for a waiting e-mail; a few pages of pdf-lib output stay far below this. */
 export const VAULT_PDF_MAX_BYTES = 5 * 1024 * 1024;
 
-/** Whether the server cannot print the document: any of its printed texts is ciphertext. */
-export function documentIsSealed(invoice: { noteAbove: string | null; noteBelow: string | null }, items: { description: string }[]): boolean {
-  return printedTexts(invoice, items).some((t) => isSealed(t));
+/**
+ * Whether the server cannot print the document: any of its printed texts is
+ * ciphertext, the item texts or (category "contacts") the buyer's name and address.
+ */
+export function documentIsSealed(
+  invoice: { noteAbove: string | null; noteBelow: string | null } & DocumentBuyer,
+  items: { description: string }[],
+  contact?: BuyerFields | null,
+): boolean {
+  return [...printedTexts(invoice, items), ...documentBuyerTexts(invoice, contact)].some((t) => isSealed(t));
+}
+
+/** The buyer texts the document prints: its snapshot laid over the contact, and the contact person. */
+export function documentBuyerTexts(invoice: DocumentBuyer, contact: BuyerFields | null | undefined): (string | null | undefined)[] {
+  const buyer = contact ? applyBuyerSnapshot(contact as never, invoice.buyerSnapshot) : null;
+  return buyerTexts(buyer, invoice.buyerContactPerson ?? null);
 }
 
 export interface SealedSendPlan {
@@ -37,6 +56,9 @@ export interface OpenedTexts {
   noteAbove?: string | null;
   noteBelow?: string | null;
   items?: { id: string; description: string }[];
+  /** The buyer's name and address as printed (category "contacts"). */
+  buyer?: Partial<Record<(typeof SEALED_BUYER_SNAPSHOT_FIELDS)[number], string | null>>;
+  buyerContactPerson?: string | null;
 }
 
 /**
@@ -66,4 +88,32 @@ export function withOpenedTexts<I extends { noteAbove: string | null; noteBelow:
 /** A real PDF, not anything else a client could upload in its place. */
 export function looksLikePdf(content: Buffer): boolean {
   return content.length > 8 && content.subarray(0, 5).toString("latin1") === "%PDF-";
+}
+
+/**
+ * The buyer of an encrypted document with its sealed name and address
+ * replaced by what the browser decrypted, for printing once (like
+ * `withOpenedTexts`). Fills the contact and the snapshot alike, so the
+ * printed buyer is the same whichever one the renderer reads.
+ */
+export function withOpenedBuyer<I extends DocumentBuyer, C extends BuyerFields>(invoice: I, contact: C, opened: OpenedTexts): { invoice: I; contact: C } {
+  const open = (stored: string | null | undefined, given: string | null | undefined): string | null | undefined => {
+    if (!isSealed(stored)) return stored;
+    if (typeof given !== "string") throw new Error("texts_missing");
+    return given;
+  };
+  const given = opened.buyer ?? {};
+  const openedContact: Record<string, unknown> = { ...contact };
+  const snapshot = invoice.buyerSnapshot && typeof invoice.buyerSnapshot === "object" ? { ...(invoice.buyerSnapshot as Record<string, string | null>) } : null;
+  for (const k of SEALED_BUYER_SNAPSHOT_FIELDS) {
+    if (isSealed(contact[k])) openedContact[k] = open(contact[k], given[k]);
+    if (snapshot && isSealed(snapshot[k])) snapshot[k] = open(snapshot[k], given[k]) ?? null;
+  }
+  // Nothing the browser cannot send back is printed: a sealed e-mail is left out.
+  if (isSealed(contact.email)) openedContact.email = null;
+  if (snapshot && isSealed(snapshot.email)) snapshot.email = null;
+  return {
+    invoice: { ...invoice, buyerSnapshot: snapshot ?? invoice.buyerSnapshot, buyerContactPerson: open(invoice.buyerContactPerson, opened.buyerContactPerson) ?? null },
+    contact: openedContact as C,
+  };
 }

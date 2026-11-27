@@ -28,6 +28,7 @@ import {
 import { generateSkDphV25, generateSkKvDphV25, generateSkSvDphV20, skSubmitterFromTenant } from "./vat-returns-sk";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 import { redactSealedInvoice, redactSealedItem } from "../vault/sealed";
+import { redactSealedContact } from "../vault/sealed-contacts";
 
 type Db = PostgresJsDatabase<typeof schema>;
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
@@ -288,7 +289,8 @@ export class ExportsService {
         ...r,
         invoice: redactSealedInvoice(r.invoice),
         // The buyer as on the document (its snapshot), not today's contact.
-        contact: r.contact ? applyBuyerSnapshot(r.contact, r.invoice.buyerSnapshot) : null,
+        // An encrypted buyer (category "contacts") exports as the placeholder.
+        contact: r.contact ? redactSealedContact(applyBuyerSnapshot(r.contact, r.invoice.buyerSnapshot)) : null,
         lineItems,
         totals: computeVatBreakdown(lineItems, { reverseCharge: r.invoice.reverseCharge }),
       };

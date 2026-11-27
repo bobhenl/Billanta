@@ -30,7 +30,8 @@ export const invoiceFieldsSchema = z.object({
   contact_id: z.string().uuid().nullish(),
   // "Kontaktní osoba odběratele" for this document. Omitted on create = the
   // customer's contacts.contact_person; null or "" = none.
-  buyer_contact_person: optionalText(255),
+  // An envelope for an encrypted customer (Důvěrný režim, "contacts").
+  buyer_contact_person: sealableText(255).nullish(),
   issue_date: z.coerce.date().optional(),
   due_date: z.coerce.date().nullish(),
   // DUZP; null/omitted = same as the issue date.

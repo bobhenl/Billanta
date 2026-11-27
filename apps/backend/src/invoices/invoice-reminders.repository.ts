@@ -15,6 +15,7 @@ import { planAllows } from "../billing/plan-access";
 import { loadPlanSummary } from "../billing/plan.guard";
 import { drizzleTx } from "../db/drizzle-tx";
 import { BRAND_CREDIT_TENANT_FIELDS, brandCreditFor, creditLangOf, type BrandCredit } from "./brand-credit";
+import { emailIsSealed } from "../vault/sealed-contacts";
 
 export interface OverdueInvoiceForReminder {
   invoice: typeof schema.invoices.$inferSelect;
@@ -169,7 +170,8 @@ export class InvoiceRemindersRepository {
         const custom = emailCustomizationOf(emailPrefsOf(tenant?.emailPrefs), "reminder", tenant, buyer?.legalName ?? undefined, vars);
         results.push({
           invoice: row.invoice,
-          contactEmail: row.contactEmail,
+          // An encrypted address (Důvěrný režim) is never sent to; the reminder is skipped.
+          contactEmail: emailIsSealed({ email: row.contactEmail }) ? null : row.contactEmail,
           publicLink: invoiceLinkOf(docTenant, row.invoice),
           clientPortalLink: buyer ? clientPortalLinkOf(docTenant, buyer) : null,
           lineItems,

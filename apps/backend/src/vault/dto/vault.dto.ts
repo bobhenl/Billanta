@@ -73,6 +73,11 @@ export const sendVaultEmailTextsSchema = z.object({
     noteAbove: openedText,
     noteBelow: openedText,
     items: z.array(z.object({ id: z.string().uuid(), description: z.string().max(20_000) })).max(500).optional(),
+    // An encrypted buyer (category "contacts"): name and address as printed.
+    buyer: z
+      .object({ legalName: openedText, addressStreet: openedText, addressCity: openedText, addressPostalCode: openedText })
+      .optional(),
+    buyerContactPerson: openedText,
   }),
   /** The member confirmed that the texts pass through the server once to print the PDF. */
   passThrough: z.literal(true),
@@ -136,3 +141,42 @@ export const rekeyInvoiceSchema = z.object({
   items: z.array(z.object({ id: z.string().uuid(), description: sealed })).max(500).default([]),
 });
 export class RekeyInvoiceDto extends createZodDto(rekeyInvoiceSchema) {}
+
+export const plainContactsQuerySchema = z.object({ limit: z.coerce.number().int().min(1).max(50).default(20) });
+export class PlainContactsQueryDto extends createZodDto(plainContactsQuerySchema) {}
+
+/**
+ * "Zašifrovat stávající kontakty": envelopes for the sealable columns of
+ * contacts, and for the buyer snapshot of their documents. Every value must
+ * be an envelope; only those columns change.
+ */
+export const sealContactsSchema = z.object({
+  contacts: z
+    .array(
+      z.object({
+        id: z.string().uuid(),
+        legalName: sealed,
+        addressStreet: sealed.optional(),
+        addressCity: sealed.optional(),
+        addressPostalCode: sealed.optional(),
+        contactPerson: sealed.optional(),
+        phone: sealed.optional(),
+        internalNote: sealed.optional(),
+      }),
+    )
+    .max(50)
+    .default([]),
+  invoices: z
+    .array(
+      z.object({
+        id: z.string().uuid(),
+        buyer: z
+          .object({ legalName: sealed.optional(), addressStreet: sealed.optional(), addressCity: sealed.optional(), addressPostalCode: sealed.optional() })
+          .default({}),
+        buyerContactPerson: sealed.optional(),
+      }),
+    )
+    .max(50)
+    .default([]),
+});
+export class SealContactsDto extends createZodDto(sealContactsSchema) {}

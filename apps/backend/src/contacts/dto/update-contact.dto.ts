@@ -1,6 +1,6 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
-import { createContactSchema } from "./create-contact.dto";
+import { contactEmail, createContactSchema } from "./create-contact.dto";
 
 /**
  * Body for `PATCH /api/v1/contacts/:id` — every create field optional, and
@@ -12,7 +12,7 @@ export const updateContactSchema = createContactSchema
   .extend({
     ico: z.string().regex(/^\d{8}$/, "IČO must be 8 digits").nullish(),
     dic: z.string().nullish(),
-    email: z.string().email().nullish(),
+    email: contactEmail.nullish(),
   })
   .partial();
 
