@@ -117,6 +117,7 @@ class AddSealedPaymentDto extends createZodDto(
 ) {}
 class DeleteSealedPaymentDto extends createZodDto(z.object({ state: verdictSchema })) {}
 class CardAmountDto extends createZodDto(z.object({ amount: z.number().positive().max(1e9).nullable() })) {}
+class SealCardPaymentDto extends createZodDto(z.object({ enc_amount: z.string().startsWith("enc:v1:").max(4000) })) {}
 
 class FakturoidImportDto extends createZodDto(
   z.object({
@@ -251,6 +252,13 @@ export class InvoicesController {
   @ApiOperation({ summary: "Issued documents with sealed amounts still waiting for payment, for bank matching in the browser" })
   openSealed(@Req() req: TenantScopedRequest) {
     return this.invoicesService.openSealedDocuments(req.tenantDb!);
+  }
+
+  @Get("sealed/card-payments")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Card payments of documents with sealed amounts that wait for the browser to seal them" })
+  cardPaymentsToSealAll(@Req() req: TenantScopedRequest) {
+    return this.invoicesService.cardPaymentsToSeal(req.tenantDb!);
   }
 
   @Get("latest/duplicate")
@@ -465,6 +473,31 @@ export class InvoicesController {
     @Query() dto: DeleteSealedPaymentDto,
   ) {
     return this.invoicesService.deleteSealedPayment(req.tenantDb!, id, paymentId, dto.state);
+  }
+
+  @Get(":id/card-payments/to-seal")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Card payments of this sealed document that wait for the browser to seal them" })
+  cardPaymentsToSeal(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    return this.invoicesService.cardPaymentsToSeal(req.tenantDb!, id);
+  }
+
+  @Post(":id/card-payments/:cardPaymentId/seal")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "Seal a card payment of a document with sealed amounts",
+    description:
+      "The browser seals the card payment's amount and fee under the document key; the server stores it as a sealed " +
+      "payment and drops the plain numbers. A repeat returns the payment sealed the first time. 400 " +
+      "document_key_mismatch for an envelope of another document, 409 card_payment_not_pending when there is nothing to seal.",
+  })
+  sealCardPayment(
+    @Req() req: TenantScopedRequest,
+    @Param("id", ParseUUIDPipe) id: string,
+    @Param("cardPaymentId", ParseUUIDPipe) cardPaymentId: string,
+    @Body() dto: SealCardPaymentDto,
+  ) {
+    return this.invoicesService.sealCardPayment(req.tenantDb!, req.user!.tenantId, req.user!.id ?? null, id, cardPaymentId, dto.enc_amount);
   }
 
   @Put(":id/card-amount")

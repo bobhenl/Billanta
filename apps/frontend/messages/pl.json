@@ -14505,7 +14505,7 @@
         "loses": [
           "Automatyczne dopasowanie płatności na serwerze: po odblokowaniu sejfu przeglądarka zaproponuje pary, a Ty je potwierdzisz",
           "Płatności liczy tylko Twoja przeglądarka: przy zaszyfrowanym dokumencie serwer zna tylko datę płatności i status, nie kwotę ani opłatę",
-          "Wysyłka przez Peppol i propozycje AI z kwotami. Płatność kartą tylko przy dokumencie, na którym wyraźnie ją włączysz – kwota do zapłaty trafi wtedy czytelnie do Billanty i Stripe",
+          "Wysyłka przez Peppol i propozycje AI z kwotami. Płatność kartą tylko przy dokumencie, na którym wyraźnie ją włączysz – kwota do zapłaty trafi wtedy czytelnie do Billanty i Stripe. Po odblokowaniu sejfu przeglądarka zaszyfruje zapłaconą kwotę do płatności, a Billanta usunie kwotę i opłatę",
           "Dochód netto liczy tylko niezaszyfrowane dokumenty i podaje, ile pominął. Kalkulator podatku ryczałtowego niczego wtedy nie wypełnia",
           "Przypomnienia, cotygodniowe podsumowanie i sumy zaległości w e-mailach nie podają kwoty"
         ],
@@ -14834,7 +14834,9 @@
         "label": "Zezwól na płatność kartą",
         "hint": "Klient zapłaci wtedy z linku kartą {amount}. Ta jedna kwota zostanie zapisana bez szyfrowania i zobaczą ją Billanta i Stripe.",
         "on": "Płatność kartą jest włączona na {amount}. Ta kwota jest zapisana bez szyfrowania i widzą ją Billanta i Stripe. Kolejna płatność ją wyłączy."
-      }
+      },
+      "cardWaiting": "kartą, czeka na zaszyfrowanie",
+      "cardSealed": "{n, plural, one {Płatność kartą została zaszyfrowana i dodana do płatności.} few {# płatności kartą zostały zaszyfrowane i dodane do płatności.} many {# płatności kartą zostało zaszyfrowanych i dodanych do płatności.} other {# płatności kartą zostało zaszyfrowanych i dodanych do płatności.}}"
     },
     "bankMatch": {
       "title": "Propozycje dopasowania zaszyfrowanych dokumentów",

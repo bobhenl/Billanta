@@ -29,6 +29,7 @@ import { TrialBanner } from '@/components/trial-banner';
 import { UserMenu } from '@/components/user-menu';
 import { VaultProvider } from '@/components/vault/vault-provider';
 import { VaultEmailOutbox } from '@/components/vault/vault-email-outbox';
+import { VaultCardPayments } from '@/components/vault/vault-card-payments';
 import type { VaultStatus } from '@/lib/vault/types';
 import { NOINDEX } from '@/lib/seo';
 import { canDo, canManage, canWrite, fetchMyAccess, fetchTenant, forbiddenSettings, hiddenSections, type TenantSettings } from '@/lib/tenant';
@@ -179,6 +180,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
             {claimGuest && <GuestInvoiceClaim />}
             {/* "Důvěrný režim": e-mails of encrypted documents waiting for a browser with the key to add the PDF. */}
             {vault?.enabled && <VaultEmailOutbox canSend={canDo(access, 'invoices.send') && canWrite(access, 'invoices')} />}
+            {/* Card payments of sealed documents wait in plain until a browser with the key seals them. */}
+            {vault?.enabled && <VaultCardPayments canEdit={canDo(access, 'invoices.create') && canWrite(access, 'invoices')} />}
             {children}
           </main>
 

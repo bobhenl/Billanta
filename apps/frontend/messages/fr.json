@@ -14504,7 +14504,7 @@
         "loses": [
           "Le rapprochement automatique sur le serveur : après le déverrouillage, votre navigateur propose des rapprochements et vous les confirmez",
           "Les paiements ne sont calculés que dans votre navigateur : pour un document chiffré, le serveur ne connaît que la date du paiement et le statut, pas le montant ni les frais",
-          "L'envoi via Peppol et les suggestions IA avec montants. Le paiement par carte seulement sur un document où vous l'autorisez – le montant à payer part alors lisible chez Billanta et Stripe",
+          "L'envoi via Peppol et les suggestions IA avec montants. Le paiement par carte seulement sur un document où vous l'autorisez – le montant à payer part alors lisible chez Billanta et Stripe. Après le déverrouillage, votre navigateur chiffre le montant payé dans les paiements et Billanta efface le montant et les frais",
           "Le revenu net ne compte que les documents non chiffrés et indique combien il en a laissé de côté. Le calculateur de l’impôt forfaitaire ne préremplit alors rien",
           "Les relances, le résumé hebdomadaire et les totaux en retard dans les e-mails n’indiquent pas le montant"
         ],
@@ -14833,7 +14833,9 @@
         "label": "Autoriser le paiement par carte",
         "hint": "Le client pourra alors payer {amount} par carte depuis le lien. Ce seul montant est enregistré en clair, Billanta et Stripe le verront.",
         "on": "Le paiement par carte est activé pour {amount}. Ce montant est enregistré en clair, Billanta et Stripe le voient. Le prochain paiement le désactive."
-      }
+      },
+      "cardWaiting": "par carte, en attente de chiffrement",
+      "cardSealed": "{n, plural, one {Un paiement par carte a été chiffré et ajouté aux paiements.} other {# paiements par carte ont été chiffrés et ajoutés aux paiements.}}"
     },
     "bankMatch": {
       "title": "Rapprochements proposés pour les documents chiffrés",

@@ -14509,7 +14509,7 @@
         "loses": [
           "Automatic payment matching on the server: after you unlock the vault, your browser suggests matches and you confirm them",
           "Payments are counted only in your browser: for an encrypted document the server knows just the payment date and the status, not the amount or the fee",
-          "Sending via Peppol and AI suggestions with amounts. Card payment only on a document where you allow it – the amount to pay then goes readable to Billanta and Stripe",
+          "Sending via Peppol and AI suggestions with amounts. Card payment only on a document where you allow it – the amount to pay then goes readable to Billanta and Stripe. Once you unlock the vault, your browser encrypts the paid amount into the payments and Billanta deletes the amount and the fee",
           "Net income counts only unsealed documents and says how many it left out. The flat-rate tax calculator then prefills nothing",
           "Reminders, the weekly digest and overdue totals in e-mails leave out the amount"
         ],
@@ -14845,7 +14845,9 @@
         "label": "Allow card payment",
         "hint": "The client can then pay {amount} by card from the link. This one amount is stored unencrypted, and Billanta and Stripe will see it.",
         "on": "Card payment is on for {amount}. This amount is stored unencrypted, and Billanta and Stripe see it. The next payment switches it off."
-      }
+      },
+      "cardWaiting": "by card, waiting to be encrypted",
+      "cardSealed": "{n, plural, one {A card payment was encrypted and added to the payments.} other {# card payments were encrypted and added to the payments.}}"
     },
     "bankMatch": {
       "title": "Suggested matches for encrypted documents",

@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException } from "@nestjs/common";
+import { BadRequestException, ConflictException, NotFoundException } from "@nestjs/common";
 import { documentKeyWrap, isSealed } from "@faktur/cz-compliance";
 import { AMOUNTS_PLAINTEXT, amountsSealed } from "./sealed-amounts";
 
@@ -67,4 +67,19 @@ export function assertCardAmount(invoice: PayableDoc, amount: number | null): vo
     throw new BadRequestException("invoice_not_payable");
   }
   if (!(amount > 0 && amount < 1e9) || Math.abs(Math.round(amount * 100) - amount * 100) > 1e-6) throw new BadRequestException("Invalid amount");
+}
+
+type CardSession = { sealState: "pending" | "sealed" | "dropped" | null; status: string } | undefined;
+
+/**
+ * A card payment of a sealed document waits with its plain amount until a
+ * browser seals it (0118). "seal" while it waits, "done" when an earlier
+ * request sealed it already (a retry gets the same answer), 404 for a
+ * payment of another document or company, 409 when there is nothing to seal.
+ */
+export function cardSealStep(session: CardSession): "seal" | "done" {
+  if (!session) throw new NotFoundException("Payment not found");
+  if (session.sealState === "sealed") return "done";
+  if (session.sealState !== "pending" || session.status !== "paid") throw new ConflictException("card_payment_not_pending");
+  return "seal";
 }

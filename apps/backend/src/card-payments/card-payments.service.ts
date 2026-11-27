@@ -247,19 +247,21 @@ export class CardPaymentsService {
     }
     if (session.payment_status !== "paid") return "open";
 
-    const amount = fromMinor(session.amount_total ?? toMinor(Number(row.amount), row.currency), row.currency);
+    const amount = fromMinor(session.amount_total ?? toMinor(Number(row.amount ?? 0), row.currency), row.currency);
     const fee = feeOf(session, row.currency);
+    const [invoice] = await db.select({ encAmounts: schema.invoices.encAmounts }).from(schema.invoices).where(eq(schema.invoices.id, row.invoiceId));
+    const sealed = amountsSealed(invoice);
     // The status guard makes the booking happen once even if the return page and the sweep race.
     const [claimed] = await db
       .update(schema.cardPaymentSessions)
-      .set({ status: "paid", paidAt: new Date(), fee: fee != null ? fee.toFixed(2) : null })
+      .set({ status: "paid", paidAt: new Date(), ...cardPaymentRecord(amount, fee, sealed) })
       .where(and(eq(schema.cardPaymentSessions.id, row.id), eq(schema.cardPaymentSessions.status, "open")))
       .returning();
     if (!claimed) return "paid";
     try {
-      const [invoice] = await db.select({ encAmounts: schema.invoices.encAmounts }).from(schema.invoices).where(eq(schema.invoices.id, row.invoiceId));
-      // Sealed amounts: the card amount was the whole rest due, so the document is paid; no sum or fee goes into it in plain.
-      if (amountsSealed(invoice)) await this.invoices.markPaid(db, row.invoiceId, new Date());
+      // Sealed amounts: the card amount was the whole rest due, so the document is paid; no sum or fee goes into
+      // it in plain. The payment waits on the session row until a browser with the key seals it (sealCardPayment).
+      if (sealed) await this.invoices.markPaid(db, row.invoiceId, new Date());
       else await this.invoices.markPaid(db, row.invoiceId, new Date(), amount, fee ? { fee } : {});
     } catch (err) {
       // Marked paid by hand meanwhile: the card payment stays on record.
@@ -300,6 +302,20 @@ export class CardPaymentsService {
 
 function cardLabel(invoice: { invoiceNumber: string | null; documentType: string }): string {
   return invoice.invoiceNumber ? `${invoice.documentType === "proforma" ? "Záloha" : "Faktura"} ${invoice.invoiceNumber}` : "Faktura";
+}
+
+/**
+ * What a paid session stores. On a sealed document it also becomes "to be
+ * sealed", with the amount Stripe actually charged (the plain card amount
+ * the user revealed), so the browser can add it to the sealed payments.
+ */
+export function cardPaymentRecord(
+  amount: number,
+  fee: number | null,
+  sealed: boolean,
+): { fee: string | null; amount?: string; sealState?: "pending" } {
+  const record = { fee: fee != null ? fee.toFixed(2) : null };
+  return sealed ? { ...record, amount: amount.toFixed(2), sealState: "pending" } : record;
 }
 
 /**

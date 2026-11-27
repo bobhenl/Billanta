@@ -14504,7 +14504,7 @@
         "loses": [
           "Automatisch koppelen van betalingen op de server: na het ontgrendelen stelt je browser koppelingen voor en bevestig jij ze",
           "Betalingen worden alleen in je browser berekend: bij een versleuteld document kent de server alleen de betaaldatum en de status, niet het bedrag of de kosten",
-          "Verzenden via Peppol en AI-voorstellen met bedragen. Kaartbetaling alleen bij een document waar je die uitdrukkelijk toestaat – het te betalen bedrag gaat dan leesbaar naar Billanta en Stripe",
+          "Verzenden via Peppol en AI-voorstellen met bedragen. Kaartbetaling alleen bij een document waar je die uitdrukkelijk toestaat – het te betalen bedrag gaat dan leesbaar naar Billanta en Stripe. Na het ontgrendelen versleutelt je browser het betaalde bedrag bij de betalingen en wist Billanta het bedrag en de kosten",
           "Het netto-inkomen telt alleen niet-versleutelde documenten en meldt hoeveel het heeft weggelaten. De rekenhulp voor de forfaitaire belasting vult dan niets in",
           "Herinneringen, het weekoverzicht en achterstallige totalen in e-mails noemen geen bedrag"
         ],
@@ -14833,7 +14833,9 @@
         "label": "Kaartbetaling toestaan",
         "hint": "De klant kan dan via de link {amount} met een kaart betalen. Dit ene bedrag wordt onversleuteld opgeslagen en Billanta en Stripe zien het.",
         "on": "Kaartbetaling staat aan voor {amount}. Dit bedrag is onversleuteld opgeslagen en Billanta en Stripe zien het. De volgende betaling zet het uit."
-      }
+      },
+      "cardWaiting": "per kaart, wacht op versleuteling",
+      "cardSealed": "{n, plural, one {Een kaartbetaling is versleuteld en bij de betalingen gezet.} other {# kaartbetalingen zijn versleuteld en bij de betalingen gezet.}}"
     },
     "bankMatch": {
       "title": "Voorgestelde koppelingen voor versleutelde documenten",

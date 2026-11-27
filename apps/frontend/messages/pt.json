@@ -14504,7 +14504,7 @@
         "loses": [
           "A correspondência automática no servidor: depois de desbloquear, o seu navegador sugere correspondências e você confirma-as",
           "Os pagamentos só são calculados no seu navegador: num documento cifrado o servidor conhece apenas a data do pagamento e o estado, não o valor nem a taxa",
-          "O envio por Peppol e as sugestões de IA com valores. O pagamento com cartão só no documento onde o permitir expressamente – o valor a pagar segue então legível para a Billanta e a Stripe",
+          "O envio por Peppol e as sugestões de IA com valores. O pagamento com cartão só no documento onde o permitir expressamente – o valor a pagar segue então legível para a Billanta e a Stripe. Depois de desbloquear, o seu navegador cifra o valor pago nos pagamentos e a Billanta apaga o valor e a taxa",
           "O rendimento líquido conta só os documentos não cifrados e indica quantos deixou de fora. A calculadora do imposto forfetário não preenche nada",
           "Os lembretes, o resumo semanal e os totais em atraso nos e-mails não indicam o valor"
         ],
@@ -14833,7 +14833,9 @@
         "label": "Permitir pagamento com cartão",
         "hint": "O cliente poderá então pagar {amount} com cartão a partir do link. Este único valor fica guardado sem cifra e a Billanta e a Stripe vão vê-lo.",
         "on": "O pagamento com cartão está ativo para {amount}. Este valor está guardado sem cifra e a Billanta e a Stripe veem-no. O próximo pagamento desativa-o."
-      }
+      },
+      "cardWaiting": "com cartão, a aguardar cifragem",
+      "cardSealed": "{n, plural, one {Um pagamento com cartão foi cifrado e adicionado aos pagamentos.} other {# pagamentos com cartão foram cifrados e adicionados aos pagamentos.}}"
     },
     "bankMatch": {
       "title": "Correspondências sugeridas para documentos cifrados",

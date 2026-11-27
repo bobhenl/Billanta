@@ -14504,7 +14504,7 @@
         "loses": [
           "Potrivirea automată a plăților pe server: după deblocarea seifului, browserul propune perechi și dvs. le confirmați",
           "Plățile le calculează doar browserul: la un document criptat serverul cunoaște doar data plății și starea, nu suma sau comisionul",
-          "Trimiterea prin Peppol și propunerile AI cu sume. Plata cu cardul doar la documentul unde o permiteți explicit – suma de plată ajunge atunci lizibil la Billanta și Stripe",
+          "Trimiterea prin Peppol și propunerile AI cu sume. Plata cu cardul doar la documentul unde o permiteți explicit – suma de plată ajunge atunci lizibil la Billanta și Stripe. După deblocarea seifului, browserul criptează suma plătită la plăți, iar Billanta șterge suma și comisionul",
           "Venitul net numără doar documentele necriptate și spune câte a lăsat deoparte. Calculatorul impozitului forfetar nu completează nimic",
           "Mementourile, rezumatul săptămânal și totalurile restante din e-mailuri nu includ suma"
         ],
@@ -14833,7 +14833,9 @@
         "label": "Permite plata cu cardul",
         "hint": "Clientul poate plăti atunci din link {amount} cu cardul. Această singură sumă se salvează necriptat și o vor vedea Billanta și Stripe.",
         "on": "Plata cu cardul este activă pentru {amount}. Suma este salvată necriptat și o văd Billanta și Stripe. Următoarea plată o dezactivează."
-      }
+      },
+      "cardWaiting": "cu cardul, așteaptă criptarea",
+      "cardSealed": "{n, plural, one {O plată cu cardul a fost criptată și adăugată la plăți.} few {# plăți cu cardul au fost criptate și adăugate la plăți.} other {# de plăți cu cardul au fost criptate și adăugate la plăți.}}"
     },
     "bankMatch": {
       "title": "Propuneri de potrivire pentru documente criptate",

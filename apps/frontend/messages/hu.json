@@ -14504,7 +14504,7 @@
         "loses": [
           "Automatikus párosítás a szerveren: a széf feloldása után a böngészője javasol párokat, Ön pedig megerősíti őket",
           "A befizetéseket csak a böngészője számolja: titkosított bizonylatnál a szerver csak a befizetés dátumát és az állapotot ismeri, az összeget és a díjat nem",
-          "Küldés Peppolon és összegeket tartalmazó MI-javaslatok. Kártyás fizetés csak annál a bizonylatnál, ahol kifejezetten engedélyezi – a fizetendő összeg ekkor olvashatóan kerül a Billantához és a Stripe-hoz",
+          "Küldés Peppolon és összegeket tartalmazó MI-javaslatok. Kártyás fizetés csak annál a bizonylatnál, ahol kifejezetten engedélyezi – a fizetendő összeg ekkor olvashatóan kerül a Billantához és a Stripe-hoz. A széf feloldása után a böngészője titkosítva felveszi a kifizetett összeget a befizetések közé, a Billanta pedig törli az összeget és a díjat",
           "A nettó jövedelem csak a nem titkosított bizonylatokat számolja, és kiírja, hányat hagyott ki. Az átalányadó-kalkulátor ilyenkor nem tölt ki semmit",
           "A felszólítások, a heti összefoglaló és a lejárt összegek az e-mailekben nem tartalmaznak összeget"
         ],
@@ -14833,7 +14833,9 @@
         "label": "Kártyás fizetés engedélyezése",
         "hint": "Az ügyfél ekkor a linken kártyával fizethet {amount} összeget. Ez az egy összeg titkosítás nélkül tárolódik, a Billanta és a Stripe látni fogja.",
         "on": "A kártyás fizetés be van kapcsolva {amount} összegre. Ez az összeg titkosítás nélkül van tárolva, a Billanta és a Stripe látja. A következő befizetés kikapcsolja."
-      }
+      },
+      "cardWaiting": "kártyával, titkosításra vár",
+      "cardSealed": "{n, plural, one {Egy kártyás fizetés titkosítva bekerült a befizetések közé.} other {# kártyás fizetés titkosítva bekerült a befizetések közé.}}"
     },
     "bankMatch": {
       "title": "Párosítási javaslatok titkosított bizonylatokhoz",

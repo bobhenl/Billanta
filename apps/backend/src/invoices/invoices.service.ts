@@ -76,6 +76,7 @@ import {
   assertPaymentEnvelope,
   assertSealedPayable,
   assertVerdict,
+  cardSealStep,
   sealedPaymentSet,
   type SealedPaymentVerdict,
 } from "../vault/sealed-payments";
@@ -1137,6 +1138,79 @@ export class InvoicesService {
   }
 
   /**
+   * Card payments of sealed documents that wait for a browser to seal them
+   * (0118), with the plain amount and fee Stripe charged and the document's
+   * envelope, so the browser finds the document key. One document, or all
+   * of the company for the pass after unlocking.
+   */
+  async cardPaymentsToSeal(db: TenantDb, invoiceId?: string) {
+    if (invoiceId) await this.requireInvoice(db, invoiceId);
+    const s = schema.cardPaymentSessions;
+    const i = schema.invoices;
+    return db
+      .select({
+        id: s.id,
+        invoiceId: s.invoiceId,
+        invoiceNumber: i.invoiceNumber,
+        encAmounts: i.encAmounts,
+        amount: s.amount,
+        fee: s.fee,
+        currency: s.currency,
+        paidAt: s.paidAt,
+      })
+      .from(s)
+      .innerJoin(i, eq(i.id, s.invoiceId))
+      .where(and(eq(s.sealState, "pending"), isNotNull(i.encAmounts), invoiceId ? eq(s.invoiceId, invoiceId) : undefined))
+      .orderBy(asc(s.paidAt))
+      .limit(200);
+  }
+
+  /**
+   * Turns a waiting card payment into a sealed payment of its document: the
+   * browser sealed the amount and fee under the document key, the server
+   * checks the envelope as for any payment and then forgets both numbers.
+   * The document's state does not change; the card payment booked it already.
+   */
+  async sealCardPayment(db: TenantDb, tenantId: string, userId: string | null, id: string, cardPaymentId: string, encAmount: string) {
+    const invoice = await this.requireInvoice(db, id);
+    assertSealedPayable(invoice, "remove");
+    assertPaymentEnvelope(invoice, encAmount);
+    const s = schema.cardPaymentSessions;
+    const find = async () => (await db.select().from(s).where(and(eq(s.id, cardPaymentId), eq(s.invoiceId, id))).limit(1))[0];
+    const sealedOf = async (row: { sealedPaymentId: string | null } | undefined) => {
+      if (!row?.sealedPaymentId) return { sealed: false, payment: null };
+      const [payment] = await db.select().from(schema.invoiceSealedPayments).where(eq(schema.invoiceSealedPayments.id, row.sealedPaymentId));
+      return { sealed: false, payment: payment ?? null };
+    };
+    const session = await find();
+    if (cardSealStep(session) === "done") return sealedOf(session);
+    // The state guard lets one of two racing tabs seal it; the other gets the first one's result.
+    const [claimed] = await db
+      .update(s)
+      .set({ sealState: "sealed", amount: null, fee: null })
+      .where(and(eq(s.id, cardPaymentId), eq(s.invoiceId, id), eq(s.sealState, "pending")))
+      .returning();
+    if (!claimed) {
+      const again = await find();
+      cardSealStep(again);
+      return sealedOf(again);
+    }
+    const [payment] = await db
+      .insert(schema.invoiceSealedPayments)
+      .values({
+        tenantId,
+        invoiceId: id,
+        paidAt: (claimed.paidAt ?? new Date()).toISOString().slice(0, 10),
+        variableSymbol: invoice.variableSymbol ?? null,
+        encAmount,
+        createdBy: userId,
+      })
+      .returning();
+    await db.update(s).set({ sealedPaymentId: payment.id }).where(eq(s.id, cardPaymentId));
+    return { sealed: true, payment };
+  }
+
+  /**
    * Unlocking needs the same fresh re-auth as opening, plus a step-up (it
    * takes a protection away); locking does not.
    */
@@ -1181,7 +1255,14 @@ export class InvoicesService {
     const invoice = await this.requireInvoice(db, id);
     if (invoice.status !== "paid") throw new BadRequestException("The document is not marked as paid");
     // Sealed payments go with it, as a plain amount_paid goes back to 0.
-    if (amountsSealed(invoice)) await db.delete(schema.invoiceSealedPayments).where(eq(schema.invoiceSealedPayments.invoiceId, id));
+    if (amountsSealed(invoice)) {
+      await db.delete(schema.invoiceSealedPayments).where(eq(schema.invoiceSealedPayments.invoiceId, id));
+      // A card payment nobody sealed yet goes too, and its plain numbers with it.
+      await db
+        .update(schema.cardPaymentSessions)
+        .set({ sealState: "dropped", amount: null, fee: null })
+        .where(and(eq(schema.cardPaymentSessions.invoiceId, id), eq(schema.cardPaymentSessions.sealState, "pending")));
+    }
     const [updated] = await db
       .update(schema.invoices)
       .set({
