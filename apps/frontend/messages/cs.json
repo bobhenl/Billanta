@@ -14169,7 +14169,17 @@
       "to": "Do",
       "partnerMember": "Člen týmu",
       "partnerMemberNone": "Není v týmu",
-      "partnerClaimOwn": "Faktury, které vystaví, jsou jeho"
+      "partnerClaimOwn": "Faktury, které vystaví, jsou jeho",
+      "credits": {
+        "none": "Žádné slevy",
+        "taxpayer": "Sleva na poplatníka ({amount} Kč)",
+        "spouse": "Poplatník + manžel/ka ({amount} Kč)",
+        "custom": "Jiná částka…",
+        "customAmount": "Slevy celkem za rok"
+      },
+      "secondaryActivity": "Vedlejší činnost (student, zaměstnanec, rodičovská…)",
+      "secondaryActivityHint": "Pod rozhodnou částkou {amount} Kč zisku za rok se neplatí sociální pojištění. Zdravotní se platí ze skutečného zisku, bez minima.",
+      "secondaryActivityUnknown": "Pro rok {year} rozhodnou částku neznáme, sociální pojištění se počítá vždy."
     },
     "errors": {
       "duplicate_partner": "Dva společníci mají stejné označení. Odeberte jednoho a přidejte ho znovu.",

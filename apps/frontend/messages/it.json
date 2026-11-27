@@ -14161,7 +14161,17 @@
       "to": "A",
       "partnerMember": "Membro del team",
       "partnerMemberNone": "Fuori dal team",
-      "partnerClaimOwn": "Le fatture che crea sono sue"
+      "partnerClaimOwn": "Le fatture che crea sono sue",
+      "credits": {
+        "none": "Nessuna detrazione",
+        "taxpayer": "Detrazione del contribuente ({amount} CZK)",
+        "spouse": "Contribuente + coniuge ({amount} CZK)",
+        "custom": "Altro importo…",
+        "customAmount": "Detrazioni totali dell’anno"
+      },
+      "secondaryActivity": "Attività secondaria (studente, dipendente, congedo parentale…)",
+      "secondaryActivityHint": "Sotto un utile annuo di {amount} CZK non si pagano i contributi sociali. L’assicurazione sanitaria si paga sull’utile effettivo, senza minimo.",
+      "secondaryActivityUnknown": "La soglia per il {year} non è ancora nota, quindi i contributi sociali vengono sempre conteggiati."
     },
     "errors": {
       "duplicate_partner": "Due soci hanno lo stesso id. Ne rimuova uno e lo aggiunga di nuovo.",

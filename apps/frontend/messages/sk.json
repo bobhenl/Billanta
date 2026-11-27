@@ -14073,7 +14073,17 @@
       "to": "Do",
       "partnerMember": "Člen tímu",
       "partnerMemberNone": "Nie je v tíme",
-      "partnerClaimOwn": "Faktúry, ktoré vystaví, sú jeho"
+      "partnerClaimOwn": "Faktúry, ktoré vystaví, sú jeho",
+      "credits": {
+        "none": "Bez zliav",
+        "taxpayer": "Zľava na poplatníka ({amount} Kč)",
+        "spouse": "Poplatník + manžel/manželka ({amount} Kč)",
+        "custom": "Iná suma…",
+        "customAmount": "Zľavy spolu za rok"
+      },
+      "secondaryActivity": "Vedľajšia činnosť (študent, zamestnanec, rodičovská…)",
+      "secondaryActivityHint": "Pod rozhodujúcou sumou {amount} Kč zisku za rok sa sociálne poistenie neplatí. Zdravotné sa platí zo skutočného zisku, bez minima.",
+      "secondaryActivityUnknown": "Pre rok {year} rozhodujúcu sumu nepoznáme, sociálne poistenie sa počíta vždy."
     },
     "errors": {
       "duplicate_partner": "Dvaja spoločníci majú rovnaké označenie. Odoberte jedného a pridajte ho znova.",

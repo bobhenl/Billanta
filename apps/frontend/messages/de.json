@@ -14162,7 +14162,17 @@
       "to": "Bis",
       "partnerMember": "Teammitglied",
       "partnerMemberNone": "Nicht im Team",
-      "partnerClaimOwn": "Rechnungen, die diese Person erstellt, gehören ihr"
+      "partnerClaimOwn": "Rechnungen, die diese Person erstellt, gehören ihr",
+      "credits": {
+        "none": "Keine Steuerermäßigungen",
+        "taxpayer": "Ermäßigung für Steuerpflichtige ({amount} CZK)",
+        "spouse": "Steuerpflichtiger + Ehepartner ({amount} CZK)",
+        "custom": "Anderer Betrag…",
+        "customAmount": "Ermäßigungen im Jahr gesamt"
+      },
+      "secondaryActivity": "Nebentätigkeit (Student, Angestellter, Elternzeit…)",
+      "secondaryActivityHint": "Unter einem Jahresgewinn von {amount} CZK fällt keine Sozialversicherung an. Die Krankenversicherung wird vom tatsächlichen Gewinn gezahlt, ohne Minimum.",
+      "secondaryActivityUnknown": "Die Grenze für {year} ist noch nicht bekannt, die Sozialversicherung wird daher immer gerechnet."
     },
     "errors": {
       "duplicate_partner": "Zwei Partner haben dieselbe ID. Entfernen Sie einen und fügen Sie ihn erneut hinzu.",

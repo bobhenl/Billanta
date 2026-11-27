@@ -46,6 +46,7 @@ export interface YearSettings extends TaxRates {
   tax_scope: TaxScope;
   /** The one taxpayer's yearly credits ('one_person'). */
   tax_credits: number;
+  secondary_activity?: boolean;
   partners: Record<string, { tax_credits: number }>;
 }
 
@@ -88,6 +89,7 @@ export function resolvedYear(model: TaxModel, year: number): YearSettings {
     ...(Object.fromEntries(RATE_KEYS.map((k) => [k, rates[k]])) as unknown as TaxRates),
     tax_scope: entry?.tax_scope ?? 'per_partner',
     tax_credits: entry?.tax_credits ?? 0,
+    secondary_activity: entry?.secondary_activity ?? false,
     partners: Object.fromEntries(model.partners.map((p) => [p.id, { tax_credits: entry?.partners[p.id]?.tax_credits ?? p.tax_credits }]))
   };
 }

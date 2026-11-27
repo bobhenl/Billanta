@@ -14161,7 +14161,17 @@
       "to": "Au",
       "partnerMember": "Membre de l'équipe",
       "partnerMemberNone": "Hors équipe",
-      "partnerClaimOwn": "Les factures qu'il crée lui reviennent"
+      "partnerClaimOwn": "Les factures qu'il crée lui reviennent",
+      "credits": {
+        "none": "Aucune réduction",
+        "taxpayer": "Réduction du contribuable ({amount} CZK)",
+        "spouse": "Contribuable + conjoint ({amount} CZK)",
+        "custom": "Autre montant…",
+        "customAmount": "Total des réductions de l’année"
+      },
+      "secondaryActivity": "Activité secondaire (étudiant, salarié, congé parental…)",
+      "secondaryActivityHint": "En dessous d’un bénéfice annuel de {amount} CZK, aucune cotisation sociale n’est due. L’assurance maladie se paie sur le bénéfice réel, sans minimum.",
+      "secondaryActivityUnknown": "Le seuil de {year} n’est pas encore connu, les cotisations sociales sont donc toujours comptées."
     },
     "errors": {
       "duplicate_partner": "Deux associés ont le même identifiant. Supprimez-en un et ajoutez-le à nouveau.",

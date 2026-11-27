@@ -14169,7 +14169,17 @@
       "to": "To",
       "partnerMember": "Team member",
       "partnerMemberNone": "Not in the team",
-      "partnerClaimOwn": "Invoices they create are theirs"
+      "partnerClaimOwn": "Invoices they create are theirs",
+      "credits": {
+        "none": "No tax credits",
+        "taxpayer": "Taxpayer credit ({amount} CZK)",
+        "spouse": "Taxpayer + spouse ({amount} CZK)",
+        "custom": "Other amount…",
+        "customAmount": "Total credits for the year"
+      },
+      "secondaryActivity": "Secondary activity (student, employee, parental leave…)",
+      "secondaryActivityHint": "Below a yearly profit of {amount} CZK no social insurance is due. Health insurance is paid from the actual profit, with no minimum.",
+      "secondaryActivityUnknown": "The threshold for {year} is not known yet, so social insurance is always counted."
     },
     "errors": {
       "duplicate_partner": "Two partners have the same id. Remove one and add it again.",

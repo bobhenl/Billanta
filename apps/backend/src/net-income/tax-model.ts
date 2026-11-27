@@ -91,6 +91,8 @@ const yearSettingsSchema = z.object({
   tax_scope: z.enum(["per_partner", "one_person"]).default("per_partner"),
   /** The one taxpayer's yearly credits ("one_person" only). */
   tax_credits: money(0, 10_000_000).default(0),
+  /** Vedlejší činnost: no social insurance below the rozhodná částka. */
+  secondary_activity: z.boolean().default(false),
   partners: z.record(z.string().regex(PARTNER_ID), yearPartnerSchema).refine((p) => Object.keys(p).length <= 20, "too_many_partners"),
 });
 

@@ -41,6 +41,8 @@ export type NetIncomeTaxScope = 'per_partner' | 'one_person';
 export interface NetIncomeYearSettings extends NetIncomeRates {
   tax_scope: NetIncomeTaxScope;
   tax_credits: number;
+  /** Vedlejší činnost (a student, an employee…): no social insurance below the rozhodná částka. */
+  secondary_activity?: boolean;
   partners: Record<string, { tax_credits: number }>;
 }
 
@@ -65,6 +67,7 @@ export interface NetIncomeYear extends NetIncomeRates {
   tax_scope: NetIncomeTaxScope;
   /** "one_person": the taxpayer's credits. */
   tax_credits: number;
+  secondary_activity: boolean;
   /** "per_partner": each partner's credits. */
   partners: Map<string, { tax_credits: number }>;
 }
@@ -84,6 +87,7 @@ export function netIncomeSettingsFor(model: NetIncomeTaxModel, year: number): Ne
     source,
     tax_scope: entry?.tax_scope ?? 'per_partner',
     tax_credits: entry?.tax_credits ?? 0,
+    secondary_activity: entry?.secondary_activity ?? false,
     partners,
   };
 }
@@ -211,8 +215,13 @@ function splitAmong(model: NetIncomeTaxModel, items: NetIncomeItem[]): number[] 
 type TaxPart = Omit<NetIncomeLine, 'income' | 'sharedExpenses' | 'net'>;
 const TAX_KEYS = ['flatExpenses', 'base', 'taxBeforeCredits', 'credits', 'social', 'health'] as const;
 
-/** One OSVČ's tax on `income` over a `fraction` of the year (cap and credits are yearly). */
-function taxOf(income: number, rates: NetIncomeYear, yearlyCredits: number, fraction: number): TaxPart & { capped: boolean } {
+/**
+ * One OSVČ's tax on `income` over a `fraction` of the year (cap, credits and
+ * the rozhodná částka are yearly). In a secondary activity a profit under the
+ * rozhodná částka is not insured socially (§ 9 odst. 6 zákona č. 589/1992 Sb.);
+ * the law tests the whole year's profit, here the prorated part stands in for it.
+ */
+function taxOf(income: number, rates: NetIncomeYear, yearlyCredits: number, fraction: number, secondaryThreshold: number | null): TaxPart & { capped: boolean } {
   const cap = rates.flat_expense_cap == null ? Infinity : rates.flat_expense_cap * fraction;
   const flat = income > 0 ? (income * rates.flat_expense_percent) / 100 : 0;
   const flatExpenses = Math.round(Math.min(flat, cap));
@@ -220,7 +229,8 @@ function taxOf(income: number, rates: NetIncomeYear, yearlyCredits: number, frac
   const taxBeforeCredits = Math.round((base * rates.income_tax_percent) / 100);
   const credits = Math.min(taxBeforeCredits, Math.round(yearlyCredits * fraction));
   const incomeTax = taxBeforeCredits - credits;
-  const social = Math.round((base * rates.social_base_percent * rates.social_rate_percent) / 10_000);
+  const uninsured = rates.secondary_activity && secondaryThreshold != null && base < secondaryThreshold * fraction;
+  const social = uninsured ? 0 : Math.round((base * rates.social_base_percent * rates.social_rate_percent) / 10_000);
   const health = Math.round((base * rates.health_base_percent * rates.health_rate_percent) / 10_000);
   return { flatExpenses, base, taxBeforeCredits, credits, incomeTax, social, health, taxes: incomeTax + social + health, capped: flat > cap };
 }
@@ -242,6 +252,8 @@ export function computeNetIncome(model: NetIncomeTaxModel, items: NetIncomeItem[
   const { months } = span;
   const fraction = months / 12;
   const rates = netIncomeSettingsFor(model, span.year);
+  // An unknown year has no rozhodná částka, so its social insurance stays in.
+  const threshold = czTaxYear(span.year)?.social.secondaryThreshold ?? null;
   const incomes = splitAmong(model, items);
   const expenses = splitAmong(model, sharedExpenseItems(model, span));
   const total = incomes.reduce((s, v) => s + v, 0);
@@ -250,7 +262,7 @@ export function computeNetIncome(model: NetIncomeTaxModel, items: NetIncomeItem[
 
   let taxes: (TaxPart & { capped: boolean })[];
   if (rates.tax_scope === 'one_person') {
-    const one = taxOf(total, rates, rates.tax_credits, fraction);
+    const one = taxOf(total, rates, rates.tax_credits, fraction, threshold);
     const parts = Object.fromEntries(TAX_KEYS.map((k) => [k, allocateWholeKc(weights.map((w) => one[k] * w))])) as Record<(typeof TAX_KEYS)[number], number[]>;
     taxes = model.partners.map((_, i) => {
       const line = Object.fromEntries(TAX_KEYS.map((k) => [k, parts[k][i]!])) as Record<(typeof TAX_KEYS)[number], number>;
@@ -258,7 +270,7 @@ export function computeNetIncome(model: NetIncomeTaxModel, items: NetIncomeItem[
       return { ...line, incomeTax, taxes: incomeTax + line.social + line.health, capped: one.capped };
     });
   } else {
-    taxes = model.partners.map((p, i) => taxOf(incomes[i]!, rates, rates.partners.get(p.id)!.tax_credits, fraction));
+    taxes = model.partners.map((p, i) => taxOf(incomes[i]!, rates, rates.partners.get(p.id)!.tax_credits, fraction, threshold));
   }
 
   const partners = model.partners.map((p, i): NetIncomePartnerLine => {

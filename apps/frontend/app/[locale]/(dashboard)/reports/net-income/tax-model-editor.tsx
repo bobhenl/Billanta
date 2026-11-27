@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react';
 import { czTaxYear } from '@faktur/cz-compliance';
 import { ChevronDown, ChevronLeft, ChevronRight, Copy, Loader2, Plus, RotateCcw, Save, SlidersHorizontal, Trash2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Banner } from '@/components/banner';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
@@ -105,6 +105,50 @@ function NumField({
   );
 }
 
+/**
+ * The yearly credits as a choice of the common cases (none, the taxpayer,
+ * the taxpayer and a spouse), so nobody has to look the amounts up. Any other
+ * sum (children, disability…) is typed in. Amounts come from cz-tax-years.
+ */
+function CreditsField({ year, value, onChange, label, disabled }: { year: number; value: number; onChange: (n: number) => void; label: string; disabled?: boolean }) {
+  const t = useTranslations('netIncome.config');
+  const known = czTaxYear(year);
+  const taxpayer = known?.taxpayerCredit ?? DEFAULTS.partners[0]!.tax_credits;
+  const presets = [
+    { key: 'none', amount: 0 },
+    { key: 'taxpayer', amount: taxpayer },
+    ...(known ? [{ key: 'spouse', amount: taxpayer + known.spouseCredit }] : [])
+  ];
+  const [custom, setCustom] = useState(!presets.some((p) => p.amount === value));
+  const locale = useLocale();
+  const fmt = (n: number) => n.toLocaleString(locale);
+  return (
+    <div className="min-w-0 space-y-2">
+      <label className="block min-w-0 text-xs font-semibold text-muted-foreground">
+        <span className="block truncate">{label}</span>
+        <select
+          className={cn(inputClass, 'mt-1')}
+          value={custom ? 'custom' : presets.find((p) => p.amount === value)!.key}
+          disabled={disabled}
+          onChange={(e) => {
+            const p = presets.find((x) => x.key === e.target.value);
+            setCustom(!p);
+            if (p) onChange(p.amount);
+          }}
+        >
+          {presets.map((p) => (
+            <option key={p.key} value={p.key}>
+              {t(`credits.${p.key}`, { amount: fmt(p.amount) })}
+            </option>
+          ))}
+          <option value="custom">{t('credits.custom')}</option>
+        </select>
+      </label>
+      {custom && <NumField label={t('credits.customAmount')} suffix="Kč" value={value} disabled={disabled} onChange={(n) => onChange(n ?? 0)} />}
+    </div>
+  );
+}
+
 export function TaxModelEditor({
   initial,
   readOnly,
@@ -117,6 +161,7 @@ export function TaxModelEditor({
   members: PartnerMember[];
 }) {
   const t = useTranslations('netIncome.config');
+  const locale = useLocale();
   const tErr = useTranslations('netIncome.errors');
   const router = useRouter();
   const [model, setModel] = useState<TaxModel>(initial);
@@ -246,9 +291,24 @@ export function TaxModelEditor({
             {rate('health_rate_percent')}
             {rate('health_base_percent')}
             {onePerson && (
-              <NumField key={fieldKey('credits')} label={t('partnerCredits')} suffix="Kč" value={shown.tax_credits} disabled={locked} onChange={(n) => setEntry({ tax_credits: n ?? 0 })} />
+              <CreditsField key={fieldKey('credits')} year={year} label={t('partnerCredits')} value={shown.tax_credits} disabled={locked} onChange={(n) => setEntry({ tax_credits: n })} />
             )}
           </div>
+          <label className="flex items-start gap-2 text-sm">
+            <input
+              type="checkbox"
+              className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+              checked={!!shown.secondary_activity}
+              disabled={locked}
+              onChange={(e) => setEntry({ secondary_activity: e.target.checked })}
+            />
+            <span>
+              {t('secondaryActivity')}
+              <span className="block text-xs text-muted-foreground">
+                {czTaxYear(year) ? t('secondaryActivityHint', { amount: czTaxYear(year)!.social.secondaryThreshold.toLocaleString(locale) }) : t('secondaryActivityUnknown', { year })}
+              </span>
+            </span>
+          </label>
           <p className="text-xs text-muted-foreground">{t(onePerson ? 'scopeOnePersonHint' : 'yearHint')}</p>
           <InfoHint hint={t('ratesHint')} className="text-xs text-muted-foreground">
             {t('ratesHintLabel')}
@@ -262,7 +322,7 @@ export function TaxModelEditor({
             <div
               key={p.id}
               id={`partner-${p.id}`}
-              className={cn('grid scroll-mt-24 grid-cols-2 items-end gap-2 rounded-lg border border-border p-3', onePerson ? 'sm:grid-cols-[1fr_7rem_auto]' : 'sm:grid-cols-[1fr_7rem_10rem_auto]')}
+              className={cn('grid scroll-mt-24 grid-cols-2 items-end gap-2 rounded-lg border border-border p-3', onePerson ? 'sm:grid-cols-[1fr_7rem_auto]' : 'sm:grid-cols-[1fr_7rem_15rem_auto]')}
             >
               <label className="col-span-2 block min-w-0 text-xs font-semibold text-muted-foreground sm:col-span-1">
                 <span className="block">{t('partnerName')}</span>
@@ -277,13 +337,13 @@ export function TaxModelEditor({
               </label>
               <NumField key={`share-${p.id}-${version}`} label={t('partnerShare')} value={p.share} disabled={readOnly} onChange={(n) => setPartner(i, { share: n ?? 0 })} />
               {!onePerson && (
-                <NumField
+                <CreditsField
                   key={fieldKey(`credit-${p.id}`)}
+                  year={year}
                   label={t('partnerCreditsIn', { year })}
-                  suffix="Kč"
                   value={shown.partners[p.id]?.tax_credits ?? p.tax_credits}
                   disabled={locked}
-                  onChange={(n) => setEntry({ partners: { ...entry!.partners, [p.id]: { tax_credits: n ?? 0 } } })}
+                  onChange={(n) => setEntry({ partners: { ...entry!.partners, [p.id]: { tax_credits: n } } })}
                 />
               )}
               {members.length > 1 && (

@@ -183,3 +183,40 @@ describe('buildSealedNetIncome', () => {
     expect(sealedNetIncomeEnvelopes({ sealedDocs: [sealed('S1', '2026-02-03', 1), sealed('S2', '2026-02-03', 2, { encAmounts: 'plain' })] })).toEqual([env(1)]);
   });
 });
+
+describe('computeNetIncome in a secondary activity', () => {
+  const year = (secondary: boolean) => ({ ...rates, tax_scope: 'one_person' as const, tax_credits: 30_840, secondary_activity: secondary, partners: {} });
+  const one = (secondary: boolean, y = 2026): NetIncomeTaxModel => ({ ...model, shared_expenses: [], extra_income: [], years: { [y]: year(secondary) } });
+  const yearSpan = (y = 2026) => ({ year: y, month: 1, months: 12 });
+
+  it('drops social insurance while the profit stays under the rozhodná částka', () => {
+    // 290 000 income → 116 000 profit, under 117 521 in 2026.
+    const r = computeNetIncome(one(true), [{ amount: 290_000, shares: null }], yearSpan());
+    expect(r.totals.base).toBe(116_000);
+    expect(r.totals.social).toBe(0);
+    expect(r.totals.health).toBe(7_830);
+  });
+
+  it('keeps social insurance from the rozhodná částka up', () => {
+    // 300 000 income → 120 000 profit, over the threshold.
+    const r = computeNetIncome(one(true), [{ amount: 300_000, shares: null }], yearSpan());
+    expect(r.totals.social).toBe(19_272);
+  });
+
+  it('counts social insurance for a main activity whatever the profit', () => {
+    const r = computeNetIncome(one(false), [{ amount: 290_000, shares: null }], yearSpan());
+    expect(r.totals.social).toBe(18_630);
+  });
+
+  it('prorates the threshold for a month', () => {
+    // 9 794 Kč is a twelfth of the 2026 threshold; 25 000 income → 10 000 profit.
+    const month = { year: 2026, month: 3, months: 1 };
+    expect(computeNetIncome(one(true), [{ amount: 24_000, shares: null }], month).totals.social).toBe(0);
+    expect(computeNetIncome(one(true), [{ amount: 25_000, shares: null }], month).totals.social).toBe(1_606);
+  });
+
+  it('keeps social insurance in a year without a known threshold', () => {
+    const r = computeNetIncome(one(true, 2031), [{ amount: 100_000, shares: null }], yearSpan(2031));
+    expect(r.totals.social).toBeGreaterThan(0);
+  });
+});

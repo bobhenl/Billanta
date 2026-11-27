@@ -14161,7 +14161,17 @@
       "to": "Eddig",
       "partnerMember": "Csapattag",
       "partnerMemberNone": "Nincs a csapatban",
-      "partnerClaimOwn": "Az általa kiállított számlák az övéi"
+      "partnerClaimOwn": "Az általa kiállított számlák az övéi",
+      "credits": {
+        "none": "Nincs adókedvezmény",
+        "taxpayer": "Adózói kedvezmény ({amount} CZK)",
+        "spouse": "Adózó + házastárs ({amount} CZK)",
+        "custom": "Más összeg…",
+        "customAmount": "Éves kedvezmények összesen"
+      },
+      "secondaryActivity": "Mellékállású tevékenység (diák, alkalmazott, szülői szabadság…)",
+      "secondaryActivityHint": "Évi {amount} CZK nyereség alatt nem kell társadalombiztosítást fizetni. Az egészségbiztosítást a tényleges nyereség után kell fizetni, minimum nélkül.",
+      "secondaryActivityUnknown": "A {year}. évi határt még nem ismerjük, ezért a társadalombiztosítás mindig számít."
     },
     "errors": {
       "duplicate_partner": "Két partnernek azonos az azonosítója. Távolítsa el az egyiket, és adja hozzá újra.",

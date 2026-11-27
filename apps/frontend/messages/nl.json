@@ -14161,7 +14161,17 @@
       "to": "Tot",
       "partnerMember": "Teamlid",
       "partnerMemberNone": "Niet in het team",
-      "partnerClaimOwn": "Facturen die diegene maakt, zijn van hem of haar"
+      "partnerClaimOwn": "Facturen die diegene maakt, zijn van hem of haar",
+      "credits": {
+        "none": "Geen heffingskortingen",
+        "taxpayer": "Korting voor de belastingplichtige ({amount} CZK)",
+        "spouse": "Belastingplichtige + partner ({amount} CZK)",
+        "custom": "Ander bedrag…",
+        "customAmount": "Kortingen totaal per jaar"
+      },
+      "secondaryActivity": "Nevenactiviteit (student, werknemer, ouderschapsverlof…)",
+      "secondaryActivityHint": "Onder een jaarwinst van {amount} CZK is geen sociale verzekering verschuldigd. De zorgverzekering wordt over de werkelijke winst betaald, zonder minimum.",
+      "secondaryActivityUnknown": "De grens voor {year} is nog niet bekend, dus de sociale verzekering telt altijd mee."
     },
     "errors": {
       "duplicate_partner": "Twee partners hebben dezelfde id. Verwijder er een en voeg hem opnieuw toe.",

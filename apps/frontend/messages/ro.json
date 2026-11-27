@@ -14161,7 +14161,17 @@
       "to": "Până la",
       "partnerMember": "Membru al echipei",
       "partnerMemberNone": "Nu e în echipă",
-      "partnerClaimOwn": "Facturile emise de el sunt ale lui"
+      "partnerClaimOwn": "Facturile emise de el sunt ale lui",
+      "credits": {
+        "none": "Fără reduceri",
+        "taxpayer": "Reducerea contribuabilului ({amount} CZK)",
+        "spouse": "Contribuabil + soț/soție ({amount} CZK)",
+        "custom": "Altă sumă…",
+        "customAmount": "Reduceri totale pe an"
+      },
+      "secondaryActivity": "Activitate secundară (student, angajat, concediu parental…)",
+      "secondaryActivityHint": "Sub un profit anual de {amount} CZK nu se plătesc asigurări sociale. Asigurarea de sănătate se plătește din profitul real, fără minim.",
+      "secondaryActivityUnknown": "Pragul pentru {year} nu este încă cunoscut, așa că asigurările sociale se calculează mereu."
     },
     "errors": {
       "duplicate_partner": "Doi parteneri au același id. Eliminați unul și adăugați-l din nou.",

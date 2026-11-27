@@ -14162,7 +14162,17 @@
       "to": "Do",
       "partnerMember": "Członek zespołu",
       "partnerMemberNone": "Spoza zespołu",
-      "partnerClaimOwn": "Faktury, które wystawi, są jego"
+      "partnerClaimOwn": "Faktury, które wystawi, są jego",
+      "credits": {
+        "none": "Bez ulg",
+        "taxpayer": "Ulga dla podatnika ({amount} CZK)",
+        "spouse": "Podatnik + małżonek ({amount} CZK)",
+        "custom": "Inna kwota…",
+        "customAmount": "Ulgi łącznie za rok"
+      },
+      "secondaryActivity": "Działalność dodatkowa (student, pracownik, urlop rodzicielski…)",
+      "secondaryActivityHint": "Poniżej rocznego zysku {amount} CZK nie płaci się ubezpieczenia społecznego. Zdrowotne płaci się od faktycznego zysku, bez minimum.",
+      "secondaryActivityUnknown": "Progu na rok {year} jeszcze nie znamy, więc ubezpieczenie społeczne jest zawsze liczone."
     },
     "errors": {
       "duplicate_partner": "Dwóch wspólników ma ten sam identyfikator. Usuń jednego i dodaj go ponownie.",

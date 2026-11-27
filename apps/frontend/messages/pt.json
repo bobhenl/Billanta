@@ -14161,7 +14161,17 @@
       "to": "Até",
       "partnerMember": "Membro da equipa",
       "partnerMemberNone": "Fora da equipa",
-      "partnerClaimOwn": "As faturas que criar são dele"
+      "partnerClaimOwn": "As faturas que criar são dele",
+      "credits": {
+        "none": "Sem deduções",
+        "taxpayer": "Dedução do contribuinte ({amount} CZK)",
+        "spouse": "Contribuinte + cônjuge ({amount} CZK)",
+        "custom": "Outro valor…",
+        "customAmount": "Total de deduções do ano"
+      },
+      "secondaryActivity": "Atividade secundária (estudante, empregado, licença parental…)",
+      "secondaryActivityHint": "Abaixo de um lucro anual de {amount} CZK não há segurança social a pagar. O seguro de saúde paga-se sobre o lucro real, sem mínimo.",
+      "secondaryActivityUnknown": "O limiar de {year} ainda não é conhecido, por isso a segurança social é sempre contada."
     },
     "errors": {
       "duplicate_partner": "Dois sócios têm o mesmo id. Remova um e adicione-o de novo.",
