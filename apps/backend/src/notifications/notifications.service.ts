@@ -5,6 +5,8 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
+import { planAllows } from "../billing/plan-access";
+import { loadPlanSummary } from "../billing/plan.guard";
 import { appUrlOf, emailLocaleOf, type EmailLocale } from "../email/email-render";
 import { EmailOutboxService } from "../email/email-outbox.service";
 import { emailTypesView, type EmailTypeInfo } from "../email/email-types";
@@ -63,6 +65,7 @@ export class NotificationsService {
     let emails = 0;
     let inApp = 0;
     let hooks: { webhooks: unknown; company: string; locale: string | null } | undefined;
+    let webhooksOn = false;
     await this.dbService.sql.begin(async (tx) => {
       await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
       const db = drizzleTx(tx, schema);
@@ -75,6 +78,9 @@ export class NotificationsService {
         .from(schema.tenantMemberships)
         .innerJoin(schema.users, eq(schema.users.id, schema.tenantMemberships.userId))
         .where(eq(schema.tenantMemberships.tenantId, tenantId));
+      // Webhooks fire on Start and up; a downgraded company keeps them stored.
+      const plan = await loadPlanSummary(db, tenantId);
+      webhooksOn = !plan || planAllows(plan, "webhooks");
       [hooks] = await db
         .select({ webhooks: schema.tenants.webhooks, company: schema.tenants.companyName, locale: schema.tenants.defaultLocale })
         .from(schema.tenants)
@@ -114,7 +120,7 @@ export class NotificationsService {
       inApp = rows.length;
     });
     let hooked = 0;
-    if (hooks) {
+    if (hooks && webhooksOn) {
       hooked = await dispatchWebhooks(hooks.webhooks, kind, payload, { company: hooks.company, siteUrl }).catch((err) => {
         this.logger.warn(`Webhook dispatch failed: ${err instanceof Error ? err.message : err}`);
         return 0;

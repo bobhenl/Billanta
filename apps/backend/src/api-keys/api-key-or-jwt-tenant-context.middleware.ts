@@ -127,6 +127,10 @@ export class ApiKeyOrJwtTenantContextMiddleware implements NestMiddleware {
       );
     }
 
+    // Counted once the key and the request are known good, so a rejected
+    // call (bad key, read-only scope) doesn't eat the quota.
+    await this.apiKeysService.countRequest(result.tenantId);
+
     await this.dbService.sql.begin(async (tx) => {
       await tx`SELECT set_config('app.current_tenant_id', ${result.tenantId}, true)`;
       // Who the audit log credits (audit_log column defaults).

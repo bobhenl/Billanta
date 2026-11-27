@@ -7,6 +7,7 @@ import { auth } from '@/auth';
 import { grantUnlock, revokeUnlock } from '@/lib/invoice-unlock';
 import { allow } from '@/lib/rate-limit';
 import { verifyPassword } from '@/lib/reauth';
+import { documentsOutText } from '@/lib/plan-refusal';
 
 /**
  * Server actions behind the invoice detail page and the list's row menu.
@@ -141,6 +142,8 @@ async function backendMessage(error: unknown): Promise<string> {
       // Anti-abuse blocks from the sending guard carry a stable code; show a translated reason.
       const code = SEND_BLOCK_CODES.find((c) => c === body.code);
       if (code) return (await getTranslations('invoices.sendBlocked'))(code);
+      const documentsOut = await documentsOutText(error.body);
+      if (documentsOut) return documentsOut;
       const message = Array.isArray(body.message) ? body.message.join(', ') : body.message;
       if (typeof message === 'string' && message) return message;
       if (typeof body.error === 'string') return body.error;

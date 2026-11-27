@@ -159,6 +159,7 @@ export { PERMISSION_AREAS, APP_MODULES } from './access';
 export type { PermissionArea, PermissionLevel, AppModule, PermissionAction } from './access';
 import type { AppModule, PermissionAction, PermissionArea, PermissionLevel } from './access';
 import type { PlanSummary } from './plan';
+import type { UsageOverview } from './usage';
 
 /** `GET /api/v1/tenants/me/access`: the member's effective access and the company's enabled modules. */
 export interface MyAccess {
@@ -173,6 +174,9 @@ export interface MyAccess {
 
 // The dashboard layout and most pages both ask for it; one call per request.
 export const fetchMyAccess = cache(async (): Promise<MyAccess> => apiFetch<MyAccess>('/api/v1/tenants/me/access'));
+
+/** This month's plan counters and feature access; null when the backend can't say (the page then shows no meter). */
+export const fetchUsage = cache(async (): Promise<UsageOverview | null> => apiFetch<UsageOverview>('/api/v1/tenants/me/usage').catch(() => null));
 
 export { canWrite, canDo } from './access';
 import { canDo, canWrite } from './access';

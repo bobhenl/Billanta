@@ -55,7 +55,7 @@ export class AiController {
     summary: "Free-text description -> pre-filled invoice fields (nothing is saved)",
     description:
       "Accepts a dashboard JWT or a public-API key (Authorization: Bearer sk_live_...). " +
-      "Uses the tenant's AI mode: its own Anthropic key, or Billanta's key within the daily limit.",
+      "Uses the tenant's AI mode: its own Anthropic key (unlimited), or Billanta's key, which spends one of the plan's monthly AI credits (403 ai_credits_exhausted when none are left).",
   })
   suggestInvoice(@Req() req: TenantScopedRequest, @Body() dto: InvoiceSuggestionDto) {
     return this.aiService.suggestInvoice(req.tenantDb!, req.user!.tenantId, dto.text);
@@ -70,7 +70,7 @@ export class AiController {
   })
   @ApiOperation({
     summary: "Photo or PDF of a received invoice -> pre-filled expense fields (nothing is saved)",
-    description: "JPEG, PNG, WebP, GIF or PDF up to 10 MB, multipart field \"file\".",
+    description: "JPEG, PNG, WebP, GIF or PDF up to 10 MB, multipart field \"file\". On Billanta's key it spends one AI credit.",
   })
   readReceipt(
     @Req() req: TenantScopedRequest,

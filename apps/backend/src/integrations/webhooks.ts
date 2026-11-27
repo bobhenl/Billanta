@@ -119,6 +119,15 @@ export function mergeWebhooks(current: Webhook[], input: WebhookInput[]): { webh
   return { webhooks: out };
 }
 
+/**
+ * Whether a save adds a webhook that isn't stored yet. Adding one needs
+ * Start; editing or removing the ones a company already has works on every
+ * plan, so a downgraded company can still clean them up.
+ */
+export function addsWebhook(current: Webhook[], input: WebhookInput[]): boolean {
+  return input.some((h) => !h.id || !current.some((c) => c.id === h.id));
+}
+
 export interface WebhookContext {
   company: string;
   siteUrl: string;

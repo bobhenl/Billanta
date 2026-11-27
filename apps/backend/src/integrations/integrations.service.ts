@@ -22,7 +22,8 @@ import { drizzleTx } from "../db/drizzle-tx";
 import { upcomingTaxEvents } from "../dashboard/tax-calendar";
 import { computeVatBreakdown, formatInvoiceAmount } from "../invoices/invoice-total.util";
 import { buildIcs, type IcsEvent } from "./ics";
-import { mergeWebhooks, sendWebhook, webhooksOf, type WebhookInput } from "./webhooks";
+import { addsWebhook, mergeWebhooks, sendWebhook, webhooksOf, type WebhookInput } from "./webhooks";
+import { assertPlanFeature } from "../billing/plan-limits";
 
 type Db = PostgresJsDatabase<typeof schema>;
 type Lang = "cs" | "sk" | "en";
@@ -188,6 +189,7 @@ export class IntegrationsService {
       const problem = await publicUrlProblem(h.url);
       if (problem) throw new BadRequestException({ error: problem, index });
     }
+    if (addsWebhook(webhooksOf(t?.webhooks), input)) await assertPlanFeature(db, tenantId, "webhooks");
     const merged = mergeWebhooks(webhooksOf(t?.webhooks), input);
     if ("error" in merged) throw new BadRequestException({ error: merged.error, index: merged.index });
     await db.update(schema.tenants).set({ webhooks: merged.webhooks, updatedAt: new Date() }).where(eq(schema.tenants.id, tenantId));
@@ -196,6 +198,8 @@ export class IntegrationsService {
 
   async testWebhook(db: Db, tenantId: string, actor: Actor, id: string) {
     assertMayDo(actor, "settings.integrations");
+    // Below Start no webhook fires, so a passing test would only mislead.
+    await assertPlanFeature(db, tenantId, "webhooks");
     const [t] = await db
       .select({ webhooks: schema.tenants.webhooks, company: schema.tenants.companyName })
       .from(schema.tenants)

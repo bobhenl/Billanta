@@ -6,7 +6,7 @@ import czOffices from '@/data/cz-offices.json';
 import { Link } from '@/i18n/navigation';
 import { buttonClass } from '@/lib/ui-classes';
 import { checkedDate } from '@/lib/legislation-checked';
-import { fetchTenant, taxCountryOf, vatStatusOf } from '@/lib/tenant';
+import { fetchTenant, fetchUsage, taxCountryOf, vatStatusOf } from '@/lib/tenant';
 import { SettingsHeader } from '@/components/settings-header';
 import { AnnualFilings } from './annual-filings';
 import { AnnualSummary } from './annual-summary';
@@ -26,7 +26,8 @@ export default async function ExportsPage() {
   const t = await getTranslations('settings.exports');
   const tDir = await getTranslations('accountantDirectory.promo');
   // The page works without it (CZ, nothing prefilled); the cards load their own figures.
-  const tenant = await fetchTenant().catch(() => null);
+  const [tenant, usage] = await Promise.all([fetchTenant().catch(() => null), fetchUsage()]);
+  const features = usage?.features;
   const country = tenant ? taxCountryOf(tenant) : undefined;
   // Slovak companies file in eDane, so they get the SK forms and no EPO guide.
   const sk = country === 'SK';
@@ -35,9 +36,9 @@ export default async function ExportsPage() {
   return (
     <div className="mx-auto max-w-3xl">
       <SettingsHeader title={t('title')} description={t('description')} />
-      <ExportPicker home={homeCurrencyOf(country)} />
+      <ExportPicker home={homeCurrencyOf(country)} accounting={features?.accounting_export} />
       <div className="mt-5">
-        <VatFilings country={sk ? 'SK' : 'CZ'} identified={!sk && vatStatusOf(tenant) === 'identified'} checked={await checkedDate('vat_forms')} />
+        <VatFilings country={sk ? 'SK' : 'CZ'} identified={!sk && vatStatusOf(tenant) === 'identified'} checked={await checkedDate('vat_forms')} usage={features?.vat_filings} />
       </div>
       {!sk && (
         <div className="mt-5">
@@ -50,7 +51,7 @@ export default async function ExportsPage() {
       {/* The DPFO and ČSSZ files are Czech forms; Slovak filing XML is not built. */}
       {!sk && (
         <div className="mt-5">
-          <AnnualFilings prefill={{ taxOffice: offices?.taxOffice ?? null, taxWorkplace: offices?.taxWorkplace ?? null, ossz: offices?.ossz ?? null, dataBox: tenant?.dataBoxId ?? null }} />
+          <AnnualFilings prefill={{ taxOffice: offices?.taxOffice ?? null, taxWorkplace: offices?.taxWorkplace ?? null, ossz: offices?.ossz ?? null, dataBox: tenant?.dataBoxId ?? null }} usage={features?.income_tax_export} />
         </div>
       )}
       {/* Exports are what people hand to an accountant, so this is where the question comes up. */}
