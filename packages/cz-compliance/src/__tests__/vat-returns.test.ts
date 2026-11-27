@@ -543,6 +543,12 @@ describe("EPO structures of 2026", () => {
     // Empty residence fields keep the business address.
     expect(submitterFromTenant({ ...tenant, residenceStreet: " ", residenceCity: null })).toMatchObject({ obec: "Brno", cPop: "12" });
   });
+
+  it("prefers the filing contact over the one on invoices", () => {
+    const s = submitterFromTenant({ ...tenant, email: "faktury@example.cz", phone: "111", filingEmail: "urad@example.cz", filingPhone: "+420 222" });
+    expect(s).toMatchObject({ email: "urad@example.cz", telefon: "+420 222" });
+    expect(submitterFromTenant({ ...tenant, email: "faktury@example.cz", phone: null, filingEmail: " ", filingPhone: "+420 222" })).toMatchObject({ email: "faktury@example.cz", telefon: "+420 222" });
+  });
 });
 
 describe("pragueToday", () => {

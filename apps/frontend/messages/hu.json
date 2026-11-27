@@ -2066,7 +2066,9 @@
         "socialOffice": "Társadalombiztosítási hivatal (OSSZ / PSSZ)",
         "none": "Nincs kiválasztva",
         "residence": "Lakóhely (hivatalok számára)",
-        "residenceHint": "Állandó lakcíme, ha eltér a vállalkozás címétől. A hivatalok a magánszemélyt a lakóhelye szerint tartják nyilván, ezért a bevallások ezt használják a vállalkozás címe helyett. Ha ugyanaz, hagyja üresen."
+        "residenceHint": "Állandó lakcíme, ha eltér a vállalkozás címétől. A hivatalok a magánszemélyt a lakóhelye szerint tartják nyilván, ezért a bevallások ezt használják a vállalkozás címe helyett. Ha ugyanaz, hagyja üresen.",
+        "contact": "Kapcsolat a hatóságoknak",
+        "contactHint": "A bevallásokba (áfabevallás és mások) kerülő e-mail és telefon. A számlákon nem jelennek meg. Ha üresen hagyja, a cég elérhetősége kerül bele."
       }
     },
     "team": {

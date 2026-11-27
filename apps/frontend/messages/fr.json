@@ -2066,7 +2066,9 @@
         "socialOffice": "Caisse de sécurité sociale (OSSZ / PSSZ)",
         "none": "Non choisi",
         "residence": "Domicile (pour les administrations)",
-        "residenceHint": "Votre adresse de résidence, si elle diffère de l’adresse de l’entreprise. Les administrations enregistrent une personne physique à son domicile, les déclarations l’utilisent donc à la place de l’adresse de l’entreprise. Laissez vide si c’est la même."
+        "residenceHint": "Votre adresse de résidence, si elle diffère de l’adresse de l’entreprise. Les administrations enregistrent une personne physique à son domicile, les déclarations l’utilisent donc à la place de l’adresse de l’entreprise. Laissez vide si c’est la même.",
+        "contact": "Contact pour l’administration",
+        "contactHint": "E-mail et téléphone inscrits dans les déclarations (TVA et autres). Ils n’apparaissent pas sur les factures. Laissez vide pour utiliser le contact de l’entreprise."
       }
     },
     "team": {

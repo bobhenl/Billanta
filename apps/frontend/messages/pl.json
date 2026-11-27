@@ -2066,7 +2066,9 @@
         "socialOffice": "Urząd ubezpieczeń społecznych (OSSZ / PSSZ)",
         "none": "Nie wybrano",
         "residence": "Miejsce zamieszkania (dla urzędów)",
-        "residenceHint": "Stały adres zamieszkania, jeśli różni się od adresu firmy. Urzędy prowadzą osobę fizyczną pod adresem zamieszkania, dlatego w zgłoszeniach użyjemy go zamiast adresu firmy. Zostaw puste, jeśli jest taki sam."
+        "residenceHint": "Stały adres zamieszkania, jeśli różni się od adresu firmy. Urzędy prowadzą osobę fizyczną pod adresem zamieszkania, dlatego w zgłoszeniach użyjemy go zamiast adresu firmy. Zostaw puste, jeśli jest taki sam.",
+        "contact": "Kontakt dla urzędów",
+        "contactHint": "E-mail i telefon wpisywane do zgłoszeń (deklaracja VAT i inne). Nie są drukowane na fakturach. Jeśli zostawisz puste, użyty zostanie kontakt firmy."
       }
     },
     "team": {

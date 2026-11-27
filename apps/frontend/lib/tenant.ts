@@ -59,6 +59,9 @@ export interface TenantSettings {
   residenceStreet?: string | null;
   residenceCity?: string | null;
   residencePostalCode?: string | null;
+  /** Contact for the filings (0125) when it differs from the one on invoices. */
+  filingEmail?: string | null;
+  filingPhone?: string | null;
   bankAccountNumber: string | null;
   bankAccountBankCode: string | null;
   bankAccountIban: string | null;

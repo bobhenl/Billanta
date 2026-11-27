@@ -2066,7 +2066,9 @@
         "socialOffice": "Segurança social (OSSZ / PSSZ)",
         "none": "Não escolhido",
         "residence": "Residência (para as autoridades)",
-        "residenceHint": "A sua morada de residência, se for diferente da morada da empresa. As autoridades registam uma pessoa singular pela residência, por isso as declarações usam-na em vez da morada da empresa. Deixe vazio se for a mesma."
+        "residenceHint": "A sua morada de residência, se for diferente da morada da empresa. As autoridades registam uma pessoa singular pela residência, por isso as declarações usam-na em vez da morada da empresa. Deixe vazio se for a mesma.",
+        "contact": "Contacto para as autoridades",
+        "contactHint": "E-mail e telefone escritos nas declarações (IVA e outras). Não aparecem nas faturas. Deixe vazio para usar o contacto da empresa."
       }
     },
     "team": {

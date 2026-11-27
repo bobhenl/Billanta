@@ -2066,7 +2066,9 @@
         "socialOffice": "Sozialversicherungsamt (OSSZ / PSSZ)",
         "none": "Nicht gewählt",
         "residence": "Wohnsitz (für Behörden)",
-        "residenceHint": "Ihr ständiger Wohnsitz, falls er von der Geschäftsadresse abweicht. Behörden führen eine Person unter ihrem Wohnsitz, daher verwenden die Meldungen ihn statt der Geschäftsadresse. Leer lassen, wenn er gleich ist."
+        "residenceHint": "Ihr ständiger Wohnsitz, falls er von der Geschäftsadresse abweicht. Behörden führen eine Person unter ihrem Wohnsitz, daher verwenden die Meldungen ihn statt der Geschäftsadresse. Leer lassen, wenn er gleich ist.",
+        "contact": "Kontakt für Behörden",
+        "contactHint": "E-Mail und Telefon, die in die Meldungen (Umsatzsteuererklärung u. a.) geschrieben werden. Auf Rechnungen erscheinen sie nicht. Leer lassen, um den Firmenkontakt zu verwenden."
       }
     },
     "team": {

@@ -2066,7 +2066,9 @@
         "socialOffice": "Ufficio di previdenza sociale (OSSZ / PSSZ)",
         "none": "Non scelto",
         "residence": "Residenza (per gli uffici)",
-        "residenceHint": "Il suo indirizzo di residenza, se diverso da quello dell’attività. Gli uffici registrano una persona fisica alla sua residenza, quindi le dichiarazioni usano questo indirizzo al posto di quello dell’attività. Lasci vuoto se è lo stesso."
+        "residenceHint": "Il suo indirizzo di residenza, se diverso da quello dell’attività. Gli uffici registrano una persona fisica alla sua residenza, quindi le dichiarazioni usano questo indirizzo al posto di quello dell’attività. Lasci vuoto se è lo stesso.",
+        "contact": "Contatto per gli uffici",
+        "contactHint": "E-mail e telefono scritti nelle dichiarazioni (IVA e altre). Non vengono stampati sulle fatture. Se li lasci vuoti, si usa il contatto dell’azienda."
       }
     },
     "team": {

@@ -2067,7 +2067,9 @@
         "socialOffice": "OSSZ / PSSZ",
         "none": "Nevybráno",
         "residence": "Bydliště (pro úřady)",
-        "residenceHint": "Trvalý pobyt, pokud se liší od adresy sídla. Úřady vedou fyzickou osobu pod adresou bydliště, proto ji v podáních použijeme místo adresy podnikání. Když je stejná, nechte prázdné."
+        "residenceHint": "Trvalý pobyt, pokud se liší od adresy sídla. Úřady vedou fyzickou osobu pod adresou bydliště, proto ji v podáních použijeme místo adresy podnikání. Když je stejná, nechte prázdné.",
+        "contact": "Kontakt pro úřady",
+        "contactHint": "E-mail a telefon, které se zapíšou do podání (přiznání k DPH a dalších). Na fakturách se netisknou. Když je necháte prázdné, použije se kontakt firmy."
       }
     },
     "team": {

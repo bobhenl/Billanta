@@ -2066,7 +2066,9 @@
         "socialOffice": "Oficina de seguridad social (OSSZ / PSSZ)",
         "none": "Sin elegir",
         "residence": "Domicilio (para las autoridades)",
-        "residenceHint": "Su domicilio permanente, si es distinto de la dirección del negocio. Las autoridades registran a una persona física por su domicilio, así que las declaraciones lo usan en lugar de la dirección del negocio. Déjelo vacío si es el mismo."
+        "residenceHint": "Su domicilio permanente, si es distinto de la dirección del negocio. Las autoridades registran a una persona física por su domicilio, así que las declaraciones lo usan en lugar de la dirección del negocio. Déjelo vacío si es el mismo.",
+        "contact": "Contacto para la administración",
+        "contactHint": "Correo y teléfono que se escriben en las declaraciones (IVA y otras). No se imprimen en las facturas. Si los deja vacíos, se usa el contacto de la empresa."
       }
     },
     "team": {

@@ -2066,7 +2066,9 @@
         "socialOffice": "Casa de asigurări sociale (OSSZ / PSSZ)",
         "none": "Neselectat",
         "residence": "Domiciliu (pentru autorități)",
-        "residenceHint": "Adresa de domiciliu, dacă diferă de adresa firmei. Autoritățile evidențiază persoana fizică după domiciliu, de aceea depunerile o folosesc în locul adresei firmei. Lăsați gol dacă este aceeași."
+        "residenceHint": "Adresa de domiciliu, dacă diferă de adresa firmei. Autoritățile evidențiază persoana fizică după domiciliu, de aceea depunerile o folosesc în locul adresei firmei. Lăsați gol dacă este aceeași.",
+        "contact": "Contact pentru autorități",
+        "contactHint": "E-mailul și telefonul trecute în declarații (decont TVA și altele). Nu apar pe facturi. Dacă le lăsați goale, se folosește contactul firmei."
       }
     },
     "team": {

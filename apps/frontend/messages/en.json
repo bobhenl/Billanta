@@ -2067,7 +2067,9 @@
         "socialOffice": "Social security office (OSSZ / PSSZ)",
         "none": "Not selected",
         "residence": "Residence (for authorities)",
-        "residenceHint": "Your permanent address, if it differs from the business address. Authorities record a person under their residence, so the filings use it instead of the business address. Leave empty if it is the same."
+        "residenceHint": "Your permanent address, if it differs from the business address. Authorities record a person under their residence, so the filings use it instead of the business address. Leave empty if it is the same.",
+        "contact": "Contact for the authorities",
+        "contactHint": "E-mail and phone written into the filings (VAT return and others). They are not printed on invoices. Leave empty to use the company contact."
       }
     },
     "team": {

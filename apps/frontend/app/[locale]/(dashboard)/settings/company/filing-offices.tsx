@@ -13,7 +13,9 @@ export const FILING_OFFICE_FIELDS = {
   socialOffice: 'social_office',
   residenceStreet: 'residence_street',
   residenceCity: 'residence_city',
-  residencePostalCode: 'residence_postal_code'
+  residencePostalCode: 'residence_postal_code',
+  filingEmail: 'filing_email',
+  filingPhone: 'filing_phone'
 } as const;
 export type FilingOfficeField = keyof typeof FILING_OFFICE_FIELDS;
 /** Sent as numbers: the backend validates them against the official code lists. */
@@ -61,10 +63,10 @@ export function FilingOffices({
       </select>
     </label>
   );
-  const text = (key: FilingOfficeField, label: string, maxLength: number, className = '') => (
+  const text = (key: FilingOfficeField, label: string, maxLength: number, className = '', type = 'text') => (
     <label className={`block text-sm ${className}`}>
       <span className="mb-1 block font-medium">{label}</span>
-      <input className={inputClass} value={values[key]} disabled={readOnly} maxLength={maxLength} onChange={(e) => set(key, e.target.value)} />
+      <input type={type} className={inputClass} value={values[key]} disabled={readOnly} maxLength={maxLength} onChange={(e) => set(key, e.target.value)} />
     </label>
   );
 
@@ -106,6 +108,15 @@ export function FilingOffices({
           </div>
         </div>
       )}
+      <div>
+        <InfoHint hint={t('contactHint')} className="mb-2">
+          <span className="text-sm font-medium">{t('contact')}</span>
+        </InfoHint>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {text('filingEmail', tc('email'), 320, '', 'email')}
+          {text('filingPhone', tc('phone'), 32, '', 'tel')}
+        </div>
+      </div>
     </div>
   );
 }

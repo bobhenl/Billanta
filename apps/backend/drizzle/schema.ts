@@ -278,6 +278,9 @@ export const tenants = pgTable("tenants", {
   residenceStreet: text("residence_street"),
   residenceCity: text("residence_city"),
   residencePostalCode: varchar("residence_postal_code", { length: 10 }),
+  // Contact for VetaP of the filings, when it should not be printed on invoices like email/phone are.
+  filingEmail: text("filing_email"),
+  filingPhone: varchar("filing_phone", { length: 32 }),
   bankAccountSwift: varchar("bank_account_swift", { length: 11 }),
   defaultDueDays: integer("default_due_days").notNull().default(14),
   defaultPaymentMethod: paymentMethodEnum("default_payment_method").notNull().default("bank_transfer"),

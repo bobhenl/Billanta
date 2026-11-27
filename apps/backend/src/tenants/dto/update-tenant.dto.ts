@@ -110,6 +110,8 @@ export const updateTenantSchema = z
     residence_street: text(200),
     residence_city: text(100),
     residence_postal_code: text(10),
+    filing_email: z.string().trim().email().max(320).nullish().or(z.literal("")),
+    filing_phone: text(32),
     bank_account_number: z
       .string()
       .regex(/^(\d{1,6}-)?\d{2,10}$/)

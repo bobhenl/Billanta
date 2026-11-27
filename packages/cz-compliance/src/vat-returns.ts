@@ -664,6 +664,8 @@ export function submitterFromTenant(t: {
   residenceStreet?: string | null;
   residenceCity?: string | null;
   residencePostalCode?: string | null;
+  filingEmail?: string | null;
+  filingPhone?: string | null;
 }): VatSubmitter {
   const legal = LEGAL_FORM.test(t.legalName.trim());
   const name = t.legalName.trim().split(/\s+/);
@@ -679,8 +681,9 @@ export function submitterFromTenant(t: {
     ...street,
     psc: (residence ? t.residencePostalCode : t.addressPostalCode) ?? "",
     stat: t.addressCountry === "CZ" ? "ČESKÁ REPUBLIKA" : t.addressCountry,
-    email: t.email ?? "",
-    telefon: t.phone ?? "",
+    // The contact for the tax office can differ from the one printed on invoices.
+    email: t.filingEmail?.trim() || t.email || "",
+    telefon: t.filingPhone?.trim() || t.phone || "",
     cUfo: t.taxOffice ?? null,
     cPracufo: t.taxOffice != null ? (t.taxWorkplace ?? null) : null,
   };

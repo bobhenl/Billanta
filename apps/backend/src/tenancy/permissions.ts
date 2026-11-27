@@ -230,6 +230,8 @@ export const TENANT_FIELD_SECTIONS: Record<string, PermissionAction> = {
   residence_street: "settings.company",
   residence_city: "settings.company",
   residence_postal_code: "settings.company",
+  filing_email: "settings.company",
+  filing_phone: "settings.company",
   bank_account_number: "settings.company",
   bank_account_bank_code: "settings.company",
   bank_account_iban: "settings.company",

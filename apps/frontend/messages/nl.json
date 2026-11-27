@@ -2066,7 +2066,9 @@
         "socialOffice": "Socialezekerheidskantoor (OSSZ / PSSZ)",
         "none": "Niet gekozen",
         "residence": "Woonadres (voor instanties)",
-        "residenceHint": "Uw vaste woonadres, als dat afwijkt van het bedrijfsadres. Instanties registreren een natuurlijke persoon op het woonadres, dus de aangiften gebruiken dat in plaats van het bedrijfsadres. Laat leeg als het hetzelfde is."
+        "residenceHint": "Uw vaste woonadres, als dat afwijkt van het bedrijfsadres. Instanties registreren een natuurlijke persoon op het woonadres, dus de aangiften gebruiken dat in plaats van het bedrijfsadres. Laat leeg als het hetzelfde is.",
+        "contact": "Contact voor de overheid",
+        "contactHint": "E-mail en telefoon die in de aangiften (btw-aangifte en andere) worden gezet. Ze staan niet op facturen. Laat leeg om het bedrijfscontact te gebruiken."
       }
     },
     "team": {
