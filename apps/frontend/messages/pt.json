@@ -8432,7 +8432,8 @@
             "regimeFlat": "Segundo as Definições, está no regime forfetário.",
             "regimeRegular": "Segundo as Definições, não está no regime forfetário.",
             "secondary": "Segundo as Definições, trata-se de uma atividade secundária. A calculadora considera as contribuições como para uma atividade principal; numa atividade secundária podem ser mais baixas.",
-            "sealed": "Nada foi preenchido: {count, plural, one {# documento tem} other {# documentos têm}} valores cifrados que o servidor não consegue somar. Introduza receitas e despesas à mão."
+            "sealed": "Ainda nada foi preenchido: {count, plural, one {# documento tem} other {# documentos têm}} valores cifrados. Desbloqueie o cofre e este navegador preenche os números, ou introduza receitas e despesas à mão.",
+            "sealedUnreadable": "Nada foi preenchido: não foi possível abrir {count, plural, one {# documento} other {# documentos}}. Introduza receitas e despesas à mão."
           }
         },
         "vat": {
@@ -14186,6 +14187,11 @@
       "highBand": "{name}: a base tributável ultrapassa o limiar do escalão de 23 % ({limit} por ano, proporcional ao período). A estimativa usa só a taxa base, o imposto real será maior.",
       "highBandOne": "A base tributável ultrapassa o limiar do escalão de 23 % ({limit} por ano, proporcional ao período). A estimativa usa só a taxa base, o imposto real será maior.",
       "singleEarner": "Só {name} tem rendimento. Se só um de vocês paga os impostos, defina este ano com um só contribuinte."
+    },
+    "sealed": {
+      "locked": "O relatório ainda não inclui {count, plural, one {# documento} other {# documentos}} com valores cifrados. Desbloqueie o cofre e este navegador soma-os.",
+      "unreadable": "Não foi possível abrir {count, plural, one {# documento} other {# documentos}}, por isso o relatório mostra só os documentos não cifrados.",
+      "failed": "Não foi possível carregar os documentos cifrados ({count}). O relatório mostra só os documentos não cifrados. Recarregue a página."
     }
   },
   "bankRules": {
@@ -14509,7 +14515,6 @@
           "A correspondência automática no servidor: depois de desbloquear, o seu navegador sugere correspondências e você confirma-as",
           "Os pagamentos só são calculados no seu navegador: num documento cifrado o servidor conhece apenas a data do pagamento e o estado, não o valor nem a taxa",
           "O envio por Peppol e as sugestões de IA com valores. O pagamento com cartão só no documento onde o permitir expressamente – o valor a pagar segue então legível para a Billanta e a Stripe",
-          "O rendimento líquido conta só os documentos não cifrados e indica quantos deixou de fora. A calculadora do imposto forfetário não preenche nada",
           "Os lembretes, o resumo semanal e os totais em atraso nos e-mails não indicam o valor"
         ],
         "how": [
@@ -14522,6 +14527,7 @@
           "O PDF, ISDOC, UBL e o pagamento QR são criados pelo seu navegador e, na ligação do cliente, pelo navegador do cliente",
           "As exportações para o contabilista (CSV, Pohoda, Money S3), as declarações de IVA, a base da declaração de rendimentos, o resumo anual e os resumos para a ČSSZ e o seguro de saúde são criados pelo seu navegador depois de desbloquear o cofre. Um documento que não abre trava o ficheiro",
           "O painel e o relatório do período somam os documentos cifrados enquanto o cofre está desbloqueado",
+          "O rendimento líquido e o preenchimento da calculadora do imposto forfetário são calculados pelo seu navegador depois de desbloquear o cofre",
           "As faturas recorrentes copiam os valores cifrados sem alterações"
         ]
       },

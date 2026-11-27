@@ -8432,7 +8432,8 @@
             "regimeFlat": "A Beállítások szerint Ön átalányadózó.",
             "regimeRegular": "A Beállítások szerint Ön nem átalányadózó.",
             "secondary": "A Beállítások szerint ez mellékes tevékenység. A kalkulátor a járulékokat fő tevékenységként számolja; mellékes tevékenységnél alacsonyabbak lehetnek.",
-            "sealed": "Semmit nem töltöttünk ki előre: {count, plural, one {# bizonylat} other {# bizonylat}} összegei titkosítottak, ezeket a szerver nem tudja összeadni. Adja meg kézzel a bevételeket és a kiadásokat."
+            "sealed": "Még semmit nem töltöttünk ki előre: {count, plural, one {# bizonylat} other {# bizonylat}} összegei titkosítottak. Oldja fel a széfet, és ez a böngésző kitölti a számokat, vagy adja meg kézzel a bevételeket és a kiadásokat.",
+            "sealedUnreadable": "Semmit nem töltöttünk ki előre: {count, plural, one {# bizonylatot nem sikerült megnyitni} other {# bizonylatot nem sikerült megnyitni}}. Adja meg kézzel a bevételeket és a kiadásokat."
           }
         },
         "vat": {
@@ -14186,6 +14187,11 @@
       "highBand": "{name}: az adóalap meghaladja a 23 %-os sáv határát ({limit} évente, az időszakra arányosítva). A becslés csak az alapkulccsal számol, a valódi adó magasabb lesz.",
       "highBandOne": "Az adóalap meghaladja a 23 %-os sáv határát ({limit} évente, az időszakra arányosítva). A becslés csak az alapkulccsal számol, a valódi adó magasabb lesz.",
       "singleEarner": "Csak {name} kapott bevételt. Ha csak egyikük fizet adót, állítsa erre az évre egy adózóra."
+    },
+    "sealed": {
+      "locked": "A kimutatás még nem tartalmaz {count, plural, one {# titkosított összegű bizonylatot} other {# titkosított összegű bizonylatot}}. Oldja fel a széfet, és ez a böngésző hozzáadja őket.",
+      "unreadable": "{count, plural, one {# bizonylatot nem sikerült megnyitni} other {# bizonylatot nem sikerült megnyitni}}, ezért a kimutatás csak a nem titkosított bizonylatokat mutatja.",
+      "failed": "A titkosított bizonylatokat ({count}) nem sikerült betölteni. A kimutatás csak a nem titkosított bizonylatokat mutatja. Töltse újra az oldalt."
     }
   },
   "bankRules": {
@@ -14509,7 +14515,6 @@
           "Automatikus párosítás a szerveren: a széf feloldása után a böngészője javasol párokat, Ön pedig megerősíti őket",
           "A befizetéseket csak a böngészője számolja: titkosított bizonylatnál a szerver csak a befizetés dátumát és az állapotot ismeri, az összeget és a díjat nem",
           "Küldés Peppolon és összegeket tartalmazó MI-javaslatok. Kártyás fizetés csak annál a bizonylatnál, ahol kifejezetten engedélyezi – a fizetendő összeg ekkor olvashatóan kerül a Billantához és a Stripe-hoz",
-          "A nettó jövedelem csak a nem titkosított bizonylatokat számolja, és kiírja, hányat hagyott ki. Az átalányadó-kalkulátor ilyenkor nem tölt ki semmit",
           "A felszólítások, a heti összefoglaló és a lejárt összegek az e-mailekben nem tartalmaznak összeget"
         ],
         "how": [
@@ -14522,6 +14527,7 @@
           "A PDF-et, az ISDOC-ot, az UBL-t és a QR-fizetést a böngészője készíti, az ügyfél linkjén az ügyfél böngészője",
           "A könyvelőnek szóló exportokat (CSV, Pohoda, Money S3), az ÁFA-bevallásokat, az adóbevallás alapjait, az éves kimutatást és a ČSSZ és az egészségbiztosító felé szóló kimutatásokat a böngészője készíti el a széf feloldása után. Egy meg nem nyitható bizonylat leállítja a fájlt",
           "A vezérlőpult és az időszaki kimutatás hozzáadja a titkosított bizonylatokat, amíg a széf fel van oldva",
+          "A nettó jövedelmet és az átalányadó-kalkulátor előzetes kitöltését a böngészője számolja ki a széf feloldása után",
           "Az ismétlődő számlák változatlanul másolják a titkosított összegeket"
         ]
       },

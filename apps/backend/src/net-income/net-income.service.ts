@@ -10,9 +10,8 @@ import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
 import { applyBuyerSnapshot } from "../invoices/party-snapshot";
 import { amountsSealed } from "../vault/sealed-amounts";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
-import { computeNetIncome, type IncomeItem } from "./net-income";
-import { netIncomeTips } from "./net-income-tips";
-import { creatorShares, settingsFor, type Shares, sharesSchema, type TaxModel, taxModelOf } from "./tax-model";
+import { netIncomeAmountOf, netIncomeReportOf, netIncomeSpanOf, type NetIncomeInputs, type NetIncomeInvoice, type SealedNetIncomeDoc } from "@faktur/cz-compliance";
+import { creatorShares, type Shares, sharesSchema, type TaxModel, taxModelOf } from "./tax-model";
 
 type Db = PostgresJsDatabase<typeof schema>;
 
@@ -73,16 +72,35 @@ export class NetIncomeService {
     return row;
   }
 
+  /** The report over the plain documents; sealed ones are only counted (the browser adds them from `inputs`). */
   async report(db: Db, tenantId: string, period: NetIncomePeriod) {
+    const { inputs, sealedIds } = await this.collect(db, tenantId, period);
+    return {
+      ...netIncomeReportOf(inputs),
+      /** Paid documents of the period with sealed amounts, left out of `result`. */
+      sealed: { count: sealedIds.length, ids: sealedIds },
+    };
+  }
+
+  /**
+   * Confidential mode: the same inputs the report is built from, the sealed
+   * documents with their totals envelope and rate instead of an amount. The
+   * browser opens them and builds the report with netIncomeReportOf; nothing
+   * opened comes back.
+   */
+  async inputs(db: Db, tenantId: string, period: NetIncomePeriod): Promise<NetIncomeInputs> {
+    return (await this.collect(db, tenantId, period)).inputs;
+  }
+
+  private async collect(db: Db, tenantId: string, period: NetIncomePeriod): Promise<{ inputs: NetIncomeInputs; sealedIds: string[] }> {
     const [tenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId));
     // The model is Czech (paušál, ČSSZ, ZP) and the received amounts are in CZK.
     if (tenantHomeCurrencyOf(tenant) !== "CZK") throw new BadRequestException("country_not_supported");
     const model = taxModelOf(tenant?.taxModel);
     const vatPayer = tenant?.dicVatPayer ?? false;
-    const firstMonth = period.month ? period.month - 1 : period.quarter ? (period.quarter - 1) * 3 : 0;
-    const months = period.month ? 1 : period.quarter ? 3 : 12;
-    const from = new Date(period.year, firstMonth, 1);
-    const to = new Date(period.year, firstMonth + months, 1);
+    const span = netIncomeSpanOf(period);
+    const from = new Date(period.year, span.month - 1, 1);
+    const to = new Date(period.year, span.month - 1 + span.months, 1);
 
     const rates = ReportRates.fromPrefs(tenant?.invoiceFormPrefs, new Date(), "CZK");
     const rows = await db
@@ -99,29 +117,32 @@ export class NetIncomeService {
         ),
       )
       .orderBy(schema.invoices.paidAt);
-    const ids = rows.map((r) => r.invoice.id);
+    // A sealed document's items hold only the placeholder: no need to load them.
+    const ids = rows.filter((r) => !amountsSealed(r.invoice)).map((r) => r.invoice.id);
     const items = ids.length ? await db.select().from(schema.invoiceLineItems).where(inArray(schema.invoiceLineItems.invoiceId, ids)) : [];
+    const rateOf = async (currency: string, exchangeRate: unknown, paidAt: Date) =>
+      (await rates.rate(currency, Number(exchangeRate) || null, paidAt, period.year)) ?? (await getHomeRate("CZK", currency, paidAt));
 
     let missingRates = 0;
-    const invoices: {
-      id: string;
-      number: string;
-      customer: string;
-      paidAt: string;
-      month: number;
-      currency: string;
-      amount: number;
-      income: number;
-      source: "czk" | "received" | "converted";
-      partnerShares: Shares | null;
-      /** The creator's partner when they claim their own invoices; used when partnerShares is null. */
-      claimedShares: Shares | null;
-    }[] = [];
-    // Sealed amounts would count as 0 income; they are listed for the browser instead.
-    const sealedIds: string[] = [];
+    const invoices: NetIncomeInvoice[] = [];
+    // Sealed amounts would count as 0 income; they go to the browser with their envelope instead.
+    const sealedDocs: SealedNetIncomeDoc[] = [];
     for (const { invoice, contact } of rows) {
+      const paidAt = invoice.paidAt!;
+      const listed = {
+        id: invoice.id,
+        number: invoice.invoiceNumber ?? "",
+        customer: contact ? (applyBuyerSnapshot(contact, invoice.buyerSnapshot).legalName ?? "") : "",
+        paidAt: dayOf(paidAt),
+        month: paidAt.getMonth() + 1,
+        currency: invoice.currency,
+        partnerShares: sharesOrNull(invoice.partnerShares),
+        claimedShares: creatorShares(model, invoice.createdByUserId),
+      };
       if (amountsSealed(invoice)) {
-        sealedIds.push(invoice.id);
+        // What arrived in CZK is sealed too (paymentsOnSeal), so a foreign one is converted like the year summary does.
+        const rate = invoice.currency === "CZK" ? 1 : await rateOf(invoice.currency, invoice.exchangeRate, paidAt);
+        sealedDocs.push({ ...listed, documentType: invoice.documentType as "invoice" | "credit_note", encAmounts: invoice.encAmounts!, rate });
         continue;
       }
       const totals = computeVatBreakdown(
@@ -129,10 +150,9 @@ export class NetIncomeService {
         { reverseCharge: invoice.reverseCharge },
       );
       const sign = invoice.documentType === "credit_note" ? -1 : 1;
-      const amount = Math.abs(vatPayer ? totals.totalWithoutVat : totals.totalWithVat) * sign;
-      const paidAt = invoice.paidAt!;
+      const amount = netIncomeAmountOf(totals, invoice.documentType, vatPayer);
       let income: number;
-      let source: "czk" | "received" | "converted";
+      let source: NetIncomeInvoice["source"];
       const received = Number(invoice.receivedCzk);
       if (invoice.currency === "CZK") {
         income = amount;
@@ -143,7 +163,7 @@ export class NetIncomeService {
         income = received * baseShare * sign;
         source = "received";
       } else {
-        const rate = (await rates.rate(invoice.currency, Number(invoice.exchangeRate) || null, paidAt, period.year)) ?? (await getHomeRate("CZK", invoice.currency, paidAt));
+        const rate = await rateOf(invoice.currency, invoice.exchangeRate, paidAt);
         if (rate == null) {
           missingRates++;
           continue;
@@ -151,60 +171,18 @@ export class NetIncomeService {
         income = amount * rate;
         source = "converted";
       }
-      invoices.push({
-        id: invoice.id,
-        number: invoice.invoiceNumber ?? "",
-        customer: contact ? (applyBuyerSnapshot(contact, invoice.buyerSnapshot).legalName ?? "") : "",
-        paidAt: dayOf(paidAt),
-        month: paidAt.getMonth() + 1,
-        currency: invoice.currency,
-        amount: round2(amount),
-        income: round2(income),
-        source,
-        partnerShares: sharesOrNull(invoice.partnerShares),
-        claimedShares: creatorShares(model, invoice.createdByUserId),
-      });
+      invoices.push({ ...listed, amount: round2(amount), income: round2(income), source });
     }
 
-    const fromDay = dayOf(from);
-    const toDay = dayOf(to);
-    const extraIncome = model.extra_income
-      .map((e, index) => ({ ...e, index }))
-      .filter((e) => e.date >= fromDay && e.date < toDay);
-
-    const itemsOf = (month: number | null): IncomeItem[] => [
-      ...invoices.filter((i) => month == null || i.month === month).map((i) => ({ amount: i.income, shares: i.partnerShares ?? i.claimedShares })),
-      ...extraIncome.filter((e) => month == null || Number(e.date.slice(5, 7)) === month).map((e) => ({ amount: e.amount, shares: e.shares })),
-    ];
-
-    // One-off and dated shared expenses are placed by the same calendar months as the extra income above.
-    const result = computeNetIncome(model, itemsOf(null), { year: period.year, month: firstMonth + 1, months });
-    // Each month on its own (credits and the paušál cap at 1/12), to compare them side by side.
-    const byMonth =
-      months > 1
-        ? Array.from({ length: months }, (_, i) => {
-            const month = firstMonth + i + 1;
-            const r = computeNetIncome(model, itemsOf(month), { year: period.year, month, months: 1 });
-            return { month, income: r.totals.income, taxes: r.totals.taxes, sharedExpenses: r.totals.sharedExpenses, net: r.totals.net };
-          })
-        : null;
-
-    const settings = settingsFor(model, period.year);
-    return {
-      period: { ...period, months, from: fromDay, to: toDay },
+    const inputs: NetIncomeInputs = {
+      period: { ...period, months: span.months, from: dayOf(from), to: dayOf(to) },
       vatPayer,
       model,
-      /** What the period was computed with (its year's settings). */
-      settings: { ...settings, partners: Object.fromEntries(settings.partners) },
-      result,
-      tips: netIncomeTips(model, period.year, result),
-      byMonth,
       invoices,
-      extraIncome,
       missingRates,
-      /** Paid documents of the period with sealed amounts, left out of `result`. */
-      sealed: { count: sealedIds.length, ids: sealedIds },
+      sealedDocs,
     };
+    return { inputs, sealedIds: sealedDocs.map((d) => d.id) };
   }
 }
 

@@ -8432,7 +8432,8 @@
             "regimeFlat": "Conform Setărilor, sunteți în regimul forfetar.",
             "regimeRegular": "Conform Setărilor, nu sunteți în regimul forfetar.",
             "secondary": "Conform Setărilor, aceasta este o activitate secundară. Calculatorul socotește asigurările ca pentru o activitate principală; pentru una secundară pot fi mai mici.",
-            "sealed": "Nu am completat nimic: {count, plural, one {# document are} few {# documente au} other {# de documente au}} sume criptate pe care serverul nu le poate aduna. Introduceți manual veniturile și cheltuielile."
+            "sealed": "Încă nu am completat nimic: {count, plural, one {# document are} few {# documente au} other {# de documente au}} sume criptate. Deblocați seiful și acest browser completează cifrele, sau introduceți manual veniturile și cheltuielile.",
+            "sealedUnreadable": "Nu am completat nimic: nu s-au putut deschide {count, plural, one {# document} few {# documente} other {# de documente}}. Introduceți manual veniturile și cheltuielile."
           }
         },
         "vat": {
@@ -14186,6 +14187,11 @@
       "highBand": "{name}: baza impozabilă depășește pragul cotei de 23 % ({limit} pe an, proporțional cu perioada). Estimarea folosește doar cota de bază, impozitul real va fi mai mare.",
       "highBandOne": "Baza impozabilă depășește pragul cotei de 23 % ({limit} pe an, proporțional cu perioada). Estimarea folosește doar cota de bază, impozitul real va fi mai mare.",
       "singleEarner": "Doar {name} are venit. Dacă doar unul dintre voi plătește impozitele, setează anul acesta pe un singur contribuabil."
+    },
+    "sealed": {
+      "locked": "Raportul nu include încă {count, plural, one {# document} few {# documente} other {# de documente}} cu sume criptate. Deblocați seiful și acest browser le adaugă.",
+      "unreadable": "Nu s-au putut deschide {count, plural, one {# document} few {# documente} other {# de documente}}, așa că raportul arată doar documentele necriptate.",
+      "failed": "Documentele criptate ({count}) nu s-au putut încărca. Raportul arată doar documentele necriptate. Reîncărcați pagina."
     }
   },
   "bankRules": {
@@ -14509,7 +14515,6 @@
           "Potrivirea automată a plăților pe server: după deblocarea seifului, browserul propune perechi și dvs. le confirmați",
           "Plățile le calculează doar browserul: la un document criptat serverul cunoaște doar data plății și starea, nu suma sau comisionul",
           "Trimiterea prin Peppol și propunerile AI cu sume. Plata cu cardul doar la documentul unde o permiteți explicit – suma de plată ajunge atunci lizibil la Billanta și Stripe",
-          "Venitul net numără doar documentele necriptate și spune câte a lăsat deoparte. Calculatorul impozitului forfetar nu completează nimic",
           "Mementourile, rezumatul săptămânal și totalurile restante din e-mailuri nu includ suma"
         ],
         "how": [
@@ -14522,6 +14527,7 @@
           "PDF-ul, ISDOC, UBL și plata QR le creează browserul dvs., iar pe linkul pentru client browserul clientului",
           "Exporturile pentru contabil (CSV, Pohoda, Money S3), declarațiile de TVA, baza declarației de venit, rezumatul anual și declarațiile pentru ČSSZ și asigurarea de sănătate le creează browserul după deblocarea seifului. Un document care nu se deschide oprește fișierul",
           "Panoul și raportul perioadei adaugă documentele criptate cât timp seiful este deblocat",
+          "Venitul net și precompletarea calculatorului impozitului forfetar le calculează browserul după deblocarea seifului",
           "Facturile recurente copiază sumele criptate neschimbate"
         ]
       },

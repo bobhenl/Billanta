@@ -8423,7 +8423,8 @@
             "regimeFlat": "V nastavení máte uvedené, že ste v paušálnom režime.",
             "regimeRegular": "V nastavení máte uvedené, že v paušálnom režime nie ste.",
             "secondary": "V nastavení máte vedľajšiu činnosť. Kalkulačka počíta poistné ako pri hlavnej činnosti, pri vedľajšej môže vyjsť nižšie.",
-            "sealed": "Čísla sme nepredvyplnili: {count, plural, one {# doklad má} few {# doklady majú} other {# dokladov má}} zašifrované sumy, ktoré server nespočíta. Zadajte príjmy a výdavky ručne."
+            "sealed": "Čísla zatiaľ nie sú predvyplnené: {count, plural, one {# doklad má} few {# doklady majú} other {# dokladov má}} zašifrované sumy. Odomknite trezor a tento prehliadač ich doplní, alebo zadajte príjmy a výdavky ručne.",
+            "sealedUnreadable": "Čísla sme nepredvyplnili: {count, plural, one {# doklad sa nepodarilo otvoriť} few {# doklady sa nepodarilo otvoriť} other {# dokladov sa nepodarilo otvoriť}}. Zadajte príjmy a výdavky ručne."
           }
         },
         "vat": {
@@ -14098,6 +14099,11 @@
       "highBand": "{name}: základ dane je nad hranicou pre 23 % daň ({limit} za rok, pomerne za obdobie). Odhad počíta len so základnou sadzbou, skutočná daň bude vyššia.",
       "highBandOne": "Základ dane je nad hranicou pre 23 % daň ({limit} za rok, pomerne za obdobie). Odhad počíta len so základnou sadzbou, skutočná daň bude vyššia.",
       "singleEarner": "Príjem má len {name}. Ak dane platí len jeden z vás, nastavte pre tento rok jedného daňovníka."
+    },
+    "sealed": {
+      "locked": "Prehľad zatiaľ nezahŕňa {count, plural, one {# doklad} few {# doklady} other {# dokladov}} so zašifrovanými sumami. Po odomknutí trezoru ich dopočíta tento prehliadač.",
+      "unreadable": "{count, plural, one {# doklad sa nepodarilo otvoriť} few {# doklady sa nepodarilo otvoriť} other {# dokladov sa nepodarilo otvoriť}}, preto prehľad ukazuje len nezašifrované doklady.",
+      "failed": "Zašifrované doklady ({count}) sa nepodarilo načítať. Prehľad ukazuje len nezašifrované doklady, skúste stránku obnoviť."
     }
   },
   "bankRules": {
@@ -14418,7 +14424,6 @@
           "Automatické párovanie platieb na serveri: po odomknutí trezoru navrhne páry váš prehliadač a vy ich potvrdíte",
           "Úhrady počíta len váš prehliadač: server pri zašifrovanom doklade pozná len dátum úhrady a stav, nie sumu ani poplatok",
           "Odoslanie cez Peppol a AI návrhy so sumami. Platba kartou len pri doklade, kde ju výslovne povolíte – suma na zaplatenie potom pôjde čitateľne do Billanty a Stripe",
-          "Čistý príjem počíta len nezašifrované doklady a napíše, koľko ich vynechal. Kalkulačka paušálnej dane potom čísla nepredvyplní",
           "Upomienky, týždenný súhrn a súčty po splatnosti v e-mailoch sumu neuvedú"
         ],
         "how": [
@@ -14431,6 +14436,7 @@
           "PDF, ISDOC, UBL a QR platbu vytvorí váš prehliadač, na odkaze pre klienta prehliadač klienta",
           "Exporty pre účtovníka (CSV, Pohoda, Money S3), priznania a prehľady DPH, podklady k daňovému priznaniu, ročný prehľad, DPFO a prehľady pre ČSSZ a ZP zostaví váš prehliadač po odomknutí trezoru. Doklad, ktorý sa nedá otvoriť, súbor zastaví",
           "Dashboard a prehľad obdobia pripočítajú zašifrované doklady, keď je trezor odomknutý",
+          "Čistý príjem a predvyplnenie kalkulačky paušálnej dane vypočíta váš prehliadač po odomknutí trezoru",
           "Opakované faktúry kopírujú zašifrované sumy bez zmeny"
         ]
       },

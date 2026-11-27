@@ -8433,7 +8433,8 @@
             "regimeFlat": "Laut Einstellungen sind Sie in der Pauschalsteuer.",
             "regimeRegular": "Laut Einstellungen sind Sie nicht in der Pauschalsteuer.",
             "secondary": "Laut Einstellungen handelt es sich um eine Nebentätigkeit. Der Rechner berechnet die Versicherung wie für eine Haupttätigkeit; bei einer Nebentätigkeit kann sie niedriger sein.",
-            "sealed": "Nichts vorausgefüllt: {count, plural, one {# Beleg hat} other {# Belege haben}} verschlüsselte Beträge, die der Server nicht addieren kann. Geben Sie Einnahmen und Ausgaben von Hand ein."
+            "sealed": "Noch nichts vorausgefüllt: {count, plural, one {# Beleg hat} other {# Belege haben}} verschlüsselte Beträge. Entsperren Sie den Tresor, dann füllt dieser Browser die Zahlen ein, oder geben Sie Einnahmen und Ausgaben von Hand ein.",
+            "sealedUnreadable": "Nichts vorausgefüllt: {count, plural, one {# Beleg ließ sich nicht öffnen} other {# Belege ließen sich nicht öffnen}}. Geben Sie Einnahmen und Ausgaben von Hand ein."
           }
         },
         "vat": {
@@ -14187,6 +14188,11 @@
       "highBand": "{name}: Die Bemessungsgrundlage liegt über der Grenze für 23 % Steuer ({limit} pro Jahr, anteilig für den Zeitraum). Die Schätzung rechnet nur mit dem Grundsatz, die echte Steuer ist höher.",
       "highBandOne": "Die Bemessungsgrundlage liegt über der Grenze für 23 % Steuer ({limit} pro Jahr, anteilig für den Zeitraum). Die Schätzung rechnet nur mit dem Grundsatz, die echte Steuer ist höher.",
       "singleEarner": "Nur {name} hat Einkommen. Wenn nur einer von Ihnen Steuern zahlt, stellen Sie dieses Jahr auf eine steuerpflichtige Person um."
+    },
+    "sealed": {
+      "locked": "Der Bericht enthält {count, plural, one {# Beleg} other {# Belege}} mit verschlüsselten Beträgen noch nicht. Entsperren Sie den Tresor, dann rechnet dieser Browser sie ein.",
+      "unreadable": "{count, plural, one {# Beleg ließ sich nicht öffnen} other {# Belege ließen sich nicht öffnen}}, daher zeigt der Bericht nur unverschlüsselte Belege.",
+      "failed": "Die verschlüsselten Belege ({count}) ließen sich nicht laden. Der Bericht zeigt nur unverschlüsselte Belege. Laden Sie die Seite neu."
     }
   },
   "bankRules": {
@@ -14510,7 +14516,6 @@
           "Automatische Zahlungszuordnung auf dem Server: nach dem Entsperren schlägt Ihr Browser Zuordnungen vor und Sie bestätigen sie",
           "Zahlungen rechnet nur Ihr Browser: bei einem verschlüsselten Beleg kennt der Server nur Zahlungsdatum und Status, nicht Betrag oder Gebühr",
           "Versand über Peppol und KI-Vorschläge mit Beträgen. Kartenzahlung nur bei einem Beleg, bei dem Sie sie ausdrücklich erlauben – der zu zahlende Betrag geht dann lesbar an Billanta und Stripe",
-          "Das Nettoeinkommen zählt nur unverschlüsselte Belege und nennt, wie viele es ausgelassen hat. Der Pauschalsteuer-Rechner füllt dann nichts vor",
           "Mahnungen, die Wochenübersicht und überfällige Summen in E-Mails nennen keinen Betrag"
         ],
         "how": [
@@ -14523,6 +14528,7 @@
           "PDF, ISDOC, UBL und die QR-Zahlung erstellt Ihr Browser, beim Kundenlink der Browser des Kunden",
           "Exporte für die Buchhaltung (CSV, Pohoda, Money S3), Umsatzsteuermeldungen, die Grundlage für die Steuererklärung, die Jahresübersicht, die Einkommensteuererklärung und die Übersichten für ČSSZ und Krankenkasse erstellt Ihr Browser, sobald Sie den Tresor entsperren. Ein Beleg, der sich nicht öffnen lässt, stoppt die Datei",
           "Dashboard und Periodenbericht rechnen die verschlüsselten Belege mit ein, solange der Tresor entsperrt ist",
+          "Das Nettoeinkommen und die Vorausfüllung des Pauschalsteuer-Rechners berechnet Ihr Browser, sobald Sie den Tresor entsperren",
           "Wiederkehrende Rechnungen kopieren die verschlüsselten Beträge unverändert"
         ]
       },
