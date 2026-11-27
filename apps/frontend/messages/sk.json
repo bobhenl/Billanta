@@ -813,7 +813,8 @@
         "ai_key_missing": "Chýba vlastný API kľúč pre AI",
         "unsupported_file_type": "Nepodporovaný typ súboru (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "AI odmietla doklad spracovať",
-        "ai_unparseable": "Z dokladu sa nepodarilo nič vyčítať"
+        "ai_unparseable": "Z dokladu sa nepodarilo nič vyčítať",
+        "ai_credits_exhausted": "AI kredity na tento mesiac sa minuli. Ďalšie pribudnú prvého, viac ich má vyšší tarif, alebo použite vlastný kľúč."
       },
       "supplierSection": "Dodávateľ",
       "supplierLinked": "Prepojené s kontaktom",
@@ -2054,7 +2055,8 @@
         "expenses": "Asistent výdavkov",
         "auditor": "Daňový poradca / audítor",
         "viewer": "Len čítanie",
-        "custom": "Vlastné oprávnenia"
+        "custom": "Vlastné oprávnenia",
+        "assistant": "Asistent (len koncepty)"
       },
       "presetHints": {
         "admin": "Plný prístup vrátane tímu, údajov firmy a predplatného.",
@@ -2063,7 +2065,8 @@
         "expenses": "Zapisuje výdavky a bločky, faktúry a kontakty len prezerá.",
         "auditor": "Vidí všetko vrátane banky a exportov, nič nemení.",
         "viewer": "Prezerá faktúry, kontakty a výdavky. Banku ani exporty nevidí.",
-        "custom": "Nastavte prístup ku každej oblasti zvlášť."
+        "custom": "Nastavte prístup ku každej oblasti zvlášť, po rozbalení aj jednotlivé akcie.",
+        "assistant": "Pripravuje koncepty faktúr a kontakty. Vystavenie, odoslanie a storno nechá na vás."
       },
       "presetsHint": "Vyberte pripravený profil, alebo pri členovi nastavte oprávnenia po oblastiach (ikona posuvníkov).",
       "areas": {
@@ -2072,7 +2075,10 @@
         "contacts": "Kontakty",
         "expenses": "Výdavky",
         "bank": "Banka",
-        "reports": "Exporty"
+        "reports": "Exporty",
+        "projects": "Projekty a výkazy",
+        "recurring": "Pravidelné faktúry",
+        "settings": "Nastavenia"
       },
       "levels": {
         "none": "Bez prístupu",
@@ -2081,7 +2087,7 @@
       },
       "editPermissions": "Upraviť oprávnenia",
       "editPermissionsFor": "Oprávnenia – {name}",
-      "permissionsHint": "Úpravy zahŕňajú aj čítanie. Tím, údaje firmy a predplatné spravujú len administrátori.",
+      "permissionsHint": "Úpravy zahŕňajú aj čítanie. Po rozbalení oblasti zapnete alebo vypnete jednotlivé akcie. Tím, moduly, zálohy a predplatné spravujú len administrátori.",
       "save": "Uložiť",
       "directory": {
         "toggle": "Nemáte účtovníka? Vyberte si z overených",
@@ -2095,7 +2101,47 @@
         "picked": "E-mail {email} je vyplnený. Skontrolujte rolu a pošlite pozvánku."
       },
       "copyLink": "Kopírovať odkaz",
-      "seatLimit": "Váš tarif už nemá voľné miesto v tíme. Plus má 3 používateľov, Firma 10. Účtovníci sa nepočítajú (max. 2)."
+      "seatLimit": "Váš tarif už nemá voľné miesto v tíme. Plus má 3 používateľov, Firma 10. Účtovníci sa nepočítajú (max. 2).",
+      "actions": {
+        "invoices": {
+          "create": "Vytvárať a upravovať koncepty",
+          "issue": "Vystavovať (prideliť číslo)",
+          "send": "Posielať klientom a upomínať",
+          "cancel": "Stornovať a mazať"
+        },
+        "expenses": {
+          "create": "Zapisovať a upravovať",
+          "approve": "Schvaľovať (zaplatené, prijaté e-faktúry)",
+          "delete": "Mazať"
+        },
+        "bank": {
+          "match": "Párovať platby a synchronizovať",
+          "connections": "Spravovať prepojenia s bankou"
+        },
+        "reports": {
+          "export": "Sťahovať exporty"
+        },
+        "settings": {
+          "company": "Firma a bankové účty",
+          "numbering": "Číslovanie dokladov",
+          "templates": "Šablóny, e-maily a premenné",
+          "paymentMethods": "Spôsoby úhrady",
+          "integrations": "Integrácie a webhooky",
+          "apiKeys": "API kľúče"
+        }
+      },
+      "actionHints": {
+        "apiKeys": "Kľúč má plný prístup k celej firme bez ohľadu na tieto oprávnenia."
+      },
+      "actionsCount": "{granted}/{total}",
+      "summaryWithout": "bez: {list}",
+      "locked": {
+        "backup": "Zálohy",
+        "billing": "Predplatné",
+        "ownerOnly": "Len vlastník",
+        "adminsOnly": "Len vlastník a administrátori"
+      },
+      "fillFromPreset": "Vyplniť podľa"
     },
     "exports": {
       "title": "Exporty pre účtovníka",
@@ -4294,7 +4340,7 @@
     "title": "Cenník",
     "lead": "Začnite zadarmo, bez platobnej karty. Na vyšší tarif prejdete, keď ho budete potrebovať.",
     "seoTitle": "Cenník fakturácie – začnite zadarmo",
-    "metaDescription": "Cenník Billanty: Zdarma s 10 dokladmi mesačne a platbou za ďalšie, Start od 4,99 €, Plus s AI od 9,99 € a Firma pre tímy. Bez platobnej karty, ceny bez DPH.",
+    "metaDescription": "Cenník Billanty: Zadarmo s 10 dokladmi mesačne, Start od 4,99 €, Plus s AI od 9,99 € a Firma pre tímy. Bez platobnej karty, ceny bez DPH.",
     "yearly": "Ročne",
     "monthly": "Mesačne",
     "yearlySave": "2 mesiace zadarmo",
@@ -4314,7 +4360,7 @@
         "cta": "Začať zadarmo",
         "features": [
           "10 dokladov mesačne v cene",
-          "Ďalšie doklady za {payg} / ks",
+          "1 používateľ + účtovník",
           "ISDOC, QR platba, registre a VIES",
           "5 AI kreditov mesačne",
           "Sledovanie limitu DPH a daňový kalendár",
@@ -4332,8 +4378,10 @@
           "Opakované faktúry a klientský portál",
           "Podklady k dani z príjmov",
           "Export pre Pohodu a Money S3",
+          "API a webhooky (1 000 požiadaviek)",
           "30 AI kreditov mesačne",
-          "Prístup pre účtovníka zdarma"
+          "Prístup pre účtovníka zdarma",
+          "Faktúry bez pätičky Billanty"
         ]
       },
       "plus": {
@@ -4343,7 +4391,7 @@
         "features": [
           "Všetko zo Startu",
           "150 AI kreditov mesačne",
-          "Priznanie k DPH, kontrolný a súhrnný výkaz",
+          "Priznanie k DPH, kontrolný a súhrnný výkaz za SK aj CZ",
           "Platby kartou na faktúre",
           "3 používatelia + účtovník",
           "API a webhooky (10 000 požiadaviek)",
@@ -4356,7 +4404,7 @@
         "cta": "Vybrať Firmu",
         "features": [
           "Všetko z Plus",
-          "Až 10 firiem pod jedným účtom",
+          "Rozdelenie čistého príjmu až medzi 10 spoločníkov",
           "10 používateľov s rolami",
           "500 AI kreditov mesačne",
           "API a webhooky (50 000 požiadaviek)",
@@ -4364,7 +4412,7 @@
         ]
       }
     },
-    "paygNote": "Na tarife Zdarma platíte len za doklady nad 10 mesačne, {payg} za kus. Pri zhruba 34 a viac dokladoch mesačne vyjde lacnejšie Start.",
+    "limitsNote": "Na tarife Zadarmo vystavíte 10 dokladov mesačne, dobropisy sa nerátajú. Export pre Pohodu alebo Money S3 si vyskúšate raz mesačne a súbory pre DPH raz za celý čas.",
     "aiCreditNote": "AI kredit = jedna faktúra z hlasovej alebo textovej správy, alebo jeden prečítaný bloček.",
     "compare": {
       "title": "Porovnanie taríf",
@@ -4396,30 +4444,37 @@
         "ownKey": "Vlastný kľúč k AI bez limitu",
         "vatLimit": "Sledovanie obratu pre DPH a daňový kalendár",
         "annual": "Podklady k dani z príjmov",
-        "vatFilings": "Priznanie k DPH, kontrolný a súhrnný výkaz",
+        "vatFilings": "Priznanie k DPH, kontrolné a súhrnné hlásenie (CZ)",
         "accountantExport": "Export pre účtovníka",
         "users": "Používatelia",
         "companies": "Firmy pod jedným účtom",
-        "api": "API a webhooky (požiadavky mesačne)",
+        "api": "API (požiadavky mesačne)",
         "time": "Evidencia času",
-        "backups": "Zálohy dát (Google Drive, stiahnutie)",
-        "support": "Podpora"
+        "backups": "Zálohy dát (Google Drive, SFTP, šifrované, stiahnutie)",
+        "support": "Podpora",
+        "invoiceLock": "Faktúry zamknuté heslom",
+        "brandFooter": "Bez pätičky „Vytvorené v Billante“",
+        "stripe": "Synchronizácia platieb zo Stripe",
+        "vatFilingsSk": "Priznanie k DPH, kontrolný a súhrnný výkaz (SK)",
+        "netIncome": "Čistý príjem: spoločníci vo výpočte",
+        "webhooks": "Webhooky"
       },
       "cell": {
-        "docsFree": "10 v cene, ďalšie {payg} / ks",
+        "docsFree": "10",
         "unlimited": "Neobmedzene",
         "twoTemplates": "2 šablóny",
         "manual": "Ručne",
         "automatic": "Automaticky",
-        "csv": "CSV",
         "csvPlus": "CSV, Pohoda, Money S3",
-        "oneUser": "1",
-        "userAccountant": "1 + účtovník",
         "threeAccountant": "3 + účtovník",
-        "tenUsers": "10 s rolami",
-        "upTo10": "Až 10",
         "email": "E-mail",
-        "priority": "Prednostná"
+        "priority": "Prednostná",
+        "onScreen": "Na obrazovke",
+        "oneDownload": "1 stiahnutie na skúšku",
+        "csvTaste": "CSV, Pohoda a Money S3 1× mesačne",
+        "oneAccountant": "1 + účtovník",
+        "tenAccountant": "10 + účtovník",
+        "ownPlan": "Až 10, každá má vlastný tarif"
       }
     },
     "compareCompetitors": "Ako si Billanta stojí oproti SuperFaktúre, Fakturoidu a ďalším",
@@ -4443,7 +4498,7 @@
       "items": [
         {
           "q": "Je Billanta zadarmo?",
-          "a": "Áno. Tarif Zadarmo nemá časové obmedzenie a nepotrebuje platobnú kartu. Zahŕňa 10 dokladov mesačne, každý ďalší stojí {payg}. ISDOC, QR platba a vyhľadanie firiem v registroch sú vo všetkých tarifoch."
+          "a": "Áno. Tarif Zadarmo nemá časové obmedzenie a nepotrebuje platobnú kartu. Zahŕňa 10 dokladov mesačne. Keď ich potrebujete viac, Start má doklady bez obmedzenia. ISDOC, QR platba a vyhľadanie firiem v registroch sú vo všetkých tarifoch."
         },
         {
           "q": "Sú ceny vrátane DPH?",
@@ -4463,7 +4518,7 @@
         },
         {
           "q": "Potrebuje môj účtovník vlastný tarif?",
-          "a": "Nie. Od tarifu Start má jeden účtovník prístup do vašej firmy zadarmo, v cene vášho tarifu."
+          "a": "Nie. Na každom tarife, aj na tarife Zadarmo, môžu mať do vašej firmy prístup až 2 účtovníci zadarmo."
         },
         {
           "q": "Prečo je na faktúrach riadok „Vystavené v aplikácii Billanta“?",
@@ -4676,7 +4731,8 @@
       "ai_provider_unavailable": "AI teraz neodpovedá. Skúste to znova o chvíľu.",
       "empty_input": "Napíšte, čo sa má fakturovať.",
       "symbol_invalid": "Symboly môžu obsahovať len číslice (VS a ŠS max. 10, KS max. 4).",
-      "reason_required": "Napíšte dôvod úpravy."
+      "reason_required": "Napíšte dôvod úpravy.",
+      "ai_credits_exhausted": "AI kredity na tento mesiac sa minuli. Ďalšie pribudnú prvého, viac ich má vyšší tarif, alebo použite vlastný kľúč."
     },
     "copy": {
       "title": "Predvyplniť podľa inej faktúry",
@@ -14060,6 +14116,20 @@
   "updateNotice": {
     "text": "Billanta má novú verziu. Obnovte stránku, nech všetko funguje.",
     "reload": "Obnoviť"
+  },
+  "planLimits": {
+    "from": "Od tarifu {plan}",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Firma"
+    },
+    "documents": "{used} z {limit} dokladov tento mesiac",
+    "aiCredits": "Zostáva {remaining} z {limit} AI kreditov tento mesiac",
+    "apiRequests": "{used} z {limit} požiadaviek API tento mesiac",
+    "tasteLeft": "Na skúšku zadarmo: {left}×",
+    "planRequired": "Toto je od tarifu {plan}.",
+    "documentsOut": "Tento mesiac ste vystavili všetkých {limit} dokladov, ktoré tarif zahŕňa. Ďalšie vystavíte od tarifu {plan} alebo od prvého dňa ďalšieho mesiaca."
   },
   "vault": {
     "settingsLink": "Nastavenia Dôverného režimu",

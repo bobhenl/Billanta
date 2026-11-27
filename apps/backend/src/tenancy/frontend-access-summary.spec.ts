@@ -39,6 +39,10 @@ describe("accessSummary", () => {
       expenses: "write",
       bank: "none",
       reports: "read",
+      // Projects and recurring follow invoices; an accountant reads settings by default.
+      projects: "write",
+      recurring: "write",
+      settings: "read",
     });
     expect(levels(accessSummary("admin", { bank: "none" })).bank).toBe("write");
     // A broken override is ignored as a whole, like the guard does.

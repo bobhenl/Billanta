@@ -812,7 +812,8 @@
         "ai_key_missing": "Manca la Sua chiave API per l'AI",
         "unsupported_file_type": "Tipo di file non supportato (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "L'AI ha rifiutato di elaborare il documento",
-        "ai_unparseable": "Non è stato possibile leggere nulla dal documento"
+        "ai_unparseable": "Non è stato possibile leggere nulla dal documento",
+        "ai_credits_exhausted": "I crediti AI di questo mese sono finiti. I nuovi arrivano il 1°; un piano superiore ne ha di più, oppure usi la Sua chiave."
       },
       "supplierSection": "Fornitore e documento",
       "supplierLinked": "Collegato a un contatto",
@@ -2053,7 +2054,8 @@
         "expenses": "Assistente per le spese",
         "auditor": "Consulente fiscale / revisore",
         "viewer": "Sola lettura",
-        "custom": "Permessi personalizzati"
+        "custom": "Permessi personalizzati",
+        "assistant": "Assistente (solo bozze)"
       },
       "presetHints": {
         "admin": "Accesso completo, inclusi team, dati aziendali e fatturazione del servizio.",
@@ -2062,7 +2064,8 @@
         "expenses": "Registra spese e ricevute, consulta fatture e contatti.",
         "auditor": "Vede tutto, incluse banca ed esportazioni, senza modificare nulla.",
         "viewer": "Consulta fatture, contatti e spese. Niente banca né esportazioni.",
-        "custom": "Imposti l'accesso per ogni area separatamente."
+        "custom": "Imposta l’accesso per ogni area ed espandi un’area per scegliere le singole azioni.",
+        "assistant": "Prepara bozze di fatture e contatti. Emissione, invio e annullamento restano a te."
       },
       "presetsHint": "Scelga un profilo predefinito oppure regoli l'accesso di un membro per ogni area (icona dei cursori).",
       "areas": {
@@ -2071,7 +2074,10 @@
         "contacts": "Contatti",
         "expenses": "Spese",
         "bank": "Banca",
-        "reports": "Esportazioni"
+        "reports": "Esportazioni",
+        "projects": "Progetti e tempo",
+        "recurring": "Fatture ricorrenti",
+        "settings": "Impostazioni"
       },
       "levels": {
         "none": "Nessun accesso",
@@ -2080,7 +2086,7 @@
       },
       "editPermissions": "Modifica permessi",
       "editPermissionsFor": "Permessi – {name}",
-      "permissionsHint": "La modifica include la lettura. Solo gli amministratori gestiscono il team, i dati aziendali e la fatturazione del servizio.",
+      "permissionsHint": "La modifica include la lettura. Espandi un’area per attivare o disattivare le singole azioni. Solo gli amministratori gestiscono team, moduli, backup e abbonamento.",
       "save": "Salva",
       "directory": {
         "toggle": "Non ha un commercialista? Ne scelga uno verificato",
@@ -2094,7 +2100,47 @@
         "picked": "{email} è stata inserita. Verifichi il ruolo e invii l'invito."
       },
       "copyLink": "Copia link",
-      "seatLimit": "Il tuo piano non ha più posti liberi. Plus ha 3 utenti, Business 10. I commercialisti non contano (fino a 2)."
+      "seatLimit": "Il tuo piano non ha più posti liberi. Plus ha 3 utenti, Business 10. I commercialisti non contano (fino a 2).",
+      "actions": {
+        "invoices": {
+          "create": "Creare e modificare bozze",
+          "issue": "Emettere (assegnare il numero)",
+          "send": "Inviare ai clienti e sollecitare",
+          "cancel": "Annullare ed eliminare"
+        },
+        "expenses": {
+          "create": "Registrare e modificare",
+          "approve": "Approvare (pagato, fatture elettroniche ricevute)",
+          "delete": "Eliminare"
+        },
+        "bank": {
+          "match": "Abbinare i pagamenti e sincronizzare",
+          "connections": "Gestire i collegamenti bancari"
+        },
+        "reports": {
+          "export": "Scaricare le esportazioni"
+        },
+        "settings": {
+          "company": "Azienda e conti bancari",
+          "numbering": "Numerazione dei documenti",
+          "templates": "Modelli, e-mail e variabili",
+          "paymentMethods": "Metodi di pagamento",
+          "integrations": "Integrazioni e webhook",
+          "apiKeys": "Chiavi API"
+        }
+      },
+      "actionHints": {
+        "apiKeys": "Una chiave ha accesso completo a tutta l’azienda, indipendentemente da questi permessi."
+      },
+      "actionsCount": "{granted}/{total}",
+      "summaryWithout": "senza: {list}",
+      "locked": {
+        "backup": "Backup",
+        "billing": "Abbonamento",
+        "ownerOnly": "Solo il titolare",
+        "adminsOnly": "Solo il titolare e gli amministratori"
+      },
+      "fillFromPreset": "Compila da"
     },
     "exports": {
       "title": "Esportazioni per il commercialista",
@@ -4287,7 +4333,7 @@
     "title": "Prezzi",
     "lead": "Inizi gratis, senza carta. Passi a un piano superiore quando ne ha bisogno.",
     "seoTitle": "Prezzi del software di fatturazione – inizia gratis",
-    "metaDescription": "Prezzi di Billanta: Free con 10 documenti al mese e pagamento a consumo oltre questa soglia, Start da 4,99 €, Plus con AI da 9,99 € e Business per i team. Nessuna carta richiesta, prezzi IVA esclusa.",
+    "metaDescription": "Prezzi di Billanta: Free con 10 documenti al mese, Start da 4,99 €, Plus con AI da 9,99 € e Business per i team. Nessuna carta richiesta, prezzi IVA esclusa.",
     "yearly": "Annuale",
     "monthly": "Mensile",
     "yearlySave": "2 mesi gratis",
@@ -4307,7 +4353,7 @@
         "cta": "Inizia gratis",
         "features": [
           "10 documenti al mese inclusi",
-          "Documenti aggiuntivi a {payg} l'uno",
+          "1 utente + commercialista",
           "ISDOC, pagamento con QR, ricerca nei registri e VIES",
           "5 crediti AI al mese",
           "Monitoraggio della soglia IVA e scadenzario fiscale",
@@ -4325,8 +4371,10 @@
           "Fatture ricorrenti e portale clienti",
           "Dati per l'imposta sul reddito",
           "Esportazione per Pohoda e Money S3",
+          "API e webhook (1.000 richieste)",
           "30 crediti AI al mese",
-          "Accesso gratuito per il commercialista"
+          "Accesso gratuito per il commercialista",
+          "Fatture senza il piè di pagina Billanta"
         ]
       },
       "plus": {
@@ -4336,7 +4384,7 @@
         "features": [
           "Tutto ciò che include Start",
           "150 crediti AI al mese",
-          "Dichiarazione IVA, comunicazione di controllo ed elenchi riepilogativi",
+          "Dichiarazione IVA, comunicazione di controllo ed elenchi riepilogativi per CZ e SK",
           "Pagamenti con carta sulle fatture",
           "3 utenti + commercialista",
           "API e webhook (10.000 richieste)",
@@ -4349,7 +4397,7 @@
         "cta": "Scegli Business",
         "features": [
           "Tutto ciò che include Plus",
-          "Fino a 10 aziende in un unico account",
+          "Reddito netto diviso fino a 10 soci",
           "10 utenti con ruoli",
           "500 crediti AI al mese",
           "API e webhook (50.000 richieste)",
@@ -4357,7 +4405,7 @@
         ]
       }
     },
-    "paygNote": "Con Free paga solo i documenti oltre i 10 al mese, {payg} l'uno. Da circa 34 documenti al mese conviene Start.",
+    "limitsNote": "Con Free emette 10 documenti al mese, le note di credito non contano. Può provare l'esportazione per Pohoda o Money S3 una volta al mese e i file IVA una volta sola.",
     "aiCreditNote": "Un credito AI = una fattura da un messaggio vocale o di testo, oppure uno scontrino letto da una foto.",
     "compare": {
       "title": "Confronta i piani",
@@ -4389,30 +4437,37 @@
         "ownKey": "La Sua chiave AI, senza limiti",
         "vatLimit": "Monitoraggio della soglia IVA e scadenzario fiscale",
         "annual": "Dati per l'imposta sul reddito",
-        "vatFilings": "Dichiarazione IVA, comunicazione di controllo ed elenchi riepilogativi",
+        "vatFilings": "Dichiarazione IVA, comunicazione di controllo ed elenchi riepilogativi (CZ)",
         "accountantExport": "Esportazione per il commercialista",
         "users": "Utenti",
         "companies": "Aziende in un unico account",
-        "api": "API e webhook (richieste al mese)",
+        "api": "API (richieste al mese)",
         "time": "Registrazione dei tempi",
-        "backups": "Backup dei dati (Google Drive, download)",
-        "support": "Assistenza"
+        "backups": "Backup dei dati (Google Drive, SFTP, cifrati, download)",
+        "support": "Assistenza",
+        "invoiceLock": "Fatture protette da password",
+        "brandFooter": "Senza il piè di pagina «Creato con Billanta»",
+        "stripe": "Sincronizzazione dei pagamenti Stripe",
+        "vatFilingsSk": "Dichiarazione IVA, comunicazione di controllo ed elenchi riepilogativi (SK)",
+        "netIncome": "Reddito netto: soci nella ripartizione",
+        "webhooks": "Webhook"
       },
       "cell": {
-        "docsFree": "10 inclusi, poi {payg} l'uno",
+        "docsFree": "10",
         "unlimited": "Illimitati",
         "twoTemplates": "2 modelli",
         "manual": "Manuale",
         "automatic": "Automatico",
-        "csv": "CSV",
         "csvPlus": "CSV, Pohoda, Money S3",
-        "oneUser": "1",
-        "userAccountant": "1 + commercialista",
         "threeAccountant": "3 + commercialista",
-        "tenUsers": "10 con ruoli",
-        "upTo10": "Fino a 10",
         "email": "E-mail",
-        "priority": "Prioritaria"
+        "priority": "Prioritaria",
+        "onScreen": "A schermo",
+        "oneDownload": "1 download di prova",
+        "csvTaste": "CSV, Pohoda e Money S3 1 volta al mese",
+        "oneAccountant": "1 + commercialista",
+        "tenAccountant": "10 + commercialista",
+        "ownPlan": "Fino a 10, ognuna con il suo piano"
       }
     },
     "compareCompetitors": "Billanta a confronto con Fakturoid, iDoklad e altri",
@@ -4436,7 +4491,7 @@
       "items": [
         {
           "q": "Billanta è gratuito?",
-          "a": "Sì. Il piano Free non ha limiti di tempo e non richiede una carta. Include 10 documenti al mese; ogni documento in più costa {payg}. ISDOC, pagamenti con QR e ricerca delle aziende nel registro ARES sono inclusi in tutti i piani."
+          "a": "Sì. Il piano Free non ha limiti di tempo e non richiede una carta. Include 10 documenti al mese. Se Le servono di più, Start non ha limiti di documenti. ISDOC, pagamenti con QR e ricerca delle aziende nel registro ARES sono inclusi in tutti i piani."
         },
         {
           "q": "I prezzi includono l'IVA?",
@@ -4456,7 +4511,7 @@
         },
         {
           "q": "Il mio commercialista ha bisogno di un piano proprio?",
-          "a": "No. Dal piano Start un commercialista ottiene gratuitamente l'accesso alla Sua azienda, nell'ambito del Suo piano."
+          "a": "No. Con ogni piano, anche con Free, fino a 2 commercialisti possono accedere gratuitamente alla Sua azienda."
         },
         {
           "q": "Perché sulle fatture compare “Creato con Billanta”?",
@@ -4669,7 +4724,8 @@
       "ai_provider_unavailable": "L’IA non risponde. Riprovi tra un momento.",
       "empty_input": "Descriva cosa fatturare.",
       "symbol_invalid": "I simboli possono contenere solo cifre (VS e SS fino a 10, KS fino a 4).",
-      "reason_required": "Indichi il motivo della modifica."
+      "reason_required": "Indichi il motivo della modifica.",
+      "ai_credits_exhausted": "I crediti AI di questo mese sono finiti. I nuovi arrivano il 1°; un piano superiore ne ha di più, oppure usi la Sua chiave."
     },
     "copy": {
       "title": "Precompila da un’altra fattura",
@@ -14144,6 +14200,20 @@
   "updateNotice": {
     "text": "È disponibile una nuova versione di Billanta. Ricarichi la pagina perché tutto funzioni.",
     "reload": "Ricarica"
+  },
+  "planLimits": {
+    "from": "Dal piano {plan}",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} di {limit} documenti questo mese",
+    "aiCredits": "Restano {remaining} di {limit} crediti AI questo mese",
+    "apiRequests": "{used} di {limit} richieste API questo mese",
+    "tasteLeft": "Da provare gratis: {left}×",
+    "planRequired": "È disponibile dal piano {plan}.",
+    "documentsOut": "Questo mese ha già emesso tutti i {limit} documenti inclusi nel piano. Può emetterne altri con il piano {plan} o dal 1° del mese prossimo."
   },
   "vault": {
     "settingsLink": "Impostazioni della Modalità riservata",

@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
-import { useCanWrite } from '@/components/access-provider';
+import { useCanDo, useCanWrite } from '@/components/access-provider';
 import { deleteExpense, setExpensePaid, type ActionResult } from '../actions';
 
 /** Toolbar of the expense detail (every action changes the expense, so none for a read-only member). */
@@ -17,6 +17,10 @@ export function ExpenseActions({ id, paid }: { id: string; paid: boolean }) {
   const [dialog, setDialog] = useState<null | 'paid' | 'delete'>(null);
   const [paidAt, setPaidAt] = useState(() => new Date().toISOString().slice(0, 10));
   const canEdit = useCanWrite('expenses');
+  // Settings → Team: paying is approving, and deleting is its own permission (the backend checks both).
+  const canCreate = useCanDo('expenses.create');
+  const canApprove = useCanDo('expenses.approve');
+  const canDelete = useCanDo('expenses.delete');
 
   const act = (fn: () => Promise<ActionResult<unknown>>, okText: string, after?: () => void) =>
     startTransition(async () => {
@@ -36,7 +40,7 @@ export function ExpenseActions({ id, paid }: { id: string; paid: boolean }) {
   return (
     <>
       <div className="flex flex-wrap gap-2">
-        {paid ? (
+        {!canApprove ? null : paid ? (
           <button type="button" className={buttonClass.secondary} disabled={pending} onClick={() => act(() => setExpensePaid(id, null), t('done.unpaid'))}>
             <Undo2 className="h-4 w-4" />
             {t('markUnpaid')}
@@ -47,26 +51,32 @@ export function ExpenseActions({ id, paid }: { id: string; paid: boolean }) {
             {t('markPaid')}
           </button>
         )}
-        <Link href={`/expenses/${id}/edit`} className={buttonClass.secondary}>
-          <Pencil className="h-4 w-4" />
-          {t('edit')}
-        </Link>
-        {/* Icon-only on phones, so the toolbar stays on one row at 375px. */}
-        <Link href={`/expenses/new?from=${id}`} className={buttonClass.ghost} title={t('duplicate')} aria-label={t('duplicate')}>
-          <Copy className="h-4 w-4" aria-hidden="true" />
-          <span className="hidden sm:inline">{t('duplicate')}</span>
-        </Link>
+        {canCreate && (
+          <>
+            <Link href={`/expenses/${id}/edit`} className={buttonClass.secondary}>
+              <Pencil className="h-4 w-4" />
+              {t('edit')}
+            </Link>
+            {/* Icon-only on phones, so the toolbar stays on one row at 375px. */}
+            <Link href={`/expenses/new?from=${id}`} className={buttonClass.ghost} title={t('duplicate')} aria-label={t('duplicate')}>
+              <Copy className="h-4 w-4" aria-hidden="true" />
+              <span className="hidden sm:inline">{t('duplicate')}</span>
+            </Link>
+          </>
+        )}
         {/* Kept apart from the everyday actions so it is not hit by mistake. */}
-        <button
-          type="button"
-          className={`${buttonClass.ghost} ml-auto hover:text-destructive sm:ml-2`}
-          title={t('delete')}
-          aria-label={t('delete')}
-          onClick={() => setDialog('delete')}
-        >
-          <Trash2 className="h-4 w-4" aria-hidden="true" />
-          <span className="hidden sm:inline">{t('delete')}</span>
-        </button>
+        {canDelete && (
+          <button
+            type="button"
+            className={`${buttonClass.ghost} ml-auto hover:text-destructive sm:ml-2`}
+            title={t('delete')}
+            aria-label={t('delete')}
+            onClick={() => setDialog('delete')}
+          >
+            <Trash2 className="h-4 w-4" aria-hidden="true" />
+            <span className="hidden sm:inline">{t('delete')}</span>
+          </button>
+        )}
       </div>
 
       <Modal

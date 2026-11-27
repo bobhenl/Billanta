@@ -2,7 +2,8 @@
 
 import { revalidatePath } from 'next/cache';
 import { backendMessage } from '@/lib/action-error';
-import { apiFetch } from '@/lib/api-client';
+import { apiFetch, ApiError } from '@/lib/api-client';
+import { documentsOutText } from '@/lib/plan-refusal';
 import { errorCode, invoiceBody, resolveContact } from './invoice-body';
 import type { AresPrefill, Contact, InvoiceDraftInput, ItemSuggestion, SuggestionResult } from './types';
 
@@ -137,6 +138,7 @@ export async function saveInvoice(
     await apiFetch(`/api/v1/invoices/${id}/issue`, { method: 'POST' });
     return { ok: true, id };
   } catch (error) {
-    return { ok: true, id, issueError: backendMessage(error) };
+    const documentsOut = error instanceof ApiError ? await documentsOutText(error.body) : null;
+    return { ok: true, id, issueError: documentsOut ?? backendMessage(error) };
   }
 }

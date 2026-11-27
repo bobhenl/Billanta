@@ -202,6 +202,15 @@ CREATE POLICY tenant_isolation ON bank_rules
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
 
+-- tenant_usage – plan-limit counters (migration 0105).
+ALTER TABLE tenant_usage ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tenant_usage FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS tenant_isolation ON tenant_usage;
+CREATE POLICY tenant_isolation ON tenant_usage
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
 -- projects / time_entries — time tracking (migration 0029).
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE projects FORCE ROW LEVEL SECURITY;

@@ -33,7 +33,7 @@ const LABELS: Record<
     button: "Přijmout pozvánku",
     ignore: "Pokud jste pozvánku nečekali, e-mail ignorujte.",
     roles: { owner: "Vlastník", admin: "Administrátor", accountant: "Účetní", viewer: "Jen čtení" },
-    areas: { invoices: "Faktury", contacts: "Kontakty", expenses: "Výdaje", bank: "Banka", reports: "Exporty" },
+    areas: { invoices: "Faktury", contacts: "Kontakty", expenses: "Výdaje", bank: "Banka", reports: "Exporty", projects: "Projekty a čas", recurring: "Opakované faktury", settings: "Nastavení" },
     levels: { none: "bez přístupu", read: "jen čtení", write: "úpravy" },
   },
   sk: {
@@ -46,7 +46,7 @@ const LABELS: Record<
     button: "Prijať pozvánku",
     ignore: "Ak ste pozvánku nečakali, e-mail ignorujte.",
     roles: { owner: "Vlastník", admin: "Administrátor", accountant: "Účtovník", viewer: "Len čítanie" },
-    areas: { invoices: "Faktúry", contacts: "Kontakty", expenses: "Výdavky", bank: "Banka", reports: "Exporty" },
+    areas: { invoices: "Faktúry", contacts: "Kontakty", expenses: "Výdavky", bank: "Banka", reports: "Exporty", projects: "Projekty a čas", recurring: "Opakované faktúry", settings: "Nastavenia" },
     levels: { none: "bez prístupu", read: "len čítanie", write: "úpravy" },
   },
   en: {
@@ -59,7 +59,7 @@ const LABELS: Record<
     button: "Accept invitation",
     ignore: "If you did not expect this invitation, you can ignore this e-mail.",
     roles: { owner: "Owner", admin: "Admin", accountant: "Accountant", viewer: "Read only" },
-    areas: { invoices: "Invoices", contacts: "Contacts", expenses: "Expenses", bank: "Bank", reports: "Exports" },
+    areas: { invoices: "Invoices", contacts: "Contacts", expenses: "Expenses", bank: "Bank", reports: "Exports", projects: "Projects and time", recurring: "Recurring invoices", settings: "Settings" },
     levels: { none: "no access", read: "read only", write: "edit" },
   },
 };

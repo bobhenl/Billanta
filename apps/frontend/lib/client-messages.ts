@@ -27,6 +27,7 @@ const DASHBOARD_ONLY = [
   'expenses',
   'reports',
   'netIncome',
+  'planLimits',
   'palette',
   'time',
   'templates',

@@ -812,7 +812,8 @@
         "ai_key_missing": "Falta a sua própria chave de API de IA",
         "unsupported_file_type": "Tipo de ficheiro não suportado (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "A IA recusou-se a processar o documento",
-        "ai_unparseable": "Não foi possível ler nada do documento"
+        "ai_unparseable": "Não foi possível ler nada do documento",
+        "ai_credits_exhausted": "Os créditos de IA deste mês acabaram. Chegam novos no dia 1; um plano superior tem mais, ou use a sua própria chave."
       },
       "supplierSection": "Fornecedor e documento",
       "supplierLinked": "Associado a um contacto",
@@ -2053,7 +2054,8 @@
         "expenses": "Assistente de despesas",
         "auditor": "Consultor fiscal / auditor",
         "viewer": "Só leitura",
-        "custom": "Permissões personalizadas"
+        "custom": "Permissões personalizadas",
+        "assistant": "Assistente (só rascunhos)"
       },
       "presetHints": {
         "admin": "Acesso total, incluindo a equipa, os dados da empresa e a subscrição.",
@@ -2062,7 +2064,8 @@
         "expenses": "Regista despesas e recibos, consulta faturas e contactos.",
         "auditor": "Vê tudo, incluindo banco e exportações, e não altera nada.",
         "viewer": "Consulta faturas, contactos e despesas. Sem banco nem exportações.",
-        "custom": "Defina o acesso a cada área separadamente."
+        "custom": "Defina o acesso de cada área e expanda uma área para escolher as ações uma a uma.",
+        "assistant": "Prepara rascunhos de faturas e contactos. Emitir, enviar e anular fica consigo."
       },
       "presetsHint": "Escolha um perfil pronto ou ajuste o acesso de um membro área a área (ícone dos controlos deslizantes).",
       "areas": {
@@ -2071,7 +2074,10 @@
         "contacts": "Contactos",
         "expenses": "Despesas",
         "bank": "Banco",
-        "reports": "Exportações"
+        "reports": "Exportações",
+        "projects": "Projetos e tempo",
+        "recurring": "Faturas recorrentes",
+        "settings": "Definições"
       },
       "levels": {
         "none": "Sem acesso",
@@ -2080,7 +2086,7 @@
       },
       "editPermissions": "Editar permissões",
       "editPermissionsFor": "Permissões – {name}",
-      "permissionsHint": "Editar inclui ler. Só os administradores gerem a equipa, os dados da empresa e a subscrição.",
+      "permissionsHint": "Editar inclui ler. Expanda uma área para ligar ou desligar as suas ações. Só os administradores gerem a equipa, os módulos, as cópias de segurança e a subscrição.",
       "save": "Guardar",
       "directory": {
         "toggle": "Não tem contabilista? Escolha um verificado",
@@ -2094,7 +2100,47 @@
         "picked": "{email} foi preenchido. Verifique a função e envie o convite."
       },
       "copyLink": "Copiar ligação",
-      "seatLimit": "O seu plano já não tem lugares livres. O Plus tem 3 utilizadores, o Business 10. Os contabilistas não contam (até 2)."
+      "seatLimit": "O seu plano já não tem lugares livres. O Plus tem 3 utilizadores, o Business 10. Os contabilistas não contam (até 2).",
+      "actions": {
+        "invoices": {
+          "create": "Criar e editar rascunhos",
+          "issue": "Emitir (atribuir número)",
+          "send": "Enviar a clientes e lembrar",
+          "cancel": "Anular e eliminar"
+        },
+        "expenses": {
+          "create": "Registar e editar",
+          "approve": "Aprovar (pago, faturas eletrónicas recebidas)",
+          "delete": "Eliminar"
+        },
+        "bank": {
+          "match": "Associar pagamentos e sincronizar",
+          "connections": "Gerir ligações bancárias"
+        },
+        "reports": {
+          "export": "Descarregar exportações"
+        },
+        "settings": {
+          "company": "Empresa e contas bancárias",
+          "numbering": "Numeração de documentos",
+          "templates": "Modelos, e-mails e variáveis",
+          "paymentMethods": "Métodos de pagamento",
+          "integrations": "Integrações e webhooks",
+          "apiKeys": "Chaves API"
+        }
+      },
+      "actionHints": {
+        "apiKeys": "Uma chave tem acesso total a toda a empresa, independentemente destas permissões."
+      },
+      "actionsCount": "{granted}/{total}",
+      "summaryWithout": "sem: {list}",
+      "locked": {
+        "backup": "Cópias de segurança",
+        "billing": "Subscrição",
+        "ownerOnly": "Só o proprietário",
+        "adminsOnly": "Só o proprietário e os administradores"
+      },
+      "fillFromPreset": "Preencher a partir de"
     },
     "exports": {
       "title": "Exportações para o contabilista",
@@ -4287,7 +4333,7 @@
     "title": "Preços",
     "lead": "Comece grátis, sem cartão. Mude de plano quando precisar.",
     "seoTitle": "Preços de faturação – comece grátis",
-    "metaDescription": "Preços da Billanta: Free com 10 documentos por mês e pagamento por utilização a partir daí, Start desde 4,99 €, Plus com IA desde 9,99 € e Business para equipas. Sem cartão, preços sem IVA.",
+    "metaDescription": "Preços da Billanta: Free com 10 documentos por mês, Start desde 4,99 €, Plus com IA desde 9,99 € e Business para equipas. Sem cartão, preços sem IVA.",
     "yearly": "Anual",
     "monthly": "Mensal",
     "yearlySave": "2 meses grátis",
@@ -4307,7 +4353,7 @@
         "cta": "Começar grátis",
         "features": [
           "10 documentos por mês incluídos",
-          "Documentos adicionais a {payg} cada",
+          "1 utilizador + contabilista",
           "ISDOC, pagamento por QR, consulta de registos e VIES",
           "5 créditos de IA por mês",
           "Controlo do limiar de IVA e calendário fiscal",
@@ -4325,8 +4371,10 @@
           "Faturas recorrentes e portal do cliente",
           "Valores para o imposto sobre o rendimento",
           "Exportação para Pohoda e Money S3",
+          "API e webhooks (1000 pedidos)",
           "30 créditos de IA por mês",
-          "Acesso gratuito para o contabilista"
+          "Acesso gratuito para o contabilista",
+          "Faturas sem o rodapé da Billanta"
         ]
       },
       "plus": {
@@ -4336,7 +4384,7 @@
         "features": [
           "Tudo o que o Start inclui",
           "150 créditos de IA por mês",
-          "Declaração de IVA, declaração de controlo e declaração recapitulativa",
+          "Declaração de IVA, de controlo e recapitulativa para CZ e SK",
           "Pagamentos com cartão nas faturas",
           "3 utilizadores + contabilista",
           "API e webhooks (10 000 pedidos)",
@@ -4349,7 +4397,7 @@
         "cta": "Escolher Business",
         "features": [
           "Tudo o que o Plus inclui",
-          "Até 10 empresas numa só conta",
+          "Rendimento líquido dividido por até 10 sócios",
           "10 utilizadores com funções",
           "500 créditos de IA por mês",
           "API e webhooks (50 000 pedidos)",
@@ -4357,7 +4405,7 @@
         ]
       }
     },
-    "paygNote": "No Free só paga os documentos acima de 10 por mês, a {payg} cada. A partir de cerca de 34 documentos por mês, o Start fica mais barato.",
+    "limitsNote": "No Grátis emite 10 documentos por mês; as notas de crédito não contam. Pode experimentar a exportação para Pohoda ou Money S3 uma vez por mês e os ficheiros de IVA uma vez.",
     "aiCreditNote": "Um crédito de IA = uma fatura a partir de uma mensagem de voz ou de texto, ou um recibo lido a partir de uma fotografia.",
     "compare": {
       "title": "Comparar planos",
@@ -4389,30 +4437,37 @@
         "ownKey": "A sua própria chave de IA, sem limite",
         "vatLimit": "Controlo do limiar de IVA e calendário fiscal",
         "annual": "Valores para o imposto sobre o rendimento",
-        "vatFilings": "Declaração de IVA, declaração de controlo e declaração recapitulativa",
+        "vatFilings": "Declaração de IVA, de controlo e recapitulativa (CZ)",
         "accountantExport": "Exportação para o contabilista",
         "users": "Utilizadores",
         "companies": "Empresas numa só conta",
-        "api": "API e webhooks (pedidos por mês)",
+        "api": "API (pedidos por mês)",
         "time": "Registo de horas",
-        "backups": "Cópias de segurança (Google Drive, transferência)",
-        "support": "Suporte"
+        "backups": "Cópias de segurança (Google Drive, SFTP, cifradas, transferência)",
+        "support": "Suporte",
+        "invoiceLock": "Faturas protegidas por palavra-passe",
+        "brandFooter": "Sem o rodapé «Feito com Billanta»",
+        "stripe": "Sincronização de pagamentos Stripe",
+        "vatFilingsSk": "Declaração de IVA, de controlo e recapitulativa (SK)",
+        "netIncome": "Rendimento líquido: sócios na divisão",
+        "webhooks": "Webhooks"
       },
       "cell": {
-        "docsFree": "10 incluídos, depois {payg} cada",
+        "docsFree": "10",
         "unlimited": "Ilimitado",
         "twoTemplates": "2 modelos",
         "manual": "Manual",
         "automatic": "Automático",
-        "csv": "CSV",
         "csvPlus": "CSV, Pohoda, Money S3",
-        "oneUser": "1",
-        "userAccountant": "1 + contabilista",
         "threeAccountant": "3 + contabilista",
-        "tenUsers": "10 com funções",
-        "upTo10": "Até 10",
         "email": "E-mail",
-        "priority": "Prioritário"
+        "priority": "Prioritário",
+        "onScreen": "No ecrã",
+        "oneDownload": "1 transferência de teste",
+        "csvTaste": "CSV, Pohoda e Money S3 1 vez por mês",
+        "oneAccountant": "1 + contabilista",
+        "tenAccountant": "10 + contabilista",
+        "ownPlan": "Até 10, cada uma com o seu plano"
       }
     },
     "compareCompetitors": "Como a Billanta se compara com o Fakturoid, o iDoklad e outros",
@@ -4436,7 +4491,7 @@
       "items": [
         {
           "q": "A Billanta é gratuita?",
-          "a": "Sim. O plano Free não tem limite de tempo e não precisa de cartão. Inclui 10 documentos por mês; cada documento adicional custa {payg}. ISDOC, pagamentos por QR e a consulta de empresas no registo ARES estão incluídos em todos os planos."
+          "a": "Sim. O plano Grátis não tem limite de tempo e não precisa de cartão. Inclui 10 documentos por mês. Se precisar de mais, o Start não tem limite de documentos. ISDOC, pagamentos por QR e a consulta de empresas no registo ARES estão incluídos em todos os planos."
         },
         {
           "q": "Os preços incluem IVA?",
@@ -4456,7 +4511,7 @@
         },
         {
           "q": "O meu contabilista precisa de um plano próprio?",
-          "a": "Não. A partir do plano Start, um contabilista tem acesso gratuito à sua empresa, incluído no seu plano."
+          "a": "Não. Em qualquer plano, incluindo o Grátis, até 2 contabilistas podem aceder gratuitamente à sua empresa."
         },
         {
           "q": "Porque é que as faturas dizem «Feito com Billanta»?",
@@ -4669,7 +4724,8 @@
       "ai_provider_unavailable": "A IA não está a responder. Tente novamente daqui a pouco.",
       "empty_input": "Descreva o que pretende faturar.",
       "symbol_invalid": "Os símbolos só podem conter algarismos (VS e SS até 10, KS até 4).",
-      "reason_required": "Indique o motivo da alteração."
+      "reason_required": "Indique o motivo da alteração.",
+      "ai_credits_exhausted": "Os créditos de IA deste mês acabaram. Chegam novos no dia 1; um plano superior tem mais, ou use a sua própria chave."
     },
     "copy": {
       "title": "Preencher a partir de outra fatura",
@@ -14144,6 +14200,20 @@
   "updateNotice": {
     "text": "Há uma nova versão do Billanta. Recarregue a página para que tudo funcione.",
     "reload": "Recarregar"
+  },
+  "planLimits": {
+    "from": "A partir do plano {plan}",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} de {limit} documentos este mês",
+    "aiCredits": "Restam {remaining} de {limit} créditos de IA este mês",
+    "apiRequests": "{used} de {limit} pedidos de API este mês",
+    "tasteLeft": "Para experimentar grátis: {left}×",
+    "planRequired": "Isto está disponível a partir do plano {plan}.",
+    "documentsOut": "Este mês já emitiu os {limit} documentos incluídos no seu plano. Pode emitir mais com o plano {plan} ou a partir do dia 1 do próximo mês."
   },
   "vault": {
     "settingsLink": "Definições do Modo confidencial",

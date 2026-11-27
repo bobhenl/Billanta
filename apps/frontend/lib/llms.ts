@@ -4,7 +4,7 @@ import { brandsFor, comparedPages } from '@/lib/competitors';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
 import { GLOSSARY } from '@/lib/glossary';
 import { glossaryText } from '@/lib/glossary-content';
-import { BANK_TRANSFER_SURCHARGE_PERCENT, COMPARISON, formatPlanPrice, PAYG_PRICE, PLANS, type PlanCurrency } from '@/lib/plans';
+import { BANK_TRANSFER_SURCHARGE_PERCENT, COMPARISON, formatPlanPrice, PLANS, type PlanCurrency } from '@/lib/plans';
 import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES } from '@/lib/public-tools';
 import { REFERRAL_REWARDS } from '@/lib/referral';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
@@ -42,7 +42,6 @@ function price(currency: PlanCurrency, value: number) {
 
 function pricingLines(): string[] {
   const plans = en.pricing.plans as Record<string, { name: string; tagline: string; features: string[] }>;
-  const payg = (c: PlanCurrency) => price(c, PAYG_PRICE[c]);
   return [
     ...PLANS.map((p) => {
       const copy = plans[p.key]!;
@@ -50,10 +49,10 @@ function pricingLines(): string[] {
         p.price.CZK.monthly === 0
           ? 'free, no time limit'
           : `${price('CZK', p.price.CZK.yearly)} / ${price('EUR', p.price.EUR.yearly)} a month billed yearly, ${price('CZK', p.price.CZK.monthly)} / ${price('EUR', p.price.EUR.monthly)} billed monthly`;
-      return `- ${copy.name} (${copy.tagline}): ${cost}. ${copy.features.map((f) => fill(f, { payg: `${payg('CZK')} / ${payg('EUR')}` })).join('; ')}.`;
+      return `- ${copy.name} (${copy.tagline}): ${cost}. ${copy.features.join('; ')}.`;
     }),
     '',
-    `Prices exclude VAT. Card subscriptions can be cancelled any time. Paying by bank transfer against a proforma costs ${BANK_TRANSFER_SURCHARGE_PERCENT} % more and is in CZK only. Free includes 10 documents a month, then ${payg('CZK')} / ${payg('EUR')} per document. ${en.pricing.aiCreditNote}`
+    `Prices exclude VAT. Card subscriptions can be cancelled any time. Paying by bank transfer against a proforma costs ${BANK_TRANSFER_SURCHARGE_PERCENT} % more and is in CZK only. ${en.pricing.limitsNote} ${en.pricing.aiCreditNote}`
   ];
 }
 
@@ -201,8 +200,7 @@ function comparisonTable(): string[] {
   const cells = c.cell as Record<string, string>;
   const groups = c.groups as Record<string, string>;
   const names = PLANS.map((p) => (en.pricing.plans as Record<string, { name: string }>)[p.key]!.name);
-  const payg = `${price('CZK', PAYG_PRICE.CZK)} / ${price('EUR', PAYG_PRICE.EUR)}`;
-  const cell = (v: boolean | number | string) => (v === true ? 'yes' : v === false ? '–' : typeof v === 'number' ? v.toLocaleString('en') : fill(cells[v] ?? v, { payg }));
+  const cell = (v: boolean | number | string) => (v === true ? 'yes' : v === false ? '–' : typeof v === 'number' ? v.toLocaleString('en') : (cells[v] ?? v));
   return [
     `| Feature | ${names.join(' | ')} |`,
     `|---|${names.map(() => '---').join('|')}|`,
@@ -219,7 +217,6 @@ function faqs(locale: string): string[] {
   const cheapest = Math.min(...PLANS.filter((p) => p.price[currency].yearly > 0).map((p) => p.price[currency].yearly));
   const params = {
     price: formatPlanPrice(cheapest, currency, locale),
-    payg: formatPlanPrice(PAYG_PRICE[currency], currency, locale),
     percent: BANK_TRANSFER_SURCHARGE_PERCENT,
     welcome: REFERRAL_REWARDS.accountant.welcome,
     reward: REFERRAL_REWARDS.accountant.reward

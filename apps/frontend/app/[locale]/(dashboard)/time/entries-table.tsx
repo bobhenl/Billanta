@@ -9,7 +9,7 @@ import { EmptyState } from '@/components/empty-state';
 import { InfoHint } from '@/components/info-hint';
 import { SortHeader, useListSort } from '@/components/sort-header';
 import { toast } from '@/components/toaster';
-import { useCanWrite } from '@/components/access-provider';
+import { useCanDo, useCanWrite } from '@/components/access-provider';
 import { formatDate, formatMoney } from '@/lib/invoice-ui';
 import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { ENTRY_STATE_CLASSES, entryState, formatMinutes, type Project, type TimeEntry } from '@/lib/time-ui';
@@ -63,7 +63,11 @@ export function EntriesTable({
   const [editing, setEditing] = useState<TimeEntry | null>(null);
   const [pending, startTransition] = useTransition();
   // Selection only feeds "invoice these", so read-only gets no checkboxes or row actions.
-  const canEdit = useCanWrite('invoices');
+  const canEdit = useCanWrite('projects');
+  // Picking entries only feeds "invoice these", which makes an invoice draft.
+  const canWriteInvoices = useCanWrite('invoices');
+  const canCreateInvoices = useCanDo('invoices.create');
+  const canBill = canEdit && canWriteInvoices && canCreateInvoices;
   const { sort, cycle, sorted } = useListSort('billanta:time:sort', SORTABLE, rows, sortValue, ['duration', 'amount']);
 
   const sums = useMemo(() => {
@@ -150,7 +154,7 @@ export function EntriesTable({
 
   return (
     <div className="mt-5">
-      {canEdit && selected.size > 0 && (
+      {canBill && selected.size > 0 && (
         <div className="sticky top-2 z-10 mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-primary/30 bg-card px-3 py-2 text-sm shadow-sm">
           <span className="font-semibold">
             {t('selected', { count: selected.size })} · {formatMinutes(pickedMinutes)} h
@@ -205,7 +209,7 @@ export function EntriesTable({
       {/* Phones: cards. */}
       <ul className="space-y-2 sm:hidden">
         {sorted.map((e) => {
-          const canPick = canEdit && entryState(e) === 'unbilled';
+          const canPick = canBill && entryState(e) === 'unbilled';
           return (
             <li key={e.id} className={cn('rounded-xl border border-border bg-card p-3', selected.has(e.id) && 'border-primary/50 bg-primary/5')}>
               <div className="flex items-start gap-3">
@@ -273,7 +277,7 @@ export function EntriesTable({
           </thead>
           <tbody>
             {sorted.map((e) => {
-              const canPick = canEdit && entryState(e) === 'unbilled';
+              const canPick = canBill && entryState(e) === 'unbilled';
               return (
                 <tr
                   key={e.id}

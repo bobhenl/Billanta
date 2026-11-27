@@ -24,7 +24,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
-import { useCanWrite } from '@/components/access-provider';
+import { useCanDo, useCanWrite } from '@/components/access-provider';
 import { CONVERSIONS, type DocumentType, type InvoiceStatus } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
 import {
@@ -114,12 +114,18 @@ export function InvoiceActions({
   const num = (v: string) => Number(v.replace(/\s/g, '').replace(',', '.')) || undefined;
   const net = { fee: num(feeValue), receivedCzk: currency === home ? undefined : num(receivedValue) };
 
+  // The area level first, then the finer actions from Settings → Team (the backend checks the same).
+  const canWriteArea = useCanWrite('invoices');
+  const canCreate = useCanDo('invoices.create');
+  const canIssue = useCanDo('invoices.issue') && canWriteArea;
+  const canSend = useCanDo('invoices.send') && canWriteArea;
+  const canCancel = useCanDo('invoices.cancel') && canWriteArea;
+  const canEdit = canWriteArea && canCreate;
+  const isDraft = status === 'draft' || status === 'pending_review';
   const menuItem = 'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold hover:bg-secondary disabled:opacity-60';
-  const canEdit = useCanWrite('invoices');
-  const isDraft = canEdit && (status === 'draft' || status === 'pending_review');
   const canPay = canEdit && status === 'issued' && documentType !== 'quote';
   // Issued but not sent yet: sending is the next step, so it takes the one primary slot.
-  const sendFirst = canEdit && numbered && status === 'issued' && !sentAt && hasEmail;
+  const sendFirst = canSend && numbered && status === 'issued' && !sentAt && hasEmail;
   const conversions = !canEdit || status === 'cancelled' || (!numbered && documentType !== 'quote') ? [] : CONVERSIONS[documentType];
 
   const act = <T,>(fn: () => Promise<ActionResult<T>>, okText: string, after?: (data: T) => void) =>
@@ -155,14 +161,18 @@ export function InvoiceActions({
         {sendFirst && sendButton}
         {isDraft && (
           <>
-            <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => setDialog('issue')}>
-              <Stamp className="h-4 w-4" />
-              {documentType === 'quote' ? t('actions.issueQuote') : t('actions.issue')}
-            </button>
-            <Link href={`/invoices/${id}/edit`} className={buttonClass.secondary} title={t('actions.edit')} aria-label={t('actions.edit')}>
-              <Pencil className="h-4 w-4" />
-              <span className="hidden sm:inline">{t('actions.edit')}</span>
-            </Link>
+            {canIssue && (
+              <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => setDialog('issue')}>
+                <Stamp className="h-4 w-4" />
+                {documentType === 'quote' ? t('actions.issueQuote') : t('actions.issue')}
+              </button>
+            )}
+            {canEdit && (
+              <Link href={`/invoices/${id}/edit`} className={buttonClass.secondary} title={t('actions.edit')} aria-label={t('actions.edit')}>
+                <Pencil className="h-4 w-4" />
+                <span className="hidden sm:inline">{t('actions.edit')}</span>
+              </Link>
+            )}
           </>
         )}
         {/* An issued document is final by law, but people still look for
@@ -200,10 +210,10 @@ export function InvoiceActions({
             PDF
           </a>
         )}
-        {canEdit && numbered && status !== 'cancelled' && !sendFirst && sendButton}
+        {canSend && numbered && status !== 'cancelled' && !sendFirst && sendButton}
         {/* The reminder email speaks of an overdue invoice, so it is offered only once the invoice is overdue,
             and never for a credit note, which pays money back. */}
-        {canPay && overdue && (documentType === 'invoice' || documentType === 'proforma') && (
+        {canSend && status === 'issued' && overdue && (documentType === 'invoice' || documentType === 'proforma') && (
           <button
             type="button"
             className={buttonClass.secondary}
@@ -216,7 +226,7 @@ export function InvoiceActions({
             <span className="hidden sm:inline">{t('actions.remind')}</span>
           </button>
         )}
-        {(canEdit || numbered) && (
+        {(canEdit || canSend || canCancel || numbered) && (
           <MoreMenu label={t('actions.more')}>
             {canEdit && status === 'paid' && (
               <button
@@ -281,20 +291,20 @@ export function InvoiceActions({
               </a>
             )}
             {/* Actions that break or throw something away sit apart from the everyday ones. */}
-            {canEdit && (numbered || isDraft) && <div role="separator" className="my-1 border-t border-border" />}
-            {canEdit && numbered && (
+            {((canSend && numbered) || (canCancel && (status === 'issued' || isDraft))) && <div role="separator" className="my-1 border-t border-border" />}
+            {canSend && numbered && (
               <button type="button" className={menuItem} onClick={() => setDialog('rotate')}>
                 <RotateCcw className="h-4 w-4" />
                 {t('actions.rotateLink')}
               </button>
             )}
-            {canEdit && status === 'issued' && (
+            {canCancel && status === 'issued' && (
               <button type="button" className={`${menuItem} hover:text-destructive`} onClick={() => setDialog('cancel')}>
                 <Ban className="h-4 w-4" />
                 {t('actions.cancel')}
               </button>
             )}
-            {isDraft && (
+            {canCancel && isDraft && (
               <button type="button" className={`${menuItem} hover:text-destructive`} onClick={() => setDialog('delete')}>
                 <Trash2 className="h-4 w-4" />
                 {t('actions.delete')}
@@ -304,7 +314,7 @@ export function InvoiceActions({
         )}
       </div>
 
-      {canEdit && editedAfterSend && (
+      {canSend && editedAfterSend && (
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-warning/40 bg-warning/10 px-4 py-3 text-sm">
           <div className="min-w-0">
             <p className="font-semibold">{t('correction.title')}</p>

@@ -6,7 +6,7 @@ import { ShareQr } from '@/components/share-qr';
 import { Link } from '@/i18n/navigation';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { TRIAL_PLAN, trialDays } from '@/lib/plan';
-import { BANK_TRANSFER_SURCHARGE_PERCENT, COMPARISON, defaultCurrency, formatPlanPrice, PAYG_PRICE, PLANS } from '@/lib/plans';
+import { BANK_TRANSFER_SURCHARGE_PERCENT, COMPARISON, defaultCurrency, PLANS } from '@/lib/plans';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 import { PricingPlans, type CompareCopy, type PlanCopy } from './pricing-plans';
 
@@ -51,14 +51,13 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
       label: t(`compare.groups.${group}`),
       rows: rows.map(([row, cells]) => ({
         label: t(`compare.rows.${row}`),
-        // Raw so `{payg}` survives for the client to fill in the chosen currency.
-        cells: cells.map((c) => (typeof c === 'number' ? number.format(c) : typeof c === 'string' ? (t.raw(`compare.cell.${c}`) as string) : c))
+        cells: cells.map((c) => (typeof c === 'number' ? number.format(c) : typeof c === 'string' ? t(`compare.cell.${c}`) : c))
       }))
     }))
   };
 
   // Questions people ask before paying, mirrored 1:1 in FAQPage data.
-  const faqParams = { payg: formatPlanPrice(PAYG_PRICE[currency], currency, locale), percent: BANK_TRANSFER_SURCHARGE_PERCENT };
+  const faqParams = { percent: BANK_TRANSFER_SURCHARGE_PERCENT };
   const faq = (t.raw('faq.items') as { q: string }[]).map(({ q }, i) => ({ q, a: t(`faq.items.${i}.a`, faqParams) }));
 
   // One Offer per plan at its yearly-billed monthly price, in the currency
@@ -115,7 +114,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
           billedMonthly: t('billedMonthly'),
           forever: t('forever'),
           popular: t('popular'),
-          paygNote: t.raw('paygNote') as string,
+          limitsNote: t('limitsNote'),
           aiCreditNote: t('aiCreditNote'),
           notes: [...(trial > 0 ? [t('trialNote', { days: trial, plan: t(`plans.${TRIAL_PLAN}.name`) })] : []), t('vatNote')],
           transferPrice: t.raw('transferPrice') as string

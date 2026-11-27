@@ -5,7 +5,7 @@ import { Banner } from '@/components/banner';
 import { redirect } from '@/i18n/navigation';
 import { apiFetch, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { auth } from '@/auth';
-import { canManage, fetchMyAccess, fetchTenant, forbiddenSettings, hiddenSections, taxCountryOf, vatStatusOf, type MyAccess, type TaxAdvances } from '@/lib/tenant';
+import { canDo, canManage, fetchMyAccess, fetchTenant, fetchUsage, forbiddenSettings, hiddenSections, taxCountryOf, vatStatusOf, type MyAccess, type TaxAdvances } from '@/lib/tenant';
 import { isLegalEntityName, type TaxProfile } from '@/lib/tax-deadlines';
 import { normalizeTaxAdvances, taxReturnSeason } from '@faktur/cz-compliance';
 import type { TimeSummary } from '@/lib/time-ui';
@@ -14,6 +14,7 @@ import { REFERRAL_REWARDS } from '@/lib/referral';
 import { SITE_URL } from '@/lib/site';
 import { DashboardView } from './dashboard-view';
 import { SwitchBanner } from '@/components/switch-banner';
+import { DocumentsMeter } from '@/components/plan-lock';
 import { isSwitchBrand, SWITCH_COOKIE } from '@/lib/switch';
 import { presetRange } from '@/lib/period-presets';
 import { FULL_ABILITIES, type DashboardAbilities, type DashboardConfig, type DashboardSummary, type PeriodStats } from './types';
@@ -31,8 +32,8 @@ function abilitiesOf(access: MyAccess | null): DashboardAbilities {
   return {
     role: access.role,
     hidden: hiddenSections(access),
-    createInvoices: p.invoices === 'write',
-    createExpenses: p.expenses === 'write' && access.modules.expenses,
+    createInvoices: canDo(access, 'invoices.create'),
+    createExpenses: canDo(access, 'expenses.create') && access.modules.expenses,
     createContacts: p.contacts === 'write',
     manage: canManage(access.role),
     exports: access.modules.reports && !forbidden.has('exports'),
@@ -54,12 +55,15 @@ export default async function DashboardHomePage() {
   let referral: { code: string; link: string; welcome: number; reward: number } | null = null;
   let abilities = FULL_ABILITIES;
   let taxReturnYear: number | null = null;
+  let usageLoad: ReturnType<typeof fetchUsage> = Promise.resolve(null);
   try {
     let tenant;
     const { from, to } = presetRange('last12');
     // All in one round: the time summary waits only for the access check
     // that decides whether to load it, not for the slower summary/stats.
     const access = fetchMyAccess().catch(() => null);
+    // Only plan-limited companies get a meter; fetchUsage fails soft.
+    usageLoad = fetchUsage();
     [summary, config, tenant, usage, stats, time] = await Promise.all([
       apiFetch<DashboardSummary>('/api/v1/dashboard/summary'),
       apiFetch<DashboardConfig>('/api/v1/dashboard/config').catch(() => null),
@@ -104,6 +108,7 @@ export default async function DashboardHomePage() {
       </Banner>
     );
   }
+  const planUsage = await usageLoad;
   const session = await auth().catch(() => null);
   const firstName = session?.user?.name?.trim().split(/\s+/)[0] ?? null;
 
@@ -114,6 +119,7 @@ export default async function DashboardHomePage() {
   return (
     <>
       {switchBanner}
+      <DocumentsMeter meter={planUsage?.documents} className="mb-3" />
       <DashboardView summary={summary} initialConfig={config} firstName={firstName} profile={profile} advances={advances} country={country} time={time} stats={stats} usage={usage} referral={referral} taxReturnYear={taxReturnYear} abilities={abilities} />
     </>
   );

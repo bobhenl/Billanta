@@ -10,6 +10,8 @@ import { applyBuyerSnapshot, applySellerSnapshot } from "./party-snapshot";
 import { reminderPrefsOf } from "../tenants/invoice-form-prefs";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
+import { planAllows } from "../billing/plan-access";
+import { loadPlanSummary } from "../billing/plan.guard";
 import { drizzleTx } from "../db/drizzle-tx";
 import { BRAND_CREDIT_TENANT_FIELDS, brandCreditFor, creditLangOf, type BrandCredit } from "./brand-credit";
 
@@ -125,6 +127,10 @@ export class InvoiceRemindersRepository {
         .limit(1);
       const rules = reminderPrefsOf(tenant?.prefs);
       if (!rules.enabled) return [];
+      // Automatic reminders are a Start feature; below it the person still
+      // sends a reminder by hand from the invoice.
+      const plan = await loadPlanSummary(db, tenantId);
+      if (plan && !planAllows(plan, "auto_reminders")) return [];
       const cooldownCutoff = new Date(Date.now() - rules.intervalDays * 24 * 60 * 60 * 1000);
 
       const rows = await db

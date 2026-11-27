@@ -1,4 +1,4 @@
-import { ExecutionContext, ForbiddenException, UnauthorizedException } from "@nestjs/common";
+import { ExecutionContext, ForbiddenException, HttpException, UnauthorizedException } from "@nestjs/common";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ApiKeysService, ValidatedApiKey } from "../api-keys/api-keys.service";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
@@ -7,6 +7,7 @@ import { ApiKeyAuthGuard } from "./api-key-auth.guard";
 type MockApiKeysService = {
   validateKey: ReturnType<typeof vi.fn>;
   touchLastUsed: ReturnType<typeof vi.fn>;
+  countRequest: ReturnType<typeof vi.fn>;
 };
 
 interface MockRequest {
@@ -29,7 +30,7 @@ describe("ApiKeyAuthGuard", () => {
   let guard: ApiKeyAuthGuard;
 
   beforeEach(() => {
-    apiKeysService = { validateKey: vi.fn(), touchLastUsed: vi.fn() };
+    apiKeysService = { validateKey: vi.fn(), touchLastUsed: vi.fn(), countRequest: vi.fn(async () => undefined) };
     guard = new ApiKeyAuthGuard(apiKeysService as unknown as ApiKeysService);
   });
 
@@ -67,6 +68,17 @@ describe("ApiKeyAuthGuard", () => {
     expect(result).toBe(true);
     expect(req.user).toEqual({ id: "key-1", email: "", tenantId: "tenant-1", role: "service", apiKey: true });
     expect(apiKeysService.touchLastUsed).toHaveBeenCalledWith("tenant-1", "key-1");
+    expect(apiKeysService.countRequest).toHaveBeenCalledWith("tenant-1");
+  });
+
+  it("refuses a request over the plan's monthly API quota", async () => {
+    apiKeysService.validateKey.mockResolvedValue({ apiKeyId: "key-1", tenantId: "tenant-1", scopes: [] });
+    const quota = new HttpException({ error: "api_quota_exceeded", limit: 1000 }, 429);
+    apiKeysService.countRequest.mockRejectedValue(quota);
+    const req: MockRequest = { headers: { authorization: "Bearer sk_live_valid" } };
+
+    await expect(guard.canActivate(makeContext(req))).rejects.toBe(quota);
+    expect(req.user).toBeUndefined();
   });
 
   it("rejects with ForbiddenException when the request body names a different tenant than the key's own", async () => {
@@ -115,5 +127,6 @@ describe("ApiKeyAuthGuard", () => {
     expect(result).toBe(true);
     expect(apiKeysService.validateKey).not.toHaveBeenCalled();
     expect(apiKeysService.touchLastUsed).toHaveBeenCalledWith("tenant-1", "key-1");
+    expect(apiKeysService.countRequest).not.toHaveBeenCalled(); // the middleware counted it
   });
 });
