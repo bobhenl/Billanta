@@ -142,6 +142,10 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   const texts = [invoice.noteAbove, invoice.noteBelow, invoice.internalNote, ...items.map((item) => item.description)];
   // The internal note is never printed, so only the printed texts count here (apps/backend/src/vault/sealed.ts).
   const confidential = [invoice.noteAbove, invoice.noteBelow, ...items.map((item) => item.description)].some(isSealed);
+  // The browser opens these to put the document key into the client link (components/vault/client-link.tsx).
+  const sealedDoc = confidential
+    ? { noteAbove: invoice.noteAbove ?? null, noteBelow: invoice.noteBelow ?? null, items: items.map((item) => ({ id: item.id, description: item.description })) }
+    : null;
   const hasPlainText = texts.some((text) => Boolean(text?.trim()) && !isSealed(text));
   const editedAfterSend = Boolean(invoice.sentAt && editedAt && invoice.status !== 'cancelled' && Date.parse(editedAt) > Date.parse(invoice.sentAt));
   // The buyer-details box below already says "waiting"/"submitted", so the status line skips it then.
@@ -291,6 +295,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           editedAfterSend={editedAfterSend}
           hasCustomer={Boolean(contact)}
           confidential={confidential}
+          sealedDoc={sealedDoc}
         />
         {/* "Zašifrovat": only while some text of this document is still plain. */}
         {hasPlainText && <SealButton scope={{ kind: 'invoice', invoiceId: invoice.id }} compact className="mt-2" />}
@@ -300,6 +305,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
             link={detail.links.public}
             defaultLink={detail.links.publicDefault ?? detail.links.public}
             slug={invoice.publicSlug ?? null}
+            sealedDoc={sealedDoc}
           />
         )}
         {canEdit && (invoice.status === 'draft' || invoice.status === 'pending_review') && invoice.documentType !== 'credit_note' && (

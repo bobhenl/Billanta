@@ -768,7 +768,15 @@
     "print": "Tipărire / PDF",
     "downloadPdf": "Descărcați PDF",
     "downloadPdfShort": "PDF",
-    "confidentialItem": "Poziție confidențială"
+    "confidentialItem": "Poziție confidențială",
+    "sealed": {
+      "noKey": "Unele texte sunt criptate. Textul complet este în linkul din e-mailul inițial.",
+      "openedLink": "Cheia din linkul dvs. a deschis textele criptate. Acest browser o reține, așa că și linkurile ulterioare deschid documentul.",
+      "openedStored": "Textele criptate au fost deschise de o cheie pe care acest browser a reținut-o dintr-un link anterior.",
+      "openedPreview": "Previzualizare: cheia din link a deschis textele. Nu a fost salvată în acest browser.",
+      "forget": "Uitați cheia în acest browser",
+      "forgotten": "Cheia a fost ștearsă din acest browser. Textul complet este în linkul din e-mailul inițial."
+    }
   },
   "expenses": {
     "title": "Cheltuieli",
@@ -14269,7 +14277,10 @@
     "actions": {
       "blocked": "Indisponibil în Modul confidențial: serverul nu poate citi un document criptat. Dezactivați atașamentul PDF/ISDOC în setările e-mail sau trimiteți un link.",
       "pdfUnavailable": "PDF-ul nu este disponibil în Modul confidențial. Puteți tipări detaliul din browser (Ctrl+P).",
-      "sendHint": "Acest document este criptat: e-mailul pleacă doar cu un link, serverul nu poate atașa PDF sau ISDOC."
+      "sendHint": "Acest document este criptat: e-mailul pleacă doar cu un link, serverul nu poate atașa PDF sau ISDOC.",
+      "linkCopied": "Link cu cheie copiat",
+      "keyLink": "Link pentru client cu cheie",
+      "copyLink": "Copiați"
     },
     "categories": {
       "recommended": "Recomandat",
@@ -14283,7 +14294,8 @@
           "Atașamentul PDF/ISDOC în e-mailuri",
           "Căutarea după textul pozițiilor și notelor, sugestiile de poziții",
           "Completarea documentelor cu AI",
-          "Descrierile pozițiilor pe linkul public și în exporturile pentru contabil (Pohoda, Money, CSV)"
+          "Link public: clientul vede textul complet doar prin linkul cu cheie din detaliul documentului. Un link fără cheie (de ex. dintr-un memento automat) îl arată doar pe un dispozitiv pe care clientul a deschis înainte linkul complet",
+          "Descrierile pozițiilor în exporturile pentru contabil (Pohoda, Money, CSV)"
         ]
       },
       "attachments": {
@@ -14400,6 +14412,17 @@
       "recoveryReplaced": "Noul cod de recuperare este valabil",
       "categoriesTitle": "Ce se criptează",
       "categoriesLead": "Urmează și alte opțiuni. La fiecare vedeți ce nu ar mai funcționa."
+    },
+    "clientLink": {
+      "ready": "Linkul conține cheia textelor criptate (după #). Clientul vede cu ea textul complet, serverul nu primește niciodată cheia.",
+      "locked": "Documentul este criptat. Deblocați seiful și linkul primește cheia cu care clientul vede textul complet.",
+      "prepare": "Acest document a fost criptat înainte de cheile pentru clienți. Dați-i o cheie proprie, apoi îl puteți trimite în link. Pe server ajung doar texte criptate din nou.",
+      "failed": "Cheia pentru client nu a putut fi pregătită. Încercați din nou.",
+      "loading": "Se pregătește cheia pentru client…",
+      "unlock": "Deblocați seiful",
+      "prepareButton": "Pregătiți linkul pentru client",
+      "shareOnly": "Trimiteți-l doar clientului. Cine are linkul complet poate citi și textele criptate.",
+      "serverEmail": "E-mailul trimis de server conține linkul fără cheie. Clientul vede acolo sumele, dar nu și textele criptate, decât dacă a deschis înainte linkul cu cheie în același browser. Ca să le vadă, trimiteți-i chiar dvs. linkul de mai sus."
     }
   }
 }

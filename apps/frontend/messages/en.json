@@ -769,7 +769,15 @@
     "print": "Print / PDF",
     "downloadPdf": "Download PDF",
     "downloadPdfShort": "PDF",
-    "confidentialItem": "Confidential item"
+    "confidentialItem": "Confidential item",
+    "sealed": {
+      "noKey": "Some texts are encrypted. The full text is in the link from the original e-mail.",
+      "openedLink": "The key from your link opened the encrypted texts. This browser remembers it, so later links open the document too.",
+      "openedStored": "A key this browser remembered from an earlier link opened the encrypted texts.",
+      "openedPreview": "Preview: the key from the link opened the texts. It was not saved in this browser.",
+      "forget": "Forget the key in this browser",
+      "forgotten": "The key is deleted from this browser. The full text is in the link from the original e-mail."
+    }
   },
   "expenses": {
     "title": "Expenses",
@@ -14274,7 +14282,10 @@
     "actions": {
       "blocked": "Unavailable in Confidential mode: the server cannot read an encrypted document. Turn off the PDF/ISDOC attachment in email settings, or send a link.",
       "pdfUnavailable": "PDF is unavailable in Confidential mode. You can print the detail from your browser (Ctrl+P).",
-      "sendHint": "This document is encrypted: the email goes out with a link only, the server cannot attach a PDF or ISDOC."
+      "sendHint": "This document is encrypted: the email goes out with a link only, the server cannot attach a PDF or ISDOC.",
+      "linkCopied": "Link with key copied",
+      "keyLink": "Client link with key",
+      "copyLink": "Copy"
     },
     "categories": {
       "recommended": "Recommended",
@@ -14288,7 +14299,8 @@
           "PDF/ISDOC attachment in emails",
           "Search by item and note text, item suggestions",
           "AI document prefill",
-          "Line descriptions on the public link and in accountant exports (Pohoda, Money, CSV)"
+          "Public link: your client sees the full text only through the link with the key from the document detail. A link without the key (e.g. from an automatic reminder) shows it only on a device where the client opened the full link before",
+          "Line descriptions in accountant exports (Pohoda, Money, CSV)"
         ]
       },
       "attachments": {
@@ -14412,6 +14424,17 @@
       "upgrade": "See plans",
       "downgradedTitle": "Encrypting more documents needs the Plus or Business plan",
       "downgradedBody": "You can still unlock, read and edit encrypted documents. New documents are saved without encryption."
+    },
+    "clientLink": {
+      "ready": "The link carries the key to the encrypted texts (after the #). Your client sees the full text with it; the server never gets the key.",
+      "locked": "This document is encrypted. Unlock the vault and the link gets the key your client needs to read the full text.",
+      "prepare": "This document was encrypted before client keys existed. Give it a key of its own, then you can send it in the link. Only re-encrypted texts go to the server.",
+      "failed": "Could not prepare the client key. Please try again.",
+      "loading": "Preparing the client key…",
+      "unlock": "Unlock the vault",
+      "prepareButton": "Prepare the client link",
+      "shareOnly": "Send it to your client only. Anyone with the full link can read the encrypted texts too.",
+      "serverEmail": "The e-mail the server sends has the link without the key. Your client sees the amounts there but not the encrypted texts, unless they opened the link with the key in the same browser before. To let them read the texts, send them the link above yourself."
     }
   }
 }

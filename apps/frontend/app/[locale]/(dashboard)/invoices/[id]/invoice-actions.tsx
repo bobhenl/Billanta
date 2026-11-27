@@ -25,8 +25,11 @@ import { Link, useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { useCanDo, useCanWrite } from '@/components/access-provider';
+import { ClientLinkNotice, useClientLinkKey } from '@/components/vault/client-link';
+import { copyText } from '@/lib/clipboard';
 import { CONVERSIONS, type DocumentType, type InvoiceStatus } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
+import type { SealedDocument } from '@/lib/vault/content';
 import {
   cancelInvoice,
   convertInvoice,
@@ -66,7 +69,8 @@ export function InvoiceActions({
   sentAt = null,
   editedAfterSend = false,
   hasCustomer = true,
-  confidential = false
+  confidential = false,
+  sealedDoc = null
 }: {
   id: string;
   documentType: DocumentType;
@@ -90,12 +94,27 @@ export function InvoiceActions({
   hasCustomer?: boolean;
   /** Printed texts are encrypted ("Důvěrný režim"): the server can't make the PDF, ISDOC or UBL. */
   confidential?: boolean;
+  /** The printed texts when some are encrypted: the browser puts their key into the client link. */
+  sealedDoc?: SealedDocument | null;
 }) {
   const t = useTranslations('doc');
   const tVault = useTranslations('vault.actions');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [dialog, setDialog] = useState<Dialog>(null);
+  const clientKey = useClientLinkKey(id, sealedDoc);
+  // Built here, never sent: the server-sent e-mail carries the same link without the #key.
+  const [origin, setOrigin] = useState('');
+  useEffect(() => setOrigin(window.location.origin), []);
+  const keyLink = clientKey.withKey(`${origin}/i/${publicLink}`);
+  const copyKeyLink = async () => {
+    try {
+      await copyText(keyLink);
+      toast({ text: tVault('linkCopied'), tone: 'ok' });
+    } catch {
+      toast({ text: t('actionFailed'), tone: 'err' });
+    }
+  };
   const [paidAt, setPaidAt] = useState(() => new Date().toISOString().slice(0, 10));
   const [templateName, setTemplateName] = useState(defaultTemplateName);
   const locale = useLocale();
@@ -285,7 +304,7 @@ export function InvoiceActions({
               </button>
             )}
             {numbered && (
-              <a href={`/i/${publicLink}?preview=1`} target="_blank" rel="noreferrer" className={menuItem}>
+              <a href={clientKey.withKey(`/i/${publicLink}?preview=1`)} target="_blank" rel="noreferrer" className={menuItem}>
                 <ExternalLink className="h-4 w-4" />
                 {t('actions.publicLink')}
               </a>
@@ -431,6 +450,26 @@ export function InvoiceActions({
       >
         <p className="text-muted-foreground">{editedAfterSend ? t('correction.sendBody') : t('confirm.sendBody')}</p>
         {confidential && <p className="mt-2 text-xs text-muted-foreground">{tVault('sendHint')}</p>}
+        {sealedDoc && (
+          <>
+            {clientKey.state === 'ready' && (
+              <div className="mt-3 flex gap-2">
+                <input
+                  readOnly
+                  value={keyLink}
+                  onFocus={(e) => e.currentTarget.select()}
+                  aria-label={tVault('keyLink')}
+                  className="h-10 min-w-0 flex-1 rounded-lg border border-input bg-background px-3 font-mono text-xs"
+                />
+                <button type="button" onClick={copyKeyLink} className={buttonClass.secondary}>
+                  <Copy className="h-4 w-4" />
+                  {tVault('copyLink')}
+                </button>
+              </div>
+            )}
+            <ClientLinkNotice link={clientKey} serverEmail className="mt-3" />
+          </>
+        )}
       </Modal>
 
       <Modal

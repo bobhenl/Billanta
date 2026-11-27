@@ -768,7 +768,15 @@
     "print": "Drukuj / PDF",
     "downloadPdf": "Pobierz PDF",
     "downloadPdfShort": "PDF",
-    "confidentialItem": "Pozycja poufna"
+    "confidentialItem": "Pozycja poufna",
+    "sealed": {
+      "noKey": "Niektóre teksty są zaszyfrowane. Pełna treść jest w linku z pierwotnego e-maila.",
+      "openedLink": "Klucz z Twojego linku otworzył zaszyfrowane teksty. Ta przeglądarka go zapamięta, więc dokument otworzą też późniejsze linki.",
+      "openedStored": "Zaszyfrowane teksty otworzył klucz, który ta przeglądarka zapamiętała z wcześniejszego linku.",
+      "openedPreview": "Podgląd: teksty otworzył klucz z linku. Nie został zapisany w tej przeglądarce.",
+      "forget": "Zapomnij klucz w tej przeglądarce",
+      "forgotten": "Klucz został usunięty z tej przeglądarki. Pełna treść jest w linku z pierwotnego e-maila."
+    }
   },
   "expenses": {
     "title": "Wydatki",
@@ -14270,7 +14278,10 @@
     "actions": {
       "blocked": "Niedostępne w Trybie poufnym: serwer nie odczyta zaszyfrowanego dokumentu. Wyłącz załącznik PDF/ISDOC w ustawieniach e-maili albo wyślij link.",
       "pdfUnavailable": "PDF jest niedostępny w Trybie poufnym. Szczegóły możesz wydrukować z przeglądarki (Ctrl+P).",
-      "sendHint": "Ten dokument jest zaszyfrowany: e-mail wyjdzie tylko z linkiem, serwer nie może dołączyć PDF ani ISDOC."
+      "sendHint": "Ten dokument jest zaszyfrowany: e-mail wyjdzie tylko z linkiem, serwer nie może dołączyć PDF ani ISDOC.",
+      "linkCopied": "Skopiowano link z kluczem",
+      "keyLink": "Link dla klienta z kluczem",
+      "copyLink": "Kopiuj"
     },
     "categories": {
       "recommended": "Zalecane",
@@ -14284,7 +14295,8 @@
           "Załącznik PDF/ISDOC w e-mailach",
           "Wyszukiwanie po tekście pozycji i notatek, podpowiedzi pozycji",
           "Wypełnianie dokumentu przez AI",
-          "Opisy pozycji w publicznym linku i w eksportach dla księgowej (Pohoda, Money, CSV)"
+          "Link publiczny: klient widzi pełną treść tylko w linku z kluczem ze szczegółów dokumentu. Link bez klucza (np. z automatycznego przypomnienia) pokaże ją tylko na urządzeniu, na którym klient wcześniej otworzył pełny link",
+          "Opisy pozycji w eksportach dla księgowej (Pohoda, Money, CSV)"
         ]
       },
       "attachments": {
@@ -14401,6 +14413,17 @@
       "recoveryReplaced": "Nowy kod odzyskiwania obowiązuje",
       "categoriesTitle": "Co jest szyfrowane",
       "categoriesLead": "Kolejne opcje wkrótce. Przy każdej widać, co przestałoby działać."
+    },
+    "clientLink": {
+      "ready": "Link zawiera klucz do zaszyfrowanych tekstów (po znaku #). Klient zobaczy z nim pełną treść, serwer nigdy nie dostaje klucza.",
+      "locked": "Dokument jest zaszyfrowany. Odblokuj sejf, a link dostanie klucz, z którym klient zobaczy pełną treść.",
+      "prepare": "Ten dokument zaszyfrowano, zanim pojawiły się klucze dla klientów. Nadaj mu własny klucz, potem możesz wysłać go w linku. Na serwer trafią tylko ponownie zaszyfrowane teksty.",
+      "failed": "Nie udało się przygotować klucza dla klienta. Spróbuj ponownie.",
+      "loading": "Przygotowuję klucz dla klienta…",
+      "unlock": "Odblokuj sejf",
+      "prepareButton": "Przygotuj link dla klienta",
+      "shareOnly": "Wyślij go tylko klientowi. Kto ma cały link, przeczyta też zaszyfrowane teksty.",
+      "serverEmail": "E-mail wysłany przez serwer zawiera link bez klucza. Klient zobaczy w nim kwoty, ale nie zaszyfrowane teksty, chyba że wcześniej otworzył link z kluczem w tej samej przeglądarce. Żeby je zobaczył, wyślij mu link powyżej sam."
     }
   }
 }

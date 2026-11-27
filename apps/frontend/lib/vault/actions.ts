@@ -1,9 +1,10 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { VaultCategory, VaultWrap } from '@faktur/cz-compliance';
+import { isSealed, type VaultCategory, type VaultWrap } from '@faktur/cz-compliance';
 import { apiFetch } from '@/lib/api-client';
 import { backendMessage } from '@/lib/action-error';
+import type { RekeyPayload } from './content';
 import type { PlainInvoice, VaultStatus } from './types';
 
 type Result<T> = { ok: true; value: T } | { ok: false; error: string };
@@ -61,8 +62,29 @@ export async function fetchPlainInvoices(scope: { invoiceId?: string; contactId?
   return call<{ remaining: number; invoices: PlainInvoice[] }>(`/api/v1/vault/invoices/plain?${query}`);
 }
 
+/**
+ * Stores one document's texts re-encrypted under its own key. This runs on
+ * the Next server, so the payload is ciphertext only: the document key
+ * itself never leaves the browser (it goes into the link's #fragment).
+ */
+export async function storeRekeyedInvoice(invoiceId: string, payload: RekeyPayload) {
+  // Only envelopes pass, in exactly these fields: nothing else can ride along to the server.
+  const envelope = (v: unknown) => (isSealed(v) ? v : undefined);
+  const body = {
+    noteAbove: envelope(payload.noteAbove),
+    noteBelow: envelope(payload.noteBelow),
+    items: payload.items.flatMap((i) => (isSealed(i.description) ? [{ id: String(i.id), description: i.description }] : []))
+  };
+  const result = await call<{ rekeyed: number }>(`/api/v1/vault/invoices/${encodeURIComponent(invoiceId)}/rekey`, json('POST', body));
+  if (result.ok) revalidatePath('/invoices', 'layout');
+  return result;
+}
+
 export async function storeSealedInvoices(invoices: PlainInvoice[]) {
-  const result = await call<{ sealed: number }>('/api/v1/vault/invoices/seal', json('POST', { invoices: invoices.map(({ invoiceNumber: _n, ...rest }) => rest) }));
+  const result = await call<{ sealed: number }>(
+    '/api/v1/vault/invoices/seal',
+    json('POST', { invoices: invoices.map(({ invoiceNumber: _n, documentKeyWrap: _w, ...rest }) => rest) })
+  );
   if (result.ok) revalidatePath('/invoices', 'layout');
   return result;
 }

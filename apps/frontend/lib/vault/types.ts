@@ -31,4 +31,6 @@ export interface PlainInvoice {
   noteBelow?: string;
   internalNote?: string;
   items: { id: string; description: string }[];
+  /** The document key its sealed texts already use (from the server); missing on an older backend. */
+  documentKeyWrap?: string | null;
 }

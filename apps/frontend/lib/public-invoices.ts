@@ -26,6 +26,8 @@ export interface PublicInvoiceLineItem {
   sortOrder: number;
   /** The description is encrypted ("Důvěrný režim"); the backend sends it empty. */
   confidential?: true;
+  /** Its ciphertext for the browser to open with the link's key; keyId null means the client can never open it. */
+  sealed?: { cipher: string; keyId: string | null };
 }
 
 export interface PublicInvoiceSupplier {
