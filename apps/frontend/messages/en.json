@@ -14411,12 +14411,20 @@
       },
       "contacts": {
         "title": "Contact names and addresses",
-        "description": "Customer names, addresses, emails and phone numbers.",
+        "description": "Customer names, addresses, contact people, phone numbers and internal notes. Company ID, VAT ID and country stay readable.",
         "loses": [
-          "Filling in and refreshing from ARES",
-          "Bank payment matching by payer name",
-          "Emails sent by the server (it does not know the address)",
-          "Contact search on the server"
+          "Contact search and suggestions run only in your browser",
+          "ARES answers by company ID only and stores nothing; names are never sent to the register",
+          "Bank payment matching by payer name does not see encrypted names (matching by variable symbol still works)",
+          "Encrypted contact email: the server sends nothing to it, so you send the invoice from your own mailbox or by link",
+          "The server cannot create the PDF or ISDOC of a document with an encrypted customer",
+          "Reminders contain only the document number, amount and link"
+        ],
+        "how": [
+          "The name, street, city, ZIP code, contact person, phone and internal note are encrypted in your browser before they go to the server.",
+          "The customer copied onto each document and its contact person are encrypted the same way.",
+          "Company ID, VAT ID and country stay readable for registers, the VAT check and the QR payment. The email stays readable unless you encrypt it on the contact.",
+          "Older contacts stay readable until you encrypt them with Encrypt existing contacts."
         ]
       },
       "amounts": {
@@ -14657,7 +14665,37 @@
       "partial": "{n} encrypted, {failed} failed. Try again later.",
       "nothing": "There was nothing to encrypt.",
       "failed": "Encryption failed. Attachments already encrypted stay encrypted."
-    }
+    },
+    "contactEditor": {
+      "locked": "This contact is encrypted. Unlock it to edit it.",
+      "otherKey": "This contact is encrypted with a different key and cannot be opened on this device.",
+      "unlock": "Unlock",
+      "sealedNote": "Confidential mode: the name, address, contact person, phone and note are saved encrypted. Company ID, VAT ID and country stay readable.",
+      "sealEmail": "Encrypt the email too",
+      "sealEmailWarning": "The server will then send no invoice or reminder to this contact. Send it from your own mailbox or copy the link.",
+      "errors": {
+        "contact_plaintext": "The contact was not saved: some details were not encrypted. Please try again.",
+        "contact_partly_sealed": "The contact was not saved: it has encrypted details, but Confidential mode for contacts is off.",
+        "contact_sealed": "This contact is encrypted. Unlock it and save again so it stays encrypted.",
+        "vault_category_off": "Contact encryption is off. Turn it on in the Confidential mode settings.",
+        "plan_required": "Contact encryption is part of a higher plan."
+      }
+    },
+    "sealContacts": {
+      "button": "Encrypt existing contacts",
+      "title": "Encrypt existing contacts",
+      "what": "Your browser loads the contacts the server can still read, encrypts their name, address, contact person, phone and note, and stores them back. Then it does the same with the customer copied onto their documents.",
+      "keeps": "Company ID, VAT ID, country and email stay readable. You can encrypt the email on each contact separately.",
+      "loses": "Contact search then runs only in your browser, and the server can no longer create the PDF or ISDOC for these customers.",
+      "resumable": "Locked documents are skipped. If you close the window, the next run continues where you left off.",
+      "cancel": "Back",
+      "confirm": "Encrypt",
+      "progress": "Encrypting… {n}",
+      "done": "{n, plural, one {# contact encrypted} other {# contacts encrypted}}.",
+      "nothing": "There was nothing to encrypt.",
+      "failed": "Encryption failed. Contacts already encrypted stay encrypted."
+    },
+    "emailSealed": "The customer’s email is encrypted, so the server sends nothing to it. Send the invoice from your own mailbox or copy the client link."
   },
   "vaultPublic": {
     "integrity": {

@@ -14407,12 +14407,20 @@
       },
       "contacts": {
         "title": "Nazwy i adresy kontaktów",
-        "description": "Nazwy klientów, adresy, e-maile i telefony.",
+        "description": "Nazwy klientów, adresy, osoby kontaktowe, telefony i notatki wewnętrzne. Numer firmy, NIP i kraj pozostają czytelne.",
         "loses": [
-          "Uzupełnianie i odświeżanie z ARES",
-          "Dopasowanie płatności bankowych po nazwie płatnika",
-          "Wysyłanie e-maili przez serwer (nie zna adresu)",
-          "Wyszukiwanie kontaktów na serwerze"
+          "Wyszukiwanie i podpowiedzi kontaktów działają tylko w Twojej przeglądarce",
+          "ARES odpowiada tylko po numerze firmy i niczego nie zapisuje; nazwy nie trafiają do rejestru",
+          "Dopasowanie płatności bankowych po nazwie płatnika nie widzi zaszyfrowanych nazw (po symbolu zmiennym nadal działa)",
+          "Zaszyfrowany e-mail kontaktu: serwer nic na niego nie wyśle, fakturę wysyłasz z własnej poczty lub linkiem",
+          "Serwer sam nie utworzy PDF ani ISDOC dokumentu z zaszyfrowanym klientem",
+          "Przypomnienia zawierają tylko numer dokumentu, kwotę i link"
+        ],
+        "how": [
+          "Nazwa, ulica, miasto, kod pocztowy, osoba kontaktowa, telefon i notatka są szyfrowane w Twojej przeglądarce, zanim trafią na serwer.",
+          "Tak samo szyfrowany jest klient przepisany na dokument i jego osoba kontaktowa.",
+          "Numer firmy, NIP i kraj pozostają czytelne dla rejestrów, kontroli VAT i płatności QR. E-mail jest czytelny, chyba że sam go zaszyfrujesz.",
+          "Starsze kontakty pozostaną czytelne, dopóki nie zaszyfrujesz ich przyciskiem Zaszyfruj istniejące kontakty."
         ]
       },
       "amounts": {
@@ -14646,7 +14654,37 @@
       "partial": "Zaszyfrowano {n}, {failed} się nie udało. Spróbuj ponownie później.",
       "nothing": "Nie było czego szyfrować.",
       "failed": "Szyfrowanie nie powiodło się. Już zaszyfrowane załączniki pozostają zaszyfrowane."
-    }
+    },
+    "contactEditor": {
+      "locked": "Ten kontakt jest zaszyfrowany. Odblokuj go, aby go edytować.",
+      "otherKey": "Ten kontakt jest zaszyfrowany innym kluczem i nie otworzysz go na tym urządzeniu.",
+      "unlock": "Odblokuj",
+      "sealedNote": "Tryb poufny: nazwa, adres, osoba kontaktowa, telefon i notatka zapisują się zaszyfrowane. Numer firmy, NIP i kraj pozostają czytelne.",
+      "sealEmail": "Zaszyfruj też e-mail",
+      "sealEmailWarning": "Serwer nie wyśle wtedy temu kontaktowi faktury ani przypomnienia. Wyślij ją z własnej poczty albo skopiuj link.",
+      "errors": {
+        "contact_plaintext": "Kontakt nie został zapisany: część danych nie była zaszyfrowana. Spróbuj ponownie.",
+        "contact_partly_sealed": "Kontakt nie został zapisany: zawiera zaszyfrowane dane, ale tryb poufny dla kontaktów jest wyłączony.",
+        "contact_sealed": "Ten kontakt jest zaszyfrowany. Odblokuj go i zapisz ponownie, aby pozostał zaszyfrowany.",
+        "vault_category_off": "Szyfrowanie kontaktów jest wyłączone. Włącz je w ustawieniach trybu poufnego.",
+        "plan_required": "Szyfrowanie kontaktów jest częścią wyższego planu."
+      }
+    },
+    "sealContacts": {
+      "button": "Zaszyfruj istniejące kontakty",
+      "title": "Zaszyfruj istniejące kontakty",
+      "what": "Przeglądarka wczyta kontakty, które serwer wciąż może odczytać, zaszyfruje ich nazwę, adres, osobę kontaktową, telefon i notatkę i zapisze je z powrotem. Potem zrobi to samo z klientem na ich dokumentach.",
+      "keeps": "Numer firmy, NIP, kraj i e-mail pozostają czytelne. E-mail możesz zaszyfrować osobno przy każdym kontakcie.",
+      "loses": "Wyszukiwanie kontaktów działa wtedy tylko w przeglądarce, a serwer nie utworzy już PDF ani ISDOC dla tych klientów.",
+      "resumable": "Zablokowane dokumenty są pomijane. Jeśli zamkniesz okno, następnym razem praca będzie kontynuowana od miejsca przerwania.",
+      "cancel": "Wstecz",
+      "confirm": "Zaszyfruj",
+      "progress": "Szyfrowanie… {n}",
+      "done": "{n, plural, one {Zaszyfrowano # kontakt} few {Zaszyfrowano # kontakty} many {Zaszyfrowano # kontaktów} other {Zaszyfrowano # kontaktu}}.",
+      "nothing": "Nie było nic do zaszyfrowania.",
+      "failed": "Szyfrowanie nie powiodło się. Już zaszyfrowane kontakty pozostają zaszyfrowane."
+    },
+    "emailSealed": "E-mail klienta jest zaszyfrowany, więc serwer nic na niego nie wyśle. Wyślij fakturę z własnej poczty albo skopiuj link dla klienta."
   },
   "vaultPublic": {
     "integrity": {

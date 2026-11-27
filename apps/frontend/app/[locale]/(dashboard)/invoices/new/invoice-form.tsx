@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, useTransition, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from 'react';
 import { AI_PROMPT_KEY } from '@/components/command-palette';
 import { BadgeCheck, Building2, ChevronDown, CloudOff, Copy, FileCheck2, Loader2, Lock, LockOpen, Plus, Save, SlidersHorizontal, Sparkles, Star, Trash2, Wand2, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -26,8 +26,12 @@ import { InvoicePreview } from './invoice-preview';
 import { NetEstimate } from '@/components/net-estimate';
 import { CopyFromInvoicePanel } from './copy-from-invoice';
 import { fetchExchangeRate, recentItems, saveInvoice, suggestInvoice, suggestItems } from './actions';
-import type { VaultKey } from '@faktur/cz-compliance';
+import { isSealed, open, type VaultKey } from '@faktur/cz-compliance';
 import { useVault } from '@/components/vault/vault-provider';
+import { ConfidentialText } from '@/components/vault/confidential-text';
+import { lookupPrefillByIco } from '@/lib/company-lookup-actions';
+import { fetchAllContacts } from '@/lib/vault/actions';
+import { contactIsSealed, contactsConfidential, matchContacts, openContact, openContacts, sealBuyer, sealsContacts } from '@/lib/vault/contacts';
 import { documentKeyFor, sealDraft } from '@/lib/vault/content';
 import { matchItemSuggestions } from '@/lib/vault/item-suggestions';
 import { invalidateSealedIndex, loadSealedIndex } from '@/lib/vault/sealed-index';
@@ -211,7 +215,13 @@ export function InvoiceForm({
   confidential
 }: {
   /** "Důvěrný režim" is on: texts can be encrypted in the browser before saving (ConfidentialInvoiceForm). */
-  confidential?: { sealByDefault: boolean; getKey: () => Promise<VaultKey | null>; keySource?: InvoiceTemplate | null };
+  confidential?: {
+    sealByDefault: boolean;
+    getKey: () => Promise<VaultKey | null>;
+    keySource?: InvoiceTemplate | null;
+    /** The starting point's customer was encrypted (category "contacts"): its copies on the document stay encrypted. */
+    buyerSealed?: boolean;
+  };
   mode?: InvoiceFormMode;
   defaults: FormDefaults;
   ai: AiSettings | null;
@@ -283,6 +293,35 @@ export function InvoiceForm({
   const chooseCustomer = (next: SelectedCustomer) => {
     setCustomer(next);
     setBuyerContactPerson(next.kind === 'contact' ? (next.contact.contactPerson ?? '') : '');
+  };
+  // "Důvěrný režim" with encrypted contacts: names are matched here, never typed to the server.
+  const vaultState = useVault();
+  const contactsLocal = contactsConfidential(vaultState.vault);
+  const sealsBuyer = contactsLocal && (sealsContacts(vaultState.vault) || Boolean(confidential?.buyerSealed));
+  // A customer still encrypted in the state (a starred pick or the default customer) is opened once the key is here.
+  useEffect(() => {
+    const k = vaultState.key;
+    if (!k) return;
+    const sealedContact = customer?.kind === 'contact' && contactIsSealed(customer.contact);
+    if (!sealedContact && !isSealed(buyerContactPerson)) return;
+    let live = true;
+    void (async () => {
+      const contact = customer?.kind === 'contact' && sealedContact ? await openContact(k, customer.contact).catch(() => null) : null;
+      const person = isSealed(buyerContactPerson) ? await open(k, buyerContactPerson).catch(() => null) : buyerContactPerson;
+      if (!live) return;
+      if (contact && customer?.kind === 'contact') setCustomer({ ...customer, contact });
+      if (person !== null) setBuyerContactPerson(person);
+    })();
+    return () => {
+      live = false;
+    };
+  }, [vaultState.key, customer, buyerContactPerson]);
+  const openedContacts = useRef<Promise<Contact[]> | null>(null);
+  const localContacts = async () => {
+    const k = vaultState.key ?? (await vaultState.requestUnlock());
+    if (!k) return [];
+    openedContacts.current ??= fetchAllContacts().then(async (r) => (r.ok ? openContacts(k, r.value) : []));
+    return openedContacts.current;
   };
   const [registry, setRegistry] = useCompanyRegistry();
   const [issueDate, setIssueDate] = useState(() => isoDate(template?.issueDate) || today());
@@ -508,7 +547,8 @@ export function InvoiceForm({
     return {
       ...Object.fromEntries((defaults.companyVars ?? []).map((v) => [v.key, v.value])),
       ...formattedVars(fieldVars, (n) => new Intl.NumberFormat(locale, { style: 'currency', currency }).format(n)),
-      customer: who?.legalName ?? '',
+      // A customer not opened yet never puts its ciphertext into the texts.
+      customer: isSealed(who?.legalName) ? '' : (who?.legalName ?? ''),
       customer_ico: who?.ico ?? '',
       issue_date: date(issueDate),
       due_date: date(dueDate),
@@ -570,11 +610,18 @@ export function InvoiceForm({
 
   const fetchCustomers = async (q: string): Promise<TypeaheadGroup<CustomerOption>[]> => {
     // Own contacts first – instant; the registers (slower, abroad even more) arrive in registryFetchers.
-    const { contacts } = await fetchContactSearch(q, 'none');
+    const { contacts } = contactsLocal ? { contacts: matchContacts(await localContacts(), q) } : await fetchContactSearch(q, 'none');
     return [{ label: t('customer.yourContacts'), items: contacts.map((contact) => ({ kind: 'contact' as const, contact })) }];
   };
   const registryPart = (part: RegistryPart) => async (q: string): Promise<TypeaheadGroup<CustomerOption>[]> => {
     if (part === 'slow' && !hasSlowRegistryPart(q, registry)) return [];
+    if (contactsLocal) {
+      // Only an exact IČO goes out, once; a known one is already among the own contacts.
+      const ico = q.replace(/\s+/g, '');
+      if (part === 'slow' || !/^\d{8}$/.test(ico) || (await localContacts()).some((c) => c.ico === ico)) return [];
+      const hit = await lookupPrefillByIco(ico);
+      return hit ? [{ label: t('customer.fromAres'), items: [{ kind: 'ares' as const, ares: hit }] }] : [];
+    }
     const { ares } = await fetchContactSearch(q, registry, part);
     return [{ label: t('customer.fromAres'), items: ares.map((a) => ({ kind: 'ares' as const, ares: a })) }];
   };
@@ -746,9 +793,19 @@ export function InvoiceForm({
     const canQueue = mode.kind === 'create' && !issue && Boolean(offline.scope);
     // "Důvěrný režim": the texts are encrypted here, so the server (and the offline queue) only ever get envelopes.
     const sealedInput = async (): Promise<InvoiceDraftInput | null> => {
-      if (!sealing) return input;
-      const key = await confidential!.getKey();
-      return key ? sealDraft(key, input, await documentKeyFor(key, confidential!.keySource)) : null;
+      let out = input;
+      if (sealing) {
+        const key = await confidential!.getKey();
+        if (!key) return null;
+        out = await sealDraft(key, out, await documentKeyFor(key, confidential!.keySource));
+      }
+      // Encrypted contacts: the document's contact person, and a register pick saved as a new contact.
+      if (sealsBuyer) {
+        const key = await vaultState.requestUnlock();
+        if (!key) return null;
+        out = await sealBuyer(key, out);
+      }
+      return out;
     };
     const queue = async () => {
       const payload = await sealedInput();
@@ -1134,7 +1191,7 @@ export function InvoiceForm({
                       ) : (
                         <Star className="h-3.5 w-3.5 shrink-0 fill-warning text-warning" aria-hidden="true" />
                       )}
-                      <span className="truncate">{contact.legalName}</span>
+                      <ConfidentialText value={contact.legalName} className="truncate" />
                     </button>
                   ))}
                 </div>
@@ -1170,7 +1227,7 @@ export function InvoiceForm({
                       ) : (
                         <Building2 className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                       )}
-                      <span className="min-w-0 flex-1 truncate font-medium">{name}</span>
+                      <ConfidentialText value={name} className="min-w-0 flex-1 truncate font-medium" />
                       <span className="shrink-0 text-xs text-muted-foreground">{[ico && `IČO ${ico}`, foreignId, city].filter(Boolean).join(' · ')}</span>
                     </span>
                   );
@@ -1568,8 +1625,9 @@ export function InvoiceForm({
                 title={tDoc(`type.${documentType}`)}
                 customerLines={(() => {
                   const c = customer ? (customer.kind === 'contact' ? customer.contact : customer.ares) : null;
+                  // Until an encrypted customer is opened, the preview shows only what is readable.
                   return c
-                    ? [c.legalName, [c.ico && `IČO ${c.ico}`, c.dic && `DIČ ${c.dic}`].filter(Boolean).join(' · '), [c.addressStreet, [c.addressPostalCode, c.addressCity].filter(Boolean).join(' ')].filter(Boolean).join(', ')].filter(Boolean)
+                    ? [c.legalName, [c.ico && `IČO ${c.ico}`, c.dic && `DIČ ${c.dic}`].filter(Boolean).join(' · '), [c.addressStreet, [c.addressPostalCode, c.addressCity].filter(Boolean).join(' ')].filter(Boolean).join(', ')].filter((line) => line && !line.includes('enc:v1:'))
                     : [];
                 })()}
                 dates={[
@@ -2072,7 +2130,7 @@ function CustomerSummary({ customer }: { customer: SelectedCustomer }) {
   return (
     <div className="min-w-0 text-sm">
       <p className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 break-words font-bold">
-        <span className="min-w-0 break-words">{c.legalName}</span>
+        <ConfidentialText value={c.legalName} className="min-w-0 break-words" />
         {/* The card's (i) already says register hits get saved to contacts; the badge keeps it as a tooltip. */}
         {customer.kind === 'ares' && (
           <span title={t('aresWillSave')} className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-[11px] font-bold text-accent-foreground">
@@ -2081,12 +2139,12 @@ function CustomerSummary({ customer }: { customer: SelectedCustomer }) {
         )}
       </p>
       <p className="text-muted-foreground">{[c.ico && `IČO ${c.ico}`, c.dic && `DIČ ${c.dic}`].filter(Boolean).join(' · ')}</p>
-      {address && <p className="text-muted-foreground">{address}</p>}
-      {customer.kind === 'contact' && customer.contact.email && <p className="truncate text-muted-foreground" title={customer.contact.email}>{customer.contact.email}</p>}
+      {address && !isSealed(c.addressStreet) && !isSealed(c.addressCity) && <p className="text-muted-foreground">{address}</p>}
+      {customer.kind === 'contact' && customer.contact.email && !isSealed(customer.contact.email) && <p className="truncate text-muted-foreground" title={customer.contact.email}>{customer.contact.email}</p>}
       {customer.kind === 'contact' && customer.contact.internalNote && (
         <p className="mt-1.5 flex gap-1.5 rounded-lg bg-warning/10 px-2 py-1.5 text-xs" title={t('internalNote')}>
           <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-warning" aria-label={t('internalNote')} />
-          <span className="whitespace-pre-line">{customer.contact.internalNote}</span>
+          <ConfidentialText value={customer.contact.internalNote} className="whitespace-pre-line" />
         </p>
       )}
     </div>

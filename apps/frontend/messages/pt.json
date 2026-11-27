@@ -14406,12 +14406,20 @@
       },
       "contacts": {
         "title": "Nomes e moradas dos contactos",
-        "description": "Nomes dos clientes, moradas, e-mails e telefones.",
+        "description": "Nomes de clientes, moradas, pessoas de contacto, telefones e notas internas. O número da empresa, o NIF-IVA e o país continuam legíveis.",
         "loses": [
-          "Preenchimento e atualização a partir do ARES",
-          "Correspondência de pagamentos bancários pelo nome do pagador",
-          "E-mails enviados pelo servidor (não conhece o endereço)",
-          "Pesquisa de contactos no servidor"
+          "A pesquisa e as sugestões de contactos funcionam só no seu navegador",
+          "O ARES responde só pelo número da empresa e não guarda nada; nenhum nome é enviado ao registo",
+          "A correspondência de pagamentos bancários pelo nome do pagador não vê nomes cifrados (pelo símbolo variável continua a funcionar)",
+          "E-mail de contacto cifrado: o servidor não envia nada para ele, a fatura é enviada do seu próprio e-mail ou por link",
+          "O servidor não consegue criar sozinho o PDF nem o ISDOC de um documento com cliente cifrado",
+          "Os lembretes contêm só o número do documento, o valor e o link"
+        ],
+        "how": [
+          "O nome, a rua, a cidade, o código postal, a pessoa de contacto, o telefone e a nota interna são cifrados no seu navegador antes de irem para o servidor.",
+          "O cliente copiado para cada documento e a respetiva pessoa de contacto são cifrados da mesma forma.",
+          "O número da empresa, o NIF-IVA e o país continuam legíveis para os registos, a verificação do IVA e o pagamento QR. O e-mail continua legível, a menos que o cifre.",
+          "Os contactos antigos continuam legíveis até os cifrar com Cifrar contactos existentes."
         ]
       },
       "amounts": {
@@ -14645,7 +14653,37 @@
       "partial": "{n} cifrados, {failed} falharam. Tente novamente mais tarde.",
       "nothing": "Não havia nada para cifrar.",
       "failed": "A cifragem falhou. Os anexos já cifrados continuam cifrados."
-    }
+    },
+    "contactEditor": {
+      "locked": "Este contacto está cifrado. Desbloqueie-o para o editar.",
+      "otherKey": "Este contacto está cifrado com outra chave e não pode ser aberto neste dispositivo.",
+      "unlock": "Desbloquear",
+      "sealedNote": "Modo confidencial: o nome, a morada, a pessoa de contacto, o telefone e a nota são guardados cifrados. O número da empresa, o NIF-IVA e o país continuam legíveis.",
+      "sealEmail": "Cifrar também o e-mail",
+      "sealEmailWarning": "O servidor deixa de enviar faturas e lembretes a este contacto. Envie-os do seu e-mail ou copie o link.",
+      "errors": {
+        "contact_plaintext": "O contacto não foi guardado: alguns dados não estavam cifrados. Tente novamente.",
+        "contact_partly_sealed": "O contacto não foi guardado: tem dados cifrados, mas o modo confidencial para contactos está desligado.",
+        "contact_sealed": "Este contacto está cifrado. Desbloqueie-o e guarde novamente para que continue cifrado.",
+        "vault_category_off": "A cifragem de contactos está desligada. Ligue-a nas definições do modo confidencial.",
+        "plan_required": "A cifragem de contactos faz parte de um plano superior."
+      }
+    },
+    "sealContacts": {
+      "button": "Cifrar contactos existentes",
+      "title": "Cifrar contactos existentes",
+      "what": "O navegador carrega os contactos que o servidor ainda consegue ler, cifra o nome, a morada, a pessoa de contacto, o telefone e a nota e volta a guardá-los. Depois faz o mesmo com o cliente copiado para os seus documentos.",
+      "keeps": "O número da empresa, o NIF-IVA, o país e o e-mail continuam legíveis. Pode cifrar o e-mail de cada contacto separadamente.",
+      "loses": "A pesquisa de contactos passa a funcionar só no navegador, e o servidor deixa de conseguir criar PDF ou ISDOC para estes clientes.",
+      "resumable": "Os documentos bloqueados são ignorados. Se fechar a janela, da próxima vez continua onde parou.",
+      "cancel": "Voltar",
+      "confirm": "Cifrar",
+      "progress": "A cifrar… {n}",
+      "done": "{n, plural, one {# contacto cifrado} other {# contactos cifrados}}.",
+      "nothing": "Não havia nada para cifrar.",
+      "failed": "A cifragem falhou. Os contactos já cifrados continuam cifrados."
+    },
+    "emailSealed": "O e-mail do cliente está cifrado, por isso o servidor não envia nada para ele. Envie a fatura do seu próprio e-mail ou copie o link para o cliente."
   },
   "vaultPublic": {
     "integrity": {

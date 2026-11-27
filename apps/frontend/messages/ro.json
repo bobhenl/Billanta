@@ -14406,12 +14406,20 @@
       },
       "contacts": {
         "title": "Numele și adresele contactelor",
-        "description": "Numele clienților, adrese, e-mailuri și telefoane.",
+        "description": "Numele clienților, adrese, persoane de contact, telefoane și note interne. Codul firmei, codul de TVA și țara rămân lizibile.",
         "loses": [
-          "Completarea și actualizarea din ARES",
-          "Potrivirea plăților bancare după numele plătitorului",
-          "E-mailuri trimise de server (nu cunoaște adresa)",
-          "Căutarea contactelor pe server"
+          "Căutarea și sugestiile de contacte rulează doar în browserul dvs.",
+          "ARES răspunde doar după codul firmei și nu salvează nimic; numele nu ajung la registru",
+          "Potrivirea plăților bancare după numele plătitorului nu vede numele criptate (după simbolul variabil merge în continuare)",
+          "E-mail de contact criptat: serverul nu trimite nimic la el, factura o trimiteți din propriul e-mail sau prin link",
+          "Serverul nu poate crea singur PDF-ul sau ISDOC-ul unui document cu client criptat",
+          "Mementourile conțin doar numărul documentului, suma și linkul"
+        ],
+        "how": [
+          "Numele, strada, orașul, codul poștal, persoana de contact, telefonul și nota internă sunt criptate în browserul dvs. înainte să ajungă pe server.",
+          "La fel sunt criptate clientul copiat pe document și persoana lui de contact.",
+          "Codul firmei, codul de TVA și țara rămân lizibile pentru registre, verificarea TVA și plata QR. E-mailul rămâne lizibil dacă nu îl criptați dvs.",
+          "Contactele mai vechi rămân lizibile până le criptați cu butonul Criptează contactele existente."
         ]
       },
       "amounts": {
@@ -14645,7 +14653,37 @@
       "partial": "{n} criptate, {failed} au eșuat. Încercați din nou mai târziu.",
       "nothing": "Nu a fost nimic de criptat.",
       "failed": "Criptarea a eșuat. Atașamentele deja criptate rămân criptate."
-    }
+    },
+    "contactEditor": {
+      "locked": "Acest contact este criptat. Deblocați-l ca să îl editați.",
+      "otherKey": "Acest contact este criptat cu altă cheie și nu poate fi deschis pe acest dispozitiv.",
+      "unlock": "Deblochează",
+      "sealedNote": "Mod confidențial: numele, adresa, persoana de contact, telefonul și nota se salvează criptate. Codul firmei, codul de TVA și țara rămân lizibile.",
+      "sealEmail": "Criptează și e-mailul",
+      "sealEmailWarning": "Serverul nu va mai trimite acestui contact facturi sau mementouri. Trimiteți-le din propriul e-mail sau copiați linkul.",
+      "errors": {
+        "contact_plaintext": "Contactul nu a fost salvat: unele date nu erau criptate. Încercați din nou.",
+        "contact_partly_sealed": "Contactul nu a fost salvat: conține date criptate, dar modul confidențial pentru contacte este oprit.",
+        "contact_sealed": "Acest contact este criptat. Deblocați-l și salvați din nou ca să rămână criptat.",
+        "vault_category_off": "Criptarea contactelor este oprită. Porniți-o în setările modului confidențial.",
+        "plan_required": "Criptarea contactelor face parte dintr-un abonament superior."
+      }
+    },
+    "sealContacts": {
+      "button": "Criptează contactele existente",
+      "title": "Criptează contactele existente",
+      "what": "Browserul încarcă contactele pe care serverul le mai poate citi, le criptează numele, adresa, persoana de contact, telefonul și nota și le salvează înapoi. Apoi face la fel cu clientul de pe documentele lor.",
+      "keeps": "Codul firmei, codul de TVA, țara și e-mailul rămân lizibile. E-mailul îl puteți cripta separat la fiecare contact.",
+      "loses": "Căutarea contactelor rulează apoi doar în browser, iar serverul nu mai poate crea PDF sau ISDOC pentru acești clienți.",
+      "resumable": "Documentele blocate sunt sărite. Dacă închideți fereastra, data viitoare se continuă de unde ați rămas.",
+      "cancel": "Înapoi",
+      "confirm": "Criptează",
+      "progress": "Se criptează… {n}",
+      "done": "{n, plural, one {# contact criptat} few {# contacte criptate} other {# de contacte criptate}}.",
+      "nothing": "Nu a fost nimic de criptat.",
+      "failed": "Criptarea a eșuat. Contactele deja criptate rămân criptate."
+    },
+    "emailSealed": "E-mailul clientului este criptat, așa că serverul nu trimite nimic la el. Trimiteți factura din propriul e-mail sau copiați linkul pentru client."
   },
   "vaultPublic": {
     "integrity": {

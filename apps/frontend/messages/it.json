@@ -14406,12 +14406,20 @@
       },
       "contacts": {
         "title": "Nomi e indirizzi dei contatti",
-        "description": "Nomi dei clienti, indirizzi, e-mail e telefoni.",
+        "description": "Nomi dei clienti, indirizzi, referenti, telefoni e note interne. Numero d’impresa, partita IVA e paese restano leggibili.",
         "loses": [
-          "Completamento e aggiornamento da ARES",
-          "Abbinamento dei pagamenti bancari per nome del pagatore",
-          "E-mail inviate dal server (non conosce l'indirizzo)",
-          "Ricerca dei contatti sul server"
+          "Ricerca e suggerimenti dei contatti funzionano solo nel tuo browser",
+          "ARES risponde solo per numero d’impresa e non salva nulla; i nomi non vengono mai inviati al registro",
+          "L’abbinamento dei pagamenti bancari per nome del pagatore non vede i nomi cifrati (per simbolo variabile funziona ancora)",
+          "E-mail del contatto cifrata: il server non vi invia nulla, la fattura la mandi dalla tua posta o con un link",
+          "Il server non può creare da solo il PDF o l’ISDOC di un documento con cliente cifrato",
+          "I solleciti contengono solo numero del documento, importo e link"
+        ],
+        "how": [
+          "Nome, via, città, CAP, referente, telefono e nota interna vengono cifrati nel tuo browser prima di arrivare al server.",
+          "Allo stesso modo vengono cifrati il cliente copiato su ogni documento e il suo referente.",
+          "Numero d’impresa, partita IVA e paese restano leggibili per i registri, il controllo IVA e il pagamento QR. L’e-mail resta leggibile se non la cifri tu.",
+          "I contatti precedenti restano leggibili finché non li cifri con Cifra i contatti esistenti."
         ]
       },
       "amounts": {
@@ -14645,7 +14653,37 @@
       "partial": "{n} cifrati, {failed} non riusciti. Riprova più tardi.",
       "nothing": "Non c’era niente da cifrare.",
       "failed": "La cifratura non è riuscita. Gli allegati già cifrati restano cifrati."
-    }
+    },
+    "contactEditor": {
+      "locked": "Questo contatto è cifrato. Sbloccalo per modificarlo.",
+      "otherKey": "Questo contatto è cifrato con un’altra chiave e non si può aprire su questo dispositivo.",
+      "unlock": "Sblocca",
+      "sealedNote": "Modalità riservata: nome, indirizzo, referente, telefono e nota vengono salvati cifrati. Numero d’impresa, partita IVA e paese restano leggibili.",
+      "sealEmail": "Cifra anche l’e-mail",
+      "sealEmailWarning": "Il server non invierà più fatture né solleciti a questo contatto. Inviala dalla tua posta o copia il link.",
+      "errors": {
+        "contact_plaintext": "Il contatto non è stato salvato: alcuni dati non erano cifrati. Riprova.",
+        "contact_partly_sealed": "Il contatto non è stato salvato: contiene dati cifrati, ma la modalità riservata per i contatti è disattivata.",
+        "contact_sealed": "Questo contatto è cifrato. Sbloccalo e salva di nuovo perché resti cifrato.",
+        "vault_category_off": "La cifratura dei contatti è disattivata. Attivala nelle impostazioni della modalità riservata.",
+        "plan_required": "La cifratura dei contatti fa parte di un piano superiore."
+      }
+    },
+    "sealContacts": {
+      "button": "Cifra i contatti esistenti",
+      "title": "Cifra i contatti esistenti",
+      "what": "Il browser carica i contatti che il server può ancora leggere, ne cifra nome, indirizzo, referente, telefono e nota e li salva di nuovo. Poi fa lo stesso con il cliente copiato sui loro documenti.",
+      "keeps": "Numero d’impresa, partita IVA, paese ed e-mail restano leggibili. L’e-mail puoi cifrarla per ogni contatto separatamente.",
+      "loses": "La ricerca dei contatti funziona poi solo nel browser, e il server non può più creare PDF né ISDOC per questi clienti.",
+      "resumable": "I documenti bloccati vengono saltati. Se chiudi la finestra, la prossima volta riprende da dove avevi lasciato.",
+      "cancel": "Indietro",
+      "confirm": "Cifra",
+      "progress": "Cifratura… {n}",
+      "done": "{n, plural, one {# contatto cifrato} other {# contatti cifrati}}.",
+      "nothing": "Non c’era nulla da cifrare.",
+      "failed": "La cifratura non è riuscita. I contatti già cifrati restano cifrati."
+    },
+    "emailSealed": "L’e-mail del cliente è cifrata, quindi il server non vi invia nulla. Invia la fattura dalla tua posta o copia il link per il cliente."
   },
   "vaultPublic": {
     "integrity": {

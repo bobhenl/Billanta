@@ -91,9 +91,13 @@ export async function deleteContact(id: string) {
 }
 
 /** Company data from ARES for an IČO (no save). */
-export async function lookupAres(ico: string) {
+/** `transient`: Důvěrný režim, the backend answers without caching or logging the result. */
+export async function lookupAres(ico: string, transient = false) {
   try {
-    const data = await apiFetch<Omit<ContactInput, 'aresVerified'> & { legalName: string }>('/api/v1/contacts/ares-lookup', json('POST', { ico }));
+    const data = await apiFetch<Omit<ContactInput, 'aresVerified'> & { legalName: string }>(
+      '/api/v1/contacts/ares-lookup',
+      json('POST', { ico, ...(transient && { transient: true }) })
+    );
     return { ok: true, data } as const;
   } catch (error) {
     return { ok: false, error: error instanceof ApiError && error.status === 404 ? 'not_found' : backendMessage(error) } as const;

@@ -5,7 +5,12 @@ export interface OpenedInvoiceTexts {
   noteAbove: string | null;
   noteBelow: string | null;
   items: { id: string; description: string }[];
+  /** An encrypted buyer (category "contacts"): name and address as printed. */
+  buyer?: Partial<Record<BuyerField, string | null>>;
+  buyerContactPerson?: string | null;
 }
+
+export type BuyerField = 'legalName' | 'addressStreet' | 'addressCity' | 'addressPostalCode';
 
 /**
  * The one place that renders the PDF of an encrypted document in the

@@ -3,29 +3,47 @@
 import { useEffect, useState, type ComponentProps } from 'react';
 import { Loader2, LockKeyhole } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { isSealed, open, type VaultKey } from '@faktur/cz-compliance';
 import { useVault } from '@/components/vault/vault-provider';
 import { draftIsSealed, openDraft } from '@/lib/vault/content';
+import { contactIsSealed, openContact, openContacts } from '@/lib/vault/contacts';
 import { buttonClass } from '@/lib/ui-classes';
 import { InvoiceForm } from './invoice-form';
 import type { InvoiceTemplate } from './types';
 
+/** The customer of the starting point is encrypted (category "contacts"). */
+const buyerIsSealed = (template: InvoiceTemplate | null) => contactIsSealed(template?.contact) || isSealed(template?.buyerContactPerson);
+
+async function openTemplate(key: VaultKey, template: InvoiceTemplate): Promise<InvoiceTemplate> {
+  const texts = draftIsSealed(template) ? await openDraft(key, template) : template;
+  return {
+    ...texts,
+    contact: texts.contact ? await openContact(key, texts.contact) : texts.contact,
+    buyerContactPerson: isSealed(texts.buyerContactPerson) ? await open(key, texts.buyerContactPerson!) : texts.buyerContactPerson
+  };
+}
+
 /**
  * The invoice editor with "Důvěrný režim": an encrypted starting point
- * (edit, duplicate, template) is opened in the browser first, and the form
- * gets what it needs to encrypt on save. Without the mode it is the plain form.
+ * (edit, duplicate, template) is opened in the browser first, its texts and
+ * its customer alike, and the form gets what it needs to encrypt on save.
+ * Without the mode it is the plain form.
  */
 export function ConfidentialInvoiceForm(props: ComponentProps<typeof InvoiceForm>) {
   const t = useTranslations('vault.editor');
   const { vault, key, requestUnlock } = useVault();
   const template = props.template ?? null;
-  const sealed = draftIsSealed(template);
+  const textsSealed = draftIsSealed(template);
+  const sealed = textsSealed || buyerIsSealed(template);
   const [opened, setOpened] = useState<InvoiceTemplate | null | 'failed'>(sealed ? null : template);
+  // Starred customers only need opening for their names; locked, they show a lock.
+  const [starred, setStarred] = useState(props.starred);
 
   useEffect(() => {
     if (!sealed) return setOpened(template);
     if (!key || !template) return setOpened(null);
     let live = true;
-    openDraft(key, template)
+    openTemplate(key, template)
       .then((t) => live && setOpened(t))
       .catch(() => live && setOpened('failed'));
     return () => {
@@ -33,9 +51,19 @@ export function ConfidentialInvoiceForm(props: ComponentProps<typeof InvoiceForm
     };
   }, [sealed, key, template]);
 
+  useEffect(() => {
+    setStarred(props.starred);
+    if (!key || !props.starred) return;
+    let live = true;
+    void openContacts(key, props.starred).then((list) => live && setStarred(list));
+    return () => {
+      live = false;
+    };
+  }, [key, props.starred]);
+
   // Below Plus an already encrypted document still opens and stays encrypted
   // on save; a plain one is edited as plain, like any gated feature.
-  if (!vault || (vault.planAllowed === false && !sealed)) return <InvoiceForm {...props} />;
+  if (!vault || (vault.planAllowed === false && !sealed)) return <InvoiceForm {...props} starred={starred} />;
 
   if (sealed && (!key || opened === null || opened === 'failed')) {
     return (
@@ -62,12 +90,14 @@ export function ConfidentialInvoiceForm(props: ComponentProps<typeof InvoiceForm
   return (
     <InvoiceForm
       {...props}
+      starred={starred}
       template={opened === 'failed' ? null : opened}
       confidential={{
-        sealByDefault: (sealed && mayKeepSealed) || (vault.sealNew && vault.planAllowed !== false),
+        sealByDefault: (textsSealed && mayKeepSealed) || (vault.sealNew && vault.planAllowed !== false),
         getKey: requestUnlock,
         // An edit keeps the document's key, so a client link sent before still opens it; a copy gets its own.
-        keySource: props.mode?.kind === 'edit' ? template : null
+        keySource: props.mode?.kind === 'edit' ? template : null,
+        buyerSealed: buyerIsSealed(template) && mayKeepSealed
       }}
     />
   );

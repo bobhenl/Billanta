@@ -14411,12 +14411,20 @@
       },
       "contacts": {
         "title": "Jména a adresy kontaktů",
-        "description": "Názvy odběratelů, adresy, e-maily a telefony.",
+        "description": "Názvy odběratelů, adresy, kontaktní osoby, telefony a interní poznámky. IČO, DIČ a země zůstávají čitelné.",
         "loses": [
-          "Doplnění a aktualizace z ARES",
-          "Párování bankovních plateb podle jména plátce",
-          "Odesílání e-mailů serverem (server nezná adresu)",
-          "Hledání kontaktů na serveru"
+          "Hledání a našeptávání kontaktů běží jen ve vašem prohlížeči",
+          "ARES vrátí údaje jen podle IČO a nic si neukládá; název do registru neposíláme",
+          "Párování bankovních plateb podle jména plátce nezná zašifrovaná jména (podle VS dál funguje)",
+          "Zašifrovaný e-mail kontaktu: server mu nic nepošle, fakturu odešlete z vlastní pošty nebo odkazem",
+          "PDF a ISDOC se zašifrovaným odběratelem server sám nevytvoří",
+          "Upomínky obsahují jen číslo dokladu, částku a odkaz"
+        ],
+        "how": [
+          "Název, ulice, město, PSČ, kontaktní osoba, telefon a interní poznámka se zašifrují ve vašem prohlížeči, ještě než odejdou na server.",
+          "Stejně se zašifruje i odběratel opsaný na dokladu a kontaktní osoba dokladu.",
+          "IČO, DIČ a země zůstávají čitelné kvůli registrům, kontrole DPH a QR platbě. E-mail je čitelný, pokud ho u kontaktu sami nezašifrujete.",
+          "Dřívější kontakty zůstanou čitelné, dokud je nezašifrujete tlačítkem Zašifrovat stávající kontakty."
         ]
       },
       "amounts": {
@@ -14657,7 +14665,37 @@
       "partial": "Zašifrováno {n}, {failed} se nepovedlo. Zkuste to znovu později.",
       "nothing": "Nebylo co šifrovat.",
       "failed": "Šifrování se nepovedlo. Už zašifrované přílohy zůstávají zašifrované."
-    }
+    },
+    "contactEditor": {
+      "locked": "Kontakt je zašifrovaný. Odemkněte ho a můžete ho upravit.",
+      "otherKey": "Kontakt je zašifrovaný jiným klíčem a tímto zařízením ho neotevřete.",
+      "unlock": "Odemknout",
+      "sealedNote": "Důvěrný režim: název, adresa, kontaktní osoba, telefon a poznámka se uloží zašifrované. IČO, DIČ a země zůstanou čitelné.",
+      "sealEmail": "Zašifrovat i e-mail",
+      "sealEmailWarning": "Server pak tomuto kontaktu nepošle fakturu ani upomínku. Pošlete ji z vlastní pošty nebo zkopírujte odkaz.",
+      "errors": {
+        "contact_plaintext": "Kontakt se neuložil: některé údaje nebyly zašifrované. Zkuste to znovu.",
+        "contact_partly_sealed": "Kontakt se neuložil: obsahuje zašifrované údaje, ale Důvěrný režim pro kontakty není zapnutý.",
+        "contact_sealed": "Kontakt je zašifrovaný. Odemkněte ho a uložte znovu, aby zůstal zašifrovaný.",
+        "vault_category_off": "Šifrování kontaktů je vypnuté. Zapněte ho v nastavení Důvěrného režimu.",
+        "plan_required": "Šifrování kontaktů je součástí vyššího tarifu."
+      }
+    },
+    "sealContacts": {
+      "button": "Zašifrovat stávající kontakty",
+      "title": "Zašifrovat stávající kontakty",
+      "what": "Prohlížeč načte kontakty, které jsou na serveru čitelné, zašifruje jejich název, adresu, kontaktní osobu, telefon a poznámku a uloží je zpět. Potom totéž udělá s odběratelem opsaným na jejich dokladech.",
+      "keeps": "IČO, DIČ, země a e-mail zůstanou čitelné. E-mail můžete zašifrovat u každého kontaktu zvlášť.",
+      "loses": "Hledání kontaktů pak běží jen v prohlížeči a server už nevytvoří PDF ani ISDOC s těmito odběrateli.",
+      "resumable": "Zamčené doklady se přeskočí. Když okno zavřete, příště se pokračuje tam, kde jste skončili.",
+      "cancel": "Zpět",
+      "confirm": "Zašifrovat",
+      "progress": "Šifruji… {n}",
+      "done": "{n, plural, one {Zašifrován # kontakt} few {Zašifrovány # kontakty} other {Zašifrováno # kontaktů}}.",
+      "nothing": "Nebylo co šifrovat.",
+      "failed": "Šifrování se nepovedlo. Už zašifrované kontakty zůstávají zašifrované."
+    },
+    "emailSealed": "E-mail odběratele je zašifrovaný, server mu nic nepošle. Pošlete fakturu z vlastní pošty nebo zkopírujte odkaz pro klienta."
   },
   "vaultPublic": {
     "integrity": {

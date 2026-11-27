@@ -14406,12 +14406,20 @@
       },
       "contacts": {
         "title": "Noms et adresses des contacts",
-        "description": "Noms des clients, adresses, e-mails et téléphones.",
+        "description": "Noms des clients, adresses, interlocuteurs, téléphones et notes internes. Le numéro d’entreprise, le numéro de TVA et le pays restent lisibles.",
         "loses": [
-          "Complément et mise à jour depuis ARES",
-          "Rapprochement des paiements bancaires par nom du payeur",
-          "E-mails envoyés par le serveur (il ne connaît pas l'adresse)",
-          "Recherche de contacts sur le serveur"
+          "La recherche et les suggestions de contacts se font uniquement dans votre navigateur",
+          "ARES répond uniquement par numéro d’entreprise et ne garde rien ; aucun nom n’est envoyé au registre",
+          "Le rapprochement des paiements bancaires par nom du payeur ne voit pas les noms chiffrés (par symbole variable, il fonctionne toujours)",
+          "E-mail de contact chiffré : le serveur n’y envoie rien, vous envoyez la facture depuis votre messagerie ou par lien",
+          "Le serveur ne peut pas créer seul le PDF ou l’ISDOC d’un document dont le client est chiffré",
+          "Les relances ne contiennent que le numéro du document, le montant et le lien"
+        ],
+        "how": [
+          "Le nom, la rue, la ville, le code postal, l’interlocuteur, le téléphone et la note interne sont chiffrés dans votre navigateur avant d’aller sur le serveur.",
+          "Le client recopié sur chaque document et son interlocuteur sont chiffrés de la même façon.",
+          "Le numéro d’entreprise, le numéro de TVA et le pays restent lisibles pour les registres, le contrôle de TVA et le paiement QR. L’e-mail reste lisible sauf si vous le chiffrez.",
+          "Les anciens contacts restent lisibles jusqu’à ce que vous les chiffriez avec Chiffrer les contacts existants."
         ]
       },
       "amounts": {
@@ -14645,7 +14653,37 @@
       "partial": "{n} chiffrées, {failed} en échec. Réessayez plus tard.",
       "nothing": "Il n’y avait rien à chiffrer.",
       "failed": "Le chiffrement a échoué. Les pièces jointes déjà chiffrées le restent."
-    }
+    },
+    "contactEditor": {
+      "locked": "Ce contact est chiffré. Déverrouillez-le pour le modifier.",
+      "otherKey": "Ce contact est chiffré avec une autre clé et ne peut pas être ouvert sur cet appareil.",
+      "unlock": "Déverrouiller",
+      "sealedNote": "Mode confidentiel : le nom, l’adresse, l’interlocuteur, le téléphone et la note sont enregistrés chiffrés. Le numéro d’entreprise, le numéro de TVA et le pays restent lisibles.",
+      "sealEmail": "Chiffrer aussi l’e-mail",
+      "sealEmailWarning": "Le serveur n’enverra alors ni facture ni relance à ce contact. Envoyez-la depuis votre messagerie ou copiez le lien.",
+      "errors": {
+        "contact_plaintext": "Le contact n’a pas été enregistré : certaines données n’étaient pas chiffrées. Réessayez.",
+        "contact_partly_sealed": "Le contact n’a pas été enregistré : il contient des données chiffrées, mais le mode confidentiel des contacts est désactivé.",
+        "contact_sealed": "Ce contact est chiffré. Déverrouillez-le et enregistrez à nouveau pour qu’il reste chiffré.",
+        "vault_category_off": "Le chiffrement des contacts est désactivé. Activez-le dans les réglages du mode confidentiel.",
+        "plan_required": "Le chiffrement des contacts fait partie d’une offre supérieure."
+      }
+    },
+    "sealContacts": {
+      "button": "Chiffrer les contacts existants",
+      "title": "Chiffrer les contacts existants",
+      "what": "Votre navigateur charge les contacts que le serveur peut encore lire, chiffre leur nom, adresse, interlocuteur, téléphone et note, puis les enregistre. Il fait ensuite de même avec le client recopié sur leurs documents.",
+      "keeps": "Le numéro d’entreprise, le numéro de TVA, le pays et l’e-mail restent lisibles. Vous pouvez chiffrer l’e-mail de chaque contact séparément.",
+      "loses": "La recherche de contacts se fait alors uniquement dans le navigateur, et le serveur ne peut plus créer de PDF ni d’ISDOC pour ces clients.",
+      "resumable": "Les documents verrouillés sont ignorés. Si vous fermez la fenêtre, la prochaine fois reprend là où vous vous êtes arrêté.",
+      "cancel": "Retour",
+      "confirm": "Chiffrer",
+      "progress": "Chiffrement… {n}",
+      "done": "{n, plural, one {# contact chiffré} other {# contacts chiffrés}}.",
+      "nothing": "Il n’y avait rien à chiffrer.",
+      "failed": "Le chiffrement a échoué. Les contacts déjà chiffrés le restent."
+    },
+    "emailSealed": "L’e-mail du client est chiffré, le serveur n’y envoie donc rien. Envoyez la facture depuis votre messagerie ou copiez le lien client."
   },
   "vaultPublic": {
     "integrity": {

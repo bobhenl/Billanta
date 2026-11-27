@@ -14407,12 +14407,20 @@
       },
       "contacts": {
         "title": "Namen und Adressen von Kontakten",
-        "description": "Kundennamen, Adressen, E-Mails und Telefonnummern.",
+        "description": "Kundennamen, Adressen, Ansprechpartner, Telefonnummern und interne Notizen. Firmennummer, USt-IdNr. und Land bleiben lesbar.",
         "loses": [
-          "Ergänzen und Aktualisieren aus ARES",
-          "Zuordnung von Bankzahlungen nach Zahlername",
-          "E-Mail-Versand durch den Server (er kennt die Adresse nicht)",
-          "Kontaktsuche auf dem Server"
+          "Kontaktsuche und Vorschläge laufen nur in Ihrem Browser",
+          "ARES antwortet nur anhand der Firmennummer und speichert nichts; Namen gehen nie an das Register",
+          "Die Zuordnung von Bankzahlungen nach Zahlername erkennt verschlüsselte Namen nicht (nach Verwendungszweck-Nummer weiterhin)",
+          "Verschlüsselte Kontakt-E-Mail: Der Server schickt nichts dorthin, Sie senden die Rechnung selbst oder per Link",
+          "PDF und ISDOC mit verschlüsseltem Kunden kann der Server nicht selbst erstellen",
+          "Mahnungen enthalten nur Belegnummer, Betrag und Link"
+        ],
+        "how": [
+          "Name, Straße, Ort, PLZ, Ansprechpartner, Telefon und interne Notiz werden in Ihrem Browser verschlüsselt, bevor sie an den Server gehen.",
+          "Der auf dem Beleg übernommene Kunde und sein Ansprechpartner werden genauso verschlüsselt.",
+          "Firmennummer, USt-IdNr. und Land bleiben für Register, USt-Prüfung und QR-Zahlung lesbar. Die E-Mail bleibt lesbar, wenn Sie sie nicht selbst verschlüsseln.",
+          "Ältere Kontakte bleiben lesbar, bis Sie sie mit Bestehende Kontakte verschlüsseln verschlüsseln."
         ]
       },
       "amounts": {
@@ -14646,7 +14654,37 @@
       "partial": "{n} verschlüsselt, {failed} fehlgeschlagen. Versuchen Sie es später erneut.",
       "nothing": "Es gab nichts zu verschlüsseln.",
       "failed": "Die Verschlüsselung ist fehlgeschlagen. Bereits verschlüsselte Anlagen bleiben verschlüsselt."
-    }
+    },
+    "contactEditor": {
+      "locked": "Dieser Kontakt ist verschlüsselt. Entsperren Sie ihn, um ihn zu bearbeiten.",
+      "otherKey": "Dieser Kontakt ist mit einem anderen Schlüssel verschlüsselt und lässt sich auf diesem Gerät nicht öffnen.",
+      "unlock": "Entsperren",
+      "sealedNote": "Vertraulicher Modus: Name, Adresse, Ansprechpartner, Telefon und Notiz werden verschlüsselt gespeichert. Firmennummer, USt-IdNr. und Land bleiben lesbar.",
+      "sealEmail": "Auch die E-Mail verschlüsseln",
+      "sealEmailWarning": "Der Server schickt diesem Kontakt dann keine Rechnung und keine Mahnung. Senden Sie sie selbst oder kopieren Sie den Link.",
+      "errors": {
+        "contact_plaintext": "Der Kontakt wurde nicht gespeichert: Einige Angaben waren nicht verschlüsselt. Bitte erneut versuchen.",
+        "contact_partly_sealed": "Der Kontakt wurde nicht gespeichert: Er enthält verschlüsselte Angaben, aber der vertrauliche Modus für Kontakte ist aus.",
+        "contact_sealed": "Dieser Kontakt ist verschlüsselt. Entsperren Sie ihn und speichern Sie erneut, damit er verschlüsselt bleibt.",
+        "vault_category_off": "Die Kontaktverschlüsselung ist aus. Schalten Sie sie in den Einstellungen des vertraulichen Modus ein.",
+        "plan_required": "Die Kontaktverschlüsselung gehört zu einem höheren Tarif."
+      }
+    },
+    "sealContacts": {
+      "button": "Bestehende Kontakte verschlüsseln",
+      "title": "Bestehende Kontakte verschlüsseln",
+      "what": "Ihr Browser lädt die Kontakte, die der Server noch lesen kann, verschlüsselt Name, Adresse, Ansprechpartner, Telefon und Notiz und speichert sie zurück. Danach macht er dasselbe mit dem Kunden auf ihren Belegen.",
+      "keeps": "Firmennummer, USt-IdNr., Land und E-Mail bleiben lesbar. Die E-Mail können Sie bei jedem Kontakt einzeln verschlüsseln.",
+      "loses": "Die Kontaktsuche läuft dann nur im Browser, und der Server kann für diese Kunden kein PDF und kein ISDOC mehr erstellen.",
+      "resumable": "Gesperrte Belege werden übersprungen. Wenn Sie das Fenster schließen, geht es beim nächsten Mal dort weiter.",
+      "cancel": "Zurück",
+      "confirm": "Verschlüsseln",
+      "progress": "Verschlüssele… {n}",
+      "done": "{n, plural, one {# Kontakt verschlüsselt} other {# Kontakte verschlüsselt}}.",
+      "nothing": "Es gab nichts zu verschlüsseln.",
+      "failed": "Verschlüsselung fehlgeschlagen. Bereits verschlüsselte Kontakte bleiben verschlüsselt."
+    },
+    "emailSealed": "Die E-Mail des Kunden ist verschlüsselt, der Server schickt nichts dorthin. Senden Sie die Rechnung selbst oder kopieren Sie den Kundenlink."
   },
   "vaultPublic": {
     "integrity": {

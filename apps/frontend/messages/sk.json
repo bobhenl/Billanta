@@ -14315,12 +14315,20 @@
       },
       "contacts": {
         "title": "Mená a adresy kontaktov",
-        "description": "Názvy odberateľov, adresy, e-maily a telefóny.",
+        "description": "Názvy odberateľov, adresy, kontaktné osoby, telefóny a interné poznámky. IČO, DIČ a krajina zostávajú čitateľné.",
         "loses": [
-          "Doplnenie a aktualizácia z ARES",
-          "Párovanie bankových platieb podľa mena platiteľa",
-          "Posielanie e-mailov serverom (server nepozná adresu)",
-          "Hľadanie kontaktov na serveri"
+          "Hľadanie a našepkávanie kontaktov beží len vo vašom prehliadači",
+          "ARES vráti údaje len podľa IČO a nič si neukladá; názov do registra neposielame",
+          "Párovanie bankových platieb podľa mena platiteľa nepozná zašifrované mená (podľa VS ďalej funguje)",
+          "Zašifrovaný e-mail kontaktu: server mu nič nepošle, faktúru odošlete z vlastnej pošty alebo odkazom",
+          "PDF a ISDOC so zašifrovaným odberateľom server sám nevytvorí",
+          "Upomienky obsahujú len číslo dokladu, sumu a odkaz"
+        ],
+        "how": [
+          "Názov, ulica, mesto, PSČ, kontaktná osoba, telefón a interná poznámka sa zašifrujú vo vašom prehliadači, ešte kým odídu na server.",
+          "Rovnako sa zašifruje aj odberateľ odpísaný na doklade a kontaktná osoba dokladu.",
+          "IČO, DIČ a krajina zostávajú čitateľné kvôli registrom, kontrole DPH a QR platbe. E-mail je čitateľný, ak ho pri kontakte sami nezašifrujete.",
+          "Staršie kontakty zostanú čitateľné, kým ich nezašifrujete tlačidlom Zašifrovať existujúce kontakty."
         ]
       },
       "amounts": {
@@ -14561,7 +14569,37 @@
       "partial": "Zašifrovaných {n}, {failed} sa nepodarilo. Skúste to znova neskôr.",
       "nothing": "Nebolo čo šifrovať.",
       "failed": "Šifrovanie sa nepodarilo. Už zašifrované prílohy zostávajú zašifrované."
-    }
+    },
+    "contactEditor": {
+      "locked": "Kontakt je zašifrovaný. Odomknite ho a môžete ho upraviť.",
+      "otherKey": "Kontakt je zašifrovaný iným kľúčom a týmto zariadením ho neotvoríte.",
+      "unlock": "Odomknúť",
+      "sealedNote": "Dôverný režim: názov, adresa, kontaktná osoba, telefón a poznámka sa uložia zašifrované. IČO, DIČ a krajina zostanú čitateľné.",
+      "sealEmail": "Zašifrovať aj e-mail",
+      "sealEmailWarning": "Server potom tomuto kontaktu nepošle faktúru ani upomienku. Pošlite ju z vlastnej pošty alebo skopírujte odkaz.",
+      "errors": {
+        "contact_plaintext": "Kontakt sa neuložil: niektoré údaje neboli zašifrované. Skúste to znova.",
+        "contact_partly_sealed": "Kontakt sa neuložil: obsahuje zašifrované údaje, ale Dôverný režim pre kontakty nie je zapnutý.",
+        "contact_sealed": "Kontakt je zašifrovaný. Odomknite ho a uložte znova, aby zostal zašifrovaný.",
+        "vault_category_off": "Šifrovanie kontaktov je vypnuté. Zapnite ho v nastaveniach Dôverného režimu.",
+        "plan_required": "Šifrovanie kontaktov je súčasťou vyššieho balíka."
+      }
+    },
+    "sealContacts": {
+      "button": "Zašifrovať existujúce kontakty",
+      "title": "Zašifrovať existujúce kontakty",
+      "what": "Prehliadač načíta kontakty, ktoré sú na serveri čitateľné, zašifruje ich názov, adresu, kontaktnú osobu, telefón a poznámku a uloží ich späť. Potom to isté urobí s odberateľom odpísaným na ich dokladoch.",
+      "keeps": "IČO, DIČ, krajina a e-mail zostanú čitateľné. E-mail môžete zašifrovať pri každom kontakte zvlášť.",
+      "loses": "Hľadanie kontaktov potom beží len v prehliadači a server už nevytvorí PDF ani ISDOC s týmito odberateľmi.",
+      "resumable": "Uzamknuté doklady sa preskočia. Keď okno zatvoríte, nabudúce sa pokračuje tam, kde ste skončili.",
+      "cancel": "Späť",
+      "confirm": "Zašifrovať",
+      "progress": "Šifrujem… {n}",
+      "done": "{n, plural, one {Zašifrovaný # kontakt} few {Zašifrované # kontakty} other {Zašifrovaných # kontaktov}}.",
+      "nothing": "Nebolo čo šifrovať.",
+      "failed": "Šifrovanie sa nepodarilo. Už zašifrované kontakty zostávajú zašifrované."
+    },
+    "emailSealed": "E-mail odberateľa je zašifrovaný, server mu nič nepošle. Pošlite faktúru z vlastnej pošty alebo skopírujte odkaz pre klienta."
   },
   "vaultPublic": {
     "integrity": {

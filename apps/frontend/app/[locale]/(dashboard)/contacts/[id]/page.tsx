@@ -6,6 +6,9 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
 import { VatStatusBadge } from '@/components/vat-status-badge';
+import { isSealed } from '@faktur/cz-compliance';
+import { ConfidentialJoin, ConfidentialLink } from '@/components/vault/confidential-join';
+import { ConfidentialText } from '@/components/vault/confidential-text';
 import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import { formatDate, formatMoney, type InvoiceRow } from '@/lib/invoice-ui';
 import { EXPENSE_STATE_CLASSES, expenseState, type ExpensePage } from '@/lib/expense-ui';
@@ -80,6 +83,8 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
     : null;
   const lastInvoice = invoices.map((i) => i.issueDate).filter(Boolean).sort().at(-1) ?? null;
 
+  // Encrypted contacts (Důvěrný režim) are opened in the browser, part by part.
+  const sealedAddress = [contact.addressStreet, contact.addressPostalCode, contact.addressCity].some(isSealed);
   const address = [contact.addressStreet, [contact.addressPostalCode, contact.addressCity].filter(Boolean).join(' '), contact.addressCountry]
     .filter(Boolean)
     .join(', ');
@@ -113,7 +118,7 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
           <h1 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight">
             {contact.isStarred && <Star className="h-5 w-5 shrink-0 fill-warning text-warning" />}
             <ColorDot color={contact.color} className="h-3 w-3" />
-            <span className="truncate">{contact.legalName}</span>
+            <ConfidentialText value={contact.legalName} className="truncate" />
             {contact.isPrivate && <Lock className="h-4 w-4 shrink-0 text-muted-foreground" aria-label={t('visibility.private')} />}
             {contact.aresVerifiedAt && <BadgeCheck className="h-5 w-5 shrink-0 text-primary" aria-label={t('aresVerified')} />}
           </h1>
@@ -185,7 +190,9 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
                 <Lock className="h-4 w-4 text-warning" />
                 {t('internalNote')}
               </h2>
-              <p className="mt-2 whitespace-pre-line text-sm">{contact.internalNote}</p>
+              <p className="mt-2 whitespace-pre-line text-sm">
+                <ConfidentialText value={contact.internalNote} />
+              </p>
             </section>
           )}
           <section className="rounded-xl border border-border bg-card p-4 text-sm">
@@ -195,22 +202,22 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
                 <div className="flex gap-2">
                   <dt className="sr-only">{t('contactPerson')}</dt>
                   <UserRound className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                  <dd>{contact.contactPerson}</dd>
+                  <dd>
+                    <ConfidentialText value={contact.contactPerson} />
+                  </dd>
                 </div>
               )}
               {address && (
                 <div className="flex gap-2">
                   <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                  <dd>{address}</dd>
+                  <dd>{sealedAddress ? <ConfidentialJoin parts={[contact.addressStreet, contact.addressPostalCode, contact.addressCity, contact.addressCountry]} /> : address}</dd>
                 </div>
               )}
               {contact.email && (
                 <div className="flex gap-2">
                   <Mail className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                   <dd>
-                    <a href={`mailto:${contact.email}`} className="text-primary hover:underline">
-                      {contact.email}
-                    </a>
+                    <ConfidentialLink value={contact.email} kind="mailto" className="text-primary hover:underline" />
                   </dd>
                 </div>
               )}
@@ -218,9 +225,7 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
                 <div className="flex gap-2">
                   <Phone className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                   <dd>
-                    <a href={`tel:${contact.phone.replace(/[^+0-9]/g, '')}`} className="text-primary hover:underline">
-                      {contact.phone}
-                    </a>
+                    <ConfidentialLink value={contact.phone} kind="tel" className="text-primary hover:underline" />
                   </dd>
                 </div>
               )}

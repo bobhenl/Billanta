@@ -14406,12 +14406,20 @@
       },
       "contacts": {
         "title": "Namen en adressen van contacten",
-        "description": "Klantnamen, adressen, e-mails en telefoonnummers.",
+        "description": "Klantnamen, adressen, contactpersonen, telefoonnummers en interne notities. Bedrijfsnummer, btw-nummer en land blijven leesbaar.",
         "loses": [
-          "Aanvullen en bijwerken uit ARES",
-          "Bankbetalingen koppelen op naam van de betaler",
-          "E-mails verstuurd door de server (die kent het adres niet)",
-          "Contacten zoeken op de server"
+          "Contacten zoeken en voorstellen gebeurt alleen in je browser",
+          "ARES antwoordt alleen op bedrijfsnummer en bewaart niets; namen gaan nooit naar het register",
+          "Bankbetalingen koppelen op naam van de betaler ziet versleutelde namen niet (op betalingskenmerk werkt het nog)",
+          "Versleuteld e-mailadres: de server stuurt er niets naartoe, je verstuurt de factuur vanuit je eigen mail of via een link",
+          "De server kan de pdf of ISDOC van een document met een versleutelde klant niet zelf maken",
+          "Herinneringen bevatten alleen het documentnummer, het bedrag en de link"
+        ],
+        "how": [
+          "Naam, straat, plaats, postcode, contactpersoon, telefoon en interne notitie worden in je browser versleuteld voordat ze naar de server gaan.",
+          "De klant die op elk document wordt overgenomen en de contactpersoon daarvan worden net zo versleuteld.",
+          "Bedrijfsnummer, btw-nummer en land blijven leesbaar voor registers, de btw-controle en de QR-betaling. Het e-mailadres blijft leesbaar tenzij je het zelf versleutelt.",
+          "Oudere contacten blijven leesbaar tot je ze versleutelt met Bestaande contacten versleutelen."
         ]
       },
       "amounts": {
@@ -14645,7 +14653,37 @@
       "partial": "{n} versleuteld, {failed} mislukt. Probeer het later opnieuw.",
       "nothing": "Er was niets te versleutelen.",
       "failed": "Versleutelen is mislukt. Bijlagen die al versleuteld zijn, blijven versleuteld."
-    }
+    },
+    "contactEditor": {
+      "locked": "Dit contact is versleuteld. Ontgrendel het om het te bewerken.",
+      "otherKey": "Dit contact is met een andere sleutel versleuteld en kan op dit apparaat niet worden geopend.",
+      "unlock": "Ontgrendelen",
+      "sealedNote": "Vertrouwelijke modus: naam, adres, contactpersoon, telefoon en notitie worden versleuteld opgeslagen. Bedrijfsnummer, btw-nummer en land blijven leesbaar.",
+      "sealEmail": "Ook het e-mailadres versleutelen",
+      "sealEmailWarning": "De server stuurt dit contact dan geen factuur of herinnering meer. Verstuur die vanuit je eigen mail of kopieer de link.",
+      "errors": {
+        "contact_plaintext": "Het contact is niet opgeslagen: sommige gegevens waren niet versleuteld. Probeer het opnieuw.",
+        "contact_partly_sealed": "Het contact is niet opgeslagen: het bevat versleutelde gegevens, maar de vertrouwelijke modus voor contacten staat uit.",
+        "contact_sealed": "Dit contact is versleuteld. Ontgrendel het en sla opnieuw op zodat het versleuteld blijft.",
+        "vault_category_off": "Versleuteling van contacten staat uit. Zet die aan in de instellingen van de vertrouwelijke modus.",
+        "plan_required": "Versleuteling van contacten hoort bij een hoger abonnement."
+      }
+    },
+    "sealContacts": {
+      "button": "Bestaande contacten versleutelen",
+      "title": "Bestaande contacten versleutelen",
+      "what": "Je browser laadt de contacten die de server nog kan lezen, versleutelt naam, adres, contactpersoon, telefoon en notitie en slaat ze weer op. Daarna doet hij hetzelfde met de klant op hun documenten.",
+      "keeps": "Bedrijfsnummer, btw-nummer, land en e-mailadres blijven leesbaar. Het e-mailadres kun je per contact apart versleutelen.",
+      "loses": "Contacten zoeken gebeurt dan alleen in de browser, en de server kan voor deze klanten geen pdf of ISDOC meer maken.",
+      "resumable": "Vergrendelde documenten worden overgeslagen. Sluit je het venster, dan gaat het de volgende keer verder waar je was.",
+      "cancel": "Terug",
+      "confirm": "Versleutelen",
+      "progress": "Versleutelen… {n}",
+      "done": "{n, plural, one {# contact versleuteld} other {# contacten versleuteld}}.",
+      "nothing": "Er was niets te versleutelen.",
+      "failed": "Versleutelen is mislukt. Al versleutelde contacten blijven versleuteld."
+    },
+    "emailSealed": "Het e-mailadres van de klant is versleuteld, dus de server stuurt er niets naartoe. Verstuur de factuur vanuit je eigen mail of kopieer de klantlink."
   },
   "vaultPublic": {
     "integrity": {

@@ -3,7 +3,10 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { ArrowUpDown, ChevronRight, FilePlus2, Lock, Plus, Search, Star, User, Users } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
+import { isSealed } from '@faktur/cz-compliance';
 import { toast } from '@/components/toaster';
+import { ConfidentialText } from '@/components/vault/confidential-text';
+import { useOpenedContacts } from '@/components/vault/opened-contacts';
 import { useCanWrite } from '@/components/access-provider';
 import { Link, useRouter } from '@/i18n/navigation';
 import { fuzzyScore } from '@/lib/fuzzy';
@@ -38,7 +41,9 @@ const SORT_KEY = 'billanta:contacts:sort';
 
 /** Starred first only in the default order; the others are plain rankings. */
 function compare(a: Row, b: Row, key: SortKey, locale: string) {
-  const byName = a.legalName.localeCompare(b.legalName, locale);
+  // A name still locked (no key here) sorts last instead of by its ciphertext.
+  const name = (r: Row) => (isSealed(r.legalName) ? '\uffff' : r.legalName);
+  const byName = name(a).localeCompare(name(b), locale);
   switch (key) {
     case 'name':
       return Number(b.isStarred) - Number(a.isStarred) || byName;
@@ -51,7 +56,7 @@ function compare(a: Row, b: Row, key: SortKey, locale: string) {
     case 'unpaid':
       return (b.stats?.unpaid ?? 0) - (a.stats?.unpaid ?? 0) || byName;
     case 'city':
-      return (a.addressCity || '\uffff').localeCompare(b.addressCity || '\uffff', locale) || byName;
+      return (isSealed(a.addressCity) ? '\uffff' : a.addressCity || '\uffff').localeCompare(isSealed(b.addressCity) ? '\uffff' : b.addressCity || '\uffff', locale) || byName;
   }
 }
 
@@ -86,6 +91,7 @@ export function ContactsList({
   const [query, setQuery] = useState('');
   const [colorFilter, setColorFilter] = useState<string | null>(null);
   const tColors = useTranslations('contacts.colors');
+  const tLocked = useTranslations('vault.text');
   const [creating, setCreating] = useState(startCreating);
   const [skipped, setSkipped] = useState<Skip[]>([]);
   const router = useRouter();
@@ -93,14 +99,17 @@ export function ContactsList({
   const canInvoice = useCanWrite('invoices');
   // A CSV import refreshes the server component; pick up the new list.
   useEffect(() => setRows(initial), [initial]);
+  // Encrypted names (Důvěrný režim) are opened here, so the filter and the sort work on them too.
+  const opened = useOpenedContacts(rows);
 
   const visible = useMemo(() => {
     const q = query.trim();
     // Typo-tolerant: "novak" finds "Novák", "fakturant" finds "Fakturnat s.r.o.".
-    const byColor = colorFilter ? rows.filter((r) => r.color === colorFilter) : rows;
-    const filtered = q ? byColor.filter((r) => fuzzyScore(q, [r.legalName, r.ico, r.email, r.dic]) > 0) : byColor;
+    const byColor = colorFilter ? opened.filter((r) => r.color === colorFilter) : opened;
+    const plain = (v: string | null | undefined) => (isSealed(v) ? null : v);
+    const filtered = q ? byColor.filter((r) => fuzzyScore(q, [plain(r.legalName), r.ico, plain(r.email), r.dic]) > 0) : byColor;
     return [...filtered].sort((a, b) => compare(a, b, sort, locale));
-  }, [rows, query, sort, locale, colorFilter]);
+  }, [opened, query, sort, locale, colorFilter]);
   const usedColors = CONTACT_COLORS.filter((c) => rows.some((r) => r.color === c));
 
   const toggle = async (row: Row) => {
@@ -112,7 +121,8 @@ export function ContactsList({
       set(!next);
       toast({ text: t('starFailed'), tone: 'err' });
     } else {
-      toast(next ? t('starred', { name: row.legalName }) : t('unstarred', { name: row.legalName }));
+      const name = isSealed(row.legalName) ? tLocked('locked') : row.legalName;
+      toast(next ? t('starred', { name }) : t('unstarred', { name }));
     }
   };
 
@@ -250,11 +260,11 @@ export function ContactsList({
                 <p className="flex items-center gap-1.5 truncate text-sm font-semibold">
                   <ColorDot color={row.color} label={row.color ? tColors(row.color) : undefined} />
                   {row.isPerson && <User className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-label={t('editor.kindPerson')} />}
-                  <span className="truncate group-hover:text-primary">{row.legalName}</span>
+                  <ConfidentialText value={row.legalName} className="truncate group-hover:text-primary" />
                   {row.isPrivate && <Lock className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-label={t('privateBadge')} />}
                 </p>
                 <p className="truncate text-xs text-muted-foreground">
-                  {[row.ico && `IČO ${row.ico}`, row.addressCity, row.email].filter(Boolean).join(' · ')}
+                  {[row.ico && `IČO ${row.ico}`, row.addressCity, row.email].filter((v) => v && !isSealed(v)).join(' · ')}
                 </p>
               </div>
               {row.stats && (

@@ -731,6 +731,7 @@ function PartnerTags({
 /** The per-row "⋯" menu, positioned `fixed` so the table's horizontal scroll never clips it. */
 function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
   const t = useTranslations('doc');
+  const tVaultRoot = useTranslations('vault');
   const router = useRouter();
   const [pos, setPos] = useState<MenuPosition | null>(null);
   const [pending, startTransition] = useTransition();
@@ -765,7 +766,7 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
     startTransition(async () => {
       const result = await fn();
       if (!result.ok) {
-        toast({ text: `${t('actionFailed')}: ${result.error}`, tone: 'err' });
+        toast({ text: result.error === 'contact_email_sealed' ? tVaultRoot('emailSealed') : `${t('actionFailed')}: ${result.error}`, tone: 'err' });
         return;
       }
       toast({ text: okText, tone: 'ok' });

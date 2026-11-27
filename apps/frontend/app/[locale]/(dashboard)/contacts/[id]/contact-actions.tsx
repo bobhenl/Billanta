@@ -7,6 +7,9 @@ import { Link, useRouter } from '@/i18n/navigation';
 import { Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { useCanWrite } from '@/components/access-provider';
+import { isSealed } from '@faktur/cz-compliance';
+import { useVault } from '@/components/vault/vault-provider';
+import { contactIsSealed, contactsConfidential, sealContact } from '@/lib/vault/contacts';
 import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 import type { Contact } from '../../invoices/new/types';
@@ -22,6 +25,9 @@ export function ContactActions({ contact }: { contact: Contact }) {
   const [pending, startTransition] = useTransition();
   const canEdit = useCanWrite('contacts');
   const canInvoice = useCanWrite('invoices');
+  const tLocked = useTranslations('vault.text');
+  const { vault, requestUnlock } = useVault();
+  const sealed = contactIsSealed(contact);
 
   // Edit is icon-only on phones too, so all actions fit one row at 375px.
   const pill = cn(buttonClass.secondary, 'h-10 w-10 shrink-0 px-0 sm:w-auto sm:px-3.5');
@@ -38,13 +44,16 @@ export function ContactActions({ contact }: { contact: Contact }) {
   const refreshAres = () =>
     startTransition(async () => {
       if (!contact.ico) return;
-      const ares = await lookupAres(contact.ico);
+      // Encrypted contacts: only the IČO goes out, and the answer is encrypted here before it is stored.
+      const key = sealed ? await requestUnlock() : null;
+      if (sealed && !key) return;
+      const ares = await lookupAres(contact.ico, sealed || contactsConfidential(vault));
       if (!ares.ok) {
         toast({ text: ares.error === 'not_found' ? t('aresNotFound') : `${t('actionFailed')}: ${ares.error}`, tone: 'err' });
         return;
       }
       const { ico: _ico, ...fields } = ares.data;
-      const saved = await updateContact(contact.id, { ...fields, aresVerified: true });
+      const saved = await updateContact(contact.id, { ...(key ? await sealContact(key, fields, { email: false }) : fields), aresVerified: true });
       toast(saved.ok ? { text: t('aresUpdated'), tone: 'ok' } : { text: `${t('actionFailed')}: ${saved.error}`, tone: 'err' });
       router.refresh();
     });
@@ -139,7 +148,7 @@ export function ContactActions({ contact }: { contact: Contact }) {
           </>
         }
       >
-        {t('deleteBody', { name: contact.legalName })}
+        {t('deleteBody', { name: isSealed(contact.legalName) ? tLocked('locked') : contact.legalName })}
       </Modal>
     </div>
   );

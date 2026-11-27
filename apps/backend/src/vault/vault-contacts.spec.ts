@@ -4,7 +4,7 @@ import type { SQL } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import { VaultService } from "./vault.service";
 
-const env = (n: number) => `enc:v1:AAAAAAAAAAAAAAAA:${"Q".repeat(20 + n)}`;
+const env = (n: number) => `enc:v1:AAAAAAAAAAAAAAAA:${"Q".repeat(20 + n)}` as const;
 
 /** Answers each `.limit()` / `.returning()` / awaited query in turn with the next rows. */
 function fakeDb(...answers: unknown[][]) {

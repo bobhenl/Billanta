@@ -18,6 +18,7 @@ import { Banner } from '@/components/banner';
 import { PasswordInput } from '@/components/password-input';
 import { toast } from '@/components/toaster';
 import { SealAttachmentsButton } from '@/components/vault/seal-attachments-button';
+import { SealContactsButton } from '@/components/vault/seal-contacts-button';
 import { SealButton } from '@/components/vault/seal-button';
 import { VaultIntegrity } from '@/components/vault/vault-integrity';
 import { VaultDeviceKeep, VaultEmailSettings } from '@/components/vault/vault-preferences';
@@ -416,6 +417,7 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
           <div className="flex flex-wrap gap-2">
             <SealButton scope={{ kind: 'company' }} />
             <SealAttachmentsButton />
+            <SealContactsButton />
           </div>
         )}
         {/* Below Plus the default can still be switched off, never on. */}

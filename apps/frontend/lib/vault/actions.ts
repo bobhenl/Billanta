@@ -5,6 +5,8 @@ import { isSealed, type VaultCategory, type VaultWrap } from '@faktur/cz-complia
 import { apiFetch } from '@/lib/api-client';
 import { backendMessage } from '@/lib/action-error';
 import type { RekeyPayload } from './content';
+import type { PlainContactBatch, sealContactBatch } from './contacts';
+import type { Contact } from '@/app/[locale]/(dashboard)/invoices/new/types';
 import type { PlainAttachment, PlainInvoice, VaultDocumentPage, VaultEmailMode, VaultStatus } from './types';
 
 type Result<T> = { ok: true; value: T } | { ok: false; error: string };
@@ -99,6 +101,28 @@ export async function storeSealedInvoices(invoices: PlainInvoice[]) {
     json('POST', { invoices: invoices.map(({ invoiceNumber: _n, documentKeyWrap: _w, ...rest }) => rest) })
   );
   if (result.ok) revalidatePath('/invoices', 'layout');
+  return result;
+}
+
+/** Every contact as stored, for the customer typeahead to open and match here (Důvěrný režim). */
+export async function fetchAllContacts() {
+  return call<Contact[]>('/api/v1/contacts');
+}
+
+/** One batch of contacts (then document buyers) stored before "Kontakty" was on. Locked documents are left out. */
+export async function fetchPlainContacts() {
+  return call<PlainContactBatch>('/api/v1/vault/contacts/plain?limit=20');
+}
+
+/** Stores the envelopes the browser made. Only envelopes pass, in exactly the sealable fields. */
+export async function storeSealedContacts(sealed: Awaited<ReturnType<typeof sealContactBatch>>) {
+  const only = <T extends object>(o: T) => Object.fromEntries(Object.entries(o).filter(([k, v]) => k === 'id' || isSealed(v)));
+  const body = {
+    contacts: sealed.contacts.filter((c) => isSealed(c.legalName)).map(only),
+    invoices: sealed.invoices.map((i) => ({ ...only({ id: i.id, buyerContactPerson: i.buyerContactPerson }), buyer: only(i.buyer) }))
+  };
+  const result = await call<{ contacts: number; invoices: number }>('/api/v1/vault/contacts/seal', json('POST', body));
+  if (result.ok) revalidatePath('/', 'layout');
   return result;
 }
 

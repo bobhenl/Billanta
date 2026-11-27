@@ -14406,12 +14406,20 @@
       },
       "contacts": {
         "title": "Partnerek neve és címe",
-        "description": "Ügyfélnevek, címek, e-mailek és telefonszámok.",
+        "description": "Ügyfélnevek, címek, kapcsolattartók, telefonszámok és belső jegyzetek. A cégazonosító, az adószám és az ország olvasható marad.",
         "loses": [
-          "Kitöltés és frissítés az ARES-ből",
-          "Banki befizetések párosítása a fizető neve alapján",
-          "A szerver által küldött e-mailek (nem ismeri a címet)",
-          "Partnerek keresése a szerveren"
+          "A partnerek keresése és ajánlása csak a böngészőjében fut",
+          "Az ARES csak cégazonosító alapján válaszol, és semmit nem tárol; nevet nem küldünk a nyilvántartásba",
+          "A banki befizetések név szerinti párosítása nem látja a titkosított neveket (változó szimbólum alapján továbbra is működik)",
+          "Titkosított partner e-mail: a szerver nem küld rá semmit, a számlát saját postafiókból vagy linkkel küldi",
+          "Titkosított ügyféllel a szerver nem tud PDF-et és ISDOC-ot készíteni",
+          "Az emlékeztetők csak a bizonylatszámot, az összeget és a linket tartalmazzák"
+        ],
+        "how": [
+          "A név, utca, város, irányítószám, kapcsolattartó, telefon és belső jegyzet a böngészőjében titkosítódik, mielőtt a szerverre kerül.",
+          "Ugyanígy titkosítódik a bizonylatra átmásolt ügyfél és annak kapcsolattartója.",
+          "A cégazonosító, az adószám és az ország olvasható marad a nyilvántartások, az áfa-ellenőrzés és a QR-fizetés miatt. Az e-mail olvasható, hacsak nem titkosítja.",
+          "A korábbi partnerek olvashatók maradnak, amíg nem titkosítja őket a Meglévő partnerek titkosítása gombbal."
         ]
       },
       "amounts": {
@@ -14645,7 +14653,37 @@
       "partial": "{n} titkosítva, {failed} nem sikerült. Próbálja újra később.",
       "nothing": "Nem volt mit titkosítani.",
       "failed": "A titkosítás nem sikerült. A már titkosított mellékletek titkosítva maradnak."
-    }
+    },
+    "contactEditor": {
+      "locked": "Ez a partner titkosítva van. Oldja fel a szerkesztéshez.",
+      "otherKey": "Ez a partner másik kulccsal van titkosítva, ezen az eszközön nem nyitható meg.",
+      "unlock": "Feloldás",
+      "sealedNote": "Bizalmas mód: a név, cím, kapcsolattartó, telefon és jegyzet titkosítva mentődik. A cégazonosító, az adószám és az ország olvasható marad.",
+      "sealEmail": "Az e-mail titkosítása is",
+      "sealEmailWarning": "A szerver ekkor nem küld ennek a partnernek számlát és emlékeztetőt. Küldje saját postafiókból, vagy másolja a linket.",
+      "errors": {
+        "contact_plaintext": "A partner nem mentődött: néhány adat nem volt titkosítva. Próbálja újra.",
+        "contact_partly_sealed": "A partner nem mentődött: titkosított adatokat tartalmaz, de a partnerek bizalmas módja ki van kapcsolva.",
+        "contact_sealed": "Ez a partner titkosítva van. Oldja fel és mentse újra, hogy titkosítva maradjon.",
+        "vault_category_off": "A partnerek titkosítása ki van kapcsolva. Kapcsolja be a bizalmas mód beállításaiban.",
+        "plan_required": "A partnerek titkosítása egy magasabb csomag része."
+      }
+    },
+    "sealContacts": {
+      "button": "Meglévő partnerek titkosítása",
+      "title": "Meglévő partnerek titkosítása",
+      "what": "A böngésző betölti azokat a partnereket, amelyeket a szerver még olvas, titkosítja a nevüket, címüket, kapcsolattartójukat, telefonjukat és jegyzetüket, majd visszamenti őket. Utána ugyanezt teszi a bizonylataikon szereplő ügyféllel.",
+      "keeps": "A cégazonosító, az adószám, az ország és az e-mail olvasható marad. Az e-mailt partnerenként külön titkosíthatja.",
+      "loses": "A partnerek keresése ezután csak a böngészőben fut, és a szerver nem készít PDF-et és ISDOC-ot ezekkel az ügyfelekkel.",
+      "resumable": "A zárolt bizonylatok kimaradnak. Ha bezárja az ablakot, legközelebb onnan folytatódik, ahol abbahagyta.",
+      "cancel": "Vissza",
+      "confirm": "Titkosítás",
+      "progress": "Titkosítás… {n}",
+      "done": "{n, plural, one {# partner titkosítva} other {# partner titkosítva}}.",
+      "nothing": "Nem volt mit titkosítani.",
+      "failed": "A titkosítás nem sikerült. A már titkosított partnerek titkosítva maradnak."
+    },
+    "emailSealed": "Az ügyfél e-mail címe titkosítva van, a szerver nem küld rá semmit. Küldje a számlát saját postafiókból, vagy másolja az ügyféllinket."
   },
   "vaultPublic": {
     "integrity": {

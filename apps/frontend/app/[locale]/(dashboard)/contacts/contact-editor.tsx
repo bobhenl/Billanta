@@ -3,8 +3,11 @@
 import { AddressInput } from '@/components/address-input';
 import { RegistryPicker, useCompanyRegistry } from '@/components/registry-picker';
 import { Typeahead, type TypeaheadGroup } from '@/components/typeahead';
-import { type FormEvent, useState, useTransition } from 'react';
-import { BadgeCheck, Building2, ChevronDown, Loader2, RefreshCw, User } from 'lucide-react';
+import { type FormEvent, useEffect, useState, useTransition } from 'react';
+import { BadgeCheck, Building2, ChevronDown, Loader2, LockKeyhole, RefreshCw, User } from 'lucide-react';
+import { isSealed } from '@faktur/cz-compliance';
+import { useVault } from '@/components/vault/vault-provider';
+import { contactIsSealed, contactsConfidential, openContact, sealContact, sealsContacts } from '@/lib/vault/contacts';
 import { useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { VatStatusBadge } from '@/components/vat-status-badge';
@@ -19,6 +22,9 @@ import { queueOffline } from '@/lib/offline-outbox';
 import type { AresPrefill, Contact } from '../invoices/new/types';
 import { CONTACT_COLORS, CONTACT_COLOR_DOT } from '@/lib/contact-colors';
 import { createContact, updateContact, type ContactInput } from './actions';
+
+/** Refusals of the encrypted-contact checks (backend vault/sealed-contacts.ts), with their own text. */
+const VAULT_CODES = ['contact_plaintext', 'contact_partly_sealed', 'contact_sealed', 'vault_category_off', 'plan_required'];
 
 const EMPTY: ContactInput = {
   legalName: '',
@@ -38,6 +44,12 @@ const EMPTY: ContactInput = {
 /**
  * Create / edit a contact in a modal. "Načíst z ARES" overwrites the
  * company fields with the registry data and marks the contact verified.
+ *
+ * With "Důvěrný režim" covering contacts, the name, address, contact
+ * person, phone and note are encrypted here on save and opened here on
+ * edit. Nothing typed into them goes to the server for suggestions: the
+ * register search by name and the address typeahead are off, and "Načíst
+ * z ARES" sends only the IČO.
  */
 export function ContactEditor({
   open,
@@ -55,7 +67,30 @@ export function ContactEditor({
   const offline = useOffline();
   const tColors = useTranslations('contacts.colors');
   const tLookup = useTranslations('companyLookup');
-  const [form, setForm] = useState<ContactInput>(() => (contact ? { ...EMPTY, ...stripNulls(contact) } : EMPTY));
+  const tVault = useTranslations('vault.contactEditor');
+  const { vault, key, requestUnlock } = useVault();
+  const storedSealed = contactIsSealed(contact);
+  // An encrypted contact stays encrypted on save, also below Plus (the server takes ciphertext over ciphertext).
+  const sealing = sealsContacts(vault) || storedSealed;
+  const confidential = contactsConfidential(vault) || storedSealed;
+  const [sealEmail, setSealEmail] = useState(() => isSealed(contact?.email));
+  const [form, setForm] = useState<ContactInput>(() => (contact && !storedSealed ? { ...EMPTY, ...stripNulls(contact) } : EMPTY));
+  const [opened, setOpened] = useState<'locked' | 'open' | 'failed'>(storedSealed ? 'locked' : 'open');
+
+  useEffect(() => {
+    if (!contact || !storedSealed || !key) return;
+    let live = true;
+    openContact(key, contact)
+      .then((c) => {
+        if (!live) return;
+        setForm({ ...EMPTY, ...stripNulls(c) });
+        setOpened('open');
+      })
+      .catch(() => live && setOpened('failed'));
+    return () => {
+      live = false;
+    };
+  }, [contact, storedSealed, key]);
   const [aresVerified, setAresVerified] = useState<boolean | undefined>(undefined);
   const [pending, startTransition] = useTransition();
   const [loadingAres, setLoadingAres] = useState(false);
@@ -96,7 +131,8 @@ export function ContactEditor({
       return;
     }
     setLoadingAres(true);
-    const result = await lookupCompanyById(ico, form.addressCountry);
+    // Encrypted contacts: only the IČO goes out, and the backend keeps no copy of the answer.
+    const result = await lookupCompanyById(ico, form.addressCountry, confidential);
     setLoadingAres(false);
     if (!result.ok) {
       toast({ text: result.error === 'not_found' ? t('aresNotFound') : `${t('aresFailed')}: ${result.error}`, tone: 'err' });
@@ -143,11 +179,20 @@ export function ContactEditor({
       ...(aresVerified !== undefined && { aresVerified })
     };
     // POST's schema has no nullable ico/dic/email – omit empty ones there.
-    const created = Object.fromEntries(Object.entries(input).filter(([, v]) => v !== null)) as ContactInput;
+    const label = input.legalName ?? '';
+    const sealedInput = async (): Promise<ContactInput | null> => {
+      if (!sealing) return input;
+      const k = await requestUnlock();
+      return k ? sealContact(k, input, { email: sealEmail }) : null;
+    };
+    const omitEmpty = (i: ContactInput) => Object.fromEntries(Object.entries(i).filter(([, v]) => v !== null)) as ContactInput;
     // Without a connection a new contact waits in the offline queue; edits stay online only.
     const queue = async () => {
       if (!offline.scope) return false;
-      await queueOffline({ kind: 'contact', scope: offline.scope, label: created.legalName ?? '', payload: created });
+      const payload = await sealedInput();
+      if (!payload) return true;
+      // The label stays in this browser's queue only; the payload is what the server will get.
+      await queueOffline({ kind: 'contact', scope: offline.scope, label, payload: omitEmpty(payload) });
       toast({ text: tOffline('contactQueued'), tone: 'ok' });
       onClose();
       return true;
@@ -157,9 +202,11 @@ export function ContactEditor({
       return;
     }
     startTransition(async () => {
+      const payload = await sealedInput();
+      if (!payload) return;
       let result;
       try {
-        result = contact ? await updateContact(contact.id, input) : await createContact(created);
+        result = contact ? await updateContact(contact.id, payload) : await createContact(omitEmpty(payload));
       } catch {
         // The request itself failed (the connection dropped meanwhile).
         if (!contact && (await queue())) return;
@@ -167,7 +214,10 @@ export function ContactEditor({
         return;
       }
       if (!result.ok) {
-        toast({ text: result.error === 'ico_taken' ? t('icoTaken') : `${t('saveFailed')}: ${result.error}`, tone: 'err' });
+        toast({
+          text: result.error === 'ico_taken' ? t('icoTaken') : VAULT_CODES.includes(result.error) ? tVault(`errors.${result.error}`) : `${t('saveFailed')}: ${result.error}`,
+          tone: 'err'
+        });
         return;
       }
       toast({ text: t('saved'), tone: 'ok' });
@@ -197,14 +247,31 @@ export function ContactEditor({
           <button type="button" className={buttonClass.secondary} onClick={onClose}>
             {t('cancel')}
           </button>
-          <button type="submit" form="contact-editor" className={buttonClass.primary} disabled={pending || !form.legalName?.trim()}>
+          <button type="submit" form="contact-editor" className={buttonClass.primary} disabled={pending || opened !== 'open' || !form.legalName?.trim()}>
             {pending && <Loader2 className="h-4 w-4 animate-spin" />}
             {t('save')}
           </button>
         </>
       }
     >
+      {opened !== 'open' ? (
+        <div className="py-4 text-center">
+          <LockKeyhole className="mx-auto h-8 w-8 text-primary" aria-hidden="true" />
+          <p className="mt-2 text-sm text-muted-foreground">{opened === 'failed' ? tVault('otherKey') : tVault('locked')}</p>
+          {opened === 'locked' && (
+            <button type="button" onClick={() => void requestUnlock()} className={cn(buttonClass.primary, 'mt-3')}>
+              {tVault('unlock')}
+            </button>
+          )}
+        </div>
+      ) : (
       <form id="contact-editor" onSubmit={submit} className="grid gap-3 sm:grid-cols-2">
+        {sealing && (
+          <p className="flex items-start gap-2 rounded-lg bg-secondary px-3 py-2 text-xs text-muted-foreground sm:col-span-2">
+            <LockKeyhole className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
+            {tVault('sealedNote')}
+          </p>
+        )}
         <InfoHint hint={t('kindHint')} className="sm:col-span-2">
           <div role="radiogroup" aria-label={t('kind')} className="inline-flex rounded-full border border-border bg-secondary p-0.5">
             {kinds.map(({ value, icon: Icon, text }) => (
@@ -227,6 +294,8 @@ export function ContactEditor({
         </InfoHint>
         {!person && (
         <>
+        {/* The register search sends the typed name to the server, so it is off for encrypted contacts. */}
+        {!confidential && (
         <div className="sm:col-span-2">
           <InfoHint hint={t('registryHint')}>
             <span className={label}>{t('registrySearch')}</span>
@@ -262,6 +331,7 @@ export function ContactEditor({
             <RegistryPicker value={registry} onChange={setRegistry} />
           </div>
         </div>
+        )}
         <label className="block">
           <span className={label}>IČO</span>
           <div className="flex gap-2">
@@ -300,13 +370,17 @@ export function ContactEditor({
         </label>
         <label className="block sm:col-span-2">
           <span className={label}>{t('street')}</span>
-          <AddressInput
-            className={field}
-            value={form.addressStreet ?? ''}
-            country={form.addressCountry}
-            onChange={(street) => setForm((f) => ({ ...f, addressStreet: street }))}
-            onPick={(a) => setForm((f) => ({ ...f, addressStreet: a.street, addressCity: a.city, addressPostalCode: a.postalCode }))}
-          />
+          {confidential ? (
+            <input className={field} value={form.addressStreet ?? ''} onChange={set('addressStreet')} />
+          ) : (
+            <AddressInput
+              className={field}
+              value={form.addressStreet ?? ''}
+              country={form.addressCountry}
+              onChange={(street) => setForm((f) => ({ ...f, addressStreet: street }))}
+              onPick={(a) => setForm((f) => ({ ...f, addressStreet: a.street, addressCity: a.city, addressPostalCode: a.postalCode }))}
+            />
+          )}
         </label>
         <label className="block">
           <span className={label}>{t('city')}</span>
@@ -322,10 +396,21 @@ export function ContactEditor({
             <input className={cn(field, 'uppercase')} maxLength={2} value={form.addressCountry ?? ''} onChange={set('addressCountry')} />
           </label>
         </div>
-        <label className={cn('block', person && 'sm:col-span-2')}>
-          <span className={label}>E-mail</span>
-          <input type="email" className={field} value={form.email ?? ''} onChange={set('email')} />
-        </label>
+        <div className={cn(person && 'sm:col-span-2')}>
+          <label className="block">
+            <span className={label}>E-mail</span>
+            <input type="email" className={field} value={form.email ?? ''} onChange={set('email')} />
+          </label>
+          {sealing && (
+            <label className="mt-1.5 flex items-start gap-2 text-xs">
+              <input type="checkbox" className="mt-0.5" checked={sealEmail} onChange={(e) => setSealEmail(e.target.checked)} />
+              <span>
+                <span className="font-semibold">{tVault('sealEmail')}</span>
+                {sealEmail && <span className="block text-warning">{tVault('sealEmailWarning')}</span>}
+              </span>
+            </label>
+          )}
+        </div>
         {!person && (
         <label className="block">
           <span className={label}>{t('vatPayer')}</span>
@@ -413,6 +498,7 @@ export function ContactEditor({
           </div>
         </details>
       </form>
+      )}
     </Modal>
   );
 }

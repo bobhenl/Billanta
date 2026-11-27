@@ -24,11 +24,14 @@ const openText = async (key: VaultKey, value: string | null) => (value && isSeal
 async function openTexts(key: VaultKey, invoiceId: string): Promise<OpenedInvoiceTexts> {
   const stored = await fetchSealedTexts(invoiceId);
   if (!stored.ok) throw new Error(stored.error);
-  const { noteAbove, noteBelow, items } = stored.value;
+  const { noteAbove, noteBelow, items, buyer, buyerContactPerson } = stored.value;
   return {
     noteAbove: await openText(key, noteAbove),
     noteBelow: await openText(key, noteBelow),
-    items: await Promise.all(items.map(async (i) => ({ id: i.id, description: (await openText(key, i.description)) ?? '' })))
+    items: await Promise.all(items.map(async (i) => ({ id: i.id, description: (await openText(key, i.description)) ?? '' }))),
+    // An encrypted buyer goes along opened; a plain one the backend keeps as stored.
+    buyer: Object.fromEntries(await Promise.all(Object.entries(buyer).map(async ([k, v]) => [k, (await openText(key, v ?? null)) ?? null]))),
+    buyerContactPerson: await openText(key, buyerContactPerson)
   };
 }
 

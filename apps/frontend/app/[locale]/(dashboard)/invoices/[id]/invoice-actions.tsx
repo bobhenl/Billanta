@@ -105,6 +105,7 @@ export function InvoiceActions({
 }) {
   const t = useTranslations('doc');
   const tVault = useTranslations('vault.actions');
+  const tVaultRoot = useTranslations('vault');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [dialog, setDialog] = useState<Dialog>(null);
@@ -192,7 +193,13 @@ export function InvoiceActions({
       const result = await fn();
       setDialog(null);
       if (!result.ok) {
-        toast({ text: result.error === 'confidential_content' ? tVault('blocked') : `${t('actionFailed')}: ${result.error}`, tone: 'err' });
+        const text =
+          result.error === 'confidential_content'
+            ? tVault('blocked')
+            : result.error === 'contact_email_sealed'
+              ? tVaultRoot('emailSealed')
+              : `${t('actionFailed')}: ${result.error}`;
+        toast({ text, tone: 'err' });
         return;
       }
       toast({ text: typeof okText === 'function' ? okText(result.data) : okText, tone: 'ok' });
