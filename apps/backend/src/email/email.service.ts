@@ -62,6 +62,8 @@ interface SendOptions {
 export interface EmailQueueOptions extends QueueContext {
   idempotencyKey?: string;
   userId?: string | null;
+  /** Deliver now and never store the attachments (`EmailOutboxService.sendNow`). */
+  direct?: boolean;
 }
 
 /** A claimed outbox row, ready for Resend. */
@@ -304,10 +306,10 @@ export class EmailService {
   }
 
   private async queue(email: OutgoingEmail, queue: EmailQueueOptions): Promise<void> {
-    await this.outbox.enqueue(
-      { ...email, userId: queue.userId ?? null, ...(queue.idempotencyKey ? { idempotencyKey: queue.idempotencyKey } : {}) },
-      { tenantId: queue.tenantId, db: queue.db },
-    );
+    const row = { ...email, userId: queue.userId ?? null, ...(queue.idempotencyKey ? { idempotencyKey: queue.idempotencyKey } : {}) };
+    const ctx = { tenantId: queue.tenantId, db: queue.db };
+    if (queue.direct) await this.outbox.sendNow(row, ctx, (deliverable) => this.deliver(deliverable));
+    else await this.outbox.enqueue(row, ctx);
   }
 
   /**

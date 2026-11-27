@@ -14204,7 +14204,7 @@
       "lead": "Chiffrer – seuls vous et les membres disposant de la clé verront le contenu, le serveur ne peut pas le lire.",
       "what": "Les descriptions de lignes et les notes (au-dessus, en dessous des lignes et internes) sont chiffrées.",
       "keeps": "Les rapports et tableaux de bord continuent de fonctionner : montants, dates et références de paiement restent en clair.",
-      "loses": "Pour les documents chiffrés, le serveur ne peut ni créer de PDF ou d'ISDOC, ni les joindre à un e-mail, ni les trouver par recherche de texte.",
+      "loses": "Pour les documents chiffrés, seul votre navigateur crée le PDF, l'ISDOC et l'UBL. Le serveur ne les joint à un e-mail que sur votre demande explicite et la recherche de texte ne les trouve pas.",
       "locked": "Les documents verrouillés sont ignorés.",
       "done": "{n, plural, one {# document chiffré} other {# documents chiffrés}}.",
       "nothing": "Il n'y avait rien à chiffrer.",
@@ -14218,13 +14218,17 @@
       "aiUnavailable": "Le pré-remplissage par IA n'est pas disponible en Mode confidentiel pendant le chiffrement – le texte devrait partir vers le serveur.",
       "sealFailed": "Impossible de chiffrer le document. Rien n'a été enregistré.",
       "sealToggle": "Chiffrer ce document",
-      "sealOnHint": "Seuls vous et les membres disposant de la clé verront les descriptions de lignes et les notes. PDF, ISDOC et suggestions de lignes ne seront pas disponibles.",
+      "sealOnHint": "Seuls vous et les membres disposant de la clé verront les descriptions de lignes et les notes. Le navigateur crée le PDF, l'ISDOC et l'UBL, les suggestions de lignes ne seront pas disponibles.",
       "sealOffHint": "Le document est enregistré sans chiffrement, comme avant."
     },
     "actions": {
-      "blocked": "Indisponible en Mode confidentiel : le serveur ne peut pas lire un document chiffré. Désactivez la pièce jointe PDF/ISDOC dans les réglages des e-mails ou envoyez un lien.",
-      "pdfUnavailable": "Le PDF n'est pas disponible en Mode confidentiel. Vous pouvez imprimer le détail depuis votre navigateur (Ctrl+P).",
-      "sendHint": "Ce document est chiffré : l'e-mail part avec un lien seulement, le serveur ne peut pas joindre de PDF ou d'ISDOC."
+      "blocked": "Impossible d'ouvrir les textes chiffrés. Déverrouillez le coffre avec la bonne clé et réessayez.",
+      "sendHint": "Ce document est chiffré : sans pièce jointe, l'e-mail part avec un lien uniquement.",
+      "pdfLocal": "Votre navigateur crée le PDF, le serveur ne voit pas les textes chiffrés.",
+      "isdocLocal": "Votre navigateur crée l'ISDOC, le serveur ne voit pas les textes chiffrés.",
+      "attachOnce": "Joindre le PDF/ISDOC – le fichier passe une fois par le serveur pour l'envoi et n'est pas conservé",
+      "attachOnceHint": "Votre navigateur crée le PDF et l'ISDOC. Le serveur les transmet au client dans cet e-mail, sans les conserver ni les journaliser.",
+      "ublLocal": "Votre navigateur crée l'UBL, le serveur ne voit pas les textes chiffrés."
     },
     "categories": {
       "recommended": "Recommandé",
@@ -14234,11 +14238,14 @@
         "title": "Descriptions de lignes et notes",
         "description": "Ce que vous avez fourni et les notes du document. Montants, dates et références restent lisibles.",
         "loses": [
-          "PDF, ISDOC, UBL et Peppol créés par le serveur",
-          "Pièce jointe PDF/ISDOC dans les e-mails",
+          "Envoi via Peppol",
           "Recherche dans le texte des lignes et des notes, suggestions de lignes",
           "Pré-remplissage des documents par IA",
           "Descriptions de lignes sur le lien public et dans les exports pour le comptable (Pohoda, Money, CSV)"
+        ],
+        "changes": [
+          "Votre navigateur crée le PDF, l'ISDOC et l'UBL",
+          "Pièce jointe PDF/ISDOC dans les e-mails uniquement si vous la cochez – le fichier passe une fois par le serveur et n'est pas conservé"
         ]
       },
       "attachments": {
@@ -14269,7 +14276,8 @@
           "Tableaux de bord, revenu net et graphiques",
           "Relances avec montant et paiements QR créés par le serveur"
         ]
-      }
+      },
+      "changesTitle": "Fonctionne autrement :"
     },
     "enable": {
       "offTitle": "Le Mode confidentiel est désactivé",

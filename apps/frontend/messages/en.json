@@ -14209,7 +14209,7 @@
       "lead": "Encrypt – only you and members with the key will see the content, the server cannot read it.",
       "what": "Line descriptions and notes (above items, below items and internal) are encrypted.",
       "keeps": "Reports and dashboards keep working: amounts, dates and variable symbols stay unencrypted.",
-      "loses": "For encrypted documents the server cannot create a PDF or ISDOC, attach them to an email or find them by text search.",
+      "loses": "For encrypted documents only your browser creates the PDF, ISDOC and UBL. The server attaches them to an email only when you explicitly ask, and text search will not find them.",
       "locked": "Locked documents are skipped.",
       "done": "{n, plural, one {# document encrypted} other {# documents encrypted}}.",
       "nothing": "There was nothing to encrypt.",
@@ -14223,13 +14223,17 @@
       "aiUnavailable": "AI prefill is unavailable in Confidential mode while encrypting – the text would have to go to the server.",
       "sealFailed": "The document could not be encrypted. Nothing was saved.",
       "sealToggle": "Encrypt this document",
-      "sealOnHint": "Only you and members with the key will see line descriptions and notes. PDF, ISDOC and item suggestions will not be available.",
+      "sealOnHint": "Only you and members with the key will see line descriptions and notes. The browser creates the PDF, ISDOC and UBL, item suggestions will not be available.",
       "sealOffHint": "The document is saved without encryption, as before."
     },
     "actions": {
-      "blocked": "Unavailable in Confidential mode: the server cannot read an encrypted document. Turn off the PDF/ISDOC attachment in email settings, or send a link.",
-      "pdfUnavailable": "PDF is unavailable in Confidential mode. You can print the detail from your browser (Ctrl+P).",
-      "sendHint": "This document is encrypted: the email goes out with a link only, the server cannot attach a PDF or ISDOC."
+      "blocked": "The encrypted texts could not be opened. Unlock the vault with the right key and try again.",
+      "sendHint": "This document is encrypted: without the attachment, the email goes out with a link only.",
+      "pdfLocal": "Your browser creates the PDF, the server never sees the encrypted texts.",
+      "isdocLocal": "Your browser creates the ISDOC, the server never sees the encrypted texts.",
+      "attachOnce": "Attach PDF/ISDOC – the file passes through the server once to be sent and is not stored",
+      "attachOnceHint": "Your browser creates the PDF and ISDOC. The server passes them to the customer in this one email and does not store or log them.",
+      "ublLocal": "Your browser creates the UBL, the server never sees the encrypted texts."
     },
     "categories": {
       "recommended": "Recommended",
@@ -14239,11 +14243,14 @@
         "title": "Line descriptions and notes",
         "description": "What you supplied and the notes on the document. Amounts, dates and symbols stay readable.",
         "loses": [
-          "PDF, ISDOC, UBL and Peppol created by the server",
-          "PDF/ISDOC attachment in emails",
+          "Sending over Peppol",
           "Search by item and note text, item suggestions",
           "AI document prefill",
           "Line descriptions on the public link and in accountant exports (Pohoda, Money, CSV)"
+        ],
+        "changes": [
+          "Your browser creates the PDF, ISDOC and UBL",
+          "PDF/ISDOC attachment in emails only when you tick it – the file passes through the server once and is not stored"
         ]
       },
       "attachments": {
@@ -14274,7 +14281,8 @@
           "Dashboards, net income and charts",
           "Reminders with amounts and QR payments created by the server"
         ]
-      }
+      },
+      "changesTitle": "Works differently:"
     },
     "enable": {
       "offTitle": "Confidential mode is off",

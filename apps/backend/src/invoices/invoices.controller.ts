@@ -6,6 +6,7 @@ import {
   ForbiddenException,
   Get,
   Headers,
+  NotFoundException,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -14,10 +15,13 @@ import {
   Req,
   Res,
   UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import { FileInterceptor } from "@nestjs/platform-express";
+import { FileFieldsInterceptor, FileInterceptor } from "@nestjs/platform-express";
+import { PDF_FONT_FILES } from "./invoice-pdf.service";
+import { MAX_SEALED_PDF_BYTES, sealedSendFiles, type UploadedPart } from "./sealed-send-files";
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Response } from "express";
 import { createZodDto } from "nestjs-zod";
@@ -171,6 +175,16 @@ export class InvoicesController {
   @ApiOperation({ summary: "Custom fields with a short list of values, for the list filter" })
   customFieldOptions(@Req() req: TenantScopedRequest) {
     return this.invoicesService.customFieldOptions(req.tenantDb!);
+  }
+
+  /** The PDF's two fonts, for the browser that draws a sealed invoice itself. */
+  @Get("pdf-fonts/:weight")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "DejaVu Sans (regular | bold) used by the invoice PDF" })
+  pdfFont(@Param("weight") weight: string, @Res() res: Response): void {
+    if ((weight !== "regular" && weight !== "bold") || !PDF_FONT_FILES) throw new NotFoundException("font_not_found");
+    res.set({ "Content-Type": "font/ttf", "Cache-Control": "private, max-age=604800, immutable", "X-Content-Type-Options": "nosniff" });
+    res.sendFile(PDF_FONT_FILES[weight]);
   }
 
   @Get("item-suggestions")
@@ -550,6 +564,33 @@ export class InvoicesController {
     return this.invoicesService.sendInvoice(req.tenantDb!, id, req.user!.tenantId);
   }
 
+  /**
+   * Důvěrný režim: sends a sealed invoice with the PDF/ISDOC the browser
+   * rendered. The user ticked that the files pass through the server once;
+   * they go into this one e-mail and are not stored or logged.
+   */
+  @Post(":id/send-with-files")
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: "pdf", maxCount: 1 },
+        { name: "isdoc", maxCount: 1 },
+      ],
+      { limits: { fileSize: MAX_SEALED_PDF_BYTES, files: 2, fields: 0, parts: 2 } },
+    ),
+  )
+  @ApiConsumes("multipart/form-data")
+  @ApiOperation({ summary: "Email a sealed invoice with browser-rendered PDF/ISDOC attached once" })
+  async sendWithFiles(
+    @Req() req: TenantScopedRequest,
+    @Param("id", ParseUUIDPipe) id: string,
+    @UploadedFiles() parts?: { pdf?: UploadedPart[]; isdoc?: UploadedPart[] },
+  ) {
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
+    return this.invoicesService.sendInvoice(req.tenantDb!, id, req.user!.tenantId, sealedSendFiles(parts));
+  }
+
   @Post(":id/remind")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
@@ -673,6 +714,33 @@ export class InvoicesController {
       "Content-Disposition": `inline; filename="${pdf.filename}"`,
     });
     res.send(pdf.content);
+  }
+
+  /** Důvěrný režim: the PDF's content with sealed texts as envelopes, for the browser to draw. */
+  @Get(":id/pdf-model")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "The invoice PDF's layout data, sealed texts left encrypted" })
+  async pdfModel(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
+    return this.invoicesService.invoicePdfModel(req.tenantDb!, req.user!.tenantId, id);
+  }
+
+  /** Důvěrný režim: the UBL input with sealed item texts left encrypted. */
+  @Get(":id/ubl-input")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "The UBL export's input, sealed texts left encrypted" })
+  async ublInput(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
+    return this.invoicesService.invoiceUblInput(req.tenantDb!, req.user!.tenantId, id);
+  }
+
+  /** Důvěrný režim: the ISDOC input with sealed item texts left encrypted. */
+  @Get(":id/isdoc-input")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "The ISDOC export's input, sealed texts left encrypted" })
+  async isdocInput(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
+    return this.invoicesService.invoiceIsdocInput(req.tenantDb!, req.user!.tenantId, id);
   }
 
   /**

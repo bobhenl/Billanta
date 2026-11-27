@@ -911,3 +911,31 @@ describe("invoiceFileBase", () => {
     expect(invoiceFileBase({ invoiceNumber: null, documentType: "invoice", language: "de" })).toBe("faktura-koncept");
   });
 });
+
+describe("InvoicesService.sendInvoice with browser-rendered files (Důvěrný režim)", () => {
+  const files = { pdf: Buffer.from("%PDF-1.3") };
+  const sealedItem = { ...lineItems[0]!, description: "enc:v1:AAAAAAAAAAAAAAAA:BBBBBBBBBBBBBBBBBBBBBBBB" };
+  const setup = (invoice: ReturnType<typeof makeInvoice>, items: typeof lineItems) => {
+    const emailService = { sendInvoiceEmail: vi.fn().mockResolvedValue(undefined) };
+    const service = new InvoicesService(emailService as unknown as EmailService, { generate: vi.fn() } as unknown as InvoicePdfService);
+    const select = vi
+      .fn()
+      .mockReturnValueOnce(makeSelectChain([invoice]))
+      .mockReturnValueOnce(makeSelectChain([makeContact()]))
+      .mockReturnValueOnce(makeSelectChain(items));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return { emailService, service, db: { select, update: vi.fn() } as any };
+  };
+
+  it("refuses files for a plain invoice: the server renders its own", async () => {
+    const { emailService, service, db } = setup(makeInvoice(), lineItems);
+    await expect(service.sendInvoice(db, "inv-1", undefined, files)).rejects.toThrow("not_confidential");
+    expect(emailService.sendInvoiceEmail).not.toHaveBeenCalled();
+  });
+
+  it("refuses files for a sealed draft that has no number yet", async () => {
+    const { emailService, service, db } = setup(makeInvoice({ invoiceNumber: null, status: "draft" }), [sealedItem]);
+    await expect(service.sendInvoice(db, "inv-1", undefined, files)).rejects.toThrow("invoice_not_issued");
+    expect(emailService.sendInvoiceEmail).not.toHaveBeenCalled();
+  });
+});

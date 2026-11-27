@@ -14204,7 +14204,7 @@
       "lead": "Cifrar – só você e os membros com a chave verão o conteúdo, o servidor não o consegue ler.",
       "what": "São cifradas as descrições das linhas e as notas (acima, abaixo das linhas e internas).",
       "keeps": "Relatórios e painéis continuam a funcionar: valores, datas e referências de pagamento ficam sem cifra.",
-      "loses": "Nos documentos cifrados, o servidor não pode criar PDF nem ISDOC, anexá-los a um e-mail nem encontrá-los na pesquisa por texto.",
+      "loses": "Nos documentos cifrados, só o seu navegador cria o PDF, o ISDOC e o UBL. O servidor só os anexa a um e-mail a seu pedido expresso e a pesquisa por texto não os encontra.",
       "locked": "Os documentos bloqueados são ignorados.",
       "done": "{n, plural, one {# documento cifrado} other {# documentos cifrados}}.",
       "nothing": "Não havia nada para cifrar.",
@@ -14218,13 +14218,17 @@
       "aiUnavailable": "O preenchimento por IA não está disponível no Modo confidencial durante a cifra – o texto teria de ir para o servidor.",
       "sealFailed": "Não foi possível cifrar o documento. Nada foi guardado.",
       "sealToggle": "Cifrar este documento",
-      "sealOnHint": "Só você e os membros com a chave verão as descrições e notas. PDF, ISDOC e sugestões de linhas não estarão disponíveis.",
+      "sealOnHint": "Só você e os membros com a chave verão as descrições e notas. O navegador cria o PDF, o ISDOC e o UBL, as sugestões de linhas não estarão disponíveis.",
       "sealOffHint": "O documento é guardado sem cifra, como até agora."
     },
     "actions": {
-      "blocked": "Indisponível no Modo confidencial: o servidor não consegue ler um documento cifrado. Desative o anexo PDF/ISDOC nas definições de e-mail ou envie uma ligação.",
-      "pdfUnavailable": "O PDF não está disponível no Modo confidencial. Pode imprimir o detalhe a partir do navegador (Ctrl+P).",
-      "sendHint": "Este documento está cifrado: o e-mail segue apenas com uma ligação, o servidor não pode anexar PDF nem ISDOC."
+      "blocked": "Não foi possível abrir os textos cifrados. Desbloqueie o cofre com a chave certa e tente novamente.",
+      "sendHint": "Este documento está cifrado: sem anexo, o e-mail segue apenas com uma ligação.",
+      "pdfLocal": "O PDF é criado pelo seu navegador, o servidor não vê os textos cifrados.",
+      "isdocLocal": "O ISDOC é criado pelo seu navegador, o servidor não vê os textos cifrados.",
+      "attachOnce": "Anexar PDF/ISDOC – o ficheiro passa uma vez pelo servidor para ser enviado e não é guardado",
+      "attachOnceHint": "O seu navegador cria o PDF e o ISDOC. O servidor envia-os ao cliente neste e-mail, sem os guardar nem registar.",
+      "ublLocal": "O UBL é criado pelo seu navegador, o servidor não vê os textos cifrados."
     },
     "categories": {
       "recommended": "Recomendado",
@@ -14234,11 +14238,14 @@
         "title": "Descrições das linhas e notas",
         "description": "O que forneceu e as notas do documento. Valores, datas e referências continuam legíveis.",
         "loses": [
-          "PDF, ISDOC, UBL e Peppol criados pelo servidor",
-          "Anexo PDF/ISDOC nos e-mails",
+          "Envio via Peppol",
           "Pesquisa pelo texto das linhas e notas, sugestões de linhas",
           "Preenchimento de documentos por IA",
           "Descrições das linhas na ligação pública e nas exportações para o contabilista (Pohoda, Money, CSV)"
+        ],
+        "changes": [
+          "O seu navegador cria o PDF, o ISDOC e o UBL",
+          "Anexo PDF/ISDOC nos e-mails só se o assinalar – o ficheiro passa uma vez pelo servidor e não é guardado"
         ]
       },
       "attachments": {
@@ -14269,7 +14276,8 @@
           "Painéis, rendimento líquido e gráficos",
           "Lembretes com valor e pagamentos QR criados pelo servidor"
         ]
-      }
+      },
+      "changesTitle": "Funciona de outra forma:"
     },
     "enable": {
       "offTitle": "O Modo confidencial está desligado",

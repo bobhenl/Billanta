@@ -14204,7 +14204,7 @@
       "lead": "Cifrar – solo tú y los miembros con la clave veréis el contenido, el servidor no puede leerlo.",
       "what": "Se cifran las descripciones de las líneas y las notas (encima, debajo de las líneas e internas).",
       "keeps": "Los informes y paneles siguen funcionando: importes, fechas y referencias de pago quedan sin cifrar.",
-      "loses": "Para los documentos cifrados el servidor no puede crear PDF ni ISDOC, adjuntarlos a un correo ni encontrarlos al buscar por texto.",
+      "loses": "En los documentos cifrados solo tu navegador crea el PDF, el ISDOC y el UBL. El servidor los adjunta a un correo solo si lo pides expresamente y la búsqueda por texto no los encuentra.",
       "locked": "Los documentos bloqueados se omiten.",
       "done": "{n, plural, one {# documento cifrado} other {# documentos cifrados}}.",
       "nothing": "No había nada que cifrar.",
@@ -14218,13 +14218,17 @@
       "aiUnavailable": "El autocompletado con IA no está disponible en el Modo confidencial mientras se cifra: el texto tendría que ir al servidor.",
       "sealFailed": "No se pudo cifrar el documento. No se guardó nada.",
       "sealToggle": "Cifrar este documento",
-      "sealOnHint": "Solo tú y los miembros con la clave veréis las descripciones y notas. PDF, ISDOC y sugerencias de líneas no estarán disponibles.",
+      "sealOnHint": "Solo tú y los miembros con la clave veréis las descripciones y notas. El navegador crea el PDF, el ISDOC y el UBL, las sugerencias de líneas no estarán disponibles.",
       "sealOffHint": "El documento se guarda sin cifrar, como hasta ahora."
     },
     "actions": {
-      "blocked": "No disponible en el Modo confidencial: el servidor no puede leer un documento cifrado. Desactiva el adjunto PDF/ISDOC en los ajustes de correo o envía un enlace.",
-      "pdfUnavailable": "El PDF no está disponible en el Modo confidencial. Puedes imprimir el detalle desde el navegador (Ctrl+P).",
-      "sendHint": "Este documento está cifrado: el correo sale solo con un enlace, el servidor no puede adjuntar PDF ni ISDOC."
+      "blocked": "No se pudieron abrir los textos cifrados. Desbloquea la caja fuerte con la clave correcta y vuelve a intentarlo.",
+      "sendHint": "Este documento está cifrado: sin adjunto, el correo sale solo con un enlace.",
+      "pdfLocal": "El PDF lo crea tu navegador, el servidor no ve los textos cifrados.",
+      "isdocLocal": "El ISDOC lo crea tu navegador, el servidor no ve los textos cifrados.",
+      "attachOnce": "Adjuntar PDF/ISDOC – el archivo pasa una vez por el servidor para enviarlo y no se guarda",
+      "attachOnceHint": "Tu navegador crea el PDF y el ISDOC. El servidor los envía al cliente en este correo y no los guarda ni los registra.",
+      "ublLocal": "El UBL lo crea tu navegador, el servidor no ve los textos cifrados."
     },
     "categories": {
       "recommended": "Recomendado",
@@ -14234,11 +14238,14 @@
         "title": "Descripciones de líneas y notas",
         "description": "Lo que suministraste y las notas del documento. Importes, fechas y referencias siguen legibles.",
         "loses": [
-          "PDF, ISDOC, UBL y Peppol creados por el servidor",
-          "Adjunto PDF/ISDOC en los correos",
+          "Envío por Peppol",
           "Búsqueda por texto de líneas y notas, sugerencias de líneas",
           "Autocompletado de documentos con IA",
           "Descripciones de líneas en el enlace público y en las exportaciones para el contable (Pohoda, Money, CSV)"
+        ],
+        "changes": [
+          "Tu navegador crea el PDF, el ISDOC y el UBL",
+          "Adjunto PDF/ISDOC en los correos solo si lo marcas – el archivo pasa una vez por el servidor y no se guarda"
         ]
       },
       "attachments": {
@@ -14269,7 +14276,8 @@
           "Paneles, ingreso neto y gráficos",
           "Recordatorios con importe y pagos QR creados por el servidor"
         ]
-      }
+      },
+      "changesTitle": "Funciona de otra forma:"
     },
     "enable": {
       "offTitle": "El Modo confidencial está desactivado",

@@ -72,6 +72,8 @@ function CategoryList({ selected, onToggle }: { selected: VaultCategory[]; onTog
       {VAULT_CATEGORIES.map((category) => {
         const on = selected.includes(category.id);
         const loses = t.raw(`${category.id}.loses`) as string[];
+        // What keeps working, only differently (made in the browser, sent on an explicit click).
+        const changes = t.has(`${category.id}.changes`) ? (t.raw(`${category.id}.changes`) as string[]) : [];
         return (
           <li key={category.id} className={cn('rounded-xl border p-3', on ? 'border-primary/40 bg-accent/30' : 'border-border bg-card', !category.available && 'opacity-80')}>
             <label className={cn('flex items-start gap-2.5', category.available && onToggle ? 'cursor-pointer' : 'cursor-default')}>
@@ -95,6 +97,16 @@ function CategoryList({ selected, onToggle }: { selected: VaultCategory[]; onTog
                     <li key={line}>{line}</li>
                   ))}
                 </ul>
+                {changes.length > 0 && (
+                  <>
+                    <span className="mt-2 block text-xs font-semibold">{t('changesTitle')}</span>
+                    <ul className="mt-1 list-disc space-y-0.5 pl-5 text-xs text-muted-foreground">
+                      {changes.map((line) => (
+                        <li key={line}>{line}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
               </span>
             </label>
           </li>

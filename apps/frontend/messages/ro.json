@@ -14204,7 +14204,7 @@
       "lead": "Criptați – conținutul îl veți vedea doar dvs. și membrii cu cheie, serverul nu îl poate citi.",
       "what": "Se criptează descrierile pozițiilor și notele (deasupra, sub poziții și interne).",
       "keeps": "Rapoartele și tablourile de bord funcționează în continuare: sumele, datele și referințele de plată rămân necriptate.",
-      "loses": "Pentru documentele criptate, serverul nu poate crea PDF sau ISDOC, nu le poate atașa la e-mail și nu le găsește la căutarea după text.",
+      "loses": "Pentru documentele criptate, doar browserul dvs. creează PDF-ul, ISDOC-ul și UBL-ul. Serverul le atașează la e-mail doar la cererea dvs. explicită și căutarea după text nu le găsește.",
       "locked": "Documentele blocate sunt sărite.",
       "done": "{n, plural, one {# document criptat} few {# documente criptate} other {# de documente criptate}}.",
       "nothing": "Nu era nimic de criptat.",
@@ -14218,13 +14218,17 @@
       "aiUnavailable": "Completarea cu AI nu este disponibilă în Modul confidențial în timpul criptării – textul ar trebui să ajungă la server.",
       "sealFailed": "Documentul nu a putut fi criptat. Nu s-a salvat nimic.",
       "sealToggle": "Criptați acest document",
-      "sealOnHint": "Descrierile pozițiilor și notele le veți vedea doar dvs. și membrii cu cheie. PDF, ISDOC și sugestiile de poziții nu vor fi disponibile.",
+      "sealOnHint": "Descrierile pozițiilor și notele le veți vedea doar dvs. și membrii cu cheie. PDF-ul, ISDOC-ul și UBL-ul le creează browserul, sugestiile de poziții nu vor fi disponibile.",
       "sealOffHint": "Documentul se salvează fără criptare, ca până acum."
     },
     "actions": {
-      "blocked": "Indisponibil în Modul confidențial: serverul nu poate citi un document criptat. Dezactivați atașamentul PDF/ISDOC în setările e-mail sau trimiteți un link.",
-      "pdfUnavailable": "PDF-ul nu este disponibil în Modul confidențial. Puteți tipări detaliul din browser (Ctrl+P).",
-      "sendHint": "Acest document este criptat: e-mailul pleacă doar cu un link, serverul nu poate atașa PDF sau ISDOC."
+      "blocked": "Textele criptate nu au putut fi deschise. Deblocați seiful cu cheia corectă și încercați din nou.",
+      "sendHint": "Acest document este criptat: fără atașament, e-mailul pleacă doar cu un link.",
+      "pdfLocal": "PDF-ul îl creează browserul dvs., serverul nu vede textele criptate.",
+      "isdocLocal": "ISDOC-ul îl creează browserul dvs., serverul nu vede textele criptate.",
+      "attachOnce": "Atașează PDF/ISDOC – fișierul trece o singură dată prin server pentru trimitere și nu se salvează",
+      "attachOnceHint": "PDF-ul și ISDOC-ul le creează browserul dvs. Serverul le trimite clientului în acest e-mail, fără să le salveze sau să le înregistreze.",
+      "ublLocal": "UBL-ul îl creează browserul dvs., serverul nu vede textele criptate."
     },
     "categories": {
       "recommended": "Recomandat",
@@ -14234,11 +14238,14 @@
         "title": "Descrierile pozițiilor și notele",
         "description": "Ce ați livrat și notele de pe document. Sumele, datele și referințele rămân lizibile.",
         "loses": [
-          "PDF, ISDOC, UBL și Peppol create de server",
-          "Atașamentul PDF/ISDOC în e-mailuri",
+          "Trimiterea prin Peppol",
           "Căutarea după textul pozițiilor și notelor, sugestiile de poziții",
           "Completarea documentelor cu AI",
           "Descrierile pozițiilor pe linkul public și în exporturile pentru contabil (Pohoda, Money, CSV)"
+        ],
+        "changes": [
+          "PDF-ul, ISDOC-ul și UBL-ul le creează browserul dvs.",
+          "Atașamentul PDF/ISDOC în e-mailuri doar dacă îl bifați – fișierul trece o dată prin server și nu se salvează"
         ]
       },
       "attachments": {
@@ -14269,7 +14276,8 @@
           "Tablouri de bord, venitul net și grafice",
           "Mementouri cu sumă și plăți QR create de server"
         ]
-      }
+      },
+      "changesTitle": "Funcționează altfel:"
     },
     "enable": {
       "offTitle": "Modul confidențial este dezactivat",

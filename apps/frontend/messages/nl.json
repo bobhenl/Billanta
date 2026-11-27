@@ -14204,7 +14204,7 @@
       "lead": "Versleutelen – alleen jij en leden met de sleutel zien de inhoud, de server kan hem niet lezen.",
       "what": "Regelomschrijvingen en notities (boven, onder de regels en intern) worden versleuteld.",
       "keeps": "Rapporten en dashboards blijven werken: bedragen, datums en betalingskenmerken blijven onversleuteld.",
-      "loses": "Voor versleutelde documenten kan de server geen pdf of ISDOC maken, ze niet aan een e-mail toevoegen en ze niet vinden via tekstzoeken.",
+      "loses": "Voor versleutelde documenten maakt alleen je browser de pdf, ISDOC en UBL. De server voegt ze alleen op jouw uitdrukkelijke verzoek aan een e-mail toe en tekstzoeken vindt ze niet.",
       "locked": "Vergrendelde documenten worden overgeslagen.",
       "done": "{n, plural, one {# document versleuteld} other {# documenten versleuteld}}.",
       "nothing": "Er viel niets te versleutelen.",
@@ -14218,13 +14218,17 @@
       "aiUnavailable": "Vooraf invullen met AI is niet beschikbaar in de Vertrouwelijke modus tijdens het versleutelen – de tekst zou naar de server moeten.",
       "sealFailed": "Het document kon niet worden versleuteld. Er is niets opgeslagen.",
       "sealToggle": "Dit document versleutelen",
-      "sealOnHint": "Alleen jij en leden met de sleutel zien regelomschrijvingen en notities. Pdf, ISDOC en regelsuggesties zijn niet beschikbaar.",
+      "sealOnHint": "Alleen jij en leden met de sleutel zien regelomschrijvingen en notities. De browser maakt de pdf, ISDOC en UBL, regelsuggesties zijn niet beschikbaar.",
       "sealOffHint": "Het document wordt zoals voorheen onversleuteld opgeslagen."
     },
     "actions": {
-      "blocked": "Niet beschikbaar in de Vertrouwelijke modus: de server kan een versleuteld document niet lezen. Zet de pdf/ISDOC-bijlage uit in de e-mailinstellingen of stuur een link.",
-      "pdfUnavailable": "Pdf is niet beschikbaar in de Vertrouwelijke modus. Je kunt de detailpagina vanuit je browser afdrukken (Ctrl+P).",
-      "sendHint": "Dit document is versleuteld: de e-mail gaat alleen met een link, de server kan geen pdf of ISDOC bijvoegen."
+      "blocked": "De versleutelde teksten konden niet worden geopend. Ontgrendel de kluis met de juiste sleutel en probeer het opnieuw.",
+      "sendHint": "Dit document is versleuteld: zonder bijlage gaat de e-mail alleen met een link.",
+      "pdfLocal": "Je browser maakt de pdf, de server ziet de versleutelde teksten niet.",
+      "isdocLocal": "Je browser maakt de ISDOC, de server ziet de versleutelde teksten niet.",
+      "attachOnce": "Pdf/ISDOC bijvoegen – het bestand gaat één keer via de server om te verzenden en wordt niet bewaard",
+      "attachOnceHint": "Je browser maakt de pdf en ISDOC. De server stuurt ze in deze ene e-mail naar de klant en bewaart of logt ze niet.",
+      "ublLocal": "Je browser maakt de UBL, de server ziet de versleutelde teksten niet."
     },
     "categories": {
       "recommended": "Aanbevolen",
@@ -14234,11 +14238,14 @@
         "title": "Regelomschrijvingen en notities",
         "description": "Wat je hebt geleverd en de notities op het document. Bedragen, datums en kenmerken blijven leesbaar.",
         "loses": [
-          "Pdf, ISDOC, UBL en Peppol gemaakt door de server",
-          "Pdf/ISDOC-bijlage in e-mails",
+          "Verzenden via Peppol",
           "Zoeken op tekst van regels en notities, regelsuggesties",
           "Documenten vooraf invullen met AI",
           "Regelomschrijvingen op de openbare link en in exports voor de boekhouder (Pohoda, Money, CSV)"
+        ],
+        "changes": [
+          "Je browser maakt de pdf, ISDOC en UBL",
+          "Pdf/ISDOC-bijlage in e-mails alleen als je die aanvinkt – het bestand gaat één keer via de server en wordt niet bewaard"
         ]
       },
       "attachments": {
@@ -14269,7 +14276,8 @@
           "Dashboards, netto-inkomen en grafieken",
           "Herinneringen met bedrag en QR-betalingen gemaakt door de server"
         ]
-      }
+      },
+      "changesTitle": "Werkt anders:"
     },
     "enable": {
       "offTitle": "De Vertrouwelijke modus staat uit",

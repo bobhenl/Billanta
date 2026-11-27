@@ -14205,7 +14205,7 @@
       "lead": "Verschlüsseln – den Inhalt sehen nur Sie und Mitglieder mit Schlüssel, der Server kann ihn nicht lesen.",
       "what": "Verschlüsselt werden Positionsbeschreibungen und Notizen (über und unter den Positionen sowie interne).",
       "keeps": "Berichte und Dashboards funktionieren weiter: Beträge, Daten und Verwendungszwecke bleiben unverschlüsselt.",
-      "loses": "Für verschlüsselte Belege erstellt der Server kein PDF oder ISDOC, hängt sie keiner E-Mail an und findet sie nicht über die Textsuche.",
+      "loses": "Für verschlüsselte Belege erstellt nur Ihr Browser PDF, ISDOC und UBL. Der Server hängt sie nur auf Ihren ausdrücklichen Wunsch an eine E-Mail an und findet sie nicht über die Textsuche.",
       "locked": "Gesperrte Belege werden übersprungen.",
       "done": "{n, plural, one {# Beleg verschlüsselt} other {# Belege verschlüsselt}}.",
       "nothing": "Es gab nichts zu verschlüsseln.",
@@ -14219,13 +14219,17 @@
       "aiUnavailable": "Das KI-Vorausfüllen ist beim Verschlüsseln im Vertraulichen Modus nicht verfügbar – der Text müsste an den Server gehen.",
       "sealFailed": "Der Beleg konnte nicht verschlüsselt werden. Nichts wurde gespeichert.",
       "sealToggle": "Diesen Beleg verschlüsseln",
-      "sealOnHint": "Positionsbeschreibungen und Notizen sehen nur Sie und Mitglieder mit Schlüssel. PDF, ISDOC und Positionsvorschläge sind nicht verfügbar.",
+      "sealOnHint": "Positionsbeschreibungen und Notizen sehen nur Sie und Mitglieder mit Schlüssel. PDF, ISDOC und UBL erstellt der Browser, Positionsvorschläge sind nicht verfügbar.",
       "sealOffHint": "Der Beleg wird wie bisher unverschlüsselt gespeichert."
     },
     "actions": {
-      "blocked": "Im Vertraulichen Modus nicht verfügbar: Der Server kann einen verschlüsselten Beleg nicht lesen. Schalten Sie den PDF/ISDOC-Anhang in den E-Mail-Einstellungen aus oder senden Sie einen Link.",
-      "pdfUnavailable": "PDF ist im Vertraulichen Modus nicht verfügbar. Sie können die Detailseite aus dem Browser drucken (Strg+P).",
-      "sendHint": "Dieser Beleg ist verschlüsselt: Die E-Mail enthält nur einen Link, PDF oder ISDOC kann der Server nicht anhängen."
+      "blocked": "Die verschlüsselten Texte ließen sich nicht öffnen. Entsperren Sie den Tresor mit dem richtigen Schlüssel und versuchen Sie es erneut.",
+      "sendHint": "Dieser Beleg ist verschlüsselt: Ohne Anhang enthält die E-Mail nur einen Link.",
+      "pdfLocal": "Das PDF erstellt Ihr Browser, der Server sieht die verschlüsselten Texte nicht.",
+      "isdocLocal": "Die ISDOC-Datei erstellt Ihr Browser, der Server sieht die verschlüsselten Texte nicht.",
+      "attachOnce": "PDF/ISDOC anhängen – die Datei läuft zum Versand einmal über den Server und wird nicht gespeichert",
+      "attachOnceHint": "PDF und ISDOC erstellt Ihr Browser. Der Server schickt sie einmal in dieser E-Mail an den Kunden, ohne sie zu speichern oder zu protokollieren.",
+      "ublLocal": "Die UBL-Datei erstellt Ihr Browser, der Server sieht die verschlüsselten Texte nicht."
     },
     "categories": {
       "recommended": "Empfohlen",
@@ -14235,11 +14239,14 @@
         "title": "Positionsbeschreibungen und Notizen",
         "description": "Was Sie geliefert haben und die Notizen auf dem Beleg. Beträge, Daten und Symbole bleiben lesbar.",
         "loses": [
-          "Vom Server erstellte PDF-, ISDOC-, UBL- und Peppol-Dateien",
-          "PDF/ISDOC-Anhang in E-Mails",
+          "Versand über Peppol",
           "Suche im Text von Positionen und Notizen, Positionsvorschläge",
           "KI-Vorausfüllen von Belegen",
           "Positionsbeschreibungen im öffentlichen Link und in Exporten für die Buchhaltung (Pohoda, Money, CSV)"
+        ],
+        "changes": [
+          "PDF, ISDOC und UBL erstellt Ihr Browser",
+          "PDF/ISDOC-Anhang in E-Mails nur, wenn Sie ihn ankreuzen – die Datei läuft einmal über den Server und wird nicht gespeichert"
         ]
       },
       "attachments": {
@@ -14270,7 +14277,8 @@
           "Dashboards, Nettoeinkommen und Diagramme",
           "Mahnungen mit Betrag und vom Server erstellte QR-Zahlungen"
         ]
-      }
+      },
+      "changesTitle": "Funktioniert anders:"
     },
     "enable": {
       "offTitle": "Der Vertrauliche Modus ist aus",

@@ -1,11 +1,12 @@
 import { randomUUID } from "node:crypto";
-import { Injectable } from "@nestjs/common";
-import { and, eq } from "drizzle-orm";
+import { Injectable, ServiceUnavailableException } from "@nestjs/common";
+import { and, eq, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import type { OutboxItem } from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
+import type { DeliverableEmail, DeliveryResult } from "./email.service";
 import type { QuietHours } from "../notifications/notification-prefs";
 import { htmlToText, renderNotificationEmail, type EmailLocale } from "./email-render";
 import type { EmailCategory, UnsubscribeType } from "./email-types";
@@ -110,6 +111,78 @@ export class EmailOutboxService {
         .onConflictDoNothing()
         .returning({ id: schema.emailOutbox.id });
       return row?.id ?? null;
+    });
+  }
+
+  /**
+   * Delivers one e-mail now instead of leaving it to the worker, for
+   * attachments that must never be stored (a sealed invoice's PDF rendered in
+   * the browser). The row is written first, without the attachments, so the
+   * demo drop trigger, the idempotency key and the history all still apply;
+   * it is never left `queued`, so the worker cannot send it again without them.
+   */
+  async sendNow(
+    email: OutgoingEmail,
+    ctx: QueueContext,
+    deliver: (row: DeliverableEmail) => Promise<DeliveryResult>,
+  ): Promise<"sent" | "skipped" | "suppressed"> {
+    return this.inTenant(ctx, async (db) => {
+      const [row] = await db
+        .insert(schema.emailOutbox)
+        .values({
+          tenantId: ctx.tenantId,
+          userId: email.userId ?? null,
+          kind: email.kind,
+          category: email.category,
+          idempotencyKey: (email.idempotencyKey ?? `${email.kind}:${randomUUID()}`).slice(0, 200),
+          recipient: email.to.trim(),
+          fromName: email.fromName ?? null,
+          replyTo: email.replyTo ?? null,
+          bcc: email.bcc ?? null,
+          subject: email.subject.slice(0, 300),
+          html: email.html,
+          textBody: email.text ?? htmlToText(email.html),
+          headers: email.headers ?? {},
+          attachments: null,
+          status: "sending",
+          attempts: 1,
+          maxAttempts: 1,
+          // Far ahead: the row only becomes visible to the worker once this transaction commits as sent or dead.
+          lockedUntil: new Date(Date.now() + 365 * 24 * 3600_000),
+        })
+        .onConflictDoNothing()
+        .returning();
+      // A demo company's e-mail, or the same click twice within the key's window.
+      if (!row) return "skipped";
+      const finish = (set: Partial<typeof schema.emailOutbox.$inferInsert>) =>
+        db.update(schema.emailOutbox).set({ ...set, lockedUntil: null, updatedAt: new Date() }).where(eq(schema.emailOutbox.id, row.id));
+
+      const [check] = await db.execute<{ suppressed: boolean }>(
+        sql`SELECT email_send_suppressed(${row.recipient}, ${row.category}) AS suppressed`,
+      );
+      if (check?.suppressed) {
+        await finish({ status: "suppressed", lastError: "suppressed" });
+        return "suppressed";
+      }
+      const result = await deliver({
+        id: row.id,
+        recipient: row.recipient,
+        fromName: row.fromName,
+        replyTo: row.replyTo,
+        bcc: row.bcc,
+        subject: row.subject,
+        html: row.html,
+        textBody: row.textBody,
+        headers: row.headers,
+        attachments: email.attachments?.map((a) => ({ filename: a.filename, contentType: a.contentType, content: a.content.toString("base64") })) ?? null,
+      });
+      if (!result.ok) {
+        // The provider's message only, never the e-mail or its files.
+        await finish({ status: "dead", lastError: `${result.name}: ${result.message}`.slice(0, 500) });
+        throw new ServiceUnavailableException(result.name === "not_configured" ? "email_not_configured" : "email_send_failed");
+      }
+      await finish({ status: "sent", sentAt: new Date(), providerMessageId: result.providerId });
+      return "sent";
     });
   }
 

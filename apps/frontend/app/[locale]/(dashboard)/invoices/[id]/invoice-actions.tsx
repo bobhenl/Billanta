@@ -25,6 +25,8 @@ import { Link, useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { useCanWrite } from '@/components/access-provider';
+import { useVault } from '@/components/vault/vault-provider';
+import { DocumentError, renderSealedIsdoc, renderSealedPdf, renderSealedUbl, saveDocument, sendWithSealedFiles } from '@/lib/vault/documents';
 import { CONVERSIONS, type DocumentType, type InvoiceStatus } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
 import {
@@ -88,7 +90,7 @@ export function InvoiceActions({
   editedAfterSend?: boolean;
   /** A draft's PDF preview needs a customer to print. */
   hasCustomer?: boolean;
-  /** Printed texts are encrypted ("Důvěrný režim"): the server can't make the PDF, ISDOC or UBL. */
+  /** Printed texts are encrypted ("Důvěrný režim"): the browser makes the PDF, ISDOC and UBL. */
   confidential?: boolean;
 }) {
   const t = useTranslations('doc');
@@ -121,6 +123,43 @@ export function InvoiceActions({
   // Issued but not sent yet: sending is the next step, so it takes the one primary slot.
   const sendFirst = canEdit && numbered && status === 'issued' && !sentAt && hasEmail;
   const conversions = !canEdit || status === 'cancelled' || (!numbered && documentType !== 'quote') ? [] : CONVERSIONS[documentType];
+
+  const { requestUnlock } = useVault();
+  // Důvěrný režim: tick to attach the PDF/ISDOC drawn here; they pass through the server once.
+  const [attachSealed, setAttachSealed] = useState(false);
+  const sealedError = (error: unknown) =>
+    toast({
+      text: error instanceof DocumentError && error.message === 'confidential_content' ? tVault('blocked') : `${t('actionFailed')}: ${error instanceof Error ? error.message : String(error)}`,
+      tone: 'err'
+    });
+
+  /** The key stays in this tab: the server sends the encrypted texts, the browser opens and draws them. */
+  const downloadSealed = (kind: 'pdf' | 'isdoc' | 'ubl') =>
+    startTransition(async () => {
+      const key = await requestUnlock();
+      if (!key) return;
+      try {
+        const render = kind === 'pdf' ? renderSealedPdf : kind === 'isdoc' ? renderSealedIsdoc : renderSealedUbl;
+        saveDocument(await render(key, id));
+      } catch (error) {
+        sealedError(error);
+      }
+    });
+
+  const sendSealed = () =>
+    startTransition(async () => {
+      const key = await requestUnlock();
+      if (!key) return;
+      try {
+        const [pdf, isdoc] = await Promise.all([renderSealedPdf(key, id), renderSealedIsdoc(key, id)]);
+        await sendWithSealedFiles(id, { pdf, isdoc });
+        setDialog(null);
+        toast({ text: t('done.sent'), tone: 'ok' });
+        router.refresh();
+      } catch (error) {
+        sealedError(error);
+      }
+    });
 
   const act = <T,>(fn: () => Promise<ActionResult<T>>, okText: string, after?: (data: T) => void) =>
     startTransition(async () => {
@@ -182,10 +221,10 @@ export function InvoiceActions({
         )}
         {/* A draft opens a stamped preview: no number, no payment QR yet. */}
         {confidential && (numbered || (isDraft && hasCustomer)) && (
-          <span className={cn(buttonClass.secondary, 'cursor-not-allowed px-3 opacity-60')} title={tVault('pdfUnavailable')} aria-disabled="true">
+          <button type="button" className={cn(buttonClass.secondary, 'px-3')} disabled={pending} title={tVault('pdfLocal')} onClick={() => downloadSealed('pdf')}>
             <FileText className="h-4 w-4" />
             PDF
-          </span>
+          </button>
         )}
         {!confidential && (numbered || (isDraft && hasCustomer)) && (
           <a
@@ -228,6 +267,20 @@ export function InvoiceActions({
                 <Undo2 className="h-4 w-4" />
                 {t('actions.markUnpaid')}
               </button>
+            )}
+            {numbered && confidential && (
+              <>
+                <button type="button" className={menuItem} disabled={pending} title={tVault('isdocLocal')} onClick={() => downloadSealed('isdoc')}>
+                  <FileCode2 className="h-4 w-4" />
+                  ISDOC
+                </button>
+                {(documentType === 'invoice' || documentType === 'credit_note') && (
+                  <button type="button" className={menuItem} disabled={pending} title={tVault('ublLocal')} onClick={() => downloadSealed('ubl')}>
+                    <FileCode2 className="h-4 w-4" />
+                    UBL
+                  </button>
+                )}
+              </>
             )}
             {numbered && !confidential && (
               <>
@@ -412,7 +465,12 @@ export function InvoiceActions({
             <button type="button" className={buttonClass.secondary} onClick={() => setDialog(null)}>
               {t('confirm.back')}
             </button>
-            <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => act(() => sendInvoice(id), t('done.sent'))}>
+            <button
+              type="button"
+              className={buttonClass.primary}
+              disabled={pending}
+              onClick={() => (confidential && attachSealed ? sendSealed() : act(() => sendInvoice(id), t('done.sent')))}
+            >
               <Send className="h-4 w-4" />
               {editedAfterSend ? t('correction.send') : t('actions.send')}
             </button>
@@ -420,7 +478,15 @@ export function InvoiceActions({
         }
       >
         <p className="text-muted-foreground">{editedAfterSend ? t('correction.sendBody') : t('confirm.sendBody')}</p>
-        {confidential && <p className="mt-2 text-xs text-muted-foreground">{tVault('sendHint')}</p>}
+        {confidential && (
+          <>
+            <label className="mt-3 flex items-start gap-2 text-sm">
+              <input type="checkbox" className="mt-0.5 h-4 w-4 accent-primary" checked={attachSealed} onChange={(e) => setAttachSealed(e.target.checked)} />
+              <span>{tVault('attachOnce')}</span>
+            </label>
+            <p className="mt-2 text-xs text-muted-foreground">{attachSealed ? tVault('attachOnceHint') : tVault('sendHint')}</p>
+          </>
+        )}
       </Modal>
 
       <Modal

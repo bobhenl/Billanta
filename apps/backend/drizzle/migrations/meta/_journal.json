@@ -715,6 +715,13 @@
       "when": 1793600900000,
       "tag": "0101_confidential_vault",
       "breakpoints": true
+    },
+    {
+      "idx": 103,
+      "version": "7",
+      "when": 1793601100000,
+      "tag": "0107_email_send_suppressed",
+      "breakpoints": true
     }
   ]
 }

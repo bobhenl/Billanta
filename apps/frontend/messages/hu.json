@@ -14204,7 +14204,7 @@
       "lead": "Titkosítás – a tartalmat csak Ön és a kulccsal rendelkező tagok látják, a szerver nem tudja elolvasni.",
       "what": "A tételleírások és a megjegyzések (a tételek felett, alatt és a belsők) titkosítva lesznek.",
       "keeps": "A kimutatások és az irányítópultok továbbra is működnek: az összegek, dátumok és közlemények titkosítatlanok maradnak.",
-      "loses": "Titkosított bizonylathoz a szerver nem készít PDF-et vagy ISDOC-ot, nem csatolja e-mailhez, és szöveges kereséssel sem találja meg.",
+      "loses": "Titkosított bizonylathoz a PDF-et, az ISDOC-ot és az UBL-t csak a böngészője készíti. A szerver csak kifejezett kérésére csatolja őket e-mailhez, és szöveges kereséssel nem találja meg.",
       "locked": "A zárolt bizonylatok kimaradnak.",
       "done": "{n, plural, one {# bizonylat titkosítva} other {# bizonylat titkosítva}}.",
       "nothing": "Nem volt mit titkosítani.",
@@ -14218,13 +14218,17 @@
       "aiUnavailable": "Az AI-kitöltés titkosítás közben nem érhető el Bizalmas módban – a szövegnek a szerverre kellene kerülnie.",
       "sealFailed": "A bizonylatot nem sikerült titkosítani. Semmi sem mentődött.",
       "sealToggle": "A bizonylat titkosítása",
-      "sealOnHint": "A tételleírásokat és megjegyzéseket csak Ön és a kulccsal rendelkező tagok látják. PDF, ISDOC és tételjavaslatok nem lesznek elérhetők.",
+      "sealOnHint": "A tételleírásokat és megjegyzéseket csak Ön és a kulccsal rendelkező tagok látják. A PDF-et, az ISDOC-ot és az UBL-t a böngésző készíti, tételjavaslatok nem lesznek elérhetők.",
       "sealOffHint": "A bizonylat a korábbiakhoz hasonlóan titkosítás nélkül mentődik."
     },
     "actions": {
-      "blocked": "Bizalmas módban nem érhető el: a szerver nem tudja elolvasni a titkosított bizonylatot. Kapcsolja ki a PDF/ISDOC-mellékletet az e-mail-beállításokban, vagy küldjön linket.",
-      "pdfUnavailable": "A PDF Bizalmas módban nem érhető el. A részleteket kinyomtathatja a böngészőből (Ctrl+P).",
-      "sendHint": "Ez a bizonylat titkosított: az e-mail csak linkkel megy ki, a szerver nem tud PDF-et vagy ISDOC-ot csatolni."
+      "blocked": "A titkosított szövegeket nem sikerült megnyitni. Oldja fel a széfet a megfelelő kulccsal, és próbálja újra.",
+      "sendHint": "Ez a bizonylat titkosított: melléklet nélkül az e-mail csak linket tartalmaz.",
+      "pdfLocal": "A PDF-et a böngészője készíti, a szerver nem látja a titkosított szövegeket.",
+      "isdocLocal": "Az ISDOC-ot a böngészője készíti, a szerver nem látja a titkosított szövegeket.",
+      "attachOnce": "PDF/ISDOC csatolása – a fájl a küldéshez egyszer áthalad a szerveren, és nem tárolódik",
+      "attachOnceHint": "A PDF-et és az ISDOC-ot a böngészője készíti. A szerver ebben az egy e-mailben továbbítja az ügyfélnek, nem tárolja és nem naplózza.",
+      "ublLocal": "Az UBL-t a böngészője készíti, a szerver nem látja a titkosított szövegeket."
     },
     "categories": {
       "recommended": "Ajánlott",
@@ -14234,11 +14238,14 @@
         "title": "Tételleírások és megjegyzések",
         "description": "Amit szállított, és a bizonylat megjegyzései. Az összegek, dátumok és azonosítók olvashatók maradnak.",
         "loses": [
-          "A szerver által készített PDF, ISDOC, UBL és Peppol",
-          "PDF/ISDOC-melléklet az e-mailekben",
+          "Küldés Peppolon keresztül",
           "Keresés a tételek és megjegyzések szövegében, tételjavaslatok",
           "Bizonylat kitöltése AI-jal",
           "Tételleírások a nyilvános linken és a könyvelőnek szóló exportokban (Pohoda, Money, CSV)"
+        ],
+        "changes": [
+          "A PDF-et, az ISDOC-ot és az UBL-t a böngészője készíti",
+          "PDF/ISDOC-melléklet az e-mailekben csak külön bejelölésre – a fájl egyszer áthalad a szerveren, és nem tárolódik"
         ]
       },
       "attachments": {
@@ -14269,7 +14276,8 @@
           "Irányítópultok, nettó jövedelem és grafikonok",
           "Összeget tartalmazó emlékeztetők és a szerver által készített QR-fizetés"
         ]
-      }
+      },
+      "changesTitle": "Másképp működik:"
     },
     "enable": {
       "offTitle": "A Bizalmas mód ki van kapcsolva",
