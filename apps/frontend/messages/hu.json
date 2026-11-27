@@ -1807,7 +1807,7 @@
         },
         "confidential": {
           "title": "Bizalmas mód",
-          "description": "Bizonylatszövegek titkosítása a böngészőben"
+          "description": "Bizonylatok, mellékletek, partnerek és összegek titkosítása a böngészőben"
         }
       },
       "managedByAdmins": "A cégadatokat, a csapatot, az előfizetést és a többi cégbeállítást a tulajdonos vagy egy adminisztrátor kezeli."
@@ -14564,7 +14564,7 @@
     },
     "settings": {
       "title": "Bizalmas mód",
-      "description": "Bizonylatszövegek titkosítása a böngészőben.",
+      "description": "Bizonylatok, mellékletek, partnerek és összegek titkosítása a böngészőben.",
       "loadError": "A beállításokat nem sikerült betölteni.",
       "failed": "Nem sikerült. Próbálja újra.",
       "onTitle": "A Bizalmas mód be van kapcsolva",
@@ -14850,11 +14850,11 @@
   "securityPage": {
     "seoTitle": "Bizalmas mód: mit lát a szerver és mit nem",
     "eyebrow": "Biztonság",
-    "title": "Bizalmas mód: bizonylatszövegek, amelyeket a szerver nem olvas el",
-    "lead": "A tételleírások és megjegyzések az Ön böngészőjében titkosítódnak. A szerver csak egy titkosított karakterláncot kap, és nincs hozzá kulcsa. Itt kipróbálhatja és ellenőrizheti.",
+    "title": "Bizalmas mód: bizonylatadatok, amelyeket a szerver nem olvas el",
+    "lead": "A bizonylatok szövegét, a mellékleteket, a partnereket és az összegeket közvetlenül a böngészőjében titkosíthatja, mindegyik részt külön. A szerver csak titkosított adatot kap, és nincs hozzá kulcsa. Itt kipróbálhatja és ellenőrizheti.",
     "featuresLink": "Minden funkció",
     "demoTitle": "Próbálja ki",
-    "demoLead": "Bejelentkezés nélkül. Az oldal ugyanazzal a kóddal titkosítja a mondatát, mint az alkalmazás, és valóban elküldi a szerverre. Egymás mellett látja, mit írt be, mi ment el és mit kapott a szerver.",
+    "demoLead": "Bejelentkezés nélkül. Az oldal ugyanazzal a kóddal titkosítja a mondatát, mint az alkalmazás, és tényleg elküldi a szervernek. Egymás mellett látja, mit írt be, mi ment el, és mit kapott a szerver. A partnereket és az összegeket az alkalmazás ugyanígy titkosítja.",
     "howTitle": "Hogyan működik",
     "howSteps": [
       {
@@ -14862,46 +14862,93 @@
         "body": "A mód bekapcsolásakor a böngésző véletlen AES-256 kulcsot hoz létre. A szerver csak a jelszavával, passkey-jével vagy helyreállítási kódjával lezárt másolatait kapja meg."
       },
       {
-        "title": "Küldés előtt titkosítva",
-        "body": "A tételleírás vagy megjegyzés titkosítódik, mielőtt elhagyja a böngészőt. A szerver egy enc:v1:… karakterláncot tárol, és nem csinál vele semmit."
+        "title": "Küldés előtt titkosul",
+        "body": "Egy szöveg, partner vagy összeg még azelőtt titkosul, hogy elhagyná a böngészőt. Minden melléklet saját kulcsot kap. A szerver csak egy titkosított karakterláncot (enc:v1:…) tárol, és nem kezd vele semmit."
       },
       {
         "title": "Csak Önnél visszafejtve",
         "body": "Feloldás után a böngésző úgy tartja a kulcsot, hogy az oldal használhatja, de a tartalmát nem olvashatja ki."
       }
     ],
-    "hiddenTitle": "Amit a szerver nem lát",
-    "hidden": [
-      "Tételleírások",
-      "Szöveg a tételek felett és alatt",
-      "Belső megjegyzések",
-      "A kulcs és az azt feloldó jelszó"
+    "categoriesTitle": "Mit titkosíthat",
+    "categoriesLead": "A négy részt a beállításokban külön kapcsolja be, később is. Mindegyik csak azokat a funkciókat kapcsolja ki, amelyeknek a szerveren olvasniuk kellene ezeket az adatokat. A pontos listát a beállítások bekapcsolás előtt megmutatják.",
+    "categories": [
+      {
+        "title": "Szövegek és megjegyzések",
+        "body": "Tételleírások, a tételek feletti és alatti szöveg és a belső megjegyzések."
+      },
+      {
+        "title": "Mellékletek és nyugták",
+        "body": "A bizonylatok fájljai és a költségek nyugtái. Minden fájlnak saját kulcsa van, a neve és típusa is titkosított. A szerver csak a méretet és a feltöltés dátumát ismeri."
+      },
+      {
+        "title": "Partnerek",
+        "body": "Név, cím, kapcsolattartó, telefon és megjegyzés. Az e-mail csak ha szeretné: ekkor a Billanta semmit sem küld ennek az ügyfélnek, a bizonylatot Ön küldi el, vagy linkkel. A cégazonosító, az adószám és az ország olvasható marad. A cégnyilvántartás csak a cégazonosítót kapja meg, a választ nem tároljuk."
+      },
+      {
+        "title": "Összegek",
+        "body": "Árak, mennyiségek, áfakulcsok, kedvezmények, végösszegek és kifizetések. A szerver helyettük nullákat tárol, így egyik összesítése sem tartalmaz valódi összeget."
+      }
     ],
-    "visibleTitle": "Amit a szerver lát, és miért",
+    "hiddenTitle": "Amit a szerver nem lát (a bekapcsolt részekben)",
+    "hidden": [
+      "Tételleírások és megjegyzések",
+      "A mellékletek és nyugták tartalma, neve és típusa",
+      "A partnerek neve, címe, telefonja és megjegyzései, kérésre az e-mail is",
+      "Árak, mennyiségek, áfa, végösszegek és kifizetések",
+      "A kulcs és a jelszó, amely feloldja"
+    ],
+    "visibleTitle": "Amit a szerver mindig lát, és miért",
     "visible": [
-      "Összegek és ÁFA – számításokhoz, bevallásokhoz és fizetések párosításához",
-      "Kiállítási és fizetési határidő – emlékeztetőkhöz",
-      "Bizonylatszám és közlemény",
-      "Az ügyfél és e-mail-címe – hogy a bizonylat elküldhető legyen"
+      "Bizonylatszám és közlemény – a számozáshoz és a fizetések párosításához",
+      "Kiállítás és fizetési határidő – az emlékeztetőkhöz",
+      "A bizonylat pénzneme és állapota",
+      "A partner cégazonosítója, adószáma és országa – a nyilvántartásokhoz és az áfa-ellenőrzéshez",
+      "A partner e-mailje, ha nem titkosítja – hogy a bizonylat elküldhető legyen",
+      "A fájlok mérete és feltöltési dátuma",
+      "Minden a nem bekapcsolt részekből"
+    ],
+    "browserTitle": "Ami az Ön böngészőjében készül",
+    "browserLead": "Azokat a fájlokat és számításokat, amelyekhez a titkosított adat kell, csak egy feloldott módú böngésző állítja össze.",
+    "browser": [
+      "PDF, ISDOC, UBL és a fizetési QR-kód",
+      "A bizonylatok CSV-exportja a könyvelőnek",
+      "Áfabevallás, ellenőrző jelentés és összesítő nyilatkozat (cseh és szlovák cégeknek)",
+      "Keresés a titkosított szövegekben és partnerekben",
+      "Az ügyfélnek szóló link a # jel után hordozza a kulcsot. A cím ezen részét a böngészők sosem küldik el a szervernek, így a bizonylatot csak az ügyfél böngészője nyitja meg."
+    ],
+    "changesTitle": "Ami másképp működik",
+    "changes": [
+      "Az emlékeztetők csak a bizonylatszámot, a határidőt és a linket tartalmazzák, titkosított adatot nem.",
+      "Az egyező közleményű fizetést az alkalmazás felajánlja párosításra, és Ön hagyja jóvá. Az összegeket a szerver nem tudja összevetni.",
+      "Ha titkosítja egy partner e-mailjét, a Billanta semmit sem küld neki. A bizonylatot saját postafiókjából vagy linkkel küldi el."
     ],
     "cspTitle": "A böngésző felügyeli, hová küldhet adatot az oldal",
     "cspBody": "Az alkalmazás, a bizonylatlinkek és ez az oldal olyan Content-Security-Policy fejléccel érkeznek, amely tartalmazza a connect-src 'self' szabályt. A böngésző ekkor magától elutasít minden kérést, amelyet egy ilyen oldal más szerverre küldene, még ha egy szkript meg is próbálja. A visszafejtett szöveg ezen az úton nem juthat ki.",
     "cspHow": "A fejlécet bárki elolvashatja: a böngésző eszközeiben (F12, Hálózat lap) kattintson az első kérésre, magára az oldalra, és a válaszfejlécek között keresse meg a Content-Security-Policy-t.",
+    "protectTitle": "A védelem gyengítése újabb ellenőrzést kér",
+    "protect": [
+      "Egy rész titkosításának kikapcsolása, egy feloldási mód eltávolítása, illetve a széfjelszó vagy a helyreállítási kód cseréje csak friss ellenőrzés után lehetséges: kétlépcsős azonosítási kóddal, jelszóval vagy passkey-jel.",
+      "A bejelentkezés és a kétlépcsős azonosítás nem oldja fel a széfet. A kulcsot csak a széfjelszó, egy passkey vagy a helyreállítási kód nyitja.",
+      "Saját eszközén megjegyeztetheti a feloldást. A kulcs úgy van a böngészőben tárolva, hogy nem olvasható ki és nem másolható. A Zárolás gomb vagy a kijelentkezés törli."
+    ],
     "limitsTitle": "Hol vannak a határok",
+    "limitsLead": "Titkosított bizonylatoknál néhány dolog nem működik, mert a szervernek olvasnia kellene az adatot. További határok abból adódnak, ahogyan a web működik.",
     "limits": [
+      "Küldés Peppolon: a törvény előírja, hogy az elküldött XML olvashatóan archiválva maradjon a szerveren.",
+      "Kártyás fizetés, részfizetés és összegeket tartalmazó MI-javaslatok titkosított összegű bizonylatoknál.",
+      "Egyes exportok, amelyeket a szerver készít (például Pohoda és Money S3): nem tartalmaznak titkosított adatot, és a titkosított összegű bizonylatokat elutasítják.",
+      "Az MI titkosított szöveget vagy nyugtát csak az Ön kifejezett megerősítése után kap. Egyszer áthalad a szerveren, és nem tárolódik.",
       "Az alkalmazás kódját a szerverünk szolgáltatja. Ha feltörnék, más kódot is küldhetne. A kód és a lenyomatok közzététele lehetővé teszi egy ilyen változás felismerését, de önmagában nem akadályozza meg.",
-      "Ha titkosított bizonylatot PDF-fel küld e-mailben, a szövegei egyszer áthaladnak a szerveren, mert onnan megy az e-mail. Az alkalmazás ezt előre jelzi, a szerver pedig nem tárolja és nem naplózza őket. Ha csak linket küld, a szerver egyáltalán nem kapja meg a szövegeket.",
-      "A mód nem titkosítja az összegeket, dátumokat, számokat és ügyfeleket, lásd fent.",
-      "Titkosított bizonylatokhoz a szerver nem készít ISDOC-ot vagy más gépi formátumot.",
+      "Ha titkosított bizonylatot e-mailben PDF-fel küld, a fájl egyszer áthalad a szerveren, mert az e-mail onnan megy ki. Az alkalmazás ezt előre jelzi, a szerver pedig nem tárolja és nem naplózza. Ha csak a linket küldi, a szerver egyáltalán nem kapja meg a titkosított adatot.",
       "A connect-src szabály a közvetlenül betöltött oldalra vonatkozik. Ha újratöltés nélkül lép át a nyilvános oldalról az alkalmazásba, frissítésig az előző oldal szabálya érvényes.",
-      "Aki hozzáfér a feloldott böngészőjéhez, látja a szövegeket. A mód a szerver ellen véd, nem a gépénél ülő ember ellen.",
-      "Ha elfelejti a jelszót és a helyreállítási kódot is, és nincs passkey-je, a szövegeket senki sem tudja visszaállítani, mi sem."
+      "Aki hozzáfér a feloldott böngészőjéhez, látja az adatokat. A mód a szervertől véd, nem attól, aki a gépénél ül.",
+      "Ha elfelejti a jelszót és a helyreállítási kódot is, és nincs passkey-je, a titkosított adatot senki sem tudja visszaállítani, mi sem."
     ],
     "verifyTitle": "Kódellenőrzés",
     "verifyLead": "Minden buildnél egy nyilvános fájlba írjuk a titkosító kód SHA-256 lenyomatait. A böngészője itt újraszámolhatja őket.",
     "planned": [
-      "A titkosító kódot (egyetlen, függőségek nélküli fájl) külön GitHub-tárolóban tesszük közzé, hogy a lenyomatok saját builddel összevethetők legyenek.",
-      "A kód független átvizsgálása tervben van."
+      "A titkosító kódot (egyetlen, függőségek nélküli fájl) külön GitHub-tárolóban tesszük közzé, hogy a lenyomatok saját builddel összevethetők legyenek."
     ]
   },
   "stepUp": {

@@ -1808,7 +1808,7 @@
         },
         "confidential": {
           "title": "Důvěrný režim",
-          "description": "Šifrování textů dokladů v prohlížeči"
+          "description": "Šifrování dokladů, příloh, kontaktů a částek v prohlížeči"
         }
       },
       "managedByAdmins": "Údaje firmy, tým, předplatné a další nastavení firmy spravuje vlastník nebo administrátor."
@@ -14569,7 +14569,7 @@
     },
     "settings": {
       "title": "Důvěrný režim",
-      "description": "Šifrování textů dokladů ve vašem prohlížeči.",
+      "description": "Šifrování dokladů, příloh, kontaktů a částek ve vašem prohlížeči.",
       "loadError": "Nastavení se nepodařilo načíst.",
       "failed": "Nepovedlo se. Zkuste to znovu.",
       "onTitle": "Důvěrný režim je zapnutý",
@@ -14862,11 +14862,11 @@
   "securityPage": {
     "seoTitle": "Důvěrný režim: co server vidí a co ne",
     "eyebrow": "Zabezpečení",
-    "title": "Důvěrný režim: texty dokladů, které server nepřečte",
-    "lead": "Popisy položek a poznámky se šifrují ve vašem prohlížeči. Server dostane jen zašifrovaný řetězec a klíč k němu nemá. Tady si to můžete sami vyzkoušet a ověřit.",
+    "title": "Důvěrný režim: data dokladů, která server nepřečte",
+    "lead": "Texty dokladů, přílohy, kontakty a částky můžete šifrovat přímo ve svém prohlížeči, každou část zvlášť. Server dostane jen zašifrovaná data a klíč k nim nemá. Tady si to můžete vyzkoušet a ověřit.",
     "featuresLink": "Všechny funkce",
     "demoTitle": "Vyzkoušejte si to",
-    "demoLead": "Bez přihlášení. Stránka zašifruje vaši větu stejným kódem jako aplikace a opravdu ji pošle na server. Vedle sebe uvidíte, co jste napsali, co odešlo a co server dostal.",
+    "demoLead": "Bez přihlášení. Stránka zašifruje vaši větu stejným kódem jako aplikace a opravdu ji pošle na server. Vedle sebe uvidíte, co jste napsali, co odešlo a co server dostal. Kontakty a částky aplikace šifruje stejně.",
     "howTitle": "Jak to funguje",
     "howSteps": [
       {
@@ -14875,45 +14875,92 @@
       },
       {
         "title": "Šifruje se před odesláním",
-        "body": "Popis položky nebo poznámka se zašifruje dřív, než opustí prohlížeč. Server uloží řetězec enc:v1:… a nic s ním nedělá."
+        "body": "Text, kontakt nebo částka se zašifruje dřív, než opustí prohlížeč. Každá příloha dostane vlastní klíč. Server uloží jen zašifrovaný řetězec (enc:v1:…) a nic s ním nedělá."
       },
       {
         "title": "Rozšifruje se jen u vás",
         "body": "Po odemčení drží prohlížeč klíč tak, že ho stránka může použít, ale nemůže přečíst jeho obsah."
       }
     ],
-    "hiddenTitle": "Co server nevidí",
+    "categoriesTitle": "Co můžete zašifrovat",
+    "categoriesLead": "Čtyři části zapínáte v nastavení každou zvlášť, i později. Každá vypne jen funkce, které by na serveru musely daná data číst. Přesný seznam vám nastavení ukáže před zapnutím.",
+    "categories": [
+      {
+        "title": "Texty a poznámky",
+        "body": "Popisy položek, text nad a pod položkami a interní poznámky."
+      },
+      {
+        "title": "Přílohy a účtenky",
+        "body": "Soubory u dokladů a účtenky u nákladů. Každý soubor má vlastní klíč a zašifrovaný je i jeho název a typ. Server zná jen velikost a datum nahrání."
+      },
+      {
+        "title": "Kontakty",
+        "body": "Název, adresa, kontaktní osoba, telefon a poznámka. E-mail jen když chcete: Billanta pak klientovi nic nepošle a doklad odešlete sami nebo odkazem. IČO, DIČ a země zůstávají čitelné. Do ARES jde jen IČO a odpověď se neukládá."
+      },
+      {
+        "title": "Částky",
+        "body": "Ceny, množství, sazby DPH, slevy, součty a úhrady. Server místo nich ukládá nuly, takže žádný jeho součet skutečnou částku neobsahuje."
+      }
+    ],
+    "hiddenTitle": "Co server nevidí (u zapnutých částí)",
     "hidden": [
-      "Popisy položek",
-      "Text nad a pod položkami",
-      "Interní poznámky",
+      "Popisy položek a poznámky",
+      "Obsah, názvy a typy příloh a účtenek",
+      "Jména, adresy, telefony a poznámky kontaktů, volitelně i e-maily",
+      "Ceny, množství, DPH, součty a úhrady",
       "Klíč ani heslo, kterým se odemyká"
     ],
-    "visibleTitle": "Co server vidí a proč",
+    "visibleTitle": "Co server vidí vždy a proč",
     "visible": [
-      "Částky a DPH – kvůli výpočtům, přiznáním a párování plateb",
-      "Data vystavení a splatnosti – kvůli upomínkám",
-      "Číslo dokladu a variabilní symbol",
-      "Odběratele a jeho e-mail – aby mohl doklad odeslat"
+      "Číslo dokladu a variabilní symbol – kvůli číslování a párování plateb",
+      "Datum vystavení a splatnosti – kvůli upomínkám",
+      "Měnu a stav dokladu",
+      "IČO, DIČ a zemi kontaktu – kvůli registrům a kontrole DPH",
+      "E-mail kontaktu, pokud ho nezašifrujete – aby mohl doklad odeslat",
+      "Velikost a datum nahrání souborů",
+      "Všechno z částí, které nemáte zapnuté"
+    ],
+    "browserTitle": "Co vzniká ve vašem prohlížeči",
+    "browserLead": "Soubory a výpočty, které potřebují zašifrovaná data, sestaví až prohlížeč s odemčeným režimem.",
+    "browser": [
+      "PDF, ISDOC, UBL a QR platba",
+      "Export dokladů pro účetní v CSV",
+      "Přiznání k DPH, kontrolní hlášení a souhrnné hlášení",
+      "Hledání v zašifrovaných textech a kontaktech",
+      "Odkaz pro klienta nese klíč za znakem #. Tuto část adresy prohlížeč na server neposílá, takže doklad otevře až prohlížeč klienta."
+    ],
+    "changesTitle": "Co funguje jinak",
+    "changes": [
+      "Upomínky obsahují jen číslo dokladu, splatnost a odkaz, žádné zašifrované údaje.",
+      "Platbu se shodným variabilním symbolem aplikace nabídne ke spárování a vy ji potvrdíte. Částky server porovnat nemůže.",
+      "Když zašifrujete e-mail kontaktu, Billanta mu nic nepošle. Doklad odešlete z vlastní pošty nebo odkazem."
     ],
     "cspTitle": "Prohlížeč hlídá, kam stránka smí posílat data",
     "cspBody": "Aplikace, odkazy na doklady i tato stránka chodí s hlavičkou Content-Security-Policy, která obsahuje connect-src 'self'. Prohlížeč pak sám odmítne každý požadavek z takové stránky na jiný server, i kdyby se o něj nějaký skript pokusil. Rozšifrovaný text touto cestou jinam neodejde.",
     "cspHow": "Hlavičku si přečte kdokoli: v nástrojích prohlížeče (F12, karta Síť) klikněte na první požadavek, tedy na samotnou stránku, a v hlavičkách odpovědi najděte Content-Security-Policy.",
+    "protectTitle": "Oslabení ochrany chce další ověření",
+    "protect": [
+      "Vypnout šifrování některé části, odebrat způsob odemčení nebo vyměnit heslo trezoru či záchranný kód jde jen po čerstvém ověření: kódem dvoufázového ověření, heslem nebo passkey.",
+      "Přihlášení ani dvoufázové ověření trezor neodemkne. Klíč otevře jen heslo trezoru, passkey nebo záchranný kód.",
+      "Na vlastním zařízení si můžete nechat odemčení pamatovat. Klíč je v prohlížeči uložený tak, že ho nejde přečíst ani zkopírovat. Zruší ho tlačítko Zamknout nebo odhlášení."
+    ],
     "limitsTitle": "Kde jsou hranice",
+    "limitsLead": "U zašifrovaných dokladů některé věci nejdou, protože by je server musel číst. Další hranice plynou z toho, jak funguje web.",
     "limits": [
+      "Odeslání přes Peppol: zákon vyžaduje, aby odeslané XML zůstalo čitelně archivované na serveru.",
+      "Platba kartou, částečné úhrady a AI návrhy s částkami u dokladů se zašifrovanými částkami.",
+      "Některé exporty, které sestavuje server (například Pohoda a Money S3): zašifrované údaje v nich nejsou a doklady se zašifrovanými částkami odmítnou.",
+      "AI dostane zašifrovaný text nebo účtenku jen po vašem výslovném potvrzení. Jednou projde serverem a neuloží se.",
       "Kód aplikace posílá náš server. Kdyby byl napadený, mohl by poslat jiný kód. Zveřejnění kódu a otisků umožňuje takovou změnu odhalit, ale samo jí nezabrání.",
-      "Když zašifrovaný doklad pošlete e-mailem s PDF, jeho texty jednou projdou serverem, protože e-mail odchází odtud. Aplikace to řekne předem a server je neuloží ani nezapíše do logu. Když pošlete jen odkaz, server texty nedostane vůbec.",
-      "Částky, data, čísla a odběratele režim nešifruje, viz výše.",
-      "Pro zašifrované doklady server nevytvoří ISDOC ani jiné strojové formáty.",
+      "Když zašifrovaný doklad pošlete e-mailem s PDF, soubor jednou projde serverem, protože e-mail odchází odtud. Aplikace to řekne předem a server ho neuloží ani nezapíše do logu. Když pošlete jen odkaz, server zašifrovaná data nedostane vůbec.",
       "Pravidlo connect-src platí pro stránku načtenou přímo. Když do aplikace přejdete z veřejného webu bez nového načtení, platí pravidlo stránky, ze které jste přišli, dokud stránku neobnovíte.",
-      "Kdo má přístup k vašemu odemčenému prohlížeči, texty uvidí. Režim chrání před serverem, ne před někým u vašeho počítače.",
-      "Když zapomenete heslo i záchranný kód a nemáte passkey, texty nikdo neobnoví, ani my."
+      "Kdo má přístup k vašemu odemčenému prohlížeči, data uvidí. Režim chrání před serverem, ne před někým u vašeho počítače.",
+      "Když zapomenete heslo i záchranný kód a nemáte passkey, zašifrovaná data nikdo neobnoví, ani my."
     ],
     "verifyTitle": "Ověření kódu",
     "verifyLead": "Při každém sestavení zapíšeme otisky SHA-256 šifrovacího kódu do veřejného souboru. Váš prohlížeč je může přepočítat přímo tady.",
     "planned": [
-      "Šifrovací kód (jeden soubor bez závislostí) zveřejníme v samostatném repozitáři na GitHubu, aby šlo otisky porovnat s vlastním sestavením.",
-      "Nezávislá kontrola kódu je v plánu."
+      "Šifrovací kód (jeden soubor bez závislostí) zveřejníme v samostatném repozitáři na GitHubu, aby šlo otisky porovnat s vlastním sestavením."
     ]
   },
   "stepUp": {

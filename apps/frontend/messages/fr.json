@@ -1807,7 +1807,7 @@
         },
         "confidential": {
           "title": "Mode confidentiel",
-          "description": "Chiffrer les textes des documents dans le navigateur"
+          "description": "Chiffrer les documents, pièces jointes, contacts et montants dans le navigateur"
         }
       },
       "managedByAdmins": "Les informations de l’entreprise, l’équipe, l’abonnement et les autres paramètres de l’entreprise sont gérés par le propriétaire ou un administrateur."
@@ -14564,7 +14564,7 @@
     },
     "settings": {
       "title": "Mode confidentiel",
-      "description": "Chiffrer les textes des documents dans votre navigateur.",
+      "description": "Chiffrer les documents, pièces jointes, contacts et montants dans votre navigateur.",
       "loadError": "Impossible de charger les réglages.",
       "failed": "Cela n'a pas fonctionné. Veuillez réessayer.",
       "onTitle": "Le Mode confidentiel est activé",
@@ -14850,11 +14850,11 @@
   "securityPage": {
     "seoTitle": "Mode confidentiel : ce que le serveur voit et ce qu'il ne voit pas",
     "eyebrow": "Sécurité",
-    "title": "Mode confidentiel : des textes de documents que le serveur ne peut pas lire",
-    "lead": "Les descriptions de lignes et les notes sont chiffrées dans votre navigateur. Le serveur ne reçoit qu'une chaîne chiffrée et n'en a pas la clé. Vous pouvez l'essayer et le vérifier vous-même ici.",
+    "title": "Mode confidentiel : des données de documents que le serveur ne lit pas",
+    "lead": "Vous pouvez chiffrer les textes des documents, les pièces jointes, les contacts et les montants directement dans votre navigateur, chaque partie séparément. Le serveur ne reçoit que des données chiffrées et n’a pas la clé. Vous pouvez l’essayer et le vérifier ici.",
     "featuresLink": "Toutes les fonctions",
     "demoTitle": "Essayez",
-    "demoLead": "Sans connexion. La page chiffre votre phrase avec le même code que l'application et l'envoie vraiment au serveur. Vous voyez côte à côte ce que vous avez tapé, ce qui est parti et ce que le serveur a reçu.",
+    "demoLead": "Sans connexion. La page chiffre votre phrase avec le même code que l’application et l’envoie vraiment au serveur. Vous voyez côte à côte ce que vous avez tapé, ce qui est parti et ce que le serveur a reçu. L’application chiffre les contacts et les montants de la même façon.",
     "howTitle": "Comment ça marche",
     "howSteps": [
       {
@@ -14862,46 +14862,93 @@
         "body": "À l'activation du mode, le navigateur crée une clé AES-256 aléatoire. Le serveur n'en reçoit que des copies verrouillées par votre mot de passe, votre passkey ou votre code de récupération."
       },
       {
-        "title": "Chiffré avant l'envoi",
-        "body": "Une description ou une note est chiffrée avant de quitter le navigateur. Le serveur stocke une chaîne enc:v1:… et n'en fait rien."
+        "title": "Chiffré avant l’envoi",
+        "body": "Un texte, un contact ou un montant est chiffré avant de quitter le navigateur. Chaque pièce jointe reçoit sa propre clé. Le serveur ne stocke qu’une chaîne chiffrée (enc:v1:…) et n’en fait rien."
       },
       {
         "title": "Déchiffré seulement chez vous",
         "body": "Après le déverrouillage, le navigateur garde la clé de façon que la page puisse l'utiliser sans pouvoir en lire le contenu."
       }
     ],
-    "hiddenTitle": "Ce que le serveur ne voit pas",
+    "categoriesTitle": "Ce que vous pouvez chiffrer",
+    "categoriesLead": "Vous activez les quatre parties séparément dans les réglages, aussi plus tard. Chacune désactive seulement les fonctions qui devraient lire ces données sur le serveur. Les réglages affichent la liste exacte avant l’activation.",
+    "categories": [
+      {
+        "title": "Textes et notes",
+        "body": "Descriptions des lignes, texte au-dessus et en dessous des lignes et notes internes."
+      },
+      {
+        "title": "Pièces jointes et reçus",
+        "body": "Fichiers des documents et reçus des dépenses. Chaque fichier a sa propre clé, et son nom et son type sont chiffrés aussi. Le serveur ne connaît que la taille et la date d’envoi."
+      },
+      {
+        "title": "Contacts",
+        "body": "Nom, adresse, personne de contact, téléphone et note. L’e-mail seulement si vous le voulez : Billanta n’envoie alors rien à ce client, et vous envoyez le document vous-même ou par lien. Le numéro d’entreprise, le numéro de TVA et le pays restent lisibles. Le registre ne reçoit que le numéro d’entreprise, et la réponse n’est pas stockée."
+      },
+      {
+        "title": "Montants",
+        "body": "Prix, quantités, taux de TVA, remises, totaux et paiements. Le serveur stocke des zéros à la place, donc aucune de ses sommes ne contient un vrai montant."
+      }
+    ],
+    "hiddenTitle": "Ce que le serveur ne voit pas (dans les parties activées)",
     "hidden": [
-      "Les descriptions de lignes",
-      "Le texte au-dessus et en dessous des lignes",
-      "Les notes internes",
+      "Les descriptions des lignes et les notes",
+      "Le contenu, le nom et le type des pièces jointes et des reçus",
+      "Les noms, adresses, téléphones et notes des contacts, et les e-mails si vous le choisissez",
+      "Les prix, quantités, TVA, totaux et paiements",
       "La clé et le mot de passe qui la déverrouille"
     ],
-    "visibleTitle": "Ce que le serveur voit, et pourquoi",
+    "visibleTitle": "Ce que le serveur voit toujours et pourquoi",
     "visible": [
-      "Montants et TVA – pour les calculs, les déclarations et le rapprochement des paiements",
-      "Dates d'émission et d'échéance – pour les relances",
-      "Numéro du document et référence de paiement",
-      "Le client et son e-mail – pour pouvoir envoyer le document"
+      "Le numéro du document et la référence de paiement – pour la numérotation et le rapprochement des paiements",
+      "Les dates d’émission et d’échéance – pour les relances",
+      "La devise et le statut du document",
+      "Le numéro d’entreprise, le numéro de TVA et le pays du contact – pour les registres et le contrôle de TVA",
+      "L’e-mail du contact, si vous ne le chiffrez pas – pour pouvoir envoyer le document",
+      "La taille et la date d’envoi des fichiers",
+      "Tout ce qui relève des parties que vous n’avez pas activées"
+    ],
+    "browserTitle": "Ce qui est créé dans votre navigateur",
+    "browserLead": "Les fichiers et calculs qui ont besoin des données chiffrées ne sont assemblés que par un navigateur où le mode est déverrouillé.",
+    "browser": [
+      "PDF, ISDOC, UBL et le QR code de paiement",
+      "L’export CSV des documents pour votre comptable",
+      "Déclaration de TVA, état de contrôle et état récapitulatif (pour les entreprises tchèques et slovaques)",
+      "La recherche dans les textes et contacts chiffrés",
+      "Le lien pour le client porte la clé après le signe #. Les navigateurs n’envoient jamais cette partie de l’adresse au serveur, donc seul le navigateur du client ouvre le document."
+    ],
+    "changesTitle": "Ce qui fonctionne autrement",
+    "changes": [
+      "Les relances ne contiennent que le numéro du document, l’échéance et le lien, aucune donnée chiffrée.",
+      "Un paiement avec la bonne référence vous est proposé pour rapprochement, et vous le confirmez. Le serveur ne peut pas comparer les montants.",
+      "Si vous chiffrez l’e-mail d’un contact, Billanta ne lui envoie rien. Vous envoyez le document depuis votre propre messagerie ou par lien."
     ],
     "cspTitle": "Le navigateur contrôle où la page peut envoyer des données",
     "cspBody": "L'application, les liens de documents et cette page sont servis avec un en-tête Content-Security-Policy qui contient connect-src 'self'. Le navigateur refuse alors de lui-même toute requête d'une telle page vers un autre serveur, même si un script essayait. Un texte déchiffré ne peut pas sortir par là.",
     "cspHow": "Tout le monde peut lire l'en-tête : dans les outils du navigateur (F12, onglet Réseau), cliquez sur la première requête, la page elle-même, et cherchez Content-Security-Policy dans les en-têtes de réponse.",
+    "protectTitle": "Réduire la protection demande une nouvelle vérification",
+    "protect": [
+      "Désactiver le chiffrement d’une partie, retirer une méthode de déverrouillage ou remplacer le mot de passe du coffre ou le code de récupération n’est possible qu’après une vérification récente : un code d’authentification à deux facteurs, votre mot de passe ou une passkey.",
+      "La connexion et l’authentification à deux facteurs ne déverrouillent pas le coffre. Seuls le mot de passe du coffre, une passkey ou le code de récupération ouvrent la clé.",
+      "Sur votre propre appareil, vous pouvez garder le déverrouillage en mémoire. La clé est stockée dans le navigateur de façon à ne pouvoir être ni lue ni copiée. Le bouton Verrouiller ou la déconnexion la supprime."
+    ],
     "limitsTitle": "Où sont les limites",
+    "limitsLead": "Certaines choses ne marchent pas pour les documents chiffrés, parce que le serveur devrait lire les données. D’autres limites viennent du fonctionnement du web.",
     "limits": [
+      "L’envoi via Peppol : la loi exige que le XML envoyé reste archivé lisiblement sur le serveur.",
+      "Le paiement par carte, les paiements partiels et les suggestions de l’IA avec montants, pour les documents aux montants chiffrés.",
+      "Certains exports créés par le serveur (par exemple Pohoda et Money S3) : ils ne contiennent pas les données chiffrées et refusent les documents aux montants chiffrés.",
+      "L’IA ne reçoit un texte ou un reçu chiffré qu’après votre confirmation explicite. Il passe une fois par le serveur et n’est pas stocké.",
       "Notre serveur fournit le code de l'application. S'il était compromis, il pourrait fournir un autre code. Publier le code et les empreintes permet de détecter un tel changement, mais ne l'empêche pas à lui seul.",
-      "Quand vous envoyez par e-mail un document chiffré avec son PDF, ses textes passent une fois par le serveur, car c'est de là que part l'e-mail. L'application vous le dit avant, et le serveur ne les conserve pas et ne les journalise pas. Si vous n'envoyez que le lien, le serveur ne reçoit jamais les textes.",
-      "Le mode ne chiffre ni les montants, ni les dates, ni les numéros, ni les clients, voir plus haut.",
-      "Pour les documents chiffrés, le serveur ne crée ni ISDOC ni autre format lisible par machine.",
+      "Quand vous envoyez un document chiffré par e-mail avec son PDF, le fichier passe une fois par le serveur, car c’est de là que part l’e-mail. L’application vous prévient avant, et le serveur ne le stocke pas et ne le journalise pas. Si vous envoyez seulement le lien, le serveur ne reçoit jamais les données chiffrées.",
       "La règle connect-src s'applique à une page chargée directement. Si vous passez du site public à l'application sans rechargement, la règle de la page précédente s'applique jusqu'au rechargement.",
-      "Toute personne ayant accès à votre navigateur déverrouillé voit les textes. Le mode protège contre le serveur, pas contre quelqu'un devant votre ordinateur.",
-      "Si vous oubliez à la fois le mot de passe et le code de récupération et n'avez pas de passkey, personne ne peut récupérer les textes, pas même nous."
+      "Toute personne ayant accès à votre navigateur déverrouillé voit les données. Le mode protège contre le serveur, pas contre quelqu’un devant votre ordinateur.",
+      "Si vous oubliez le mot de passe et le code de récupération et n’avez pas de passkey, personne ne peut récupérer les données chiffrées, pas même nous."
     ],
     "verifyTitle": "Vérification du code",
     "verifyLead": "À chaque build, nous écrivons les empreintes SHA-256 du code de chiffrement dans un fichier public. Votre navigateur peut les recalculer ici même.",
     "planned": [
-      "Nous publierons le code de chiffrement (un seul fichier sans dépendances) dans un dépôt GitHub dédié, pour comparer les empreintes avec votre propre build.",
-      "Une revue indépendante du code est prévue."
+      "Nous publierons le code de chiffrement (un seul fichier sans dépendances) dans un dépôt GitHub dédié, pour comparer les empreintes avec votre propre build."
     ]
   },
   "stepUp": {

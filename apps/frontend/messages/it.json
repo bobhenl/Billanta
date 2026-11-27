@@ -1807,7 +1807,7 @@
         },
         "confidential": {
           "title": "Modalità riservata",
-          "description": "Cifra i testi dei documenti nel browser"
+          "description": "Cifra documenti, allegati, contatti e importi nel browser"
         }
       },
       "managedByAdmins": "I dati aziendali, il team, l'abbonamento e le altre impostazioni dell'azienda sono gestiti dal proprietario o da un amministratore."
@@ -14564,7 +14564,7 @@
     },
     "settings": {
       "title": "Modalità riservata",
-      "description": "Cifra i testi dei documenti nel tuo browser.",
+      "description": "Cifra documenti, allegati, contatti e importi nel tuo browser.",
       "loadError": "Impossibile caricare le impostazioni.",
       "failed": "Non ha funzionato. Riprova.",
       "onTitle": "La Modalità riservata è attiva",
@@ -14850,11 +14850,11 @@
   "securityPage": {
     "seoTitle": "Modalità riservata: cosa vede il server e cosa no",
     "eyebrow": "Sicurezza",
-    "title": "Modalità riservata: testi dei documenti che il server non può leggere",
-    "lead": "Le descrizioni delle righe e le note vengono cifrate nel tuo browser. Il server riceve solo una stringa cifrata e non ne ha la chiave. Qui puoi provarlo e verificarlo tu.",
+    "title": "Modalità riservata: dati dei documenti che il server non legge",
+    "lead": "Puoi cifrare i testi dei documenti, gli allegati, i contatti e gli importi direttamente nel tuo browser, ogni parte separatamente. Il server riceve solo dati cifrati e non ne ha la chiave. Qui puoi provarlo e verificarlo tu.",
     "featuresLink": "Tutte le funzioni",
     "demoTitle": "Provalo",
-    "demoLead": "Senza accesso. La pagina cifra la tua frase con lo stesso codice dell'app e la invia davvero al server. Vedi affiancati cosa hai scritto, cosa è partito e cosa ha ricevuto il server.",
+    "demoLead": "Senza accesso. La pagina cifra la tua frase con lo stesso codice dell’app e la invia davvero al server. Vedi affiancati ciò che hai scritto, ciò che è partito e ciò che ha ricevuto il server. L’app cifra contatti e importi allo stesso modo.",
     "howTitle": "Come funziona",
     "howSteps": [
       {
@@ -14862,46 +14862,93 @@
         "body": "Quando attivi la modalità, il browser crea una chiave AES-256 casuale. Il server ne riceve solo copie chiuse con la tua password, passkey o codice di recupero."
       },
       {
-        "title": "Cifrato prima dell'invio",
-        "body": "Una descrizione o una nota viene cifrata prima di lasciare il browser. Il server salva una stringa enc:v1:… e non ci fa nulla."
+        "title": "Cifrato prima dell’invio",
+        "body": "Un testo, un contatto o un importo viene cifrato prima di lasciare il browser. Ogni allegato riceve una propria chiave. Il server salva solo una stringa cifrata (enc:v1:…) e non ci fa nulla."
       },
       {
         "title": "Decifrato solo da te",
         "body": "Dopo lo sblocco, il browser tiene la chiave in modo che la pagina possa usarla ma non leggerne il contenuto."
       }
     ],
-    "hiddenTitle": "Cosa il server non vede",
+    "categoriesTitle": "Cosa puoi cifrare",
+    "categoriesLead": "Le quattro parti si attivano separatamente nelle impostazioni, anche in seguito. Ognuna disattiva solo le funzioni che dovrebbero leggere quei dati sul server. L’elenco esatto lo mostrano le impostazioni prima dell’attivazione.",
+    "categories": [
+      {
+        "title": "Testi e note",
+        "body": "Descrizioni delle righe, il testo sopra e sotto le righe e le note interne."
+      },
+      {
+        "title": "Allegati e ricevute",
+        "body": "File dei documenti e ricevute delle spese. Ogni file ha una propria chiave, e anche nome e tipo sono cifrati. Il server conosce solo la dimensione e la data di caricamento."
+      },
+      {
+        "title": "Contatti",
+        "body": "Nome, indirizzo, referente, telefono e nota. L’e-mail solo se vuoi: allora Billanta non invia nulla a quel cliente, e il documento lo mandi tu o tramite link. Numero d’impresa, partita IVA e paese restano leggibili. Il registro riceve solo il numero d’impresa, e la risposta non viene salvata."
+      },
+      {
+        "title": "Importi",
+        "body": "Prezzi, quantità, aliquote IVA, sconti, totali e pagamenti. Il server salva degli zeri al loro posto, quindi nessuna sua somma contiene un importo reale."
+      }
+    ],
+    "hiddenTitle": "Cosa il server non vede (nelle parti attivate)",
     "hidden": [
-      "Le descrizioni delle righe",
-      "Il testo sopra e sotto le righe",
-      "Le note interne",
+      "Le descrizioni delle righe e le note",
+      "Contenuto, nome e tipo di allegati e ricevute",
+      "Nomi, indirizzi, telefoni e note dei contatti, e le e-mail se lo scegli",
+      "Prezzi, quantità, IVA, totali e pagamenti",
       "La chiave e la password che la sblocca"
     ],
-    "visibleTitle": "Cosa il server vede e perché",
+    "visibleTitle": "Cosa il server vede sempre e perché",
     "visible": [
-      "Importi e IVA – per calcoli, dichiarazioni e abbinamento dei pagamenti",
-      "Date di emissione e scadenza – per i solleciti",
-      "Numero del documento e causale",
-      "Il cliente e la sua e-mail – per poter inviare il documento"
+      "Numero del documento e causale di pagamento – per la numerazione e l’abbinamento dei pagamenti",
+      "Date di emissione e di scadenza – per i solleciti",
+      "Valuta e stato del documento",
+      "Numero d’impresa, partita IVA e paese del contatto – per i registri e la verifica IVA",
+      "L’e-mail del contatto, se non la cifri – per poter inviare il documento",
+      "Dimensione e data di caricamento dei file",
+      "Tutto ciò che riguarda le parti che non hai attivato"
+    ],
+    "browserTitle": "Cosa nasce nel tuo browser",
+    "browserLead": "I file e i calcoli che hanno bisogno dei dati cifrati li compone solo un browser con la modalità sbloccata.",
+    "browser": [
+      "PDF, ISDOC, UBL e il codice QR di pagamento",
+      "L’esportazione CSV dei documenti per il commercialista",
+      "Dichiarazione IVA, comunicazione di controllo ed elenco riepilogativo (per aziende ceche e slovacche)",
+      "La ricerca nei testi e nei contatti cifrati",
+      "Il link per il cliente porta la chiave dopo il segno #. I browser non inviano mai quella parte dell’indirizzo al server, quindi solo il browser del cliente apre il documento."
+    ],
+    "changesTitle": "Cosa funziona diversamente",
+    "changes": [
+      "I solleciti contengono solo numero del documento, scadenza e link, nessun dato cifrato.",
+      "Un pagamento con la causale giusta ti viene proposto per l’abbinamento, e tu lo confermi. Il server non può confrontare gli importi.",
+      "Se cifri l’e-mail di un contatto, Billanta non gli invia nulla. Il documento lo mandi dalla tua casella o tramite link."
     ],
     "cspTitle": "Il browser controlla dove la pagina può inviare dati",
     "cspBody": "L'app, i link ai documenti e questa pagina sono serviti con un'intestazione Content-Security-Policy che contiene connect-src 'self'. Il browser rifiuta allora da solo ogni richiesta di una tale pagina verso un altro server, anche se uno script ci provasse. Un testo decifrato non può uscire da lì.",
     "cspHow": "Chiunque può leggere l'intestazione: negli strumenti del browser (F12, scheda Rete) fai clic sulla prima richiesta, la pagina stessa, e cerca Content-Security-Policy nelle intestazioni della risposta.",
+    "protectTitle": "Ridurre la protezione richiede un’altra verifica",
+    "protect": [
+      "Disattivare la cifratura di una parte, togliere un metodo di sblocco o sostituire la password della cassaforte o il codice di recupero è possibile solo dopo una verifica recente: un codice di autenticazione a due fattori, la tua password o una passkey.",
+      "L’accesso e l’autenticazione a due fattori non sbloccano la cassaforte. Solo la password della cassaforte, una passkey o il codice di recupero aprono la chiave.",
+      "Sul tuo dispositivo puoi far ricordare lo sblocco. La chiave è salvata nel browser in modo che non si possa leggere né copiare. Il pulsante Blocca o la disconnessione la rimuovono."
+    ],
     "limitsTitle": "Dove sono i limiti",
+    "limitsLead": "Alcune cose non funzionano con i documenti cifrati, perché il server dovrebbe leggere i dati. Altri limiti dipendono da come funziona il web.",
     "limits": [
+      "Invio tramite Peppol: la legge richiede che l’XML inviato resti archiviato in forma leggibile sul server.",
+      "Pagamento con carta, pagamenti parziali e suggerimenti dell’IA con importi, per i documenti con importi cifrati.",
+      "Alcune esportazioni create dal server (per esempio Pohoda e Money S3): non contengono i dati cifrati e rifiutano i documenti con importi cifrati.",
+      "L’IA riceve un testo o una ricevuta cifrati solo dopo la tua conferma esplicita. Passa una volta dal server e non viene salvato.",
       "Il codice dell'app lo fornisce il nostro server. Se fosse compromesso, potrebbe fornire un altro codice. Pubblicare il codice e gli hash permette di accorgersi di un tale cambiamento, ma non lo impedisce da solo.",
-      "Quando invii per e-mail un documento cifrato con il PDF, i suoi testi passano una volta dal server, perché l'e-mail parte da lì. L'app te lo dice prima, e il server non li conserva e non li registra nei log. Se invii solo il link, il server non riceve mai i testi.",
-      "La modalità non cifra importi, date, numeri né clienti, vedi sopra.",
-      "Per i documenti cifrati il server non crea ISDOC né altri formati leggibili da macchina.",
+      "Quando invii un documento cifrato via e-mail con il PDF, il file passa una volta dal server, perché l’e-mail parte da lì. L’app te lo dice prima, e il server non lo salva né lo registra nei log. Se invii solo il link, il server non riceve mai i dati cifrati.",
       "La regola connect-src vale per una pagina caricata direttamente. Se passi dal sito pubblico all'app senza ricaricare, vale la regola della pagina precedente finché non ricarichi.",
-      "Chi ha accesso al tuo browser sbloccato vede i testi. La modalità protegge dal server, non da qualcuno davanti al tuo computer.",
-      "Se dimentichi sia la password sia il codice di recupero e non hai una passkey, nessuno può recuperare i testi, nemmeno noi."
+      "Chi ha accesso al tuo browser sbloccato vede i dati. La modalità protegge dal server, non da qualcuno davanti al tuo computer.",
+      "Se dimentichi sia la password sia il codice di recupero e non hai una passkey, nessuno può recuperare i dati cifrati, nemmeno noi."
     ],
     "verifyTitle": "Verifica del codice",
     "verifyLead": "A ogni build scriviamo gli hash SHA-256 del codice di cifratura in un file pubblico. Il tuo browser può ricalcolarli proprio qui.",
     "planned": [
-      "Pubblicheremo il codice di cifratura (un solo file senza dipendenze) in un repository GitHub dedicato, per confrontare gli hash con un tuo build.",
-      "È prevista una revisione indipendente del codice."
+      "Pubblicheremo il codice di cifratura (un solo file senza dipendenze) in un repository GitHub dedicato, per confrontare gli hash con un tuo build."
     ]
   },
   "stepUp": {

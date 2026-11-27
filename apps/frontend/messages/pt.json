@@ -1807,7 +1807,7 @@
         },
         "confidential": {
           "title": "Modo confidencial",
-          "description": "Cifrar os textos dos documentos no navegador"
+          "description": "Cifrar documentos, anexos, contactos e valores no navegador"
         }
       },
       "managedByAdmins": "Os dados da empresa, a equipa, a subscrição e outras definições da empresa são geridos pelo proprietário ou por um administrador."
@@ -14564,7 +14564,7 @@
     },
     "settings": {
       "title": "Modo confidencial",
-      "description": "Cifrar os textos dos documentos no seu navegador.",
+      "description": "Cifrar documentos, anexos, contactos e valores no seu navegador.",
       "loadError": "Não foi possível carregar as definições.",
       "failed": "Não funcionou. Tente novamente.",
       "onTitle": "O Modo confidencial está ativo",
@@ -14850,11 +14850,11 @@
   "securityPage": {
     "seoTitle": "Modo confidencial: o que o servidor vê e o que não vê",
     "eyebrow": "Segurança",
-    "title": "Modo confidencial: textos de documentos que o servidor não consegue ler",
-    "lead": "As descrições das linhas e as notas são cifradas no seu navegador. O servidor recebe apenas uma cadeia cifrada e não tem a chave. Aqui pode experimentar e verificar por si.",
+    "title": "Modo confidencial: dados dos documentos que o servidor não lê",
+    "lead": "Pode cifrar os textos dos documentos, os anexos, os contactos e os valores diretamente no seu navegador, cada parte separadamente. O servidor recebe apenas dados cifrados e não tem a chave. Aqui pode experimentar e verificar por si.",
     "featuresLink": "Todas as funções",
     "demoTitle": "Experimente",
-    "demoLead": "Sem iniciar sessão. A página cifra a sua frase com o mesmo código da aplicação e envia-a mesmo para o servidor. Vê lado a lado o que escreveu, o que saiu e o que o servidor recebeu.",
+    "demoLead": "Sem iniciar sessão. A página cifra a sua frase com o mesmo código da aplicação e envia-a mesmo para o servidor. Vê lado a lado o que escreveu, o que saiu e o que o servidor recebeu. A aplicação cifra os contactos e os valores da mesma forma.",
     "howTitle": "Como funciona",
     "howSteps": [
       {
@@ -14862,46 +14862,93 @@
         "body": "Ao ativar o modo, o navegador cria uma chave AES-256 aleatória. O servidor só recebe cópias fechadas com a sua palavra-passe, passkey ou código de recuperação."
       },
       {
-        "title": "Cifrado antes do envio",
-        "body": "Uma descrição ou nota é cifrada antes de sair do navegador. O servidor guarda uma cadeia enc:v1:… e não faz nada com ela."
+        "title": "Cifrado antes de ser enviado",
+        "body": "Um texto, um contacto ou um valor é cifrado antes de sair do navegador. Cada anexo recebe a sua própria chave. O servidor guarda apenas uma cadeia cifrada (enc:v1:…) e não faz nada com ela."
       },
       {
         "title": "Decifrado só do seu lado",
         "body": "Depois de desbloquear, o navegador guarda a chave de forma que a página a pode usar, mas não ler o seu conteúdo."
       }
     ],
-    "hiddenTitle": "O que o servidor não vê",
+    "categoriesTitle": "O que pode cifrar",
+    "categoriesLead": "Ativa as quatro partes separadamente nas definições, também mais tarde. Cada uma desliga apenas as funções que teriam de ler esses dados no servidor. As definições mostram a lista exata antes de ativar.",
+    "categories": [
+      {
+        "title": "Textos e notas",
+        "body": "Descrições das linhas, o texto acima e abaixo das linhas e as notas internas."
+      },
+      {
+        "title": "Anexos e recibos",
+        "body": "Ficheiros dos documentos e recibos das despesas. Cada ficheiro tem a sua própria chave, e o nome e o tipo também são cifrados. O servidor conhece apenas o tamanho e a data de carregamento."
+      },
+      {
+        "title": "Contactos",
+        "body": "Nome, morada, pessoa de contacto, telefone e nota. O e-mail só se quiser: nesse caso a Billanta não envia nada a esse cliente, e o documento é enviado por si ou por link. O número de empresa, o NIF e o país continuam legíveis. O registo recebe apenas o número de empresa, e a resposta não é guardada."
+      },
+      {
+        "title": "Valores",
+        "body": "Preços, quantidades, taxas de IVA, descontos, totais e pagamentos. O servidor guarda zeros no lugar deles, por isso nenhuma das suas somas contém um valor real."
+      }
+    ],
+    "hiddenTitle": "O que o servidor não vê (nas partes ativadas)",
     "hidden": [
-      "As descrições das linhas",
-      "O texto acima e abaixo das linhas",
-      "As notas internas",
+      "As descrições das linhas e as notas",
+      "O conteúdo, o nome e o tipo dos anexos e recibos",
+      "Nomes, moradas, telefones e notas dos contactos, e os e-mails se escolher",
+      "Preços, quantidades, IVA, totais e pagamentos",
       "A chave e a palavra-passe que a desbloqueia"
     ],
-    "visibleTitle": "O que o servidor vê e porquê",
+    "visibleTitle": "O que o servidor vê sempre e porquê",
     "visible": [
-      "Valores e IVA – para cálculos, declarações e conciliação de pagamentos",
-      "Datas de emissão e vencimento – para lembretes",
-      "Número do documento e referência de pagamento",
-      "O cliente e o seu e-mail – para o documento poder ser enviado"
+      "Número do documento e referência de pagamento – para a numeração e a correspondência de pagamentos",
+      "Datas de emissão e de vencimento – para os lembretes",
+      "A moeda e o estado do documento",
+      "Número de empresa, NIF e país do contacto – para os registos e a verificação do IVA",
+      "O e-mail do contacto, se não o cifrar – para o documento poder ser enviado",
+      "Tamanho e data de carregamento dos ficheiros",
+      "Tudo o que pertence às partes que não ativou"
+    ],
+    "browserTitle": "O que é criado no seu navegador",
+    "browserLead": "Os ficheiros e cálculos que precisam dos dados cifrados só são montados por um navegador com o modo desbloqueado.",
+    "browser": [
+      "PDF, ISDOC, UBL e o código QR de pagamento",
+      "A exportação CSV dos documentos para o contabilista",
+      "Declaração de IVA, declaração de controlo e declaração recapitulativa (para empresas checas e eslovacas)",
+      "A pesquisa nos textos e contactos cifrados",
+      "O link para o cliente leva a chave depois do sinal #. Os navegadores nunca enviam essa parte do endereço ao servidor, por isso só o navegador do cliente abre o documento."
+    ],
+    "changesTitle": "O que funciona de outra forma",
+    "changes": [
+      "Os lembretes contêm apenas o número do documento, o vencimento e o link, nenhum dado cifrado.",
+      "Um pagamento com a referência certa é-lhe proposto para correspondência, e confirma-o. O servidor não consegue comparar valores.",
+      "Se cifrar o e-mail de um contacto, a Billanta não lhe envia nada. O documento é enviado a partir do seu próprio e-mail ou por link."
     ],
     "cspTitle": "O navegador controla para onde a página pode enviar dados",
     "cspBody": "A aplicação, os links de documentos e esta página são servidos com um cabeçalho Content-Security-Policy que contém connect-src 'self'. O navegador recusa então por si qualquer pedido dessa página para outro servidor, mesmo que um script tente. Um texto decifrado não pode sair por aí.",
     "cspHow": "Qualquer pessoa pode ler o cabeçalho: nas ferramentas do navegador (F12, separador Rede) clique no primeiro pedido, a própria página, e procure Content-Security-Policy nos cabeçalhos da resposta.",
+    "protectTitle": "Reduzir a proteção pede outra verificação",
+    "protect": [
+      "Desligar a cifragem de uma parte, remover um método de desbloqueio ou substituir a palavra-passe do cofre ou o código de recuperação só é possível após uma verificação recente: um código de autenticação de dois fatores, a sua palavra-passe ou uma passkey.",
+      "Iniciar sessão ou a autenticação de dois fatores não desbloqueiam o cofre. Só a palavra-passe do cofre, uma passkey ou o código de recuperação abrem a chave.",
+      "No seu próprio dispositivo pode manter o desbloqueio memorizado. A chave fica guardada no navegador de forma a não poder ser lida nem copiada. O botão Bloquear ou terminar sessão remove-a."
+    ],
     "limitsTitle": "Onde estão os limites",
+    "limitsLead": "Algumas coisas não funcionam com documentos cifrados, porque o servidor teria de ler os dados. Outros limites vêm da forma como a web funciona.",
     "limits": [
+      "Envio por Peppol: a lei exige que o XML enviado fique arquivado de forma legível no servidor.",
+      "Pagamento com cartão, pagamentos parciais e sugestões de IA com valores, em documentos com valores cifrados.",
+      "Algumas exportações criadas pelo servidor (por exemplo Pohoda e Money S3): não contêm os dados cifrados e recusam documentos com valores cifrados.",
+      "A IA só recebe um texto ou recibo cifrado depois da sua confirmação expressa. Passa uma vez pelo servidor e não é guardado.",
       "O código da aplicação é entregue pelo nosso servidor. Se fosse comprometido, poderia entregar outro código. Publicar o código e os hashes permite detetar essa mudança, mas não a impede por si só.",
-      "Quando envia por e-mail um documento cifrado com o PDF, os seus textos passam uma vez pelo servidor, porque o e-mail sai de lá. A aplicação avisa antes, e o servidor não os guarda nem os regista em logs. Se enviar só o link, o servidor nunca recebe os textos.",
-      "O modo não cifra valores, datas, números nem clientes, ver acima.",
-      "Para documentos cifrados o servidor não cria ISDOC nem outros formatos legíveis por máquina.",
+      "Quando envia um documento cifrado por e-mail com o PDF, o ficheiro passa uma vez pelo servidor, porque o e-mail sai de lá. A aplicação avisa antes, e o servidor não o guarda nem o regista. Se enviar apenas o link, o servidor nunca recebe os dados cifrados.",
       "A regra connect-src aplica-se a uma página carregada diretamente. Se passar do site público para a aplicação sem recarregar, vale a regra da página anterior até recarregar.",
-      "Quem tiver acesso ao seu navegador desbloqueado vê os textos. O modo protege do servidor, não de alguém ao seu computador.",
-      "Se esquecer a palavra-passe e o código de recuperação e não tiver passkey, ninguém consegue recuperar os textos, nem nós."
+      "Quem tiver acesso ao seu navegador desbloqueado vê os dados. O modo protege contra o servidor, não contra alguém ao seu computador.",
+      "Se esquecer a palavra-passe e o código de recuperação e não tiver passkey, ninguém consegue recuperar os dados cifrados, nem nós."
     ],
     "verifyTitle": "Verificação do código",
     "verifyLead": "Em cada build escrevemos os hashes SHA-256 do código de cifragem num ficheiro público. O seu navegador pode recalculá-los aqui mesmo.",
     "planned": [
-      "Vamos publicar o código de cifragem (um único ficheiro sem dependências) num repositório próprio no GitHub, para comparar os hashes com um build seu.",
-      "Está prevista uma revisão independente do código."
+      "Vamos publicar o código de cifragem (um único ficheiro sem dependências) num repositório próprio no GitHub, para comparar os hashes com um build seu."
     ]
   },
   "stepUp": {

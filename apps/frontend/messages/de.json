@@ -1807,7 +1807,7 @@
         },
         "confidential": {
           "title": "Vertraulicher Modus",
-          "description": "Belegtexte im Browser verschlüsseln"
+          "description": "Belege, Anhänge, Kontakte und Beträge im Browser verschlüsseln"
         }
       },
       "managedByAdmins": "Unternehmensdaten, Team, Abonnement und weitere Unternehmenseinstellungen verwaltet der Inhaber oder ein Administrator."
@@ -14565,7 +14565,7 @@
     },
     "settings": {
       "title": "Vertraulicher Modus",
-      "description": "Belegtexte in Ihrem Browser verschlüsseln.",
+      "description": "Belege, Anhänge, Kontakte und Beträge in Ihrem Browser verschlüsseln.",
       "loadError": "Die Einstellungen konnten nicht geladen werden.",
       "failed": "Das hat nicht geklappt. Bitte erneut versuchen.",
       "onTitle": "Der Vertrauliche Modus ist an",
@@ -14851,11 +14851,11 @@
   "securityPage": {
     "seoTitle": "Vertraulicher Modus: was der Server sieht und was nicht",
     "eyebrow": "Sicherheit",
-    "title": "Vertraulicher Modus: Dokumenttexte, die der Server nicht lesen kann",
-    "lead": "Positionsbeschreibungen und Notizen werden in Ihrem Browser verschlüsselt. Der Server bekommt nur eine verschlüsselte Zeichenkette und hat keinen Schlüssel dafür. Hier können Sie es selbst ausprobieren und prüfen.",
+    "title": "Vertraulicher Modus: Belegdaten, die der Server nicht lesen kann",
+    "lead": "Belegtexte, Anhänge, Kontakte und Beträge können Sie direkt in Ihrem Browser verschlüsseln, jeden Teil einzeln. Der Server erhält nur verschlüsselte Daten und hat keinen Schlüssel dafür. Hier können Sie es selbst ausprobieren und prüfen.",
     "featuresLink": "Alle Funktionen",
     "demoTitle": "Probieren Sie es aus",
-    "demoLead": "Ohne Anmeldung. Die Seite verschlüsselt Ihren Satz mit demselben Code wie die App und sendet ihn wirklich an den Server. Nebeneinander sehen Sie, was Sie geschrieben haben, was gesendet wurde und was der Server bekam.",
+    "demoLead": "Ohne Anmeldung. Die Seite verschlüsselt Ihren Satz mit demselben Code wie die App und sendet ihn wirklich an den Server. Sie sehen nebeneinander, was Sie eingegeben haben, was gesendet wurde und was der Server erhalten hat. Kontakte und Beträge verschlüsselt die App genauso.",
     "howTitle": "So funktioniert es",
     "howSteps": [
       {
@@ -14864,45 +14864,92 @@
       },
       {
         "title": "Verschlüsselt vor dem Senden",
-        "body": "Eine Positionsbeschreibung oder Notiz wird verschlüsselt, bevor sie den Browser verlässt. Der Server speichert eine Zeichenkette enc:v1:… und macht nichts damit."
+        "body": "Ein Text, ein Kontakt oder ein Betrag wird verschlüsselt, bevor er den Browser verlässt. Jeder Anhang bekommt einen eigenen Schlüssel. Der Server speichert nur eine verschlüsselte Zeichenkette (enc:v1:…) und macht nichts damit."
       },
       {
         "title": "Entschlüsselt nur bei Ihnen",
         "body": "Nach dem Entsperren hält der Browser den Schlüssel so, dass die Seite ihn nutzen, aber seinen Inhalt nicht lesen kann."
       }
     ],
-    "hiddenTitle": "Was der Server nicht sieht",
+    "categoriesTitle": "Was Sie verschlüsseln können",
+    "categoriesLead": "Die vier Teile schalten Sie in den Einstellungen einzeln ein, auch später. Jeder schaltet nur die Funktionen ab, die diese Daten auf dem Server lesen müssten. Die genaue Liste zeigen die Einstellungen vor dem Einschalten.",
+    "categories": [
+      {
+        "title": "Texte und Notizen",
+        "body": "Positionsbeschreibungen, der Text über und unter den Positionen und interne Notizen."
+      },
+      {
+        "title": "Anhänge und Quittungen",
+        "body": "Dateien an Belegen und Quittungen an Ausgaben. Jede Datei hat einen eigenen Schlüssel, auch Name und Typ sind verschlüsselt. Der Server kennt nur Größe und Upload-Datum."
+      },
+      {
+        "title": "Kontakte",
+        "body": "Name, Adresse, Ansprechpartner, Telefon und Notiz. Die E-Mail nur, wenn Sie wollen: Billanta schickt diesem Kunden dann nichts, und Sie senden den Beleg selbst oder per Link. Firmennummer, USt-IdNr. und Land bleiben lesbar. Das Handelsregister erhält nur die Firmennummer, die Antwort wird nicht gespeichert."
+      },
+      {
+        "title": "Beträge",
+        "body": "Preise, Mengen, MwSt.-Sätze, Rabatte, Summen und Zahlungen. Der Server speichert stattdessen Nullen, keine seiner Summen enthält also einen echten Betrag."
+      }
+    ],
+    "hiddenTitle": "Was der Server nicht sieht (in den eingeschalteten Teilen)",
     "hidden": [
-      "Positionsbeschreibungen",
-      "Text über und unter den Positionen",
-      "Interne Notizen",
+      "Positionsbeschreibungen und Notizen",
+      "Inhalt, Namen und Typen von Anhängen und Quittungen",
+      "Namen, Adressen, Telefonnummern und Notizen von Kontakten, auf Wunsch auch E-Mails",
+      "Preise, Mengen, MwSt., Summen und Zahlungen",
       "Den Schlüssel und das Passwort, das ihn entsperrt"
     ],
-    "visibleTitle": "Was der Server sieht und warum",
+    "visibleTitle": "Was der Server immer sieht und warum",
     "visible": [
-      "Beträge und MwSt. – für Berechnungen, Steuererklärungen und Zahlungsabgleich",
+      "Belegnummer und Verwendungszweck – für die Nummerierung und den Zahlungsabgleich",
       "Ausstellungs- und Fälligkeitsdatum – für Mahnungen",
-      "Dokumentnummer und Verwendungszweck",
-      "Den Kunden und seine E-Mail – damit das Dokument versendet werden kann"
+      "Währung und Status des Belegs",
+      "Firmennummer, USt-IdNr. und Land des Kontakts – für Register und MwSt.-Prüfung",
+      "Die E-Mail des Kontakts, wenn Sie sie nicht verschlüsseln – damit der Beleg versendet werden kann",
+      "Größe und Upload-Datum von Dateien",
+      "Alles aus den Teilen, die Sie nicht eingeschaltet haben"
+    ],
+    "browserTitle": "Was in Ihrem Browser entsteht",
+    "browserLead": "Dateien und Berechnungen, die die verschlüsselten Daten brauchen, stellt erst ein Browser mit entsperrtem Modus zusammen.",
+    "browser": [
+      "PDF, ISDOC, UBL und der QR-Code für die Zahlung",
+      "Der CSV-Export der Belege für die Buchhaltung",
+      "Umsatzsteuererklärung, Kontrollmeldung und Zusammenfassende Meldung (für Firmen in Tschechien und der Slowakei)",
+      "Die Suche in verschlüsselten Texten und Kontakten",
+      "Der Link für den Kunden trägt den Schlüssel nach dem Zeichen #. Diesen Teil der Adresse senden Browser nie an den Server, den Beleg öffnet also erst der Browser des Kunden."
+    ],
+    "changesTitle": "Was anders funktioniert",
+    "changes": [
+      "Mahnungen enthalten nur Belegnummer, Fälligkeit und Link, keine verschlüsselten Daten.",
+      "Eine Zahlung mit passendem Verwendungszweck wird zum Abgleich angeboten, und Sie bestätigen sie. Beträge kann der Server nicht vergleichen.",
+      "Wenn Sie die E-Mail eines Kontakts verschlüsseln, schickt Billanta ihm nichts. Sie senden den Beleg aus Ihrem eigenen Postfach oder per Link."
     ],
     "cspTitle": "Der Browser kontrolliert, wohin die Seite Daten senden darf",
     "cspBody": "Die App, Dokumentlinks und diese Seite werden mit einem Content-Security-Policy-Header ausgeliefert, der connect-src 'self' enthält. Der Browser lehnt dann selbst jede Anfrage einer solchen Seite an einen anderen Server ab, auch wenn ein Skript es versucht. Entschlüsselter Text kann auf diesem Weg nicht hinaus.",
     "cspHow": "Jeder kann den Header lesen: Klicken Sie in den Browser-Werkzeugen (F12, Tab Netzwerk) auf die erste Anfrage, die Seite selbst, und suchen Sie in den Antwort-Headern Content-Security-Policy.",
+    "protectTitle": "Weniger Schutz braucht eine weitere Bestätigung",
+    "protect": [
+      "Die Verschlüsselung eines Teils abschalten, eine Entsperrmethode entfernen oder das Tresorpasswort bzw. den Wiederherstellungscode ersetzen geht nur nach einer frischen Bestätigung: mit einem Code der Zwei-Faktor-Authentifizierung, Ihrem Passwort oder einem Passkey.",
+      "Anmeldung und Zwei-Faktor-Authentifizierung entsperren den Tresor nicht. Den Schlüssel öffnen nur das Tresorpasswort, ein Passkey oder der Wiederherstellungscode.",
+      "Auf Ihrem eigenen Gerät können Sie die Entsperrung merken lassen. Der Schlüssel liegt so im Browser, dass er sich weder lesen noch kopieren lässt. Die Schaltfläche Sperren oder das Abmelden entfernt ihn."
+    ],
     "limitsTitle": "Wo die Grenzen liegen",
+    "limitsLead": "Manches geht bei verschlüsselten Belegen nicht, weil der Server die Daten lesen müsste. Weitere Grenzen ergeben sich daraus, wie das Web funktioniert.",
     "limits": [
+      "Versand über Peppol: Das Gesetz verlangt, dass das gesendete XML lesbar auf dem Server archiviert bleibt.",
+      "Kartenzahlung, Teilzahlungen und KI-Vorschläge mit Beträgen bei Belegen mit verschlüsselten Beträgen.",
+      "Einige Exporte, die der Server erstellt (zum Beispiel Pohoda und Money S3): Sie enthalten keine verschlüsselten Daten und lehnen Belege mit verschlüsselten Beträgen ab.",
+      "Die KI erhält einen verschlüsselten Text oder eine Quittung nur nach Ihrer ausdrücklichen Bestätigung. Er geht einmal über den Server und wird nicht gespeichert.",
       "Den Code der App liefert unser Server. Wäre er kompromittiert, könnte er anderen Code liefern. Die Veröffentlichung von Code und Hashes macht eine solche Änderung erkennbar, verhindert sie aber nicht von selbst.",
-      "Wenn Sie ein verschlüsseltes Dokument mit PDF per E-Mail senden, gehen seine Texte einmal über den Server, weil die E-Mail von dort verschickt wird. Die App sagt es vorher, und der Server speichert und protokolliert sie nicht. Senden Sie nur den Link, bekommt der Server die Texte nie.",
-      "Beträge, Daten, Nummern und Kunden verschlüsselt der Modus nicht, siehe oben.",
-      "Für verschlüsselte Dokumente erstellt der Server kein ISDOC und keine anderen maschinenlesbaren Formate.",
+      "Wenn Sie einen verschlüsselten Beleg per E-Mail mit PDF senden, geht die Datei einmal über den Server, weil die E-Mail von dort verschickt wird. Die App sagt es vorher, und der Server speichert oder protokolliert sie nicht. Senden Sie nur den Link, erhält der Server die verschlüsselten Daten gar nicht.",
       "Die Regel connect-src gilt für eine direkt geladene Seite. Wechseln Sie ohne Neuladen von der öffentlichen Website in die App, gilt bis zum Neuladen die Regel der vorherigen Seite.",
-      "Wer Zugang zu Ihrem entsperrten Browser hat, sieht die Texte. Der Modus schützt vor dem Server, nicht vor jemandem an Ihrem Computer.",
-      "Wenn Sie Passwort und Wiederherstellungscode vergessen und keinen Passkey haben, kann niemand die Texte wiederherstellen, auch wir nicht."
+      "Wer Zugriff auf Ihren entsperrten Browser hat, sieht die Daten. Der Modus schützt vor dem Server, nicht vor jemandem an Ihrem Computer.",
+      "Wenn Sie Passwort und Wiederherstellungscode vergessen und keinen Passkey haben, kann niemand die verschlüsselten Daten wiederherstellen, auch wir nicht."
     ],
     "verifyTitle": "Code-Prüfung",
     "verifyLead": "Bei jedem Build schreiben wir die SHA-256-Hashes des Verschlüsselungscodes in eine öffentliche Datei. Ihr Browser kann sie hier nachrechnen.",
     "planned": [
-      "Den Verschlüsselungscode (eine Datei ohne Abhängigkeiten) veröffentlichen wir in einem eigenen GitHub-Repository, damit sich die Hashes mit einem eigenen Build vergleichen lassen.",
-      "Eine unabhängige Prüfung des Codes ist geplant."
+      "Den Verschlüsselungscode (eine Datei ohne Abhängigkeiten) veröffentlichen wir in einem eigenen GitHub-Repository, damit sich die Hashes mit einem eigenen Build vergleichen lassen."
     ]
   },
   "stepUp": {
