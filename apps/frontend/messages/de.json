@@ -841,6 +841,7 @@
       "vatBreakdown": "Netto {base} + USt. {vat}",
       "reverseChargeLabel": "Reverse-Charge (§ 92a)",
       "reverseChargeHint": "Der Lieferant hat ohne USt. fakturiert, und Sie führen die Steuer selbst ab. Geben Sie den Nettobetrag ein; die USt. wird in der Erklärung zugleich geschuldet und als Vorsteuer abgezogen (Zeilen 10/11 und 43/44), und der Beleg erscheint in Abschnitt B.1 der Kontrollmeldung.",
+      "reverseChargeHintIdentified": "Geben Sie den Nettobetrag ein. Die USt. von {rate} % melden Sie in der Umsatzsteuererklärung für den Monat des Belegs und zahlen sie bis zum 25. des Folgemonats. Als identifizierte Person können Sie sie nicht als Vorsteuer abziehen.",
       "amountLabelReverseCharge": "Betrag netto",
       "vatBreakdownReverseCharge": "Netto {base}, selbst abzuführende USt. {vat}",
       "reverseChargeRequiredHint": "Abschnitt B.1 erfordert die USt-IdNr. des Lieferanten und die Belegnummer.",

@@ -101,7 +101,22 @@ const KH_THRESHOLD = 10_000;
 
 export const xmlAttr = (v: string) =>
   v.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[c]!);
-const int = (n: number) => String(Math.round(n));
+// Sums are taken to haléře first (§ 146 odst. 3 DŘ counts to two decimals),
+// so float noise such as 30.000000004 does not add a crown when rounding up.
+const haler = (n: number) => Math.round(n * 100) / 100;
+// `+ 0` turns -0 into 0, so a credit note that cancels out prints "0".
+/** Mathematical rounding to whole Kč, halves away from zero (bases, deductions). */
+export const roundKc = (n: number) => Math.sign(n) * Math.round(Math.abs(haler(n))) + 0;
+/**
+ * Tax to whole Kč upward: "Daň se zaokrouhluje na celé koruny nahoru"
+ * (§ 146 odst. 1 zák. 280/2009 Sb.). Up means toward +∞, so a negative
+ * line from credit notes never states less tax than owed.
+ */
+export const taxKc = (n: number) => Math.ceil(haler(n)) + 0;
+const int = (n: number) => String(roundKc(n));
+const upKc = (n: number) => String(taxKc(n));
+/** KH may carry haléře (pokyny 25 5564/1, "včetně haléřové položky"), so it keeps document values. */
+const kc2 = (n: number) => String(haler(n) + 0);
 export const czDate = (d: Date) =>
   `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`;
 /** DIČ without the country prefix, as EPO wants it. */
@@ -227,17 +242,24 @@ export function generateDphDp3(input: {
     odp5 += b.vat2;
   }
 
-  // Totals from the rounded line values, as EPO re-checks them: ř. 62 sums
-  // ř. 1–13, ř. 46 (and with it ř. 63) sums ř. 40–45.
-  const danZocelk = Math.round(dan23) + Math.round(dan5) + Math.round(danRpren23) + Math.round(danRpren5);
-  const odpSumNar = Math.round(odp23) + Math.round(odp5) + Math.round(danRpren23) + Math.round(danRpren5);
+  // The form wants whole koruny without a direction. Tax lines (ř. 1, 2,
+  // 10, 11) round up by § 146 odst. 1 DŘ. Bases and deductions (ř. 40–46)
+  // round mathematically: § 146 speaks of the tax, and neither ZDPH nor the
+  // pokyny 25 5412 say how to round odpočet. So ř. 10 and ř. 43 can differ
+  // by a crown for the same reverse-charge invoice.
+  // Totals sum the rounded lines, as EPO re-checks them: ř. 62 sums ř. 1–13,
+  // ř. 46 (and with it ř. 63) sums ř. 40–45, ř. 64/65 is their difference.
+  const danZocelk = taxKc(dan23) + taxKc(dan5) + taxKc(danRpren23) + taxKc(danRpren5);
+  const odpSumNar = roundKc(odp23) + roundKc(odp5) + roundKc(danRpren23) + roundKc(danRpren5);
   const odpZocelk = odpSumNar;
   const diff = danZocelk - odpZocelk;
 
+  const TAX_LINES = new Set(["dan23", "dan5", "dan_rpren23", "dan_rpren5"]);
   const attrs = (pairs: [string, number][]) =>
     pairs
-      .filter(([, v]) => Math.round(v) !== 0)
-      .map(([k, v]) => `${k}="${int(v)}"`)
+      .map(([k, v]) => [k, TAX_LINES.has(k) ? upKc(v) : int(v)] as const)
+      .filter(([, v]) => v !== "0")
+      .map(([k, v]) => `${k}="${v}"`)
       .join(" ");
   const veta = (name: string, pairs: [string, number][]) => {
     const a = attrs(pairs);
@@ -328,7 +350,9 @@ export function generateDphDp3Identified(input: {
   let plnSluzby = 0;
   for (const doc of input.issued) if (classifyIssued(doc) === "eu") plnSluzby += baseOf(doc.parts);
 
-  const nonZero = (pairs: [string, number][]) => pairs.filter(([, v]) => Math.round(v) !== 0);
+  // Tax lines (dan_*) round up by § 146 odst. 1 DŘ, bases mathematically.
+  const nonZero = (pairs: [string, number][]) =>
+    pairs.map(([k, v]) => [k, k.startsWith("dan_") ? upKc(v) : int(v)] as const).filter(([, v]) => v !== "0");
   const veta1 = nonZero([
     ["p_sl23_e", eu.base1],
     ["dan_psl23_e", eu.vat1],
@@ -342,9 +366,9 @@ export function generateDphDp3Identified(input: {
   const veta2 = nonZero([["pln_sluzby", plnSluzby]]);
   if (veta1.length === 0 && veta2.length === 0) return { xml: null, warnings };
   // ř. 62 sums the rounded tax lines; ř. 63 (odpočet) is always 0 here.
-  const danZocelk = [eu.vat1, eu.vat2, third.vat1, third.vat2].reduce((s, v) => s + Math.round(v), 0);
-  const line = (name: string, pairs: [string, number][]) =>
-    pairs.length ? `\n  <${name} ${pairs.map(([k, v]) => `${k}="${int(v)}"`).join(" ")} />` : "";
+  const danZocelk = [eu.vat1, eu.vat2, third.vat1, third.vat2].reduce((s, v) => s + taxKc(v), 0);
+  const line = (name: string, pairs: (readonly [string, string])[]) =>
+    pairs.length ? `\n  <${name} ${pairs.map(([k, v]) => `${k}="${v}"`).join(" ")} />` : "";
 
   const xml = `${header("41.6.1")}
 <DPHDP3 verzePis="${VAT_FORM_VERSIONS.DPHDP3}">
@@ -364,6 +388,10 @@ export function generateDphDp3Identified(input: {
  * no threshold; the rest to B.2/B.3. VetaC rez_pren23/rez_pren5 repeat the
  * B.1 bases (DPHDP3 ř. 10/11). Source: the DPHKH1 structure description on
  * adisspr.mfcr.cz (read 2026-10-18).
+ *
+ * Amounts keep their haléře, as on the documents: the pokyny (25 5564/1)
+ * allow "v detailu (včetně haléřové položky)". Rounding each row to whole
+ * koruny would make part C drift from the rows it sums.
  */
 export function generateDphKh1(input: {
   issued: VatIssuedDoc[];
@@ -394,7 +422,7 @@ export function generateDphKh1(input: {
       if (!doc.reverseChargeCode) warnings.push({ code: "reverse_charge_code_missing", document: doc.number });
       const code = doc.reverseChargeCode ? ` kod_pred_pl="${xmlAttr(doc.reverseChargeCode)}"` : "";
       a1.push(
-        `<VetaA1 c_radku="${a1.length + 1}" dic_odb="${xmlAttr(dicNumber(doc.customerDic))}" c_evid_dd="${xmlAttr(doc.number)}" duzp="${czDate(doc.taxableDate)}" zakl_dane1="${int(base)}"${code} />`,
+        `<VetaA1 c_radku="${a1.length + 1}" dic_odb="${xmlAttr(dicNumber(doc.customerDic))}" c_evid_dd="${xmlAttr(doc.number)}" duzp="${czDate(doc.taxableDate)}" zakl_dane1="${kc2(base)}"${code} />`,
       );
       continue;
     }
@@ -403,9 +431,9 @@ export function generateDphKh1(input: {
     c.obrat23 += b.base1;
     c.obrat5 += b.base2;
     const czDic = dicCountry(doc.customerDic) === "CZ" ? doc.customerDic! : null;
-    if (czDic && Math.abs(Math.round(doc.totalCzk)) > KH_THRESHOLD) {
+    if (czDic && Math.abs(haler(doc.totalCzk)) > KH_THRESHOLD) {
       a4.push(
-        `<VetaA4 c_radku="${a4.length + 1}" dic_odb="${xmlAttr(dicNumber(czDic))}" c_evid_dd="${xmlAttr(doc.number)}" dppd="${czDate(doc.taxableDate)}" zakl_dane1="${int(b.base1)}" dan1="${int(b.vat1)}" zakl_dane2="${int(b.base2)}" dan2="${int(b.vat2)}" kod_rezim_pl="0" zdph_44="N" />`,
+        `<VetaA4 c_radku="${a4.length + 1}" dic_odb="${xmlAttr(dicNumber(czDic))}" c_evid_dd="${xmlAttr(doc.number)}" dppd="${czDate(doc.taxableDate)}" zakl_dane1="${kc2(b.base1)}" dan1="${kc2(b.vat1)}" zakl_dane2="${kc2(b.base2)}" dan2="${kc2(b.vat2)}" kod_rezim_pl="0" zdph_44="N" />`,
       );
     } else {
       a5.base1 += b.base1;
@@ -437,7 +465,7 @@ export function generateDphKh1(input: {
       if (!doc.reverseChargeCode) warnings.push({ code: "received_reverse_charge_code_missing", document: label });
       const code = doc.reverseChargeCode ? ` kod_pred_pl="${xmlAttr(doc.reverseChargeCode)}"` : "";
       b1.push(
-        `<VetaB1 c_radku="${b1.length + 1}" dic_dod="${xmlAttr(dicNumber(doc.supplierDic))}" c_evid_dd="${xmlAttr(doc.number)}" duzp="${czDate(doc.taxableDate)}" zakl_dane1="${int(b.base1)}" dan1="${int(b.vat1)}" zakl_dane2="${int(b.base2)}" dan2="${int(b.vat2)}"${code} />`,
+        `<VetaB1 c_radku="${b1.length + 1}" dic_dod="${xmlAttr(dicNumber(doc.supplierDic))}" c_evid_dd="${xmlAttr(doc.number)}" duzp="${czDate(doc.taxableDate)}" zakl_dane1="${kc2(b.base1)}" dan1="${kc2(b.vat1)}" zakl_dane2="${kc2(b.base2)}" dan2="${kc2(b.vat2)}"${code} />`,
       );
       continue;
     }
@@ -445,9 +473,9 @@ export function generateDphKh1(input: {
     c.pln23 += b.base1;
     c.pln5 += b.base2;
     const czDic = dicCountry(doc.supplierDic) === "CZ" ? doc.supplierDic! : null;
-    if (czDic && doc.number && Math.abs(Math.round(doc.totalCzk)) > KH_THRESHOLD) {
+    if (czDic && doc.number && Math.abs(haler(doc.totalCzk)) > KH_THRESHOLD) {
       b2.push(
-        `<VetaB2 c_radku="${b2.length + 1}" dic_dod="${xmlAttr(dicNumber(czDic))}" c_evid_dd="${xmlAttr(doc.number)}" dppd="${czDate(doc.taxableDate)}" zakl_dane1="${int(b.base1)}" dan1="${int(b.vat1)}" zakl_dane2="${int(b.base2)}" dan2="${int(b.vat2)}" pomer="N" zdph_44="N" />`,
+        `<VetaB2 c_radku="${b2.length + 1}" dic_dod="${xmlAttr(dicNumber(czDic))}" c_evid_dd="${xmlAttr(doc.number)}" dppd="${czDate(doc.taxableDate)}" zakl_dane1="${kc2(b.base1)}" dan1="${kc2(b.vat1)}" zakl_dane2="${kc2(b.base2)}" dan2="${kc2(b.vat2)}" pomer="N" zdph_44="N" />`,
       );
     } else {
       b3.base1 += b.base1;
@@ -458,7 +486,7 @@ export function generateDphKh1(input: {
   }
 
   const sum = (s: typeof a5) =>
-    `zakl_dane1="${int(s.base1)}" dan1="${int(s.vat1)}" zakl_dane2="${int(s.base2)}" dan2="${int(s.vat2)}"`;
+    `zakl_dane1="${kc2(s.base1)}" dan1="${kc2(s.vat1)}" zakl_dane2="${kc2(s.base2)}" dan2="${kc2(s.vat2)}"`;
   const rows = [
     ...a1,
     ...a4,
@@ -466,7 +494,7 @@ export function generateDphKh1(input: {
     ...b1,
     ...b2,
     ...(b3.base1 || b3.base2 ? [`<VetaB3 ${sum(b3)} />`] : []),
-    `<VetaC obrat23="${int(c.obrat23)}" obrat5="${int(c.obrat5)}" pln23="${int(c.pln23)}" pln5="${int(c.pln5)}" pln_rez_pren="${int(c.plnRezPren)}" rez_pren23="${int(c.rezPren23)}" rez_pren5="${int(c.rezPren5)}" />`,
+    `<VetaC obrat23="${kc2(c.obrat23)}" obrat5="${kc2(c.obrat5)}" pln23="${kc2(c.pln23)}" pln5="${kc2(c.pln5)}" pln_rez_pren="${kc2(c.plnRezPren)}" rez_pren23="${kc2(c.rezPren23)}" rez_pren5="${kc2(c.rezPren5)}" />`,
   ];
 
   const xml = `${header("41.16.3")}
@@ -483,7 +511,9 @@ export function generateDphKh1(input: {
 /**
  * Souhrnné hlášení (DPHSHV): supplies to VAT-registered customers in other
  * EU states, one row per customer VAT ID. Returns null when there is
- * nothing to report (no filing is due then).
+ * nothing to report (no filing is due then). The row value rounds up:
+ * "Celková hodnota plnění se zaokrouhlí na celé koruny nahoru" (pokyny
+ * 25 5525), with credit notes already subtracted inside the row.
  */
 export function generateDphShv(input: {
   issued: VatIssuedDoc[];
@@ -505,7 +535,7 @@ export function generateDphShv(input: {
   if (rows.size === 0) return null;
   const vetaR = [...rows.values()].map(
     (r, i) =>
-      `<VetaR por_c_stran="1" c_rad="${i + 1}" k_stat="${r.country}" c_vat="${xmlAttr(r.vat)}" k_pln_eu="3" pln_pocet="${r.count}" pln_hodnota="${int(r.value)}" />`,
+      `<VetaR por_c_stran="1" c_rad="${i + 1}" k_stat="${r.country}" c_vat="${xmlAttr(r.vat)}" k_pln_eu="3" pln_pocet="${r.count}" pln_hodnota="${upKc(r.value)}" />`,
   );
   return `${header("45.5.1")}
 <DPHSHV verzePis="${VAT_FORM_VERSIONS.DPHSHV}">

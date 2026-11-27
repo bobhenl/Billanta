@@ -62,7 +62,8 @@ export function ExpenseForm({
   expense,
   initial,
   suppliers: storedSuppliers,
-  home = 'CZK'
+  home = 'CZK',
+  identified = false
 }: {
   /** Open the QR camera right away (dashboard "scan an invoice" tile). */
   autoScan?: boolean;
@@ -73,6 +74,8 @@ export function ExpenseForm({
   suppliers: SupplierOption[];
   /** The company's own currency, the default for a new expense. */
   home?: string;
+  /** VAT status "identified": it owes the tax on a foreign service, but files no kontrolní hlášení and deducts nothing. */
+  identified?: boolean;
 }) {
   const src = expense ?? initial;
   const t = useTranslations('expenses.form');
@@ -508,7 +511,7 @@ export function ExpenseForm({
                 onChange={(e) => setReverseCharge(e.target.checked)}
                 className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
               />
-              <InfoHint hint={t('reverseChargeHint')} label={t('reverseChargeLabel')} className="min-w-0">
+              <InfoHint hint={identified ? t('reverseChargeHintIdentified', { rate: Number(vatRate) }) : t('reverseChargeHint')} label={t('reverseChargeLabel')} className="min-w-0">
                 <span className="font-medium">{t('reverseChargeLabel')}</span>
               </InfoHint>
             </label>
@@ -560,7 +563,7 @@ export function ExpenseForm({
             {t('moreDetails')}
             <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden="true" />
           </summary>
-          {isReverseCharge && <p className="mt-2 text-xs text-muted-foreground">{t('reverseChargeRequiredHint')}</p>}
+          {isReverseCharge && !identified && <p className="mt-2 text-xs text-muted-foreground">{t('reverseChargeRequiredHint')}</p>}
           <div className="mt-3 grid gap-3 sm:grid-cols-3">
             <label className="block">
               <span className={label}>DIČ</span>

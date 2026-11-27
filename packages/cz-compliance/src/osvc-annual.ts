@@ -133,12 +133,14 @@ export function computeOsvcAnnualSummary(input: OsvcAnnualInput) {
   // minimum base per month of activity, at the share the year is settled at),
   // at most 48× the average wage (a yearly cap, not scaled by months).
   const minSocialYearly = months * roundUp(p.averageWage * p.annualMinSocialShare);
-  const socialBase = Math.min(Math.max(profit * p.socialBaseShare, minSocialYearly), p.socialMaxMultiple * p.averageWage);
+  // The base rounds up before the rate applies (§ 5d and § 7 odst. 3 zák. 589/1992 Sb.).
+  const socialBase = Math.min(Math.max(roundUp(profit * p.socialBaseShare), minSocialYearly), p.socialMaxMultiple * p.averageWage);
   const social = roundUp(socialBase * SOCIAL_RATE);
 
   // Health insurance: 50 % of profit, at least 50 % of the average wage per month of activity.
   const minHealthMonthly = roundUp(p.averageWage * 0.5);
-  const healthBase = Math.max(profit * HEALTH_BASE_SHARE, minHealthMonthly * months);
+  // Rounded up as in the přehled ZP (computeHealth), so both show the same premium.
+  const healthBase = Math.max(roundUp(profit * HEALTH_BASE_SHARE), minHealthMonthly * months);
   const health = roundUp(healthBase * HEALTH_RATE);
 
   // Next year's monthly advances: this year's base per month of activity
@@ -150,7 +152,7 @@ export function computeOsvcAnnualSummary(input: OsvcAnnualInput) {
   const nextMinHealth = roundUp(roundUp(next.averageWage * 0.5) * HEALTH_RATE);
   // Someone at the minimum base pays next year's minimum.
   const atSocialMinimum = profit * p.socialBaseShare <= minSocialYearly;
-  const socialAdvance = atSocialMinimum ? nextMinSocial : Math.max(roundUp((socialBase / months) * SOCIAL_RATE), nextMinSocial);
+  const socialAdvance = atSocialMinimum ? nextMinSocial : Math.max(roundUp(roundUp(socialBase / months) * SOCIAL_RATE), nextMinSocial);
   const healthAdvance = Math.max(roundUp((healthBase / months) * HEALTH_RATE), nextMinHealth);
 
   return {
@@ -165,14 +167,14 @@ export function computeOsvcAnnualSummary(input: OsvcAnnualInput) {
     profit: round2(profit),
     tax: { base: taxBase, beforeCredit: roundUp(taxBeforeCredit), credit: p.taxpayerCredit, total: incomeTax },
     social: {
-      base: roundUp(socialBase),
+      base: socialBase,
       total: social,
       paid: input.paidSocial ?? null,
       balance: input.paidSocial == null ? null : social - input.paidSocial,
       nextAdvance: socialAdvance,
     },
     health: {
-      base: roundUp(healthBase),
+      base: healthBase,
       total: health,
       paid: input.paidHealth ?? null,
       balance: input.paidHealth == null ? null : health - input.paidHealth,

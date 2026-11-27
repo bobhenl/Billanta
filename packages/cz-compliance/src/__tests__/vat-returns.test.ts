@@ -323,3 +323,120 @@ describe("supplierOrigin", () => {
     expect(supplierOrigin({ supplierDic: null, supplierCountry: null })).toBe("domestic");
   });
 });
+
+// Every amount below rounds differently up and mathematically, so each
+// assertion tells the two rules apart (e.g. 32.13 is 33 up and 32 mathematically).
+describe("rounding of the Czech VAT filings", () => {
+  it("DPHDP3: tax lines up (§ 146 DŘ), bases and deductions mathematically, ř. 62/64 from the rounded lines", () => {
+    const xml = generateDphDp3({
+      issued: [
+        issued({ parts: [{ ratePercent: 21, base: 1000.4, vat: 210.08 }], totalCzk: 1210.48 }),
+        issued({ number: "2026-002", parts: [{ ratePercent: 12, base: 100.3, vat: 12.04 }], totalCzk: 112.34 }),
+      ],
+      received: [
+        received({ parts: [{ ratePercent: 21, base: 500.4, vat: 105.08 }], totalCzk: 605.48 }),
+        received({ number: "RC-1", reverseCharge: true, parts: [{ ratePercent: 21, base: 152.49, vat: 32.02 }], totalCzk: 152.49 }),
+        received({ number: "RC-2", reverseCharge: true, parts: [{ ratePercent: 12, base: 10.4, vat: 1.25 }], totalCzk: 10.4 }),
+      ],
+      submitter,
+      period,
+      today,
+    });
+    expect(xml).toContain(
+      '<Veta1 obrat23="1000" dan23="211" obrat5="100" dan5="13" rez_pren23="152" dan_rpren23="33" rez_pren5="10" dan_rpren5="2" />',
+    );
+    // The deduction of the same reverse-charge tax stays mathematical: 32, not 33.
+    expect(xml).toContain(
+      '<Veta4 pln23="500" odp_tuz23_nar="105" nar_zdp23="152" od_zdp23="32" nar_zdp5="10" od_zdp5="1" odp_sum_nar="138" />',
+    );
+    // ř. 62 = 211 + 13 + 33 + 2, ř. 63 = 105 + 32 + 1, ř. 64 = 259 − 138.
+    expect(xml).toContain('<Veta6 dan_zocelk="259" odp_zocelk="138" dano_da="121" dano_no="0" />');
+  });
+
+  it("DPHDP3: a tax line below one crown is still filed, as 1", () => {
+    const xml = generateDphDp3({ issued: [issued({ parts: [{ ratePercent: 21, base: 1.4, vat: 0.29 }], totalCzk: 1.69 })], received: [], submitter, period, today });
+    expect(xml).toContain('<Veta1 obrat23="1" dan23="1" />');
+    expect(xml).toContain('dan_zocelk="1"');
+  });
+
+  it("DPHDP3: credit notes round toward +∞ for tax and away from zero for the base", () => {
+    const xml = generateDphDp3({
+      issued: [issued({ number: "D-1", parts: [{ ratePercent: 21, base: -500.5, vat: -105.7 }], totalCzk: -606.2 })],
+      received: [],
+      submitter,
+      period,
+      today,
+    });
+    expect(xml).toContain('<Veta1 obrat23="-501" dan23="-105" />');
+    expect(xml).toContain('<Veta6 dan_zocelk="-105" odp_zocelk="0" dano_da="0" dano_no="105" />');
+  });
+
+  it("DPHDP3: float noise in a sum does not add a crown", () => {
+    // 0.11 + 3.99 + 0.9 is 5.000000000000001 in floating point.
+    const docs = [0.11, 3.99, 0.9].map((vat, i) => issued({ number: `n${i}`, parts: [{ ratePercent: 21, base: 10, vat }], totalCzk: 10 + vat }));
+    const xml = generateDphDp3({ issued: docs, received: [], submitter, period, today });
+    expect(xml).toContain('dan23="5"');
+  });
+
+  it("identified person: the tax rounds up, so 152.99 Kč of Google Ads owes 33 Kč, not 32", () => {
+    const ads = received({ number: "IE-10", supplierDic: "IE6388047V", reverseCharge: true, parts: [{ ratePercent: 21, base: 152.99, vat: 32.1279 }], totalCzk: 152.99 });
+    const tool = received({ number: "US-2", supplierDic: null, supplierCountry: "US", reverseCharge: true, parts: [{ ratePercent: 21, base: 300.4, vat: 63.08 }], totalCzk: 300.4 });
+    const { xml } = generateDphDp3Identified({ issued: [], received: [ads, tool], submitter, period, today });
+    expect(xml).toContain('<Veta1 p_sl23_e="153" dan_psl23_e="33" p_sl23_z="300" dan_psl23_z="64" />');
+    expect(xml).toContain('<Veta6 dan_zocelk="97" odp_zocelk="0" dano_da="97" dano_no="0" />');
+  });
+
+  it("identified person: 151.84 Kč at 21 % (31.8864 Kč) is 32 Kč", () => {
+    const ads = received({ number: "IE-11", supplierDic: "IE6388047V", reverseCharge: true, parts: [{ ratePercent: 21, base: 151.84, vat: 31.8864 }], totalCzk: 151.84 });
+    const { xml } = generateDphDp3Identified({ issued: [], received: [ads], submitter, period, today });
+    expect(xml).toContain('<Veta1 p_sl23_e="152" dan_psl23_e="32" />');
+  });
+
+  it("DPHKH1 keeps the haléře of the documents and part C sums them", () => {
+    const { xml } = generateDphKh1({
+      issued: [
+        issued({ parts: [{ ratePercent: 21, base: 10000.4, vat: 2100.08 }], totalCzk: 12100.48 }),
+        issued({ number: "s1", parts: [{ ratePercent: 21, base: 100.25, vat: 21.05 }], totalCzk: 121.3 }),
+        issued({ number: "s2", parts: [{ ratePercent: 21, base: 100.3, vat: 21.06 }], totalCzk: 121.36 }),
+      ],
+      received: [received({ number: "RC-3", reverseCharge: true, reverseChargeCode: "4", parts: [{ ratePercent: 21, base: 152.49, vat: 32.02 }], totalCzk: 152.49 })],
+      submitter,
+      period,
+      today,
+    });
+    expect(xml).toMatch(/<VetaA4 [^>]*zakl_dane1="10000.4" dan1="2100.08" zakl_dane2="0" dan2="0"/);
+    expect(xml).toContain('<VetaA5 zakl_dane1="200.55" dan1="42.11" zakl_dane2="0" dan2="0" />');
+    expect(xml).toMatch(/<VetaB1 [^>]*zakl_dane1="152.49" dan1="32.02"/);
+    expect(xml).toContain('<VetaC obrat23="10200.95" obrat5="0" pln23="0" pln5="0" pln_rez_pren="0" rez_pren23="152.49" rez_pren5="0" />');
+  });
+
+  it("DPHKH1 itemizes a document of 10 000.40 Kč incl. VAT: it is above the threshold", () => {
+    const { xml } = generateDphKh1({
+      issued: [issued({ parts: [{ ratePercent: 21, base: 8264.79, vat: 1735.61 }], totalCzk: 10000.4 })],
+      received: [],
+      submitter,
+      period,
+      today,
+    });
+    expect(xml).toContain("<VetaA4 ");
+    expect(xml).not.toContain("<VetaA5 ");
+  });
+
+  it("DPHSHV rounds each row's total up, credit notes counted negative", () => {
+    const de = { customerDic: "DE123456789", customerCountry: "DE" };
+    const fr = { customerDic: "FR12345678901", customerCountry: "FR" };
+    const xml = generateDphShv({
+      issued: [
+        issued({ ...de, parts: [{ ratePercent: 0, base: 1000.2, vat: 0 }] }),
+        issued({ ...de, number: "x", parts: [{ ratePercent: 0, base: 500.1, vat: 0 }] }),
+        issued({ ...fr, number: "y", parts: [{ ratePercent: 0, base: 1000.2, vat: 0 }] }),
+        issued({ ...fr, number: "dobropis", parts: [{ ratePercent: 0, base: -200.9, vat: 0 }] }),
+      ],
+      submitter,
+      period,
+      today,
+    })!;
+    expect(xml).toContain('k_stat="DE" c_vat="123456789" k_pln_eu="3" pln_pocet="2" pln_hodnota="1501"');
+    expect(xml).toContain('k_stat="FR" c_vat="12345678901" k_pln_eu="3" pln_pocet="2" pln_hodnota="800"');
+  });
+});

@@ -159,3 +159,24 @@ describe('ČNB daily list', () => {
     expect(parseCnbDay('16.10.2026 #201\nzemě|měna|množství|kód|kurz\n')).toBeNull();
   });
 });
+
+describe('OSVČ insurance rounding', () => {
+  // 55 % of 1 000 784.01 is 550 431.2055. Rounded up to 550 432 before the
+  // rate (§ 5d zák. 589/1992), the premium is 160 727, not 160 726.
+  const r = computeOsvcAnnualSummary({ year: 2026, income: 1_000_784.01, actualExpenses: 0, flatRate: null });
+
+  it('rounds the social base up before the rate', () => {
+    expect(r.social.base).toBe(550_432);
+    expect(r.social.total).toBe(160_727);
+  });
+
+  it('rounds the health base up before the rate, as the přehled ZP does', () => {
+    expect(r.health.base).toBe(500_393);
+    expect(r.health.total).toBe(67_554);
+  });
+
+  it('rounds the monthly base of the next social advance up before the rate (§ 14 odst. 13)', () => {
+    // 550 432 / 12 = 45 869.33 → 45 870, × 29.2 % = 13 394.04 → 13 395 (not 13 394).
+    expect(r.social.nextAdvance).toBe(13_395);
+  });
+});

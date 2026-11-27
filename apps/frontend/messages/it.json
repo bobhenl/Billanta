@@ -841,6 +841,7 @@
       "vatBreakdown": "Imponibile {base} + IVA {vat}",
       "reverseChargeLabel": "Inversione contabile (§ 92a)",
       "reverseChargeHint": "Il fornitore ha fatturato senza IVA e l'imposta la assolve Lei. Inserisca l'importo senza IVA; l'IVA viene sia versata sia detratta nella dichiarazione (righe 10/11 e 43/44) e il documento rientra nella sezione B.1 della comunicazione di controllo.",
+      "reverseChargeHintIdentified": "Inserisca l'importo senza IVA. L'IVA del {rate} % va dichiarata nella dichiarazione IVA del mese del documento e versata entro il 25 del mese successivo. Come persona identificata non può detrarla.",
       "amountLabelReverseCharge": "Importo IVA esclusa",
       "vatBreakdownReverseCharge": "Imponibile {base}, IVA da autoliquidare {vat}",
       "reverseChargeRequiredHint": "La sezione B.1 richiede la partita IVA del fornitore e il numero del documento.",

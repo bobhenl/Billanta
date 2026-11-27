@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { fetchHomeCurrency } from '@/lib/tenant';
+import { homeCurrencyOf } from '@faktur/cz-compliance';
+import { fetchTenant, taxCountryOf, vatStatusOf } from '@/lib/tenant';
 import { apiFetch } from '@/lib/api-client';
 import type { Expense } from '@/lib/expense-ui';
 import { ExpenseForm, type SupplierOption } from '../expense-form';
@@ -21,18 +22,19 @@ export default async function NewExpensePage(props: { searchParams: Promise<{ fr
   const searchParams = await props.searchParams;
   const gate = await writeGate('expenses', '/expenses', 'expenses.create');
   if (gate) return gate;
-  const [suppliers, source] = await Promise.all([
+  const [suppliers, source, tenant] = await Promise.all([
     apiFetch<SupplierOption[]>('/api/v1/contacts').catch(() => []),
     searchParams.from && UUID.test(searchParams.from)
       ? apiFetch<Expense>(`/api/v1/expenses/${searchParams.from}`).catch(() => null)
-      : Promise.resolve(null)
+      : Promise.resolve(null),
+    fetchTenant().catch(() => null)
   ]);
   const initial = source
     ? { ...source, expenseDate: new Date().toISOString(), dueDate: null, paidAt: null, documentNumber: null, variableSymbol: null }
     : searchParams.description
       ? prefill(searchParams.description, searchParams.amount)
       : undefined;
-  return <ExpenseForm autoScan={searchParams.scan === '1'} initial={initial} suppliers={suppliers.map(({ id, legalName, ico }) => ({ id, legalName, ico }))} home={await fetchHomeCurrency()} />;
+  return <ExpenseForm autoScan={searchParams.scan === '1'} initial={initial} suppliers={suppliers.map(({ id, legalName, ico }) => ({ id, legalName, ico }))} home={homeCurrencyOf(taxCountryOf(tenant))} identified={vatStatusOf(tenant) === 'identified'} />;
 }
 
 function prefill(description: string, amount?: string): Expense {

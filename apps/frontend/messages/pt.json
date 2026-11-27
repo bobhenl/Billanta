@@ -841,6 +841,7 @@
       "vatBreakdown": "Base {base} + IVA {vat}",
       "reverseChargeLabel": "Autoliquidação (§ 92a)",
       "reverseChargeHint": "O fornecedor faturou sem IVA e é você que o liquida. Introduza o montante sem IVA; o IVA é simultaneamente liquidado e deduzido na declaração (linhas 10/11 e 43/44) e o documento vai para a secção B.1 da declaração de controlo.",
+      "reverseChargeHintIdentified": "Introduza o montante sem IVA. Declara o IVA de {rate} % na declaração de IVA do mês do documento e paga-o até ao dia 25 do mês seguinte. Como pessoa identificada, não o pode deduzir.",
       "amountLabelReverseCharge": "Montante s/ IVA",
       "vatBreakdownReverseCharge": "Base {base}, IVA a autoliquidar {vat}",
       "reverseChargeRequiredHint": "A secção B.1 exige o NIF de IVA do fornecedor e o número do documento.",
