@@ -1547,7 +1547,52 @@
       },
       "readOnlyBadge": "Solo lectura",
       "twoFactorRequired": "Las claves de API solo se pueden crear con la autenticación en dos pasos activada.",
-      "planRequired": "Esta función forma parte de un plan superior. Elija uno en Plan y facturación."
+      "planRequired": "Esta función forma parte de un plan superior. Elija uno en Plan y facturación.",
+      "mcp": {
+        "linkTitle": "MCP / asistentes de IA",
+        "linkDescription": "Conecta Claude, Cursor u otro asistente de IA a Billanta con una clave API.",
+        "title": "MCP / asistentes de IA",
+        "description": "Con MCP, un asistente de IA puede leer tus datos de Billanta y preparar borradores. Solo necesita una clave API.",
+        "backToKeys": "Volver a las claves API",
+        "url": {
+          "title": "Dirección del servidor MCP",
+          "description": "Introduce esta dirección en el asistente. La clave va en la cabecera Authorization."
+        },
+        "step1": {
+          "title": "Crea una clave API",
+          "body": "Genera una clave nueva en Claves de API. Si el asistente solo debe leer y responder preguntas, marca Solo lectura. Para crear contactos, borradores de facturas y gastos necesita una clave de lectura y escritura.",
+          "link": "Ir a las claves API"
+        },
+        "step2": {
+          "title": "Conecta el asistente",
+          "claudeCode": "Claude Code: ejecuta este comando en un terminal y pon tu clave en lugar de sk_live_...",
+          "desktop": "Claude Desktop, Cursor y otros: añade esta entrada a la configuración de servidores MCP. La clave va solo en la variable BILLANTA_API_KEY.",
+          "desktopHint": "En Claude Desktop la configuración está en Ajustes → Desarrollador → Editar configuración, en Cursor en Settings → MCP. Reinicia la aplicación después de guardar. npx descarga mcp-remote, así que necesitas Node.js."
+        },
+        "step3": {
+          "title": "Pruébalo",
+          "body": "Pregunta por ejemplo: «¿Qué facturas están vencidas?» o «Prepara una factura para Novák s.r.o. por 10 horas de consultoría.» Encontrarás el borrador en tus facturas con el estado Pendiente de revisión."
+        },
+        "can": {
+          "title": "Qué puede hacer el asistente",
+          "read": "Leer facturas, contactos, gastos, movimientos bancarios y el resumen del panel.",
+          "contacts": "Crear y editar contactos y buscar una empresa en el registro.",
+          "drafts": "Preparar o editar un borrador de factura. El borrador espera tu revisión.",
+          "expenses": "Registrar un gasto que luego revisas tú.",
+          "settings": "Cambiar los datos básicos de la empresa y los ajustes de facturas, como el plazo de pago o la numeración."
+        },
+        "cannot": {
+          "title": "Qué no puede hacer el asistente",
+          "issue": "Emitir o enviar una factura, ni marcarla como enviada. Eso lo haces siempre tú en la aplicación.",
+          "bank": "Cambiar la cuenta bancaria, los datos de pago o el correo desde el que se envían las facturas.",
+          "delete": "Borrar nada.",
+          "admin": "Gestionar claves API, el equipo, la suscripción ni los webhooks."
+        },
+        "security": {
+          "title": "Guarda la clave como una contraseña",
+          "body": "Quien tenga tu clave ve los datos de tu empresa. No la pongas en archivos compartidos ni en repositorios. Si se filtra, revócala enseguida en Claves de API y crea una nueva."
+        }
+      }
     },
     "backup": {
       "title": "Destinos de copia de seguridad",

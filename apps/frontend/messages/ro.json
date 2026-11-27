@@ -1547,7 +1547,52 @@
       },
       "readOnlyBadge": "Doar citire",
       "twoFactorRequired": "Cheile API pot fi create doar cu autentificare în doi pași.",
-      "planRequired": "Această funcție face parte dintr-un plan superior. Alegeți unul în Plan și facturare."
+      "planRequired": "Această funcție face parte dintr-un plan superior. Alegeți unul în Plan și facturare.",
+      "mcp": {
+        "linkTitle": "MCP / asistenți AI",
+        "linkDescription": "Conectați Claude, Cursor sau alt asistent AI la Billanta cu o cheie API.",
+        "title": "MCP / asistenți AI",
+        "description": "Prin MCP, un asistent AI poate citi datele dvs. din Billanta și poate pregăti ciorne. Are nevoie doar de o cheie API.",
+        "backToKeys": "Înapoi la cheile API",
+        "url": {
+          "title": "Adresa serverului MCP",
+          "description": "Introduceți această adresă în asistent. Cheia se trimite în antetul Authorization."
+        },
+        "step1": {
+          "title": "Creați o cheie API",
+          "body": "Generați o cheie nouă la Chei API. Dacă asistentul doar citește și răspunde la întrebări, bifați Doar citire. Pentru a crea contacte, ciorne de facturi și cheltuieli are nevoie de o cheie de citire și scriere.",
+          "link": "Mergi la cheile API"
+        },
+        "step2": {
+          "title": "Conectați asistentul",
+          "claudeCode": "Claude Code: rulați această comandă în terminal și puneți cheia dvs. în locul sk_live_...",
+          "desktop": "Claude Desktop, Cursor și altele: adăugați această intrare în configurația serverelor MCP. Cheia se pune doar în variabila BILLANTA_API_KEY.",
+          "desktopHint": "În Claude Desktop configurația e la Setări → Dezvoltator → Editează configurația, în Cursor la Settings → MCP. Reporniți aplicația după salvare. mcp-remote este descărcat de npx, deci aveți nevoie de Node.js."
+        },
+        "step3": {
+          "title": "Încercați",
+          "body": "Întrebați de exemplu: „Ce facturi sunt restante?” sau „Pregătește o factură pentru Novák s.r.o. pentru 10 ore de consultanță.” Ciorna o găsiți la facturi, cu starea În așteptarea verificării."
+        },
+        "can": {
+          "title": "Ce poate face asistentul",
+          "read": "Să citească facturi, contacte, cheltuieli, tranzacții bancare și rezumatul din panou.",
+          "contacts": "Să creeze și să editeze contacte și să caute o firmă în registru.",
+          "drafts": "Să pregătească sau să editeze o ciornă de factură. Ciorna așteaptă verificarea dvs.",
+          "expenses": "Să înregistreze o cheltuială pe care o verificați apoi.",
+          "settings": "Să modifice datele de bază ale firmei și setările facturilor, de exemplu termenul de plată sau numerotarea."
+        },
+        "cannot": {
+          "title": "Ce nu poate face asistentul",
+          "issue": "Să emită sau să trimită o factură ori să o marcheze ca trimisă. Asta faceți întotdeauna dvs. în aplicație.",
+          "bank": "Să schimbe contul bancar, datele de plată sau adresa de e-mail de la care pleacă facturile.",
+          "delete": "Să șteargă ceva.",
+          "admin": "Să administreze cheile API, echipa, abonamentul sau webhook-urile."
+        },
+        "security": {
+          "title": "Păstrați cheia ca pe o parolă",
+          "body": "Oricine are cheia dvs. vede datele firmei. Nu o puneți în fișiere sau depozite partajate. Dacă ajunge la altcineva, revocați-o imediat la Chei API și creați una nouă."
+        }
+      }
     },
     "backup": {
       "title": "Destinații de backup",

@@ -10,6 +10,9 @@ import { lockOf } from '@/lib/usage';
 import { PlanLock } from '@/components/plan-lock';
 import { ApiKeysManager, type ApiKeyListItem } from './api-keys-manager';
 import { settingsGate } from '@/components/settings-gate';
+import { publicApiBase } from '@/lib/public-api';
+import { Link } from '@/i18n/navigation';
+import { Bot, ChevronRight } from 'lucide-react';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.apiKeys');
@@ -34,12 +37,7 @@ export default async function ApiKeysSettingsPage() {
     return <Banner tone="err" title={t('loadError')} className="mt-6" />;
   }
 
-  // In production the public API lives under the app's origin (Caddy routes /api/v1 to the
-  // backend); in dev there is no Caddy, so point straight at the backend.
-  const apiBase = (
-    process.env.PUBLIC_API_URL ??
-    (process.env.NODE_ENV === 'development' ? process.env.BACKEND_URL ?? 'http://localhost:3000' : process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3100')
-  ).replace(/\/$/, '');
+  const apiBase = publicApiBase();
 
   // Owners and admins, or a member with this settings section (Settings → Team).
   const editable = canManage(role) || (role !== null && (await fetchMayEditSettings('apiKeys')));
@@ -62,6 +60,16 @@ export default async function ApiKeysSettingsPage() {
         </Banner>
       )}
       <ApiKeysManager initialKeys={keys} apiBase={apiBase} readOnly={!editable} />
+      <Link href="/settings/api-keys/mcp" className="mt-4 flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary sm:p-5">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
+          <Bot className="h-5 w-5" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-bold">{t('mcp.linkTitle')}</span>
+          <span className="block text-sm text-muted-foreground">{t('mcp.linkDescription')}</span>
+        </span>
+        <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
+      </Link>
     </div>
   );
 }

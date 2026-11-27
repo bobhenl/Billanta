@@ -1548,7 +1548,52 @@
       },
       "readOnlyBadge": "Jen čtení",
       "twoFactorRequired": "API klíč lze vytvořit jen s dvoufázovým ověřením.",
-      "planRequired": "Tahle funkce patří do vyššího tarifu. Vyberte si ho v sekci Tarif a platby."
+      "planRequired": "Tahle funkce patří do vyššího tarifu. Vyberte si ho v sekci Tarif a platby.",
+      "mcp": {
+        "linkTitle": "MCP / AI asistenti",
+        "linkDescription": "Připojte Claude, Cursor nebo jiného AI asistenta k Billantě pomocí API klíče.",
+        "title": "MCP / AI asistenti",
+        "description": "AI asistent může přes MCP číst vaše data v Billantě a připravovat koncepty. Stačí mu API klíč.",
+        "backToKeys": "Zpět na API klíče",
+        "url": {
+          "title": "Adresa MCP serveru",
+          "description": "Tuto adresu zadáte do asistenta. Klíč se posílá v hlavičce Authorization."
+        },
+        "step1": {
+          "title": "Vytvořte API klíč",
+          "body": "V API klíčích vygenerujte nový klíč. Pokud má asistent jen číst a odpovídat na dotazy, zaškrtněte Jen pro čtení. Pro zakládání kontaktů, konceptů faktur a výdajů potřebuje klíč pro čtení i zápis.",
+          "link": "Přejít na API klíče"
+        },
+        "step2": {
+          "title": "Připojte asistenta",
+          "claudeCode": "Claude Code: spusťte v terminálu tento příkaz a místo sk_live_... vložte svůj klíč.",
+          "desktop": "Claude Desktop, Cursor a další: přidejte do konfigurace MCP serverů tento záznam. Klíč patří jen do proměnné BILLANTA_API_KEY.",
+          "desktopHint": "Claude Desktop má konfiguraci v Nastavení → Vývojář → Upravit konfiguraci, Cursor v Settings → MCP. Po uložení aplikaci restartujte. Nástroj mcp-remote se stáhne přes npx, je potřeba mít nainstalovaný Node.js."
+        },
+        "step3": {
+          "title": "Vyzkoušejte to",
+          "body": "Zeptejte se třeba: „Které faktury jsou po splatnosti?“ nebo „Připrav fakturu pro firmu Novák s.r.o. za 10 hodin konzultací.“ Koncept pak najdete ve fakturách se stavem Čeká na kontrolu."
+        },
+        "can": {
+          "title": "Co asistent může",
+          "read": "Číst faktury, kontakty, výdaje, bankovní pohyby a souhrn z přehledu.",
+          "contacts": "Zakládat a upravovat kontakty a dohledat firmu v ARES.",
+          "drafts": "Připravit nebo upravit koncept faktury. Koncept čeká na vaši kontrolu.",
+          "expenses": "Zapsat výdaj, který pak zkontrolujete.",
+          "settings": "Upravit základní údaje firmy a nastavení faktur, třeba splatnost nebo číselné řady."
+        },
+        "cannot": {
+          "title": "Co asistent nemůže",
+          "issue": "Vystavit nebo odeslat fakturu, ani ji označit jako odeslanou. To vždy děláte vy v aplikaci.",
+          "bank": "Změnit bankovní účet, platební údaje nebo e-mail, ze kterého se faktury odesílají.",
+          "delete": "Cokoli mazat.",
+          "admin": "Spravovat API klíče, tým, předplatné ani webhooky."
+        },
+        "security": {
+          "title": "Klíč chraňte jako heslo",
+          "body": "Kdo má váš klíč, vidí data vaší firmy. Nevkládejte ho do sdílených souborů ani do repozitáře. Když unikne, hned ho v API klíčích zneplatněte a vytvořte nový."
+        }
+      }
     },
     "backup": {
       "title": "Zálohování dat",

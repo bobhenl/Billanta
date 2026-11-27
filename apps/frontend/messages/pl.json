@@ -1547,7 +1547,52 @@
       },
       "readOnlyBadge": "Tylko do odczytu",
       "twoFactorRequired": "Klucze API można tworzyć tylko z włączonym uwierzytelnianiem dwuskładnikowym.",
-      "planRequired": "Ta funkcja jest częścią wyższego planu. Wybierz go w sekcji Plan i płatności."
+      "planRequired": "Ta funkcja jest częścią wyższego planu. Wybierz go w sekcji Plan i płatności.",
+      "mcp": {
+        "linkTitle": "MCP / asystenci AI",
+        "linkDescription": "Połącz Claude, Cursor lub innego asystenta AI z Billantą za pomocą klucza API.",
+        "title": "MCP / asystenci AI",
+        "description": "Przez MCP asystent AI może czytać Twoje dane w Billancie i przygotowywać szkice. Wystarczy mu klucz API.",
+        "backToKeys": "Wróć do kluczy API",
+        "url": {
+          "title": "Adres serwera MCP",
+          "description": "Ten adres wpisz w asystencie. Klucz jest wysyłany w nagłówku Authorization."
+        },
+        "step1": {
+          "title": "Utwórz klucz API",
+          "body": "W kluczach API wygeneruj nowy klucz. Jeśli asystent ma tylko czytać i odpowiadać na pytania, zaznacz Tylko do odczytu. Do tworzenia kontaktów, szkiców faktur i wydatków potrzebny jest klucz do odczytu i zapisu.",
+          "link": "Przejdź do kluczy API"
+        },
+        "step2": {
+          "title": "Połącz asystenta",
+          "claudeCode": "Claude Code: uruchom to polecenie w terminalu i wstaw swój klucz zamiast sk_live_...",
+          "desktop": "Claude Desktop, Cursor i inne: dodaj ten wpis do konfiguracji serwerów MCP. Klucz wpisz tylko w zmiennej BILLANTA_API_KEY.",
+          "desktopHint": "W Claude Desktop konfiguracja jest w Ustawienia → Deweloper → Edytuj konfigurację, w Cursor w Settings → MCP. Po zapisaniu uruchom aplikację ponownie. mcp-remote pobiera npx, więc potrzebny jest Node.js."
+        },
+        "step3": {
+          "title": "Wypróbuj",
+          "body": "Zapytaj na przykład: „Które faktury są po terminie?” albo „Przygotuj fakturę dla Novák s.r.o. za 10 godzin konsultacji.” Szkic znajdziesz w fakturach ze statusem Do sprawdzenia."
+        },
+        "can": {
+          "title": "Co asystent może",
+          "read": "Czytać faktury, kontakty, wydatki, operacje bankowe i podsumowanie z pulpitu.",
+          "contacts": "Dodawać i edytować kontakty oraz wyszukać firmę w rejestrze.",
+          "drafts": "Przygotować lub edytować szkic faktury. Szkic czeka na Twoje sprawdzenie.",
+          "expenses": "Zapisać wydatek, który potem sprawdzisz.",
+          "settings": "Zmienić podstawowe dane firmy i ustawienia faktur, np. termin płatności lub numerację."
+        },
+        "cannot": {
+          "title": "Czego asystent nie może",
+          "issue": "Wystawić ani wysłać faktury ani oznaczyć jej jako wysłanej. To zawsze robisz sam w aplikacji.",
+          "bank": "Zmienić konta bankowego, danych płatności ani adresu e-mail, z którego wysyłane są faktury.",
+          "delete": "Niczego usuwać.",
+          "admin": "Zarządzać kluczami API, zespołem, subskrypcją ani webhookami."
+        },
+        "security": {
+          "title": "Chroń klucz jak hasło",
+          "body": "Kto ma Twój klucz, widzi dane Twojej firmy. Nie wklejaj go do udostępnianych plików ani repozytoriów. Jeśli wycieknie, od razu unieważnij go w kluczach API i utwórz nowy."
+        }
+      }
     },
     "backup": {
       "title": "Miejsca kopii zapasowych",

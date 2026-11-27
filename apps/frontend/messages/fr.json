@@ -1547,7 +1547,52 @@
       },
       "readOnlyBadge": "Lecture seule",
       "twoFactorRequired": "Les clés API ne peuvent être créées qu’avec l’authentification à deux facteurs activée.",
-      "planRequired": "Cette fonctionnalité fait partie d’une offre supérieure. Choisissez-en une dans Offre et facturation."
+      "planRequired": "Cette fonctionnalité fait partie d’une offre supérieure. Choisissez-en une dans Offre et facturation.",
+      "mcp": {
+        "linkTitle": "MCP / assistants IA",
+        "linkDescription": "Connectez Claude, Cursor ou un autre assistant IA à Billanta avec une clé API.",
+        "title": "MCP / assistants IA",
+        "description": "Via MCP, un assistant IA peut lire vos données Billanta et préparer des brouillons. Il lui faut seulement une clé API.",
+        "backToKeys": "Retour aux clés API",
+        "url": {
+          "title": "Adresse du serveur MCP",
+          "description": "Indiquez cette adresse dans votre assistant. La clé passe dans l’en-tête Authorization."
+        },
+        "step1": {
+          "title": "Créez une clé API",
+          "body": "Générez une nouvelle clé dans Clés API. Si l’assistant doit seulement lire et répondre à des questions, cochez Lecture seule. Pour créer des contacts, des brouillons de factures et des dépenses, il lui faut une clé en lecture et écriture.",
+          "link": "Aller aux clés API"
+        },
+        "step2": {
+          "title": "Connectez l’assistant",
+          "claudeCode": "Claude Code : lancez cette commande dans un terminal et remplacez sk_live_... par votre clé.",
+          "desktop": "Claude Desktop, Cursor et autres : ajoutez cette entrée à la configuration des serveurs MCP. La clé va uniquement dans la variable BILLANTA_API_KEY.",
+          "desktopHint": "Dans Claude Desktop, la configuration se trouve dans Paramètres → Développeur → Modifier la configuration, dans Cursor dans Settings → MCP. Redémarrez l’application après l’enregistrement. mcp-remote est téléchargé par npx, Node.js doit donc être installé."
+        },
+        "step3": {
+          "title": "Essayez",
+          "body": "Demandez par exemple : « Quelles factures sont en retard ? » ou « Prépare une facture pour Novák s.r.o. pour 10 heures de conseil. » Vous trouverez le brouillon dans vos factures avec le statut À vérifier."
+        },
+        "can": {
+          "title": "Ce que l’assistant peut faire",
+          "read": "Lire les factures, contacts, dépenses, opérations bancaires et le résumé du tableau de bord.",
+          "contacts": "Créer et modifier des contacts et rechercher une entreprise dans le registre.",
+          "drafts": "Préparer ou modifier un brouillon de facture. Le brouillon attend votre vérification.",
+          "expenses": "Saisir une dépense que vous vérifierez ensuite.",
+          "settings": "Modifier les informations de base de l’entreprise et les réglages des factures, comme le délai de paiement ou la numérotation."
+        },
+        "cannot": {
+          "title": "Ce que l’assistant ne peut pas faire",
+          "issue": "Émettre ou envoyer une facture, ni la marquer comme envoyée. C’est toujours vous qui le faites dans l’application.",
+          "bank": "Changer le compte bancaire, les informations de paiement ou l’adresse e-mail d’envoi des factures.",
+          "delete": "Supprimer quoi que ce soit.",
+          "admin": "Gérer les clés API, l’équipe, l’abonnement ou les webhooks."
+        },
+        "security": {
+          "title": "Protégez la clé comme un mot de passe",
+          "body": "Toute personne qui a votre clé voit les données de votre entreprise. Ne la mettez pas dans des fichiers partagés ni dans un dépôt. En cas de fuite, révoquez-la tout de suite dans Clés API et créez-en une nouvelle."
+        }
+      }
     },
     "backup": {
       "title": "Destinations de sauvegarde",

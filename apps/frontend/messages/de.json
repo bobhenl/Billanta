@@ -1547,7 +1547,52 @@
       },
       "readOnlyBadge": "Nur lesen",
       "twoFactorRequired": "API-Schlüssel können nur mit aktivierter Zwei-Faktor-Authentifizierung erstellt werden.",
-      "planRequired": "Diese Funktion ist Teil eines höheren Tarifs. Wählen Sie einen unter Tarif und Abrechnung."
+      "planRequired": "Diese Funktion ist Teil eines höheren Tarifs. Wählen Sie einen unter Tarif und Abrechnung.",
+      "mcp": {
+        "linkTitle": "MCP / KI-Assistenten",
+        "linkDescription": "Verbinden Sie Claude, Cursor oder einen anderen KI-Assistenten per API-Schlüssel mit Billanta.",
+        "title": "MCP / KI-Assistenten",
+        "description": "Über MCP kann ein KI-Assistent Ihre Daten in Billanta lesen und Entwürfe vorbereiten. Dafür braucht er nur einen API-Schlüssel.",
+        "backToKeys": "Zurück zu den API-Schlüsseln",
+        "url": {
+          "title": "Adresse des MCP-Servers",
+          "description": "Diese Adresse tragen Sie im Assistenten ein. Der Schlüssel wird im Header Authorization gesendet."
+        },
+        "step1": {
+          "title": "API-Schlüssel erstellen",
+          "body": "Erstellen Sie unter API-Schlüssel einen neuen Schlüssel. Soll der Assistent nur lesen und Fragen beantworten, wählen Sie Nur lesen. Für Kontakte, Rechnungsentwürfe und Ausgaben braucht er einen Schlüssel mit Lese- und Schreibrechten.",
+          "link": "Zu den API-Schlüsseln"
+        },
+        "step2": {
+          "title": "Assistenten verbinden",
+          "claudeCode": "Claude Code: Führen Sie diesen Befehl im Terminal aus und ersetzen Sie sk_live_... durch Ihren Schlüssel.",
+          "desktop": "Claude Desktop, Cursor und andere: Fügen Sie diesen Eintrag in die MCP-Serverkonfiguration ein. Der Schlüssel gehört nur in die Variable BILLANTA_API_KEY.",
+          "desktopHint": "In Claude Desktop finden Sie die Konfiguration unter Einstellungen → Entwickler → Konfiguration bearbeiten, in Cursor unter Settings → MCP. Starten Sie die App nach dem Speichern neu. mcp-remote wird über npx geladen, Node.js muss installiert sein."
+        },
+        "step3": {
+          "title": "Ausprobieren",
+          "body": "Fragen Sie zum Beispiel: „Welche Rechnungen sind überfällig?“ oder „Erstelle eine Rechnung für Novák s.r.o. über 10 Stunden Beratung.“ Den Entwurf finden Sie dann bei den Rechnungen mit dem Status Zur Prüfung."
+        },
+        "can": {
+          "title": "Was der Assistent kann",
+          "read": "Rechnungen, Kontakte, Ausgaben, Bankbewegungen und die Übersicht lesen.",
+          "contacts": "Kontakte anlegen und bearbeiten und eine Firma im Handelsregister nachschlagen.",
+          "drafts": "Einen Rechnungsentwurf vorbereiten oder bearbeiten. Der Entwurf wartet auf Ihre Prüfung.",
+          "expenses": "Eine Ausgabe erfassen, die Sie danach prüfen.",
+          "settings": "Grunddaten der Firma und Rechnungseinstellungen ändern, etwa Zahlungsziel oder Nummernkreise."
+        },
+        "cannot": {
+          "title": "Was der Assistent nicht kann",
+          "issue": "Eine Rechnung ausstellen, versenden oder als versendet markieren. Das tun immer Sie selbst in der App.",
+          "bank": "Bankkonto, Zahlungsdaten oder die Absender-E-Mail für Rechnungen ändern.",
+          "delete": "Irgendetwas löschen.",
+          "admin": "API-Schlüssel, Team, Abo oder Webhooks verwalten."
+        },
+        "security": {
+          "title": "Schützen Sie den Schlüssel wie ein Passwort",
+          "body": "Wer Ihren Schlüssel hat, sieht die Daten Ihrer Firma. Legen Sie ihn nicht in geteilte Dateien oder Repositorys. Wenn er bekannt wird, widerrufen Sie ihn sofort unter API-Schlüssel und erstellen Sie einen neuen."
+        }
+      }
     },
     "backup": {
       "title": "Sicherungsziele",

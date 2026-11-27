@@ -1547,7 +1547,52 @@
       },
       "readOnlyBadge": "Só de leitura",
       "twoFactorRequired": "As chaves de API só podem ser criadas com autenticação de dois fatores.",
-      "planRequired": "Esta funcionalidade faz parte de um plano superior. Escolha um em Plano e faturação."
+      "planRequired": "Esta funcionalidade faz parte de um plano superior. Escolha um em Plano e faturação.",
+      "mcp": {
+        "linkTitle": "MCP / assistentes de IA",
+        "linkDescription": "Ligue o Claude, o Cursor ou outro assistente de IA à Billanta com uma chave API.",
+        "title": "MCP / assistentes de IA",
+        "description": "Através do MCP, um assistente de IA pode ler os seus dados na Billanta e preparar rascunhos. Só precisa de uma chave API.",
+        "backToKeys": "Voltar às chaves API",
+        "url": {
+          "title": "Endereço do servidor MCP",
+          "description": "Indique este endereço no assistente. A chave vai no cabeçalho Authorization."
+        },
+        "step1": {
+          "title": "Crie uma chave API",
+          "body": "Gere uma nova chave em Chaves de API. Se o assistente só deve ler e responder a perguntas, marque Só de leitura. Para criar contactos, rascunhos de faturas e despesas, precisa de uma chave de leitura e escrita.",
+          "link": "Ir para as chaves API"
+        },
+        "step2": {
+          "title": "Ligue o assistente",
+          "claudeCode": "Claude Code: execute este comando num terminal e coloque a sua chave no lugar de sk_live_...",
+          "desktop": "Claude Desktop, Cursor e outros: adicione esta entrada à configuração dos servidores MCP. A chave vai só na variável BILLANTA_API_KEY.",
+          "desktopHint": "No Claude Desktop a configuração está em Definições → Programador → Editar configuração, no Cursor em Settings → MCP. Reinicie a aplicação depois de guardar. O npx descarrega o mcp-remote, por isso é preciso ter o Node.js instalado."
+        },
+        "step3": {
+          "title": "Experimente",
+          "body": "Pergunte, por exemplo: «Que faturas estão em atraso?» ou «Prepara uma fatura para a Novák s.r.o. por 10 horas de consultoria.» Encontra o rascunho nas faturas com o estado A aguardar revisão."
+        },
+        "can": {
+          "title": "O que o assistente pode fazer",
+          "read": "Ler faturas, contactos, despesas, movimentos bancários e o resumo do painel.",
+          "contacts": "Criar e editar contactos e procurar uma empresa no registo.",
+          "drafts": "Preparar ou editar um rascunho de fatura. O rascunho aguarda a sua revisão.",
+          "expenses": "Registar uma despesa que depois verifica.",
+          "settings": "Alterar os dados básicos da empresa e as definições de faturas, como o prazo de pagamento ou a numeração."
+        },
+        "cannot": {
+          "title": "O que o assistente não pode fazer",
+          "issue": "Emitir ou enviar uma fatura, nem marcá-la como enviada. Isso é sempre feito por si na aplicação.",
+          "bank": "Alterar a conta bancária, os dados de pagamento ou o e-mail de onde saem as faturas.",
+          "delete": "Apagar o que quer que seja.",
+          "admin": "Gerir chaves API, a equipa, a subscrição ou webhooks."
+        },
+        "security": {
+          "title": "Guarde a chave como uma palavra-passe",
+          "body": "Quem tiver a sua chave vê os dados da sua empresa. Não a coloque em ficheiros partilhados nem em repositórios. Se for divulgada, revogue-a de imediato em Chaves de API e crie uma nova."
+        }
+      }
     },
     "backup": {
       "title": "Destinos de cópia de segurança",

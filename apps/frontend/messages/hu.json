@@ -1547,7 +1547,52 @@
       },
       "readOnlyBadge": "Csak olvasás",
       "twoFactorRequired": "API-kulcs csak kétlépcsős azonosítással hozható létre.",
-      "planRequired": "Ez a funkció egy magasabb csomag része. Válasszon egyet a Csomag és számlázás részben."
+      "planRequired": "Ez a funkció egy magasabb csomag része. Válasszon egyet a Csomag és számlázás részben.",
+      "mcp": {
+        "linkTitle": "MCP / AI-asszisztensek",
+        "linkDescription": "Csatlakoztassa a Claude-ot, a Cursort vagy más AI-asszisztenst a Billantához API-kulccsal.",
+        "title": "MCP / AI-asszisztensek",
+        "description": "MCP-n keresztül egy AI-asszisztens olvashatja a Billantában lévő adatait, és piszkozatokat készíthet. Ehhez csak egy API-kulcs kell.",
+        "backToKeys": "Vissza az API-kulcsokhoz",
+        "url": {
+          "title": "Az MCP-szerver címe",
+          "description": "Ezt a címet adja meg az asszisztensben. A kulcs az Authorization fejlécben megy."
+        },
+        "step1": {
+          "title": "Hozzon létre API-kulcsot",
+          "body": "Az API-kulcsoknál hozzon létre új kulcsot. Ha az asszisztens csak olvas és kérdésekre válaszol, jelölje be a Csak olvasás lehetőséget. Partnerek, számlapiszkozatok és kiadások létrehozásához írási joggal is rendelkező kulcs kell.",
+          "link": "Ugrás az API-kulcsokhoz"
+        },
+        "step2": {
+          "title": "Csatlakoztassa az asszisztenst",
+          "claudeCode": "Claude Code: futtassa ezt a parancsot a terminálban, és az sk_live_... helyére írja a saját kulcsát.",
+          "desktop": "Claude Desktop, Cursor és mások: adja hozzá ezt a bejegyzést az MCP-szerverek konfigurációjához. A kulcs csak a BILLANTA_API_KEY változóba kerüljön.",
+          "desktopHint": "A Claude Desktopban a konfiguráció a Beállítások → Fejlesztő → Konfiguráció szerkesztése alatt van, a Cursorban a Settings → MCP alatt. Mentés után indítsa újra az alkalmazást. Az mcp-remote-ot az npx tölti le, ehhez Node.js kell."
+        },
+        "step3": {
+          "title": "Próbálja ki",
+          "body": "Kérdezze meg például: „Mely számlák késnek?” vagy „Készíts számlát a Novák s.r.o. részére 10 óra tanácsadásról.” A piszkozatot a számlák között találja Ellenőrzésre vár állapottal."
+        },
+        "can": {
+          "title": "Mit tud az asszisztens",
+          "read": "Olvasni a számlákat, partnereket, kiadásokat, banki tételeket és az áttekintés összesítőjét.",
+          "contacts": "Partnereket létrehozni és szerkeszteni, céget keresni a cégjegyzékben.",
+          "drafts": "Számlapiszkozatot készíteni vagy szerkeszteni. A piszkozat az Ön ellenőrzésére vár.",
+          "expenses": "Kiadást rögzíteni, amelyet Ön utána ellenőriz.",
+          "settings": "A cég alapadatait és a számlabeállításokat módosítani, például a fizetési határidőt vagy a számozást."
+        },
+        "cannot": {
+          "title": "Mit nem tud az asszisztens",
+          "issue": "Számlát kiállítani, elküldeni vagy elküldöttnek jelölni. Ezt mindig Ön végzi az alkalmazásban.",
+          "bank": "Bankszámlát, fizetési adatokat vagy a számlák küldő e-mail-címét módosítani.",
+          "delete": "Bármit törölni.",
+          "admin": "API-kulcsokat, csapatot, előfizetést vagy webhookokat kezelni."
+        },
+        "security": {
+          "title": "Úgy vigyázzon a kulcsra, mint egy jelszóra",
+          "body": "Akinél a kulcsa van, látja a cége adatait. Ne tegye megosztott fájlokba vagy tárolókba. Ha kiszivárog, azonnal vonja vissza az API-kulcsoknál, és hozzon létre újat."
+        }
+      }
     },
     "backup": {
       "title": "Biztonsági mentés célhelyei",

@@ -1547,7 +1547,52 @@
       },
       "readOnlyBadge": "Alleen lezen",
       "twoFactorRequired": "API-sleutels kunnen alleen worden aangemaakt met tweestapsverificatie.",
-      "planRequired": "Deze functie hoort bij een hoger abonnement. Kies er een onder Abonnement en facturatie."
+      "planRequired": "Deze functie hoort bij een hoger abonnement. Kies er een onder Abonnement en facturatie.",
+      "mcp": {
+        "linkTitle": "MCP / AI-assistenten",
+        "linkDescription": "Koppel Claude, Cursor of een andere AI-assistent met een API-sleutel aan Billanta.",
+        "title": "MCP / AI-assistenten",
+        "description": "Via MCP kan een AI-assistent je gegevens in Billanta lezen en concepten klaarzetten. Daarvoor is alleen een API-sleutel nodig.",
+        "backToKeys": "Terug naar API-sleutels",
+        "url": {
+          "title": "Adres van de MCP-server",
+          "description": "Vul dit adres in bij je assistent. De sleutel gaat mee in de header Authorization."
+        },
+        "step1": {
+          "title": "Maak een API-sleutel",
+          "body": "Maak bij API-sleutels een nieuwe sleutel aan. Moet de assistent alleen lezen en vragen beantwoorden, vink dan Alleen lezen aan. Voor contacten, factuurconcepten en uitgaven is een sleutel met lees- en schrijfrechten nodig.",
+          "link": "Naar API-sleutels"
+        },
+        "step2": {
+          "title": "Koppel de assistent",
+          "claudeCode": "Claude Code: voer dit commando uit in een terminal en zet je sleutel op de plek van sk_live_...",
+          "desktop": "Claude Desktop, Cursor en andere: voeg deze regel toe aan de configuratie van MCP-servers. De sleutel hoort alleen in de variabele BILLANTA_API_KEY.",
+          "desktopHint": "In Claude Desktop staat de configuratie onder Instellingen → Ontwikkelaar → Configuratie bewerken, in Cursor onder Settings → MCP. Start de app opnieuw na het opslaan. npx haalt mcp-remote op, dus Node.js moet geïnstalleerd zijn."
+        },
+        "step3": {
+          "title": "Probeer het",
+          "body": "Vraag bijvoorbeeld: \"Welke facturen zijn te laat?\" of \"Maak een factuur voor Novák s.r.o. voor 10 uur advies.\" Het concept vind je bij je facturen met de status Te controleren."
+        },
+        "can": {
+          "title": "Wat de assistent kan",
+          "read": "Facturen, contacten, uitgaven, banktransacties en de samenvatting van het dashboard lezen.",
+          "contacts": "Contacten aanmaken en bewerken en een bedrijf opzoeken in het register.",
+          "drafts": "Een factuurconcept klaarzetten of bewerken. Het concept wacht op jouw controle.",
+          "expenses": "Een uitgave vastleggen die jij daarna controleert.",
+          "settings": "Basisgegevens van het bedrijf en factuurinstellingen wijzigen, zoals betaaltermijn of nummering."
+        },
+        "cannot": {
+          "title": "Wat de assistent niet kan",
+          "issue": "Een factuur uitgeven of versturen, of als verstuurd markeren. Dat doe je altijd zelf in de app.",
+          "bank": "De bankrekening, betaalgegevens of het e-mailadres waarmee facturen worden verstuurd wijzigen.",
+          "delete": "Iets verwijderen.",
+          "admin": "API-sleutels, het team, het abonnement of webhooks beheren."
+        },
+        "security": {
+          "title": "Behandel de sleutel als een wachtwoord",
+          "body": "Wie je sleutel heeft, ziet de gegevens van je bedrijf. Zet hem niet in gedeelde bestanden of repositories. Lekt hij uit, trek hem dan meteen in bij API-sleutels en maak een nieuwe."
+        }
+      }
     },
     "backup": {
       "title": "Back-upbestemmingen",

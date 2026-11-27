@@ -1548,7 +1548,52 @@
       },
       "readOnlyBadge": "Read-only",
       "twoFactorRequired": "API keys can only be created with two-factor authentication.",
-      "planRequired": "This feature is part of a higher plan. Pick one under Plan and billing."
+      "planRequired": "This feature is part of a higher plan. Pick one under Plan and billing.",
+      "mcp": {
+        "linkTitle": "MCP / AI assistants",
+        "linkDescription": "Connect Claude, Cursor or another AI assistant to Billanta with an API key.",
+        "title": "MCP / AI assistants",
+        "description": "Over MCP, an AI assistant can read your Billanta data and prepare drafts. All it needs is an API key.",
+        "backToKeys": "Back to API keys",
+        "url": {
+          "title": "MCP server URL",
+          "description": "Give this URL to your assistant. The key goes in the Authorization header."
+        },
+        "step1": {
+          "title": "Create an API key",
+          "body": "Generate a new key under API keys. If the assistant should only read and answer questions, tick Read-only. To create contacts, invoice drafts and expenses it needs a read+write key.",
+          "link": "Go to API keys"
+        },
+        "step2": {
+          "title": "Connect the assistant",
+          "claudeCode": "Claude Code: run this command in a terminal and put your key in place of sk_live_...",
+          "desktop": "Claude Desktop, Cursor and others: add this entry to the MCP server config. The key only goes into the BILLANTA_API_KEY variable.",
+          "desktopHint": "In Claude Desktop the config is under Settings → Developer → Edit config, in Cursor under Settings → MCP. Restart the app after saving. mcp-remote is fetched by npx, so Node.js must be installed."
+        },
+        "step3": {
+          "title": "Try it",
+          "body": "Ask for example: \"Which invoices are overdue?\" or \"Draft an invoice for Novák s.r.o. for 10 hours of consulting.\" You will find the draft among your invoices with the status Pending review."
+        },
+        "can": {
+          "title": "What the assistant can do",
+          "read": "Read invoices, contacts, expenses, bank transactions and the dashboard summary.",
+          "contacts": "Create and edit contacts and look a company up in the business register.",
+          "drafts": "Prepare or edit an invoice draft. The draft waits for your review.",
+          "expenses": "Record an expense for you to check.",
+          "settings": "Edit basic company details and invoice settings, such as due days or number formats."
+        },
+        "cannot": {
+          "title": "What the assistant cannot do",
+          "issue": "Issue or send an invoice, or mark it as sent. You always do that yourself in the app.",
+          "bank": "Change the bank account, payment details or the e-mail invoices are sent from.",
+          "delete": "Delete anything.",
+          "admin": "Manage API keys, the team, billing or webhooks."
+        },
+        "security": {
+          "title": "Treat the key like a password",
+          "body": "Anyone with your key can see your company data. Keep it out of shared files and repositories. If it leaks, revoke it under API keys straight away and create a new one."
+        }
+      }
     },
     "backup": {
       "title": "Backup destinations",

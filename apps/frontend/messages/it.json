@@ -1547,7 +1547,52 @@
       },
       "readOnlyBadge": "Sola lettura",
       "twoFactorRequired": "Le chiavi API possono essere create solo con l'autenticazione a due fattori.",
-      "planRequired": "Questa funzione fa parte di un piano superiore. Lo scelga in Piano e fatturazione."
+      "planRequired": "Questa funzione fa parte di un piano superiore. Lo scelga in Piano e fatturazione.",
+      "mcp": {
+        "linkTitle": "MCP / assistenti IA",
+        "linkDescription": "Collega Claude, Cursor o un altro assistente IA a Billanta con una chiave API.",
+        "title": "MCP / assistenti IA",
+        "description": "Tramite MCP un assistente IA può leggere i tuoi dati in Billanta e preparare bozze. Gli serve solo una chiave API.",
+        "backToKeys": "Torna alle chiavi API",
+        "url": {
+          "title": "Indirizzo del server MCP",
+          "description": "Inserisci questo indirizzo nell’assistente. La chiave viene inviata nell’intestazione Authorization."
+        },
+        "step1": {
+          "title": "Crea una chiave API",
+          "body": "Genera una nuova chiave in Chiavi API. Se l’assistente deve solo leggere e rispondere alle domande, seleziona Sola lettura. Per creare contatti, bozze di fattura e spese serve una chiave di lettura e scrittura.",
+          "link": "Vai alle chiavi API"
+        },
+        "step2": {
+          "title": "Collega l’assistente",
+          "claudeCode": "Claude Code: esegui questo comando nel terminale e inserisci la tua chiave al posto di sk_live_...",
+          "desktop": "Claude Desktop, Cursor e altri: aggiungi questa voce alla configurazione dei server MCP. La chiave va solo nella variabile BILLANTA_API_KEY.",
+          "desktopHint": "In Claude Desktop la configurazione è in Impostazioni → Sviluppatore → Modifica configurazione, in Cursor in Settings → MCP. Riavvia l’app dopo aver salvato. mcp-remote viene scaricato da npx, quindi serve Node.js."
+        },
+        "step3": {
+          "title": "Provalo",
+          "body": "Chiedi ad esempio: «Quali fatture sono scadute?» oppure «Prepara una fattura per Novák s.r.o. per 10 ore di consulenza.» Troverai la bozza tra le fatture con lo stato Da verificare."
+        },
+        "can": {
+          "title": "Cosa può fare l’assistente",
+          "read": "Leggere fatture, contatti, spese, movimenti bancari e il riepilogo della dashboard.",
+          "contacts": "Creare e modificare contatti e cercare un’azienda nel registro.",
+          "drafts": "Preparare o modificare una bozza di fattura. La bozza attende la tua verifica.",
+          "expenses": "Registrare una spesa che poi verifichi tu.",
+          "settings": "Modificare i dati di base dell’azienda e le impostazioni delle fatture, come i termini di pagamento o la numerazione."
+        },
+        "cannot": {
+          "title": "Cosa non può fare l’assistente",
+          "issue": "Emettere o inviare una fattura, né segnarla come inviata. Lo fai sempre tu nell’app.",
+          "bank": "Cambiare il conto bancario, i dati di pagamento o l’e-mail da cui partono le fatture.",
+          "delete": "Eliminare qualsiasi cosa.",
+          "admin": "Gestire chiavi API, team, abbonamento o webhook."
+        },
+        "security": {
+          "title": "Custodisci la chiave come una password",
+          "body": "Chi ha la tua chiave vede i dati della tua azienda. Non metterla in file condivisi né in repository. Se finisce in mani sbagliate, revocala subito in Chiavi API e creane una nuova."
+        }
+      }
     },
     "backup": {
       "title": "Destinazioni di backup",
