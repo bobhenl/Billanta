@@ -964,8 +964,14 @@
       "successWithDuplicates": "{total} Umsatz/Umsätze importiert, {matched} automatisch zugeordnet. {duplicates, plural, one {# Zahlung war} other {# Zahlungen waren}} bereits in Billanta und wurden übersprungen.",
       "errors": {
         "bank_statement_unknown_format": "Dieses Format kennen wir nicht. Laden Sie den Kontoauszug als camt.053 (XML), GPC/ABO oder CSV hoch.",
-        "bank_statement_invalid": "Der Kontoauszug ist beschädigt oder unvollständig."
-      }
+        "bank_statement_invalid": "Der Kontoauszug ist beschädigt oder unvollständig.",
+        "bank_statement_nothing_matches_filter": "Kein Umsatz im Auszug enthält die eingegebenen Wörter."
+      },
+      "filterToggle": "Nur einige Umsätze hochladen",
+      "filterLabel": "Nur Umsätze speichern, die enthalten",
+      "filterPlaceholder": "z. B. Google, Facebook",
+      "filterHint": "Wörter mit Komma trennen. Andere Umsätze des Auszugs werden in Billanta gar nicht gespeichert, praktisch bei einem Privatkonto.",
+      "filteredOut": "{n, plural, one {Der Filter hat # weiteren Umsatz ausgelassen.} other {Der Filter hat # weitere Umsätze ausgelassen.}}"
     },
     "empty": "Noch keine Bankumsätze. Laden Sie über die Schaltfläche oben rechts einen Kontoauszug hoch.",
     "filterLabel": "Anzeigen",

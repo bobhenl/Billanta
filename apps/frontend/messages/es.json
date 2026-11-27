@@ -964,8 +964,14 @@
       "successWithDuplicates": "Se han importado {total} movimiento(s); {matched} conciliado(s) automáticamente. {duplicates, plural, one {# pago ya estaba en Billanta y se ha omitido} other {# pagos ya estaban en Billanta y se han omitido}}.",
       "errors": {
         "bank_statement_unknown_format": "No conocemos este formato. Suba el extracto en camt.053 (XML), GPC/ABO o CSV.",
-        "bank_statement_invalid": "El extracto está dañado o incompleto."
-      }
+        "bank_statement_invalid": "El extracto está dañado o incompleto.",
+        "bank_statement_nothing_matches_filter": "Ningún movimiento del extracto contiene las palabras indicadas."
+      },
+      "filterToggle": "Subir solo algunos movimientos",
+      "filterLabel": "Guardar solo movimientos que contengan",
+      "filterPlaceholder": "p. ej. Google, Facebook",
+      "filterHint": "Separe las palabras con comas. Los demás movimientos del extracto no se guardan en Billanta, útil para una cuenta personal.",
+      "filteredOut": "{n, plural, one {El filtro omitió # movimiento más.} other {El filtro omitió # movimientos más.}}"
     },
     "empty": "Aún no hay movimientos bancarios. Suba un extracto con el botón de arriba a la derecha.",
     "filterLabel": "Mostrar",

@@ -964,8 +964,14 @@
       "successWithDuplicates": "Importada(s) {total} transação(ões), {matched} conciliada(s) automaticamente. {duplicates, plural, one {# pagamento já estava} other {# pagamentos já estavam}} na Billanta e foram ignorados.",
       "errors": {
         "bank_statement_unknown_format": "Não conhecemos este formato. Carregue o extrato em camt.053 (XML), GPC/ABO ou CSV.",
-        "bank_statement_invalid": "O extrato está danificado ou incompleto."
-      }
+        "bank_statement_invalid": "O extrato está danificado ou incompleto.",
+        "bank_statement_nothing_matches_filter": "Nenhum movimento do extrato contém as palavras indicadas."
+      },
+      "filterToggle": "Carregar só alguns movimentos",
+      "filterLabel": "Guardar só movimentos que contenham",
+      "filterPlaceholder": "p. ex. Google, Facebook",
+      "filterHint": "Separe as palavras com vírgulas. Os outros movimentos do extrato não são guardados na Billanta, útil para uma conta pessoal.",
+      "filteredOut": "{n, plural, one {O filtro deixou de fora mais # movimento.} other {O filtro deixou de fora mais # movimentos.}}"
     },
     "empty": "Ainda não há transações bancárias. Carregue um extrato com o botão no canto superior direito.",
     "filterLabel": "Mostrar",

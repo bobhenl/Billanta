@@ -27,6 +27,7 @@ import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 const czNumber = (n: number) => n.toLocaleString("cs-CZ", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 import { payerName } from "./payer-name";
 import { parseUploadedStatement } from "./statement-upload";
+import { filterUploadedRows } from "./import-filter";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 
@@ -127,9 +128,11 @@ export class BankReconciliationService {
    * opened (`db` here is `req.tenantDb`), so a parse/insert failure partway
    * through rolls back the whole import — never a half-imported statement.
    */
-  async importStatement(db: TenantDb, tenantId: string, filename: string, file: Buffer) {
-    const { source, rows } = parseUploadedStatement(filename, file);
-    const result = await this.persistAndMatch(db, tenantId, filename, source, rows);
+  async importStatement(db: TenantDb, tenantId: string, filename: string, file: Buffer, keywords?: string | null) {
+    const parsed = parseUploadedStatement(filename, file);
+    const { rows, filteredOut } = filterUploadedRows(parsed.rows, keywords);
+    if (rows.length === 0 && filteredOut > 0) throw new BadRequestException("bank_statement_nothing_matches_filter");
+    const result = { ...(await this.persistAndMatch(db, tenantId, filename, parsed.source, rows)), filteredOut };
     // A credit from PayPal in the statement may be a withdrawal the PayPal sync already knows.
     await this.pairPaypalTransfers(db);
     const { total, matched, unmatched, ruled, duplicates } = result.summary;

@@ -964,8 +964,14 @@
       "successWithDuplicates": "{total} transactie(s) geïmporteerd, {matched} automatisch gekoppeld. {duplicates, plural, one {# betaling stond al in Billanta en is overgeslagen} other {# betalingen stonden al in Billanta en zijn overgeslagen}}.",
       "errors": {
         "bank_statement_unknown_format": "Dit formaat kennen we niet. Upload het afschrift als camt.053 (XML), GPC/ABO of CSV.",
-        "bank_statement_invalid": "Het afschrift is beschadigd of onvolledig."
-      }
+        "bank_statement_invalid": "Het afschrift is beschadigd of onvolledig.",
+        "bank_statement_nothing_matches_filter": "Geen enkele transactie in het afschrift bevat de opgegeven woorden."
+      },
+      "filterToggle": "Alleen sommige transacties uploaden",
+      "filterLabel": "Alleen transacties opslaan die bevatten",
+      "filterPlaceholder": "bijv. Google, Facebook",
+      "filterHint": "Scheid woorden met komma’s. Andere transacties uit het afschrift komen helemaal niet in Billanta, handig voor een privérekening.",
+      "filteredOut": "{n, plural, one {Het filter liet nog # transactie weg.} other {Het filter liet nog # transacties weg.}}"
     },
     "empty": "Nog geen banktransacties. Upload een afschrift met de knop rechtsboven.",
     "filterLabel": "Toon",

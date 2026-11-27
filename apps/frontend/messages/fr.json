@@ -964,8 +964,14 @@
       "successWithDuplicates": "{total} opération(s) importée(s), dont {matched} rapprochée(s) automatiquement. {duplicates, plural, one {# paiement était déjà dans Billanta et a été ignoré} other {# paiements étaient déjà dans Billanta et ont été ignorés}}.",
       "errors": {
         "bank_statement_unknown_format": "Nous ne reconnaissons pas ce format. Importez le relevé au format camt.053 (XML), GPC/ABO ou CSV.",
-        "bank_statement_invalid": "Le relevé est endommagé ou incomplet."
-      }
+        "bank_statement_invalid": "Le relevé est endommagé ou incomplet.",
+        "bank_statement_nothing_matches_filter": "Aucune opération du relevé ne contient les mots saisis."
+      },
+      "filterToggle": "Importer seulement certaines opérations",
+      "filterLabel": "Enregistrer seulement les opérations contenant",
+      "filterPlaceholder": "p. ex. Google, Facebook",
+      "filterHint": "Séparez les mots par des virgules. Les autres opérations du relevé ne sont pas du tout enregistrées dans Billanta, pratique pour un compte personnel.",
+      "filteredOut": "{n, plural, one {Le filtre a écarté # autre opération.} other {Le filtre a écarté # autres opérations.}}"
     },
     "empty": "Aucune opération bancaire pour le moment. Importez un relevé avec le bouton en haut à droite.",
     "filterLabel": "Afficher",

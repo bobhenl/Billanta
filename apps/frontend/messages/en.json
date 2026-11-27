@@ -965,8 +965,14 @@
       "successWithDuplicates": "Imported {total} transaction(s), {matched} matched automatically. {duplicates, plural, one {# payment was} other {# payments were}} already in Billanta and skipped.",
       "errors": {
         "bank_statement_unknown_format": "We don't know this format. Upload the statement as camt.053 (XML), GPC/ABO or CSV.",
-        "bank_statement_invalid": "The statement is damaged or incomplete."
-      }
+        "bank_statement_invalid": "The statement is damaged or incomplete.",
+        "bank_statement_nothing_matches_filter": "No movement in the statement contains the words you entered."
+      },
+      "filterToggle": "Upload only some movements",
+      "filterLabel": "Store only movements containing",
+      "filterPlaceholder": "e.g. Google, Facebook",
+      "filterHint": "Separate words with commas. Other movements in the statement are not stored in Billanta at all, which suits a personal account.",
+      "filteredOut": "{n, plural, one {The filter left out # more movement.} other {The filter left out # more movements.}}"
     },
     "empty": "No bank transactions yet. Upload a statement with the button at the top right.",
     "filterLabel": "Show",

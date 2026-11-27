@@ -964,8 +964,14 @@
       "successWithDuplicates": "Movimenti importati: {total}, abbinati automaticamente: {matched}. {duplicates, plural, one {# pagamento era già presente in Billanta ed è stato saltato} many {# pagamenti erano già presenti in Billanta e sono stati saltati} other {# pagamenti erano già presenti in Billanta e sono stati saltati}}.",
       "errors": {
         "bank_statement_unknown_format": "Formato non riconosciuto. Carichi l'estratto conto in formato camt.053 (XML), GPC/ABO o CSV.",
-        "bank_statement_invalid": "L'estratto conto è danneggiato o incompleto."
-      }
+        "bank_statement_invalid": "L'estratto conto è danneggiato o incompleto.",
+        "bank_statement_nothing_matches_filter": "Nessun movimento dell’estratto contiene le parole inserite."
+      },
+      "filterToggle": "Carica solo alcuni movimenti",
+      "filterLabel": "Salva solo i movimenti che contengono",
+      "filterPlaceholder": "es. Google, Facebook",
+      "filterHint": "Separa le parole con una virgola. Gli altri movimenti dell’estratto non vengono salvati in Billanta, utile per un conto personale.",
+      "filteredOut": "{n, plural, one {Il filtro ha escluso # altro movimento.} other {Il filtro ha escluso altri # movimenti.}}"
     },
     "empty": "Ancora nessun movimento bancario. Carichi un estratto conto con il pulsante in alto a destra.",
     "filterLabel": "Mostra",

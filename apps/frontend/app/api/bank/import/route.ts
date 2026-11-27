@@ -16,6 +16,8 @@ export async function POST(request: Request) {
     }
     const body = new FormData();
     body.set('file', file, file instanceof File ? file.name : 'statement.csv');
+    const keywords = incoming.get('keywords');
+    if (typeof keywords === 'string' && keywords.trim()) body.set('keywords', keywords.slice(0, 500));
     const res = await apiFetchRaw('/api/v1/bank-reconciliation/import', { method: 'POST', body });
     return NextResponse.json(await res.json());
   } catch (error) {

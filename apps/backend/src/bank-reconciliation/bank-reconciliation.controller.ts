@@ -63,14 +63,17 @@ export class BankReconciliationController {
   @ApiBody({
     schema: {
       type: "object",
-      properties: { file: { type: "string", format: "binary" } },
+      properties: {
+        file: { type: "string", format: "binary" },
+        keywords: { type: "string", description: "Optional: store only movements containing one of these words (comma separated)" },
+      },
       required: ["file"],
     },
   })
   @ApiOperation({
     summary: "Import a bank statement (CSV, camt.053, GPC) and auto-match transactions against issued invoices",
   })
-  async importStatement(@Req() req: TenantScopedRequest, @UploadedFile() file?: UploadedCsvFile) {
+  async importStatement(@Req() req: TenantScopedRequest, @UploadedFile() file?: UploadedCsvFile, @Body("keywords") keywords?: unknown) {
     if (!file) {
       throw new BadRequestException('No file uploaded – expected a multipart form field named "file"');
     }
@@ -78,7 +81,13 @@ export class BankReconciliationController {
       throw new BadRequestException("bank_statement_unknown_format");
     }
 
-    return this.bankReconciliationService.importStatement(req.tenantDb!, req.user!.tenantId, file.originalname, file.buffer);
+    return this.bankReconciliationService.importStatement(
+      req.tenantDb!,
+      req.user!.tenantId,
+      file.originalname,
+      file.buffer,
+      typeof keywords === "string" ? keywords : null,
+    );
   }
 
   @Get("transactions")

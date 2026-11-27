@@ -964,8 +964,14 @@
       "successWithDuplicates": "{total} tranzakció importálva, ebből {matched} automatikusan párosítva. {duplicates, plural, one {# befizetés már szerepelt} other {# befizetés már szerepelt}} a Billantában, ezeket kihagytuk.",
       "errors": {
         "bank_statement_unknown_format": "Ezt a formátumot nem ismerjük. Töltse fel a kivonatot camt.053 (XML), GPC/ABO vagy CSV formátumban.",
-        "bank_statement_invalid": "A kivonat sérült vagy hiányos."
-      }
+        "bank_statement_invalid": "A kivonat sérült vagy hiányos.",
+        "bank_statement_nothing_matches_filter": "A kivonatban egyik tétel sem tartalmazza a megadott szavakat."
+      },
+      "filterToggle": "Csak néhány tétel feltöltése",
+      "filterLabel": "Csak az ezeket tartalmazó tételek mentése",
+      "filterPlaceholder": "pl. Google, Facebook",
+      "filterHint": "A szavakat vesszővel válassza el. A kivonat többi tétele egyáltalán nem kerül a Billantába, ez magánszámlánál hasznos.",
+      "filteredOut": "{n, plural, other {A szűrő további # tételt hagyott ki.}}"
     },
     "empty": "Még nincsenek banki tranzakciók. Töltsön fel kivonatot a jobb felső sarokban lévő gombbal.",
     "filterLabel": "Megjelenítés",

@@ -964,8 +964,14 @@
       "successWithDuplicates": "Zaimportowano transakcje: {total}, automatycznie sparowano: {matched}. {duplicates, plural, one {# płatność była już w Billanta i została pominięta} few {# płatności były już w Billanta i zostały pominięte} many {# płatności było już w Billanta i zostało pominiętych} other {# płatności było już w Billanta i zostało pominiętych}}.",
       "errors": {
         "bank_statement_unknown_format": "Nie znamy tego formatu. Wgraj wyciąg jako camt.053 (XML), GPC/ABO lub CSV.",
-        "bank_statement_invalid": "Wyciąg jest uszkodzony lub niekompletny."
-      }
+        "bank_statement_invalid": "Wyciąg jest uszkodzony lub niekompletny.",
+        "bank_statement_nothing_matches_filter": "Żadna operacja w wyciągu nie zawiera podanych słów."
+      },
+      "filterToggle": "Wgraj tylko niektóre operacje",
+      "filterLabel": "Zapisz tylko operacje zawierające",
+      "filterPlaceholder": "np. Google, Facebook",
+      "filterHint": "Słowa oddziel przecinkiem. Pozostałe operacje z wyciągu w ogóle nie trafią do Billanty, przydaje się to przy koncie prywatnym.",
+      "filteredOut": "{n, plural, one {Filtr pominął # operację.} few {Filtr pominął # operacje.} other {Filtr pominął # operacji.}}"
     },
     "empty": "Nie ma jeszcze transakcji bankowych. Wgraj wyciąg przyciskiem w prawym górnym rogu.",
     "filterLabel": "Pokaż",

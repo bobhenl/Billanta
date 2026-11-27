@@ -964,8 +964,14 @@
       "successWithDuplicates": "Tranzacții importate: {total}, dintre care {matched} potrivite automat. {duplicates, plural, one {# plată era deja în Billanta și a fost omisă} few {# plăți erau deja în Billanta și au fost omise} other {# de plăți erau deja în Billanta și au fost omise}}.",
       "errors": {
         "bank_statement_unknown_format": "Nu cunoaștem acest format. Încărcați extrasul ca camt.053 (XML), GPC/ABO sau CSV.",
-        "bank_statement_invalid": "Extrasul este deteriorat sau incomplet."
-      }
+        "bank_statement_invalid": "Extrasul este deteriorat sau incomplet.",
+        "bank_statement_nothing_matches_filter": "Nicio tranzacție din extras nu conține cuvintele introduse."
+      },
+      "filterToggle": "Încărcați doar unele tranzacții",
+      "filterLabel": "Salvați doar tranzacțiile care conțin",
+      "filterPlaceholder": "de ex. Google, Facebook",
+      "filterHint": "Separați cuvintele prin virgulă. Celelalte tranzacții din extras nu ajung deloc în Billanta, util pentru un cont personal.",
+      "filteredOut": "{n, plural, one {Filtrul a omis încă # tranzacție.} few {Filtrul a omis încă # tranzacții.} other {Filtrul a omis încă # de tranzacții.}}"
     },
     "empty": "Încă nu există tranzacții bancare. Încărcați un extras cu butonul din dreapta sus.",
     "filterLabel": "Afișați",

@@ -9,7 +9,7 @@ import { toast } from '@/components/toaster';
 
 /** What the backend parses: CSV, camt.053 XML and GPC/ABO. */
 const STATEMENT_EXTENSIONS = ['.csv', '.xml', '.gpc', '.abo'];
-const STATEMENT_ERRORS = ['bank_statement_unknown_format', 'bank_statement_invalid'];
+const STATEMENT_ERRORS = ['bank_statement_unknown_format', 'bank_statement_invalid', 'bank_statement_nothing_matches_filter'];
 
 /** Lets the bank connections box open the same file picker. */
 export const STATEMENT_INPUT_ID = 'bank-statement-file';
@@ -20,6 +20,9 @@ export function BankImport() {
   const router = useRouter();
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
+  // Optional words: from a personal account's statement only, say, the ad spend gets stored.
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [keywords, setKeywords] = useState('');
 
   async function upload(file: File) {
     const name = file.name.toLowerCase();
@@ -31,9 +34,11 @@ export function BankImport() {
     try {
       const body = new FormData();
       body.set('file', file);
+      if (filterOpen && keywords.trim()) body.set('keywords', keywords);
       const res = await fetch('/api/bank/import', { method: 'POST', body });
       const json = (await res.json().catch(() => ({}))) as {
         summary?: { total: number; matched: number; duplicates?: number };
+        filteredOut?: number;
         message?: unknown;
         errors?: unknown;
       };
@@ -50,10 +55,9 @@ export function BankImport() {
         return;
       }
       const { total, matched, duplicates = 0 } = json.summary;
-      toast({
-        text: duplicates > 0 ? t('successWithDuplicates', { total, matched, duplicates }) : t('success', { total, matched }),
-        tone: 'ok'
-      });
+      const filteredOut = json.filteredOut ?? 0;
+      const text = duplicates > 0 ? t('successWithDuplicates', { total, matched, duplicates }) : t('success', { total, matched });
+      toast({ text: filteredOut > 0 ? `${text} ${t('filteredOut', { n: filteredOut })}` : text, tone: 'ok' });
       router.refresh();
     } finally {
       setBusy(false);
@@ -83,6 +87,23 @@ export function BankImport() {
         {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4" />}
         {busy ? t('importing') : t('submit')}
       </button>
+      {filterOpen ? (
+        <label className="flex w-64 max-w-full flex-col gap-1 text-left text-xs">
+          <span className="font-semibold">{t('filterLabel')}</span>
+          <input
+            value={keywords}
+            onChange={(e) => setKeywords(e.target.value)}
+            maxLength={500}
+            placeholder={t('filterPlaceholder')}
+            className="h-9 rounded-lg border border-border bg-background px-2.5 text-sm"
+          />
+          <span className="text-[11px] text-muted-foreground">{t('filterHint')}</span>
+        </label>
+      ) : (
+        <button type="button" onClick={() => setFilterOpen(true)} className="text-[11px] font-semibold text-primary hover:underline">
+          {t('filterToggle')}
+        </button>
+      )}
       <InfoHint
         label={t('formatHelpLabel')}
         rowClassName="justify-end"

@@ -965,8 +965,14 @@
       "successWithDuplicates": "Naimportovaných {total} transakcií, {matched} spárovaných automaticky. {duplicates, plural, one {# platbu už Billanta mala} few {# platby už Billanta mala} other {# platieb už Billanta mala}}, tie sme preskočili.",
       "errors": {
         "bank_statement_unknown_format": "Tento formát nepoznáme. Nahrajte výpis ako camt.053 (XML), GPC/ABO alebo CSV.",
-        "bank_statement_invalid": "Výpis je poškodený alebo neúplný."
-      }
+        "bank_statement_invalid": "Výpis je poškodený alebo neúplný.",
+        "bank_statement_nothing_matches_filter": "Vo výpise nie je žiadny pohyb, ktorý by obsahoval zadané slová."
+      },
+      "filterToggle": "Nahrať len niektoré pohyby",
+      "filterLabel": "Uložiť len pohyby obsahujúce",
+      "filterPlaceholder": "napr. Google, Facebook",
+      "filterHint": "Slová oddeľte čiarkou. Ostatné pohyby z výpisu sa do Billanty vôbec neuložia, hodí sa to pri osobnom účte.",
+      "filteredOut": "{n, plural, one {# ďalší pohyb filter vynechal.} few {# ďalšie pohyby filter vynechal.} other {# ďalších pohybov filter vynechal.}}"
     },
     "empty": "Zatiaľ tu nie sú žiadne bankové transakcie. Nahrajte výpis tlačidlom vpravo hore.",
     "filterLabel": "Zobraziť",

@@ -964,8 +964,14 @@
       "successWithDuplicates": "Імпортовано транзакцій: {total}, автоматично зіставлено: {matched}. {duplicates, plural, one {# платіж Billanta вже мала} few {# платежі Billanta вже мала} many {# платежів Billanta вже мала} other {# платежу Billanta вже мала}}, їх ми пропустили.",
       "errors": {
         "bank_statement_unknown_format": "Цей формат нам невідомий. Завантажте виписку як camt.053 (XML), GPC/ABO або CSV.",
-        "bank_statement_invalid": "Виписка пошкоджена або неповна."
-      }
+        "bank_statement_invalid": "Виписка пошкоджена або неповна.",
+        "bank_statement_nothing_matches_filter": "У виписці немає жодної операції з указаними словами."
+      },
+      "filterToggle": "Завантажити лише деякі операції",
+      "filterLabel": "Зберегти лише операції, що містять",
+      "filterPlaceholder": "напр. Google, Facebook",
+      "filterHint": "Слова розділяйте комою. Інші операції з виписки взагалі не потраплять до Billanta, це зручно для особистого рахунку.",
+      "filteredOut": "{n, plural, one {Фільтр пропустив # операцію.} few {Фільтр пропустив # операції.} other {Фільтр пропустив # операцій.}}"
     },
     "empty": "Поки що тут немає банківських транзакцій. Завантажте виписку кнопкою праворуч угорі.",
     "filterLabel": "Показати",
