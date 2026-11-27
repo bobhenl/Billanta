@@ -209,4 +209,49 @@ describe("AiService", () => {
       expect(usage.consumeUsage).toHaveBeenCalledWith(expect.anything(), "t1", "ai_credits", expect.any(String), 5);
     });
   });
+
+  describe("receipts in Důvěrný režim", () => {
+    const FREE = { ...TENANT, planEnforced: true, subscriptionStatus: "none", isDemo: false };
+
+    it("refuses an encrypted receipt before the model or the credits see it", async () => {
+      const { generateDataKey, sealFile } = await import("@faktur/cz-compliance");
+      const { body } = await sealFile(await generateDataKey(), new TextEncoder().encode("%PDF-1.7"), { name: "a.pdf", mime: "application/pdf" });
+      const err = await new AiService(contacts)
+        .readReceipt(fakeDb([[FREE]]).db as never, "t1", { buffer: Buffer.from(body), mediaType: "application/pdf" })
+        .catch((e: unknown) => e);
+      expect(err).toBeInstanceOf(HttpException);
+      expect((err as HttpException).getStatus()).toBe(409);
+      expect((err as HttpException).message).toBe("encrypted_file");
+      expect(parseMock).not.toHaveBeenCalled();
+      expect(usage.consumeUsage).not.toHaveBeenCalled();
+    });
+
+    it("reads a decrypted receipt once without storing or logging it", async () => {
+      const marker = "UCTENKA-7f3a-DUVERNE";
+      const file = Buffer.from(`%PDF-1.7 ${marker}`);
+      const b64 = file.toString("base64");
+      const spies = (["log", "info", "warn", "error", "debug"] as const).map((m) => vi.spyOn(console, m).mockImplementation(() => {}));
+      const { Logger } = await import("@nestjs/common");
+      const loggerSpies = (["log", "warn", "error", "debug", "verbose"] as const).map((m) => vi.spyOn(Logger.prototype, m).mockImplementation(() => {}));
+      parseMock.mockResolvedValue({ stop_reason: "end_turn", parsed_output: { supplier: { ico: null, name: null }, amount: 100 } });
+      const fake = fakeDb([[FREE]]);
+      const insert = vi.fn(() => ({ values: vi.fn(() => ({ returning: vi.fn(async () => []) })) }));
+      const db = { ...fake.db, insert, execute: vi.fn(async () => []) };
+      try {
+        const result = await new AiService(contacts).readReceipt(db as never, "t1", { buffer: file, mediaType: "application/pdf" });
+        expect(result.suggestion).toMatchObject({ amount: 100 });
+        // The model got the file...
+        expect(JSON.stringify(parseMock.mock.calls)).toContain(b64);
+        // ...and nothing else did: no row, no update, no usage record, no log line.
+        expect(insert).not.toHaveBeenCalled();
+        expect(db.execute).not.toHaveBeenCalled();
+        const elsewhere = JSON.stringify([fake.updates, usage.consumeUsage.mock.calls, ...spies.map((s) => s.mock.calls), ...loggerSpies.map((s) => s.mock.calls)]);
+        expect(elsewhere).not.toContain(b64);
+        expect(elsewhere).not.toContain(marker);
+      } finally {
+        spies.forEach((s) => s.mockRestore());
+        loggerSpies.forEach((s) => s.mockRestore());
+      }
+    });
+  });
 });

@@ -781,8 +781,31 @@ export const invoiceAttachments = pgTable("invoice_attachments", {
   mime: varchar("mime", { length: 100 }).notNull(),
   sizeBytes: integer("size_bytes").notNull(),
   data: text("data").notNull(),
+  /** Encrypted in the browser (migration 0112): file key, name and type sealed; `data` is ciphertext. */
+  encMeta: text("enc_meta"),
   sendWithEmail: boolean("send_with_email").notNull().default(true),
   showInPortal: boolean("show_in_portal").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * Files attached to an expense: the receipt or received invoice itself
+ * (migration 0112). Plain, or encrypted in the browser like invoice
+ * attachments; an encrypted row keeps placeholders in filename/mime.
+ */
+export const expenseAttachments = pgTable("expense_attachments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  expenseId: uuid("expense_id")
+    .notNull()
+    .references(() => expenses.id, { onDelete: "cascade" }),
+  filename: varchar("filename", { length: 200 }).notNull(),
+  mime: varchar("mime", { length: 100 }).notNull(),
+  sizeBytes: integer("size_bytes").notNull(),
+  data: text("data").notNull(),
+  encMeta: text("enc_meta"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

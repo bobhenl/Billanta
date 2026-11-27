@@ -329,6 +329,7 @@ export class InvoicesService {
     invoice: typeof schema.invoices.$inferSelect,
     contact: typeof schema.contacts.$inferSelect,
     kind: "invoice" | "reminder",
+    extra: EmailAttachment[] = [],
   ): Promise<EmailCustomization> {
     const [liveTenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
     const prefs = emailPrefsOf(liveTenant?.emailPrefs);
@@ -346,6 +347,8 @@ export class InvoicesService {
     if (kind === "invoice" && this.attachmentsService) {
       attachments.push(...(await this.attachmentsService.forEmail(db, invoice.id)));
     }
+    // Decrypted in the browser for this e-mail only (send-with-files).
+    if (kind === "invoice") attachments.push(...extra);
     const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, invoice.id));
     const breakdown = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
     // {company}, {ico}, {iban}, {customer}… as on the document (its snapshot, if issued).
@@ -1391,7 +1394,7 @@ export class InvoicesService {
    * for the no-auth client-portal view), emails it via
    * `EmailService.sendInvoiceEmail`, then stamps `sent_at`.
    */
-  async sendInvoice(db: TenantDb, id: string, tenantId?: string) {
+  async sendInvoice(db: TenantDb, id: string, tenantId?: string, extra: EmailAttachment[] = []) {
     const [invoice] = await db.select().from(schema.invoices).where(eq(schema.invoices.id, id)).limit(1);
     if (!invoice) {
       throw new NotFoundException(`Invoice ${id} not found`);
@@ -1434,7 +1437,7 @@ export class InvoicesService {
         language: invoice.language,
         documentType: invoice.documentType,
         credit: await this.emailCredit(db, invoice.tenantId, invoice.language),
-        ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "invoice") } : {}),
+        ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "invoice", extra) } : {}),
       },
       // Collapses a double-click into one e-mail; a deliberate resend a minute later still goes out.
       { tenantId: invoice.tenantId, db, idempotencyKey: `invoice:${invoice.id}:${Math.floor(Date.now() / 60_000)}` },

@@ -1345,6 +1345,8 @@ AS $$
   WHERE i.public_token = p_public_token
     AND i.status NOT IN ('draft', 'pending_review')
     AND a.show_in_portal
+    -- Encrypted files (0112) only open in a browser with the company key.
+    AND a.enc_meta IS NULL
   ORDER BY a.created_at;
 $$;
 
@@ -1364,6 +1366,8 @@ AS $$
     AND a.id = p_attachment_id
     AND i.status NOT IN ('draft', 'pending_review')
     AND a.show_in_portal
+    -- Encrypted files (0112) only open in a browser with the company key.
+    AND a.enc_meta IS NULL
   LIMIT 1;
 $$;
 

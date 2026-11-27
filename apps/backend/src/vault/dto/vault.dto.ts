@@ -1,10 +1,11 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
-import { AVAILABLE_VAULT_CATEGORIES } from "@faktur/cz-compliance";
+import { AVAILABLE_VAULT_CATEGORIES, type VaultCategory } from "@faktur/cz-compliance";
 import { isSealed } from "../sealed";
 
 const b64 = (max: number) => z.string().max(max).regex(/^[A-Za-z0-9+/]+={0,2}$/, "base64");
 const sealed = z.string().max(20_000).refine(isSealed, "sealed");
+const availableCategory = z.enum(AVAILABLE_VAULT_CATEGORIES as [VaultCategory, ...VaultCategory[]]);
 
 /** A wrapped data key as the browser built it (`VaultWrap` in @faktur/cz-compliance). */
 const passwordWrap = z.object({
@@ -37,7 +38,7 @@ export const enableVaultSchema = z.object({
   password: passwordWrap,
   recovery: recoveryWrap,
   /** Only the categories that are built; planned ones are shown, not selectable. */
-  categories: z.array(z.enum(AVAILABLE_VAULT_CATEGORIES as ["texts"])).min(1).default(["texts"]),
+  categories: z.array(availableCategory).min(1).default(["texts"]),
   /** The owner ticked every warning (lost password + code = unreadable data, 10-year archive duty). */
   acknowledged: z.literal(true),
 });
@@ -50,7 +51,10 @@ export class MemberWrapDto extends createZodDto(memberWrapSchema) {}
 export const recoveryWrapSchema = z.object({ recovery: recoveryWrap });
 export class RecoveryWrapDto extends createZodDto(recoveryWrapSchema) {}
 
-export const vaultSettingsSchema = z.object({ sealNew: z.boolean() });
+/** `categories` lets a company add a category built after it switched the mode on. */
+export const vaultSettingsSchema = z
+  .object({ sealNew: z.boolean().optional(), categories: z.array(availableCategory).min(1).optional() })
+  .refine((v) => v.sealNew !== undefined || v.categories !== undefined, "empty");
 export class VaultSettingsDto extends createZodDto(vaultSettingsSchema) {}
 
 export const plainInvoicesQuerySchema = z.object({
@@ -59,6 +63,9 @@ export const plainInvoicesQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(50).default(20),
 });
 export class PlainInvoicesQueryDto extends createZodDto(plainInvoicesQuerySchema) {}
+
+export const plainAttachmentsQuerySchema = z.object({ limit: z.coerce.number().int().min(1).max(20).default(10) });
+export class PlainAttachmentsQueryDto extends createZodDto(plainAttachmentsQuerySchema) {}
 
 /**
  * "Zašifrovat": the browser sends back the texts it encrypted. Every value

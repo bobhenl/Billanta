@@ -1,11 +1,36 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query, Req, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Put,
+  Query,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { planAllows } from "../billing/plan-access";
-import { loadPlanSummary, RequirePlan } from "../billing/plan.guard";
+import { RequirePlan } from "../billing/plan.guard";
+import { MAX_ATTACHMENT_BYTES } from "../invoices/invoice-attachments.service";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
-import { EnableVaultDto, MemberWrapDto, PlainInvoicesQueryDto, RecoveryWrapDto, SealInvoicesDto, VaultSettingsDto } from "./dto/vault.dto";
-import { confidentialPlanRequired } from "./sealed";
+import {
+  EnableVaultDto,
+  MemberWrapDto,
+  PlainAttachmentsQueryDto,
+  PlainInvoicesQueryDto,
+  RecoveryWrapDto,
+  SealInvoicesDto,
+  VaultSettingsDto,
+} from "./dto/vault.dto";
+import { encryptedLimit, type UploadedFileLike } from "./sealed-files";
 import { VaultService } from "./vault.service";
 
 /**
@@ -52,10 +77,9 @@ export class VaultController {
   }
 
   @Patch("settings")
-  @ApiOperation({ summary: "Whether the editor encrypts new documents by default" })
-  async settings(@Req() req: TenantScopedRequest, @Body() dto: VaultSettingsDto) {
-    // Turning the default off is always allowed, turning it on needs Plus.
-    if (dto.sealNew) await this.requirePlan(req);
+  @ApiOperation({ summary: "Encrypt new documents by default, and which categories are encrypted" })
+  settings(@Req() req: TenantScopedRequest, @Body() dto: VaultSettingsDto) {
+    // Turning things off is always allowed, turning them on needs Plus (checked in the service).
     return this.vault.updateSettings(req.tenantDb!, req.user!.tenantId, req.user!, dto);
   }
 
@@ -72,10 +96,26 @@ export class VaultController {
     return this.vault.seal(req.tenantDb!, req.user!.tenantId, dto);
   }
 
-  private async requirePlan(req: TenantScopedRequest) {
-    const plan = await loadPlanSummary(req.tenantDb!, req.user!.tenantId);
-    if (plan && !planAllows(plan, "confidential_mode")) {
-      throw confidentialPlanRequired();
-    }
+  @Get("attachments/plain")
+  @ApiOperation({ summary: "Files stored before attachments were encrypted, for the browser to encrypt" })
+  plainAttachments(@Req() req: TenantScopedRequest, @Query() query: PlainAttachmentsQueryDto) {
+    return this.vault.plainAttachments(req.tenantDb!, req.user!.tenantId, query);
+  }
+
+  @Put("attachments/:kind/:id")
+  @RequirePlan("confidential_mode")
+  @UseInterceptors(FileInterceptor("file", { limits: { fileSize: encryptedLimit(MAX_ATTACHMENT_BYTES) } }))
+  @ApiConsumes("multipart/form-data")
+  @ApiOperation({ summary: "Replace a plain file with the ciphertext the browser made from it" })
+  sealAttachment(
+    @Req() req: TenantScopedRequest,
+    @Param("kind") kind: string,
+    @Param("id", ParseUUIDPipe) id: string,
+    @UploadedFile() file?: UploadedFileLike,
+    @Body("enc_meta") encMeta?: unknown,
+  ) {
+    if (kind !== "invoice" && kind !== "expense") throw new BadRequestException({ error: "bad_kind" });
+    if (!file) throw new BadRequestException({ error: "no_file" });
+    return this.vault.sealAttachment(req.tenantDb!, req.user!.tenantId, kind, id, file, encMeta);
   }
 }

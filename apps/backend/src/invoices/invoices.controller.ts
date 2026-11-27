@@ -14,10 +14,11 @@ import {
   Req,
   Res,
   UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import { FileInterceptor } from "@nestjs/platform-express";
+import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Response } from "express";
 import { createZodDto } from "nestjs-zod";
@@ -38,7 +39,8 @@ import {
 import { CreateInvoiceDraftDto } from "./dto/create-invoice-draft.dto";
 import { getHomeRate } from "../exports/home-rates";
 import { tenantHomeCurrency } from "../tenants/home-currency";
-import { InvoiceAttachmentsService, MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
+import { encryptedLimit } from "../vault/sealed-files";
+import { InvoiceAttachmentsService, MAX_ATTACHMENT_BYTES, MAX_ATTACHMENTS_PER_INVOICE, passThroughFiles } from "./invoice-attachments.service";
 import { InvoiceImportService } from "./invoice-import.service";
 import { guestInvoiceSchema } from "../guest-invoices/guest-invoices.service";
 import { IMPORT_FIELDS } from "./invoice-import.util";
@@ -561,6 +563,27 @@ export class InvoicesController {
     return this.invoicesService.sendInvoice(req.tenantDb!, id, req.user!.tenantId);
   }
 
+  /**
+   * The same send, with files the browser decrypted for this one e-mail
+   * ("Důvěrný režim" attachments). They go into the outbox row only until
+   * delivery (finish_email_outbox clears it) and are never stored or logged
+   * anywhere else.
+   */
+  @Post(":id/send-with-files")
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FilesInterceptor("files", MAX_ATTACHMENTS_PER_INVOICE, { limits: { fileSize: MAX_ATTACHMENT_BYTES } }))
+  @ApiConsumes("multipart/form-data")
+  @ApiOperation({ summary: "Email an invoice with one-time attachments decrypted in the browser (not stored)" })
+  async sendWithFiles(
+    @Req() req: TenantScopedRequest,
+    @Param("id", ParseUUIDPipe) id: string,
+    @UploadedFiles() files?: { buffer: Buffer; size: number; mimetype: string; originalname: string }[],
+  ) {
+    assertMayDo(req.user, "invoices.send");
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
+    return this.invoicesService.sendInvoice(req.tenantDb!, id, req.user!.tenantId, passThroughFiles(files ?? []));
+  }
+
   @Post(":id/remind")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
@@ -608,17 +631,27 @@ export class InvoicesController {
 
   @Post(":id/attachments")
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor("file", { limits: { fileSize: MAX_ATTACHMENT_BYTES } }))
+  @UseInterceptors(FileInterceptor("file", { limits: { fileSize: encryptedLimit(MAX_ATTACHMENT_BYTES) } }))
   @ApiConsumes("multipart/form-data")
-  @ApiBody({ schema: { type: "object", properties: { file: { type: "string", format: "binary" } }, required: ["file"] } })
-  @ApiOperation({ summary: "Attach a file (PDF, image, Office, CSV/XML/TXT; ≤ 5 MB, ≤ 10 per invoice)" })
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: {
+        file: { type: "string", format: "binary" },
+        enc_meta: { type: "string", description: "Důvěrný režim: the sealed file key, name and type; the file is then ciphertext" },
+      },
+      required: ["file"],
+    },
+  })
+  @ApiOperation({ summary: "Attach a file (PDF, image, Office, CSV/XML/TXT; ≤ 5 MB, ≤ 10 per invoice), plain or encrypted in the browser" })
   addAttachment(
     @Req() req: TenantScopedRequest,
     @Param("id", ParseUUIDPipe) id: string,
     @UploadedFile() file?: { buffer: Buffer; size: number; mimetype: string; originalname: string },
+    @Body("enc_meta") encMeta?: unknown,
   ) {
     if (!file) throw new BadRequestException({ error: "no_file" });
-    return this.attachmentsService.add(req.tenantDb!, req.user!.tenantId, id, file);
+    return this.attachmentsService.add(req.tenantDb!, req.user!.tenantId, id, file, encMeta);
   }
 
   @Patch(":id/attachments/:attachmentId")
