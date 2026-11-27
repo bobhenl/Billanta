@@ -2024,24 +2024,59 @@ CREATE POLICY tenant_isolation ON einvoice_status_events
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
 
 -- ---------------------------------------------------------------------------
--- Per-member visibility of clients (migration 0100)
+-- Per-member visibility: record scopes and access locks (0100, 0111, 0122)
 -- ---------------------------------------------------------------------------
 -- RESTRICTIVE policies are ANDed with tenant_isolation, so they can only
 -- hide rows inside a tenant, never open another tenant.
 --
--- app_view_mode() says how much of the tenant the current request sees:
---   'full' – no signed-in user (crons, API keys, the AI service), the
---            company owner, or a user with no membership here (classroom
---            helpers that only set the user);
---   'all'  – everything except contacts marked private (and their documents);
---   'own'  – only contacts assigned to this user, documents of those
---            contacts and documents this user created.
+-- app_scope(area) says how much of one area ('contacts', 'invoices',
+-- 'expenses') the current request sees:
+--   'full'     – no signed-in user (crons, API keys, the AI service), the
+--                company owner, or a user with no membership here (classroom
+--                helpers that only set the user); locks don't apply either;
+--   'all'      – everything the locks leave them;
+--   'edit_own' – sees what 'all' sees, changes only its own records;
+--   'own'      – only its own records: created by the member, or of a client
+--                assigned to them (contacts: assigned to them).
+-- app_view_mode() folds the three into 'full' | 'all' | 'own' for what has
+-- no area of its own (unmatched bank payments): 'own' if any area is.
 -- Admins are always 'all': they manage the team, so a scope they could
 -- lift themselves would protect nothing. SECURITY DEFINER because the
--- policies call it while tenant_memberships itself is RLS-protected; it
--- reads one row of the current tenant and user, nothing caller-controlled.
--- The policies call it as (SELECT app_view_mode()) so it runs once per
+-- policies call them while tenant_memberships itself is RLS-protected; they
+-- read one row of the current tenant and user, nothing caller-controlled.
+-- The policies call them as (SELECT app_scope(...)) so they run once per
 -- query, and wrap the per-row checks in CASE so 'full' never evaluates them.
+CREATE OR REPLACE FUNCTION app_member_role()
+RETURNS text
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT m.role FROM tenant_memberships m
+  WHERE m.tenant_id = nullif(current_setting('app.current_tenant_id', true), '')::uuid
+    AND m.user_id = nullif(current_setting('app.current_user_id', true), '')::uuid;
+$$;
+
+CREATE OR REPLACE FUNCTION app_scope(p_area text)
+RETURNS text
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT coalesce((
+    SELECT CASE
+      WHEN m.role = 'owner' THEN 'full'
+      WHEN m.role = 'admin' THEN 'all'
+      ELSE CASE p_area WHEN 'contacts' THEN m.contact_scope WHEN 'invoices' THEN m.invoice_scope WHEN 'expenses' THEN m.expense_scope ELSE 'all' END
+    END
+    FROM tenant_memberships m
+    WHERE m.tenant_id = nullif(current_setting('app.current_tenant_id', true), '')::uuid
+      AND m.user_id = nullif(current_setting('app.current_user_id', true), '')::uuid
+  ), 'full');
+$$;
+
 CREATE OR REPLACE FUNCTION app_view_mode()
 RETURNS text
 LANGUAGE sql
@@ -2053,7 +2088,8 @@ AS $$
     SELECT CASE
       WHEN m.role = 'owner' THEN 'full'
       WHEN m.role = 'admin' THEN 'all'
-      ELSE m.contact_scope
+      WHEN 'own' IN (m.contact_scope, m.invoice_scope, m.expense_scope) THEN 'own'
+      ELSE 'all'
     END
     FROM tenant_memberships m
     WHERE m.tenant_id = nullif(current_setting('app.current_tenant_id', true), '')::uuid
@@ -2061,38 +2097,157 @@ AS $$
   ), 'full');
 $$;
 
+-- A locked record (access_lock) is seen by its holder and by the roles the
+-- lock still lets in: 'private' nobody else, 'admin' admins, 'accountant'
+-- admins and accountants (everyone but viewers). The company owner is
+-- 'full' and never gets here, so no lock shuts them out.
+CREATE OR REPLACE FUNCTION app_lock_allows(p_lock text, p_holder uuid)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SET search_path = public
+AS $$
+  SELECT p_lock IS NULL
+    OR coalesce(p_holder = nullif(current_setting('app.current_user_id', true), '')::uuid, false)
+    OR (p_lock = 'admin' AND app_member_role() = 'admin')
+    OR (p_lock = 'accountant' AND app_member_role() IN ('admin', 'accountant'));
+$$;
+
+-- "Own" document: created by the member, or of a client assigned to them.
+-- Runs as the caller, so a client locked away from them doesn't count.
+CREATE OR REPLACE FUNCTION app_owns_document(p_creator uuid, p_contact uuid)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SET search_path = public
+AS $$
+  SELECT coalesce(p_creator = nullif(current_setting('app.current_user_id', true), '')::uuid, false)
+    OR (p_contact IS NOT NULL AND EXISTS (
+      SELECT 1 FROM contacts c WHERE c.id = p_contact AND c.owner_user_id = nullif(current_setting('app.current_user_id', true), '')::uuid));
+$$;
+
 REVOKE ALL ON FUNCTION app_view_mode() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION app_view_mode() TO faktur_app;
+REVOKE ALL ON FUNCTION app_scope(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION app_scope(text) TO faktur_app;
+REVOKE ALL ON FUNCTION app_member_role() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION app_member_role() TO faktur_app;
+GRANT EXECUTE ON FUNCTION app_lock_allows(text, uuid) TO faktur_app;
+GRANT EXECUTE ON FUNCTION app_owns_document(uuid, uuid) TO faktur_app;
 
 DROP POLICY IF EXISTS member_visibility ON contacts;
 CREATE POLICY member_visibility ON contacts AS RESTRICTIVE
-  USING (CASE (SELECT app_view_mode())
+  USING (CASE (SELECT app_scope('contacts'))
     WHEN 'full' THEN true
-    ELSE owner_user_id = nullif(current_setting('app.current_user_id', true), '')::uuid
-      OR ((SELECT app_view_mode()) = 'all' AND NOT is_private)
+    WHEN 'own' THEN app_lock_allows(access_lock, access_lock_user_id)
+      AND coalesce(owner_user_id = nullif(current_setting('app.current_user_id', true), '')::uuid, false)
+    ELSE app_lock_allows(access_lock, access_lock_user_id)
   END);
 
--- A document is visible with its contact; one without a contact follows
--- the scope. The EXISTS runs under the contacts policies above. An invoice
--- marked private (0111) is left to the owner ('full') and its creator.
+-- A document is visible with its client (the EXISTS runs under the contacts
+-- policy above, so a locked or out-of-scope client takes its documents
+-- along); one without a client follows the scope; the member's own
+-- documents stay theirs. A lock on the document itself comes first.
 DROP POLICY IF EXISTS member_visibility ON invoices;
 CREATE POLICY member_visibility ON invoices AS RESTRICTIVE
-  USING (CASE (SELECT app_view_mode())
+  USING (CASE (SELECT app_scope('invoices'))
     WHEN 'full' THEN true
-    ELSE created_by_user_id = nullif(current_setting('app.current_user_id', true), '')::uuid
-      OR (NOT is_private AND (
-        (contact_id IS NULL AND (SELECT app_view_mode()) = 'all')
-        OR EXISTS (SELECT 1 FROM contacts c WHERE c.id = invoices.contact_id)))
+    WHEN 'own' THEN app_lock_allows(access_lock, access_lock_user_id) AND app_owns_document(created_by_user_id, contact_id)
+    ELSE app_lock_allows(access_lock, access_lock_user_id) AND (
+      coalesce(created_by_user_id = nullif(current_setting('app.current_user_id', true), '')::uuid, false)
+      OR contact_id IS NULL
+      OR EXISTS (SELECT 1 FROM contacts c WHERE c.id = invoices.contact_id))
   END);
 
 DROP POLICY IF EXISTS member_visibility ON expenses;
 CREATE POLICY member_visibility ON expenses AS RESTRICTIVE
-  USING (CASE (SELECT app_view_mode())
+  USING (CASE (SELECT app_scope('expenses'))
     WHEN 'full' THEN true
-    ELSE created_by_user_id = nullif(current_setting('app.current_user_id', true), '')::uuid
-      OR (supplier_contact_id IS NULL AND (SELECT app_view_mode()) = 'all')
-      OR EXISTS (SELECT 1 FROM contacts c WHERE c.id = expenses.supplier_contact_id)
+    WHEN 'own' THEN app_lock_allows(access_lock, access_lock_user_id) AND app_owns_document(created_by_user_id, supplier_contact_id)
+    ELSE app_lock_allows(access_lock, access_lock_user_id) AND (
+      coalesce(created_by_user_id = nullif(current_setting('app.current_user_id', true), '')::uuid, false)
+      OR supplier_contact_id IS NULL
+      OR EXISTS (SELECT 1 FROM contacts c WHERE c.id = expenses.supplier_contact_id))
   END);
+
+-- 'edit_own': the rows above stay visible, but writes need an own record.
+-- UPDATE checks only the new row (USING true), so changing someone else's
+-- record fails loudly with this policy's name (mapped to 403
+-- record_read_only, src/tenancy/visibility.ts) instead of updating nothing.
+DROP POLICY IF EXISTS member_edit_scope_insert ON contacts;
+CREATE POLICY member_edit_scope_insert ON contacts AS RESTRICTIVE FOR INSERT
+  WITH CHECK ((SELECT app_scope('contacts')) <> 'edit_own' OR coalesce(owner_user_id = nullif(current_setting('app.current_user_id', true), '')::uuid, false));
+DROP POLICY IF EXISTS member_edit_scope_update ON contacts;
+CREATE POLICY member_edit_scope_update ON contacts AS RESTRICTIVE FOR UPDATE
+  USING (true)
+  WITH CHECK ((SELECT app_scope('contacts')) <> 'edit_own' OR coalesce(owner_user_id = nullif(current_setting('app.current_user_id', true), '')::uuid, false));
+DROP POLICY IF EXISTS member_edit_scope_delete ON contacts;
+CREATE POLICY member_edit_scope_delete ON contacts AS RESTRICTIVE FOR DELETE
+  USING ((SELECT app_scope('contacts')) <> 'edit_own' OR coalesce(owner_user_id = nullif(current_setting('app.current_user_id', true), '')::uuid, false));
+
+DROP POLICY IF EXISTS member_edit_scope_insert ON invoices;
+CREATE POLICY member_edit_scope_insert ON invoices AS RESTRICTIVE FOR INSERT
+  WITH CHECK ((SELECT app_scope('invoices')) <> 'edit_own' OR app_owns_document(created_by_user_id, contact_id));
+DROP POLICY IF EXISTS member_edit_scope_update ON invoices;
+CREATE POLICY member_edit_scope_update ON invoices AS RESTRICTIVE FOR UPDATE
+  USING (true)
+  WITH CHECK ((SELECT app_scope('invoices')) <> 'edit_own' OR app_owns_document(created_by_user_id, contact_id));
+DROP POLICY IF EXISTS member_edit_scope_delete ON invoices;
+CREATE POLICY member_edit_scope_delete ON invoices AS RESTRICTIVE FOR DELETE
+  USING ((SELECT app_scope('invoices')) <> 'edit_own' OR app_owns_document(created_by_user_id, contact_id));
+
+DROP POLICY IF EXISTS member_edit_scope_insert ON expenses;
+CREATE POLICY member_edit_scope_insert ON expenses AS RESTRICTIVE FOR INSERT
+  WITH CHECK ((SELECT app_scope('expenses')) <> 'edit_own' OR app_owns_document(created_by_user_id, supplier_contact_id));
+DROP POLICY IF EXISTS member_edit_scope_update ON expenses;
+CREATE POLICY member_edit_scope_update ON expenses AS RESTRICTIVE FOR UPDATE
+  USING (true)
+  WITH CHECK ((SELECT app_scope('expenses')) <> 'edit_own' OR app_owns_document(created_by_user_id, supplier_contact_id));
+DROP POLICY IF EXISTS member_edit_scope_delete ON expenses;
+CREATE POLICY member_edit_scope_delete ON expenses AS RESTRICTIVE FOR DELETE
+  USING ((SELECT app_scope('expenses')) <> 'edit_own' OR app_owns_document(created_by_user_id, supplier_contact_id));
+
+-- An invoice's items are edited with it: the same line for their writes.
+DROP POLICY IF EXISTS member_edit_scope_insert ON invoice_line_items;
+CREATE POLICY member_edit_scope_insert ON invoice_line_items AS RESTRICTIVE FOR INSERT
+  WITH CHECK ((SELECT app_scope('invoices')) <> 'edit_own'
+    OR EXISTS (SELECT 1 FROM invoices i WHERE i.id = invoice_line_items.invoice_id AND app_owns_document(i.created_by_user_id, i.contact_id)));
+DROP POLICY IF EXISTS member_edit_scope_update ON invoice_line_items;
+CREATE POLICY member_edit_scope_update ON invoice_line_items AS RESTRICTIVE FOR UPDATE
+  USING (true)
+  WITH CHECK ((SELECT app_scope('invoices')) <> 'edit_own'
+    OR EXISTS (SELECT 1 FROM invoices i WHERE i.id = invoice_line_items.invoice_id AND app_owns_document(i.created_by_user_id, i.contact_id)));
+DROP POLICY IF EXISTS member_edit_scope_delete ON invoice_line_items;
+CREATE POLICY member_edit_scope_delete ON invoice_line_items AS RESTRICTIVE FOR DELETE
+  USING ((SELECT app_scope('invoices')) <> 'edit_own'
+    OR EXISTS (SELECT 1 FROM invoices i WHERE i.id = invoice_line_items.invoice_id AND app_owns_document(i.created_by_user_id, i.contact_id)));
+
+-- Tax filings must not come out short without saying so. A member sees a
+-- complete company only when no area is limited to their own records and
+-- no lock hides anything from them. The exports refuse the filing files
+-- otherwise (src/exports). It answers yes or no for the whole company, so
+-- it tells nothing about which record, when or how much.
+CREATE OR REPLACE FUNCTION app_view_complete()
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT CASE app_view_mode()
+    WHEN 'full' THEN true
+    WHEN 'own' THEN false
+    ELSE NOT EXISTS (SELECT 1 FROM invoices i WHERE i.tenant_id = nullif(current_setting('app.current_tenant_id', true), '')::uuid
+        AND i.access_lock IS NOT NULL AND NOT app_lock_allows(i.access_lock, i.access_lock_user_id))
+      AND NOT EXISTS (SELECT 1 FROM expenses e WHERE e.tenant_id = nullif(current_setting('app.current_tenant_id', true), '')::uuid
+        AND e.access_lock IS NOT NULL AND NOT app_lock_allows(e.access_lock, e.access_lock_user_id))
+      AND NOT EXISTS (SELECT 1 FROM contacts c WHERE c.tenant_id = nullif(current_setting('app.current_tenant_id', true), '')::uuid
+        AND c.access_lock IS NOT NULL AND NOT app_lock_allows(c.access_lock, c.access_lock_user_id))
+  END;
+$$;
+
+REVOKE ALL ON FUNCTION app_view_complete() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION app_view_complete() TO faktur_app;
 
 DROP POLICY IF EXISTS member_visibility ON invoice_line_items;
 CREATE POLICY member_visibility ON invoice_line_items AS RESTRICTIVE
@@ -2219,7 +2374,7 @@ DROP POLICY IF EXISTS member_visibility ON audit_log;
 CREATE POLICY member_visibility ON audit_log AS RESTRICTIVE FOR SELECT
   USING (CASE (SELECT app_view_mode())
     WHEN 'full' THEN true
-    ELSE entity_id IS NULL OR entity_type NOT IN ('invoice', 'contact') OR NOT app_row_hidden(entity_type, entity_id)
+    ELSE entity_id IS NULL OR entity_type NOT IN ('invoice', 'contact', 'expense') OR NOT app_row_hidden(entity_type, entity_id)
   END);
 
 DROP POLICY IF EXISTS member_visibility ON notifications;

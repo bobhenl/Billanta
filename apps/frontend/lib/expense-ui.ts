@@ -1,5 +1,7 @@
 /** Shapes and helpers shared by the expense list, detail and form. */
 
+import type { AccessLock } from './record-lock';
+
 /** A row of `GET /api/v1/expenses` / `GET /api/v1/expenses/:id` (Drizzle camelCase). */
 export interface Expense {
   id: string;
@@ -23,6 +25,10 @@ export interface Expense {
   note: string | null;
   /** Drafted by a bank rule from an outgoing payment; cleared when someone saves the expense. */
   needsReview?: boolean;
+  createdByUserId?: string | null;
+  /** Who still sees it beyond the expense area's readers (lib/record-lock). */
+  accessLock?: AccessLock | null;
+  accessLockUserId?: string | null;
   createdAt: string;
 }
 

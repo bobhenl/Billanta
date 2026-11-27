@@ -5,6 +5,7 @@
  */
 
 import type { HomeCurrency } from '@faktur/cz-compliance';
+import type { AccessLock } from './record-lock';
 
 export type InvoiceStatus = 'draft' | 'pending_review' | 'issued' | 'paid' | 'cancelled';
 export type DocumentType = 'invoice' | 'proforma' | 'credit_note' | 'quote';
@@ -55,8 +56,9 @@ export interface InvoiceRow {
   /** Locked by an owner/admin; until the viewer re-authenticates the customer and notes come back empty. */
   locked?: boolean;
   lockedAt?: string | null;
-  /** "Soukromá faktura": seen only by the company owner and createdByUserId. */
-  isPrivate?: boolean;
+  /** Who still sees it beyond the invoice area's readers; set by accessLockUserId (lib/record-lock). */
+  accessLock?: AccessLock | null;
+  accessLockUserId?: string | null;
   createdByUserId?: string | null;
   /** Open "customer fills in their details" link on a draft (null when none). */
   buyerDetailsToken?: string | null;

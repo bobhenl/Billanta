@@ -12,6 +12,7 @@ import { deleteExpense, setExpensePaid, type ActionResult } from '../actions';
 /** Toolbar of the expense detail (every action changes the expense, so none for a read-only member). */
 export function ExpenseActions({ id, paid }: { id: string; paid: boolean }) {
   const t = useTranslations('expenses.detail');
+  const tLock = useTranslations('recordLock');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [dialog, setDialog] = useState<null | 'paid' | 'delete'>(null);
@@ -27,7 +28,7 @@ export function ExpenseActions({ id, paid }: { id: string; paid: boolean }) {
       const result = await fn();
       setDialog(null);
       if (!result.ok) {
-        toast({ text: `${t('actionFailed')}: ${result.error}`, tone: 'err' });
+        toast({ text: result.error === 'record_read_only' ? tLock('errors.record_read_only') : `${t('actionFailed')}: ${result.error}`, tone: 'err' });
         return;
       }
       toast({ text: okText, tone: 'ok' });

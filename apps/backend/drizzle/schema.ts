@@ -34,6 +34,20 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
+/** How much of one area a member sees and edits (tenant_memberships, 0122). */
+export type RecordScope = "all" | "edit_own" | "own";
+/** Who besides the holder and the company owner sees a locked record (0122). */
+export type AccessLockLevel = "private" | "admin" | "accountant";
+
+// A locked record is seen by its holder, the company owner and the roles the
+// level lets in (app_lock_allows in rls-policies.sql); null = no lock.
+function accessLockColumns() {
+  return {
+    accessLock: varchar("access_lock", { length: 12 }).$type<AccessLockLevel>(),
+    accessLockUserId: uuid("access_lock_user_id").references(() => users.id, { onDelete: "set null" }),
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Enums
 // ---------------------------------------------------------------------------
@@ -479,10 +493,13 @@ export const tenantMemberships = pgTable(
     // (Settings → Integrace); null = feeds off. Resolved without a session
     // through `find_feed_owner` in drizzle/rls-policies.sql.
     feedToken: uuid("feed_token"),
-    // 'all' = sees the whole company; 'own' = only contacts assigned to them
-    // and their documents (0100, enforced by RLS via app_view_mode()).
-    // Ignored for owners and admins.
-    contactScope: varchar("contact_scope", { length: 8 }).notNull().default("all"),
+    // Per area: 'all' = sees and edits the whole company; 'edit_own' = sees
+    // it all, edits only own records; 'own' = sees only own records (their
+    // clients, what they created and their clients' documents). Enforced by
+    // RLS via app_scope() (0100, 0122). Ignored for owners and admins.
+    contactScope: varchar("contact_scope", { length: 8 }).$type<RecordScope>().notNull().default("all"),
+    invoiceScope: varchar("invoice_scope", { length: 8 }).$type<RecordScope>().notNull().default("all"),
+    expenseScope: varchar("expense_scope", { length: 8 }).$type<RecordScope>().notNull().default("all"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
@@ -540,10 +557,10 @@ export const contacts = pgTable("contacts", {
   // Colour label shown as a dot next to the customer everywhere (CONTACT_COLORS); null = none.
   color: varchar("color", { length: 16 }),
   // Who the customer belongs to in the team (0100): defaults to whoever
-  // created it. is_private hides it, with its documents and payments, from
-  // everyone but that person and the company owner (RLS, app_view_mode()).
+  // created it. An access lock hides it, with its documents and payments,
+  // from everyone the lock leaves out (0122, member_visibility).
   ownerUserId: uuid("owner_user_id").references(() => users.id, { onDelete: "set null" }),
-  isPrivate: boolean("is_private").notNull().default(false),
+  ...accessLockColumns(),
   // Private note about the customer (payment habits, contact person …); never printed or sent.
   internalNote: text("internal_note"),
   // Client portal link (/c/:portalToken) listing every issued document for this customer;
@@ -738,8 +755,8 @@ export const invoices = pgTable(
     // Lists, totals and exports still count it.
     lockedAt: timestamp("locked_at", { withTimezone: true }),
     lockedBy: uuid("locked_by"),
-    // Seen only by the company owner and createdByUserId (0111, member_visibility in rls-policies.sql).
-    isPrivate: boolean("is_private").notNull().default(false),
+    // Who else may see it (0122, member_visibility in rls-policies.sql).
+    ...accessLockColumns(),
     // Kept by the payment provider (PayPal, Stripe, Wise…), in the invoice currency.
     paymentFees: numeric("payment_fees", { precision: 14, scale: 2 }).notNull().default("0"),
     // What actually landed on the account, in CZK; null = not recorded.
@@ -1176,6 +1193,8 @@ export const expenses = pgTable("expenses", {
   receiptFileUrl: text("receipt_file_url"),
   // Whoever entered it (0100, column default from app.current_user_id).
   createdByUserId: uuid("created_by_user_id").references(() => users.id, { onDelete: "set null" }),
+  // Who else may see it (0122).
+  ...accessLockColumns(),
   // The supplier's own document number and payment details as printed on
   // the received invoice (typed in, or read by AI from a photo/PDF).
   documentNumber: varchar("document_number", { length: 64 }),

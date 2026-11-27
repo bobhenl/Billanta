@@ -1383,19 +1383,17 @@
       "person": "Private person",
       "visibility": {
         "title": "Who sees this client",
-        "hint": "A private client and their documents are seen only by the company owner and the member the client belongs to. Others won’t find it in lists or in the history.",
+        "hint": "Who the client belongs to and who sees it. Others won't find a locked client or its documents in lists, search, notifications or the change history. Only the company owner can hand over a locked client.",
         "owner": "Belongs to",
         "nobody": "The whole company (no one in particular)",
         "formerMember": "Former team member",
-        "private": "Private – seen only by the company owner and the person the client belongs to",
-        "privateHint": "Others won’t find it in contacts, invoices, notifications or the change history.",
         "ownedBy": "Belongs to: {name}",
         "ownerOnly": "Only the company owner or the person the client belongs to can change this.",
         "saved": "Saved",
         "failed": "Could not save",
         "errors": {
           "visibility_owner_only": "Only the company owner or the person the client belongs to can change this.",
-          "visibility_would_hide": "You would stop seeing this client yourself. Only the company owner can hand over a private client.",
+          "visibility_would_hide": "You would stop seeing the client yourself. Only the company owner can hand over a locked client.",
           "owner_not_member": "That person is no longer on the team."
         }
       }
@@ -1463,8 +1461,7 @@
       "violet": "Violet",
       "pink": "Pink",
       "slate": "Grey"
-    },
-    "privateBadge": "Private client"
+    }
   },
   "settings": {
     "title": "Settings",
@@ -2205,14 +2202,24 @@
         "adminsOnly": "Owner and admins only"
       },
       "fillFromPreset": "Fill in from",
-      "contactScope": {
-        "label": "Sees clients",
+      "scope": {
+        "label": {
+          "contacts": "Sees clients",
+          "invoices": "Sees invoices",
+          "expenses": "Sees expenses"
+        },
         "all": "Whole company",
-        "own": "Only their own",
-        "hint": "Only their own = only the clients you assign to them (Belongs to) and documents they created themselves.",
+        "edit_own": "All, edits only own",
+        "own": "Only own",
+        "hint": {
+          "contacts": "Only own = the clients you assign to them (Belongs to). Edits only own = sees everything, but changes and deletes only their own.",
+          "invoices": "Only own = invoices they created and invoices of their clients. Edits only own = sees everything, but changes and deletes only their own.",
+          "expenses": "Only own = expenses they entered and expenses from their suppliers. Edits only own = sees everything, but changes and deletes only their own."
+        },
         "ownerOnly": "Only the company owner can change this.",
-        "summary": "own clients only",
-        "refused": "Only the company owner can change this."
+        "refused": "Only the company owner can change this.",
+        "summaryOwn": "only own: {list}",
+        "summaryEditOwn": "edits only own: {list}"
       }
     },
     "exports": {
@@ -4815,7 +4822,8 @@
       "ai_credits_exhausted": "This month's AI credits are used up. New ones arrive on the 1st; a higher plan has more, or use your own key.",
       "amounts_plaintext": "The document wasn't saved: the amounts weren't encrypted. Please try again.",
       "amounts_sealed": "The document's amounts are encrypted, so the server can't do this.",
-      "amounts_partly_paid": "A partly paid document can't be encrypted. Encrypt it once it is paid in full."
+      "amounts_partly_paid": "A partly paid document can't be encrypted. Encrypt it once it is paid in full.",
+      "record_read_only": "You can only view this record: you may edit only your own."
     },
     "copy": {
       "title": "Prefill from another invoice",
@@ -5441,7 +5449,7 @@
       "relock": "Hide again",
       "lockedToast": "Details hidden",
       "unlockedToast": "Details now show without a password",
-      "teamHint": "This protects against someone looking at an unlocked or shared computer, not against colleagues: every team member reveals them with their own password. If only certain people should see an invoice, mark it private, or set who the client belongs to.",
+      "teamHint": "This protects against someone looking at an unlocked or shared computer, not against colleagues: every team member reveals them with their own password. If only certain people should see an invoice, lock access to it, or set who the client belongs to.",
       "teamLink": "Set who in the team sees what",
       "errors": {
         "wrong_current": "Wrong password.",
@@ -5449,19 +5457,9 @@
         "too_many_attempts": "Too many attempts. Try again in a few minutes.",
         "generic": "That didn't work. Please try again."
       },
-      "privacyLink": "Mark as private"
+      "privacyLink": "Lock access"
     },
-    "partnerDefaultShares": "default shares",
-    "privacy": {
-      "label": "Private invoice",
-      "hint": "Seen only by the company owner and whoever created it, including its items, attachments and payments.",
-      "badge": "Private invoice",
-      "ownerOnly": "Only the company owner or whoever created the invoice can change this.",
-      "failed": "Could not change it",
-      "madePrivate": "The invoice is private",
-      "madeShared": "The team can see the invoice again"
-    },
-    "privateRow": "Private invoice"
+    "partnerDefaultShares": "default shares"
   },
   "invite": {
     "title": "Team invitation",
@@ -7468,7 +7466,8 @@
       "bank_account": "Bank accounts",
       "member": "Team",
       "api_key": "API keys",
-      "import": "Imports"
+      "import": "Imports",
+      "expense": "Expenses"
     },
     "docTypes": {
       "invoice": "an invoice",
@@ -7506,8 +7505,8 @@
         "send_waiting_pdf": "queued for sending with the PDF",
         "locked": "locked",
         "unlocked": "unlocked",
-        "made_private": "made private",
-        "made_shared": "shared with the team"
+        "made_private": "locked access to",
+        "made_shared": "unlocked access to"
       },
       "tenant": {
         "updated": "edited the company details",
@@ -7550,6 +7549,10 @@
         "contacts_csv": "imported contacts from CSV",
         "fakturoid": "imported data from Fakturoid",
         "guest": "brought over invoices made without an account"
+      },
+      "expense": {
+        "made_private": "locked access to expense",
+        "made_shared": "unlocked access to expense"
       }
     },
     "fields": {
@@ -7636,7 +7639,11 @@
       "isPrivate": "Private",
       "ownerUserId": "Belongs to",
       "contactScope": "Sees clients",
-      "vaultCategories": "Categories turned off"
+      "vaultCategories": "Categories turned off",
+      "accessLock": "Access lock",
+      "accessLockUserId": "Locked by",
+      "invoiceScope": "Sees invoices",
+      "expenseScope": "Sees expenses"
     },
     "values": {
       "invoice": "Invoice",
@@ -7656,7 +7663,11 @@
       "recovery": "Recovery code",
       "password": "Password",
       "recent_sign_in": "Recent sign-in",
-      "passkey": "Passkey"
+      "passkey": "Passkey",
+      "private": "Private",
+      "own": "Only own",
+      "edit_own": "Edits only own",
+      "all": "Whole company"
     },
     "cleared": "cleared",
     "filters": {
@@ -15214,5 +15225,34 @@
       "unreadable": "{count, plural, one {# invoice could not be opened} other {# invoices could not be opened}} and keep the \"Encrypted amounts\" status.",
       "failed": "The encrypted invoices ({count}) could not be loaded. Try refreshing the page."
     }
+  },
+  "recordLock": {
+    "label": "Lock access",
+    "hint": "Others won't find a locked record in lists, search, notifications or the change history. Only whoever set the lock, or the company owner, can change it afterwards. It still counts towards VAT returns and tax figures.",
+    "holderOnly": "Only whoever locked it, or the company owner, can change this.",
+    "levels": {
+      "none": {
+        "invoice": "Not locked – everyone who sees invoices",
+        "expense": "Not locked – everyone who sees expenses",
+        "contact": "Not locked – everyone who sees contacts"
+      },
+      "private": "Only me and the company owner",
+      "admin": "Me, the company owner and admins",
+      "accountant": "Everyone except read-only members"
+    },
+    "badge": {
+      "private": "Locked – private",
+      "admin": "Locked – admins only",
+      "accountant": "Locked – hidden from read-only members"
+    },
+    "locked": "Access locked",
+    "opened": "Lock removed",
+    "failed": "Could not save",
+    "errors": {
+      "visibility_owner_only": "Only whoever set the lock, or the company owner, can change it.",
+      "visibility_would_hide": "You would stop seeing this record yourself.",
+      "record_read_only": "You can only view this record: you may edit only your own."
+    },
+    "filingNeedsFullView": "A filing is calculated from the whole company's documents, and some of them are hidden from you (you see only your own, or they are locked). The company owner or a member with full access can prepare it."
   }
 }

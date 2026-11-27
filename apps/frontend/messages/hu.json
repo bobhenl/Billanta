@@ -1382,19 +1382,17 @@
       "person": "Magánszemély",
       "visibility": {
         "title": "Ki látja az ügyfelet",
-        "hint": "A privát ügyfelet és bizonylatait csak a cég tulajdonosa és az a tag látja, akié az ügyfél. Mások sem a listákban, sem az előzményekben nem találják.",
+        "hint": "Kié az ügyfél, és ki látja. A zárolt ügyfelet és bizonylatait mások nem találják a listákban, a keresésben, az értesítésekben és a változásnaplóban. Zárolt ügyfelet csak a cég tulajdonosa adhat át.",
         "owner": "Gazdája",
         "nobody": "Az egész cég (senki külön)",
         "formerMember": "Korábbi csapattag",
-        "private": "Privát – csak a cég tulajdonosa és az látja, akié az ügyfél",
-        "privateHint": "Mások nem találják a kapcsolatok, számlák, értesítések és a változásnapló között.",
         "ownedBy": "Gazdája: {name}",
         "ownerOnly": "Ezt csak a cég tulajdonosa vagy az ügyfél gazdája módosíthatja.",
         "saved": "Mentve",
         "failed": "Nem sikerült menteni",
         "errors": {
           "visibility_owner_only": "Ezt csak a cég tulajdonosa vagy az ügyfél gazdája módosíthatja.",
-          "visibility_would_hide": "Így Ön sem látná többé az ügyfelet. Privát ügyfelet csak a cég tulajdonosa adhat át.",
+          "visibility_would_hide": "Így Ön sem látná többé az ügyfelet. Zárolt ügyfelet csak a cég tulajdonosa adhat át.",
           "owner_not_member": "Ez a személy már nincs a csapatban."
         }
       }
@@ -1462,8 +1460,7 @@
       "violet": "Ibolya",
       "pink": "Rózsaszín",
       "slate": "Szürke"
-    },
-    "privateBadge": "Privát ügyfél"
+    }
   },
   "settings": {
     "title": "Beállítások",
@@ -2204,14 +2201,24 @@
         "adminsOnly": "Csak a tulajdonos és az adminisztrátorok"
       },
       "fillFromPreset": "Kitöltés ez alapján:",
-      "contactScope": {
-        "label": "Látja az ügyfeleket",
+      "scope": {
+        "label": {
+          "contacts": "Ügyfeleket lát",
+          "invoices": "Számlákat lát",
+          "expenses": "Kiadásokat lát"
+        },
         "all": "Az egész cég",
-        "own": "Csak a sajátjait",
-        "hint": "Csak a sajátjait = csak a neki kiosztott ügyfeleket (Gazdája) és az általa kiállított bizonylatokat.",
+        "edit_own": "Mindent, csak a sajátját szerkeszti",
+        "own": "Csak a sajátját",
+        "hint": {
+          "contacts": "Csak a sajátját = az ügyfelek, akiket hozzá rendel (Felelős). Csak a sajátját szerkeszti = mindent lát, de csak a sajátját módosíthatja és törölheti.",
+          "invoices": "Csak a sajátját = az általa kiállított számlák és az ügyfelei számlái. Csak a sajátját szerkeszti = mindent lát, de csak a sajátját módosíthatja és törölheti.",
+          "expenses": "Csak a sajátját = az általa rögzített kiadások és a szállítói kiadásai. Csak a sajátját szerkeszti = mindent lát, de csak a sajátját módosíthatja és törölheti."
+        },
         "ownerOnly": "Ezt csak a cég tulajdonosa módosíthatja.",
-        "summary": "csak saját ügyfelek",
-        "refused": "Ezt csak a cég tulajdonosa módosíthatja."
+        "refused": "Ezt csak a cég tulajdonosa módosíthatja.",
+        "summaryOwn": "csak a sajátját: {list}",
+        "summaryEditOwn": "csak a sajátját szerkeszti: {list}"
       }
     },
     "exports": {
@@ -4808,7 +4815,8 @@
       "ai_credits_exhausted": "Az e havi MI-kreditek elfogytak. Újak 1-jén jönnek, egy magasabb csomagban több van, vagy használja a saját kulcsát.",
       "amounts_plaintext": "A bizonylat nem mentődött el: az összegek nem voltak titkosítva. Próbálja újra.",
       "amounts_sealed": "A bizonylat összegei titkosítva vannak, ezért a szerver ezt nem tudja elvégezni.",
-      "amounts_partly_paid": "Részben kifizetett bizonylat nem titkosítható. Titkosítsa a teljes kifizetés után."
+      "amounts_partly_paid": "Részben kifizetett bizonylat nem titkosítható. Titkosítsa a teljes kifizetés után.",
+      "record_read_only": "Ezt a tételt csak megtekintheti: csak a sajátjait szerkesztheti."
     },
     "copy": {
       "title": "Előkitöltés másik számlából",
@@ -5434,7 +5442,7 @@
       "relock": "Újra elrejtés",
       "lockedToast": "Részletek elrejtve",
       "unlockedToast": "A részletek jelszó nélkül látszanak",
-      "teamHint": "Ez a zárolatlan vagy közös számítógépre pillantók ellen véd, nem a kollégák ellen: minden csapattag a saját jelszavával felfedi őket. Ha egy számlát csak bizonyos emberek láthatnak, jelölje privátnak, vagy állítsa be, kié az ügyfél.",
+      "teamHint": "Ez a zárolatlan vagy közös számítógépre pillantók ellen véd, nem a kollégák ellen: minden csapattag a saját jelszavával felfedi őket. Ha egy számlát csak bizonyos emberek láthatnak, zárolja hozzá a hozzáférést, vagy állítsa be, kié az ügyfél.",
       "teamLink": "Beállítás: ki mit lát a csapatban",
       "errors": {
         "wrong_current": "Hibás jelszó.",
@@ -5442,18 +5450,8 @@
         "too_many_attempts": "Túl sok próbálkozás. Próbálja újra néhány perc múlva.",
         "generic": "Nem sikerült. Próbálja újra."
       },
-      "privacyLink": "Megjelölés privátként"
-    },
-    "privacy": {
-      "label": "Privát számla",
-      "hint": "Csak a cég tulajdonosa és a kiállítója látja, a tételekkel, mellékletekkel és fizetésekkel együtt.",
-      "badge": "Privát számla",
-      "ownerOnly": "Ezt csak a cég tulajdonosa vagy a számla kiállítója módosíthatja.",
-      "failed": "Nem sikerült módosítani",
-      "madePrivate": "A számla privát",
-      "madeShared": "A csapat újra látja a számlát"
-    },
-    "privateRow": "Privát számla"
+      "privacyLink": "Hozzáférés zárolása"
+    }
   },
   "invite": {
     "title": "Meghívás a csapatba",
@@ -7460,7 +7458,8 @@
       "bank_account": "Bankszámlák",
       "member": "Csapat",
       "api_key": "API-kulcsok",
-      "import": "Importálások"
+      "import": "Importálások",
+      "expense": "Kiadások"
     },
     "docTypes": {
       "invoice": "számla",
@@ -7498,8 +7497,8 @@
         "send_waiting_pdf": "PDF-fel küldésre sorba állította:",
         "locked": "zárolta",
         "unlocked": "feloldotta",
-        "made_private": "priváttá tette",
-        "made_shared": "megosztotta a csapattal"
+        "made_private": "zárolta a hozzáférést ehhez:",
+        "made_shared": "feloldotta a hozzáférést ehhez:"
       },
       "tenant": {
         "updated": "szerkesztette a cégadatokat",
@@ -7542,6 +7541,10 @@
         "contacts_csv": "partnereket importált CSV-ből",
         "fakturoid": "adatokat importált a Fakturoidból",
         "guest": "átvette a fiók nélkül készített számlákat"
+      },
+      "expense": {
+        "made_private": "zárolta a hozzáférést ehhez a kiadáshoz:",
+        "made_shared": "feloldotta a hozzáférést ehhez a kiadáshoz:"
       }
     },
     "fields": {
@@ -7628,7 +7631,11 @@
       "isPrivate": "Privát",
       "ownerUserId": "Felelős",
       "contactScope": "Ügyfeleket lát",
-      "vaultCategories": "Kikapcsolt kategóriák"
+      "vaultCategories": "Kikapcsolt kategóriák",
+      "accessLock": "Hozzáférés zárolása",
+      "accessLockUserId": "Zárolta",
+      "invoiceScope": "Számlákat lát",
+      "expenseScope": "Kiadásokat lát"
     },
     "values": {
       "invoice": "Számla",
@@ -7648,7 +7655,11 @@
       "recovery": "Helyreállítási kód",
       "password": "Jelszó",
       "recent_sign_in": "Friss bejelentkezés",
-      "passkey": "Passkey"
+      "passkey": "Passkey",
+      "private": "Privát",
+      "own": "Csak a sajátját",
+      "edit_own": "Csak a sajátját szerkeszti",
+      "all": "Az egész cég"
     },
     "cleared": "törölve",
     "filters": {
@@ -15202,5 +15213,34 @@
       "unreadable": "{count, plural, one {# számlát nem sikerült megnyitni} other {# számlát nem sikerült megnyitni}}, ezek „Titkosított összegek” állapotban maradnak.",
       "failed": "A titkosított számlákat ({count}) nem sikerült betölteni. Frissítse az oldalt."
     }
+  },
+  "recordLock": {
+    "label": "Hozzáférés zárolása",
+    "hint": "A zárolt tételt mások nem találják a listákban, a keresésben, az értesítésekben és a változásnaplóban. A zárolást ezután csak az módosíthatja, aki beállította, vagy a cég tulajdonosa. Az áfabevallásba és az adóadatokba továbbra is beleszámít.",
+    "holderOnly": "Ezt csak az módosíthatja, aki zárolta, vagy a cég tulajdonosa.",
+    "levels": {
+      "none": {
+        "invoice": "Nincs zárolva – mindenki, aki számlákat lát",
+        "expense": "Nincs zárolva – mindenki, aki kiadásokat lát",
+        "contact": "Nincs zárolva – mindenki, aki kapcsolatokat lát"
+      },
+      "private": "Csak én és a cég tulajdonosa",
+      "admin": "Én, a cég tulajdonosa és az adminisztrátorok",
+      "accountant": "Mindenki, kivéve a csak olvasási joggal rendelkező tagokat"
+    },
+    "badge": {
+      "private": "Zárolva – privát",
+      "admin": "Zárolva – csak adminisztrátorok",
+      "accountant": "Zárolva – rejtve a csak olvasó tagok elől"
+    },
+    "locked": "Hozzáférés zárolva",
+    "opened": "Zárolás feloldva",
+    "failed": "Nem sikerült menteni",
+    "errors": {
+      "visibility_owner_only": "A zárolást csak az módosíthatja, aki beállította, vagy a cég tulajdonosa.",
+      "visibility_would_hide": "Így Ön sem látná többé ezt a tételt.",
+      "record_read_only": "Ezt a tételt csak megtekintheti: csak a sajátjait szerkesztheti."
+    },
+    "filingNeedsFullView": "A bevallás a teljes cég bizonylataiból készül, és ezek egy részét Ön nem látja (csak a sajátjait látja, vagy zárolva vannak). A cég tulajdonosa vagy egy teljes hozzáférésű tag készítheti el."
   }
 }

@@ -1382,19 +1382,17 @@
       "person": "Osoba prywatna",
       "visibility": {
         "title": "Kto widzi klienta",
-        "hint": "Prywatnego klienta i jego dokumenty widzi tylko właściciel firmy i członek, do którego klient należy. Inni nie znajdą go na listach ani w historii.",
+        "hint": "Do kogo należy klient i kto go widzi. Zablokowanego klienta i jego dokumentów inni nie znajdą na listach, w wyszukiwaniu, powiadomieniach ani w historii zmian. Zablokowanego klienta może przekazać tylko właściciel firmy.",
         "owner": "Należy do",
         "nobody": "Całej firmy (nikogo konkretnego)",
         "formerMember": "Były członek zespołu",
-        "private": "Prywatny – widzi go tylko właściciel firmy i osoba, do której klient należy",
-        "privateHint": "Inni nie znajdą go w kontaktach, fakturach, powiadomieniach ani historii zmian.",
         "ownedBy": "Należy do: {name}",
         "ownerOnly": "Zmienić to może tylko właściciel firmy lub osoba, do której klient należy.",
         "saved": "Zapisano",
         "failed": "Nie udało się zapisać",
         "errors": {
           "visibility_owner_only": "Zmienić to może tylko właściciel firmy lub osoba, do której klient należy.",
-          "visibility_would_hide": "Sam przestałbyś widzieć tego klienta. Przekazać prywatnego klienta może tylko właściciel firmy.",
+          "visibility_would_hide": "W ten sposób sam(a) przestał(a)byś widzieć klienta. Zablokowanego klienta może przekazać tylko właściciel firmy.",
           "owner_not_member": "Ta osoba nie należy już do zespołu."
         }
       }
@@ -1462,8 +1460,7 @@
       "violet": "Fioletowy",
       "pink": "Różowy",
       "slate": "Szary"
-    },
-    "privateBadge": "Prywatny klient"
+    }
   },
   "settings": {
     "title": "Ustawienia",
@@ -2204,14 +2201,24 @@
         "adminsOnly": "Tylko właściciel i administratorzy"
       },
       "fillFromPreset": "Wypełnij według",
-      "contactScope": {
-        "label": "Widzi klientów",
+      "scope": {
+        "label": {
+          "contacts": "Widzi klientów",
+          "invoices": "Widzi faktury",
+          "expenses": "Widzi wydatki"
+        },
         "all": "Cała firma",
-        "own": "Tylko swoich",
-        "hint": "Tylko swoich = tylko klientów, których mu przypiszesz (Należy do), i dokumenty, które sam wystawił.",
+        "edit_own": "Wszystko, edytuje tylko własne",
+        "own": "Tylko własne",
+        "hint": {
+          "contacts": "Tylko własne = klienci, których mu przypiszesz (Należy do). Edytuje tylko własne = widzi wszystko, ale zmieniać i usuwać może tylko własne.",
+          "invoices": "Tylko własne = faktury, które sam wystawił, i faktury jego klientów. Edytuje tylko własne = widzi wszystko, ale zmieniać i usuwać może tylko własne.",
+          "expenses": "Tylko własne = wydatki, które sam wprowadził, i wydatki od jego dostawców. Edytuje tylko własne = widzi wszystko, ale zmieniać i usuwać może tylko własne."
+        },
         "ownerOnly": "Zmienić to może tylko właściciel firmy.",
-        "summary": "tylko swoich klientów",
-        "refused": "To może zmienić tylko właściciel firmy."
+        "refused": "To może zmienić tylko właściciel firmy.",
+        "summaryOwn": "tylko własne: {list}",
+        "summaryEditOwn": "edytuje tylko własne: {list}"
       }
     },
     "exports": {
@@ -4808,7 +4815,8 @@
       "ai_credits_exhausted": "Kredyty AI na ten miesiąc się skończyły. Nowe pojawią się 1. dnia, wyższy plan ma ich więcej, możesz też użyć własnego klucza.",
       "amounts_plaintext": "Dokument nie został zapisany: kwoty nie były zaszyfrowane. Spróbuj ponownie.",
       "amounts_sealed": "Kwoty dokumentu są zaszyfrowane, więc serwer nie może tego wykonać.",
-      "amounts_partly_paid": "Częściowo opłaconego dokumentu nie można zaszyfrować. Zaszyfruj go po pełnej zapłacie."
+      "amounts_partly_paid": "Częściowo opłaconego dokumentu nie można zaszyfrować. Zaszyfruj go po pełnej zapłacie.",
+      "record_read_only": "Ten rekord możesz tylko przeglądać: edytować możesz tylko własne."
     },
     "copy": {
       "title": "Wypełnij na podstawie innej faktury",
@@ -5435,7 +5443,7 @@
       "relock": "Ukryj ponownie",
       "lockedToast": "Szczegóły ukryte",
       "unlockedToast": "Szczegóły są widoczne bez hasła",
-      "teamHint": "Chroni przed spojrzeniem na niezablokowany lub wspólny komputer, a nie przed współpracownikami: każdy członek zespołu odkrywa je własnym hasłem. Jeśli fakturę mają widzieć tylko wybrane osoby, oznacz ją jako prywatną albo ustaw, do kogo należy klient.",
+      "teamHint": "Chroni przed spojrzeniem na niezablokowany lub wspólny komputer, a nie przed współpracownikami: każdy członek zespołu odkrywa je własnym hasłem. Jeśli fakturę mają widzieć tylko wybrane osoby, zablokuj do niej dostęp albo ustaw, do kogo należy klient.",
       "teamLink": "Ustaw, kto w zespole co widzi",
       "errors": {
         "wrong_current": "Złe hasło.",
@@ -5443,18 +5451,8 @@
         "too_many_attempts": "Zbyt wiele prób. Spróbuj za kilka minut.",
         "generic": "Nie udało się. Spróbuj ponownie."
       },
-      "privacyLink": "Oznacz jako prywatną"
-    },
-    "privacy": {
-      "label": "Prywatna faktura",
-      "hint": "Widzi ją tylko właściciel firmy i osoba, która ją wystawiła, razem z pozycjami, załącznikami i płatnościami.",
-      "badge": "Prywatna faktura",
-      "ownerOnly": "Zmienić to może tylko właściciel firmy lub osoba, która wystawiła fakturę.",
-      "failed": "Nie udało się zmienić",
-      "madePrivate": "Faktura jest prywatna",
-      "madeShared": "Zespół znowu widzi fakturę"
-    },
-    "privateRow": "Prywatna faktura"
+      "privacyLink": "Zablokuj dostęp"
+    }
   },
   "invite": {
     "title": "Zaproszenie do zespołu",
@@ -7461,7 +7459,8 @@
       "bank_account": "Konta bankowe",
       "member": "Zespół",
       "api_key": "Klucze API",
-      "import": "Importy"
+      "import": "Importy",
+      "expense": "Wydatki"
     },
     "docTypes": {
       "invoice": "fakturę",
@@ -7499,8 +7498,8 @@
         "send_waiting_pdf": "dodał(a) do wysłania z PDF",
         "locked": "zablokował(a)",
         "unlocked": "odblokował(a)",
-        "made_private": "ustawił(a) jako prywatny",
-        "made_shared": "udostępnił(a) zespołowi"
+        "made_private": "zablokował(a) dostęp do dokumentu",
+        "made_shared": "odblokował(a) dostęp do dokumentu"
       },
       "tenant": {
         "updated": "edytował(a) dane firmy",
@@ -7543,6 +7542,10 @@
         "contacts_csv": "zaimportował(a) kontakty z CSV",
         "fakturoid": "zaimportował(a) dane z Fakturoid",
         "guest": "przeniósł/przeniosła faktury utworzone bez konta"
+      },
+      "expense": {
+        "made_private": "zablokował(a) dostęp do wydatku",
+        "made_shared": "odblokował(a) dostęp do wydatku"
       }
     },
     "fields": {
@@ -7629,7 +7632,11 @@
       "isPrivate": "Prywatny",
       "ownerUserId": "Należy do",
       "contactScope": "Widzi klientów",
-      "vaultCategories": "Wyłączone kategorie"
+      "vaultCategories": "Wyłączone kategorie",
+      "accessLock": "Blokada dostępu",
+      "accessLockUserId": "Zablokował(a)",
+      "invoiceScope": "Widzi faktury",
+      "expenseScope": "Widzi wydatki"
     },
     "values": {
       "invoice": "Faktura",
@@ -7649,7 +7656,11 @@
       "recovery": "Kod odzyskiwania",
       "password": "Hasło",
       "recent_sign_in": "Niedawne logowanie",
-      "passkey": "Passkey"
+      "passkey": "Passkey",
+      "private": "Prywatne",
+      "own": "Tylko własne",
+      "edit_own": "Edytuje tylko własne",
+      "all": "Cała firma"
     },
     "cleared": "wyczyszczono",
     "filters": {
@@ -15203,5 +15214,34 @@
       "unreadable": "{count, plural, one {Nie udało się otworzyć # faktury} few {Nie udało się otworzyć # faktur} many {Nie udało się otworzyć # faktur} other {Nie udało się otworzyć # faktury}}, zostaje przy nich status „Zaszyfrowane kwoty”.",
       "failed": "Nie udało się wczytać zaszyfrowanych faktur ({count}). Odśwież stronę."
     }
+  },
+  "recordLock": {
+    "label": "Zablokuj dostęp",
+    "hint": "Zablokowanego rekordu inni nie znajdą na listach, w wyszukiwaniu, powiadomieniach ani w historii zmian. Blokadę może potem zmienić tylko ten, kto ją ustawił, albo właściciel firmy. Nadal liczy się do deklaracji VAT i podatkowych zestawień.",
+    "holderOnly": "Zmienić to może tylko ten, kto zablokował rekord, albo właściciel firmy.",
+    "levels": {
+      "none": {
+        "invoice": "Bez blokady – każdy, kto widzi faktury",
+        "expense": "Bez blokady – każdy, kto widzi wydatki",
+        "contact": "Bez blokady – każdy, kto widzi kontakty"
+      },
+      "private": "Tylko ja i właściciel firmy",
+      "admin": "Ja, właściciel firmy i administratorzy",
+      "accountant": "Wszyscy oprócz członków tylko do odczytu"
+    },
+    "badge": {
+      "private": "Zablokowane – prywatne",
+      "admin": "Zablokowane – tylko administratorzy",
+      "accountant": "Zablokowane – ukryte przed członkami tylko do odczytu"
+    },
+    "locked": "Dostęp zablokowany",
+    "opened": "Blokada zdjęta",
+    "failed": "Nie udało się zapisać",
+    "errors": {
+      "visibility_owner_only": "Blokadę może zmienić tylko ten, kto ją ustawił, albo właściciel firmy.",
+      "visibility_would_hide": "W ten sposób sam(a) przestał(a)byś widzieć ten rekord.",
+      "record_read_only": "Ten rekord możesz tylko przeglądać: edytować możesz tylko własne."
+    },
+    "filingNeedsFullView": "Deklarację liczy się z dokumentów całej firmy, a części z nich nie widzisz (masz dostęp tylko do własnych albo są zablokowane). Przygotuje ją właściciel firmy lub członek z pełnym dostępem."
   }
 }

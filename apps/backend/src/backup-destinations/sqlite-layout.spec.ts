@@ -23,7 +23,7 @@ function sealedBundle(): ExportBundle {
         status: "issued",
         encAmounts: DOC_ENVELOPE,
         noteAbove: "enc:v1:note",
-        isPrivate: true,
+        reverseCharge: true,
         issueDate: new Date("2026-11-01T00:00:00.000Z"),
         lineItems: [
           {
@@ -74,7 +74,7 @@ describe("sqliteLayout", () => {
     expect(cell(items, 0, "enc_amounts")).toBe(ITEM_ENVELOPE);
     expect(cell(items, 0, "unit_price")).toBe("0.00");
     expect(cell(items, 0, "discount_percent")).toBe("0.00");
-    expect(cell(invoices, 0, "is_private")).toBe(1);
+    expect(cell(invoices, 0, "reverse_charge")).toBe(1);
     expect(cell(invoices, 0, "issue_date")).toBe("2026-11-01T00:00:00.000Z");
   });
 

@@ -128,6 +128,7 @@ function writeRemembered(v: Remembered | null) {
 export function AnnualFilings({ prefill, usage }: { prefill: AnnualFilingsPrefill; usage?: FeatureUsage | null }) {
   const tPlan = useTranslations('planLimits');
   const t = useTranslations('settings.exports.filings');
+  const tLock = useTranslations('recordLock');
   const locale = useLocale();
   const now = new Date();
   // Always the year being filed: the current year's forms only come out the
@@ -149,6 +150,8 @@ export function AnnualFilings({ prefill, usage }: { prefill: AnnualFilingsPrefil
   });
   const prefilled = prefill.taxOffice != null || prefill.ossz != null || !!prefill.dataBox;
   const [remember, setRemember] = useState(false);
+  // 409 filing_needs_full_view: the member does not see the whole company.
+  const [partial, setPartial] = useState(false);
 
   // Rodné číslo and VS ČSSZ are personal data the server never keeps; the
   // user may opt in to keep them in this browser only. Storage can throw
@@ -190,6 +193,7 @@ export function AnnualFilings({ prefill, usage }: { prefill: AnnualFilingsPrefil
           const json = res.ok ? ((await res.json()) as Filings) : null;
           if (alive) {
             setSealed(null);
+            setPartial(res.status === 409);
             setData(json);
           }
           return;
@@ -234,7 +238,7 @@ export function AnnualFilings({ prefill, usage }: { prefill: AnnualFilingsPrefil
         return;
       }
       const code = ERROR_CODES.find((c) => text.includes(c));
-      setError(code ? t(`errors.${code}`) : t('errors.generic'));
+      setError(text.includes('filing_needs_full_view') ? tLock('filingNeedsFullView') : code ? t(`errors.${code}`) : t('errors.generic'));
       return;
     }
     const inputs = (await res.json()) as AnnualFilingsInputs;
@@ -275,7 +279,7 @@ export function AnnualFilings({ prefill, usage }: { prefill: AnnualFilingsPrefil
           return;
         }
         const code = ERROR_CODES.find((c) => text.includes(c));
-        setError(code ? t(`errors.${code}`) : t('errors.generic'));
+        setError(text.includes('filing_needs_full_view') ? tLock('filingNeedsFullView') : code ? t(`errors.${code}`) : t('errors.generic'));
         return;
       }
       const blob = await res.blob();
@@ -388,7 +392,7 @@ export function AnnualFilings({ prefill, usage }: { prefill: AnnualFilingsPrefil
         </label>
       </div>
 
-      {data === null && <p className="mt-4 text-sm text-destructive">{t('failed')}</p>}
+      {data === null && <p className="mt-4 text-sm text-destructive">{partial ? tLock('filingNeedsFullView') : t('failed')}</p>}
       {sealed?.kind === 'locked' && (
         <p className="mt-4 text-sm text-warning print:hidden">
           {tSealed('reportLocked')}{' '}

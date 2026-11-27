@@ -1383,19 +1383,17 @@
       "person": "Soukromá osoba",
       "visibility": {
         "title": "Kdo klienta vidí",
-        "hint": "Soukromého klienta a jeho doklady vidí jen vlastník firmy a člen, kterému klient patří. Ostatní ho v seznamech ani v historii nenajdou.",
+        "hint": "Komu klient patří a kdo ho vidí. Zamčeného klienta a jeho doklady ostatní nenajdou v seznamech, hledání, upozorněních ani historii změn. Zamčeného klienta může předat jen vlastník firmy.",
         "owner": "Patří",
         "nobody": "Celé firmě (nikomu zvlášť)",
         "formerMember": "Bývalý člen týmu",
-        "private": "Soukromý – vidí jen vlastník firmy a ten, komu klient patří",
-        "privateHint": "Ostatní ho nenajdou v kontaktech, fakturách, upozorněních ani historii změn.",
         "ownedBy": "Patří: {name}",
         "ownerOnly": "Měnit to může jen vlastník firmy nebo ten, komu klient patří.",
         "saved": "Uloženo",
         "failed": "Nepodařilo se uložit",
         "errors": {
           "visibility_owner_only": "Měnit to může jen vlastník firmy nebo ten, komu klient patří.",
-          "visibility_would_hide": "Tím byste klienta sami přestali vidět. Předat soukromého klienta může jen vlastník firmy.",
+          "visibility_would_hide": "Tím byste klienta sami přestali vidět. Předat zamčeného klienta může jen vlastník firmy.",
           "owner_not_member": "Vybraný člověk už není v týmu."
         }
       }
@@ -1463,8 +1461,7 @@
       "violet": "Fialová",
       "pink": "Růžová",
       "slate": "Šedá"
-    },
-    "privateBadge": "Soukromý klient"
+    }
   },
   "settings": {
     "title": "Nastavení",
@@ -2205,14 +2202,24 @@
         "adminsOnly": "Jen vlastník a administrátoři"
       },
       "fillFromPreset": "Vyplnit podle",
-      "contactScope": {
-        "label": "Vidí klienty",
+      "scope": {
+        "label": {
+          "contacts": "Vidí klienty",
+          "invoices": "Vidí faktury",
+          "expenses": "Vidí výdaje"
+        },
         "all": "Celá firma",
+        "edit_own": "Vše, upravuje jen své",
         "own": "Jen své",
-        "hint": "Jen své = jen klienti, které mu přiřadíte (Patří), a doklady, které sám vystavil.",
+        "hint": {
+          "contacts": "Jen své = klienti, které mu přiřadíte (Patří). Upravuje jen své = vidí vše, ale měnit a mazat smí jen své.",
+          "invoices": "Jen své = faktury, které sám vystavil, a faktury jeho klientů. Upravuje jen své = vidí vše, ale měnit a mazat smí jen své.",
+          "expenses": "Jen své = výdaje, které sám zadal, a výdaje od jeho dodavatelů. Upravuje jen své = vidí vše, ale měnit a mazat smí jen své."
+        },
         "ownerOnly": "Měnit to může jen vlastník firmy.",
-        "summary": "jen své klienty",
-        "refused": "Tohle může změnit jen vlastník firmy."
+        "refused": "Tohle může změnit jen vlastník firmy.",
+        "summaryOwn": "jen své: {list}",
+        "summaryEditOwn": "upravuje jen své: {list}"
       }
     },
     "exports": {
@@ -4815,7 +4822,8 @@
       "ai_credits_exhausted": "AI kredity na tento měsíc došly. Další přibudou prvního, víc jich má vyšší tarif, nebo použijte vlastní klíč.",
       "amounts_plaintext": "Doklad se neuložil: částky nebyly zašifrované. Zkuste to znovu.",
       "amounts_sealed": "Částky dokladu jsou zašifrované a server s nimi tuto akci neudělá.",
-      "amounts_partly_paid": "Částečně uhrazený doklad nejde zašifrovat. Zašifrujte ho po úplné úhradě."
+      "amounts_partly_paid": "Částečně uhrazený doklad nejde zašifrovat. Zašifrujte ho po úplné úhradě.",
+      "record_read_only": "Tento záznam můžete jen prohlížet: upravovat smíte jen své vlastní."
     },
     "copy": {
       "title": "Předvyplnit podle jiné faktury",
@@ -5441,7 +5449,7 @@
       "relock": "Znovu skrýt",
       "lockedToast": "Detaily jsou skryté",
       "unlockedToast": "Detaily se zobrazují bez hesla",
-      "teamHint": "Chrání před cizím pohledem na nezamčeném nebo sdíleném počítači, ne před kolegy: každý člen týmu si je odkryje svým vlastním heslem. Pokud má fakturu vidět jen někdo z týmu, označte ji jako soukromou, nebo u klienta nastavte, komu patří.",
+      "teamHint": "Chrání před cizím pohledem na nezamčeném nebo sdíleném počítači, ne před kolegy: každý člen týmu si je odkryje svým vlastním heslem. Pokud má fakturu vidět jen někdo z týmu, zamkněte k ní přístup, nebo u klienta nastavte, komu patří.",
       "teamLink": "Nastavit, kdo z týmu co vidí",
       "errors": {
         "wrong_current": "Heslo nesedí.",
@@ -5449,19 +5457,9 @@
         "too_many_attempts": "Příliš mnoho pokusů. Zkuste to za pár minut.",
         "generic": "Nepovedlo se to. Zkuste to znovu."
       },
-      "privacyLink": "Označit jako soukromou"
+      "privacyLink": "Zamknout přístup"
     },
-    "partnerDefaultShares": "výchozí podíly",
-    "privacy": {
-      "label": "Soukromá faktura",
-      "hint": "Vidí ji jen vlastník firmy a ten, kdo ji vystavil, i s položkami, přílohami a platbami.",
-      "badge": "Soukromá faktura",
-      "ownerOnly": "Měnit to může jen vlastník firmy nebo ten, kdo fakturu vystavil.",
-      "failed": "Nepodařilo se změnit",
-      "madePrivate": "Faktura je soukromá",
-      "madeShared": "Fakturu zase vidí tým"
-    },
-    "privateRow": "Soukromá faktura"
+    "partnerDefaultShares": "výchozí podíly"
   },
   "invite": {
     "title": "Pozvánka do týmu",
@@ -7468,7 +7466,8 @@
       "bank_account": "Bankovní účty",
       "member": "Tým",
       "api_key": "API klíče",
-      "import": "Importy"
+      "import": "Importy",
+      "expense": "Výdaje"
     },
     "docTypes": {
       "invoice": "fakturu",
@@ -7506,8 +7505,8 @@
         "send_waiting_pdf": "zařadil(a) k odeslání s PDF",
         "locked": "zamkl(a)",
         "unlocked": "odemkl(a)",
-        "made_private": "nastavil(a) jako soukromý doklad",
-        "made_shared": "zpřístupnil(a) týmu doklad"
+        "made_private": "zamkl(a) přístup k dokladu",
+        "made_shared": "odemkl(a) přístup k dokladu"
       },
       "tenant": {
         "updated": "upravil(a) údaje firmy",
@@ -7550,6 +7549,10 @@
         "contacts_csv": "naimportoval(a) kontakty z CSV",
         "fakturoid": "naimportoval(a) data z Fakturoidu",
         "guest": "převzal(a) faktury vystavené bez účtu"
+      },
+      "expense": {
+        "made_private": "zamkl(a) přístup k výdaji",
+        "made_shared": "odemkl(a) přístup k výdaji"
       }
     },
     "fields": {
@@ -7636,7 +7639,11 @@
       "isPrivate": "Soukromý",
       "ownerUserId": "Patří",
       "contactScope": "Vidí klienty",
-      "vaultCategories": "Vypnuté kategorie"
+      "vaultCategories": "Vypnuté kategorie",
+      "accessLock": "Zámek přístupu",
+      "accessLockUserId": "Zamkl(a)",
+      "invoiceScope": "Vidí faktury",
+      "expenseScope": "Vidí výdaje"
     },
     "values": {
       "invoice": "Faktura",
@@ -7656,7 +7663,11 @@
       "recovery": "Záložní kód",
       "password": "Heslo",
       "recent_sign_in": "Nedávné přihlášení",
-      "passkey": "Passkey"
+      "passkey": "Passkey",
+      "private": "Soukromé",
+      "own": "Jen své",
+      "edit_own": "Upravuje jen své",
+      "all": "Celá firma"
     },
     "cleared": "smazáno",
     "filters": {
@@ -15214,5 +15225,34 @@
       "unreadable": "{count, plural, one {# fakturu se nepodařilo otevřít} few {# faktury se nepodařilo otevřít} other {# faktur se nepodařilo otevřít}}, u nich zůstává stav „Zašifrované částky“.",
       "failed": "Zašifrované faktury ({count}) se nepodařilo načíst. Zkuste stránku obnovit."
     }
+  },
+  "recordLock": {
+    "label": "Zamknout přístup",
+    "hint": "Zamčený záznam ostatní nenajdou v seznamech, hledání, upozorněních ani historii změn. Zámek pak může změnit jen ten, kdo ho nastavil, nebo vlastník firmy. Do přiznání k DPH a daňových podkladů se počítá dál.",
+    "holderOnly": "Změnit to může jen ten, kdo záznam zamkl, nebo vlastník firmy.",
+    "levels": {
+      "none": {
+        "invoice": "Nezamčeno – vidí ji každý, kdo vidí faktury",
+        "expense": "Nezamčeno – vidí ho každý, kdo vidí výdaje",
+        "contact": "Nezamčeno – vidí ho každý, kdo vidí kontakty"
+      },
+      "private": "Jen já a vlastník firmy",
+      "admin": "Já, vlastník firmy a správci",
+      "accountant": "Všichni kromě členů jen pro čtení"
+    },
+    "badge": {
+      "private": "Zamčeno – soukromé",
+      "admin": "Zamčeno – jen správci",
+      "accountant": "Zamčeno – skryté členům jen pro čtení"
+    },
+    "locked": "Přístup zamčen",
+    "opened": "Zámek zrušen",
+    "failed": "Nepodařilo se uložit",
+    "errors": {
+      "visibility_owner_only": "Zámek může změnit jen ten, kdo ho nastavil, nebo vlastník firmy.",
+      "visibility_would_hide": "Tím byste záznam sami přestali vidět.",
+      "record_read_only": "Tento záznam můžete jen prohlížet: upravovat smíte jen své vlastní."
+    },
+    "filingNeedsFullView": "Podání se počítá z dokladů celé firmy a některé z nich nevidíte (máte přístup jen ke svým, nebo jsou zamčené). Připraví ho vlastník firmy nebo člen s plným přístupem."
   }
 }

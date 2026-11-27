@@ -11,6 +11,10 @@ import { cn } from '@/lib/utils';
 import { isReverseChargeCode } from '@faktur/cz-compliance';
 import { AttachmentsPanel, type Attachment } from '../../invoices/[id]/attachments-panel';
 import { ExpenseActions } from './expense-actions';
+import { RecordLock } from '@/components/record-lock';
+import { mayChangeLock } from '@/lib/record-lock';
+import { fetchMyRole } from '@/lib/tenant';
+import { auth } from '@/auth';
 import { ConfidentialText } from '@/components/vault/confidential-text';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -54,6 +58,13 @@ export default async function ExpenseDetailPage(props: { params: Promise<{ id: s
       </Banner>
     );
   }
+
+  const [role, session] = await Promise.all([fetchMyRole().catch(() => null), auth()]);
+  const canLock = mayChangeLock(role, session?.user?.id, {
+    person: expense.createdByUserId ?? null,
+    accessLock: expense.accessLock ?? null,
+    accessLockUserId: expense.accessLockUserId ?? null
+  });
 
   // Null on an older backend without expense files: the panel is then left out.
   const attachments = await apiFetch<Attachment[]>(`/api/v1/expenses/${params.id}/attachments`).catch(() => null);
@@ -125,6 +136,10 @@ export default async function ExpenseDetailPage(props: { params: Promise<{ id: s
 
       <div className="mt-5">
         <ExpenseActions id={expense.id} paid={Boolean(expense.paidAt)} />
+      </div>
+
+      <div className="mt-4">
+        <RecordLock kind="expense" id={expense.id} level={expense.accessLock ?? null} canChange={canLock} />
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">

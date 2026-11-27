@@ -1,6 +1,7 @@
 /** Wire shapes of the backend endpoints the new-invoice form uses (apps/backend/src/{contacts,invoices,ai}). */
 
 import type { ReverseChargeCode } from '@faktur/cz-compliance';
+import type { AccessLock } from '@/lib/record-lock';
 
 export interface Contact {
   id: string;
@@ -25,8 +26,9 @@ export interface Contact {
   portalToken?: string | null;
   /** Team member the client belongs to (null = the whole company). */
   ownerUserId?: string | null;
-  /** Seen only by the company owner and ownerUserId. */
-  isPrivate?: boolean;
+  /** Who still sees the client beyond the contact area's readers (lib/record-lock). */
+  accessLock?: AccessLock | null;
+  accessLockUserId?: string | null;
 }
 
 export interface AresPrefill {

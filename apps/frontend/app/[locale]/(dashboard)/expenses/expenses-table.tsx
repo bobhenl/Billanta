@@ -9,6 +9,7 @@ import { toast } from '@/components/toaster';
 import { useCanDo, useCanWrite } from '@/components/access-provider';
 import { EmptyState } from '@/components/empty-state';
 import { ConfirmModal } from '@/components/modal';
+import { LockBadge } from '@/components/record-lock';
 import { formatDate, formatMoney } from '@/lib/invoice-ui';
 import { EXPENSE_STATE_CLASSES, expenseState, isKnownCategory, vatOfGross, type Expense } from '@/lib/expense-ui';
 import { cn } from '@/lib/utils';
@@ -165,7 +166,10 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
               )}
               <Link href={`/expenses/${e.id}`} className="flex min-w-0 flex-1 items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{e.supplierNameRaw ?? e.description}</p>
+                  <p className="flex items-center gap-1.5 text-sm font-semibold">
+                    <span className="truncate">{e.supplierNameRaw ?? e.description}</span>
+                    <LockBadge level={e.accessLock} />
+                  </p>
                   <p className="truncate text-xs text-muted-foreground">
                     {formatDate(e.expenseDate, locale)}
                     {e.category && ` · ${isKnownCategory(e.category) ? t(`category.${e.category}`) : e.category}`}
@@ -235,9 +239,12 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
                   )}
                   <td className="whitespace-nowrap px-2 py-2.5 tabular-nums">{formatDate(e.expenseDate, locale)}</td>
                   <td className="px-2 py-2.5 font-semibold">
-                    <Link href={`/expenses/${e.id}`} onClick={(ev) => ev.stopPropagation()} className="hover:text-primary">
-                      {e.supplierNameRaw ?? '–'}
-                    </Link>
+                    <span className="inline-flex items-center gap-1.5">
+                      <Link href={`/expenses/${e.id}`} onClick={(ev) => ev.stopPropagation()} className="hover:text-primary">
+                        {e.supplierNameRaw ?? '–'}
+                      </Link>
+                      <LockBadge level={e.accessLock} />
+                    </span>
                     {e.documentNumber && <div className="text-xs font-normal text-muted-foreground">{e.documentNumber}</div>}
                   </td>
                   <td className="max-w-[260px] truncate px-2 py-2.5 text-muted-foreground">{e.description}</td>

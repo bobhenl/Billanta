@@ -20,6 +20,7 @@ import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagg
 import type { Response } from "express";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { MAX_ATTACHMENT_BYTES } from "../invoices/invoice-attachments.service";
+import { SetAccessLockDto } from "../tenancy/access-lock.dto";
 import { assertMayDo } from "../tenancy/permissions";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { encryptedLimit, type UploadedFileLike } from "../vault/sealed-files";
@@ -67,6 +68,15 @@ export class ExpensesController {
       if ((current.paidAt?.getTime() ?? null) !== (dto.paidAt?.getTime() ?? null)) assertMayDo(req.user, "expenses.approve");
     }
     return this.expensesService.update(req.tenantDb!, id, dto);
+  }
+
+  @Patch(":id/access-lock")
+  @ApiOperation({
+    summary: "Lock who sees an expense (level: private | admin | accountant | null)",
+    description: "Same rules as PATCH /v1/invoices/:id/access-lock (403 visibility_owner_only). Audited.",
+  })
+  setAccessLock(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: SetAccessLockDto) {
+    return this.expensesService.setAccessLock(req.tenantDb!, id, dto.level, req.user!);
   }
 
   @Delete(":id")

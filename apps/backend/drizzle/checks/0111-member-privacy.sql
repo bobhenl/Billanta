@@ -1,4 +1,4 @@
--- Rolled-back check of the member visibility rules (migration 0111 and the
+-- Rolled-back check of the member visibility rules (migrations 0111, 0122 and the
 -- member_visibility policies in rls-policies.sql). Builds a small team in the
 -- demo company, then asks the database as each member what they see and
 -- what they may change. Any failed ASSERT aborts with its message; nothing
@@ -30,16 +30,16 @@ BEGIN
   PERFORM set_config('app.current_tenant_id', v_tenant::text, true);
 
   -- The migration alone hides nothing: no invoice was private before this check.
-  ASSERT NOT EXISTS (SELECT 1 FROM invoices WHERE tenant_id = v_tenant AND is_private), 'an invoice is private before anyone marked it';
+  ASSERT NOT EXISTS (SELECT 1 FROM invoices WHERE tenant_id = v_tenant AND access_lock IS NOT NULL), 'an invoice is private before anyone marked it';
 
   INSERT INTO users (email) VALUES ('check-admin@0111.example') RETURNING id INTO v_admin;
   INSERT INTO users (email) VALUES ('check-seller@0111.example') RETURNING id INTO v_seller;
   INSERT INTO tenant_memberships (tenant_id, user_id, role) VALUES (v_tenant, v_admin, 'admin'), (v_tenant, v_seller, 'accountant');
 
   INSERT INTO contacts (tenant_id, legal_name) VALUES (v_tenant, 'Check shared client') RETURNING id INTO v_shared;
-  INSERT INTO contacts (tenant_id, legal_name, owner_user_id, is_private) VALUES (v_tenant, 'Check private client', v_seller, true) RETURNING id INTO v_private;
+  INSERT INTO contacts (tenant_id, legal_name, owner_user_id, access_lock, access_lock_user_id) VALUES (v_tenant, 'Check private client', v_seller, 'private', v_seller) RETURNING id INTO v_private;
   INSERT INTO invoices (tenant_id, contact_id, created_by_user_id) VALUES (v_tenant, v_shared, v_owner) RETURNING id INTO v_inv_shared;
-  INSERT INTO invoices (tenant_id, contact_id, created_by_user_id, is_private) VALUES (v_tenant, v_shared, v_seller, true) RETURNING id INTO v_inv_private;
+  INSERT INTO invoices (tenant_id, contact_id, created_by_user_id, access_lock, access_lock_user_id) VALUES (v_tenant, v_shared, v_seller, 'private', v_seller) RETURNING id INTO v_inv_private;
   INSERT INTO invoices (tenant_id, contact_id, created_by_user_id) VALUES (v_tenant, v_private, v_seller) RETURNING id INTO v_inv_client;
 
   INSERT INTO audit_log (tenant_id, entity_type, entity_id, entity_label, action)
@@ -76,8 +76,8 @@ END $$;
 DO $$
 BEGIN
   BEGIN
-    UPDATE contacts SET is_private = true WHERE id = current_setting('chk.shared')::uuid;
-    RAISE EXCEPTION 'admin marked a client private';
+    UPDATE contacts SET access_lock = 'private', access_lock_user_id = current_setting('chk.seller')::uuid WHERE id = current_setting('chk.shared')::uuid;
+    RAISE EXCEPTION 'admin locked a client in someone else''s name';
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;
   BEGIN
@@ -86,8 +86,8 @@ BEGIN
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;
   BEGIN
-    UPDATE invoices SET is_private = true WHERE id = current_setting('chk.inv_shared')::uuid;
-    RAISE EXCEPTION 'admin marked an invoice private';
+    UPDATE invoices SET access_lock = 'private', access_lock_user_id = current_setting('chk.owner')::uuid WHERE id = current_setting('chk.inv_shared')::uuid;
+    RAISE EXCEPTION 'admin locked an invoice in someone else''s name';
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;
   BEGIN
@@ -111,10 +111,10 @@ BEGIN
   ASSERT EXISTS (SELECT 1 FROM invoices WHERE id = current_setting('chk.inv_private')::uuid), 'seller should see the invoice they made private';
   ASSERT EXISTS (SELECT 1 FROM invoices WHERE id = current_setting('chk.inv_client')::uuid), 'seller should see the invoice of their client';
   -- Unmarking is theirs to do.
-  UPDATE invoices SET is_private = false WHERE id = current_setting('chk.inv_private')::uuid;
+  UPDATE invoices SET access_lock = NULL, access_lock_user_id = NULL WHERE id = current_setting('chk.inv_private')::uuid;
   GET DIAGNOSTICS n = ROW_COUNT;
   ASSERT n = 1, 'seller could not unmark their own invoice';
-  UPDATE invoices SET is_private = true WHERE id = current_setting('chk.inv_private')::uuid;
+  UPDATE invoices SET access_lock = 'private', access_lock_user_id = current_setting('chk.seller')::uuid WHERE id = current_setting('chk.inv_private')::uuid;
   -- Giving a private client away would hide it from them: the policy refuses the new row.
   BEGIN
     UPDATE contacts SET owner_user_id = current_setting('chk.admin')::uuid WHERE id = current_setting('chk.private')::uuid;
@@ -132,8 +132,8 @@ BEGIN
   ASSERT n = 3, 'owner should see all three invoices';
   ASSERT EXISTS (SELECT 1 FROM audit_log WHERE entity_id = current_setting('chk.private')::uuid), 'owner should see the private client history';
   UPDATE tenant_memberships SET contact_scope = 'own' WHERE user_id = current_setting('chk.seller')::uuid;
-  UPDATE contacts SET owner_user_id = current_setting('chk.admin')::uuid WHERE id = current_setting('chk.private')::uuid;
-  UPDATE invoices SET is_private = true WHERE id = current_setting('chk.inv_shared')::uuid;
+  UPDATE contacts SET owner_user_id = current_setting('chk.admin')::uuid, access_lock_user_id = current_setting('chk.admin')::uuid WHERE id = current_setting('chk.private')::uuid;
+  UPDATE invoices SET access_lock = 'private', access_lock_user_id = current_setting('chk.owner')::uuid WHERE id = current_setting('chk.inv_shared')::uuid;
 END $$;
 
 -- ---- a limited seller now: only what is theirs ----------------------------

@@ -1382,19 +1382,17 @@
       "person": "Persoană fizică",
       "visibility": {
         "title": "Cine vede clientul",
-        "hint": "Un client privat și documentele lui sunt văzute doar de proprietarul firmei și de membrul căruia îi aparține clientul. Ceilalți nu îl găsesc nici în liste, nici în istoric.",
+        "hint": "Cui îi aparține clientul și cine îl vede. Un client blocat și documentele lui nu apar pentru ceilalți în liste, căutare, notificări sau istoricul modificărilor. Un client blocat poate fi predat doar de proprietarul firmei.",
         "owner": "Aparține",
         "nobody": "Întregii firme (nimănui anume)",
         "formerMember": "Fost membru al echipei",
-        "private": "Privat – îl văd doar proprietarul firmei și cel căruia îi aparține clientul",
-        "privateHint": "Ceilalți nu îl găsesc în contacte, facturi, notificări sau istoricul modificărilor.",
         "ownedBy": "Aparține: {name}",
         "ownerOnly": "Doar proprietarul firmei sau cel căruia îi aparține clientul poate schimba asta.",
         "saved": "Salvat",
         "failed": "Salvarea a eșuat",
         "errors": {
           "visibility_owner_only": "Doar proprietarul firmei sau cel căruia îi aparține clientul poate schimba asta.",
-          "visibility_would_hide": "Astfel nici dvs. nu ați mai vedea clientul. Doar proprietarul firmei poate preda un client privat.",
+          "visibility_would_hide": "Astfel nu ați mai vedea nici dumneavoastră clientul. Un client blocat poate fi predat doar de proprietarul firmei.",
           "owner_not_member": "Persoana aleasă nu mai face parte din echipă."
         }
       }
@@ -1462,8 +1460,7 @@
       "violet": "Violet",
       "pink": "Roz",
       "slate": "Gri"
-    },
-    "privateBadge": "Client privat"
+    }
   },
   "settings": {
     "title": "Setări",
@@ -2204,14 +2201,24 @@
         "adminsOnly": "Doar proprietarul și administratorii"
       },
       "fillFromPreset": "Completează după",
-      "contactScope": {
-        "label": "Vede clienții",
+      "scope": {
+        "label": {
+          "contacts": "Vede clienți",
+          "invoices": "Vede facturi",
+          "expenses": "Vede cheltuieli"
+        },
         "all": "Toată firma",
-        "own": "Doar pe ai săi",
-        "hint": "Doar pe ai săi = doar clienții pe care i-i atribuiți (Aparține) și documentele emise de el.",
+        "edit_own": "Tot, editează doar ale sale",
+        "own": "Doar ale sale",
+        "hint": {
+          "contacts": "Doar ale sale = clienții pe care i-i atribuiți (Aparține de). Editează doar ale sale = vede tot, dar poate modifica și șterge doar ale sale.",
+          "invoices": "Doar ale sale = facturile emise de el și facturile clienților săi. Editează doar ale sale = vede tot, dar poate modifica și șterge doar ale sale.",
+          "expenses": "Doar ale sale = cheltuielile introduse de el și cele de la furnizorii săi. Editează doar ale sale = vede tot, dar poate modifica și șterge doar ale sale."
+        },
         "ownerOnly": "Doar proprietarul firmei poate schimba asta.",
-        "summary": "doar clienții proprii",
-        "refused": "Doar proprietarul firmei poate schimba asta."
+        "refused": "Doar proprietarul firmei poate schimba asta.",
+        "summaryOwn": "doar ale sale: {list}",
+        "summaryEditOwn": "editează doar ale sale: {list}"
       }
     },
     "exports": {
@@ -4808,7 +4815,8 @@
       "ai_credits_exhausted": "Creditele AI pe luna aceasta s-au terminat. Altele noi vin pe 1, un plan superior are mai multe, sau folosiți propria cheie.",
       "amounts_plaintext": "Documentul nu a fost salvat: sumele nu erau criptate. Încercați din nou.",
       "amounts_sealed": "Sumele documentului sunt criptate, așa că serverul nu poate face acest lucru.",
-      "amounts_partly_paid": "Un document plătit parțial nu poate fi criptat. Criptați-l după plata integrală."
+      "amounts_partly_paid": "Un document plătit parțial nu poate fi criptat. Criptați-l după plata integrală.",
+      "record_read_only": "Această înregistrare o puteți doar vizualiza: puteți edita doar pe ale dumneavoastră."
     },
     "copy": {
       "title": "Precompletați dintr-o altă factură",
@@ -5434,7 +5442,7 @@
       "relock": "Ascunde din nou",
       "lockedToast": "Detalii ascunse",
       "unlockedToast": "Detaliile se afișează fără parolă",
-      "teamHint": "Protejează împotriva privirilor pe un calculator deblocat sau comun, nu împotriva colegilor: fiecare membru al echipei le dezvăluie cu propria parolă. Dacă o factură trebuie văzută doar de anumite persoane, marcați-o ca privată sau setați cui îi aparține clientul.",
+      "teamHint": "Protejează împotriva privirilor pe un calculator deblocat sau comun, nu împotriva colegilor: fiecare membru al echipei le dezvăluie cu propria parolă. Dacă o factură trebuie văzută doar de anumite persoane, restricționați accesul la ea sau setați cui îi aparține clientul.",
       "teamLink": "Setează cine din echipă ce vede",
       "errors": {
         "wrong_current": "Parolă greșită.",
@@ -5442,18 +5450,8 @@
         "too_many_attempts": "Prea multe încercări. Încercați peste câteva minute.",
         "generic": "Nu a funcționat. Încercați din nou."
       },
-      "privacyLink": "Marchează ca privată"
-    },
-    "privacy": {
-      "label": "Factură privată",
-      "hint": "O văd doar proprietarul firmei și cel care a emis-o, inclusiv articolele, atașamentele și plățile.",
-      "badge": "Factură privată",
-      "ownerOnly": "Doar proprietarul firmei sau cel care a emis factura poate schimba asta.",
-      "failed": "Schimbarea a eșuat",
-      "madePrivate": "Factura este privată",
-      "madeShared": "Echipa vede din nou factura"
-    },
-    "privateRow": "Factură privată"
+      "privacyLink": "Restricționează accesul"
+    }
   },
   "invite": {
     "title": "Invitație în echipă",
@@ -7460,7 +7458,8 @@
       "bank_account": "Conturi bancare",
       "member": "Echipă",
       "api_key": "Chei API",
-      "import": "Importuri"
+      "import": "Importuri",
+      "expense": "Cheltuieli"
     },
     "docTypes": {
       "invoice": "o factură",
@@ -7498,8 +7497,8 @@
         "send_waiting_pdf": "a pus la coadă pentru trimitere cu PDF",
         "locked": "a blocat",
         "unlocked": "a deblocat",
-        "made_private": "a făcut privat",
-        "made_shared": "a partajat cu echipa"
+        "made_private": "a restricționat accesul la",
+        "made_shared": "a eliminat restricția de acces la"
       },
       "tenant": {
         "updated": "a editat datele firmei",
@@ -7542,6 +7541,10 @@
         "contacts_csv": "a importat clienți din CSV",
         "fakturoid": "a importat date din Fakturoid",
         "guest": "a transferat facturile create fără cont"
+      },
+      "expense": {
+        "made_private": "a restricționat accesul la cheltuiala",
+        "made_shared": "a eliminat restricția de acces la cheltuiala"
       }
     },
     "fields": {
@@ -7628,7 +7631,11 @@
       "isPrivate": "Privat",
       "ownerUserId": "Aparține de",
       "contactScope": "Vede clienți",
-      "vaultCategories": "Categorii dezactivate"
+      "vaultCategories": "Categorii dezactivate",
+      "accessLock": "Restricție de acces",
+      "accessLockUserId": "Blocat de",
+      "invoiceScope": "Vede facturi",
+      "expenseScope": "Vede cheltuieli"
     },
     "values": {
       "invoice": "Factură",
@@ -7648,7 +7655,11 @@
       "recovery": "Cod de recuperare",
       "password": "Parolă",
       "recent_sign_in": "Autentificare recentă",
-      "passkey": "Passkey"
+      "passkey": "Passkey",
+      "private": "Privat",
+      "own": "Doar ale sale",
+      "edit_own": "Editează doar ale sale",
+      "all": "Toată firma"
     },
     "cleared": "șters",
     "filters": {
@@ -15202,5 +15213,34 @@
       "unreadable": "{count, plural, one {# factură nu a putut fi deschisă} few {# facturi nu au putut fi deschise} other {# de facturi nu au putut fi deschise}} și rămân cu starea „Sume criptate”.",
       "failed": "Facturile criptate ({count}) nu au putut fi încărcate. Reîmprospătați pagina."
     }
+  },
+  "recordLock": {
+    "label": "Restricționează accesul",
+    "hint": "Ceilalți nu găsesc o înregistrare blocată în liste, căutare, notificări sau istoricul modificărilor. Blocarea poate fi schimbată apoi doar de cel care a setat-o sau de proprietarul firmei. Se ia în calcul în continuare la decontul de TVA și la datele fiscale.",
+    "holderOnly": "Doar cel care a blocat înregistrarea sau proprietarul firmei poate schimba asta.",
+    "levels": {
+      "none": {
+        "invoice": "Neblocat – toți cei care văd facturile",
+        "expense": "Neblocat – toți cei care văd cheltuielile",
+        "contact": "Neblocat – toți cei care văd contactele"
+      },
+      "private": "Doar eu și proprietarul firmei",
+      "admin": "Eu, proprietarul firmei și administratorii",
+      "accountant": "Toți, în afară de membrii doar cu citire"
+    },
+    "badge": {
+      "private": "Blocat – privat",
+      "admin": "Blocat – doar administratori",
+      "accountant": "Blocat – ascuns membrilor doar cu citire"
+    },
+    "locked": "Acces restricționat",
+    "opened": "Blocare eliminată",
+    "failed": "Nu s-a putut salva",
+    "errors": {
+      "visibility_owner_only": "Blocarea poate fi schimbată doar de cel care a setat-o sau de proprietarul firmei.",
+      "visibility_would_hide": "Astfel nu ați mai vedea nici dumneavoastră înregistrarea.",
+      "record_read_only": "Această înregistrare o puteți doar vizualiza: puteți edita doar pe ale dumneavoastră."
+    },
+    "filingNeedsFullView": "Declarația se calculează din documentele întregii firme, iar pe unele nu le vedeți (vedeți doar pe ale dumneavoastră sau sunt blocate). O poate pregăti proprietarul firmei sau un membru cu acces complet."
   }
 }

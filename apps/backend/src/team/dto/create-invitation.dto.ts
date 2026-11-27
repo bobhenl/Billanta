@@ -12,11 +12,17 @@ export const createInvitationSchema = z.object({
 
 export class CreateInvitationDto extends createZodDto(createInvitationSchema) {}
 
+const recordScope = z.enum(["all", "edit_own", "own"]);
+
 export const updateMemberSchema = z.object({
   role: z.enum(["admin", "accountant", "viewer"]),
   permissions: permissionsSchema.nullable().optional(),
-  // Which clients the member sees: the whole company or only their own. Owner only (TeamService).
-  contactScope: z.enum(["all", "own"]).optional(),
+  // What the member sees and edits per area (all | edit_own | own). Owner only (TeamService).
+  scopes: z
+    .object({ contacts: recordScope.optional(), invoices: recordScope.optional(), expenses: recordScope.optional() })
+    .optional(),
+  // The clients' scope alone, as sent before 0122; `scopes.contacts` wins.
+  contactScope: recordScope.optional(),
 });
 
 export class UpdateMemberDto extends createZodDto(updateMemberSchema) {}

@@ -69,6 +69,7 @@ export function ContactEditor({
   const tColors = useTranslations('contacts.colors');
   const tLookup = useTranslations('companyLookup');
   const tVault = useTranslations('vault.contactEditor');
+  const tLock = useTranslations('recordLock');
   const { vault, key, requestUnlock } = useVault();
   const storedSealed = contactIsSealed(contact);
   // An encrypted contact stays encrypted on save, also below Plus (the server takes ciphertext over ciphertext).
@@ -216,7 +217,7 @@ export function ContactEditor({
       }
       if (!result.ok) {
         toast({
-          text: result.error === 'ico_taken' ? t('icoTaken') : VAULT_CODES.includes(result.error) ? tVault(`errors.${result.error}`) : `${t('saveFailed')}: ${result.error}`,
+          text: result.error === 'ico_taken' ? t('icoTaken') : result.error === 'record_read_only' ? tLock('errors.record_read_only') : VAULT_CODES.includes(result.error) ? tVault(`errors.${result.error}`) : `${t('saveFailed')}: ${result.error}`,
           tone: 'err'
         });
         return;

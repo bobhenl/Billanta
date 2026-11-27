@@ -56,9 +56,9 @@ export interface ContactInput {
   internalNote?: string | null;
 }
 
-/** Who the client belongs to and whether only they (and the company owner) see it; refused (403) for anyone else. */
-export async function setContactVisibility(id: string, change: { ownerUserId?: string | null; isPrivate?: boolean }) {
-  return run<{ ownerUserId: string | null; isPrivate: boolean }>(`/api/v1/contacts/${encodeURIComponent(id)}/visibility`, json('PATCH', change));
+/** Who the client belongs to; refused (403) for anyone else. Its lock goes through lib/record-lock-actions. */
+export async function setContactVisibility(id: string, change: { ownerUserId: string | null }) {
+  return run<{ ownerUserId: string | null }>(`/api/v1/contacts/${encodeURIComponent(id)}/visibility`, json('PATCH', change));
 }
 
 async function run<T>(path: string, init: RequestInit): Promise<ActionResult<T>> {

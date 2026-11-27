@@ -159,8 +159,10 @@ export class ContactsController {
 
   @Patch(":id/visibility")
   @ApiOperation({
-    summary: "Who the client belongs to (ownerUserId) and whether it is private (isPrivate)",
-    description: "Company owner or the client's current owner only (403 visibility_owner_only). Audited.",
+    summary: "Who the client belongs to (ownerUserId) and who else sees it (accessLock: private | admin | accountant | null)",
+    description:
+      "ownerUserId: company owner or the client's current owner. accessLock: the lock's holder, or the client's owner or an admin when it has none. " +
+      "403 visibility_owner_only otherwise; widening needs a step-up. Audited.",
   })
   setVisibility(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: ContactVisibilityDto) {
     return this.contactsService.setVisibility(req.tenantDb!, req.user!, id, dto);
