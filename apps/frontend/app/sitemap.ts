@@ -77,6 +77,7 @@ const STATIC_ENTRIES: UrlEntry[] = [
   { path: '/invoicing-for-beginners', changeFrequency: 'monthly', priority: 0.7 },
   { path: '/invoicing-for-advanced', changeFrequency: 'monthly', priority: 0.7 },
   { path: '/team-roles', changeFrequency: 'monthly', priority: 0.6 },
+  { path: '/security/confidential', changeFrequency: 'monthly', priority: 0.5 },
   { path: '/for-owners', changeFrequency: 'monthly', priority: 0.5 },
   { path: '/for-assistants', changeFrequency: 'monthly', priority: 0.5 },
 

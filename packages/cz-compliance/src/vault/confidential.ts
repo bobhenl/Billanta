@@ -4,8 +4,9 @@
  * 256). The server stores only that key wrapped by a member's vault
  * password, a passkey (WebAuthn PRF) or the recovery code, and the text as
  * `enc:v1:<base64 iv>:<base64 ciphertext>`. Plain and sealed rows coexist,
- * so `isSealed` is what every reader checks. Design:
- * docs/research/client-side-encryption.md.
+ * so `isSealed` is what every reader checks. See README.md next to this file.
+ * This folder holds only generic crypto: it is published on its own, so
+ * nothing app-specific (plans, endpoints, categories) belongs here.
  *
  * Only WebCrypto, so the same code runs in the browser and in Node (tests,
  * and the backend that only ever calls `isSealed`).
@@ -207,19 +208,3 @@ export function unwrapWithRecoveryCode(wrap: VaultWrap, code: string, extractabl
 export function wrapWithRecoveryCode(key: VaultKey, code: string): Promise<VaultWrap> {
   return wrapWithSecret(key, recoveryCodeSecret(code), 'recovery');
 }
-
-/**
- * What a company can choose to encrypt. Each category switches off the server
- * features that need to read it (the enable screen lists them), so the choice
- * is the customer's. `available: false` ones are planned, not built.
- */
-export const VAULT_CATEGORIES = [
-  { id: 'texts', available: true, default: true },
-  { id: 'attachments', available: false, default: false },
-  { id: 'contacts', available: false, default: false },
-  { id: 'amounts', available: false, default: false },
-] as const;
-
-export type VaultCategory = (typeof VAULT_CATEGORIES)[number]['id'];
-
-export const AVAILABLE_VAULT_CATEGORIES = VAULT_CATEGORIES.filter((c) => c.available).map((c) => c.id);

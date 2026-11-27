@@ -2107,3 +2107,10 @@ DROP POLICY IF EXISTS tenant_isolation ON vault_key_wraps;
 CREATE POLICY tenant_isolation ON vault_key_wraps
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+-- Migration 0110: e-mails of encrypted documents waiting for a browser to add the PDF.
+ALTER TABLE vault_email_queue ENABLE ROW LEVEL SECURITY;
+ALTER TABLE vault_email_queue FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON vault_email_queue;
+CREATE POLICY tenant_isolation ON vault_email_queue
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);

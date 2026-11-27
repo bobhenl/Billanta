@@ -18,7 +18,8 @@ import { getHomeRateDay } from "../exports/home-rates";
 import { exchangeRateSettingsOf, isCnbRate, resolveRateMode, type StoredRateMode } from "./exchange-rate-mode";
 import * as schema from "../../drizzle/schema";
 import { withIdempotencyKey } from "../common/idempotency";
-import { EmailService, type EmailAttachment, type EmailCustomization } from "../email/email.service";
+import { buildInvoiceEmail, EmailService, type EmailAttachment, type EmailCustomization, type SendInvoiceEmailParams } from "../email/email.service";
+import { documentIsSealed, sealedSendPlan, withOpenedTexts, type OpenedTexts } from "../vault/vault-email";
 import { emailCustomizationOf, emailPrefsOf } from "../tenants/email-prefs";
 import { templateValues, templateVarsOf } from "../tenants/template-vars";
 import { InvoiceAttachmentsService } from "./invoice-attachments.service";
@@ -327,11 +328,13 @@ export class InvoicesService {
     invoice: typeof schema.invoices.$inferSelect,
     contact: typeof schema.contacts.$inferSelect,
     kind: "invoice" | "reminder",
+    opts: { sealed?: boolean } = {},
   ): Promise<EmailCustomization> {
     const [liveTenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
     const prefs = emailPrefsOf(liveTenant?.emailPrefs);
     const attachments: EmailAttachment[] = [];
-    if (kind === "invoice" && invoice.invoiceNumber) {
+    // An encrypted document: the server can make neither file (both print its texts).
+    if (kind === "invoice" && invoice.invoiceNumber && !opts.sealed) {
       const base = invoiceFileBase(invoice);
       if (prefs.attachPdf) {
         attachments.push({ filename: `${base}.pdf`, content: await this.generateInvoicePdf(db, tenantId, invoice.id), contentType: "application/pdf" });
@@ -1389,7 +1392,7 @@ export class InvoicesService {
    * for the no-auth client-portal view), emails it via
    * `EmailService.sendInvoiceEmail`, then stamps `sent_at`.
    */
-  async sendInvoice(db: TenantDb, id: string, tenantId?: string) {
+  async sendInvoice(db: TenantDb, id: string, tenantId?: string, userId?: string) {
     const [invoice] = await db.select().from(schema.invoices).where(eq(schema.invoices.id, id)).limit(1);
     if (!invoice) {
       throw new NotFoundException(`Invoice ${id} not found`);
@@ -1413,27 +1416,25 @@ export class InvoicesService {
       .select()
       .from(schema.invoiceLineItems)
       .where(eq(schema.invoiceLineItems.invoiceId, id));
-    const total = computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge });
 
     // Already in the customer's hands and edited since ("Přesto upravit"):
     // the email says it is a corrected copy that replaces the earlier one.
     const corrected = invoice.sentAt ? await this.editedSince(db, id, invoice.sentAt) : false;
 
+    // Důvěrný režim: the server cannot render the PDF of an encrypted document.
+    // Instead of failing, the e-mail goes out with the link and the PDF waits
+    // for a member's browser, or the whole e-mail waits (vault/vault-email.ts).
+    const sealed = documentIsSealed(invoice, lineItems);
+    const plan = sealed ? sealedSendPlan(await this.vaultEmailMode(db), await this.attachesPdf(db, invoice.tenantId)) : null;
+
     await assertCanSendEmail(db, invoice.tenantId);
+    if (plan?.queue) await this.queueForBrowser(db, invoice, contact.email, plan.queue, corrected, userId);
+    if (plan && !plan.sendNow) {
+      await this.log(db, invoice, "send_waiting_pdf", [{ field: "email", from: null, to: contact.email }]);
+      return { ...invoice, vaultEmail: "waiting" as const };
+    }
     await this.emailService.sendInvoiceEmail(
-      {
-        corrected,
-        to: contact.email,
-        invoiceNumber: invoice.invoiceNumber ?? invoice.id,
-        // Once something is paid the e-mail asks for the rest, like the PDF's "Zbývá uhradit".
-        amount: formatInvoiceAmount(Number(invoice.amountPaid ?? 0) > 0 ? amountLeftToPay(total, invoice.amountPaid) : total, invoice.currency),
-        dueDate: invoice.dueDate,
-        ...(await this.emailLinks(db, invoice, contact)),
-        language: invoice.language,
-        documentType: invoice.documentType,
-        credit: await this.emailCredit(db, invoice.tenantId, invoice.language),
-        ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "invoice") } : {}),
-      },
+      await this.invoiceEmailParams(db, invoice, contact, lineItems, tenantId, corrected, { sealed }),
       // Collapses a double-click into one e-mail; a deliberate resend a minute later still goes out.
       { tenantId: invoice.tenantId, db, idempotencyKey: `invoice:${invoice.id}:${Math.floor(Date.now() / 60_000)}` },
     );
@@ -1447,7 +1448,126 @@ export class InvoicesService {
 
     this.ping(updated, "invoice_sent", `Faktura ${updated.invoiceNumber ?? ""} odeslána`, `Komu: ${contact.email}`);
     await this.log(db, updated, corrected ? "sent_corrected" : "sent", [{ field: "email", from: null, to: contact.email }]);
-    return updated;
+    return plan?.queue ? { ...updated, vaultEmail: "pdf_follows" as const } : updated;
+  }
+
+  /** What the invoice e-mail says; `sealed` leaves out the files the server cannot make (PDF, ISDOC). */
+  private async invoiceEmailParams(
+    db: TenantDb,
+    invoice: InvoiceRow,
+    contact: typeof schema.contacts.$inferSelect,
+    lineItems: (typeof schema.invoiceLineItems.$inferSelect)[],
+    tenantId: string | undefined,
+    corrected: boolean,
+    opts: { sealed: boolean },
+  ): Promise<SendInvoiceEmailParams> {
+    const total = computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge });
+    return {
+      corrected,
+      to: contact.email ?? "",
+      invoiceNumber: invoice.invoiceNumber ?? invoice.id,
+      // Once something is paid the e-mail asks for the rest, like the PDF's "Zbývá uhradit".
+      amount: formatInvoiceAmount(Number(invoice.amountPaid ?? 0) > 0 ? amountLeftToPay(total, invoice.amountPaid) : total, invoice.currency),
+      dueDate: invoice.dueDate,
+      variableSymbol: invoice.documentType === "credit_note" ? null : invoice.variableSymbol,
+      paymentQr: tenantId ? await this.paymentQrFor(db, tenantId, invoice.id) : null,
+      ...(await this.emailLinks(db, invoice, contact)),
+      language: invoice.language,
+      documentType: invoice.documentType,
+      credit: await this.emailCredit(db, invoice.tenantId, invoice.language),
+      ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "invoice", opts) } : {}),
+    };
+  }
+
+  /**
+   * The payment QR for the e-mail, built from the same data as the PDF's.
+   * Best effort: a reminder or invoice e-mail never fails over its QR.
+   */
+  async paymentQrFor(db: TenantDb, tenantId: string, invoiceId: string): Promise<Buffer | null> {
+    try {
+      const { invoice, contact, tenant, lineItems } = await this.loadIssuedInvoiceForDocument(db, tenantId, invoiceId);
+      if (!isRemindableDocument(invoice.documentType)) return null;
+      return await this.invoicePdfService.paymentQr(invoice, contact, tenant, computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge }));
+    } catch {
+      return null;
+    }
+  }
+
+  private async vaultEmailMode(db: TenantDb): Promise<string | null> {
+    const [vault] = await db.select({ mode: schema.tenantVaults.emailMode }).from(schema.tenantVaults).limit(1);
+    return vault?.mode ?? null;
+  }
+
+  private async attachesPdf(db: TenantDb, tenantId: string): Promise<boolean> {
+    const [tenant] = await db.select({ emailPrefs: schema.tenants.emailPrefs }).from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
+    return emailPrefsOf(tenant?.emailPrefs).attachPdf;
+  }
+
+  /** One waiting e-mail per document: a second send while one waits keeps the first. */
+  private async queueForBrowser(db: TenantDb, invoice: InvoiceRow, recipient: string, kind: "invoice" | "invoice_pdf", corrected: boolean, userId?: string) {
+    await db
+      .insert(schema.vaultEmailQueue)
+      .values({ tenantId: invoice.tenantId, invoiceId: invoice.id, kind, recipient, corrected, createdBy: userId ?? null })
+      .onConflictDoNothing();
+  }
+
+  /**
+   * Sends a waiting e-mail of an encrypted document with the PDF a member's
+   * browser rendered (`POST v1/vault/invoices/emails/:id/send`), or with the
+   * texts it decrypted, which the server prints once in memory while no
+   * browser renderer exists. Either goes straight to Resend: it is not
+   * stored, queued or logged.
+   */
+  async sendQueuedWithPdf(db: TenantDb, tenantId: string, userId: string, queueId: string, source: { pdf: Buffer } | { texts: OpenedTexts }) {
+    const [row] = await db
+      .select()
+      .from(schema.vaultEmailQueue)
+      .where(and(eq(schema.vaultEmailQueue.id, queueId), eq(schema.vaultEmailQueue.status, "waiting")))
+      .limit(1);
+    if (!row) throw new NotFoundException("vault_email_not_found");
+    const [invoice] = await db.select().from(schema.invoices).where(eq(schema.invoices.id, row.invoiceId)).limit(1);
+    if (!invoice?.contactId || !invoice.invoiceNumber) throw new NotFoundException("vault_email_not_found");
+    const [contact] = await db.select().from(schema.contacts).where(eq(schema.contacts.id, invoice.contactId)).limit(1);
+    if (!contact) throw new NotFoundException("vault_email_not_found");
+    const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, invoice.id));
+
+    await assertCanSendEmail(db, tenantId);
+    const pdf = "pdf" in source ? source.pdf : await this.printOpened(db, tenantId, invoice.id, source.texts);
+    const followUp = row.kind === "invoice_pdf";
+    const params = await this.invoiceEmailParams(db, invoice, { ...contact, email: row.recipient }, lineItems, tenantId, row.corrected, { sealed: true });
+    const file: EmailAttachment = { filename: `${invoiceFileBase(invoice)}.pdf`, content: pdf, contentType: "application/pdf" };
+    // The follow-up carries only the PDF; the full e-mail carries what the server-sent one would have.
+    const rest = followUp ? [] : (params.custom?.attachments ?? []);
+    const email = buildInvoiceEmail({ ...params, custom: { ...params.custom, attachments: [file, ...rest] } }, { pdfFollowUp: followUp });
+    await this.emailService.sendNow(email, { tenantId, db, userId, idempotencyKey: `vault-email:${row.id}` });
+    await recordEmailSent(db, tenantId, "invoice", row.recipient);
+    await db
+      .update(schema.vaultEmailQueue)
+      .set({ status: "sent", doneAt: new Date(), doneBy: userId })
+      .where(eq(schema.vaultEmailQueue.id, row.id));
+    if (followUp) return { sent: true };
+    const [updated] = await db
+      .update(schema.invoices)
+      .set({ sentAt: new Date(), updatedAt: new Date() })
+      .where(eq(schema.invoices.id, invoice.id))
+      .returning();
+    this.ping(updated, "invoice_sent", `Faktura ${updated.invoiceNumber ?? ""} odeslána`, `Komu: ${row.recipient}`);
+    await this.log(db, updated, row.corrected ? "sent_corrected" : "sent", [{ field: "email", from: null, to: row.recipient }]);
+    return { sent: true };
+  }
+
+  /** The PDF of an encrypted document from the texts a browser decrypted, never kept past this call. */
+  private async printOpened(db: TenantDb, tenantId: string, invoiceId: string, texts: OpenedTexts): Promise<Buffer> {
+    const doc = await this.loadIssuedInvoiceForDocument(db, tenantId, invoiceId);
+    const opened = (() => {
+      try {
+        return withOpenedTexts(doc.invoice, doc.lineItems, texts);
+      } catch {
+        throw new BadRequestException("texts_missing");
+      }
+    })();
+    const totals = computeVatBreakdown(opened.items, { reverseCharge: opened.invoice.reverseCharge });
+    return this.invoicePdfService.generate(opened.invoice, doc.contact, doc.tenant, opened.items, totals, doc.related);
   }
 
   private async emailLinks(db: TenantDb, invoice: typeof schema.invoices.$inferSelect, contact: typeof schema.contacts.$inferSelect) {
@@ -1504,6 +1624,9 @@ export class InvoicesService {
         invoiceNumber: invoice.invoiceNumber ?? invoice.id,
         amount: formatInvoiceAmount(left, invoice.currency),
         dueDate: invoice.dueDate,
+        // Works for an encrypted document too: none of this is its text.
+        variableSymbol: invoice.variableSymbol,
+        paymentQr: tenantId ? await this.paymentQrFor(db, tenantId, invoice.id) : null,
         ...(await this.emailLinks(db, invoice, contact)),
         reminderCount: invoice.reminderCount + 1,
         language: invoice.language,

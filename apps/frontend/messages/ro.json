@@ -245,7 +245,8 @@
         "cookies": "Politica privind cookie-urile",
         "cookieSettings": "Setări cookie-uri",
         "dpa": "Acord de prelucrare a datelor",
-        "contact": "Contact"
+        "contact": "Contact",
+        "confidential": "Modul confidențial și securitate"
       },
       "account": {
         "title": "Cont",
@@ -7341,7 +7342,8 @@
         "buyer_details_submitted": "și-a completat datele de facturare pentru",
         "buyer_details_cancelled": "a închis cererea de date ale clientului pentru",
         "profile_order": "a creat prin comandă din profilul public:",
-        "link_renamed": "a redenumit linkul public"
+        "link_renamed": "a redenumit linkul public",
+        "send_waiting_pdf": "a pus la coadă pentru trimitere cu PDF"
       },
       "tenant": {
         "updated": "a editat datele firmei",
@@ -14269,7 +14271,9 @@
     "actions": {
       "blocked": "Indisponibil în Modul confidențial: serverul nu poate citi un document criptat. Dezactivați atașamentul PDF/ISDOC în setările e-mail sau trimiteți un link.",
       "pdfUnavailable": "PDF-ul nu este disponibil în Modul confidențial. Puteți tipări detaliul din browser (Ctrl+P).",
-      "sendHint": "Acest document este criptat: e-mailul pleacă doar cu un link, serverul nu poate atașa PDF sau ISDOC."
+      "sendHint": "Documentul este criptat, deci serverul nu poate crea singur PDF sau ISDOC. În funcție de setări, linkul pleacă imediat și PDF-ul din browserul dvs., sau pleacă doar linkul.",
+      "emailWaiting": "E-mailul așteaptă PDF-ul. Pleacă dintr-un browser cu modul deblocat, vedeți notificarea de sus.",
+      "pdfFollows": "Link trimis. Trimiteți PDF-ul ca e-mail suplimentar din notificarea de sus."
     },
     "categories": {
       "recommended": "Recomandat",
@@ -14400,6 +14404,167 @@
       "recoveryReplaced": "Noul cod de recuperare este valabil",
       "categoriesTitle": "Ce se criptează",
       "categoriesLead": "Urmează și alte opțiuni. La fiecare vedeți ce nu ar mai funcționa."
+    },
+    "outbox": {
+      "badge": "{n, plural, one {# e-mail așteaptă} few {# e-mailuri așteaptă} other {# de e-mailuri așteaptă}} să fie trimise cu PDF",
+      "open": "Afișează",
+      "title": "E-mailuri care așteaptă PDF-ul",
+      "back": "Închide",
+      "send": "Trimite ({n})",
+      "unlockAndSend": "Deblochează și trimite ({n})",
+      "lead": "Serverul nu poate transforma singur un document criptat în PDF. PDF-ul se creează aici, într-un browser cu Modul confidențial deblocat.",
+      "passThroughPdf": "PDF-ul se creează în browserul dvs. Serverul îl transmite o dată destinatarului și nu îl păstrează.",
+      "passThroughTexts": "După ce apăsați Trimite, textele decriptate ale acestor documente trec o dată prin server: acesta creează din ele PDF-ul și îl trimite pe e-mail. Nu le păstrează și nu le scrie în jurnale.",
+      "unnumbered": "Fără număr",
+      "kind": {
+        "invoice": "Așteaptă tot e-mailul",
+        "invoice_pdf": "PDF pentru un link trimis"
+      },
+      "dismiss": "Nu trimite",
+      "settingsHint": "Când și cum se trimite PDF-ul alegeți în",
+      "settingsLink": "setările Modului confidențial",
+      "sent": "{n, plural, one {# e-mail trimis} few {# e-mailuri trimise} other {# de e-mailuri trimise}}",
+      "failed": "{n, plural, one {# e-mail nu a putut fi trimis} few {# e-mailuri nu au putut fi trimise} other {# de e-mailuri nu au putut fi trimise}}"
+    },
+    "emailSettings": {
+      "title": "E-mailuri pentru documente criptate",
+      "lead": "Ce se întâmplă când trimiteți un document criptat. Linkul, suma, scadența, referința de plată și plata QR pleacă întotdeauna.",
+      "mode": {
+        "link_now": "Link acum, PDF mai târziu",
+        "wait": "Așteaptă și trimite totul o dată",
+        "link_only": "Doar link, niciodată PDF"
+      },
+      "modeHint": {
+        "link_now": "Clientul primește imediat un e-mail cu linkul. PDF-ul vine într-un al doilea e-mail, imediat ce cineva din echipă îl trimite dintr-un browser cu modul deblocat.",
+        "wait": "E-mailul pleacă doar cu PDF-ul, din browserul unui membru al echipei cu modul deblocat. Până atunci clientul nu primește nimic.",
+        "link_only": "Clientul primește doar linkul și deschide documentul acolo. Serverul nu primește niciodată textele lui."
+      },
+      "autoSend": "Trimite PDF-urile automat",
+      "autoSendHint": "Imediat ce cineva din echipă deschide aplicația cu modul deblocat, PDF-urile în așteptare pleacă fără alt clic.",
+      "passThrough": "Fiecare PDF trimis trece o dată prin server, pentru că e-mailul pleacă de acolo. Serverul nu îl păstrează și nu îl scrie în jurnale.",
+      "saved": "Salvat",
+      "failed": "Salvarea nu a reușit"
+    },
+    "device": {
+      "title": "Ține minte deblocarea pe acest dispozitiv",
+      "hint": "Modul rămâne deblocat și după închiderea browserului, fără limita de 12 ore, astfel încât PDF-urile în așteptare pot pleca ori de câte ori deschideți aplicația. Cheia este păstrată în browser astfel încât nu poate fi citită sau copiată. Blocarea, oprirea acestei opțiuni sau deconectarea o șterg.",
+      "risk": "Activați doar pe propriul dispozitiv, pe care nu îl mai folosește nimeni. Cine deschide acest browser vede textele criptate.",
+      "on": "Acest dispozitiv ține minte deblocarea",
+      "off": "Deblocarea expiră din nou după 12 ore",
+      "failed": "Nu a mers. Deblocați mai întâi modul."
+    },
+    "serverView": {
+      "title": "Ce vede serverul",
+      "lead": "Așa sunt stocate pe server textele acestui document. Doar un browser cu modul deblocat le poate decripta.",
+      "server": "Serverul are:",
+      "you": "Dvs. vedeți:",
+      "noteAbove": "Text deasupra pozițiilor",
+      "noteBelow": "Text sub poziții",
+      "internalNote": "Notă internă",
+      "item": "Poziția {n}",
+      "notSealed": "Sumele, datele, numărul documentului, referința de plată și clienții sunt vizibile serverului, ca să calculeze TVA, să urmărească scadențele și să potrivească plățile.",
+      "more": "Cum funcționează și cum verificați"
     }
+  },
+  "vaultPublic": {
+    "integrity": {
+      "title": "Verificarea codului",
+      "lead": "La fiecare build al aplicației se înregistrează amprentele SHA-256 ale codului de criptare și ale fișierelor care îl conțin.",
+      "sourceHash": "Fișier sursă {path}",
+      "repo": "Cod sursă public",
+      "repoPlanned": "Plănuim să îl publicăm într-un depozit GitHub separat.",
+      "chunks": "Fișierele încărcate de browser",
+      "check": "Verifică în acest browser",
+      "match": "Corespunde",
+      "mismatch": "Nu corespunde",
+      "error": "Fișierul nu a putut fi descărcat",
+      "loadedHere": "încărcat pe această pagină",
+      "missing": "Manifestul nu este încă disponibil. Se creează la buildul de producție.",
+      "honest": "Manifestul și fișierele vin de la același server, deci o potrivire arată doar că manifestul descrie ce se servește. Verificarea reală este compararea amprentelor cu un build din sursa publicată."
+    },
+    "demo": {
+      "label": "Scrieți orice propoziție",
+      "placeholder": "De exemplu: Consultanță pentru vânzarea firmei, 12 ore",
+      "send": "Criptează și trimite",
+      "keyNote": "Cheia se creează doar pentru această pagină și nu este trimisă nicăieri. Dispare la reîncărcare.",
+      "typed": "Ce ați scris",
+      "typedHint": "Rămâne doar în browserul dvs.",
+      "sent": "Ce a plecat spre server",
+      "sentHint": "Corpul exact al cererii POST {path}.",
+      "received": "Ce a primit serverul (HTTP {status})",
+      "receivedHint": "Serverul returnează exact ce a primit. Nu stochează nimic.",
+      "open": "Decriptează aici",
+      "openedAs": "Browserul dvs. a decriptat înapoi în:",
+      "rateLimited": "Prea multe încercări. Reîncercați peste câteva minute.",
+      "failed": "Cererea a eșuat. Reîncercați.",
+      "devtoolsTitle": "Verificați singur în instrumentele browserului",
+      "devtoolsSteps": [
+        "Apăsați F12 (pe Mac Cmd+Option+I) și deschideți fila Rețea (Network).",
+        "Apăsați din nou Criptează și trimite.",
+        "Faceți clic în listă pe cererea „echo” și deschideți Payload (Conținut) și Response (Răspuns).",
+        "Veți vedea doar un șir enc:v1:…, nu propoziția dvs. Ctrl+F în fila Rețea caută în toate cererile: încercați să găsiți un cuvânt din propoziție."
+      ]
+    },
+    "csp": {
+      "liveTitle": "Antetul Content-Security-Policy al acestei pagini, citit chiar acum",
+      "liveMissing": "Antetul nu a putut fi citit. Îl găsiți în instrumentele browserului, la cererea pentru această pagină."
+    }
+  },
+  "securityPage": {
+    "seoTitle": "Modul confidențial: ce vede serverul și ce nu",
+    "eyebrow": "Securitate",
+    "title": "Modul confidențial: texte de documente pe care serverul nu le poate citi",
+    "lead": "Descrierile pozițiilor și notele se criptează în browserul dvs. Serverul primește doar un șir criptat și nu are cheia lui. Aici puteți încerca și verifica singur.",
+    "featuresLink": "Toate funcțiile",
+    "demoTitle": "Încercați",
+    "demoLead": "Fără autentificare. Pagina vă criptează propoziția cu același cod ca aplicația și chiar o trimite la server. Vedeți una lângă alta ce ați scris, ce a plecat și ce a primit serverul.",
+    "howTitle": "Cum funcționează",
+    "howSteps": [
+      {
+        "title": "Cheia se creează la dvs.",
+        "body": "La activarea modului, browserul creează o cheie AES-256 aleatoare. Serverul primește doar copii ale ei, încuiate cu parola, passkey-ul sau codul de recuperare."
+      },
+      {
+        "title": "Criptat înainte de trimitere",
+        "body": "O descriere sau o notă se criptează înainte să părăsească browserul. Serverul stochează un șir enc:v1:… și nu face nimic cu el."
+      },
+      {
+        "title": "Decriptat doar la dvs.",
+        "body": "După deblocare, browserul ține cheia astfel încât pagina o poate folosi, dar nu îi poate citi conținutul."
+      }
+    ],
+    "hiddenTitle": "Ce nu vede serverul",
+    "hidden": [
+      "Descrierile pozițiilor",
+      "Textul de deasupra și de sub poziții",
+      "Notele interne",
+      "Cheia și parola care o deblochează"
+    ],
+    "visibleTitle": "Ce vede serverul și de ce",
+    "visible": [
+      "Sume și TVA – pentru calcule, declarații și potrivirea plăților",
+      "Datele de emitere și scadență – pentru remindere",
+      "Numărul documentului și referința de plată",
+      "Clientul și e-mailul lui – ca documentul să poată fi trimis"
+    ],
+    "cspTitle": "Browserul controlează unde poate trimite date pagina",
+    "cspBody": "Aplicația, linkurile de documente și această pagină sunt servite cu un antet Content-Security-Policy care conține connect-src 'self'. Browserul refuză atunci singur orice cerere a unei astfel de pagini către alt server, chiar dacă un script ar încerca. Textul decriptat nu poate pleca pe această cale.",
+    "cspHow": "Oricine poate citi antetul: în instrumentele browserului (F12, fila Rețea) faceți clic pe prima cerere, pagina însăși, și căutați Content-Security-Policy în anteturile răspunsului.",
+    "limitsTitle": "Unde sunt limitele",
+    "limits": [
+      "Codul aplicației este livrat de serverul nostru. Dacă ar fi compromis, ar putea livra alt cod. Publicarea codului și a amprentelor face o astfel de schimbare detectabilă, dar nu o împiedică de la sine.",
+      "Când trimiteți pe e-mail un document criptat cu PDF, textele lui trec o dată prin server, pentru că e-mailul pleacă de acolo. Aplicația vă spune dinainte, iar serverul nu le păstrează și nu le scrie în jurnale. Dacă trimiteți doar linkul, serverul nu primește deloc textele.",
+      "Modul nu criptează sumele, datele, numerele sau clienții, vedeți mai sus.",
+      "Pentru documentele criptate serverul nu creează ISDOC sau alte formate pentru mașini.",
+      "Regula connect-src se aplică unei pagini încărcate direct. Dacă treceți în aplicație de pe site-ul public fără reîncărcare, până la reîncărcare se aplică regula paginii anterioare.",
+      "Cine are acces la browserul dvs. deblocat vede textele. Modul protejează față de server, nu față de cineva de la calculatorul dvs.",
+      "Dacă uitați și parola, și codul de recuperare și nu aveți passkey, nimeni nu poate recupera textele, nici noi."
+    ],
+    "verifyTitle": "Verificarea codului",
+    "verifyLead": "La fiecare build scriem amprentele SHA-256 ale codului de criptare într-un fișier public. Browserul dvs. le poate recalcula chiar aici.",
+    "planned": [
+      "Vom publica codul de criptare (un singur fișier fără dependențe) într-un depozit GitHub separat, ca amprentele să poată fi comparate cu propriul build.",
+      "O verificare independentă a codului este planificată."
+    ]
   }
 }

@@ -24,6 +24,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
+import { VAULT_EMAILS_CHANGED } from '@/components/vault/vault-email-outbox';
 import { useCanDo, useCanWrite } from '@/components/access-provider';
 import { CONVERSIONS, type DocumentType, type InvoiceStatus } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
@@ -128,7 +129,7 @@ export function InvoiceActions({
   const sendFirst = canSend && numbered && status === 'issued' && !sentAt && hasEmail;
   const conversions = !canEdit || status === 'cancelled' || (!numbered && documentType !== 'quote') ? [] : CONVERSIONS[documentType];
 
-  const act = <T,>(fn: () => Promise<ActionResult<T>>, okText: string, after?: (data: T) => void) =>
+  const act = <T,>(fn: () => Promise<ActionResult<T>>, okText: string | ((data: T) => string), after?: (data: T) => void) =>
     startTransition(async () => {
       const result = await fn();
       setDialog(null);
@@ -136,7 +137,7 @@ export function InvoiceActions({
         toast({ text: result.error === 'confidential_content' ? tVault('blocked') : `${t('actionFailed')}: ${result.error}`, tone: 'err' });
         return;
       }
-      toast({ text: okText, tone: 'ok' });
+      toast({ text: typeof okText === 'function' ? okText(result.data) : okText, tone: 'ok' });
       if (after) after(result.data);
       else router.refresh();
     });
@@ -422,7 +423,20 @@ export function InvoiceActions({
             <button type="button" className={buttonClass.secondary} onClick={() => setDialog(null)}>
               {t('confirm.back')}
             </button>
-            <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => act(() => sendInvoice(id), t('done.sent'))}>
+            <button type="button" className={buttonClass.primary} disabled={pending} onClick={() =>
+                act(
+                  () => sendInvoice(id),
+                  // An encrypted document's PDF waits for a browser with the key (backend vault/vault-email.ts).
+                  (data) => {
+                    const vaultEmail = (data as { vaultEmail?: 'waiting' | 'pdf_follows' } | null)?.vaultEmail;
+                    return vaultEmail === 'waiting' ? tVault('emailWaiting') : vaultEmail === 'pdf_follows' ? tVault('pdfFollows') : t('done.sent');
+                  },
+                  () => {
+                    window.dispatchEvent(new Event(VAULT_EMAILS_CHANGED));
+                    router.refresh();
+                  }
+                )
+              }>
               <Send className="h-4 w-4" />
               {editedAfterSend ? t('correction.send') : t('actions.send')}
             </button>

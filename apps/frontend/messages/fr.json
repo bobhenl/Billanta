@@ -245,7 +245,8 @@
         "cookies": "Politique relative aux cookies",
         "cookieSettings": "Paramètres des cookies",
         "dpa": "Accord de traitement des données",
-        "contact": "Contact"
+        "contact": "Contact",
+        "confidential": "Mode confidentiel et sécurité"
       },
       "account": {
         "title": "Compte",
@@ -7341,7 +7342,8 @@
         "buyer_details_submitted": "a renseigné ses informations de facturation pour",
         "buyer_details_cancelled": "a clôturé la demande d’informations client pour",
         "profile_order": "créé par une commande depuis le profil public :",
-        "link_renamed": "a renommé le lien public"
+        "link_renamed": "a renommé le lien public",
+        "send_waiting_pdf": "a mis en attente d'envoi avec le PDF"
       },
       "tenant": {
         "updated": "a modifié les informations de l’entreprise",
@@ -14269,7 +14271,9 @@
     "actions": {
       "blocked": "Indisponible en Mode confidentiel : le serveur ne peut pas lire un document chiffré. Désactivez la pièce jointe PDF/ISDOC dans les réglages des e-mails ou envoyez un lien.",
       "pdfUnavailable": "Le PDF n'est pas disponible en Mode confidentiel. Vous pouvez imprimer le détail depuis votre navigateur (Ctrl+P).",
-      "sendHint": "Ce document est chiffré : l'e-mail part avec un lien seulement, le serveur ne peut pas joindre de PDF ou d'ISDOC."
+      "sendHint": "Ce document est chiffré, le serveur ne peut donc créer ni PDF ni ISDOC. Selon vos réglages, le lien part tout de suite et le PDF depuis votre navigateur, ou seul le lien part.",
+      "emailWaiting": "L'e-mail attend le PDF. Il partira d'un navigateur avec le mode déverrouillé, voir l'avis en haut.",
+      "pdfFollows": "Lien envoyé. Envoyez le PDF par un e-mail complémentaire depuis l'avis en haut."
     },
     "categories": {
       "recommended": "Recommandé",
@@ -14400,6 +14404,167 @@
       "recoveryReplaced": "Le nouveau code de secours est actif",
       "categoriesTitle": "Ce qui est chiffré",
       "categoriesLead": "D'autres options arrivent. Pour chacune, vous voyez ce qui cesserait de fonctionner."
+    },
+    "outbox": {
+      "badge": "{n, plural, one {# e-mail attend} other {# e-mails attendent}} d'être envoyés avec le PDF",
+      "open": "Afficher",
+      "title": "E-mails en attente du PDF",
+      "back": "Fermer",
+      "send": "Envoyer ({n})",
+      "unlockAndSend": "Déverrouiller et envoyer ({n})",
+      "lead": "Le serveur ne peut pas transformer seul un document chiffré en PDF. Le PDF est créé ici, dans un navigateur où le Mode confidentiel est déverrouillé.",
+      "passThroughPdf": "Le PDF est créé dans votre navigateur. Le serveur le transmet une fois au destinataire et ne le conserve pas.",
+      "passThroughTexts": "Quand vous cliquez sur Envoyer, les textes déchiffrés de ces documents passent une fois par le serveur : il en fait le PDF et l'envoie par e-mail. Il ne les conserve pas et ne les journalise pas.",
+      "unnumbered": "Sans numéro",
+      "kind": {
+        "invoice": "Tout l'e-mail attend",
+        "invoice_pdf": "PDF pour un lien envoyé"
+      },
+      "dismiss": "Ne pas envoyer",
+      "settingsHint": "Choisissez quand et comment le PDF part dans les",
+      "settingsLink": "réglages du Mode confidentiel",
+      "sent": "{n, plural, one {# e-mail envoyé} other {# e-mails envoyés}}",
+      "failed": "{n, plural, one {# e-mail n'a pas pu être envoyé} other {# e-mails n'ont pas pu être envoyés}}"
+    },
+    "emailSettings": {
+      "title": "E-mails des documents chiffrés",
+      "lead": "Ce qui se passe quand vous envoyez un document chiffré. Le lien, le montant, l'échéance, la référence de paiement et le paiement QR partent toujours.",
+      "mode": {
+        "link_now": "Lien maintenant, PDF ensuite",
+        "wait": "Attendre et tout envoyer d'un coup",
+        "link_only": "Lien seul, jamais de PDF"
+      },
+      "modeHint": {
+        "link_now": "Le client reçoit tout de suite un e-mail avec le lien. Le PDF suit dans un second e-mail dès qu'un membre de l'équipe l'envoie depuis un navigateur avec le mode déverrouillé.",
+        "wait": "L'e-mail ne part qu'avec le PDF, depuis le navigateur d'un membre de l'équipe avec le mode déverrouillé. D'ici là, le client ne reçoit rien.",
+        "link_only": "Le client reçoit seulement le lien et ouvre le document là-bas. Le serveur ne reçoit jamais ses textes."
+      },
+      "autoSend": "Envoyer les PDF automatiquement",
+      "autoSendHint": "Dès qu'un membre de l'équipe ouvre l'application avec le mode déverrouillé, les PDF en attente partent sans autre clic.",
+      "passThrough": "Chaque PDF envoyé passe une fois par le serveur, car c'est de là que part l'e-mail. Le serveur ne le conserve pas et ne le journalise pas.",
+      "saved": "Enregistré",
+      "failed": "Échec de l'enregistrement"
+    },
+    "device": {
+      "title": "Mémoriser le déverrouillage sur cet appareil",
+      "hint": "Le mode reste déverrouillé après la fermeture du navigateur, sans limite de 12 heures, pour que les PDF en attente puissent partir chaque fois que vous ouvrez l'application. La clé est stockée dans le navigateur de façon à ne pouvoir être ni lue ni copiée. Verrouiller, désactiver cette option ou se déconnecter la supprime.",
+      "risk": "N'activez cette option que sur votre propre appareil, que personne d'autre n'utilise. Quiconque ouvre ce navigateur verra les textes chiffrés.",
+      "on": "Cet appareil mémorise le déverrouillage",
+      "off": "Le déverrouillage expire de nouveau après 12 heures",
+      "failed": "Cela n'a pas fonctionné. Déverrouillez d'abord le mode."
+    },
+    "serverView": {
+      "title": "Ce que voit le serveur",
+      "lead": "Voici comment les textes de ce document sont stockés sur le serveur. Seul un navigateur avec le mode déverrouillé peut les déchiffrer.",
+      "server": "Le serveur a :",
+      "you": "Vous voyez :",
+      "noteAbove": "Texte au-dessus des lignes",
+      "noteBelow": "Texte sous les lignes",
+      "internalNote": "Note interne",
+      "item": "Ligne {n}",
+      "notSealed": "Le serveur voit les montants, les dates, le numéro du document, les références et les clients, pour calculer la TVA, suivre les échéances et rapprocher les paiements.",
+      "more": "Comment ça marche et comment le vérifier"
     }
+  },
+  "vaultPublic": {
+    "integrity": {
+      "title": "Vérification du code",
+      "lead": "Chaque build de l'application enregistre les empreintes SHA-256 du code de chiffrement et des fichiers qui le contiennent.",
+      "sourceHash": "Fichier source {path}",
+      "repo": "Code source public",
+      "repoPlanned": "Nous prévoyons de le publier dans un dépôt GitHub dédié.",
+      "chunks": "Fichiers chargés par votre navigateur",
+      "check": "Vérifier dans ce navigateur",
+      "match": "Correspond",
+      "mismatch": "Ne correspond pas",
+      "error": "Impossible de télécharger le fichier",
+      "loadedHere": "chargé sur cette page",
+      "missing": "Le manifeste n'est pas encore disponible. Il est créé par le build de production.",
+      "honest": "Le même serveur envoie le manifeste et les fichiers, donc une correspondance montre seulement que le manifeste décrit ce qui est servi. La vraie vérification consiste à comparer les empreintes avec un build du code source publié."
+    },
+    "demo": {
+      "label": "Tapez une phrase quelconque",
+      "placeholder": "Par exemple : Conseil pour la vente de l'entreprise, 12 heures",
+      "send": "Chiffrer et envoyer",
+      "keyNote": "La clé est créée pour cette page seulement et n'est jamais envoyée. Elle disparaît au rechargement.",
+      "typed": "Ce que vous avez tapé",
+      "typedHint": "Reste uniquement dans votre navigateur.",
+      "sent": "Ce qui a été envoyé au serveur",
+      "sentHint": "Le corps exact de la requête POST {path}.",
+      "received": "Ce que le serveur a reçu (HTTP {status})",
+      "receivedHint": "Le serveur renvoie exactement ce qu'il a reçu. Il ne stocke rien.",
+      "open": "Déchiffrer ici",
+      "openedAs": "Votre navigateur l'a déchiffré en :",
+      "rateLimited": "Trop d'essais. Réessayez dans quelques minutes.",
+      "failed": "La requête a échoué. Réessayez.",
+      "devtoolsTitle": "Vérifiez-le vous-même dans les outils du navigateur",
+      "devtoolsSteps": [
+        "Appuyez sur F12 (Cmd+Option+I sur Mac) et ouvrez l'onglet Réseau (Network).",
+        "Cliquez de nouveau sur Chiffrer et envoyer.",
+        "Cliquez sur la requête « echo » dans la liste et ouvrez Payload (Charge utile) et Response (Réponse).",
+        "Vous ne verrez qu'une chaîne enc:v1:…, pas votre phrase. Ctrl+F dans l'onglet Réseau cherche dans toutes les requêtes : essayez d'y trouver un mot de votre phrase."
+      ]
+    },
+    "csp": {
+      "liveTitle": "L'en-tête Content-Security-Policy de cette page, lu à l'instant",
+      "liveMissing": "Impossible de lire l'en-tête. Vous le trouverez dans les outils du navigateur, sur la requête de cette page."
+    }
+  },
+  "securityPage": {
+    "seoTitle": "Mode confidentiel : ce que le serveur voit et ce qu'il ne voit pas",
+    "eyebrow": "Sécurité",
+    "title": "Mode confidentiel : des textes de documents que le serveur ne peut pas lire",
+    "lead": "Les descriptions de lignes et les notes sont chiffrées dans votre navigateur. Le serveur ne reçoit qu'une chaîne chiffrée et n'en a pas la clé. Vous pouvez l'essayer et le vérifier vous-même ici.",
+    "featuresLink": "Toutes les fonctions",
+    "demoTitle": "Essayez",
+    "demoLead": "Sans connexion. La page chiffre votre phrase avec le même code que l'application et l'envoie vraiment au serveur. Vous voyez côte à côte ce que vous avez tapé, ce qui est parti et ce que le serveur a reçu.",
+    "howTitle": "Comment ça marche",
+    "howSteps": [
+      {
+        "title": "La clé naît chez vous",
+        "body": "À l'activation du mode, le navigateur crée une clé AES-256 aléatoire. Le serveur n'en reçoit que des copies verrouillées par votre mot de passe, votre passkey ou votre code de récupération."
+      },
+      {
+        "title": "Chiffré avant l'envoi",
+        "body": "Une description ou une note est chiffrée avant de quitter le navigateur. Le serveur stocke une chaîne enc:v1:… et n'en fait rien."
+      },
+      {
+        "title": "Déchiffré seulement chez vous",
+        "body": "Après le déverrouillage, le navigateur garde la clé de façon que la page puisse l'utiliser sans pouvoir en lire le contenu."
+      }
+    ],
+    "hiddenTitle": "Ce que le serveur ne voit pas",
+    "hidden": [
+      "Les descriptions de lignes",
+      "Le texte au-dessus et en dessous des lignes",
+      "Les notes internes",
+      "La clé et le mot de passe qui la déverrouille"
+    ],
+    "visibleTitle": "Ce que le serveur voit, et pourquoi",
+    "visible": [
+      "Montants et TVA – pour les calculs, les déclarations et le rapprochement des paiements",
+      "Dates d'émission et d'échéance – pour les relances",
+      "Numéro du document et référence de paiement",
+      "Le client et son e-mail – pour pouvoir envoyer le document"
+    ],
+    "cspTitle": "Le navigateur contrôle où la page peut envoyer des données",
+    "cspBody": "L'application, les liens de documents et cette page sont servis avec un en-tête Content-Security-Policy qui contient connect-src 'self'. Le navigateur refuse alors de lui-même toute requête d'une telle page vers un autre serveur, même si un script essayait. Un texte déchiffré ne peut pas sortir par là.",
+    "cspHow": "Tout le monde peut lire l'en-tête : dans les outils du navigateur (F12, onglet Réseau), cliquez sur la première requête, la page elle-même, et cherchez Content-Security-Policy dans les en-têtes de réponse.",
+    "limitsTitle": "Où sont les limites",
+    "limits": [
+      "Notre serveur fournit le code de l'application. S'il était compromis, il pourrait fournir un autre code. Publier le code et les empreintes permet de détecter un tel changement, mais ne l'empêche pas à lui seul.",
+      "Quand vous envoyez par e-mail un document chiffré avec son PDF, ses textes passent une fois par le serveur, car c'est de là que part l'e-mail. L'application vous le dit avant, et le serveur ne les conserve pas et ne les journalise pas. Si vous n'envoyez que le lien, le serveur ne reçoit jamais les textes.",
+      "Le mode ne chiffre ni les montants, ni les dates, ni les numéros, ni les clients, voir plus haut.",
+      "Pour les documents chiffrés, le serveur ne crée ni ISDOC ni autre format lisible par machine.",
+      "La règle connect-src s'applique à une page chargée directement. Si vous passez du site public à l'application sans rechargement, la règle de la page précédente s'applique jusqu'au rechargement.",
+      "Toute personne ayant accès à votre navigateur déverrouillé voit les textes. Le mode protège contre le serveur, pas contre quelqu'un devant votre ordinateur.",
+      "Si vous oubliez à la fois le mot de passe et le code de récupération et n'avez pas de passkey, personne ne peut récupérer les textes, pas même nous."
+    ],
+    "verifyTitle": "Vérification du code",
+    "verifyLead": "À chaque build, nous écrivons les empreintes SHA-256 du code de chiffrement dans un fichier public. Votre navigateur peut les recalculer ici même.",
+    "planned": [
+      "Nous publierons le code de chiffrement (un seul fichier sans dépendances) dans un dépôt GitHub dédié, pour comparer les empreintes avec votre propre build.",
+      "Une revue indépendante du code est prévue."
+    ]
   }
 }

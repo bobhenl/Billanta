@@ -4,16 +4,10 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import type { CreateRecurringInvoiceDto } from "./dto/create-recurring-invoice.dto";
 import type { UpdateRecurringInvoiceDto } from "./dto/update-recurring-invoice.dto";
+import type { LineItemSnapshot } from "./snapshot-items";
+import { assertSealingAllowed } from "../vault/sealed";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
-
-/** Shape stored in `recurringInvoiceTemplates.lineItemsSnapshot` (jsonb). */
-type LineItemSnapshot = {
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  vatRate?: number | null;
-};
 
 @Injectable()
 export class RecurringInvoicesService {
@@ -32,6 +26,8 @@ export class RecurringInvoicesService {
   }
 
   async create(db: TenantDb, tenantId: string, dto: CreateRecurringInvoiceDto) {
+    // Encrypted descriptions are copied into every draft as they are; storing new ones needs the plan.
+    await assertSealingAllowed(db, tenantId, dto.lineItems.map((i) => i.description));
     const lineItemsSnapshot: LineItemSnapshot[] = dto.lineItems.map((item) => ({
       description: item.description,
       quantity: item.quantity,
@@ -57,7 +53,14 @@ export class RecurringInvoicesService {
     return template;
   }
 
-  async update(db: TenantDb, id: string, dto: UpdateRecurringInvoiceDto) {
+  async update(db: TenantDb, id: string, dto: UpdateRecurringInvoiceDto, tenantId?: string) {
+    if (dto.lineItems && tenantId) {
+      // Keeping envelopes the template already had is fine after a downgrade, adding new ones is not.
+      await assertSealingAllowed(db, tenantId, dto.lineItems.map((i) => i.description), async () => {
+        const [stored] = await this.findOne(db, id);
+        return ((stored?.lineItemsSnapshot ?? []) as LineItemSnapshot[]).map((i) => i.description);
+      });
+    }
     const patch: Partial<typeof schema.recurringInvoiceTemplates.$inferInsert> = {
       updatedAt: new Date(),
     };

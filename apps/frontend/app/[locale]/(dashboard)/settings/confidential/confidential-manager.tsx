@@ -18,6 +18,8 @@ import { Banner } from '@/components/banner';
 import { PasswordInput } from '@/components/password-input';
 import { toast } from '@/components/toaster';
 import { SealButton } from '@/components/vault/seal-button';
+import { VaultIntegrity } from '@/components/vault/vault-integrity';
+import { VaultDeviceKeep, VaultEmailSettings } from '@/components/vault/vault-preferences';
 import { useVault } from '@/components/vault/vault-provider';
 import { Link, useRouter } from '@/i18n/navigation';
 import { SITE_NAME } from '@/lib/site';
@@ -421,6 +423,9 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
         )}
       </section>
 
+      {manager && <VaultEmailSettings vault={vault} />}
+      <VaultDeviceKeep />
+
       <section className="space-y-3 rounded-xl border border-border bg-card p-4">
         <h2 className="text-sm font-bold">{t('methodsTitle')}</h2>
         <ul className="divide-y divide-border text-sm">
@@ -539,6 +544,8 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
         <p className="mb-2 text-xs text-muted-foreground">{t('categoriesLead')}</p>
         <CategoryList selected={vault.categories} />
       </section>
+
+      <VaultIntegrity />
     </div>
   );
 }

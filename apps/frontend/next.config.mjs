@@ -26,6 +26,15 @@ function legacyRedirects() {
 // loads its message catalog — see i18n/request.ts.
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
+const BASE_CSP = "frame-ancestors 'self'; base-uri 'self'; object-src 'none'";
+// The dashboard's top-level folders (app/[locale]/(dashboard)), the private
+// document links (/i, /d, /c) and the Confidential mode page. A new dashboard
+// section belongs here too.
+const STRICT_CONNECT_SECTIONS = [
+  'activity', 'admin', 'bank', 'billing', 'classroom', 'contacts', 'dashboard', 'expenses', 'invoices', 'reports', 'settings', 'time', 'welcome',
+  'i', 'd', 'c', 'security'
+];
+
 const backendUrl = (process.env.BACKEND_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 
 /** @type {import('next').NextConfig} */
@@ -61,9 +70,23 @@ const nextConfig = {
   // base-uri and object-src cost nothing here (no <base>, no plugins) and take
   // away two script-injection tricks. A script-src would need per-request
   // nonces, which would make every cached marketing page dynamic.
+  //
+  // The app, the private document links and /security/confidential also get
+  // connect-src 'self': the browser itself refuses any fetch, XHR, beacon or
+  // WebSocket to another origin, so a decrypted text cannot leave by those
+  // routes even if a script tried. That page explains it, and anyone can read
+  // the header. blob: and data: stay local to the browser. None of these
+  // pages load Clarity (marketing layout only) or talk to a third party from
+  // the browser; Stripe, PayPal and bank sign-ins are redirects, not fetches.
+  // The marketing pages keep the plain rule, as Clarity posts to its own host.
+  // A later rule for the same header wins, so the strict one comes second.
   async headers() {
     return [
-      { source: '/:path((?!embed/|badges/).*)', headers: [{ key: 'Content-Security-Policy', value: "frame-ancestors 'self'; base-uri 'self'; object-src 'none'" }] },
+      { source: '/:path((?!embed/|badges/).*)', headers: [{ key: 'Content-Security-Policy', value: BASE_CSP }] },
+      {
+        source: `/:locale/:section(${STRICT_CONNECT_SECTIONS.join('|')})/:path*`,
+        headers: [{ key: 'Content-Security-Policy', value: `${BASE_CSP}; connect-src 'self' blob: data:` }]
+      },
       {
         source: '/embed/:path*',
         headers: [
@@ -76,6 +99,8 @@ const nextConfig = {
   async rewrites() {
     return [
       { source: '/api/v1/feeds/:path*', destination: `${backendUrl}/api/v1/feeds/:path*` },
+      // The live demo on /security/confidential posts here from the browser (Caddy routes it in production).
+      { source: '/api/v1/public/vault-demo/:path*', destination: `${backendUrl}/api/v1/public/vault-demo/:path*` },
       { source: '/api/docs', destination: `${backendUrl}/api/docs` },
       { source: '/api/docs/:path*', destination: `${backendUrl}/api/docs/:path*` }
     ];

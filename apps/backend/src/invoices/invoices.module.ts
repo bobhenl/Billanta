@@ -13,6 +13,7 @@ import { InvoiceRemindersCron } from "./invoice-reminders.cron";
 import { InvoiceRemindersRepository } from "./invoice-reminders.repository";
 import { InvoicesController } from "./invoices.controller";
 import { InvoicesService } from "./invoices.service";
+import { VaultEmailQueueController } from "./vault-email-queue.controller";
 import { BuyerDetailsService } from "./buyer-details.service";
 
 @Module({
@@ -27,7 +28,8 @@ import { BuyerDetailsService } from "./buyer-details.service";
   // AiModule: voice notes from the dashboard become drafts through AiService.suggestInvoice.
   // WelcomeTrialModule: an import that fills in the company's IČO can start the trial.
   imports: [EmailModule, AuthModule, ApiKeysModule, AiModule, WelcomeTrialModule],
-  controllers: [InvoicesController],
+  // VaultEmailQueueController: e-mails of encrypted documents waiting for a browser's PDF.
+  controllers: [InvoicesController, VaultEmailQueueController],
   // SubscriptionActiveGuard (blueprint §5 plan gating) is re-provided
   // directly here — rather than importing the whole BillingModule — since
   // it has no dependencies beyond the request object itself and

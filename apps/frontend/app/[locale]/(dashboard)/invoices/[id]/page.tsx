@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { isSealed } from '@faktur/cz-compliance';
 import { ConfidentialText } from '@/components/vault/confidential-text';
 import { SealButton } from '@/components/vault/seal-button';
+import { ServerViewPanel } from '@/components/vault/server-view-panel';
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
 import { AlertTriangle, ArrowLeft, ArrowDownLeft, Lock, Building2, CheckCircle2, ChevronDown, ExternalLink, FileText, History, Link2, Wallet, XCircle } from 'lucide-react';
@@ -69,6 +70,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   const tBuyer = await getTranslations('invoices.buyerDetails');
   const tProfileOrder = await getTranslations('invoices.profileOrder');
   const tGloss = await getTranslations('glossary');
+  const tServer = await getTranslations('vault.serverView');
 
   let detail: InvoiceDetail;
   let attachments: Attachment[] | null = null;
@@ -720,6 +722,15 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               <p className="mt-2 whitespace-pre-line text-sm"><ConfidentialText value={invoice.internalNote} /></p>
             </section>
           )}
+
+          <ServerViewPanel
+            fields={[
+              { label: tServer('noteAbove'), value: invoice.noteAbove },
+              ...items.map((item, i) => ({ label: tServer('item', { n: i + 1 }), value: item.description })),
+              { label: tServer('noteBelow'), value: invoice.noteBelow },
+              { label: tServer('internalNote'), value: invoice.internalNote }
+            ]}
+          />
         </aside>
       </div>
 

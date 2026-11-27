@@ -156,8 +156,12 @@ export function parseConsent(raw: string | null | undefined): ConsentState | nul
  * teacher cannot give it for them, so no analytics runs here and no banner
  * asks for it, whatever the browser has stored. `pathname` may carry the
  * locale prefix or not.
+ *
+ * Also /security: the Confidential mode page has a live demo the visitor
+ * types into, and it promises its own strict connect-src (next.config.mjs),
+ * so no session recorder runs there.
  */
-const NO_ANALYTICS = new RegExp(`^(?:/(?:${LOCALE_PATTERN}))?/(?:for-schools|join)(?:/|$)`);
+const NO_ANALYTICS = new RegExp(`^(?:/(?:${LOCALE_PATTERN}))?/(?:for-schools|join|security)(?:/|$)`);
 
 export function isNoAnalyticsPath(pathname: string): boolean {
   return NO_ANALYTICS.test(pathname);

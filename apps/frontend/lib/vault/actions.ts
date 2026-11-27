@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import type { VaultCategory, VaultWrap } from '@faktur/cz-compliance';
 import { apiFetch } from '@/lib/api-client';
 import { backendMessage } from '@/lib/action-error';
-import type { PlainInvoice, VaultStatus } from './types';
+import type { PlainInvoice, VaultEmailMode, VaultStatus } from './types';
 
 type Result<T> = { ok: true; value: T } | { ok: false; error: string };
 
@@ -47,8 +47,9 @@ export async function replaceRecoveryWrap(recovery: VaultWrap) {
   return result;
 }
 
-export async function updateVaultSettings(sealNew: boolean) {
-  const result = await call<VaultStatus>('/api/v1/vault/settings', json('PATCH', { sealNew }));
+export async function updateVaultSettings(input: boolean | { sealNew?: boolean; emailMode?: VaultEmailMode; autoSendPdf?: boolean }) {
+  const body = typeof input === 'boolean' ? { sealNew: input } : input;
+  const result = await call<VaultStatus>('/api/v1/vault/settings', json('PATCH', body));
   if (result.ok) revalidatePath('/', 'layout');
   return result;
 }

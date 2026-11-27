@@ -245,7 +245,8 @@
         "cookies": "Polityka cookies",
         "cookieSettings": "Ustawienia cookies",
         "dpa": "Umowa powierzenia przetwarzania danych",
-        "contact": "Kontakt"
+        "contact": "Kontakt",
+        "confidential": "Tryb poufny i bezpieczeństwo"
       },
       "account": {
         "title": "Konto",
@@ -7342,7 +7343,8 @@
         "buyer_details_submitted": "uzupełnił(a) swoje dane rozliczeniowe do",
         "buyer_details_cancelled": "zamknął/zamknęła prośbę o dane klienta do",
         "profile_order": "utworzono przez zamówienie z profilu publicznego:",
-        "link_renamed": "zmienił(a) nazwę publicznego linku"
+        "link_renamed": "zmienił(a) nazwę publicznego linku",
+        "send_waiting_pdf": "dodał(a) do wysłania z PDF"
       },
       "tenant": {
         "updated": "edytował(a) dane firmy",
@@ -14270,7 +14272,9 @@
     "actions": {
       "blocked": "Niedostępne w Trybie poufnym: serwer nie odczyta zaszyfrowanego dokumentu. Wyłącz załącznik PDF/ISDOC w ustawieniach e-maili albo wyślij link.",
       "pdfUnavailable": "PDF jest niedostępny w Trybie poufnym. Szczegóły możesz wydrukować z przeglądarki (Ctrl+P).",
-      "sendHint": "Ten dokument jest zaszyfrowany: e-mail wyjdzie tylko z linkiem, serwer nie może dołączyć PDF ani ISDOC."
+      "sendHint": "Dokument jest zaszyfrowany, więc serwer sam nie utworzy PDF ani ISDOC. Zależnie od ustawień link wyjdzie od razu, a PDF z Twojej przeglądarki, albo wyjdzie tylko link.",
+      "emailWaiting": "E-mail czeka na PDF. Wyjdzie z przeglądarki z odblokowanym trybem, zobacz komunikat u góry.",
+      "pdfFollows": "Link wysłany. PDF wyślesz dodatkowym e-mailem z komunikatu u góry."
     },
     "categories": {
       "recommended": "Zalecane",
@@ -14401,6 +14405,167 @@
       "recoveryReplaced": "Nowy kod odzyskiwania obowiązuje",
       "categoriesTitle": "Co jest szyfrowane",
       "categoriesLead": "Kolejne opcje wkrótce. Przy każdej widać, co przestałoby działać."
+    },
+    "outbox": {
+      "badge": "{n, plural, one {# e-mail czeka} few {# e-maile czekają} many {# e-maili czeka} other {# e-maila czeka}} na wysłanie z PDF",
+      "open": "Pokaż",
+      "title": "E-maile czekające na PDF",
+      "back": "Zamknij",
+      "send": "Wyślij ({n})",
+      "unlockAndSend": "Odblokuj i wyślij ({n})",
+      "lead": "Serwer nie zamieni zaszyfrowanego dokumentu w PDF sam. PDF powstaje dopiero tutaj, w przeglądarce z odblokowanym Trybem poufnym.",
+      "passThroughPdf": "PDF powstaje w Twojej przeglądarce. Serwer raz przekaże go odbiorcy i go nie zapisze.",
+      "passThroughTexts": "Po kliknięciu Wyślij odszyfrowane teksty tych dokumentów raz przejdą przez serwer: utworzy z nich PDF i wyśle go e-mailem. Nie zapisze ich ani nie zapisze w logach.",
+      "unnumbered": "Bez numeru",
+      "kind": {
+        "invoice": "Czeka cały e-mail",
+        "invoice_pdf": "PDF do wysłanego linku"
+      },
+      "dismiss": "Nie wysyłaj",
+      "settingsHint": "Kiedy i jak wysyłać PDF, ustawisz w",
+      "settingsLink": "ustawieniach Trybu poufnego",
+      "sent": "{n, plural, one {Wysłano # e-mail} few {Wysłano # e-maile} many {Wysłano # e-maili} other {Wysłano # e-maila}}",
+      "failed": "{n, plural, one {Nie udało się wysłać # e-maila} other {Nie udało się wysłać # e-maili}}"
+    },
+    "emailSettings": {
+      "title": "E-maile zaszyfrowanych dokumentów",
+      "lead": "Co się dzieje, gdy wysyłasz zaszyfrowany dokument. Link, kwota, termin płatności, tytuł przelewu i płatność QR wychodzą zawsze.",
+      "mode": {
+        "link_now": "Link od razu, PDF później",
+        "wait": "Poczekaj i wyślij wszystko razem",
+        "link_only": "Tylko link, nigdy PDF"
+      },
+      "modeHint": {
+        "link_now": "Klient od razu dostaje e-mail z linkiem. PDF przyjdzie drugim e-mailem, gdy ktoś z zespołu wyśle go z przeglądarki z odblokowanym trybem.",
+        "wait": "E-mail wyjdzie dopiero z PDF, z przeglądarki członka zespołu z odblokowanym trybem. Do tego czasu klient nic nie dostanie.",
+        "link_only": "Klient dostaje tylko link i tam otwiera dokument. Serwer nigdy nie dostaje jego tekstów."
+      },
+      "autoSend": "Wysyłaj PDF automatycznie",
+      "autoSendHint": "Gdy ktoś z zespołu otworzy aplikację z odblokowanym trybem, czekające PDF wyjdą bez kolejnego kliknięcia.",
+      "passThrough": "Każdy wysłany PDF raz przechodzi przez serwer, bo stamtąd wychodzi e-mail. Serwer go nie zapisuje ani nie loguje.",
+      "saved": "Zapisano",
+      "failed": "Nie udało się zapisać"
+    },
+    "device": {
+      "title": "Zapamiętaj odblokowanie na tym urządzeniu",
+      "hint": "Tryb pozostaje odblokowany po zamknięciu przeglądarki, bez limitu 12 godzin, więc czekające PDF mogą wyjść za każdym razem, gdy otworzysz aplikację. Klucz jest zapisany w przeglądarce tak, że nie da się go odczytać ani skopiować. Usuwa go Zablokuj, wyłączenie tej opcji lub wylogowanie.",
+      "risk": "Włączaj tylko na własnym urządzeniu, z którego nikt inny nie korzysta. Kto otworzy tę przeglądarkę, zobaczy zaszyfrowane teksty.",
+      "on": "To urządzenie pamięta odblokowanie",
+      "off": "Odblokowanie znów wygaśnie po 12 godzinach",
+      "failed": "Nie udało się. Najpierw odblokuj tryb."
+    },
+    "serverView": {
+      "title": "Co widzi serwer",
+      "lead": "Tak teksty tego dokumentu są zapisane na serwerze. Odszyfrować je może tylko przeglądarka z odblokowanym trybem.",
+      "server": "Serwer ma:",
+      "you": "Ty widzisz:",
+      "noteAbove": "Tekst nad pozycjami",
+      "noteBelow": "Tekst pod pozycjami",
+      "internalNote": "Notatka wewnętrzna",
+      "item": "Pozycja {n}",
+      "notSealed": "Kwoty, daty, numer dokumentu, tytuł przelewu i klientów serwer widzi, żeby liczyć VAT, pilnować terminów i dopasowywać płatności.",
+      "more": "Jak to działa i jak to sprawdzić"
     }
+  },
+  "vaultPublic": {
+    "integrity": {
+      "title": "Weryfikacja kodu",
+      "lead": "Przy każdym buildzie aplikacji zapisujemy skróty SHA-256 kodu szyfrującego i plików, które go zawierają.",
+      "sourceHash": "Plik źródłowy {path}",
+      "repo": "Publiczny kod źródłowy",
+      "repoPlanned": "Planujemy opublikować go w osobnym repozytorium na GitHubie.",
+      "chunks": "Pliki, które ładuje przeglądarka",
+      "check": "Sprawdź w tej przeglądarce",
+      "match": "Zgadza się",
+      "mismatch": "Nie zgadza się",
+      "error": "Nie udało się pobrać pliku",
+      "loadedHere": "załadowany na tej stronie",
+      "missing": "Manifest nie jest jeszcze dostępny. Powstaje przy buildzie produkcyjnym.",
+      "honest": "Manifest i pliki wysyła ten sam serwer, więc zgodność pokazuje tylko, że manifest opisuje to, co jest wysyłane. Prawdziwa weryfikacja to porównanie skrótów z buildem z opublikowanego kodu."
+    },
+    "demo": {
+      "label": "Wpisz dowolne zdanie",
+      "placeholder": "Na przykład: Doradztwo przy sprzedaży firmy, 12 godzin",
+      "send": "Zaszyfruj i wyślij",
+      "keyNote": "Klucz powstaje tylko dla tej strony i nigdzie nie jest wysyłany. Po odświeżeniu znika.",
+      "typed": "Co wpisałeś",
+      "typedHint": "Zostaje tylko w Twojej przeglądarce.",
+      "sent": "Co poszło na serwer",
+      "sentHint": "Dokładna treść żądania POST {path}.",
+      "received": "Co dostał serwer (HTTP {status})",
+      "receivedHint": "Serwer zwraca dokładnie to, co otrzymał. Niczego nie zapisuje.",
+      "open": "Odszyfruj tutaj",
+      "openedAs": "Twoja przeglądarka odszyfrowała to z powrotem na:",
+      "rateLimited": "Za dużo prób. Spróbuj za kilka minut.",
+      "failed": "Żądanie się nie powiodło. Spróbuj ponownie.",
+      "devtoolsTitle": "Sprawdź to sam w narzędziach przeglądarki",
+      "devtoolsSteps": [
+        "Naciśnij F12 (na Macu Cmd+Option+I) i otwórz kartę Sieć (Network).",
+        "Kliknij ponownie Zaszyfruj i wyślij.",
+        "Kliknij na liście żądanie „echo” i otwórz Payload (Ładunek) oraz Response (Odpowiedź).",
+        "Zobaczysz tylko ciąg enc:v1:…, a nie swoje zdanie. Ctrl+F w karcie Sieć przeszukuje wszystkie żądania: spróbuj znaleźć słowo ze swojego zdania."
+      ]
+    },
+    "csp": {
+      "liveTitle": "Nagłówek Content-Security-Policy tej strony, pobrany przed chwilą",
+      "liveMissing": "Nie udało się odczytać nagłówka. Znajdziesz go w narzędziach przeglądarki przy żądaniu tej strony."
+    }
+  },
+  "securityPage": {
+    "seoTitle": "Tryb poufny: co widzi serwer, a czego nie",
+    "eyebrow": "Bezpieczeństwo",
+    "title": "Tryb poufny: teksty dokumentów, których serwer nie przeczyta",
+    "lead": "Opisy pozycji i notatki są szyfrowane w Twojej przeglądarce. Serwer dostaje tylko zaszyfrowany ciąg i nie ma do niego klucza. Tutaj możesz to sam wypróbować i sprawdzić.",
+    "featuresLink": "Wszystkie funkcje",
+    "demoTitle": "Wypróbuj",
+    "demoLead": "Bez logowania. Strona szyfruje Twoje zdanie tym samym kodem co aplikacja i naprawdę wysyła je na serwer. Obok siebie zobaczysz, co wpisałeś, co zostało wysłane i co dostał serwer.",
+    "howTitle": "Jak to działa",
+    "howSteps": [
+      {
+        "title": "Klucz powstaje u Ciebie",
+        "body": "Przy włączeniu trybu przeglądarka tworzy losowy klucz AES-256. Serwer dostaje tylko jego kopie zablokowane Twoim hasłem, passkey lub kodem odzyskiwania."
+      },
+      {
+        "title": "Szyfrowane przed wysłaniem",
+        "body": "Opis pozycji lub notatka jest szyfrowana, zanim opuści przeglądarkę. Serwer zapisuje ciąg enc:v1:… i nic z nim nie robi."
+      },
+      {
+        "title": "Odszyfrowane tylko u Ciebie",
+        "body": "Po odblokowaniu przeglądarka trzyma klucz tak, że strona może go używać, ale nie może odczytać jego zawartości."
+      }
+    ],
+    "hiddenTitle": "Czego serwer nie widzi",
+    "hidden": [
+      "Opisów pozycji",
+      "Tekstu nad i pod pozycjami",
+      "Notatek wewnętrznych",
+      "Klucza ani hasła, które go odblokowuje"
+    ],
+    "visibleTitle": "Co serwer widzi i dlaczego",
+    "visible": [
+      "Kwoty i VAT – do obliczeń, deklaracji i dopasowania płatności",
+      "Daty wystawienia i płatności – do przypomnień",
+      "Numer dokumentu i tytuł przelewu",
+      "Klienta i jego e-mail – żeby dokument mógł zostać wysłany"
+    ],
+    "cspTitle": "Przeglądarka pilnuje, dokąd strona może wysyłać dane",
+    "cspBody": "Aplikacja, linki do dokumentów i ta strona są wysyłane z nagłówkiem Content-Security-Policy, który zawiera connect-src 'self'. Przeglądarka sama odrzuca wtedy każde żądanie takiej strony do innego serwera, nawet gdyby próbował tego jakiś skrypt. Odszyfrowany tekst nie wyjdzie tą drogą.",
+    "cspHow": "Nagłówek może przeczytać każdy: w narzędziach przeglądarki (F12, karta Sieć) kliknij pierwsze żądanie, czyli samą stronę, i w nagłówkach odpowiedzi znajdź Content-Security-Policy.",
+    "limitsTitle": "Gdzie są granice",
+    "limits": [
+      "Kod aplikacji dostarcza nasz serwer. Gdyby został przejęty, mógłby dostarczyć inny kod. Publikacja kodu i skrótów pozwala taką zmianę wykryć, ale sama jej nie zapobiega.",
+      "Gdy wysyłasz zaszyfrowany dokument e-mailem z PDF, jego teksty raz przechodzą przez serwer, bo stamtąd wychodzi e-mail. Aplikacja mówi o tym wcześniej, a serwer ich nie zapisuje ani nie loguje. Gdy wysyłasz tylko link, serwer w ogóle nie dostaje tekstów.",
+      "Tryb nie szyfruje kwot, dat, numerów ani klientów, zobacz wyżej.",
+      "Dla zaszyfrowanych dokumentów serwer nie tworzy ISDOC ani innych formatów maszynowych.",
+      "Reguła connect-src dotyczy strony załadowanej bezpośrednio. Gdy przejdziesz do aplikacji z publicznej strony bez przeładowania, do odświeżenia obowiązuje reguła poprzedniej strony.",
+      "Kto ma dostęp do Twojej odblokowanej przeglądarki, zobaczy teksty. Tryb chroni przed serwerem, nie przed kimś przy Twoim komputerze.",
+      "Jeśli zapomnisz hasło i kod odzyskiwania i nie masz passkey, nikt nie odzyska tekstów, także my."
+    ],
+    "verifyTitle": "Weryfikacja kodu",
+    "verifyLead": "Przy każdym buildzie zapisujemy skróty SHA-256 kodu szyfrującego w publicznym pliku. Twoja przeglądarka może je przeliczyć tutaj.",
+    "planned": [
+      "Kod szyfrujący (jeden plik bez zależności) opublikujemy w osobnym repozytorium na GitHubie, żeby dało się porównać skróty z własnym buildem.",
+      "Niezależny przegląd kodu jest planowany."
+    ]
   }
 }

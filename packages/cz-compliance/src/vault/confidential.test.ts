@@ -17,7 +17,7 @@ import {
   wrapWithPassword,
   wrapWithRecoveryCode,
   wrapWithSecret
-} from '../index.js';
+} from './confidential.js';
 
 // Low iterations keep the suite fast; the default (600 000) is the same code path.
 const FAST = 1_000;

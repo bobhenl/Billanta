@@ -245,7 +245,8 @@
         "cookies": "Cookie Policy",
         "cookieSettings": "Cookie settings",
         "dpa": "Data Processing Agreement",
-        "contact": "Contact"
+        "contact": "Contact",
+        "confidential": "Confidential mode and security"
       },
       "account": {
         "title": "Account",
@@ -7349,7 +7350,8 @@
         "buyer_details_submitted": "filled in their billing details for",
         "buyer_details_cancelled": "closed the customer details request for",
         "profile_order": "created by ordering from the public profile:",
-        "link_renamed": "renamed the public link"
+        "link_renamed": "renamed the public link",
+        "send_waiting_pdf": "queued for sending with the PDF"
       },
       "tenant": {
         "updated": "edited the company details",
@@ -14274,7 +14276,9 @@
     "actions": {
       "blocked": "Unavailable in Confidential mode: the server cannot read an encrypted document. Turn off the PDF/ISDOC attachment in email settings, or send a link.",
       "pdfUnavailable": "PDF is unavailable in Confidential mode. You can print the detail from your browser (Ctrl+P).",
-      "sendHint": "This document is encrypted: the email goes out with a link only, the server cannot attach a PDF or ISDOC."
+      "sendHint": "This document is encrypted, so the server cannot make the PDF or ISDOC itself. Depending on your Confidential mode settings, the link goes now and the PDF from your browser, or only the link goes.",
+      "emailWaiting": "The e-mail is waiting for the PDF. It goes out from a browser with the mode unlocked, see the notice at the top.",
+      "pdfFollows": "Link sent. Send the PDF as a follow-up e-mail from the notice at the top."
     },
     "categories": {
       "recommended": "Recommended",
@@ -14412,6 +14416,167 @@
       "upgrade": "See plans",
       "downgradedTitle": "Encrypting more documents needs the Plus or Business plan",
       "downgradedBody": "You can still unlock, read and edit encrypted documents. New documents are saved without encryption."
+    },
+    "outbox": {
+      "badge": "{n, plural, one {# e-mail is} other {# e-mails are}} waiting to be sent with the PDF",
+      "open": "Show",
+      "title": "E-mails waiting for the PDF",
+      "back": "Close",
+      "send": "Send ({n})",
+      "unlockAndSend": "Unlock and send ({n})",
+      "lead": "The server cannot turn an encrypted document into a PDF by itself. The PDF is made here, in a browser with Confidential mode unlocked.",
+      "passThroughPdf": "The PDF is made in your browser. The server forwards it to the recipient once and does not store it.",
+      "passThroughTexts": "When you click Send, the decrypted texts of these documents pass through the server once: it makes the PDF from them and e-mails it. It does not store or log them.",
+      "unnumbered": "No number",
+      "kind": {
+        "invoice": "Whole e-mail waiting",
+        "invoice_pdf": "PDF for a sent link"
+      },
+      "dismiss": "Do not send",
+      "settingsHint": "Choose when and how the PDF is sent in",
+      "settingsLink": "Confidential mode settings",
+      "sent": "{n, plural, one {# e-mail sent} other {# e-mails sent}}",
+      "failed": "{n, plural, one {# e-mail could not be sent} other {# e-mails could not be sent}}"
+    },
+    "emailSettings": {
+      "title": "E-mails for encrypted documents",
+      "lead": "What happens when you send an encrypted document. The link, amount, due date, payment reference and QR payment always go.",
+      "mode": {
+        "link_now": "Link now, PDF later",
+        "wait": "Wait and send it all at once",
+        "link_only": "Link only, never a PDF"
+      },
+      "modeHint": {
+        "link_now": "The customer gets an e-mail with the link right away. The PDF follows in a second e-mail once a team member sends it from a browser with the mode unlocked.",
+        "wait": "The e-mail goes only with the PDF, from the browser of a team member with the mode unlocked. Until then the customer gets nothing.",
+        "link_only": "The customer gets only the link and opens the document there. The server never receives its texts."
+      },
+      "autoSend": "Send PDFs automatically",
+      "autoSendHint": "As soon as a team member opens the app with the mode unlocked, waiting PDFs go out without another click.",
+      "passThrough": "Every PDF sent passes through the server once, because that is where e-mail is sent from. The server does not store or log it.",
+      "saved": "Saved",
+      "failed": "Could not save"
+    },
+    "device": {
+      "title": "Remember unlock on this device",
+      "hint": "The mode stays unlocked after the browser closes, with no 12-hour limit, so waiting PDFs can go out whenever you open the app. The key is stored in the browser in a way that cannot be read or copied. Lock, turning this off or signing out removes it.",
+      "risk": "Only turn this on for your own device that nobody else uses. Anyone who opens this browser will see the encrypted texts.",
+      "on": "This device remembers the unlock",
+      "off": "The unlock expires after 12 hours again",
+      "failed": "That did not work. Unlock the mode first."
+    },
+    "serverView": {
+      "title": "What the server sees",
+      "lead": "This is how the texts of this document are stored on the server. Only a browser with the mode unlocked can decrypt them.",
+      "server": "The server has:",
+      "you": "You see:",
+      "noteAbove": "Text above the items",
+      "noteBelow": "Text below the items",
+      "internalNote": "Internal note",
+      "item": "Item {n}",
+      "notSealed": "The server sees amounts, dates, the document number, references and customers, so it can calculate VAT, track due dates and match payments.",
+      "more": "How it works and how to check it"
     }
+  },
+  "vaultPublic": {
+    "integrity": {
+      "title": "Code check",
+      "lead": "Every build of the app records the SHA-256 hashes of the encryption code and of the files that contain it.",
+      "sourceHash": "Source file {path}",
+      "repo": "Public source code",
+      "repoPlanned": "We plan to publish it in its own GitHub repository.",
+      "chunks": "Files your browser loads",
+      "check": "Check in this browser",
+      "match": "Matches",
+      "mismatch": "Does not match",
+      "error": "Could not download the file",
+      "loadedHere": "loaded on this page",
+      "missing": "The manifest is not available yet. It is made by the production build.",
+      "honest": "The same server sends the manifest and the files, so a match only shows that the manifest describes what is being served. The real check is to compare the hashes with a build of the published source."
+    },
+    "demo": {
+      "label": "Type any sentence",
+      "placeholder": "For example: Advice on selling the company, 12 hours",
+      "send": "Encrypt and send",
+      "keyNote": "The key is made for this page only and is never sent. It is gone when you reload.",
+      "typed": "What you typed",
+      "typedHint": "Stays in your browser only.",
+      "sent": "What was sent to the server",
+      "sentHint": "The exact body of the POST {path} request.",
+      "received": "What the server got (HTTP {status})",
+      "receivedHint": "The server returns exactly what it received. It stores nothing.",
+      "open": "Decrypt here",
+      "openedAs": "Your browser decrypted it back to:",
+      "rateLimited": "Too many tries. Please wait a few minutes.",
+      "failed": "The request failed. Please try again.",
+      "devtoolsTitle": "Check it yourself in your browser tools",
+      "devtoolsSteps": [
+        "Press F12 (Cmd+Option+I on a Mac) and open the Network tab.",
+        "Click Encrypt and send again.",
+        "Click the \"echo\" request in the list and open Payload and Response.",
+        "You will see only an enc:v1:… string, not your sentence. Ctrl+F in the Network tab searches every request: try to find a word from your sentence."
+      ]
+    },
+    "csp": {
+      "liveTitle": "The Content-Security-Policy header of this page, fetched just now",
+      "liveMissing": "Could not read the header. You can find it in your browser tools on the request for this page."
+    }
+  },
+  "securityPage": {
+    "seoTitle": "Confidential mode: what the server sees and what it does not",
+    "eyebrow": "Security",
+    "title": "Confidential mode: document texts the server cannot read",
+    "lead": "Item descriptions and notes are encrypted in your browser. The server gets only an encrypted string and has no key for it. You can try it and check it yourself here.",
+    "featuresLink": "All features",
+    "demoTitle": "Try it",
+    "demoLead": "No sign-in needed. The page encrypts your sentence with the same code as the app and really sends it to the server. You see side by side what you typed, what was sent and what the server got.",
+    "howTitle": "How it works",
+    "howSteps": [
+      {
+        "title": "The key is made on your side",
+        "body": "When the mode is switched on, the browser creates a random AES-256 key. The server gets only copies of it locked with your password, passkey or recovery code."
+      },
+      {
+        "title": "Encrypted before it is sent",
+        "body": "An item description or a note is encrypted before it leaves the browser. The server stores an enc:v1:… string and does nothing with it."
+      },
+      {
+        "title": "Decrypted only on your side",
+        "body": "After unlocking, the browser holds the key so that the page can use it but cannot read its contents."
+      }
+    ],
+    "hiddenTitle": "What the server does not see",
+    "hidden": [
+      "Item descriptions",
+      "Text above and below the items",
+      "Internal notes",
+      "The key or the password that unlocks it"
+    ],
+    "visibleTitle": "What the server sees and why",
+    "visible": [
+      "Amounts and VAT – for calculations, tax returns and matching payments",
+      "Issue and due dates – for reminders",
+      "Document number and payment reference",
+      "The customer and their e-mail – so the document can be sent"
+    ],
+    "cspTitle": "The browser controls where the page may send data",
+    "cspBody": "The app, document links and this page are served with a Content-Security-Policy header that contains connect-src 'self'. The browser itself then refuses any request from such a page to another server, even if a script tried. Decrypted text cannot leave that way.",
+    "cspHow": "Anyone can read the header: in your browser tools (F12, Network tab) click the first request, the page itself, and find Content-Security-Policy in the response headers.",
+    "limitsTitle": "Where the limits are",
+    "limits": [
+      "Our server delivers the app code. If it were compromised, it could deliver different code. Publishing the code and the hashes makes such a change detectable, but does not prevent it by itself.",
+      "When you e-mail an encrypted document with its PDF, its texts pass through the server once, because that is where e-mail is sent from. The app tells you first, and the server does not store or log them. If you send only the link, the server never gets the texts.",
+      "The mode does not encrypt amounts, dates, numbers or customers, see above.",
+      "For encrypted documents the server makes no ISDOC or other machine-readable formats.",
+      "The connect-src rule applies to a page loaded directly. If you move into the app from the public site without a reload, the rule of the page you came from applies until you reload.",
+      "Anyone with access to your unlocked browser can see the texts. The mode protects against the server, not against someone at your computer.",
+      "If you forget both the password and the recovery code and have no passkey, nobody can recover the texts, not even us."
+    ],
+    "verifyTitle": "Code check",
+    "verifyLead": "Every build writes the SHA-256 hashes of the encryption code into a public file. Your browser can recompute them right here.",
+    "planned": [
+      "We will publish the encryption code (one file with no dependencies) in its own GitHub repository, so the hashes can be compared with your own build.",
+      "An independent review of the code is planned."
+    ]
   }
 }

@@ -5,7 +5,7 @@
   "description": "Next.js App Router dashboard for the CZ/SK invoicing SaaS — i18n (cs/sk/en) via next-intl, Tailwind CSS + shadcn/ui foundations. See blueprint §2 (tech stack), §6 (AI-draft review UX), §7 (i18n), §9 (legal/liability disclaimers).",
   "scripts": {
     "dev": "next dev -p 3100",
-    "build": "next build",
+    "build": "next build && node scripts/vault-manifest.mjs",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
