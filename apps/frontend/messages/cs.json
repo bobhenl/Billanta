@@ -14088,7 +14088,8 @@
       "health": "Zdravotní pojištění",
       "taxes": "Daň a pojištění celkem",
       "sharedExpenses": "Společné výdaje",
-      "net": "Čistý příjem"
+      "net": "Čistý příjem",
+      "refund": "Doplatek / vrácení"
     },
     "formula": "Základ = příjmy − {flat} % paušál. Daň {tax} % ze základu, sociální {socialRate} % z {socialBase} % základu, zdravotní {healthRate} % z {healthBase} % základu.",
     "estimateNote": "Orientační odhad: bez minimálních záloh, bez 23% sazby daně a bez zaokrouhlení základu. Nenahrazuje daňové přiznání ani přehledy.",
@@ -14200,7 +14201,16 @@
       "secondaryActivityChange": "Změnit v nastavení firmy",
       "secondaryActivityPartial": "Rozhodná částka se snižuje o dvanáctinu za každý měsíc bez vedlejší činnosti. Měsíce hlavní činnosti se pojišťují vždy.",
       "secondaryActivityLegacy": "Zapnuto dříve přímo v tomto přehledu. Teď se to nastavuje v nastavení firmy.",
-      "secondaryActivityLegacyClear": "Vypnout"
+      "secondaryActivityLegacyClear": "Vypnout",
+      "actual": {
+        "title": "Skutečně zaplaceno za rok",
+        "hint": "Po podání přiznání a přehledů zadejte, co jste opravdu zaplatili. Rozpočítá se společníkům podle jejich faktur.",
+        "actual_tax": "Daň z příjmů",
+        "actual_social": "Sociální pojištění",
+        "actual_health": "Zdravotní pojištění",
+        "actual_refund": "Doplatek (+) / vrácení (−)",
+        "refundHint": "Doplatek zaplacený později zadejte kladně, vrácený přeplatek se znaménkem minus. Prázdné pole = použije se odhad."
+      }
     },
     "errors": {
       "duplicate_partner": "Dva společníci mají stejné označení. Odeberte jednoho a přidejte ho znovu.",
@@ -14237,6 +14247,12 @@
       "locked": "Přehled zatím nezahrnuje {count, plural, one {# doklad} few {# doklady} other {# dokladů}} se zašifrovanými částkami. Po odemčení trezoru je dopočítá tento prohlížeč.",
       "unreadable": "{count, plural, one {# doklad se nepodařilo otevřít} few {# doklady se nepodařilo otevřít} other {# dokladů se nepodařilo otevřít}}, proto přehled ukazuje jen nezašifrované doklady.",
       "failed": "Zašifrované doklady ({count}) se nepodařilo načíst. Přehled ukazuje jen nezašifrované doklady, zkuste stránku obnovit."
+    },
+    "actual": {
+      "badgeActual": "skutečnost",
+      "badgeEstimate": "odhad",
+      "note": "Řádky označené „skutečnost“ jsou částky opravdu zaplacené za rok {year}, rozpočítané společníkům podle jejich příjmů.",
+      "noteProrated": "Řádky označené „skutečnost“ jsou poměrnou částí plateb za rok {year} podle toho, kolik ročních příjmů připadá na toto období, a společníkům se rozpočítají podle jejich příjmů."
     }
   },
   "bankRules": {

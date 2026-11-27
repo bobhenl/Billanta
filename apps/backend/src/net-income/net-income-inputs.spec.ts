@@ -6,6 +6,7 @@ vi.mock("../exports/home-rates", () => homeRates);
 
 import * as schema from "../../drizzle/schema";
 import { NetIncomeService } from "./net-income.service";
+import { DEFAULT_TAX_MODEL } from "./tax-model";
 
 const ENV = `enc:v1:AAAAAAAAAAAAAAA1:${"Q".repeat(24)}`;
 
@@ -27,7 +28,7 @@ const invoice = (id: string, over: Record<string, unknown> = {}) => ({
 });
 
 /** A tenant DB: the tenant row, the period's invoices and their items, whatever the query. */
-function fakeDb(rows: ReturnType<typeof invoice>[]) {
+function fakeDb(rows: ReturnType<typeof invoice>[], taxModel: unknown = null) {
   const itemQueries: unknown[] = [];
   const items = [{ invoiceId: "P1", quantity: "2", unitPrice: "5000", vatRate: "21", discountPercent: "0" }];
   const db = {
@@ -41,7 +42,7 @@ function fakeDb(rows: ReturnType<typeof invoice>[]) {
         then: (ok: (v: unknown) => unknown, fail: (e: unknown) => unknown) =>
           Promise.resolve(
             table === schema.tenants
-              ? [{ id: "t1", country: "CZ", dicVatPayer: true, taxModel: null, invoiceFormPrefs: null }]
+              ? [{ id: "t1", country: "CZ", dicVatPayer: true, taxModel, invoiceFormPrefs: null }]
               : table === schema.invoices
                 ? rows.map((r) => ({ invoice: r, contact: { legalName: "Alfa s.r.o." } }))
                 : items,
@@ -109,5 +110,14 @@ describe("NetIncomeService.inputs (Confidential mode)", () => {
     expect(built.result.totals.income).toBe(20_000);
     const { sealed: _sealed, ...plainPart } = report;
     expect({ ...built, result: plainPart.result, tips: plainPart.tips, byMonth: plainPart.byMonth, invoices: plainPart.invoices }).toEqual(plainPart);
+  });
+
+  it("sends the whole year's income for a quarter only when the year has actual payments to prorate", async () => {
+    const rows = [invoice("P1"), sealedRow()];
+    const service = new NetIncomeService();
+    expect((await service.inputs(fakeDb(rows).db, "t1", Q1)).yearIncome).toBeUndefined();
+    const year = { ...DEFAULT_TAX_MODEL, tax_scope: "one_person", tax_credits: 0, partners: {}, actual_social: 20_000 };
+    const inputs = await service.inputs(fakeDb(rows, { ...DEFAULT_TAX_MODEL, years: { 2026: year } }).db, "t1", Q1);
+    expect(inputs.yearIncome).toEqual({ invoices: 10_000, sealedDocs: [{ documentType: "invoice", encAmounts: ENV, rate: 25 }] });
   });
 });

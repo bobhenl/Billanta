@@ -14080,7 +14080,8 @@
       "health": "Zorgverzekering",
       "taxes": "Belasting en premies totaal",
       "sharedExpenses": "Gedeelde kosten",
-      "net": "Netto-inkomen"
+      "net": "Netto-inkomen",
+      "refund": "Bijbetaling / teruggave"
     },
     "formula": "Grondslag = inkomsten − {flat} % forfaitaire kosten. Belasting {tax} % van de grondslag, sociale verzekering {socialRate} % van {socialBase} % van de grondslag, zorgverzekering {healthRate} % van {healthBase} % van de grondslag.",
     "estimateNote": "Een ruwe schatting: geen minimale voorschotten, geen belastingschijf van 23 % en geen afronding van de grondslag. Ze vervangt de belastingaangifte en de jaaroverzichten niet.",
@@ -14192,7 +14193,16 @@
       "secondaryActivityChange": "Wijzigen in de bedrijfsinstellingen",
       "secondaryActivityPartial": "De drempel daalt met een twaalfde voor elke maand zonder nevenactiviteit. Maanden met hoofdactiviteit zijn altijd verzekerd.",
       "secondaryActivityLegacy": "Eerder direct in dit overzicht ingeschakeld. Dit stelt u nu in bij de bedrijfsinstellingen.",
-      "secondaryActivityLegacyClear": "Uitschakelen"
+      "secondaryActivityLegacyClear": "Uitschakelen",
+      "actual": {
+        "title": "Werkelijk betaald over het jaar",
+        "hint": "Vul na het indienen van de aangifte en de overzichten in wat u echt hebt betaald. Het wordt over de partners verdeeld naar hun facturen.",
+        "actual_tax": "Inkomstenbelasting",
+        "actual_social": "Sociale verzekering",
+        "actual_health": "Zorgverzekering",
+        "actual_refund": "Bijbetaling (+) / teruggave (−)",
+        "refundHint": "Vul een latere bijbetaling positief in en een terugbetaald teveel met een minteken. Een leeg veld gebruikt de schatting."
+      }
     },
     "errors": {
       "duplicate_partner": "Twee partners hebben dezelfde id. Verwijder er een en voeg hem opnieuw toe.",
@@ -14229,6 +14239,12 @@
       "locked": "Het overzicht bevat {count, plural, one {# document} other {# documenten}} met versleutelde bedragen nog niet. Ontgrendel de kluis en deze browser telt ze mee.",
       "unreadable": "{count, plural, one {# document kon niet worden geopend} other {# documenten konden niet worden geopend}}, dus het overzicht toont alleen niet-versleutelde documenten.",
       "failed": "De versleutelde documenten ({count}) konden niet worden geladen. Het overzicht toont alleen niet-versleutelde documenten. Laad de pagina opnieuw."
+    },
+    "actual": {
+      "badgeActual": "werkelijk",
+      "badgeEstimate": "schatting",
+      "note": "Regels met „werkelijk” zijn de bedragen die voor {year} echt zijn betaald, verdeeld over de partners naar hun inkomsten.",
+      "noteProrated": "Regels met „werkelijk” zijn het deel van deze periode van wat voor {year} is betaald, naar haar aandeel in de jaarinkomsten, verdeeld over de partners naar hun inkomsten."
     }
   },
   "bankRules": {

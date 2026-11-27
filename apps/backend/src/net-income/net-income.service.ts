@@ -11,7 +11,7 @@ import { applyBuyerSnapshot } from "../invoices/party-snapshot";
 import { amountsSealed } from "../vault/sealed-amounts";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 import { netIncomeAmountOf, netIncomeReportOf, netIncomeSpanOf, type NetIncomeActivity, type NetIncomeInputs, type NetIncomeInvoice, type SealedNetIncomeDoc } from "@faktur/cz-compliance";
-import { creatorShares, type Shares, sharesSchema, type TaxModel, taxModelOf } from "./tax-model";
+import { creatorShares, settingsFor, type Shares, sharesSchema, type TaxModel, taxModelOf } from "./tax-model";
 
 type Db = PostgresJsDatabase<typeof schema>;
 
@@ -192,6 +192,15 @@ export class NetIncomeService {
       // Company settings decide vedlejší činnost (the report's own old switch only while they say nothing).
       activity: activityOf(tenant),
     };
+    // A month or quarter takes its part of the year's actual payments by income, so it needs the whole year's.
+    // Loaded only then: most years have no actual amounts and the period alone is enough.
+    if (span.months < 12 && settingsFor(model, period.year).actual) {
+      const { inputs: year } = await this.collect(db, tenantId, { year: period.year, month: null, quarter: null });
+      inputs.yearIncome = {
+        invoices: round2(year.invoices.reduce((s, i) => s + i.income, 0)),
+        sealedDocs: year.sealedDocs.map((d) => ({ documentType: d.documentType, encAmounts: d.encAmounts, rate: d.rate })),
+      };
+    }
     return { inputs, sealedIds: sealedDocs.map((d) => d.id) };
   }
 }

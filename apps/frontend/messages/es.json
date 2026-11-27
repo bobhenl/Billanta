@@ -14080,7 +14080,8 @@
       "health": "Seguro de salud",
       "taxes": "Total de impuestos y seguros",
       "sharedExpenses": "Gastos compartidos",
-      "net": "Ingreso neto"
+      "net": "Ingreso neto",
+      "refund": "Pago adicional / devolución"
     },
     "formula": "Base = ingresos − {flat} % de gastos a tanto alzado. Impuesto: {tax} % de la base; seguro social: {socialRate} % del {socialBase} % de la base; seguro de salud: {healthRate} % del {healthBase} % de la base.",
     "estimateNote": "Una estimación aproximada: sin anticipos mínimos, sin el tramo del 23 % y sin redondeo de la base. No sustituye a la declaración de la renta ni a los resúmenes anuales.",
@@ -14192,7 +14193,16 @@
       "secondaryActivityChange": "Cambiar en los ajustes de la empresa",
       "secondaryActivityPartial": "El umbral baja una doceava parte por cada mes sin actividad secundaria. Los meses de actividad principal siempre cotizan.",
       "secondaryActivityLegacy": "Activado antes en este informe. Ahora se configura en los ajustes de la empresa.",
-      "secondaryActivityLegacyClear": "Desactivar"
+      "secondaryActivityLegacyClear": "Desactivar",
+      "actual": {
+        "title": "Pagado realmente en el año",
+        "hint": "Tras presentar la declaración y los resúmenes, introduzca lo que pagó de verdad. Se reparte entre los socios según sus facturas.",
+        "actual_tax": "Impuesto sobre la renta",
+        "actual_social": "Seguro social",
+        "actual_health": "Seguro de salud",
+        "actual_refund": "Pago adicional (+) / devolución (−)",
+        "refundHint": "Introduzca en positivo lo pagado más tarde y con signo menos el exceso devuelto. Un campo vacío usa la estimación."
+      }
     },
     "errors": {
       "duplicate_partner": "Dos socios tienen el mismo id. Quite uno y vuelva a añadirlo.",
@@ -14229,6 +14239,12 @@
       "locked": "El informe aún no incluye {count, plural, one {# documento} other {# documentos}} con importes cifrados. Desbloquee la caja fuerte y este navegador los sumará.",
       "unreadable": "No se {count, plural, one {pudo abrir # documento} other {pudieron abrir # documentos}}, así que el informe muestra solo los documentos sin cifrar.",
       "failed": "No se pudieron cargar los documentos cifrados ({count}). El informe muestra solo los documentos sin cifrar. Recargue la página."
+    },
+    "actual": {
+      "badgeActual": "real",
+      "badgeEstimate": "estimación",
+      "note": "Las líneas marcadas como «real» son lo pagado realmente por {year}, repartido entre los socios según sus ingresos.",
+      "noteProrated": "Las líneas marcadas como «real» son la parte de este periodo de lo pagado por {year}, según su peso en los ingresos del año, repartida entre los socios según sus ingresos."
     }
   },
   "bankRules": {

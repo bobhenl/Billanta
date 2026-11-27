@@ -14080,7 +14080,8 @@
       "health": "Egészségbiztosítás",
       "taxes": "Adó és biztosítás összesen",
       "sharedExpenses": "Közös költségek",
-      "net": "Nettó jövedelem"
+      "net": "Nettó jövedelem",
+      "refund": "Utólagos befizetés / visszatérítés"
     },
     "formula": "Alap = bevétel − {flat} % költségátalány. Adó: az alap {tax} %-a, társadalombiztosítás: az alap {socialBase} %-ának {socialRate} %-a, egészségbiztosítás: az alap {healthBase} %-ának {healthRate} %-a.",
     "estimateNote": "Durva becslés: minimális előlegek, 23 %-os adósáv és az alap kerekítése nélkül. Nem helyettesíti az adóbevallást és az éves elszámolásokat.",
@@ -14192,7 +14193,16 @@
       "secondaryActivityChange": "Módosítás a cég beállításaiban",
       "secondaryActivityPartial": "A határösszeg minden mellékfoglalkozás nélküli hónappal egy tizenketted résszel csökken. A főfoglalkozás hónapjai mindig biztosítottak.",
       "secondaryActivityLegacy": "Korábban közvetlenül ebben a kimutatásban kapcsolták be. Most a cég beállításaiban adható meg.",
-      "secondaryActivityLegacyClear": "Kikapcsolás"
+      "secondaryActivityLegacyClear": "Kikapcsolás",
+      "actual": {
+        "title": "Ténylegesen befizetve az évre",
+        "hint": "A bevallás és a kimutatások beadása után adja meg, mennyit fizetett valójában. A partnerek között számláik arányában oszlik el.",
+        "actual_tax": "Jövedelemadó",
+        "actual_social": "Társadalombiztosítás",
+        "actual_health": "Egészségbiztosítás",
+        "actual_refund": "Utólagos befizetés (+) / visszatérítés (−)",
+        "refundHint": "A később befizetett összeget pozitívan, a visszakapott túlfizetést mínusz előjellel adja meg. Üres mező esetén a becslés marad."
+      }
     },
     "errors": {
       "duplicate_partner": "Két partnernek azonos az azonosítója. Távolítsa el az egyiket, és adja hozzá újra.",
@@ -14229,6 +14239,12 @@
       "locked": "A kimutatás még nem tartalmaz {count, plural, one {# titkosított összegű bizonylatot} other {# titkosított összegű bizonylatot}}. Oldja fel a széfet, és ez a böngésző hozzáadja őket.",
       "unreadable": "{count, plural, one {# bizonylatot nem sikerült megnyitni} other {# bizonylatot nem sikerült megnyitni}}, ezért a kimutatás csak a nem titkosított bizonylatokat mutatja.",
       "failed": "A titkosított bizonylatokat ({count}) nem sikerült betölteni. A kimutatás csak a nem titkosított bizonylatokat mutatja. Töltse újra az oldalt."
+    },
+    "actual": {
+      "badgeActual": "tényleges",
+      "badgeEstimate": "becslés",
+      "note": "A „tényleges” jelölésű sorok a(z) {year}. évre ténylegesen befizetett összegek, a partnerek között bevételeik arányában elosztva.",
+      "noteProrated": "A „tényleges” jelölésű sorok a(z) {year}. évre befizetett összegek erre az időszakra eső része, az éves bevételből való részesedése szerint, a partnerek között bevételeik arányában elosztva."
     }
   },
   "bankRules": {

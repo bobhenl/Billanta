@@ -14081,7 +14081,8 @@
       "health": "Krankenversicherung",
       "taxes": "Steuer und Versicherung gesamt",
       "sharedExpenses": "Gemeinsame Ausgaben",
-      "net": "Nettoeinkommen"
+      "net": "Nettoeinkommen",
+      "refund": "Nachzahlung / Erstattung"
     },
     "formula": "Grundlage = Einnahmen − {flat} % Ausgabenpauschale. Steuer {tax} % der Grundlage, Sozialversicherung {socialRate} % aus {socialBase} % der Grundlage, Krankenversicherung {healthRate} % aus {healthBase} % der Grundlage.",
     "estimateNote": "Eine grobe Schätzung: ohne Mindestvorauszahlungen, ohne den Steuersatz von 23 % und ohne Rundung der Grundlage. Sie ersetzt weder die Steuererklärung noch die Jahresübersichten.",
@@ -14193,7 +14194,16 @@
       "secondaryActivityChange": "In den Firmeneinstellungen ändern",
       "secondaryActivityPartial": "Der Schwellenbetrag sinkt um ein Zwölftel für jeden Monat ohne Nebentätigkeit. Monate mit Haupttätigkeit sind immer versichert.",
       "secondaryActivityLegacy": "Früher direkt in dieser Übersicht eingeschaltet. Jetzt wird es in den Firmeneinstellungen festgelegt.",
-      "secondaryActivityLegacyClear": "Ausschalten"
+      "secondaryActivityLegacyClear": "Ausschalten",
+      "actual": {
+        "title": "Tatsächlich gezahlt für das Jahr",
+        "hint": "Tragen Sie nach Abgabe der Steuererklärung und der Übersichten ein, was Sie wirklich gezahlt haben. Es wird nach ihren Rechnungen auf die Partner verteilt.",
+        "actual_tax": "Einkommensteuer",
+        "actual_social": "Sozialversicherung",
+        "actual_health": "Krankenversicherung",
+        "actual_refund": "Nachzahlung (+) / Erstattung (−)",
+        "refundHint": "Eine spätere Nachzahlung positiv eingeben, eine erstattete Überzahlung mit Minus. Ein leeres Feld nutzt die Schätzung."
+      }
     },
     "errors": {
       "duplicate_partner": "Zwei Partner haben dieselbe ID. Entfernen Sie einen und fügen Sie ihn erneut hinzu.",
@@ -14230,6 +14240,12 @@
       "locked": "Der Bericht enthält {count, plural, one {# Beleg} other {# Belege}} mit verschlüsselten Beträgen noch nicht. Entsperren Sie den Tresor, dann rechnet dieser Browser sie ein.",
       "unreadable": "{count, plural, one {# Beleg ließ sich nicht öffnen} other {# Belege ließen sich nicht öffnen}}, daher zeigt der Bericht nur unverschlüsselte Belege.",
       "failed": "Die verschlüsselten Belege ({count}) ließen sich nicht laden. Der Bericht zeigt nur unverschlüsselte Belege. Laden Sie die Seite neu."
+    },
+    "actual": {
+      "badgeActual": "tatsächlich",
+      "badgeEstimate": "Schätzung",
+      "note": "Als „tatsächlich“ markierte Zeilen sind die für {year} wirklich gezahlten Beträge, nach Einnahmen auf die Partner verteilt.",
+      "noteProrated": "Als „tatsächlich“ markierte Zeilen sind der Anteil dieses Zeitraums an den Zahlungen für {year}, nach seinem Anteil an den Jahreseinnahmen, und nach Einnahmen auf die Partner verteilt."
     }
   },
   "bankRules": {

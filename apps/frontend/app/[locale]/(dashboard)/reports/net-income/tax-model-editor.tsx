@@ -30,6 +30,7 @@ const DEFAULTS: TaxModel = {
 };
 
 const MAX_PARTNERS = 10;
+const ACTUAL_FIELDS = ['actual_tax', 'actual_social', 'actual_health', 'actual_refund'] as const;
 const ERRORS = ['duplicate_partner_user', 'partner_user_not_member', 'partner_limit', 'duplicate_partner', 'shares_must_be_positive', 'expense_date_required', 'expense_range_invalid'];
 
 const newId = () => `p${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`;
@@ -225,6 +226,8 @@ export function TaxModelEditor({
   const [year, setYear] = useState(reportYear);
   // Remounts the number fields after a reset, so they show the new values.
   const [version, setVersion] = useState(0);
+  // Per year: whether "Skutečně zaplaceno" was opened or closed by hand.
+  const [actualOpen, setActualOpen] = useState<Record<number, boolean>>({});
   const [saving, start] = useTransition();
   const set = <K extends keyof TaxModel>(k: K, v: TaxModel[K]) => setModel((m) => ({ ...m, [k]: v }));
   const many = model.partners.length > 1;
@@ -359,6 +362,41 @@ export function TaxModelEditor({
               setModel((m) => ({ ...m, years: Object.fromEntries(Object.entries(m.years).map(([y, e]) => [y, { ...e, secondary_activity: false }])) }))
             }
           />
+          {/* One taxpayer's real payments, shared out by income; per partner each files their own, which the model does not track. */}
+          {(onePerson || !many) && (
+            <details
+              className="group/actual rounded-lg border border-border"
+              // Open by what is saved, not by what is being typed: clearing the last field must not fold it shut.
+              open={actualOpen[year] ?? ACTUAL_FIELDS.some((k) => initial.years[String(year)]?.[k] != null)}
+              onToggle={(e) => {
+                const open = e.currentTarget.open;
+                setActualOpen((o) => (o[year] === open ? o : { ...o, [year]: open }));
+              }}
+            >
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+                {t('actual.title')}
+                <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open/actual:rotate-180" aria-hidden="true" />
+              </summary>
+              <div className="space-y-3 border-t border-border px-3 py-3">
+                <p className="text-xs text-muted-foreground">{t('actual.hint')}</p>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  {ACTUAL_FIELDS.map((k) => (
+                    <NumField
+                      key={fieldKey(k)}
+                      label={t(`actual.${k}`)}
+                      suffix="Kč"
+                      value={entry?.[k] ?? null}
+                      empty={null}
+                      disabled={locked}
+                      // Whole Kč, like the přiznání; a refund is entered with a minus.
+                      onChange={(n) => setEntry({ [k]: n == null ? null : k === 'actual_refund' ? Math.round(n) : Math.max(0, Math.round(n)) })}
+                    />
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground">{t('actual.refundHint')}</p>
+              </div>
+            </details>
+          )}
           <p className="text-xs text-muted-foreground">{t(onePerson ? 'scopeOnePersonHint' : 'yearHint')}</p>
           <InfoHint hint={t('ratesHint')} className="text-xs text-muted-foreground">
             {t('ratesHintLabel')}

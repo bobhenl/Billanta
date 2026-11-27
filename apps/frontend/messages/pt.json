@@ -14080,7 +14080,8 @@
       "health": "Seguro de saúde",
       "taxes": "Total de impostos e contribuições",
       "sharedExpenses": "Despesas partilhadas",
-      "net": "Rendimento líquido"
+      "net": "Rendimento líquido",
+      "refund": "Pagamento adicional / reembolso"
     },
     "formula": "Base = rendimento − {flat} % de despesas forfetárias. Imposto: {tax} % da base; segurança social: {socialRate} % de {socialBase} % da base; seguro de saúde: {healthRate} % de {healthBase} % da base.",
     "estimateNote": "Uma estimativa aproximada: sem adiantamentos mínimos, sem o escalão de 23 % e sem arredondamento da base. Não substitui a declaração de impostos nem as declarações anuais.",
@@ -14192,7 +14193,16 @@
       "secondaryActivityChange": "Alterar nas definições da empresa",
       "secondaryActivityPartial": "O limiar desce um duodécimo por cada mês sem atividade secundária. Os meses de atividade principal são sempre segurados.",
       "secondaryActivityLegacy": "Ativado antes diretamente neste relatório. Agora define-se nas definições da empresa.",
-      "secondaryActivityLegacyClear": "Desativar"
+      "secondaryActivityLegacyClear": "Desativar",
+      "actual": {
+        "title": "Realmente pago no ano",
+        "hint": "Depois de entregar a declaração e os resumos, introduza o que pagou de facto. É repartido entre os sócios pelas suas faturas.",
+        "actual_tax": "Imposto sobre o rendimento",
+        "actual_social": "Segurança social",
+        "actual_health": "Seguro de saúde",
+        "actual_refund": "Pagamento adicional (+) / reembolso (−)",
+        "refundHint": "Introduza um pagamento feito mais tarde como positivo e um reembolso com sinal menos. Um campo vazio usa a estimativa."
+      }
     },
     "errors": {
       "duplicate_partner": "Dois sócios têm o mesmo id. Remova um e adicione-o de novo.",
@@ -14229,6 +14239,12 @@
       "locked": "O relatório ainda não inclui {count, plural, one {# documento} other {# documentos}} com valores cifrados. Desbloqueie o cofre e este navegador soma-os.",
       "unreadable": "Não foi possível abrir {count, plural, one {# documento} other {# documentos}}, por isso o relatório mostra só os documentos não cifrados.",
       "failed": "Não foi possível carregar os documentos cifrados ({count}). O relatório mostra só os documentos não cifrados. Recarregue a página."
+    },
+    "actual": {
+      "badgeActual": "real",
+      "badgeEstimate": "estimativa",
+      "note": "As linhas marcadas «real» são o que foi realmente pago por {year}, repartido entre os sócios pelos seus rendimentos.",
+      "noteProrated": "As linhas marcadas «real» são a parte deste período do que foi pago por {year}, pelo seu peso nos rendimentos do ano, repartida entre os sócios pelos seus rendimentos."
     }
   },
   "bankRules": {

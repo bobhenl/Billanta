@@ -14088,7 +14088,8 @@
       "health": "Health insurance",
       "taxes": "Tax and insurance total",
       "sharedExpenses": "Shared expenses",
-      "net": "Net income"
+      "net": "Net income",
+      "refund": "Paid extra / refunded"
     },
     "formula": "Base = income − {flat} % flat-rate expenses. Tax {tax} % of the base, social {socialRate} % of {socialBase} % of the base, health {healthRate} % of {healthBase} % of the base.",
     "estimateNote": "A rough estimate: no minimum advances, no 23 % tax band and no rounding of the base. It does not replace the tax return or the yearly statements.",
@@ -14200,7 +14201,16 @@
       "secondaryActivityChange": "Change in company settings",
       "secondaryActivityPartial": "The threshold drops by a twelfth for each month without secondary activity. Months of main activity are always insured.",
       "secondaryActivityLegacy": "Turned on earlier in this report. It is now set in company settings.",
-      "secondaryActivityLegacyClear": "Turn off"
+      "secondaryActivityLegacyClear": "Turn off",
+      "actual": {
+        "title": "Actually paid for the year",
+        "hint": "Once your tax return and insurance statements are filed, enter what you really paid. It is split between the partners by their invoices.",
+        "actual_tax": "Income tax",
+        "actual_social": "Social insurance",
+        "actual_health": "Health insurance",
+        "actual_refund": "Paid extra (+) / refunded (−)",
+        "refundHint": "Enter an amount paid later as positive and a refunded overpayment with a minus sign. An empty field uses the estimate."
+      }
     },
     "errors": {
       "duplicate_partner": "Two partners have the same id. Remove one and add it again.",
@@ -14237,6 +14247,12 @@
       "locked": "This report does not include {count, plural, one {# document} other {# documents}} with sealed amounts yet. Unlock the vault and this browser adds them.",
       "unreadable": "{count, plural, one {# document could not be opened} other {# documents could not be opened}}, so the report shows only the unsealed documents.",
       "failed": "The sealed documents ({count}) could not be loaded. The report shows only the unsealed documents. Try reloading the page."
+    },
+    "actual": {
+      "badgeActual": "actual",
+      "badgeEstimate": "estimate",
+      "note": "Lines marked “actual” are what was really paid for {year}, split between the partners by their income.",
+      "noteProrated": "Lines marked “actual” are this period’s part of what was paid for {year}, by its share of the year’s income, split between the partners by their income."
     }
   },
   "bankRules": {
