@@ -85,7 +85,7 @@ export function SealedSearchTable({ note, item, ...props }: Props) {
       ) : (
         <p className="text-sm text-muted-foreground" role="status">
           {t('included')}
-          {state.skippedLocked > 0 && ` ${t('skippedLocked', { n: state.skippedLocked })}`}
+          {state.kind === 'done' && state.skippedLocked > 0 && ` ${t('skippedLocked', { n: state.skippedLocked })}`}
         </p>
       )}
       <InvoicesTable {...props} rows={rows} />

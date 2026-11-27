@@ -231,7 +231,7 @@ export class VaultService {
       : [];
     return {
       documents: open.map((r) =>
-        vaultDocumentView(r.invoice, r.invoice.contactId ? { legalName: r.legalName, ico: r.ico } : null, items.filter((it) => it.invoiceId === r.id)),
+        vaultDocumentView(r.invoice, r.invoice.contactId && r.legalName != null ? { legalName: r.legalName, ico: r.ico } : null, items.filter((it) => it.invoiceId === r.id)),
       ),
       skippedLocked,
       next,

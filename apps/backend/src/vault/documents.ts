@@ -14,7 +14,7 @@ type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
  */
 export function vaultDocumentView(
   invoice: InvoiceRow,
-  contact: { legalName: string | null; ico: string | null } | null,
+  contact: { legalName: string; ico: string | null } | null,
   items: LineItemRow[],
 ) {
   const buyer = contact ? applyBuyerSnapshot(contact, invoice.buyerSnapshot) : null;
