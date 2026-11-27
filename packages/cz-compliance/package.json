@@ -15,12 +15,19 @@
     "./pay-by-square": {
       "types": "./dist/pay-by-square.d.ts",
       "default": "./dist/pay-by-square.js"
+    },
+    "./eet": {
+      "types": "./dist/eet.d.ts",
+      "default": "./dist/eet.js"
     }
   },
   "typesVersions": {
     "*": {
       "pay-by-square": [
         "./dist/pay-by-square.d.ts"
+      ],
+      "eet": [
+        "./dist/eet.d.ts"
       ]
     }
   },
