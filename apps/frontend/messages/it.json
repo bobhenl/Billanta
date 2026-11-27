@@ -8428,7 +8428,8 @@
             "regimeFlat": "Secondo le Impostazioni aderisce al regime forfettario.",
             "regimeRegular": "Secondo le Impostazioni non aderisce al regime forfettario.",
             "secondary": "Secondo le Impostazioni si tratta di un’attività secondaria. Il calcolatore conteggia i contributi come per un’attività principale; per un’attività secondaria possono essere inferiori.",
-            "sealed": "Non abbiamo precompilato nulla: {count, plural, one {# documento ha} other {# documenti hanno}} importi cifrati che il server non può sommare. Inserisci entrate e spese a mano."
+            "sealed": "Non abbiamo ancora precompilato nulla: {count, plural, one {# documento ha} other {# documenti hanno}} importi cifrati. Sblocca la cassaforte e questo browser inserirà i numeri, oppure inserisci entrate e spese a mano.",
+            "sealedUnreadable": "Non abbiamo precompilato nulla: {count, plural, one {# documento non si è potuto aprire} other {# documenti non si sono potuti aprire}}. Inserisci entrate e spese a mano."
           }
         },
         "vat": {
@@ -14182,6 +14183,11 @@
       "highBand": "{name}: la base imponibile supera la soglia dell’aliquota del 23 % ({limit} l’anno, in proporzione al periodo). La stima usa solo l’aliquota base, l’imposta reale sarà più alta.",
       "highBandOne": "La base imponibile supera la soglia dell’aliquota del 23 % ({limit} l’anno, in proporzione al periodo). La stima usa solo l’aliquota base, l’imposta reale sarà più alta.",
       "singleEarner": "Solo {name} ha un reddito. Se solo uno di voi paga le imposte, imposta quest’anno su un solo contribuente."
+    },
+    "sealed": {
+      "locked": "Il report non include ancora {count, plural, one {# documento} other {# documenti}} con importi cifrati. Sblocca la cassaforte e questo browser li aggiungerà.",
+      "unreadable": "{count, plural, one {# documento non si è potuto aprire} other {# documenti non si sono potuti aprire}}, quindi il report mostra solo i documenti non cifrati.",
+      "failed": "Non è stato possibile caricare i documenti cifrati ({count}). Il report mostra solo i documenti non cifrati. Ricarica la pagina."
     }
   },
   "bankRules": {
@@ -14505,7 +14511,6 @@
           "L'abbinamento automatico sul server: dopo lo sblocco il tuo browser propone gli abbinamenti e tu li confermi",
           "I pagamenti li calcola solo il tuo browser: per un documento cifrato il server conosce solo la data del pagamento e lo stato, non l'importo né la commissione",
           "L'invio tramite Peppol e i suggerimenti IA con importi. Il pagamento con carta solo sul documento dove lo consenti esplicitamente – l'importo da pagare arriva allora leggibile a Billanta e Stripe",
-          "Il reddito netto conta solo i documenti non cifrati e indica quanti ne ha esclusi. Il calcolatore dell’imposta forfettaria non precompila nulla",
           "Solleciti, riepilogo settimanale e totali scaduti nelle e-mail non riportano l’importo"
         ],
         "how": [
@@ -14518,6 +14523,7 @@
           "PDF, ISDOC, UBL e pagamento QR li crea il tuo browser, e nel link per il cliente il browser del cliente",
           "Le esportazioni per il commercialista (CSV, Pohoda, Money S3), le dichiarazioni IVA, la base per la dichiarazione dei redditi, il riepilogo annuale e i prospetti per ČSSZ e assicurazione sanitaria li crea il tuo browser dopo lo sblocco della cassaforte. Un documento che non si apre blocca il file",
           "La dashboard e il report del periodo aggiungono i documenti cifrati mentre la cassaforte è sbloccata",
+          "Il reddito netto e la precompilazione del calcolatore dell’imposta forfettaria li calcola il tuo browser dopo lo sblocco della cassaforte",
           "Le fatture ricorrenti copiano gli importi cifrati senza modificarli"
         ]
       },

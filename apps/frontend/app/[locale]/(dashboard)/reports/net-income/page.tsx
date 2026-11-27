@@ -9,6 +9,7 @@ import { canManage, canWrite, fetchMyAccess } from '@/lib/tenant';
 import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 import { NetIncomeView } from './net-income-view';
+import { SealedNetIncome } from './sealed-net-income';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('netIncome');
@@ -20,7 +21,8 @@ const KINDS: PeriodKind[] = ['month', 'quarter', 'year'];
 /**
  * "Po zdanění": what is left of a month's, quarter's or year's paid income
  * after income tax, insurance and shared expenses, per partner, under the
- * company's own tax model. The backend computes it (net-income module).
+ * company's own tax model. The backend computes it (net-income module); with
+ * sealed amounts the browser does, from the same inputs (SealedNetIncome).
  */
 export default async function NetIncomePage({ searchParams }: { searchParams: Promise<{ year?: string; month?: string; quarter?: string }> }) {
   const t = await getTranslations('netIncome');
@@ -108,14 +110,27 @@ export default async function NetIncomePage({ searchParams }: { searchParams: Pr
         </div>
       </div>
 
-      <NetIncomeView
-        key={periodQuery(period)}
-        report={report}
-        kind={period.kind}
-        canEdit={access ? canManage(access.role) : false}
-        canSplit={canWrite(access, 'invoices')}
-        members={members}
-      />
+      {report.sealed?.count ? (
+        // Důvěrný režim: this browser opens the sealed amounts and builds the full report.
+        <SealedNetIncome
+          key={periodQuery(period)}
+          report={report}
+          query={periodQuery(period)}
+          kind={period.kind}
+          canEdit={access ? canManage(access.role) : false}
+          canSplit={canWrite(access, 'invoices')}
+          members={members}
+        />
+      ) : (
+        <NetIncomeView
+          key={periodQuery(period)}
+          report={report}
+          kind={period.kind}
+          canEdit={access ? canManage(access.role) : false}
+          canSplit={canWrite(access, 'invoices')}
+          members={members}
+        />
+      )}
     </div>
   );
 }

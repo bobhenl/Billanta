@@ -8428,7 +8428,8 @@
             "regimeFlat": "D’après les paramètres, vous êtes au régime forfaitaire.",
             "regimeRegular": "D’après les paramètres, vous n’êtes pas au régime forfaitaire.",
             "secondary": "D’après les paramètres, il s’agit d’une activité secondaire. Le calculateur compte les cotisations comme pour une activité principale ; pour une activité secondaire, elles peuvent être moins élevées.",
-            "sealed": "Rien n’est prérempli : {count, plural, one {# document a} other {# documents ont}} des montants chiffrés que le serveur ne peut pas additionner. Saisissez vos recettes et dépenses à la main."
+            "sealed": "Rien n’est encore prérempli : {count, plural, one {# document a} other {# documents ont}} des montants chiffrés. Déverrouillez le coffre et ce navigateur remplira les chiffres, ou saisissez vos recettes et dépenses à la main.",
+            "sealedUnreadable": "Rien n’est prérempli : {count, plural, one {# document n’a pas pu être ouvert} other {# documents n’ont pas pu être ouverts}}. Saisissez vos recettes et dépenses à la main."
           }
         },
         "vat": {
@@ -14182,6 +14183,11 @@
       "highBand": "{name} : la base imposable dépasse le seuil de la tranche à 23 % ({limit} par an, au prorata de la période). L’estimation n’utilise que le taux de base, l’impôt réel sera plus élevé.",
       "highBandOne": "La base imposable dépasse le seuil de la tranche à 23 % ({limit} par an, au prorata de la période). L’estimation n’utilise que le taux de base, l’impôt réel sera plus élevé.",
       "singleEarner": "Seul(e) {name} a des revenus. Si un seul d’entre vous paie les impôts, passez cette année à un seul contribuable."
+    },
+    "sealed": {
+      "locked": "Le rapport n’inclut pas encore {count, plural, one {# document} other {# documents}} aux montants chiffrés. Déverrouillez le coffre et ce navigateur les ajoutera.",
+      "unreadable": "{count, plural, one {# document n’a pas pu être ouvert} other {# documents n’ont pas pu être ouverts}}, le rapport ne montre donc que les documents non chiffrés.",
+      "failed": "Les documents chiffrés ({count}) n’ont pas pu être chargés. Le rapport ne montre que les documents non chiffrés. Rechargez la page."
     }
   },
   "bankRules": {
@@ -14505,7 +14511,6 @@
           "Le rapprochement automatique sur le serveur : après le déverrouillage, votre navigateur propose des rapprochements et vous les confirmez",
           "Les paiements ne sont calculés que dans votre navigateur : pour un document chiffré, le serveur ne connaît que la date du paiement et le statut, pas le montant ni les frais",
           "L'envoi via Peppol et les suggestions IA avec montants. Le paiement par carte seulement sur un document où vous l'autorisez – le montant à payer part alors lisible chez Billanta et Stripe",
-          "Le revenu net ne compte que les documents non chiffrés et indique combien il en a laissé de côté. Le calculateur de l’impôt forfaitaire ne préremplit alors rien",
           "Les relances, le résumé hebdomadaire et les totaux en retard dans les e-mails n’indiquent pas le montant"
         ],
         "how": [
@@ -14518,6 +14523,7 @@
           "Le PDF, l’ISDOC, l’UBL et le paiement QR sont créés par votre navigateur, et sur le lien client par celui du client",
           "Les exports pour le comptable (CSV, Pohoda, Money S3), les déclarations de TVA, la base de la déclaration de revenus, le bilan annuel et les relevés pour la ČSSZ et l’assurance maladie sont créés par votre navigateur une fois le coffre déverrouillé. Un document impossible à ouvrir bloque le fichier",
           "Le tableau de bord et le rapport de période ajoutent les documents chiffrés tant que le coffre est déverrouillé",
+          "Le revenu net et le préremplissage du calculateur de l’impôt forfaitaire sont calculés par votre navigateur une fois le coffre déverrouillé",
           "Les factures récurrentes copient les montants chiffrés sans les modifier"
         ]
       },

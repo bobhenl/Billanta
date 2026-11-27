@@ -2,15 +2,18 @@ import {
   buildSealedAccountingXml,
   buildSealedFilingLines,
   buildSealedInvoicesCsv,
+  buildSealedNetIncome,
   buildSealedTaxReturn,
   buildSealedVatFiling,
   buildSealedYearIncome,
   sealedAccountingEnvelopes,
   sealedEnvelopesOf,
   sealedIncomeEnvelopes,
+  sealedNetIncomeEnvelopes,
   type AnnualFilingsInputs,
   type DocumentAmounts,
   type ItemAmounts,
+  type NetIncomeInputs,
   type SealedAccountingInputs,
   type SealedCsvInputs,
   type SealedVatInputs,
@@ -86,6 +89,11 @@ export async function sealedYearIncome(key: VaultKey, inputs: YearIncomeInputs) 
 /** The DPFO / ČSSZ / ZP lines with the sealed income, or how many documents could not be opened. */
 export async function sealedFilingLines(key: VaultKey, inputs: AnnualFilingsInputs) {
   return buildSealedFilingLines(inputs, await openAll(key, sealedIncomeEnvelopes(inputs)));
+}
+
+/** The net income report with the sealed documents, or how many could not be opened. */
+export async function sealedNetIncome(key: VaultKey, inputs: NetIncomeInputs) {
+  return buildSealedNetIncome(inputs, await openAll(key, sealedNetIncomeEnvelopes(inputs)));
 }
 
 /** Saves a file; a Blob keeps its bytes (a CSV's BOM would not survive `res.text()`). */

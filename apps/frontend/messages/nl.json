@@ -8428,7 +8428,8 @@
             "regimeFlat": "Volgens de instellingen zit je in het forfaitaire regime.",
             "regimeRegular": "Volgens de instellingen zit je niet in het forfaitaire regime.",
             "secondary": "Volgens de instellingen is dit een nevenactiviteit. De calculator rekent de premies als voor een hoofdactiviteit; voor een nevenactiviteit kunnen ze lager zijn.",
-            "sealed": "Niets vooraf ingevuld: {count, plural, one {# document heeft} other {# documenten hebben}} versleutelde bedragen die de server niet kan optellen. Vul inkomsten en uitgaven zelf in."
+            "sealed": "Nog niets vooraf ingevuld: {count, plural, one {# document heeft} other {# documenten hebben}} versleutelde bedragen. Ontgrendel de kluis en deze browser vult de cijfers in, of vul inkomsten en uitgaven zelf in.",
+            "sealedUnreadable": "Niets vooraf ingevuld: {count, plural, one {# document kon niet worden geopend} other {# documenten konden niet worden geopend}}. Vul inkomsten en uitgaven zelf in."
           }
         },
         "vat": {
@@ -14182,6 +14183,11 @@
       "highBand": "{name}: de grondslag ligt boven de grens van de 23 %-schijf ({limit} per jaar, naar rato van de periode). De schatting rekent alleen met het basistarief, de echte belasting wordt hoger.",
       "highBandOne": "De grondslag ligt boven de grens van de 23 %-schijf ({limit} per jaar, naar rato van de periode). De schatting rekent alleen met het basistarief, de echte belasting wordt hoger.",
       "singleEarner": "Alleen {name} heeft inkomen. Betaalt maar één van jullie belasting, zet dit jaar dan op één belastingplichtige."
+    },
+    "sealed": {
+      "locked": "Het overzicht bevat {count, plural, one {# document} other {# documenten}} met versleutelde bedragen nog niet. Ontgrendel de kluis en deze browser telt ze mee.",
+      "unreadable": "{count, plural, one {# document kon niet worden geopend} other {# documenten konden niet worden geopend}}, dus het overzicht toont alleen niet-versleutelde documenten.",
+      "failed": "De versleutelde documenten ({count}) konden niet worden geladen. Het overzicht toont alleen niet-versleutelde documenten. Laad de pagina opnieuw."
     }
   },
   "bankRules": {
@@ -14505,7 +14511,6 @@
           "Automatisch koppelen van betalingen op de server: na het ontgrendelen stelt je browser koppelingen voor en bevestig jij ze",
           "Betalingen worden alleen in je browser berekend: bij een versleuteld document kent de server alleen de betaaldatum en de status, niet het bedrag of de kosten",
           "Verzenden via Peppol en AI-voorstellen met bedragen. Kaartbetaling alleen bij een document waar je die uitdrukkelijk toestaat – het te betalen bedrag gaat dan leesbaar naar Billanta en Stripe",
-          "Het netto-inkomen telt alleen niet-versleutelde documenten en meldt hoeveel het heeft weggelaten. De rekenhulp voor de forfaitaire belasting vult dan niets in",
           "Herinneringen, het weekoverzicht en achterstallige totalen in e-mails noemen geen bedrag"
         ],
         "how": [
@@ -14518,6 +14523,7 @@
           "PDF, ISDOC, UBL en de QR-betaling maakt je browser, en via de klantlink de browser van de klant",
           "Exports voor de boekhouder (CSV, Pohoda, Money S3), btw-aangiften, de basis voor de belastingaangifte, het jaaroverzicht en de overzichten voor ČSSZ en de zorgverzekeraar maakt uw browser zodra u de kluis ontgrendelt. Een document dat niet open gaat, houdt het bestand tegen",
           "Het dashboard en het periodeoverzicht tellen de versleutelde documenten mee zolang de kluis ontgrendeld is",
+          "Het netto-inkomen en het vooraf invullen van de rekenhulp voor de forfaitaire belasting berekent je browser zodra je de kluis ontgrendelt",
           "Terugkerende facturen kopiëren de versleutelde bedragen ongewijzigd"
         ]
       },

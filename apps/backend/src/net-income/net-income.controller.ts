@@ -1,10 +1,11 @@
 import { BadRequestException, Body, Controller, Get, Param, ParseUUIDPipe, Put, Query, Req, UseGuards } from "@nestjs/common";
+import type { NetIncomeInputs } from "@faktur/cz-compliance";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
-import { NetIncomeService } from "./net-income.service";
+import { NetIncomeService, type NetIncomePeriod } from "./net-income.service";
 import { DEFAULT_TAX_MODEL, sharesSchema, taxModelSchema } from "./tax-model";
 
 const periodQuerySchema = z
@@ -15,10 +16,17 @@ const periodQuerySchema = z
   })
   .refine((q) => !(q.month && q.quarter), "month_or_quarter");
 
+function periodOf(query: Record<string, string>): NetIncomePeriod {
+  const parsed = periodQuerySchema.safeParse(query);
+  if (!parsed.success) throw new BadRequestException("invalid_period");
+  const { year, month, quarter } = parsed.data;
+  return { year, month: month ?? null, quarter: quarter ?? null };
+}
+
 class TaxModelDto extends createZodDto(taxModelSchema) {}
 class PartnerSharesDto extends createZodDto(z.object({ shares: sharesSchema.nullable() })) {}
 
-/** Report "Po zdanění" (reports area: anyone who may read reports). */
+/** Report "Po zdanění" (owner and admin only, RoleAccessGuard). */
 @ApiTags("net-income")
 @Controller("v1/net-income")
 @UseGuards(JwtAuthGuard)
@@ -29,10 +37,17 @@ export class NetIncomeController {
   @Get()
   @ApiOperation({ summary: "Income from paid invoices in a month, quarter or year, split between partners, minus tax, insurance and shared expenses (?year=&month=|quarter=)" })
   report(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>) {
-    const parsed = periodQuerySchema.safeParse(query);
-    if (!parsed.success) throw new BadRequestException("invalid_period");
-    const { year, month, quarter } = parsed.data;
-    return this.service.report(req.tenantDb!, req.user!.tenantId, { year, month: month ?? null, quarter: quarter ?? null });
+    return this.service.report(req.tenantDb!, req.user!.tenantId, periodOf(query));
+  }
+
+  // Under v1/net-income, so the same owner/admin rule of RoleAccessGuard applies.
+  @Get("inputs")
+  @ApiOperation({
+    summary:
+      "Confidential mode: the report's inputs (?year=&month=|quarter=), the sealed documents with their totals envelope and rate instead of an amount, so the browser builds the report",
+  })
+  inputs(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>): Promise<NetIncomeInputs> {
+    return this.service.inputs(req.tenantDb!, req.user!.tenantId, periodOf(query));
   }
 }
 

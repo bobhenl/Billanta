@@ -8436,7 +8436,8 @@
             "regimeFlat": "Settings say you are in the flat-rate regime.",
             "regimeRegular": "Settings say you are not in the flat-rate regime.",
             "secondary": "Settings say this is a secondary activity. The calculator counts insurance as for a main activity; for a secondary one it can be lower.",
-            "sealed": "Nothing is prefilled: {count, plural, one {# document has} other {# documents have}} sealed amounts the server cannot add up. Enter your income and expenses by hand."
+            "sealed": "Nothing is prefilled yet: {count, plural, one {# document has} other {# documents have}} sealed amounts. Unlock the vault and this browser fills in the numbers, or enter your income and expenses by hand.",
+            "sealedUnreadable": "Nothing is prefilled: {count, plural, one {# document could not be opened} other {# documents could not be opened}}. Enter your income and expenses by hand."
           }
         },
         "vat": {
@@ -14190,6 +14191,11 @@
       "highBand": "{name}: the tax base is above the 23 % band ({limit} a year, prorated to the period). The estimate uses the basic rate only, so the real tax will be higher.",
       "highBandOne": "The tax base is above the 23 % band ({limit} a year, prorated to the period). The estimate uses the basic rate only, so the real tax will be higher.",
       "singleEarner": "Only {name} has income. If only one of you pays the taxes, set this year to one taxpayer."
+    },
+    "sealed": {
+      "locked": "This report does not include {count, plural, one {# document} other {# documents}} with sealed amounts yet. Unlock the vault and this browser adds them.",
+      "unreadable": "{count, plural, one {# document could not be opened} other {# documents could not be opened}}, so the report shows only the unsealed documents.",
+      "failed": "The sealed documents ({count}) could not be loaded. The report shows only the unsealed documents. Try reloading the page."
     }
   },
   "bankRules": {
@@ -14510,7 +14516,6 @@
           "Automatic payment matching on the server: after you unlock the vault, your browser suggests matches and you confirm them",
           "Payments are counted only in your browser: for an encrypted document the server knows just the payment date and the status, not the amount or the fee",
           "Sending via Peppol and AI suggestions with amounts. Card payment only on a document where you allow it – the amount to pay then goes readable to Billanta and Stripe",
-          "Net income counts only unsealed documents and says how many it left out. The flat-rate tax calculator then prefills nothing",
           "Reminders, the weekly digest and overdue totals in e-mails leave out the amount"
         ],
         "how": [
@@ -14523,6 +14528,7 @@
           "PDF, ISDOC, UBL and the QR payment are made by your browser, and on the client link by the client's browser",
           "Accountant exports (CSV, Pohoda, Money S3), VAT returns and reports, the tax-return basis, the year summary, the income tax return and the ČSSZ and health insurance overviews are built by your browser once you unlock the vault. A document it cannot open stops the file",
           "The dashboard and the period report add the sealed documents while the vault is unlocked",
+          "Net income and the flat-rate tax calculator's prefill are computed by your browser once you unlock the vault",
           "Recurring invoices copy the encrypted amounts unchanged"
         ]
       },

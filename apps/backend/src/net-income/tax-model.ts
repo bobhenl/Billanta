@@ -146,42 +146,5 @@ export function taxModelOf(stored: unknown): TaxModel {
   return parsed.success ? parsed.data : DEFAULT_TAX_MODEL;
 }
 
-export interface ResolvedYear extends Pick<TaxModel, (typeof RATE_KEYS)[number]> {
-  /** The `years` entry used, or null for the top-level values. */
-  source: number | null;
-  tax_scope: YearSettings["tax_scope"];
-  /** "one_person": the taxpayer's credits. */
-  tax_credits: number;
-  /** "per_partner": each partner's credits. */
-  partners: Map<string, { tax_credits: number }>;
-}
-
-/** The settings in force in `year`. */
-export function settingsFor(model: TaxModel, year: number): ResolvedYear {
-  const source =
-    Object.keys(model.years)
-      .map(Number)
-      .filter((y) => y <= year)
-      .sort((a, b) => b - a)[0] ?? null;
-  const entry = source == null ? null : model.years[String(source)]!;
-  const rates = entry ?? model;
-  const partners = new Map(model.partners.map((p) => [p.id, { tax_credits: entry?.partners[p.id]?.tax_credits ?? p.tax_credits }]));
-  return {
-    ...(Object.fromEntries(RATE_KEYS.map((k) => [k, rates[k]])) as Pick<TaxModel, (typeof RATE_KEYS)[number]>),
-    source,
-    tax_scope: entry?.tax_scope ?? "per_partner",
-    tax_credits: entry?.tax_credits ?? 0,
-    partners,
-  };
-}
-
-/**
- * Whose invoice it is when it has no split of its own: the partner linked to
- * the member who created it, if that partner claims their own invoices;
- * otherwise null, i.e. the default shares.
- */
-export function creatorShares(model: TaxModel, createdByUserId: string | null): Shares | null {
-  if (!createdByUserId) return null;
-  const partner = model.partners.find((p) => p.claim_own && p.user_id === createdByUserId);
-  return partner ? { [partner.id]: 1 } : null;
-}
+// The settings of a year and the creator's claim are shared with the browser (cz-compliance).
+export { creatorShares, netIncomeSettingsFor as settingsFor, type NetIncomeYear as ResolvedYear } from "@faktur/cz-compliance";

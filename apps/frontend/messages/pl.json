@@ -8429,7 +8429,8 @@
             "regimeFlat": "Według Ustawień rozliczasz się ryczałtem.",
             "regimeRegular": "Według Ustawień nie rozliczasz się ryczałtem.",
             "secondary": "Według Ustawień to działalność dodatkowa. Kalkulator liczy składki jak dla działalności głównej; dla dodatkowej mogą być niższe.",
-            "sealed": "Nic nie zostało wypełnione: {count, plural, one {# dokument ma} few {# dokumenty mają} many {# dokumentów ma} other {# dokumentu ma}} zaszyfrowane kwoty, których serwer nie zsumuje. Wpisz przychody i wydatki ręcznie."
+            "sealed": "Nic jeszcze nie zostało wypełnione: {count, plural, one {# dokument ma} few {# dokumenty mają} many {# dokumentów ma} other {# dokumentu ma}} zaszyfrowane kwoty. Odblokuj sejf, a ta przeglądarka uzupełni liczby, albo wpisz przychody i wydatki ręcznie.",
+            "sealedUnreadable": "Nic nie zostało wypełnione: nie udało się otworzyć {count, plural, one {# dokumentu} few {# dokumentów} many {# dokumentów} other {# dokumentu}}. Wpisz przychody i wydatki ręcznie."
           }
         },
         "vat": {
@@ -14183,6 +14184,11 @@
       "highBand": "{name}: podstawa opodatkowania przekracza próg stawki 23 % ({limit} rocznie, proporcjonalnie do okresu). Szacunek liczy tylko stawkę podstawową, faktyczny podatek będzie wyższy.",
       "highBandOne": "Podstawa opodatkowania przekracza próg stawki 23 % ({limit} rocznie, proporcjonalnie do okresu). Szacunek liczy tylko stawkę podstawową, faktyczny podatek będzie wyższy.",
       "singleEarner": "Przychód ma tylko {name}. Jeśli podatki płaci tylko jedno z was, ustaw ten rok na jednego podatnika."
+    },
+    "sealed": {
+      "locked": "Raport nie obejmuje jeszcze {count, plural, one {# dokumentu} few {# dokumentów} many {# dokumentów} other {# dokumentu}} z zaszyfrowanymi kwotami. Odblokuj sejf, a ta przeglądarka je doliczy.",
+      "unreadable": "Nie udało się otworzyć {count, plural, one {# dokumentu} few {# dokumentów} many {# dokumentów} other {# dokumentu}}, więc raport pokazuje tylko niezaszyfrowane dokumenty.",
+      "failed": "Nie udało się wczytać zaszyfrowanych dokumentów ({count}). Raport pokazuje tylko niezaszyfrowane dokumenty. Odśwież stronę."
     }
   },
   "bankRules": {
@@ -14506,7 +14512,6 @@
           "Automatyczne dopasowanie płatności na serwerze: po odblokowaniu sejfu przeglądarka zaproponuje pary, a Ty je potwierdzisz",
           "Płatności liczy tylko Twoja przeglądarka: przy zaszyfrowanym dokumencie serwer zna tylko datę płatności i status, nie kwotę ani opłatę",
           "Wysyłka przez Peppol i propozycje AI z kwotami. Płatność kartą tylko przy dokumencie, na którym wyraźnie ją włączysz – kwota do zapłaty trafi wtedy czytelnie do Billanty i Stripe",
-          "Dochód netto liczy tylko niezaszyfrowane dokumenty i podaje, ile pominął. Kalkulator podatku ryczałtowego niczego wtedy nie wypełnia",
           "Przypomnienia, cotygodniowe podsumowanie i sumy zaległości w e-mailach nie podają kwoty"
         ],
         "how": [
@@ -14519,6 +14524,7 @@
           "PDF, ISDOC, UBL i płatność QR tworzy Twoja przeglądarka, a w linku dla klienta przeglądarka klienta",
           "Eksporty dla księgowego (CSV, Pohoda, Money S3), deklaracje VAT, podstawę zeznania podatkowego, podsumowanie roku i zestawienia dla ČSSZ i ubezpieczyciela zdrowotnego tworzy Twoja przeglądarka po odblokowaniu sejfu. Dokument, którego nie da się otworzyć, zatrzymuje plik",
           "Pulpit i raport okresu doliczają zaszyfrowane dokumenty, gdy sejf jest odblokowany",
+          "Dochód netto i wypełnienie kalkulatora podatku ryczałtowego oblicza Twoja przeglądarka po odblokowaniu sejfu",
           "Faktury cykliczne kopiują zaszyfrowane kwoty bez zmian"
         ]
       },

@@ -143,6 +143,8 @@ export interface NetIncomeReport {
   }[];
   extraIncome: (TaxModel['extra_income'][number] & { index: number })[];
   missingRates: number;
+  /** Paid documents with sealed amounts, left out of `result` by the server (the browser adds them after unlock). */
+  sealed?: { count: number; ids: string[] };
 }
 
 export type PeriodKind = 'month' | 'quarter' | 'year';
