@@ -8400,7 +8400,8 @@
             "loadError": "Non è stato possibile caricare i Suoi totali. Inserisca i numeri manualmente.",
             "regimeFlat": "Secondo le Impostazioni aderisce al regime forfettario.",
             "regimeRegular": "Secondo le Impostazioni non aderisce al regime forfettario.",
-            "secondary": "Secondo le Impostazioni si tratta di un’attività secondaria. Il calcolatore conteggia i contributi come per un’attività principale; per un’attività secondaria possono essere inferiori."
+            "secondary": "Secondo le Impostazioni si tratta di un’attività secondaria. Il calcolatore conteggia i contributi come per un’attività principale; per un’attività secondaria possono essere inferiori.",
+            "sealed": "Non abbiamo precompilato nulla: {count, plural, one {# documento ha} other {# documenti hanno}} importi cifrati che il server non può sommare. Inserisci entrate e spese a mano."
           }
         },
         "vat": {
@@ -14476,9 +14477,8 @@
         "loses": [
           "Abbinamento automatico dei pagamenti per importo: un pagamento con il VS di un documento cifrato attende la tua conferma manuale",
           "Pagamenti parziali: un documento cifrato può essere segnato solo come pagato per intero, senza commissioni né importo accreditato",
-          "Esportazioni per il commercialista, dichiarazioni e riepiloghi IVA dal server: rifiutano i documenti con importi cifrati e li elencano",
           "Invio tramite Peppol, suggerimenti dell’IA con importi e pagamento con carta",
-          "La dashboard, il reddito netto e i report contano solo i documenti non cifrati e indicano quanti ne hanno esclusi",
+          "Il reddito netto conta solo i documenti non cifrati e indica quanti ne ha esclusi. Il calcolatore dell’imposta forfettaria non precompila nulla",
           "Solleciti, riepilogo settimanale e totali scaduti nelle e-mail non riportano l’importo"
         ],
         "how": [
@@ -14489,6 +14489,8 @@
         ],
         "changes": [
           "PDF, ISDOC, UBL e pagamento QR li crea il tuo browser, e nel link per il cliente il browser del cliente",
+          "Le esportazioni per il commercialista (CSV, Pohoda, Money S3), le dichiarazioni IVA, la base per la dichiarazione dei redditi, il riepilogo annuale e i prospetti per ČSSZ e assicurazione sanitaria li crea il tuo browser dopo lo sblocco della cassaforte. Un documento che non si apre blocca il file",
+          "La dashboard e il report del periodo aggiungono i documenti cifrati mentre la cassaforte è sbloccata",
           "Le fatture ricorrenti copiano gli importi cifrati senza modificarli"
         ]
       },
@@ -14753,7 +14755,7 @@
       "title": "Cifra gli importi esistenti",
       "what": "Il browser carica i documenti i cui importi sono leggibili sul server, cifra quantità, prezzi, aliquote IVA, sconti e totali e li salva di nuovo. Sul server al loro posto restano degli zeri.",
       "keeps": "Numero del documento, VS, scadenza, valuta e stato restano leggibili, quindi trovi ancora i pagamenti tramite VS.",
-      "loses": "Il server non creerà più PDF, ISDOC né esportazioni per il commercialista per questi documenti e non li conterà nei report. Un documento pagato resta pagato.",
+      "loses": "Il server non creerà più PDF, ISDOC né esportazioni per questi documenti; li crea il tuo browser dopo lo sblocco della cassaforte. Il reddito netto non li conta. Un documento pagato resta pagato.",
       "resumable": "I documenti bloccati e quelli pagati in parte vengono saltati. Se chiudi la finestra, la prossima volta si riprende da dove ti eri fermato.",
       "cancel": "Indietro",
       "confirm": "Cifra",
@@ -14770,7 +14772,12 @@
       "exportUnreadable": "Nessun file creato: {count, plural, one {# documento non si può aprire} other {# documenti non si possono aprire}} con questa chiave. Un documento mancante renderebbe il file errato.",
       "creditNoteLocked": "La nota di credito di una fattura con importi cifrati si prepara dopo lo sblocco della cassaforte.",
       "creditNoteUnreadable": "Gli importi della fattura non si possono aprire con questa chiave, quindi la nota di credito non è stata creata.",
-      "bulkSealed": "Questo modello ha importi cifrati. Non serve per la fatturazione massiva, solo per una singola fattura."
+      "bulkSealed": "Questo modello ha importi cifrati. Non serve per la fatturazione massiva, solo per una singola fattura.",
+      "reportIncluded": "Include {count, plural, one {# documento} other {# documenti}} con importi cifrati, aperti da questo browser.",
+      "reportOpening": "Apertura degli importi cifrati…",
+      "reportUnreadable": "Nessun report: {count, plural, one {# documento non si può} other {# documenti non si possono}} aprire con questa chiave. Senza di loro le cifre risulterebbero più basse.",
+      "reportLocked": "Alcuni documenti dell’anno hanno importi cifrati. Il tuo browser calcola le cifre quando sblocchi la cassaforte.",
+      "unlock": "Sblocca la cassaforte"
     }
   },
   "vaultPublic": {

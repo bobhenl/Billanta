@@ -5,6 +5,8 @@ import {
   buildSealedAccountingXml,
   buildSealedFilingLines,
   buildSealedTaxReturn,
+  buildSealedYearIncome,
+  computeOsvcAnnualSummary,
   FILING_PERSON_PATTERNS,
   generateDpfdp,
   mergeSealedIncome,
@@ -187,6 +189,18 @@ describe('sealed annual income', () => {
 
   it('lists the envelopes to open', () => {
     expect(sealedIncomeEnvelopes(year())).toEqual([env(1), env(2), env(3)]);
+  });
+
+  it('gives the year summary the income the server reports for the same documents', () => {
+    const out = buildSealedYearIncome(year({ plainIncome: 100_000.004 }), opened);
+    expect(out.income).toBe(computeOsvcAnnualSummary({ year: 2025, income: 145_000.004, actualExpenses: 0, flatRate: null }).income);
+    expect(out.income).toBe(145_000);
+    expect(out.counts).toEqual({ invoices: 5, expenses: 1, missingRates: 1 });
+    expect(buildSealedYearIncome(year({ plainIncome: -60_000 }), opened).income).toBe(0);
+  });
+
+  it('gives the year summary no income while a sealed document stays shut', () => {
+    expect(buildSealedYearIncome(year(), new Map([[env(1), amounts(2_000)]]))).toMatchObject({ income: null, missing: 2 });
   });
 
   const filings = (): AnnualFilingsInputs =>

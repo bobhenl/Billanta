@@ -8,6 +8,9 @@ import { useLocale, useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
+import { FILING_PERSON_PATTERNS, FormNotPublishedError, generateCsszOsvc, generateDpfdp, type AnnualFilingsInputs, type VaultKey } from '@faktur/cz-compliance';
+import { useVault } from '@/components/vault/vault-provider';
+import { isAmountsSealedRefusal, saveText, sealedFilingLines } from '@/lib/vault/sealed-exports';
 
 interface Filings {
   year: number;
@@ -29,6 +32,44 @@ interface Filings {
   };
   forms: { dpfdp: string | null; cssz: boolean };
   insurers: { code: string; name: string }[];
+}
+
+/** With sealed amounts: the vault is locked, some documents stay shut, or they were all opened here. */
+type Sealed = { kind: 'locked' } | { kind: 'unreadable'; count: number } | { kind: 'opened'; count: number };
+
+/** The browser's lines in the shape the server's `GET /exports/annual-filings` gives. */
+async function openFilings(key: VaultKey, inputs: AnnualFilingsInputs) {
+  const out = await sealedFilingLines(key, inputs);
+  if (!out.lines) return { data: null, lines: null, missing: out.missing };
+  const data: Filings = {
+    year: inputs.figures.year,
+    basis: inputs.figures.basis,
+    vatPayer: inputs.vatPayer,
+    counts: out.counts,
+    ...out.lines,
+    forms: inputs.forms,
+    insurers: [...inputs.insurers]
+  };
+  return { data, lines: out.lines, missing: 0 };
+}
+
+/** The person data as the server's POST routes take it; null when a value has the wrong format. */
+function filingPerson(person: Record<string, string>) {
+  const out: { birthNumber?: string; taxOffice?: number; taxWorkplace?: number; dataBox?: string; variableSymbol?: string; ossz?: string } = {};
+  for (const [k, raw] of Object.entries(person)) {
+    const v = raw.trim();
+    if (!v) continue;
+    if (k === 'taxOffice' || k === 'taxWorkplace') {
+      const n = Number(v);
+      if (!Number.isInteger(n) || n < 1 || n > 9999) return null;
+      out[k] = n;
+      continue;
+    }
+    const pattern = FILING_PERSON_PATTERNS[k as keyof typeof FILING_PERSON_PATTERNS];
+    if (pattern && !pattern.test(v)) return null;
+    (out as Record<string, string>)[k] = v;
+  }
+  return out;
 }
 
 const EXPENSE_MODES = ['60', '80', '40', '30', 'actual'] as const;
@@ -127,6 +168,9 @@ export function AnnualFilings({ prefill, usage }: { prefill: AnnualFilingsPrefil
   const [data, setData] = useState<Filings | null | undefined>(undefined);
   const [busy, setBusy] = useState<'dpfdp' | 'osvc' | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [sealed, setSealed] = useState<Sealed | null>(null);
+  const { key: vaultKey, requestUnlock } = useVault();
+  const tSealed = useTranslations('vault.amounts');
   const years = Array.from({ length: 4 }, (_, i) => String(now.getFullYear() - i));
 
   const query: Record<string, string> = { year, expenses: mode, basis, activity };
@@ -138,21 +182,82 @@ export function AnnualFilings({ prefill, usage }: { prefill: AnnualFilingsPrefil
   useEffect(() => {
     let alive = true;
     const timer = setTimeout(() => {
-      fetch(`/api/files/exports/annual-filings?${qs}`)
-        .then((r) => (r.ok ? r.json() : null))
-        .then((json: Filings | null) => alive && setData(json))
-        .catch(() => alive && setData(null));
+      (async () => {
+        const res = await fetch(`/api/files/exports/annual-filings?${qs}`);
+        if (!(await isAmountsSealedRefusal(res))) {
+          const json = res.ok ? ((await res.json()) as Filings) : null;
+          if (alive) {
+            setSealed(null);
+            setData(json);
+          }
+          return;
+        }
+        // Sealed amounts (Důvěrný režim): this browser opens them and computes the same lines.
+        if (!vaultKey) {
+          if (alive) {
+            setSealed({ kind: 'locked' });
+            setData(undefined);
+          }
+          return;
+        }
+        const inputs = await fetch(`/api/files/exports/annual-filings-inputs?${qs}`);
+        if (!inputs.ok) throw new Error(String(inputs.status));
+        const body = (await inputs.json()) as AnnualFilingsInputs;
+        const out = await openFilings(vaultKey, body);
+        if (!alive) return;
+        setSealed(out.data ? { kind: 'opened', count: body.sealedDocs.length } : { kind: 'unreadable', count: out.missing });
+        setData(out.data ?? undefined);
+      })().catch(() => alive && setData(null));
     }, 250);
     return () => {
       alive = false;
       clearTimeout(timer);
     };
-  }, [qs]);
+  }, [qs, vaultKey]);
+
+  /** The file is written here from the opened lines; the inputs route counts it on the plan. */
+  async function downloadSealed(kind: 'dpfdp' | 'osvc') {
+    if (!vaultKey) return;
+    const filer = filingPerson(person);
+    if (!filer) {
+      setError(t('errors.invalid_filings_query'));
+      return;
+    }
+    const res = await fetch(`/api/files/exports/annual-filings-inputs?${qs}&file=${kind}`);
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      const plan = res.status === 403 ? planRequiredIn(text) : null;
+      if (plan) {
+        setError(tPlan('planRequired', { plan: tPlan(`plans.${plan}`) }));
+        return;
+      }
+      const code = ERROR_CODES.find((c) => text.includes(c));
+      setError(code ? t(`errors.${code}`) : t('errors.generic'));
+      return;
+    }
+    const inputs = (await res.json()) as AnnualFilingsInputs;
+    const { lines, missing } = await openFilings(vaultKey, inputs);
+    if (!lines) {
+      setError(tSealed('exportUnreadable', { count: missing }));
+      return;
+    }
+    const filerData = { submitter: inputs.submitter, ...filer };
+    try {
+      if (kind === 'dpfdp') saveText(`dpfdp-${lines.dpfo.year}.xml`, generateDpfdp(lines.dpfo, filerData), 'application/xml;charset=utf-8');
+      else saveText(`prehled-osvc-cssz-${lines.cssz.year}.xml`, generateCsszOsvc(lines.cssz, filerData), 'application/xml;charset=utf-8');
+    } catch (err) {
+      setError(err instanceof FormNotPublishedError ? t('errors.form_not_published') : t('errors.generic'));
+    }
+  }
 
   async function download(kind: 'dpfdp' | 'osvc') {
     setBusy(kind);
     setError(null);
     try {
+      if (sealed) {
+        await downloadSealed(kind);
+        return;
+      }
       const body: Record<string, unknown> = { ...query };
       for (const [k, v] of Object.entries(person)) if (v.trim()) body[k] = v.trim();
       const res = await fetch(`/api/files/exports/annual-filings/${kind}.xml`, {
@@ -282,6 +387,16 @@ export function AnnualFilings({ prefill, usage }: { prefill: AnnualFilingsPrefil
       </div>
 
       {data === null && <p className="mt-4 text-sm text-destructive">{t('failed')}</p>}
+      {sealed?.kind === 'locked' && (
+        <p className="mt-4 text-sm text-warning print:hidden">
+          {tSealed('reportLocked')}{' '}
+          <button type="button" onClick={() => void requestUnlock()} className="font-semibold text-primary hover:underline">
+            {tSealed('unlock')}
+          </button>
+        </p>
+      )}
+      {sealed?.kind === 'unreadable' && <p className="mt-4 text-sm text-destructive">{tSealed('reportUnreadable', { count: sealed.count })}</p>}
+      {sealed?.kind === 'opened' && data && <p className="mt-4 text-xs text-muted-foreground print:hidden">{tSealed('reportIncluded', { count: sealed.count })}</p>}
       {data && (
         <>
           <div className="mt-5 grid gap-4 text-sm md:grid-cols-2">

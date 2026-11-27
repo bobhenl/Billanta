@@ -8400,7 +8400,8 @@
             "loadError": "Je totalen konden niet worden geladen. Vul de bedragen zelf in.",
             "regimeFlat": "Volgens de instellingen zit je in het forfaitaire regime.",
             "regimeRegular": "Volgens de instellingen zit je niet in het forfaitaire regime.",
-            "secondary": "Volgens de instellingen is dit een nevenactiviteit. De calculator rekent de premies als voor een hoofdactiviteit; voor een nevenactiviteit kunnen ze lager zijn."
+            "secondary": "Volgens de instellingen is dit een nevenactiviteit. De calculator rekent de premies als voor een hoofdactiviteit; voor een nevenactiviteit kunnen ze lager zijn.",
+            "sealed": "Niets vooraf ingevuld: {count, plural, one {# document heeft} other {# documenten hebben}} versleutelde bedragen die de server niet kan optellen. Vul inkomsten en uitgaven zelf in."
           }
         },
         "vat": {
@@ -14476,9 +14477,8 @@
         "loses": [
           "Automatisch koppelen van betalingen op bedrag: een betaling met het VS van een versleuteld document wacht op je handmatige bevestiging",
           "Deelbetalingen: een versleuteld document kan alleen als volledig betaald worden gemarkeerd, zonder kosten en bijgeschreven bedrag",
-          "Exports voor de boekhouder, aangiften en btw-overzichten van de server: ze weigeren documenten met versleutelde bedragen en noemen ze",
           "Verzenden via Peppol, AI-suggesties met bedragen en kaartbetaling",
-          "Het dashboard, het netto-inkomen en de rapporten tellen alleen onversleutelde documenten en melden hoeveel ze hebben overgeslagen",
+          "Het netto-inkomen telt alleen niet-versleutelde documenten en meldt hoeveel het heeft weggelaten. De rekenhulp voor de forfaitaire belasting vult dan niets in",
           "Herinneringen, het weekoverzicht en achterstallige totalen in e-mails noemen geen bedrag"
         ],
         "how": [
@@ -14489,6 +14489,8 @@
         ],
         "changes": [
           "PDF, ISDOC, UBL en de QR-betaling maakt je browser, en via de klantlink de browser van de klant",
+          "Exports voor de boekhouder (CSV, Pohoda, Money S3), btw-aangiften, de basis voor de belastingaangifte, het jaaroverzicht en de overzichten voor ČSSZ en de zorgverzekeraar maakt uw browser zodra u de kluis ontgrendelt. Een document dat niet open gaat, houdt het bestand tegen",
+          "Het dashboard en het periodeoverzicht tellen de versleutelde documenten mee zolang de kluis ontgrendeld is",
           "Terugkerende facturen kopiëren de versleutelde bedragen ongewijzigd"
         ]
       },
@@ -14753,7 +14755,7 @@
       "title": "Bestaande bedragen versleutelen",
       "what": "De browser laadt de documenten waarvan de bedragen op de server leesbaar zijn, versleutelt aantallen, prijzen, btw-tarieven, kortingen en totalen en slaat ze weer op. Op de server blijven er nullen voor in de plaats.",
       "keeps": "Documentnummer, VS, vervaldatum, valuta en status blijven leesbaar, dus betalingen vind je nog steeds op VS.",
-      "loses": "De server maakt voor deze documenten dan geen PDF, ISDOC of boekhoudexports meer en telt ze niet mee in rapporten. Een betaald document blijft betaald.",
+      "loses": "De server maakt voor deze documenten dan geen pdf, ISDOC of exports meer; uw browser maakt ze na het ontgrendelen van de kluis. Het netto-inkomen laat ze weg. Een betaald document blijft betaald.",
       "resumable": "Vergrendelde en deels betaalde documenten worden overgeslagen. Sluit je het venster, dan gaat het de volgende keer verder waar je was gebleven.",
       "cancel": "Terug",
       "confirm": "Versleutelen",
@@ -14770,7 +14772,12 @@
       "exportUnreadable": "Geen bestand gemaakt: {count, plural, one {# document kan} other {# documenten kunnen}} niet met deze sleutel worden geopend. Een ontbrekend document zou het bestand onjuist maken.",
       "creditNoteLocked": "Een creditnota voor een factuur met versleutelde bedragen wordt gemaakt nadat de kluis is ontgrendeld.",
       "creditNoteUnreadable": "De bedragen van de factuur kunnen niet met deze sleutel worden geopend, dus er is geen creditnota gemaakt.",
-      "bulkSealed": "Deze sjabloon heeft versleutelde bedragen. Hij is niet bruikbaar voor bulkfacturatie, alleen voor één factuur."
+      "bulkSealed": "Deze sjabloon heeft versleutelde bedragen. Hij is niet bruikbaar voor bulkfacturatie, alleen voor één factuur.",
+      "reportIncluded": "Inclusief {count, plural, one {# document} other {# documenten}} met versleutelde bedragen, geopend door deze browser.",
+      "reportOpening": "Versleutelde bedragen openen…",
+      "reportUnreadable": "Geen overzicht: {count, plural, one {# document kan} other {# documenten kunnen}} niet met deze sleutel worden geopend. Zonder die documenten zouden de cijfers te laag uitvallen.",
+      "reportLocked": "Sommige documenten van het jaar hebben versleutelde bedragen. Uw browser berekent de cijfers zodra u de kluis ontgrendelt.",
+      "unlock": "Kluis ontgrendelen"
     }
   },
   "vaultPublic": {

@@ -79,6 +79,20 @@ export function mergeSealedIncome(
   return { income, counts: { ...inputs.counts, invoices, missingRates }, missing };
 }
 
+/**
+ * The year summary's income (roční přehled) with the sealed documents
+ * opened, never below 0 and to the haléř as the server's summary gives it;
+ * `income` is null while any document is missing.
+ */
+export function buildSealedYearIncome(
+  inputs: YearIncomeInputs,
+  opened: ReadonlyMap<string, DocumentAmounts>,
+): { income: number | null; counts: YearIncomeInputs['counts']; missing: number } {
+  const merged = mergeSealedIncome(inputs, opened);
+  if (merged.missing > 0) return { income: null, counts: merged.counts, missing: merged.missing };
+  return { income: Math.round(Math.max(0, merged.income) * 100) / 100, counts: merged.counts, missing: 0 };
+}
+
 /** The tax-return basis apart from the income (`GET /exports/tax-return-basis-inputs`). */
 export interface TaxReturnInputs extends YearIncomeInputs {
   country: TaxReturnCountry;

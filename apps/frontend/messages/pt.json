@@ -8400,7 +8400,8 @@
             "loadError": "Não foi possível carregar os seus totais. Introduza os números manualmente.",
             "regimeFlat": "Segundo as Definições, está no regime forfetário.",
             "regimeRegular": "Segundo as Definições, não está no regime forfetário.",
-            "secondary": "Segundo as Definições, trata-se de uma atividade secundária. A calculadora considera as contribuições como para uma atividade principal; numa atividade secundária podem ser mais baixas."
+            "secondary": "Segundo as Definições, trata-se de uma atividade secundária. A calculadora considera as contribuições como para uma atividade principal; numa atividade secundária podem ser mais baixas.",
+            "sealed": "Nada foi preenchido: {count, plural, one {# documento tem} other {# documentos têm}} valores cifrados que o servidor não consegue somar. Introduza receitas e despesas à mão."
           }
         },
         "vat": {
@@ -14476,9 +14477,8 @@
         "loses": [
           "Correspondência automática de pagamentos por valor: um pagamento com o VS de um documento cifrado aguarda a sua confirmação manual",
           "Pagamentos parciais: um documento cifrado só pode ser marcado como pago na totalidade, sem comissões nem valor creditado",
-          "Exportações para o contabilista, declarações e relatórios de IVA do servidor: recusam documentos com valores cifrados e listam-nos",
           "Envio via Peppol, sugestões de IA com valores e pagamento com cartão",
-          "O painel, o rendimento líquido e os relatórios contam apenas documentos não cifrados e indicam quantos deixaram de fora",
+          "O rendimento líquido conta só os documentos não cifrados e indica quantos deixou de fora. A calculadora do imposto forfetário não preenche nada",
           "Os lembretes, o resumo semanal e os totais em atraso nos e-mails não indicam o valor"
         ],
         "how": [
@@ -14489,6 +14489,8 @@
         ],
         "changes": [
           "O PDF, ISDOC, UBL e o pagamento QR são criados pelo seu navegador e, na ligação do cliente, pelo navegador do cliente",
+          "As exportações para o contabilista (CSV, Pohoda, Money S3), as declarações de IVA, a base da declaração de rendimentos, o resumo anual e os resumos para a ČSSZ e o seguro de saúde são criados pelo seu navegador depois de desbloquear o cofre. Um documento que não abre trava o ficheiro",
+          "O painel e o relatório do período somam os documentos cifrados enquanto o cofre está desbloqueado",
           "As faturas recorrentes copiam os valores cifrados sem alterações"
         ]
       },
@@ -14753,7 +14755,7 @@
       "title": "Cifrar valores existentes",
       "what": "O navegador carrega os documentos cujos valores são legíveis no servidor, cifra quantidades, preços, taxas de IVA, descontos e totais e volta a guardá-los. No servidor ficam zeros no seu lugar.",
       "keeps": "O número do documento, o VS, o vencimento, a moeda e o estado continuam legíveis, por isso continua a encontrar os pagamentos pelo VS.",
-      "loses": "O servidor deixa de criar PDF, ISDOC ou exportações para o contabilista destes documentos e não os conta nos relatórios. Um documento pago continua pago.",
+      "loses": "O servidor deixa de criar PDF, ISDOC e exportações para estes documentos; o seu navegador cria-os depois de desbloquear o cofre. O rendimento líquido não os conta. Um documento pago continua pago.",
       "resumable": "Os documentos bloqueados e os parcialmente pagos são ignorados. Se fechar a janela, da próxima vez continua onde parou.",
       "cancel": "Voltar",
       "confirm": "Cifrar",
@@ -14770,7 +14772,12 @@
       "exportUnreadable": "Nenhum ficheiro criado: {count, plural, one {# documento não pode ser aberto} other {# documentos não podem ser abertos}} com esta chave. Um documento em falta tornaria o ficheiro incorreto.",
       "creditNoteLocked": "A nota de crédito de uma fatura com valores cifrados é preparada depois de desbloquear o cofre.",
       "creditNoteUnreadable": "Os valores da fatura não podem ser abertos com esta chave, por isso a nota de crédito não foi criada.",
-      "bulkSealed": "Este modelo tem valores cifrados. Não serve para faturação em massa, apenas para uma fatura individual."
+      "bulkSealed": "Este modelo tem valores cifrados. Não serve para faturação em massa, apenas para uma fatura individual.",
+      "reportIncluded": "Inclui {count, plural, one {# documento} other {# documentos}} com valores cifrados, abertos por este navegador.",
+      "reportOpening": "A abrir os valores cifrados…",
+      "reportUnreadable": "Sem relatório: {count, plural, one {# documento não pode} other {# documentos não podem}} ser aberto(s) com esta chave. Sem eles os valores ficariam mais baixos.",
+      "reportLocked": "Alguns documentos do ano têm valores cifrados. O seu navegador calcula os valores quando desbloquear o cofre.",
+      "unlock": "Desbloquear o cofre"
     }
   },
   "vaultPublic": {

@@ -20,6 +20,8 @@ interface AnnualSums {
   year: number;
   income: number;
   actualExpenses: number;
+  /** Documents with sealed amounts, left out of `income`. */
+  sealed?: { count: number };
 }
 
 /**
@@ -57,7 +59,9 @@ export default async function InAppFlatTaxPage() {
     }
   }
 
-  const prefill: FlatTaxPrefill | undefined = sums
+  // An income short of the sealed documents would tilt the comparison, so with any of them the page prefills nothing.
+  const sealedCount = sums?.sealed?.count ?? 0;
+  const prefill: FlatTaxPrefill | undefined = sums && sealedCount === 0
     ? { year: sums.year, income: sums.income, actualExpenses: sums.actualExpenses, vatPayer: vatStatusOf(tenant) === 'payer' }
     : undefined;
   const czk = (n: number) => format.number(Math.round(n), { style: 'currency', currency: 'CZK', maximumFractionDigits: 0 });
@@ -76,7 +80,9 @@ export default async function InAppFlatTaxPage() {
       </div>
       <div className="mb-6 space-y-2">
         {notOsvc && <Banner tone="info">{t('notOsvc')}</Banner>}
-        {prefill ? (
+        {sealedCount > 0 ? (
+          <Banner tone="info">{t('sealed', { count: sealedCount })}</Banner>
+        ) : prefill ? (
           <Banner tone="info">{t('prefilled', { year: prefill.year, income: czk(prefill.income), expenses: czk(prefill.actualExpenses) })}</Banner>
         ) : (
           <Banner tone="warn">{t('loadError')}</Banner>

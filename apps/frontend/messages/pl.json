@@ -8401,7 +8401,8 @@
             "loadError": "Nie udało się wczytać Twoich sum. Wpisz liczby ręcznie.",
             "regimeFlat": "Według Ustawień rozliczasz się ryczałtem.",
             "regimeRegular": "Według Ustawień nie rozliczasz się ryczałtem.",
-            "secondary": "Według Ustawień to działalność dodatkowa. Kalkulator liczy składki jak dla działalności głównej; dla dodatkowej mogą być niższe."
+            "secondary": "Według Ustawień to działalność dodatkowa. Kalkulator liczy składki jak dla działalności głównej; dla dodatkowej mogą być niższe.",
+            "sealed": "Nic nie zostało wypełnione: {count, plural, one {# dokument ma} few {# dokumenty mają} many {# dokumentów ma} other {# dokumentu ma}} zaszyfrowane kwoty, których serwer nie zsumuje. Wpisz przychody i wydatki ręcznie."
           }
         },
         "vat": {
@@ -14477,9 +14478,8 @@
         "loses": [
           "Automatyczne dopasowanie płatności według kwoty: płatność z VS zaszyfrowanego dokumentu czeka na Twoje ręczne potwierdzenie",
           "Płatności częściowe: zaszyfrowany dokument można oznaczyć tylko jako opłacony w całości, bez opłat i zaksięgowanej kwoty",
-          "Eksporty dla księgowego, zeznania i zestawienia VAT z serwera: odrzucają dokumenty z zaszyfrowanymi kwotami i je wypisują",
           "Wysyłka przez Peppol, sugestie AI z kwotami i płatność kartą",
-          "Pulpit, dochód netto i raporty liczą tylko niezaszyfrowane dokumenty i podają, ile pominęły",
+          "Dochód netto liczy tylko niezaszyfrowane dokumenty i podaje, ile pominął. Kalkulator podatku ryczałtowego niczego wtedy nie wypełnia",
           "Przypomnienia, cotygodniowe podsumowanie i sumy zaległości w e-mailach nie podają kwoty"
         ],
         "how": [
@@ -14490,6 +14490,8 @@
         ],
         "changes": [
           "PDF, ISDOC, UBL i płatność QR tworzy Twoja przeglądarka, a w linku dla klienta przeglądarka klienta",
+          "Eksporty dla księgowego (CSV, Pohoda, Money S3), deklaracje VAT, podstawę zeznania podatkowego, podsumowanie roku i zestawienia dla ČSSZ i ubezpieczyciela zdrowotnego tworzy Twoja przeglądarka po odblokowaniu sejfu. Dokument, którego nie da się otworzyć, zatrzymuje plik",
+          "Pulpit i raport okresu doliczają zaszyfrowane dokumenty, gdy sejf jest odblokowany",
           "Faktury cykliczne kopiują zaszyfrowane kwoty bez zmian"
         ]
       },
@@ -14754,7 +14756,7 @@
       "title": "Zaszyfruj istniejące kwoty",
       "what": "Przeglądarka wczyta dokumenty, których kwoty są czytelne na serwerze, zaszyfruje ilości, ceny, stawki VAT, rabaty i sumy i zapisze je z powrotem. Na serwerze zostaną w ich miejscu zera.",
       "keeps": "Numer dokumentu, VS, termin płatności, waluta i status pozostaną czytelne, więc płatności według VS nadal znajdziesz.",
-      "loses": "Serwer nie utworzy wtedy dla tych dokumentów PDF, ISDOC ani eksportów dla księgowego i nie uwzględni ich w raportach. Opłacony dokument pozostanie opłacony.",
+      "loses": "Serwer nie utworzy wtedy dla tych dokumentów PDF, ISDOC ani eksportów; utworzy je Twoja przeglądarka po odblokowaniu sejfu. Dochód netto ich nie uwzględnia. Opłacony dokument pozostaje opłacony.",
       "resumable": "Zablokowane i częściowo opłacone dokumenty zostaną pominięte. Jeśli zamkniesz okno, następnym razem praca będzie kontynuowana od miejsca, w którym skończyłeś.",
       "cancel": "Wróć",
       "confirm": "Zaszyfruj",
@@ -14771,7 +14773,12 @@
       "exportUnreadable": "Plik nie powstał: {count, plural, one {# dokumentu} few {# dokumentów} many {# dokumentów} other {# dokumentu}} nie da się otworzyć tym kluczem. Brakujący dokument zafałszowałby plik.",
       "creditNoteLocked": "Faktura korygująca do faktury z zaszyfrowanymi kwotami powstanie dopiero po odblokowaniu sejfu.",
       "creditNoteUnreadable": "Kwot faktury nie da się otworzyć tym kluczem, więc korekta nie powstała.",
-      "bulkSealed": "Ten szablon ma zaszyfrowane kwoty. Nie nadaje się do fakturowania zbiorczego, tylko do pojedynczej faktury."
+      "bulkSealed": "Ten szablon ma zaszyfrowane kwoty. Nie nadaje się do fakturowania zbiorczego, tylko do pojedynczej faktury.",
+      "reportIncluded": "Uwzględnia {count, plural, one {# dokument} few {# dokumenty} many {# dokumentów} other {# dokumentu}} z zaszyfrowanymi kwotami, otwarte przez tę przeglądarkę.",
+      "reportOpening": "Otwieranie zaszyfrowanych kwot…",
+      "reportUnreadable": "Brak zestawienia: {count, plural, one {# dokumentu} few {# dokumentów} many {# dokumentów} other {# dokumentu}} nie da się otworzyć tym kluczem. Bez nich liczby wyszłyby za niskie.",
+      "reportLocked": "Niektóre dokumenty z tego roku mają zaszyfrowane kwoty. Przeglądarka policzy liczby, gdy odblokujesz sejf.",
+      "unlock": "Odblokuj sejf"
     }
   },
   "vaultPublic": {

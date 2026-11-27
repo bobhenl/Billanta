@@ -8401,7 +8401,8 @@
             "loadError": "Ihre Summen konnten nicht geladen werden. Geben Sie die Zahlen manuell ein.",
             "regimeFlat": "Laut Einstellungen sind Sie in der Pauschalsteuer.",
             "regimeRegular": "Laut Einstellungen sind Sie nicht in der Pauschalsteuer.",
-            "secondary": "Laut Einstellungen handelt es sich um eine Nebentätigkeit. Der Rechner berechnet die Versicherung wie für eine Haupttätigkeit; bei einer Nebentätigkeit kann sie niedriger sein."
+            "secondary": "Laut Einstellungen handelt es sich um eine Nebentätigkeit. Der Rechner berechnet die Versicherung wie für eine Haupttätigkeit; bei einer Nebentätigkeit kann sie niedriger sein.",
+            "sealed": "Nichts vorausgefüllt: {count, plural, one {# Beleg hat} other {# Belege haben}} verschlüsselte Beträge, die der Server nicht addieren kann. Geben Sie Einnahmen und Ausgaben von Hand ein."
           }
         },
         "vat": {
@@ -14477,9 +14478,8 @@
         "loses": [
           "Automatische Zahlungszuordnung nach Betrag: Eine Zahlung mit dem VS eines verschlüsselten Belegs wartet auf Ihre manuelle Bestätigung",
           "Teilzahlungen: Ein verschlüsselter Beleg kann nur als vollständig bezahlt markiert werden, ohne Gebühren und gutgeschriebenen Betrag",
-          "Exporte für die Buchhaltung, Steuererklärungen und MwSt.-Übersichten vom Server: Belege mit verschlüsselten Beträgen werden abgelehnt und aufgelistet",
           "Versand über Peppol, KI-Vorschläge mit Beträgen und Kartenzahlung",
-          "Dashboard, Nettoeinkommen und Berichte zählen nur unverschlüsselte Belege und zeigen, wie viele ausgelassen wurden",
+          "Das Nettoeinkommen zählt nur unverschlüsselte Belege und nennt, wie viele es ausgelassen hat. Der Pauschalsteuer-Rechner füllt dann nichts vor",
           "Mahnungen, die Wochenübersicht und überfällige Summen in E-Mails nennen keinen Betrag"
         ],
         "how": [
@@ -14490,6 +14490,8 @@
         ],
         "changes": [
           "PDF, ISDOC, UBL und die QR-Zahlung erstellt Ihr Browser, beim Kundenlink der Browser des Kunden",
+          "Exporte für die Buchhaltung (CSV, Pohoda, Money S3), Umsatzsteuermeldungen, die Grundlage für die Steuererklärung, die Jahresübersicht, die Einkommensteuererklärung und die Übersichten für ČSSZ und Krankenkasse erstellt Ihr Browser, sobald Sie den Tresor entsperren. Ein Beleg, der sich nicht öffnen lässt, stoppt die Datei",
+          "Dashboard und Periodenbericht rechnen die verschlüsselten Belege mit ein, solange der Tresor entsperrt ist",
           "Wiederkehrende Rechnungen kopieren die verschlüsselten Beträge unverändert"
         ]
       },
@@ -14754,7 +14756,7 @@
       "title": "Vorhandene Beträge verschlüsseln",
       "what": "Der Browser lädt die Belege, deren Beträge auf dem Server lesbar sind, verschlüsselt Mengen, Preise, MwSt.-Sätze, Rabatte und Summen und speichert sie zurück. Auf dem Server bleiben an ihrer Stelle Nullen.",
       "keeps": "Belegnummer, VS, Fälligkeit, Währung und Status bleiben lesbar, Zahlungen finden Sie also weiterhin über den VS.",
-      "loses": "Der Server erstellt für diese Belege dann weder PDF noch ISDOC noch Buchhaltungsexporte und zählt sie nicht in Berichten. Ein bezahlter Beleg bleibt bezahlt.",
+      "loses": "Der Server erstellt für diese Belege dann keine PDFs, kein ISDOC und keine Exporte; Ihr Browser erstellt sie nach dem Entsperren des Tresors. Das Nettoeinkommen lässt sie aus. Ein bezahlter Beleg bleibt bezahlt.",
       "resumable": "Gesperrte und teilweise bezahlte Belege werden übersprungen. Wenn Sie das Fenster schließen, geht es beim nächsten Mal dort weiter, wo Sie aufgehört haben.",
       "cancel": "Zurück",
       "confirm": "Verschlüsseln",
@@ -14771,7 +14773,12 @@
       "exportUnreadable": "Keine Datei erstellt: {count, plural, one {# Beleg lässt} other {# Belege lassen}} sich mit diesem Schlüssel nicht öffnen. Ein fehlender Beleg würde die Datei verfälschen.",
       "creditNoteLocked": "Eine Gutschrift zu einer Rechnung mit verschlüsselten Beträgen wird erst nach dem Entsperren des Tresors erstellt.",
       "creditNoteUnreadable": "Die Beträge der Rechnung lassen sich mit diesem Schlüssel nicht öffnen, daher wurde keine Gutschrift erstellt.",
-      "bulkSealed": "Diese Vorlage hat verschlüsselte Beträge. Sie eignet sich nicht für Sammelrechnungen, nur für eine einzelne Rechnung."
+      "bulkSealed": "Diese Vorlage hat verschlüsselte Beträge. Sie eignet sich nicht für Sammelrechnungen, nur für eine einzelne Rechnung.",
+      "reportIncluded": "Einschließlich {count, plural, one {# Beleg} other {# Belege}} mit verschlüsselten Beträgen, die dieser Browser geöffnet hat.",
+      "reportOpening": "Verschlüsselte Beträge werden geöffnet…",
+      "reportUnreadable": "Keine Auswertung: {count, plural, one {# Beleg lässt} other {# Belege lassen}} sich mit diesem Schlüssel nicht öffnen. Ohne sie wären die Zahlen zu niedrig.",
+      "reportLocked": "Einige Belege des Jahres haben verschlüsselte Beträge. Ihr Browser berechnet die Zahlen, sobald Sie den Tresor entsperren.",
+      "unlock": "Tresor entsperren"
     }
   },
   "vaultPublic": {

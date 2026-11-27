@@ -8,7 +8,8 @@ import { FeatureBadge } from '@/components/plan-lock';
 import { DecryptedExport } from '@/components/vault/decrypted-export';
 import { useVault } from '@/components/vault/vault-provider';
 import { toast } from '@/components/toaster';
-import { isAmountsSealedRefusal, saveText, sealedInvoicesCsv } from '@/lib/vault/sealed-exports';
+import { isAmountsSealedRefusal, saveText, sealedAccountingXml, sealedInvoicesCsv } from '@/lib/vault/sealed-exports';
+import type { VaultKey } from '@faktur/cz-compliance';
 import type { FeatureUsage } from '@/lib/usage';
 import { inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
@@ -55,6 +56,17 @@ const FILES = [
   { key: 'moneyS3', path: 'money-s3.xml', icon: FileCode2, gated: true }
 ] as const;
 
+/** A file the browser builds itself when the server refuses it over sealed amounts. */
+interface SealedFile {
+  /** The server's file-name stem. */
+  fallback: string;
+  ext: string;
+  type: string;
+  /** The inputs route with the start of its query. */
+  inputs: string;
+  build: (key: VaultKey, inputs: any) => Promise<{ body: string | null; missing: number }>;
+}
+
 /** `accounting` is the Pohoda/Money S3 plan access; CSV is on every plan. */
 export function ExportPicker({ home = 'CZK', accounting }: { home?: string; accounting?: FeatureUsage | null }) {
   const t = useTranslations('settings.exports');
@@ -73,19 +85,25 @@ export function ExportPicker({ home = 'CZK', accounting }: { home?: string; acco
   const { key: vaultKey, requestUnlock } = useVault();
 
   /**
-   * The invoice CSV is fetched rather than linked: with sealed amounts the
-   * server refuses it and this browser builds it from the server's rows
-   * plus the totals it opens.
+   * The invoice CSV and the accountant's XML are fetched rather than
+   * linked: with sealed amounts the server refuses them and this browser
+   * builds them from the server's rows plus the amounts it opens.
    */
-  async function downloadInvoices(event: React.MouseEvent<HTMLAnchorElement>) {
+  const SEALED: Partial<Record<(typeof FILES)[number]['key'], SealedFile>> = {
+    invoices: { fallback: 'faktury', ext: 'csv', type: 'text/csv;charset=utf-8', inputs: 'invoices-csv-inputs?', build: sealedInvoicesCsv },
+    pohoda: { fallback: 'pohoda', ext: 'xml', type: 'application/xml;charset=utf-8', inputs: 'accounting-inputs?format=pohoda&', build: sealedAccountingXml },
+    moneyS3: { fallback: 'money-s3', ext: 'xml', type: 'application/xml;charset=utf-8', inputs: 'accounting-inputs?format=money-s3&', build: sealedAccountingXml }
+  };
+
+  async function download(event: React.MouseEvent<HTMLAnchorElement>, path: string, file: SealedFile) {
     if (!query) return;
     event.preventDefault();
     try {
-      const res = await fetch(`/api/files/exports/invoices.csv?${query}`);
+      const res = await fetch(`/api/files/exports/${path}?${query}`);
       if (!(await isAmountsSealedRefusal(res))) {
         if (!res.ok) throw new Error(String(res.status));
-        const name = /filename="([^"]+)"/.exec(res.headers.get('content-disposition') ?? '')?.[1] ?? 'faktury.csv';
-        saveText(name, await res.blob(), 'text/csv;charset=utf-8');
+        const name = /filename="([^"]+)"/.exec(res.headers.get('content-disposition') ?? '')?.[1] ?? `${file.fallback}.${file.ext}`;
+        saveText(name, await res.blob(), file.type);
         return;
       }
       const k = vaultKey ?? (await requestUnlock());
@@ -93,14 +111,14 @@ export function ExportPicker({ home = 'CZK', accounting }: { home?: string; acco
         toast({ text: tSealed('exportLocked'), tone: 'info' });
         return;
       }
-      const inputs = await fetch(`/api/files/exports/invoices-csv-inputs?${query}`);
+      const inputs = await fetch(`/api/files/exports/${file.inputs}${query}`);
       if (!inputs.ok) throw new Error(String(inputs.status));
-      const out = await sealedInvoicesCsv(k, await inputs.json());
+      const out = await file.build(k, await inputs.json());
       if (out.body == null) {
         toast({ text: tSealed('exportUnreadable', { count: out.missing }), tone: 'err' });
         return;
       }
-      saveText(`faktury-${periodLabel(query)}.csv`, out.body, 'text/csv;charset=utf-8');
+      saveText(`${file.fallback}-${periodLabel(query)}.${file.ext}`, out.body, file.type);
     } catch {
       toast({ text: t('vat.failed'), tone: 'err' });
     }
@@ -158,7 +176,7 @@ export function ExportPicker({ home = 'CZK', accounting }: { home?: string; acco
           <a
             key={key}
             href={open ? `/api/files/exports/${path}?${query}` : undefined}
-            onClick={key === 'invoices' ? downloadInvoices : undefined}
+            onClick={SEALED[key] ? (event) => download(event, path, SEALED[key]!) : undefined}
             download
             aria-disabled={!open}
             className={cn(
