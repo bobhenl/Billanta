@@ -14410,7 +14410,7 @@
       "progress": "Encrypting… {n}",
       "lead": "Encrypt – only you and members with the key will see the content, the server cannot read it.",
       "what": "Line descriptions and notes (above items, below items and internal) are encrypted.",
-      "keeps": "Reports and dashboards keep working: amounts, dates and variable symbols stay unencrypted.",
+      "keeps": "Reports and dashboards keep working. This button does not encrypt amounts, dates or variable symbols; amounts have their own Amounts category.",
       "loses": "For encrypted documents only your browser creates the PDF, ISDOC and UBL. The server attaches them to an email only when the file from your browser passes through it once, and it does not store it. Text search runs only in your browser after unlock.",
       "locked": "Locked documents are skipped.",
       "done": "{n, plural, one {# document encrypted} other {# documents encrypted}}.",
@@ -14659,7 +14659,7 @@
       "skippedLocked": "{n, plural, one {# locked document is missing from the export.} other {# locked documents are missing from the export.}}",
       "unreadable": "[Cannot decrypt]",
       "unreadableCount": "{n, plural, one {# text could not be decrypted.} other {# texts could not be decrypted.}}",
-      "accountingNote": "The accountant exports above (CSV, Pohoda, Money S3) are built by the server, so they show “[Důvěrný obsah]” in place of encrypted texts. Amounts, VAT, dates and customers in them are complete.",
+      "accountingNote": "If you encrypt amounts or contacts, your browser builds these exports after you unlock, and the data in them is complete. Otherwise the server builds them and they show “[Důvěrný obsah]” in place of encrypted texts.",
       "columns": {
         "documentType": "Document type",
         "invoiceNumber": "Number",
@@ -14956,7 +14956,7 @@
     "limits": [
       "Sending via Peppol: the law requires the sent XML to stay archived on the server in readable form.",
       "Card payments, partial payments and AI suggestions with amounts, for documents with encrypted amounts.",
-      "Some exports the server builds (for example Pohoda and Money S3): they leave out encrypted data and refuse documents with encrypted amounts.",
+      "Exports the server builds without your browser, such as the automatic backup or sending files to your accountant over SFTP: encrypted data stays encrypted in them. Pohoda, Money S3, CSV and filings are built by your browser after you unlock.",
       "AI gets an encrypted text or receipt only after you confirm it explicitly. It passes through the server once and is not stored.",
       "Our server delivers the app code. If it were compromised, it could deliver different code. Publishing the code and the hashes makes such a change detectable, but does not prevent it by itself.",
       "When you e-mail an encrypted document with its PDF, the file passes through the server once, because that is where e-mail is sent from. The app tells you first, and the server does not store or log it. If you send only the link, the server never gets the encrypted data.",

@@ -14314,7 +14314,7 @@
       "progress": "Šifrujem… {n}",
       "lead": "Zašifrovať – obsah uvidíte len vy a členovia s kľúčom, server ho neprečíta.",
       "what": "Šifrujú sa popisy položiek a poznámky (nad položkami, pod položkami a interné).",
-      "keeps": "Prehľady a dashboardy fungujú ďalej: sumy, dátumy a variabilné symboly zostávajú nezašifrované.",
+      "keeps": "Prehľady a dashboardy fungujú ďalej. Sumy, dátumy a variabilné symboly sa týmto tlačidlom nešifrujú, sumy má na starosti samostatná kategória Sumy.",
       "loses": "Pri zašifrovaných dokladoch vytvorí PDF, ISDOC a UBL len váš prehliadač. K e-mailu ich server priloží, len keď súbor z prehliadača raz prejde serverom, a neuloží ho. Hľadanie podľa textu prebehne len vo vašom prehliadači po odomknutí.",
       "locked": "Uzamknuté doklady sa preskočia.",
       "done": "{n, plural, one {Zašifrovaný # doklad} few {Zašifrované # doklady} other {Zašifrovaných # dokladov}}.",
@@ -14563,7 +14563,7 @@
       "skippedLocked": "{n, plural, one {# uzamknutý doklad v exporte chýba.} few {# uzamknuté doklady v exporte chýbajú.} other {# uzamknutých dokladov v exporte chýba.}}",
       "unreadable": "[Nedá sa dešifrovať]",
       "unreadableCount": "{n, plural, one {# text sa nepodarilo dešifrovať.} few {# texty sa nepodarilo dešifrovať.} other {# textov sa nepodarilo dešifrovať.}}",
-      "accountingNote": "Exporty pre účtovníka vyššie (CSV, Pohoda, Money S3) vytvára server, preto majú namiesto zašifrovaných textov „[Důvěrný obsah]“. Sumy, DPH, dátumy a odberatelia v nich sú úplné.",
+      "accountingNote": "Ak máte zapnuté šifrovanie súm alebo kontaktov, tieto exporty zostaví po odomknutí váš prehliadač a údaje v nich sú úplné. Inak ich vytvára server a namiesto zašifrovaných textov majú „[Důvěrný obsah]“.",
       "columns": {
         "documentType": "Typ dokladu",
         "invoiceNumber": "Číslo",
@@ -14860,7 +14860,7 @@
     "limits": [
       "Odoslanie cez Peppol: zákon vyžaduje, aby odoslané XML zostalo čitateľne archivované na serveri.",
       "Platba kartou, čiastočné úhrady a návrhy AI so sumami pri dokladoch so zašifrovanými sumami.",
-      "Niektoré exporty, ktoré zostavuje server (napríklad Pohoda a Money S3): zašifrované údaje v nich nie sú a doklady so zašifrovanými sumami odmietnu.",
+      "Exporty, ktoré vytvára server bez vášho prehliadača, napríklad automatická záloha alebo odoslanie účtovníčke cez SFTP: zašifrované údaje v nich zostanú zašifrované. Pohodu, Money S3, CSV a podania zostaví po odomknutí váš prehliadač.",
       "AI dostane zašifrovaný text alebo bloček len po vašom výslovnom potvrdení. Raz prejde serverom a neuloží sa.",
       "Kód aplikácie posiela náš server. Keby bol napadnutý, mohol by poslať iný kód. Zverejnenie kódu a odtlačkov umožňuje takú zmenu odhaliť, ale samo jej nezabráni.",
       "Keď zašifrovaný doklad pošlete e-mailom s PDF, súbor raz prejde serverom, pretože e-mail odchádza odtiaľ. Aplikácia to povie vopred a server ho neuloží ani nezapíše do logu. Keď pošlete len odkaz, server zašifrované údaje nedostane vôbec.",

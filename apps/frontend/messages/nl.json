@@ -14405,7 +14405,7 @@
       "progress": "Versleutelen… {n}",
       "lead": "Versleutelen – alleen jij en leden met de sleutel zien de inhoud, de server kan hem niet lezen.",
       "what": "Regelomschrijvingen en notities (boven, onder de regels en intern) worden versleuteld.",
-      "keeps": "Rapporten en dashboards blijven werken: bedragen, datums en betalingskenmerken blijven onversleuteld.",
+      "keeps": "Overzichten en dashboards blijven werken. Deze knop versleutelt geen bedragen, datums of variabele symbolen; bedragen hebben een eigen categorie Bedragen.",
       "loses": "Voor versleutelde documenten maakt alleen je browser de pdf, ISDOC en UBL. De server voegt ze alleen aan een e-mail toe als het bestand uit je browser er één keer doorheen gaat, en bewaart het niet. Zoeken op tekst gebeurt na ontgrendelen alleen in je browser.",
       "locked": "Vergrendelde documenten worden overgeslagen.",
       "done": "{n, plural, one {# document versleuteld} other {# documenten versleuteld}}.",
@@ -14647,7 +14647,7 @@
       "skippedLocked": "{n, plural, one {# vergrendeld document ontbreekt in de export.} other {# vergrendelde documenten ontbreken in de export.}}",
       "unreadable": "[Niet te ontsleutelen]",
       "unreadableCount": "{n, plural, one {# tekst kon niet worden ontsleuteld.} other {# teksten konden niet worden ontsleuteld.}}",
-      "accountingNote": "De exports voor de boekhouder hierboven (CSV, Pohoda, Money S3) maakt de server, daarom staat er „[Důvěrný obsah]” in plaats van versleutelde teksten. Bedragen, btw, datums en klanten zijn volledig.",
+      "accountingNote": "Als u bedragen of contacten versleutelt, stelt uw browser deze exports samen na ontgrendelen en zijn de gegevens volledig. Anders maakt de server ze en staat er „[Důvěrný obsah]” in plaats van versleutelde teksten.",
       "columns": {
         "documentType": "Documenttype",
         "invoiceNumber": "Nummer",
@@ -14944,7 +14944,7 @@
     "limits": [
       "Verzenden via Peppol: de wet eist dat de verzonden XML leesbaar gearchiveerd blijft op de server.",
       "Kaartbetaling, deelbetalingen en AI-voorstellen met bedragen, voor documenten met versleutelde bedragen.",
-      "Sommige exports die de server maakt (bijvoorbeeld Pohoda en Money S3): ze bevatten de versleutelde gegevens niet en weigeren documenten met versleutelde bedragen.",
+      "Exports die de server zonder uw browser maakt, zoals de automatische back-up of het versturen naar uw boekhouder via SFTP: versleutelde gegevens blijven daarin versleuteld. Pohoda, Money S3, CSV en aangiften stelt uw browser samen na ontgrendelen.",
       "AI krijgt een versleutelde tekst of bon alleen na je uitdrukkelijke bevestiging. Die gaat één keer via de server en wordt niet opgeslagen.",
       "Onze server levert de code van de app. Als hij gecompromitteerd was, kon hij andere code leveren. Code en hashes publiceren maakt zo'n wijziging zichtbaar, maar voorkomt hem niet vanzelf.",
       "Als je een versleuteld document per e-mail met pdf verstuurt, gaat het bestand één keer via de server, omdat de e-mail daarvandaan vertrekt. De app zegt dat vooraf, en de server slaat het niet op en logt het niet. Stuur je alleen de link, dan krijgt de server de versleutelde gegevens helemaal niet.",

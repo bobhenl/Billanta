@@ -14406,7 +14406,7 @@
       "progress": "Szyfruję… {n}",
       "lead": "Zaszyfruj – treść zobaczysz tylko Ty i członkowie z kluczem, serwer jej nie odczyta.",
       "what": "Szyfrowane są opisy pozycji i notatki (nad pozycjami, pod pozycjami i wewnętrzne).",
-      "keeps": "Raporty i pulpity działają dalej: kwoty, daty i tytuły płatności pozostają niezaszyfrowane.",
+      "keeps": "Raporty i dashboardy działają dalej. Ten przycisk nie szyfruje kwot, dat ani symboli zmiennych; kwotami zajmuje się osobna kategoria Kwoty.",
       "loses": "Dla zaszyfrowanych dokumentów PDF, ISDOC i UBL tworzy tylko Twoja przeglądarka. Serwer dołącza je do e-maila tylko wtedy, gdy plik z przeglądarki raz przez niego przejdzie, i go nie zapisuje. Wyszukiwanie tekstowe działa po odblokowaniu tylko w Twojej przeglądarce.",
       "locked": "Zablokowane dokumenty są pomijane.",
       "done": "{n, plural, one {Zaszyfrowano # dokument} few {Zaszyfrowano # dokumenty} other {Zaszyfrowano # dokumentów}}.",
@@ -14648,7 +14648,7 @@
       "skippedLocked": "{n, plural, one {W eksporcie brakuje # zablokowanego dokumentu.} few {W eksporcie brakuje # zablokowanych dokumentów.} many {W eksporcie brakuje # zablokowanych dokumentów.} other {W eksporcie brakuje # zablokowanego dokumentu.}}",
       "unreadable": "[Nie można odszyfrować]",
       "unreadableCount": "{n, plural, one {Nie udało się odszyfrować # tekstu.} few {Nie udało się odszyfrować # tekstów.} many {Nie udało się odszyfrować # tekstów.} other {Nie udało się odszyfrować # tekstu.}}",
-      "accountingNote": "Eksporty dla księgowej powyżej (CSV, Pohoda, Money S3) tworzy serwer, dlatego zamiast zaszyfrowanych tekstów jest w nich „[Důvěrný obsah]”. Kwoty, VAT, daty i kontrahenci są w nich kompletne.",
+      "accountingNote": "Jeśli szyfrujesz kwoty lub kontakty, te eksporty tworzy Twoja przeglądarka po odblokowaniu i dane w nich są pełne. W przeciwnym razie tworzy je serwer, a zamiast zaszyfrowanych tekstów jest w nich „[Důvěrný obsah]”.",
       "columns": {
         "documentType": "Typ dokumentu",
         "invoiceNumber": "Numer",
@@ -14945,7 +14945,7 @@
     "limits": [
       "Wysyłka przez Peppol: prawo wymaga, aby wysłany XML pozostał czytelnie zarchiwizowany na serwerze.",
       "Płatność kartą, płatności częściowe i propozycje AI z kwotami przy dokumentach z zaszyfrowanymi kwotami.",
-      "Niektóre eksporty tworzone przez serwer (na przykład Pohoda i Money S3): nie zawierają zaszyfrowanych danych i odrzucają dokumenty z zaszyfrowanymi kwotami.",
+      "Eksporty, które serwer tworzy bez Twojej przeglądarki, np. automatyczna kopia zapasowa lub wysyłka do księgowej przez SFTP: zaszyfrowane dane pozostają w nich zaszyfrowane. Pohodę, Money S3, CSV i deklaracje tworzy Twoja przeglądarka po odblokowaniu.",
       "AI dostaje zaszyfrowany tekst lub paragon tylko po Twoim wyraźnym potwierdzeniu. Raz przechodzi przez serwer i nie jest zapisywany.",
       "Kod aplikacji dostarcza nasz serwer. Gdyby został przejęty, mógłby dostarczyć inny kod. Publikacja kodu i skrótów pozwala taką zmianę wykryć, ale sama jej nie zapobiega.",
       "Gdy wysyłasz zaszyfrowany dokument e-mailem z PDF, plik raz przechodzi przez serwer, bo stamtąd wychodzi e-mail. Aplikacja mówi o tym wcześniej, a serwer go nie zapisuje ani nie loguje. Gdy wysyłasz tylko link, serwer w ogóle nie dostaje zaszyfrowanych danych.",

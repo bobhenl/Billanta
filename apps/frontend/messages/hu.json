@@ -14405,7 +14405,7 @@
       "progress": "Titkosítás… {n}",
       "lead": "Titkosítás – a tartalmat csak Ön és a kulccsal rendelkező tagok látják, a szerver nem tudja elolvasni.",
       "what": "A tételleírások és a megjegyzések (a tételek felett, alatt és a belsők) titkosítva lesznek.",
-      "keeps": "A kimutatások és az irányítópultok továbbra is működnek: az összegek, dátumok és közlemények titkosítatlanok maradnak.",
+      "keeps": "A kimutatások és a dashboardok továbbra is működnek. Ez a gomb nem titkosítja az összegeket, dátumokat és változó szimbólumokat; az összegekhez külön Összegek kategória tartozik.",
       "loses": "Titkosított bizonylatnál a PDF-et, az ISDOC-ot és az UBL-t csak a böngészője készíti el. A szerver csak akkor csatolja őket e-mailhez, ha a böngészőből érkező fájl egyszer áthalad rajta, és nem tárolja. A szöveges keresés feloldás után csak a böngészőjében fut.",
       "locked": "A zárolt bizonylatok kimaradnak.",
       "done": "{n, plural, one {# bizonylat titkosítva} other {# bizonylat titkosítva}}.",
@@ -14647,7 +14647,7 @@
       "skippedLocked": "{n, plural, one {# zárolt bizonylat hiányzik az exportból.} other {# zárolt bizonylat hiányzik az exportból.}}",
       "unreadable": "[Nem fejthető vissza]",
       "unreadableCount": "{n, plural, one {# szöveget nem sikerült visszafejteni.} other {# szöveget nem sikerült visszafejteni.}}",
-      "accountingNote": "A fenti könyvelési exportokat (CSV, Pohoda, Money S3) a szerver készíti, ezért a titkosított szövegek helyén „[Důvěrný obsah]” áll. Az összegek, az áfa, a dátumok és a vevők teljesek.",
+      "accountingNote": "Ha titkosítja az összegeket vagy a kontaktokat, ezeket az exportokat feloldás után a böngészője állítja össze, és az adatok bennük teljesek. Különben a szerver készíti őket, és a titkosított szövegek helyén „[Důvěrný obsah]” áll.",
       "columns": {
         "documentType": "Bizonylattípus",
         "invoiceNumber": "Szám",
@@ -14944,7 +14944,7 @@
     "limits": [
       "Küldés Peppolon: a törvény előírja, hogy az elküldött XML olvashatóan archiválva maradjon a szerveren.",
       "Kártyás fizetés, részfizetés és összegeket tartalmazó MI-javaslatok titkosított összegű bizonylatoknál.",
-      "Egyes exportok, amelyeket a szerver készít (például Pohoda és Money S3): nem tartalmaznak titkosított adatot, és a titkosított összegű bizonylatokat elutasítják.",
+      "Azok az exportok, amelyeket a szerver a böngészője nélkül készít, például az automatikus mentés vagy a könyvelőnek SFTP-n küldött fájlok: a titkosított adatok bennük titkosítva maradnak. A Pohoda, Money S3, CSV fájlokat és a bevallásokat feloldás után a böngészője állítja össze.",
       "Az MI titkosított szöveget vagy nyugtát csak az Ön kifejezett megerősítése után kap. Egyszer áthalad a szerveren, és nem tárolódik.",
       "Az alkalmazás kódját a szerverünk szolgáltatja. Ha feltörnék, más kódot is küldhetne. A kód és a lenyomatok közzététele lehetővé teszi egy ilyen változás felismerését, de önmagában nem akadályozza meg.",
       "Ha titkosított bizonylatot e-mailben PDF-fel küld, a fájl egyszer áthalad a szerveren, mert az e-mail onnan megy ki. Az alkalmazás ezt előre jelzi, a szerver pedig nem tárolja és nem naplózza. Ha csak a linket küldi, a szerver egyáltalán nem kapja meg a titkosított adatot.",

@@ -14405,7 +14405,7 @@
       "progress": "Cifrando… {n}",
       "lead": "Cifrar – solo tú y los miembros con la clave veréis el contenido, el servidor no puede leerlo.",
       "what": "Se cifran las descripciones de las líneas y las notas (encima, debajo de las líneas e internas).",
-      "keeps": "Los informes y paneles siguen funcionando: importes, fechas y referencias de pago quedan sin cifrar.",
+      "keeps": "Los informes y paneles siguen funcionando. Este botón no cifra importes, fechas ni símbolos variables; los importes tienen su propia categoría Importes.",
       "loses": "En los documentos cifrados solo tu navegador crea el PDF, ISDOC y UBL. El servidor los adjunta a un correo solo cuando el archivo de tu navegador pasa por él una vez, y no lo guarda. La búsqueda por texto se hace solo en tu navegador tras desbloquear.",
       "locked": "Los documentos bloqueados se omiten.",
       "done": "{n, plural, one {# documento cifrado} other {# documentos cifrados}}.",
@@ -14647,7 +14647,7 @@
       "skippedLocked": "{n, plural, one {Falta # documento bloqueado en la exportación.} many {Faltan # documentos bloqueados en la exportación.} other {Faltan # documentos bloqueados en la exportación.}}",
       "unreadable": "[No se puede descifrar]",
       "unreadableCount": "{n, plural, one {# texto no se pudo descifrar.} many {# textos no se pudieron descifrar.} other {# textos no se pudieron descifrar.}}",
-      "accountingNote": "Las exportaciones contables de arriba (CSV, Pohoda, Money S3) las genera el servidor, así que muestran «[Důvěrný obsah]» en lugar de los textos cifrados. Importes, IVA, fechas y clientes están completos.",
+      "accountingNote": "Si cifra los importes o los contactos, su navegador genera estas exportaciones tras desbloquear y los datos están completos. Si no, las genera el servidor y muestran «[Důvěrný obsah]» en lugar de los textos cifrados.",
       "columns": {
         "documentType": "Tipo de documento",
         "invoiceNumber": "Número",
@@ -14944,7 +14944,7 @@
     "limits": [
       "Envío por Peppol: la ley exige que el XML enviado quede archivado de forma legible en el servidor.",
       "Pago con tarjeta, pagos parciales y sugerencias de IA con importes, en documentos con importes cifrados.",
-      "Algunas exportaciones que crea el servidor (por ejemplo Pohoda y Money S3): no contienen los datos cifrados y rechazan los documentos con importes cifrados.",
+      "Las exportaciones que el servidor genera sin su navegador, como la copia de seguridad automática o el envío al contable por SFTP: los datos cifrados siguen cifrados en ellas. Pohoda, Money S3, CSV y las declaraciones los genera su navegador tras desbloquear.",
       "La IA recibe un texto o un recibo cifrado solo tras tu confirmación expresa. Pasa una vez por el servidor y no se guarda.",
       "El código de la aplicación lo entrega nuestro servidor. Si estuviera comprometido, podría entregar otro código. Publicar el código y los hashes permite detectar un cambio así, pero no lo impide por sí solo.",
       "Cuando envías un documento cifrado por e-mail con su PDF, el archivo pasa una vez por el servidor, porque el e-mail sale desde ahí. La aplicación te lo avisa antes, y el servidor no lo guarda ni lo registra. Si envías solo el enlace, el servidor nunca recibe los datos cifrados.",

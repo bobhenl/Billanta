@@ -14405,7 +14405,7 @@
       "progress": "Se criptează… {n}",
       "lead": "Criptați – conținutul îl veți vedea doar dvs. și membrii cu cheie, serverul nu îl poate citi.",
       "what": "Se criptează descrierile pozițiilor și notele (deasupra, sub poziții și interne).",
-      "keeps": "Rapoartele și tablourile de bord funcționează în continuare: sumele, datele și referințele de plată rămân necriptate.",
+      "keeps": "Rapoartele și dashboardurile funcționează în continuare. Acest buton nu criptează sumele, datele sau simbolurile variabile; pentru sume există categoria separată Sume.",
       "loses": "Pentru documentele criptate, doar browserul dvs. creează PDF, ISDOC și UBL. Serverul le atașează la e-mail doar când fișierul din browser trece o singură dată prin el, fără să-l păstreze. Căutarea după text se face doar în browserul dvs., după deblocare.",
       "locked": "Documentele blocate sunt sărite.",
       "done": "{n, plural, one {# document criptat} few {# documente criptate} other {# de documente criptate}}.",
@@ -14647,7 +14647,7 @@
       "skippedLocked": "{n, plural, one {Lipsește # document blocat din export.} few {Lipsesc # documente blocate din export.} other {Lipsesc # de documente blocate din export.}}",
       "unreadable": "[Nu se poate decripta]",
       "unreadableCount": "{n, plural, one {# text nu a putut fi decriptat.} few {# texte nu au putut fi decriptate.} other {# de texte nu au putut fi decriptate.}}",
-      "accountingNote": "Exporturile pentru contabil de mai sus (CSV, Pohoda, Money S3) le creează serverul, de aceea conțin „[Důvěrný obsah]” în locul textelor criptate. Sumele, TVA, datele și clienții sunt complete.",
+      "accountingNote": "Dacă criptați sumele sau contactele, aceste exporturi le întocmește browserul dvs. după deblocare, iar datele din ele sunt complete. Altfel le creează serverul și au „[Důvěrný obsah]” în locul textelor criptate.",
       "columns": {
         "documentType": "Tip document",
         "invoiceNumber": "Număr",
@@ -14944,7 +14944,7 @@
     "limits": [
       "Trimiterea prin Peppol: legea cere ca XML-ul trimis să rămână arhivat lizibil pe server.",
       "Plata cu cardul, plățile parțiale și sugestiile AI cu sume, la documentele cu sume criptate.",
-      "Unele exporturi create de server (de exemplu Pohoda și Money S3): nu conțin datele criptate și refuză documentele cu sume criptate.",
+      "Exporturile pe care serverul le creează fără browserul dvs., de exemplu backupul automat sau trimiterea către contabil prin SFTP: datele criptate rămân criptate în ele. Pohoda, Money S3, CSV și declarațiile le întocmește browserul dvs. după deblocare.",
       "AI primește un text sau un bon criptat doar după confirmarea dvs. explicită. Trece o dată prin server și nu se stochează.",
       "Codul aplicației este livrat de serverul nostru. Dacă ar fi compromis, ar putea livra alt cod. Publicarea codului și a amprentelor face o astfel de schimbare detectabilă, dar nu o împiedică de la sine.",
       "Când trimiteți un document criptat pe e-mail cu PDF, fișierul trece o dată prin server, pentru că e-mailul pleacă de acolo. Aplicația vă spune dinainte, iar serverul nu îl stochează și nu îl scrie în jurnal. Dacă trimiteți doar linkul, serverul nu primește deloc datele criptate.",

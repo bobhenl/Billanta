@@ -14406,7 +14406,7 @@
       "progress": "Verschlüssele… {n}",
       "lead": "Verschlüsseln – den Inhalt sehen nur Sie und Mitglieder mit Schlüssel, der Server kann ihn nicht lesen.",
       "what": "Verschlüsselt werden Positionsbeschreibungen und Notizen (über und unter den Positionen sowie interne).",
-      "keeps": "Berichte und Dashboards funktionieren weiter: Beträge, Daten und Verwendungszwecke bleiben unverschlüsselt.",
+      "keeps": "Übersichten und Dashboards funktionieren weiter. Diese Schaltfläche verschlüsselt keine Beträge, Daten oder variablen Symbole; für Beträge gibt es die eigene Kategorie Beträge.",
       "loses": "Für verschlüsselte Belege erstellt nur Ihr Browser PDF, ISDOC und UBL. Der Server hängt sie nur dann an eine E-Mail an, wenn die Datei aus Ihrem Browser einmal durch ihn läuft, und speichert sie nicht. Die Textsuche läuft nach dem Entsperren nur in Ihrem Browser.",
       "locked": "Gesperrte Belege werden übersprungen.",
       "done": "{n, plural, one {# Beleg verschlüsselt} other {# Belege verschlüsselt}}.",
@@ -14648,7 +14648,7 @@
       "skippedLocked": "{n, plural, one {# gesperrter Beleg fehlt im Export.} other {# gesperrte Belege fehlen im Export.}}",
       "unreadable": "[Nicht entschlüsselbar]",
       "unreadableCount": "{n, plural, one {# Text konnte nicht entschlüsselt werden.} other {# Texte konnten nicht entschlüsselt werden.}}",
-      "accountingNote": "Die Exporte für die Buchhaltung oben (CSV, Pohoda, Money S3) erstellt der Server, daher steht dort statt verschlüsselter Texte „[Důvěrný obsah]“. Beträge, MwSt., Daten und Kunden sind darin vollständig.",
+      "accountingNote": "Wenn Sie Beträge oder Kontakte verschlüsseln, erstellt Ihr Browser diese Exporte nach dem Entsperren, und die Daten darin sind vollständig. Sonst erstellt sie der Server, und statt verschlüsselter Texte steht dort „[Důvěrný obsah]“.",
       "columns": {
         "documentType": "Belegart",
         "invoiceNumber": "Nummer",
@@ -14945,7 +14945,7 @@
     "limits": [
       "Versand über Peppol: Das Gesetz verlangt, dass das gesendete XML lesbar auf dem Server archiviert bleibt.",
       "Kartenzahlung, Teilzahlungen und KI-Vorschläge mit Beträgen bei Belegen mit verschlüsselten Beträgen.",
-      "Einige Exporte, die der Server erstellt (zum Beispiel Pohoda und Money S3): Sie enthalten keine verschlüsselten Daten und lehnen Belege mit verschlüsselten Beträgen ab.",
+      "Exporte, die der Server ohne Ihren Browser erstellt, etwa die automatische Sicherung oder die Übergabe an die Buchhaltung per SFTP: verschlüsselte Daten bleiben darin verschlüsselt. Pohoda, Money S3, CSV und Meldungen erstellt Ihr Browser nach dem Entsperren.",
       "Die KI erhält einen verschlüsselten Text oder eine Quittung nur nach Ihrer ausdrücklichen Bestätigung. Er geht einmal über den Server und wird nicht gespeichert.",
       "Den Code der App liefert unser Server. Wäre er kompromittiert, könnte er anderen Code liefern. Die Veröffentlichung von Code und Hashes macht eine solche Änderung erkennbar, verhindert sie aber nicht von selbst.",
       "Wenn Sie einen verschlüsselten Beleg per E-Mail mit PDF senden, geht die Datei einmal über den Server, weil die E-Mail von dort verschickt wird. Die App sagt es vorher, und der Server speichert oder protokolliert sie nicht. Senden Sie nur den Link, erhält der Server die verschlüsselten Daten gar nicht.",

@@ -14405,7 +14405,7 @@
       "progress": "Chiffrement… {n}",
       "lead": "Chiffrer – seuls vous et les membres disposant de la clé verront le contenu, le serveur ne peut pas le lire.",
       "what": "Les descriptions de lignes et les notes (au-dessus, en dessous des lignes et internes) sont chiffrées.",
-      "keeps": "Les rapports et tableaux de bord continuent de fonctionner : montants, dates et références de paiement restent en clair.",
+      "keeps": "Les rapports et tableaux de bord continuent de fonctionner. Ce bouton ne chiffre ni les montants, ni les dates, ni les symboles variables ; les montants ont leur propre catégorie Montants.",
       "loses": "Pour les documents chiffrés, seul votre navigateur crée le PDF, l’ISDOC et l’UBL. Le serveur ne les joint à un e-mail que si le fichier de votre navigateur passe une fois par lui, et il ne le conserve pas. La recherche de texte se fait uniquement dans votre navigateur après déverrouillage.",
       "locked": "Les documents verrouillés sont ignorés.",
       "done": "{n, plural, one {# document chiffré} other {# documents chiffrés}}.",
@@ -14647,7 +14647,7 @@
       "skippedLocked": "{n, plural, one {# document verrouillé manque dans l’export.} many {# documents verrouillés manquent dans l’export.} other {# documents verrouillés manquent dans l’export.}}",
       "unreadable": "[Impossible à déchiffrer]",
       "unreadableCount": "{n, plural, one {# texte n’a pas pu être déchiffré.} many {# textes n’ont pas pu être déchiffrés.} other {# textes n’ont pas pu être déchiffrés.}}",
-      "accountingNote": "Les exports comptables ci-dessus (CSV, Pohoda, Money S3) sont créés par le serveur : ils affichent « [Důvěrný obsah] » à la place des textes chiffrés. Montants, TVA, dates et clients y sont complets.",
+      "accountingNote": "Si vous chiffrez les montants ou les contacts, votre navigateur produit ces exports après déverrouillage et les données y sont complètes. Sinon, le serveur les produit et ils affichent « [Důvěrný obsah] » à la place des textes chiffrés.",
       "columns": {
         "documentType": "Type de document",
         "invoiceNumber": "Numéro",
@@ -14944,7 +14944,7 @@
     "limits": [
       "L’envoi via Peppol : la loi exige que le XML envoyé reste archivé lisiblement sur le serveur.",
       "Le paiement par carte, les paiements partiels et les suggestions de l’IA avec montants, pour les documents aux montants chiffrés.",
-      "Certains exports créés par le serveur (par exemple Pohoda et Money S3) : ils ne contiennent pas les données chiffrées et refusent les documents aux montants chiffrés.",
+      "Les exports que le serveur produit sans votre navigateur, comme la sauvegarde automatique ou l’envoi au comptable par SFTP : les données chiffrées y restent chiffrées. Pohoda, Money S3, CSV et les déclarations sont produits par votre navigateur après déverrouillage.",
       "L’IA ne reçoit un texte ou un reçu chiffré qu’après votre confirmation explicite. Il passe une fois par le serveur et n’est pas stocké.",
       "Notre serveur fournit le code de l'application. S'il était compromis, il pourrait fournir un autre code. Publier le code et les empreintes permet de détecter un tel changement, mais ne l'empêche pas à lui seul.",
       "Quand vous envoyez un document chiffré par e-mail avec son PDF, le fichier passe une fois par le serveur, car c’est de là que part l’e-mail. L’application vous prévient avant, et le serveur ne le stocke pas et ne le journalise pas. Si vous envoyez seulement le lien, le serveur ne reçoit jamais les données chiffrées.",
