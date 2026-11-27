@@ -8427,7 +8427,8 @@
             "loadError": "No se han podido cargar sus totales. Introduzca las cifras a mano.",
             "regimeFlat": "Según los Ajustes, está en el régimen a tanto alzado.",
             "regimeRegular": "Según los Ajustes, no está en el régimen a tanto alzado.",
-            "secondary": "Según los Ajustes, se trata de una actividad secundaria. La calculadora computa las cotizaciones como para una actividad principal; para una secundaria pueden ser menores."
+            "secondary": "Según los Ajustes, se trata de una actividad secundaria. La calculadora computa las cotizaciones como para una actividad principal; para una secundaria pueden ser menores.",
+            "sealed": "No hemos rellenado nada: {count, plural, one {# documento tiene} other {# documentos tienen}} importes cifrados que el servidor no puede sumar. Introduzca ingresos y gastos a mano."
           }
         },
         "vat": {
@@ -14503,9 +14504,8 @@
         "loses": [
           "Conciliación automática de pagos por importe: un pago con el VS de un documento cifrado espera tu confirmación manual",
           "Pagos parciales: un documento cifrado solo puede marcarse como pagado en su totalidad, sin comisiones ni importe abonado",
-          "Exportaciones para el contable, declaraciones e informes de IVA del servidor: rechazan los documentos con importes cifrados y los enumeran",
           "Envío por Peppol, sugerencias de IA con importes y pago con tarjeta",
-          "El panel, los ingresos netos y los informes solo cuentan documentos sin cifrar e indican cuántos han dejado fuera",
+          "Los ingresos netos cuentan solo los documentos sin cifrar e indican cuántos han dejado fuera. La calculadora del impuesto a tanto alzado no rellena nada",
           "Los recordatorios, el resumen semanal y los totales vencidos en los correos no incluyen el importe"
         ],
         "how": [
@@ -14516,6 +14516,8 @@
         ],
         "changes": [
           "El PDF, ISDOC, UBL y el pago QR los crea tu navegador, y en el enlace del cliente el navegador del cliente",
+          "Las exportaciones para el contable (CSV, Pohoda, Money S3), las declaraciones de IVA, la base para la declaración de la renta, el resumen anual y los resúmenes para ČSSZ y el seguro médico los genera su navegador cuando desbloquea la caja fuerte. Un documento que no se puede abrir detiene el archivo",
+          "El panel y el informe del periodo suman los documentos cifrados mientras la caja fuerte está desbloqueada",
           "Las facturas recurrentes copian los importes cifrados sin cambios"
         ]
       },
@@ -14783,7 +14785,7 @@
       "title": "Cifrar importes existentes",
       "what": "El navegador carga los documentos cuyos importes son legibles en el servidor, cifra cantidades, precios, tipos de IVA, descuentos y totales y los vuelve a guardar. En el servidor quedan ceros en su lugar.",
       "keeps": "El número del documento, el VS, el vencimiento, la moneda y el estado siguen legibles, así que seguirás encontrando los pagos por VS.",
-      "loses": "El servidor ya no creará PDF, ISDOC ni exportaciones contables de estos documentos y no los contará en los informes. Un documento pagado sigue pagado.",
+      "loses": "El servidor ya no creará PDF, ISDOC ni exportaciones de estos documentos; los genera su navegador tras desbloquear la caja fuerte. Los ingresos netos no los incluyen. Un documento pagado sigue pagado.",
       "resumable": "Los documentos bloqueados y los pagados parcialmente se omiten. Si cierras la ventana, la próxima vez se continúa donde lo dejaste.",
       "cancel": "Volver",
       "confirm": "Cifrar",
@@ -14800,7 +14802,12 @@
       "exportUnreadable": "No se creó el archivo: {count, plural, one {# documento no se puede abrir} other {# documentos no se pueden abrir}} con esta clave. Un documento que falte haría el archivo incorrecto.",
       "creditNoteLocked": "La factura rectificativa de una factura con importes cifrados se prepara tras desbloquear la caja fuerte.",
       "creditNoteUnreadable": "Los importes de la factura no se pueden abrir con esta clave, así que no se creó la rectificativa.",
-      "bulkSealed": "Esta plantilla tiene importes cifrados. No sirve para facturación masiva, solo para una factura individual."
+      "bulkSealed": "Esta plantilla tiene importes cifrados. No sirve para facturación masiva, solo para una factura individual.",
+      "reportIncluded": "Incluye {count, plural, one {# documento} other {# documentos}} con importes cifrados, abiertos por este navegador.",
+      "reportOpening": "Abriendo los importes cifrados…",
+      "reportUnreadable": "Sin informe: {count, plural, one {# documento no se puede} other {# documentos no se pueden}} abrir con esta clave. Sin ellos las cifras saldrían más bajas.",
+      "reportLocked": "Algunos documentos del año tienen importes cifrados. Su navegador calcula las cifras cuando desbloquee la caja fuerte.",
+      "unlock": "Desbloquear la caja fuerte"
     }
   },
   "vaultPublic": {

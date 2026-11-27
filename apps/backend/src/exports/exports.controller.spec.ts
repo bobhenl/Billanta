@@ -15,6 +15,8 @@ function setup(tenant: Record<string, unknown> = TENANT) {
     vatReturn: vi.fn(async () => ({ body: "<dp3/>", warnings: [] })),
     vatReturnSk: vi.fn(async () => "<dphv25/>"),
     vatInputs: vi.fn(async () => ({ issued: [] })),
+    accountingInputs: vi.fn(async () => ({ invoices: [] })),
+    annualSummary: vi.fn(async () => SUMMARY),
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const chain: any = { from: () => chain, where: () => Promise.resolve([tenant]) };
@@ -25,8 +27,29 @@ function setup(tenant: Record<string, unknown> = TENANT) {
 
 const refusal = new ForbiddenException({ error: "plan_required" });
 
+const SEALED_DOC = { encAmounts: "enc:v1:doc", documentType: "invoice", rate: 1 };
+let SUMMARY: Record<string, unknown>;
+function summary(sealed: boolean) {
+  return {
+    year: 2025,
+    basis: "cash",
+    vatPayer: false,
+    income: 300_000,
+    plainIncome: 300_000,
+    actualExpenses: 20_000,
+    byCategory: { "": 20_000 },
+    flatRate: 60,
+    counts: { invoices: 3, expenses: 1, missingRates: 0 },
+    social: { paid: 0 },
+    health: { paid: 0 },
+    sealed: sealed ? { count: 1, ids: ["S"] } : { count: 0, ids: [] },
+    sealedDocs: sealed ? [SEALED_DOC] : [],
+  };
+}
+
 beforeEach(() => {
   limits.spendFeature.mockReset().mockResolvedValue("plan");
+  SUMMARY = summary(true);
 });
 
 describe("ExportsController plan gates", () => {
@@ -121,5 +144,70 @@ describe("ExportsController vat-inputs (sealed amounts, built in the browser)", 
     expect(czech.service.vatInputs).not.toHaveBeenCalled();
     // A refused filing is not counted on the plan.
     expect(limits.spendFeature).not.toHaveBeenCalled();
+  });
+});
+
+describe("ExportsController accounting-inputs (sealed amounts, built in the browser)", () => {
+  it("counts the Pohoda or Money S3 file on the plan", async () => {
+    const { controller, service, req } = setup();
+    await controller.accountingInputs(req as never, { format: "money-s3", month: "2026-03" });
+    expect(service.accountingInputs).toHaveBeenCalledWith(req.tenantDb, "money-s3", expect.anything(), TENANT);
+    expect(limits.spendFeature).toHaveBeenCalledWith(req.tenantDb, "t1", "accounting_export");
+  });
+
+  it("refuses an unknown format before reading anything", async () => {
+    const { controller, service, req } = setup();
+    await expect(controller.accountingInputs(req as never, { format: "csv", month: "2026-03" })).rejects.toMatchObject({ status: 400 });
+    expect(service.accountingInputs).not.toHaveBeenCalled();
+    expect(limits.spendFeature).not.toHaveBeenCalled();
+  });
+});
+
+describe("ExportsController year reports with sealed amounts", () => {
+  it("still refuses the tax-return basis, its files and the filings while a document is sealed", async () => {
+    const { controller, req, res } = setup();
+    await expect(controller.taxReturnBasis(req as never, { year: "2025", rate: "60" })).rejects.toMatchObject({ status: 409 });
+    await expect(controller.taxReturnBasisCsv(req as never, { year: "2025", rate: "60" }, res as never)).rejects.toMatchObject({ status: 409 });
+    await expect(controller.filings(req as never, { year: "2025", activity: "H" })).rejects.toMatchObject({ status: 409 });
+    expect(res.send).not.toHaveBeenCalled();
+  });
+
+  it("computes the tax-return basis from the plain income when nothing is sealed", async () => {
+    SUMMARY = summary(false);
+    const { controller, req } = setup();
+    const report = await controller.taxReturnBasis(req as never, { year: "2025", rate: "60" });
+    expect(report).toMatchObject({ income: 300_000, counts: { invoices: 3 } });
+  });
+
+  it("hands the browser the tax-return inputs with the sealed documents, spending only for a file", async () => {
+    const { controller, req } = setup();
+    const inputs = await controller.taxReturnInputs(req as never, { year: "2025", rate: "60" });
+    expect(inputs).toMatchObject({ year: 2025, plainIncome: 300_000, sealedDocs: [SEALED_DOC], flatRate: 60, country: "CZ" });
+    expect(limits.spendFeature).not.toHaveBeenCalled();
+    await controller.taxReturnInputs(req as never, { year: "2025", rate: "60", file: "pdf" });
+    expect(limits.spendFeature).toHaveBeenCalledWith(req.tenantDb, "t1", "income_tax_export");
+  });
+
+  it("hands the browser the filings inputs without any personal data, spending only for a file", async () => {
+    const { controller, req } = setup({ ...TENANT, legalName: "Jan Novák", addressStreet: "Dlouhá 1", addressCity: "Praha", addressPostalCode: "11000" });
+    const inputs = await controller.filingsInputs(req as never, { year: "2025", activity: "H" });
+    expect(inputs).toMatchObject({ plainIncome: 300_000, sealedDocs: [SEALED_DOC], forms: { dpfdp: "DPFDP7", cssz: true } });
+    expect(inputs.figures).toMatchObject({ year: 2025, flatRate: 60, activity: "H" });
+    expect(JSON.stringify(inputs)).not.toMatch(/birthNumber|dataBox/);
+    expect(limits.spendFeature).not.toHaveBeenCalled();
+    await controller.filingsInputs(req as never, { year: "2025", activity: "H", file: "osvc" });
+    expect(limits.spendFeature).toHaveBeenCalledWith(req.tenantDb, "t1", "income_tax_export");
+  });
+
+  it("spends nothing for a filing whose form is not published for the year", async () => {
+    SUMMARY = { ...summary(true), year: 2020 };
+    const { controller, req } = setup();
+    await expect(controller.filingsInputs(req as never, { year: "2020", activity: "H", file: "dpfdp" })).rejects.toMatchObject({ status: 404 });
+    expect(limits.spendFeature).not.toHaveBeenCalled();
+  });
+
+  it("gives a Slovak company no Czech filings inputs", async () => {
+    const { controller, req } = setup({ ...TENANT, dic: "SK2020123456", country: "SK" });
+    await expect(controller.filingsInputs(req as never, { year: "2025", activity: "H" })).rejects.toMatchObject({ status: 400 });
   });
 });

@@ -8,7 +8,9 @@ import {
   open,
   openInvoicePdfModel,
   renderInvoicePdf,
+  renderTaxReturnPdf,
   type InvoicePdfModel,
+  type TaxReturnReport,
   type IsdocInvoiceInput,
   type UblOptions,
   type VaultKey
@@ -81,6 +83,12 @@ async function drawPdf(model: InvoicePdfModel, fontBase?: string): Promise<Uint8
   // pdfkit is large; only someone downloading a sealed invoice loads it.
   const [{ default: PDFDocument }, f] = await Promise.all([import('pdfkit/js/pdfkit.standalone'), pdfFonts(fontBase)]);
   return renderInvoicePdf(PDFDocument, model, f);
+}
+
+/** The tax-return basis as a PDF, drawn here when its income includes sealed amounts. */
+export async function drawTaxReturnPdf(report: TaxReturnReport): Promise<Blob> {
+  const [{ default: PDFDocument }, f] = await Promise.all([import('pdfkit/js/pdfkit.standalone'), pdfFonts()]);
+  return new Blob([(await renderTaxReturnPdf(PDFDocument, report, f)) as BlobPart], { type: 'application/pdf' });
 }
 
 export async function renderSealedPdf(key: VaultKey, invoiceId: string): Promise<RenderedDocument> {

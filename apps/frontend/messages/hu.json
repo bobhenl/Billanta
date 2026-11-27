@@ -8427,7 +8427,8 @@
             "loadError": "Az összesítéseit nem sikerült betölteni. Adja meg a számokat kézzel.",
             "regimeFlat": "A Beállítások szerint Ön átalányadózó.",
             "regimeRegular": "A Beállítások szerint Ön nem átalányadózó.",
-            "secondary": "A Beállítások szerint ez mellékes tevékenység. A kalkulátor a járulékokat fő tevékenységként számolja; mellékes tevékenységnél alacsonyabbak lehetnek."
+            "secondary": "A Beállítások szerint ez mellékes tevékenység. A kalkulátor a járulékokat fő tevékenységként számolja; mellékes tevékenységnél alacsonyabbak lehetnek.",
+            "sealed": "Semmit nem töltöttünk ki előre: {count, plural, one {# bizonylat} other {# bizonylat}} összegei titkosítottak, ezeket a szerver nem tudja összeadni. Adja meg kézzel a bevételeket és a kiadásokat."
           }
         },
         "vat": {
@@ -14503,9 +14504,8 @@
         "loses": [
           "Automatikus fizetéspárosítás összeg alapján: egy titkosított bizonylat VS-ével érkező fizetés az Ön kézi megerősítésére vár",
           "Részfizetések: titkosított bizonylatot csak teljesen kifizetettként lehet jelölni, díjak és jóváírt összeg nélkül",
-          "Könyvelői exportok, bevallások és ÁFA-kimutatások a szerverről: a titkosított összegű bizonylatokat elutasítják és felsorolják",
           "Küldés Peppolon, MI-javaslatok összegekkel és kártyás fizetés",
-          "Az irányítópult, a nettó jövedelem és a kimutatások csak a nem titkosított bizonylatokat számolják, és jelzik, hányat hagytak ki",
+          "A nettó jövedelem csak a nem titkosított bizonylatokat számolja, és kiírja, hányat hagyott ki. Az átalányadó-kalkulátor ilyenkor nem tölt ki semmit",
           "A felszólítások, a heti összefoglaló és a lejárt összegek az e-mailekben nem tartalmaznak összeget"
         ],
         "how": [
@@ -14516,6 +14516,8 @@
         ],
         "changes": [
           "A PDF-et, az ISDOC-ot, az UBL-t és a QR-fizetést a böngészője készíti, az ügyfél linkjén az ügyfél böngészője",
+          "A könyvelőnek szóló exportokat (CSV, Pohoda, Money S3), az ÁFA-bevallásokat, az adóbevallás alapjait, az éves kimutatást és a ČSSZ és az egészségbiztosító felé szóló kimutatásokat a böngészője készíti el a széf feloldása után. Egy meg nem nyitható bizonylat leállítja a fájlt",
+          "A vezérlőpult és az időszaki kimutatás hozzáadja a titkosított bizonylatokat, amíg a széf fel van oldva",
           "Az ismétlődő számlák változatlanul másolják a titkosított összegeket"
         ]
       },
@@ -14783,7 +14785,7 @@
       "title": "Meglévő összegek titkosítása",
       "what": "A böngésző betölti azokat a bizonylatokat, amelyek összegei olvashatók a szerveren, titkosítja a mennyiségeket, árakat, ÁFA-kulcsokat, kedvezményeket és végösszegeket, majd visszamenti őket. A szerveren a helyükön nullák maradnak.",
       "keeps": "A bizonylatszám, a VS, a határidő, a pénznem és az állapot olvasható marad, így a fizetéseket VS alapján továbbra is megtalálja.",
-      "loses": "A szerver ezután ezekhez a bizonylatokhoz nem készít PDF-et, ISDOC-ot vagy könyvelői exportot, és nem számolja őket a kimutatásokban. A kifizetett bizonylat kifizetett marad.",
+      "loses": "A szerver ezekhez a bizonylatokhoz nem készít PDF-et, ISDOC-ot és exportot; ezeket a böngészője készíti el a széf feloldása után. A nettó jövedelem nem számolja őket. A kifizetett bizonylat kifizetett marad.",
       "resumable": "A zárolt és részben kifizetett bizonylatok kimaradnak. Ha bezárja az ablakot, legközelebb ott folytatódik, ahol abbahagyta.",
       "cancel": "Vissza",
       "confirm": "Titkosítás",
@@ -14800,7 +14802,12 @@
       "exportUnreadable": "A fájl nem készült el: {count, plural, one {# bizonylat} other {# bizonylat}} nem nyitható meg ezzel a kulccsal. Egy hiányzó bizonylat meghamisítaná a fájlt.",
       "creditNoteLocked": "A titkosított összegű számla jóváírása a széf feloldása után készül el.",
       "creditNoteUnreadable": "A számla összegei nem nyithatók meg ezzel a kulccsal, ezért jóváírás nem készült.",
-      "bulkSealed": "Ennek a sablonnak titkosított összegei vannak. Tömeges számlázásra nem, csak egyedi számlához használható."
+      "bulkSealed": "Ennek a sablonnak titkosított összegei vannak. Tömeges számlázásra nem, csak egyedi számlához használható.",
+      "reportIncluded": "Benne van {count, plural, one {# titkosított összegű bizonylat} other {# titkosított összegű bizonylat}}, amelyet ez a böngésző nyitott meg.",
+      "reportOpening": "A titkosított összegek megnyitása…",
+      "reportUnreadable": "Nincs kimutatás: {count, plural, one {# bizonylat} other {# bizonylat}} nem nyitható meg ezzel a kulccsal. Nélkülük a számok túl alacsonyak lennének.",
+      "reportLocked": "Az év néhány bizonylatának összegei titkosítottak. A számokat a böngészője számolja ki, amikor feloldja a széfet.",
+      "unlock": "Széf feloldása"
     }
   },
   "vaultPublic": {

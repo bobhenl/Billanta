@@ -105,6 +105,33 @@ describe("sqliteLayout", () => {
     expect(sqliteLayout(bundle).map((t) => t.name)).not.toContain("vault_key_wraps");
   });
 
+  it("carries encrypted attachments as ciphertext with their enc_meta, never opened", () => {
+    const ciphertext = "AfoAfw==";
+    const bundle: ExportBundle = {
+      ...sealedBundle(),
+      attachments: {
+        invoices: [
+          { id: "a-1", tenantId: TENANT, invoiceId: "inv-1", filename: "encrypted", mime: "application/octet-stream", sizeBytes: 4, data: ciphertext, encMeta: "enc:v1:meta", sendWithEmail: false, showInPortal: false },
+        ] as unknown as NonNullable<ExportBundle["attachments"]>["invoices"],
+        expenses: [],
+      },
+    };
+    const tables = sqliteLayout(bundle);
+    const attachments = table(tables, "invoice_attachments");
+    expect(cell(attachments, 0, "enc_meta")).toBe("enc:v1:meta");
+    expect(cell(attachments, 0, "data")).toBe(ciphertext);
+    expect(attachments.ddl).toContain('"invoice_id" TEXT REFERENCES invoices(id)');
+    expect(tables.map((t) => t.name)).toContain("expense_attachments");
+    for (const t of [schema.invoiceAttachments, schema.expenseAttachments]) {
+      const config = getTableConfig(t);
+      expect(table(tables, config.name).columns.sort()).toEqual(config.columns.map((c) => c.name).sort());
+    }
+  });
+
+  it("leaves the attachments out of a bundle that did not ask for them", () => {
+    expect(sqliteLayout(sealedBundle()).map((t) => t.name)).not.toContain("invoice_attachments");
+  });
+
   it("types money as TEXT and booleans as INTEGER", () => {
     const ddl = table(sqliteLayout(sealedBundle()), "invoice_line_items").ddl;
     expect(ddl).toContain('"unit_price" TEXT');

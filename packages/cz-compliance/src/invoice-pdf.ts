@@ -220,7 +220,8 @@ export async function openInvoicePdfModel(model: InvoicePdfModel, open: (value: 
   };
 }
 
-function startDoc(PDFDocument: PdfDocumentClass, options: object, fonts: PdfFonts | null) {
+/** A pdfkit document collecting its bytes, with the body fonts registered (Helvetica without them). */
+export function startPdfDoc(PDFDocument: PdfDocumentClass, options: object, fonts: PdfFonts | null) {
   const doc = new PDFDocument(options) as Doc;
   if (fonts) {
     doc.registerFont('Body', fonts.regular as never);
@@ -250,7 +251,7 @@ function startDoc(PDFDocument: PdfDocumentClass, options: object, fonts: PdfFont
 export async function renderInvoicePdf(PDFDocument: PdfDocumentClass, model: InvoicePdfModel, fonts: PdfFonts | null): Promise<Uint8Array> {
   if ([...sealableModelTexts(model), ...customerTexts(model)].some(holdsEnvelope)) throw new Error('confidential_content');
   if (model.sealedAmounts) throw new Error('confidential_content');
-  const { doc, finished, regular, bold } = startDoc(
+  const { doc, finished, regular, bold } = startPdfDoc(
     PDFDocument,
     {
       size: 'A4',
@@ -288,7 +289,7 @@ export async function renderLetterPdf(
   input: { title: string; body: string; creator: string; credit: { text: string; url: string } },
   fonts: PdfFonts | null,
 ): Promise<Uint8Array> {
-  const { doc, finished, regular, bold } = startDoc(
+  const { doc, finished, regular, bold } = startPdfDoc(
     PDFDocument,
     { size: 'A4', margin: 60, bufferPages: true, info: { Title: input.title, Creator: input.creator } },
     fonts,

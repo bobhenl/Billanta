@@ -8435,7 +8435,8 @@
             "loadError": "Vaše součty se nepodařilo načíst, zadejte čísla ručně.",
             "regimeFlat": "V nastavení máte uvedeno, že jste v paušálním režimu.",
             "regimeRegular": "V nastavení máte uvedeno, že v paušálním režimu nejste.",
-            "secondary": "V nastavení máte vedlejší činnost. Kalkulačka počítá pojistné jako u hlavní činnosti, při vedlejší může vyjít nižší."
+            "secondary": "V nastavení máte vedlejší činnost. Kalkulačka počítá pojistné jako u hlavní činnosti, při vedlejší může vyjít nižší.",
+            "sealed": "Čísla jsme nepředvyplnili: {count, plural, one {# doklad má} few {# doklady mají} other {# dokladů má}} zašifrované částky, které server nesečte. Zadejte příjmy a výdaje ručně."
           }
         },
         "vat": {
@@ -14508,9 +14509,8 @@
         "loses": [
           "Automatické párování plateb podle částky: platba s VS zašifrovaného dokladu počká na vaše ruční potvrzení",
           "Částečné úhrady: zašifrovaný doklad jde označit jen jako celý zaplacený, bez poplatků a připsané částky",
-          "Exporty pro účetní, přiznání a přehledy DPH ze serveru: doklady se zašifrovanými částkami odmítnou a vypíšou je",
           "Odeslání přes Peppol, AI návrhy s částkami a platba kartou",
-          "Dashboard, čistý příjem a přehledy počítají jen nezašifrované doklady a napíšou, kolik jich vynechaly",
+          "Čistý příjem počítá jen nezašifrované doklady a napíše, kolik jich vynechal. Kalkulačka paušální daně pak čísla nepředvyplní",
           "Upomínky, týdenní souhrn a součty po splatnosti v e-mailech částku neuvedou"
         ],
         "how": [
@@ -14521,6 +14521,8 @@
         ],
         "changes": [
           "PDF, ISDOC, UBL a QR platbu vytvoří váš prohlížeč, na odkazu pro klienta prohlížeč klienta",
+          "Exporty pro účetní (CSV, Pohoda, Money S3), přiznání a přehledy DPH, podklady pro DAP, roční přehled, DPFO a přehledy pro ČSSZ a ZP sestaví váš prohlížeč po odemčení trezoru. Doklad, který nejde otevřít, soubor zastaví",
+          "Dashboard a přehled období připočtou zašifrované doklady, když je trezor odemčený",
           "Opakované faktury kopírují zašifrované částky beze změny"
         ]
       },
@@ -14795,7 +14797,7 @@
       "title": "Zašifrovat stávající částky",
       "what": "Prohlížeč načte doklady, jejichž částky jsou na serveru čitelné, zašifruje množství, ceny, sazby DPH, slevy a součty a uloží je zpět. Na serveru místo nich zůstanou nuly.",
       "keeps": "Číslo dokladu, variabilní symbol, splatnost, měna a stav zůstanou čitelné, takže platby podle VS dál najdete.",
-      "loses": "Server pak u těchto dokladů nevytvoří PDF, ISDOC ani exporty pro účetní a nezapočítá je do přehledů. Zaplacený doklad zůstane zaplacený.",
+      "loses": "Server pak u těchto dokladů nevytvoří PDF, ISDOC ani exporty, ty sestaví váš prohlížeč po odemčení trezoru. Do čistého příjmu je nezapočítá. Zaplacený doklad zůstane zaplacený.",
       "resumable": "Zamčené a částečně uhrazené doklady se přeskočí. Když okno zavřete, příště se pokračuje tam, kde jste skončili.",
       "cancel": "Zpět",
       "confirm": "Zašifrovat",
@@ -14812,7 +14814,12 @@
       "exportUnreadable": "Soubor nevznikl: {count, plural, one {# doklad} few {# doklady} other {# dokladů}} nejde tímto klíčem otevřít. Chybějící doklad by soubor zkreslil.",
       "creditNoteLocked": "Dobropis k faktuře se zašifrovanými částkami se připraví až po odemčení trezoru.",
       "creditNoteUnreadable": "Částky faktury nejde tímto klíčem otevřít, dobropis proto nevznikl.",
-      "bulkSealed": "Šablona má zašifrované částky. Hromadně z ní faktury nevystavíte, použijte ji pro jednotlivou fakturu."
+      "bulkSealed": "Šablona má zašifrované částky. Hromadně z ní faktury nevystavíte, použijte ji pro jednotlivou fakturu.",
+      "reportIncluded": "Včetně {count, plural, one {# dokladu} few {# dokladů} other {# dokladů}} se zašifrovanými částkami, které otevřel tento prohlížeč.",
+      "reportOpening": "Otevírám zašifrované částky…",
+      "reportUnreadable": "Přehled nevznikl: {count, plural, one {# doklad} few {# doklady} other {# dokladů}} nejde tímto klíčem otevřít. Bez nich by čísla vyšla nižší.",
+      "reportLocked": "Některé doklady roku mají zašifrované částky. Čísla spočítá váš prohlížeč, až odemknete trezor.",
+      "unlock": "Odemknout trezor"
     }
   },
   "vaultPublic": {

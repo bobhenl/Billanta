@@ -8427,7 +8427,8 @@
             "loadError": "Impossible de charger vos totaux. Saisissez les chiffres manuellement.",
             "regimeFlat": "D’après les paramètres, vous êtes au régime forfaitaire.",
             "regimeRegular": "D’après les paramètres, vous n’êtes pas au régime forfaitaire.",
-            "secondary": "D’après les paramètres, il s’agit d’une activité secondaire. Le calculateur compte les cotisations comme pour une activité principale ; pour une activité secondaire, elles peuvent être moins élevées."
+            "secondary": "D’après les paramètres, il s’agit d’une activité secondaire. Le calculateur compte les cotisations comme pour une activité principale ; pour une activité secondaire, elles peuvent être moins élevées.",
+            "sealed": "Rien n’est prérempli : {count, plural, one {# document a} other {# documents ont}} des montants chiffrés que le serveur ne peut pas additionner. Saisissez vos recettes et dépenses à la main."
           }
         },
         "vat": {
@@ -14503,9 +14504,8 @@
         "loses": [
           "Rapprochement automatique des paiements par montant : un paiement portant le VS d’un document chiffré attend votre confirmation manuelle",
           "Paiements partiels : un document chiffré ne peut être marqué que comme payé en totalité, sans frais ni montant crédité",
-          "Exports pour le comptable, déclarations et rapports de TVA du serveur : ils refusent les documents aux montants chiffrés et les listent",
           "Envoi via Peppol, suggestions de l’IA avec montants et paiement par carte",
-          "Le tableau de bord, le revenu net et les rapports ne comptent que les documents non chiffrés et indiquent combien ils en ont laissé de côté",
+          "Le revenu net ne compte que les documents non chiffrés et indique combien il en a laissé de côté. Le calculateur de l’impôt forfaitaire ne préremplit alors rien",
           "Les relances, le résumé hebdomadaire et les totaux en retard dans les e-mails n’indiquent pas le montant"
         ],
         "how": [
@@ -14516,6 +14516,8 @@
         ],
         "changes": [
           "Le PDF, l’ISDOC, l’UBL et le paiement QR sont créés par votre navigateur, et sur le lien client par celui du client",
+          "Les exports pour le comptable (CSV, Pohoda, Money S3), les déclarations de TVA, la base de la déclaration de revenus, le bilan annuel et les relevés pour la ČSSZ et l’assurance maladie sont créés par votre navigateur une fois le coffre déverrouillé. Un document impossible à ouvrir bloque le fichier",
+          "Le tableau de bord et le rapport de période ajoutent les documents chiffrés tant que le coffre est déverrouillé",
           "Les factures récurrentes copient les montants chiffrés sans les modifier"
         ]
       },
@@ -14783,7 +14785,7 @@
       "title": "Chiffrer les montants existants",
       "what": "Le navigateur charge les documents dont les montants sont lisibles sur le serveur, chiffre les quantités, prix, taux de TVA, remises et totaux, puis les enregistre. Des zéros restent à leur place sur le serveur.",
       "keeps": "Le numéro du document, le VS, l’échéance, la devise et le statut restent lisibles, vous retrouvez donc toujours les paiements par VS.",
-      "loses": "Le serveur ne créera plus de PDF, d’ISDOC ni d’exports comptables pour ces documents et ne les comptera pas dans les rapports. Un document payé reste payé.",
+      "loses": "Le serveur ne créera plus de PDF, d’ISDOC ni d’exports pour ces documents ; votre navigateur les crée une fois le coffre déverrouillé. Le revenu net ne les compte pas. Un document payé reste payé.",
       "resumable": "Les documents verrouillés et partiellement payés sont ignorés. Si vous fermez la fenêtre, la prochaine fois reprend là où vous vous êtes arrêté.",
       "cancel": "Retour",
       "confirm": "Chiffrer",
@@ -14800,7 +14802,12 @@
       "exportUnreadable": "Aucun fichier créé : {count, plural, one {# document ne peut pas être ouvert} other {# documents ne peuvent pas être ouverts}} avec cette clé. Un document manquant fausserait le fichier.",
       "creditNoteLocked": "L'avoir d'une facture aux montants chiffrés est préparé après le déverrouillage du coffre.",
       "creditNoteUnreadable": "Les montants de la facture ne peuvent pas être ouverts avec cette clé, aucun avoir n'a donc été créé.",
-      "bulkSealed": "Ce modèle a des montants chiffrés. Il ne sert pas à la facturation groupée, seulement à une facture individuelle."
+      "bulkSealed": "Ce modèle a des montants chiffrés. Il ne sert pas à la facturation groupée, seulement à une facture individuelle.",
+      "reportIncluded": "Inclut {count, plural, one {# document} other {# documents}} aux montants chiffrés, ouverts par ce navigateur.",
+      "reportOpening": "Ouverture des montants chiffrés…",
+      "reportUnreadable": "Pas de rapport : {count, plural, one {# document ne peut} other {# documents ne peuvent}} pas être ouverts avec cette clé. Sans eux, les chiffres seraient trop bas.",
+      "reportLocked": "Certains documents de l’année ont des montants chiffrés. Votre navigateur calcule les chiffres une fois le coffre déverrouillé.",
+      "unlock": "Déverrouiller le coffre"
     }
   },
   "vaultPublic": {

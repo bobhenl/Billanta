@@ -12,19 +12,18 @@ import { type ExportDateBy, type ExportPeriod, ExportsService, VatRateUnavailabl
 import { ReportRates } from "./uniform-rate";
 import type { VatExportWarning, VatPeriod } from "./vat-returns";
 import { FLAT_RATES, paidAdvances, type FlatRate } from "./annual-summary";
-import {
-  computeCssz,
-  computeDpfo,
-  computeHealth,
-  CSSZ_OSVC_YEARS,
-  dpfdpFormFor,
-  FormNotPublishedError,
-  generateCsszOsvc,
-  generateDpfdp,
-  HEALTH_INSURERS,
-} from "./annual-filings";
+import { CSSZ_OSVC_YEARS, dpfdpFormFor, FormNotPublishedError, generateCsszOsvc, generateDpfdp, HEALTH_INSURERS } from "./annual-filings";
 import { submitterFromTenant } from "./vat-returns";
-import { computeTaxReturnBasis, isLegalEntityName, normalizeTaxAdvances } from "@faktur/cz-compliance";
+import {
+  annualFilingLinesOf,
+  FILING_PERSON_PATTERNS,
+  isLegalEntityName,
+  normalizeTaxAdvances,
+  taxReturnReportOf,
+  type AnnualFilingsInputs,
+  type FilingFigures,
+  type TaxReturnInputs,
+} from "@faktur/cz-compliance";
 import { taxReturnCsv, taxReturnFileName, taxReturnPdf, type TaxReturnReport } from "./tax-return-basis";
 import { tenantCountry, tenantHomeCurrencyOf } from "../tenants/home-currency";
 import { spendFeature } from "../billing/plan-limits";
@@ -146,15 +145,20 @@ const filingsQuerySchema = annualQuerySchema.extend({
 // Personal data for the files travels in the POST body only (never in a URL)
 // and is not stored: it goes straight into the generated XML.
 const filingPersonSchema = z.object({
-  birthNumber: z.string().regex(/^\d{6}\/?\d{3,4}$/).optional(),
-  birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  birthNumber: z.string().regex(FILING_PERSON_PATTERNS.birthNumber).optional(),
+  birthDate: z.string().regex(FILING_PERSON_PATTERNS.birthDate).optional(),
   taxOffice: z.coerce.number().int().min(1).max(9999).optional(),
   taxWorkplace: z.coerce.number().int().min(1).max(9999).optional(),
-  dataBox: z.string().regex(/^[a-z0-9]{7}$/i).optional(),
-  variableSymbol: z.string().regex(/^\d{1,10}$/).optional(),
-  ossz: z.string().regex(/^\d{3}$/).optional(),
+  dataBox: z.string().regex(FILING_PERSON_PATTERNS.dataBox).optional(),
+  variableSymbol: z.string().regex(FILING_PERSON_PATTERNS.variableSymbol).optional(),
+  ossz: z.string().regex(FILING_PERSON_PATTERNS.ossz).optional(),
 });
 const filingBodySchema = filingsQuerySchema.merge(filingPersonSchema);
+
+/** `?file=` of an inputs route: the browser is about to build that file, so the plan counts it. */
+const taxReturnInputsSchema = taxReturnQuerySchema.extend({ file: z.enum(["csv", "pdf"]).optional() });
+const filingsInputsSchema = filingsQuerySchema.extend({ file: z.enum(["dpfdp", "osvc"]).optional() });
+const accountingFormatSchema = z.enum(["pohoda", "money-s3"]);
 
 /** Exports for the accountant. Any member (incl. the accountant role) may download. */
 @ApiTags("exports")
@@ -213,6 +217,22 @@ export class ExportsController {
     const body = await this.exportsService.moneyS3Xml(req.tenantDb!, period, tenant!);
     await this.spend(req, "accounting_export");
     this.send(res, body, "application/xml; charset=utf-8", `money-s3-${period.label}.xml`);
+  }
+
+  @Get("accounting-inputs")
+  @ApiOperation({
+    summary:
+      "Confidential mode: what pohoda.xml / money-s3.xml are built from (?format=pohoda|money-s3 plus the period), sealed documents with their envelopes, so the browser builds the XML",
+  })
+  async accountingInputs(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>) {
+    const format = accountingFormatSchema.safeParse(query.format);
+    if (!format.success) throw new BadRequestException("invalid_format");
+    const period = parsePeriod(query);
+    const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
+    const inputs = await this.exportsService.accountingInputs(req.tenantDb!, format.data, period, tenant!);
+    // The file is built in the browser, so the plan counts it here.
+    await this.spend(req, "accounting_export");
+    return inputs;
   }
 
   @Get("annual-summary")
@@ -324,6 +344,25 @@ export class ExportsController {
    * a sole trader by the day paid.
    */
   private async loadTaxReturn(req: TenantScopedRequest, query: unknown): Promise<TaxReturnReport> {
+    const { inputs, sealed } = await this.taxReturnInputsOf(req, query);
+    refuseSealedSet(sealed);
+    return taxReturnReportOf(inputs, inputs.plainIncome, inputs.counts);
+  }
+
+  @Get("tax-return-basis-inputs")
+  @ApiOperation({
+    summary:
+      "Confidential mode: the tax-return basis apart from the sealed income (?year=&rate=, &file=csv|pdf when a file is built), sealed documents with their envelope and rate, so the browser builds the report",
+  })
+  async taxReturnInputs(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>): Promise<TaxReturnInputs> {
+    const parsed = taxReturnInputsSchema.safeParse(query);
+    if (!parsed.success) throw new BadRequestException("invalid_tax_return_query");
+    const { inputs } = await this.taxReturnInputsOf(req, parsed.data);
+    if (parsed.data.file) await this.spend(req, "income_tax_export");
+    return inputs;
+  }
+
+  private async taxReturnInputsOf(req: TenantScopedRequest, query: unknown): Promise<{ inputs: TaxReturnInputs; sealed: { count: number; ids: string[] } }> {
     const parsed = taxReturnQuerySchema.safeParse(query);
     if (!parsed.success) throw new BadRequestException("invalid_tax_return_query");
     const { year, rate } = parsed.data;
@@ -341,26 +380,23 @@ export class ExportsController {
         rates: ReportRates.fromPrefs(tenant?.invoiceFormPrefs, new Date(), tenantHomeCurrencyOf(tenant)),
         homeCurrency: tenantHomeCurrencyOf(tenant),
       });
-      refuseSealedSet(s.sealed);
-      const b = computeTaxReturnBasis({
+      const inputs: TaxReturnInputs = {
         country,
         year,
-        income: s.income,
-        expensesByCategory: s.byCategory,
         vatPayer,
         legalEntity,
         flatRate: Number(rate) as FlatRate,
         paidSocial: paid.paidSocial,
         paidHealth: paid.paidHealth,
-      });
-      return {
-        ...b,
+        expensesByCategory: s.byCategory,
         companyName: tenant?.legalName ?? "",
         basis,
-        vatPayer,
         flatTaxRegime: tenant?.flatTaxRegime === true,
+        plainIncome: s.plainIncome,
         counts: s.counts,
+        sealedDocs: s.sealedDocs,
       };
+      return { inputs, sealed: s.sealed };
     } catch (err) {
       if (err instanceof VatRateUnavailableError) throw new ServiceUnavailableException(err.message);
       throw err;
@@ -419,34 +455,62 @@ export class ExportsController {
   }
 
   private async loadFilings(req: TenantScopedRequest, q: z.infer<typeof filingsQuerySchema>) {
-    const summary = await this.loadAnnual(req, q);
-    // Filings prefilled without the sealed income would understate it.
+    const { summary, tenant, figures } = await this.filingFigures(req, q);
+    // Filings prefilled without the sealed income would understate it; the browser builds them (annual-filings-inputs).
     refuseSealedSet(summary.sealed);
-    const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
-    if (!tenant) throw new NotFoundException("tenant_not_found");
-    // DPFO, přehled ČSSZ and ZP are Czech filings; a Slovak company's amounts are in euros.
-    if (summary.country !== "CZ") throw new BadRequestException("country_not_supported");
-    const months = q.months ?? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     try {
-      const dpfo = computeDpfo({
-        year: summary.year,
-        income: summary.income,
-        actualExpenses: summary.actualExpenses,
-        flatRate: summary.flatRate,
-        basis: q.basis,
-        taxAdvancesPaid: q.taxAdvancesPaid,
-        spouseCredit: q.spouseCredit,
-        months: months.length,
-      });
-      // ř. 113 of the DAP is the base for both přehledy.
-      const profit = Math.max(0, dpfo.rows.r113);
-      const cssz = computeCssz({ year: summary.year, profit, activity: q.activity, months, paidAdvances: summary.social.paid ?? 0 });
-      const health = computeHealth({ year: summary.year, profit, months: months.length, paidAdvances: summary.health.paid ?? 0 });
-      return { summary, tenant, lines: { dpfo, cssz, health } };
+      return { summary, tenant, lines: annualFilingLinesOf(figures, summary.plainIncome) };
     } catch (err) {
       if (err instanceof FormNotPublishedError) throw new NotFoundException("year_not_supported");
       throw err;
     }
+  }
+
+  private async filingFigures(req: TenantScopedRequest, q: z.infer<typeof filingsQuerySchema>) {
+    const summary = await this.loadAnnual(req, q);
+    const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
+    if (!tenant) throw new NotFoundException("tenant_not_found");
+    // DPFO, přehled ČSSZ and ZP are Czech filings; a Slovak company's amounts are in euros.
+    if (summary.country !== "CZ") throw new BadRequestException("country_not_supported");
+    const figures: FilingFigures = {
+      year: summary.year,
+      actualExpenses: summary.actualExpenses,
+      flatRate: summary.flatRate,
+      basis: q.basis,
+      activity: q.activity,
+      months: q.months,
+      taxAdvancesPaid: q.taxAdvancesPaid,
+      spouseCredit: q.spouseCredit,
+      paidSocial: summary.social.paid ?? 0,
+      paidHealth: summary.health.paid ?? 0,
+    };
+    return { summary, tenant, figures };
+  }
+
+  @Get("annual-filings-inputs")
+  @ApiOperation({
+    summary:
+      "Confidential mode: what the annual filings are computed from apart from the sealed income (&file=dpfdp|osvc when a file is built), sealed documents with their envelope and rate; personal data never comes here",
+  })
+  async filingsInputs(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>): Promise<AnnualFilingsInputs> {
+    const parsed = filingsInputsSchema.safeParse(query);
+    if (!parsed.success) throw new BadRequestException("invalid_filings_query");
+    const { summary, tenant, figures } = await this.filingFigures(req, parsed.data);
+    const forms = { dpfdp: dpfdpFormFor(summary.year)?.form ?? null, cssz: (CSSZ_OSVC_YEARS as readonly number[]).includes(summary.year) };
+    const { file } = parsed.data;
+    if ((file === "dpfdp" && !forms.dpfdp) || (file === "osvc" && !forms.cssz)) throw new NotFoundException("form_not_published");
+    if (file) await this.spend(req, "income_tax_export");
+    return {
+      vatPayer: summary.vatPayer,
+      plainIncome: summary.plainIncome,
+      counts: summary.counts,
+      sealedDocs: summary.sealedDocs,
+      figures,
+      submitter: submitterFromTenant(tenant),
+      paidSource: summary.paidSource,
+      forms,
+      insurers: HEALTH_INSURERS,
+    };
   }
 
   @Get("dphdp3.xml")

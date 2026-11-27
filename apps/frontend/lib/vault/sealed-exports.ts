@@ -1,16 +1,27 @@
 import {
+  buildSealedAccountingXml,
+  buildSealedFilingLines,
   buildSealedInvoicesCsv,
+  buildSealedTaxReturn,
   buildSealedVatFiling,
+  buildSealedYearIncome,
+  sealedAccountingEnvelopes,
   sealedEnvelopesOf,
+  sealedIncomeEnvelopes,
+  type AnnualFilingsInputs,
   type DocumentAmounts,
+  type ItemAmounts,
+  type SealedAccountingInputs,
   type SealedCsvInputs,
   type SealedVatInputs,
-  type VaultKey
+  type TaxReturnInputs,
+  type VaultKey,
+  type YearIncomeInputs
 } from '@faktur/cz-compliance';
-import { openDocumentAmounts } from './amounts';
+import { openDocumentAmounts, openItemAmounts } from './amounts';
 
 /*
- * The accountant CSV and the VAT filings when some documents have sealed
+ * The accountant's files, the VAT filings and the year's reports when some documents have sealed
  * amounts. The server refuses the file (409 amounts_sealed) and hands out
  * its inputs instead; the envelopes are opened here and the file is built
  * with the server's own builders (cz-compliance). Nothing opened is sent.
@@ -27,11 +38,15 @@ export async function isAmountsSealedRefusal(res: Response): Promise<boolean> {
   }
 }
 
-async function openAll(key: VaultKey, ciphers: string[]): Promise<Map<string, DocumentAmounts>> {
-  const opened = new Map<string, DocumentAmounts>();
+function openAll(key: VaultKey, ciphers: string[]): Promise<Map<string, DocumentAmounts>> {
+  return openEach(key, ciphers, openDocumentAmounts);
+}
+
+async function openEach<T>(key: VaultKey, ciphers: string[], open: (key: VaultKey, cipher: string) => Promise<T>): Promise<Map<string, T>> {
+  const opened = new Map<string, T>();
   await Promise.all(
     [...new Set(ciphers)].map((c) =>
-      openDocumentAmounts(key, c).then(
+      open(key, c).then(
         (v) => void opened.set(c, v),
         // Another key or a broken envelope: the builder counts it as missing.
         () => undefined
@@ -49,6 +64,28 @@ export async function sealedInvoicesCsv(key: VaultKey, inputs: SealedCsvInputs) 
 /** The VAT filing XML (null body: nothing to report), or how many documents could not be opened. */
 export async function sealedVatFiling(key: VaultKey, inputs: SealedVatInputs) {
   return buildSealedVatFiling(inputs, await openAll(key, sealedEnvelopesOf(inputs)));
+}
+
+/** The Pohoda or Money S3 XML, or how many documents could not be opened. */
+export async function sealedAccountingXml(key: VaultKey, inputs: SealedAccountingInputs) {
+  const { documents, items } = sealedAccountingEnvelopes(inputs);
+  const [docs, lines] = await Promise.all([openAll(key, documents), openEach<ItemAmounts>(key, items, openItemAmounts)]);
+  return buildSealedAccountingXml(inputs, docs, lines);
+}
+
+/** The tax-return basis with the sealed income, or how many documents could not be opened. */
+export async function sealedTaxReturn(key: VaultKey, inputs: TaxReturnInputs) {
+  return buildSealedTaxReturn(inputs, await openAll(key, sealedIncomeEnvelopes(inputs)));
+}
+
+/** The roční přehled income with the sealed documents, or how many could not be opened. */
+export async function sealedYearIncome(key: VaultKey, inputs: YearIncomeInputs) {
+  return buildSealedYearIncome(inputs, await openAll(key, sealedIncomeEnvelopes(inputs)));
+}
+
+/** The DPFO / ČSSZ / ZP lines with the sealed income, or how many documents could not be opened. */
+export async function sealedFilingLines(key: VaultKey, inputs: AnnualFilingsInputs) {
+  return buildSealedFilingLines(inputs, await openAll(key, sealedIncomeEnvelopes(inputs)));
 }
 
 /** Saves a file; a Blob keeps its bytes (a CSV's BOM would not survive `res.text()`). */

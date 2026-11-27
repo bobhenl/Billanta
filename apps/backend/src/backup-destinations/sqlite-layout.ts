@@ -96,6 +96,13 @@ export function sqliteLayout(bundle: ExportBundle): SqliteTable[] {
     tableOf(schema.expenses, bundle.expenses),
     tableOf(schema.recurringInvoiceTemplates, bundle.recurringTemplates ?? []),
   ];
+  if (bundle.attachments) {
+    // As stored: an encrypted file stays ciphertext with its `enc_meta`, opened only by a restore with the key.
+    tables.push(
+      tableOf(schema.invoiceAttachments, bundle.attachments.invoices, { references: { invoice_id: "invoices(id)" } }),
+      tableOf(schema.expenseAttachments, bundle.attachments.expenses, { references: { expense_id: "expenses(id)" } }),
+    );
+  }
   if (bundle.vault) {
     tables.push(
       tableOf(schema.tenantVaults, [bundle.vault.settings], { primaryKey: "tenant_id" }),
