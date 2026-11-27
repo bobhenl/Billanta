@@ -1,4 +1,5 @@
-import { BadRequestException, ForbiddenException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ConflictException, ForbiddenException, NotFoundException } from "@nestjs/common";
+import { generateDataKey, seal } from "@faktur/cz-compliance";
 import { PgDialect } from "drizzle-orm/pg-core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { EmailService } from "../email/email.service";
@@ -21,7 +22,7 @@ vi.mock("../exports/ecb-rates", async (orig) => ({ ...(await orig<typeof import(
 const limits = vi.hoisted(() => ({ countIssuedDocument: vi.fn(async () => undefined) }));
 vi.mock("../billing/plan-limits", () => ({ countIssuedDocument: limits.countIssuedDocument }));
 
-type MockEmailService ={ sendInvoiceEmail: ReturnType<typeof vi.fn> };
+type MockEmailService = { sendInvoiceEmail: ReturnType<typeof vi.fn>; sendNow: ReturnType<typeof vi.fn> };
 type MockInvoicePdfService = { generate: ReturnType<typeof vi.fn> };
 
 /**
@@ -140,7 +141,7 @@ describe("InvoicesService.sendInvoice", () => {
   let service: InvoicesService;
 
   beforeEach(() => {
-    emailService = { sendInvoiceEmail: vi.fn().mockResolvedValue(undefined) };
+    emailService = { sendInvoiceEmail: vi.fn().mockResolvedValue(undefined), sendNow: vi.fn().mockResolvedValue(undefined) };
     invoicePdfService = { generate: vi.fn().mockResolvedValue(Buffer.from("%PDF-fake")) };
     service = new InvoicesService(
       emailService as unknown as EmailService,
@@ -179,6 +180,9 @@ describe("InvoicesService.sendInvoice", () => {
       clientPortalLink: "acme-s-r-o-Qw12Er34Ty56",
       language: "cs",
       documentType: "invoice",
+      variableSymbol: null,
+      // best effort: this fixture has no tenant data to build a QR from
+      paymentQr: null,
       credit: {
         label: "Vystaveno v aplikaci Billanta",
         url: expect.stringMatching(/\/cs\?utm_source=invoice&utm_medium=footer&utm_content=email&ref=AbCd1234$/),
@@ -264,6 +268,48 @@ describe("InvoicesService.sendInvoice", () => {
       expect.anything(),
     );
   });
+
+  // Files a member's browser decrypted for this one e-mail (send-with-files).
+  const passed = [{ filename: "uctenka.pdf", content: Buffer.from("%PDF-1.7 decrypted"), contentType: "application/pdf" }];
+
+  it("sends decrypted files straight to the provider, never through the stored outbox", async () => {
+    const invoice = makeInvoice();
+    const select = vi
+      .fn()
+      .mockReturnValueOnce(makeSelectChain([invoice]))
+      .mockReturnValueOnce(makeSelectChain([makeContact()]))
+      .mockReturnValueOnce(makeSelectChain(lineItems))
+      .mockReturnValueOnce(makeSelectChain([{ companyName: "Vejtom", publicProfile: {}, invoiceFormPrefs: {} }]))
+      .mockReturnValueOnce(makeSelectChain([{ planEnforced: true, invoiceFormPrefs: {}, referralCode: null }]));
+    const update = vi.fn().mockReturnValue(makeUpdateChain([invoice]));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = { select, update } as any;
+
+    await service.sendInvoice(db, "inv-1", undefined, "user-1", passed);
+
+    expect(emailService.sendInvoiceEmail).not.toHaveBeenCalled();
+    expect(emailService.sendNow).toHaveBeenCalledWith(expect.objectContaining({ to: "client@example.com" }), expect.objectContaining({ userId: "user-1" }));
+  });
+
+  it("refuses decrypted files when the e-mail would wait for a browser, so they are never queued", async () => {
+    const invoice = makeInvoice({ noteAbove: await seal(await generateDataKey(), "důvěrné") });
+    const select = vi
+      .fn()
+      .mockReturnValueOnce(makeSelectChain([invoice]))
+      .mockReturnValueOnce(makeSelectChain([makeContact()]))
+      .mockReturnValueOnce(makeSelectChain(lineItems))
+      // Důvěrný režim set to "wait for the PDF", and the company attaches PDFs
+      .mockReturnValueOnce(makeSelectChain([{ mode: "wait" }]))
+      .mockReturnValueOnce(makeSelectChain([{ emailPrefs: { attachPdf: true } }]));
+    const insert = vi.fn();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = { select, update: vi.fn(), insert } as any;
+
+    await expect(service.sendInvoice(db, "inv-1", "tenant-1", "user-1", passed)).rejects.toBeInstanceOf(ConflictException);
+    expect(insert).not.toHaveBeenCalled();
+    expect(emailService.sendNow).not.toHaveBeenCalled();
+    expect(emailService.sendInvoiceEmail).not.toHaveBeenCalled();
+  });
 });
 
 describe("InvoicesService.sendReminder", () => {
@@ -315,7 +361,7 @@ describe("InvoicesService.issue", () => {
   let service: InvoicesService;
 
   beforeEach(() => {
-    emailService = { sendInvoiceEmail: vi.fn().mockResolvedValue(undefined) };
+    emailService = { sendInvoiceEmail: vi.fn().mockResolvedValue(undefined), sendNow: vi.fn().mockResolvedValue(undefined) };
     invoicePdfService = { generate: vi.fn().mockResolvedValue(Buffer.from("%PDF-fake")) };
     service = new InvoicesService(
       emailService as unknown as EmailService,

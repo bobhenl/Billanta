@@ -1,21 +1,26 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException, Optional } from "@nestjs/common";
-import { and, asc, desc, eq, inArray, isNull, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, gte, inArray, isNull, lt, or, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { AuditService } from "../audit/audit.service";
 import { planAllows } from "../billing/plan-access";
 import { loadPlanSummary } from "../billing/plan.guard";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
+import { documentKeyWrap } from "@faktur/cz-compliance";
 import { MAX_ATTACHMENT_BYTES } from "../invoices/invoice-attachments.service";
-import { confidentialPlanRequired, isSealed } from "./sealed";
+import { confidentialPlanRequired, isSealed, rekeyWrites } from "./sealed";
 import { assertFileSealingAllowed, classifyUpload, ENCRYPTED_FILENAME, ENCRYPTED_MIME, type UploadedFileLike } from "./sealed-files";
+import { openablePage, vaultDocumentView } from "./documents";
+import { assertInvoiceOpen } from "../invoices/invoice-lock";
 import type {
   EnableVaultDto,
   MemberWrapDto,
   PlainAttachmentsQueryDto,
   PlainInvoicesQueryDto,
   RecoveryWrapDto,
+  RekeyInvoiceDto,
   SealInvoicesDto,
+  VaultDocumentsQueryDto,
   VaultSettingsDto,
 } from "./dto/vault.dto";
 
@@ -88,6 +93,8 @@ export class VaultService {
       enabled: true as const,
       planAllowed,
       sealNew: vault.sealNew,
+      emailMode: vault.emailMode,
+      autoSendPdf: vault.autoSendPdf,
       categories: vault.categories,
       keyCheck: vault.keyCheck,
       enabledAt: vault.createdAt,
@@ -167,7 +174,13 @@ export class VaultService {
     }
     await db
       .update(schema.tenantVaults)
-      .set({ ...(dto.sealNew !== undefined ? { sealNew: dto.sealNew } : {}), ...(categories ? { categories } : {}), updatedAt: new Date() })
+      .set({
+        ...(dto.sealNew !== undefined ? { sealNew: dto.sealNew } : {}),
+        ...(dto.emailMode !== undefined ? { emailMode: dto.emailMode } : {}),
+        ...(dto.autoSendPdf !== undefined ? { autoSendPdf: dto.autoSendPdf } : {}),
+        ...(categories ? { categories } : {}),
+        updatedAt: new Date(),
+      })
       .where(eq(schema.tenantVaults.tenantId, tenantId));
     if (categories) await this.audit?.record(db, tenantId, { entityType: "tenant", entityId: tenantId, action: "vault_categories_changed" });
     return this.status(db, tenantId, user.id);
@@ -285,7 +298,56 @@ export class VaultService {
         noteBelow: plain(r.noteBelow),
         internalNote: plain(r.internalNote),
         items: items.filter((it) => it.invoiceId === r.id && !isSealed(it.description)).map(({ id, description }) => ({ id, description })),
+        // The key the document's sealed printed texts already use, so the rest joins it (one key per client link).
+        documentKeyWrap:
+          [r.noteAbove, r.noteBelow, ...items.filter((it) => it.invoiceId === r.id).map((it) => it.description)].map(documentKeyWrap).find(Boolean) ?? null,
       })),
+    };
+  }
+
+  /**
+   * Documents with their texts as stored, a page at a time, ordered by id.
+   * The browser opens the envelopes after unlock for its own search, item
+   * suggestions and the readable export; nothing here can open them.
+   */
+  async documents(db: TenantDb, tenantId: string, user: AuthenticatedUser, query: VaultDocumentsQueryDto) {
+    await this.requireVault(db, tenantId);
+    const i = schema.invoices;
+    const sealedText = (column: unknown) => sql`${column} LIKE 'enc:v1:%'`;
+    const hasSealed = or(
+      sealedText(i.noteAbove),
+      sealedText(i.noteBelow),
+      sealedText(i.internalNote),
+      sql`EXISTS (SELECT 1 FROM ${schema.invoiceLineItems} li WHERE li.invoice_id = ${i.id} AND li.description LIKE 'enc:v1:%')`,
+    );
+    const rows = await db
+      .select({ invoice: i, legalName: schema.contacts.legalName, ico: schema.contacts.ico })
+      .from(i)
+      .leftJoin(schema.contacts, eq(schema.contacts.id, i.contactId))
+      .where(
+        and(
+          query.after ? gt(i.id, query.after) : undefined,
+          query.from ? gte(i.issueDate, new Date(`${query.from}T00:00:00Z`)) : undefined,
+          query.to ? lt(i.issueDate, new Date(Date.parse(`${query.to}T00:00:00Z`) + 86_400_000)) : undefined,
+          query.sealed_only === "true" ? hasSealed : undefined,
+        ),
+      )
+      .orderBy(asc(i.id))
+      .limit(query.limit + 1);
+    const { open, skippedLocked, next } = openablePage(
+      rows.map((r) => ({ ...r, id: r.invoice.id, lockedAt: r.invoice.lockedAt })),
+      query.limit,
+      user,
+    );
+    const items = open.length
+      ? await db.select().from(schema.invoiceLineItems).where(inArray(schema.invoiceLineItems.invoiceId, open.map((r) => r.id)))
+      : [];
+    return {
+      documents: open.map((r) =>
+        vaultDocumentView(r.invoice, r.invoice.contactId && r.legalName != null ? { legalName: r.legalName, ico: r.ico } : null, items.filter((it) => it.invoiceId === r.id)),
+      ),
+      skippedLocked,
+      next,
     };
   }
 
@@ -320,5 +382,42 @@ export class VaultService {
       sealed++;
     }
     return { sealed };
+  }
+
+  /**
+   * Stores one document's printed texts re-encrypted under its own key (see
+   * `rekeyWrites`). Like `seal`, only text columns change and not
+   * `updated_at`. A locked document needs the usual fresh re-auth.
+   */
+  async rekey(db: TenantDb, tenantId: string, user: AuthenticatedUser, id: string, dto: RekeyInvoiceDto) {
+    await this.requireVault(db, tenantId);
+    await assertInvoiceOpen(db, id, user);
+    const [invoice] = await db
+      .select({ id: schema.invoices.id, invoiceNumber: schema.invoices.invoiceNumber, noteAbove: schema.invoices.noteAbove, noteBelow: schema.invoices.noteBelow })
+      .from(schema.invoices)
+      .where(and(eq(schema.invoices.id, id), eq(schema.invoices.tenantId, tenantId)))
+      .limit(1);
+    if (!invoice) throw new NotFoundException("Invoice not found");
+    const stored = await db
+      .select({ id: schema.invoiceLineItems.id, description: schema.invoiceLineItems.description })
+      .from(schema.invoiceLineItems)
+      .where(eq(schema.invoiceLineItems.invoiceId, id));
+    const byId = new Map(stored.map((i) => [i.id, i.description]));
+    if (dto.items.some((i) => !byId.has(i.id))) throw new NotFoundException("rekey_unknown_item");
+    rekeyWrites([
+      ...(dto.noteAbove ? [{ incoming: dto.noteAbove, stored: invoice.noteAbove }] : []),
+      ...(dto.noteBelow ? [{ incoming: dto.noteBelow, stored: invoice.noteBelow }] : []),
+      ...dto.items.map((i) => ({ incoming: i.description, stored: byId.get(i.id) })),
+    ]);
+    const notes = { ...(dto.noteAbove ? { noteAbove: dto.noteAbove } : {}), ...(dto.noteBelow ? { noteBelow: dto.noteBelow } : {}) };
+    if (Object.keys(notes).length) await db.update(schema.invoices).set(notes).where(eq(schema.invoices.id, id));
+    for (const item of dto.items) {
+      await db
+        .update(schema.invoiceLineItems)
+        .set({ description: item.description })
+        .where(and(eq(schema.invoiceLineItems.id, item.id), eq(schema.invoiceLineItems.invoiceId, id)));
+    }
+    await this.audit?.record(db, tenantId, { entityType: "invoice", entityId: id, entityLabel: invoice.invoiceNumber, action: "sealed" });
+    return { rekeyed: Object.keys(notes).length + dto.items.length };
   }
 }

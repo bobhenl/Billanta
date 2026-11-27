@@ -18,6 +18,8 @@ export interface OutgoingAttachment {
   filename: string;
   content: Buffer;
   contentType?: string;
+  /** An inline image the HTML shows as `cid:<id>` (the payment QR). */
+  contentId?: string;
 }
 
 export interface OutgoingEmail {
@@ -102,7 +104,12 @@ export class EmailOutboxService {
           textBody: email.text ?? htmlToText(email.html),
           headers: email.headers ?? {},
           attachments: email.attachments?.length
-            ? email.attachments.map((a) => ({ filename: a.filename, contentType: a.contentType, content: a.content.toString("base64") }))
+            ? email.attachments.map((a) => ({
+                filename: a.filename,
+                contentType: a.contentType,
+                content: a.content.toString("base64"),
+                ...(a.contentId ? { contentId: a.contentId } : {}),
+              }))
             : null,
           maxAttempts: OUTBOX.maxAttempts,
           sendAfter,
@@ -111,6 +118,43 @@ export class EmailOutboxService {
         .returning({ id: schema.emailOutbox.id });
       return row?.id ?? null;
     });
+  }
+
+  /**
+   * The history row of an e-mail `EmailService.sendNow` already delivered.
+   * Its attachments are not kept, only named in the e-mail itself: that is
+   * the point of sending past the queue (the PDF of an encrypted document).
+   */
+  async recordSent(email: OutgoingEmail, sent: { id: string; providerId: string | null }, ctx: QueueContext): Promise<void> {
+    const now = new Date();
+    await this.inTenant(ctx, (db) =>
+      db
+        .insert(schema.emailOutbox)
+        .values({
+          id: sent.id,
+          tenantId: ctx.tenantId,
+          userId: email.userId ?? null,
+          kind: email.kind,
+          category: email.category,
+          idempotencyKey: (email.idempotencyKey ?? `${email.kind}:${sent.id}`).slice(0, 200),
+          recipient: email.to.trim(),
+          fromName: email.fromName ?? null,
+          replyTo: email.replyTo ?? null,
+          bcc: email.bcc ?? null,
+          subject: email.subject.slice(0, 300),
+          html: email.html,
+          textBody: email.text ?? htmlToText(email.html),
+          headers: email.headers ?? {},
+          attachments: null,
+          status: "sent",
+          attempts: 1,
+          maxAttempts: OUTBOX.maxAttempts,
+          providerMessageId: sent.providerId,
+          sentAt: now,
+          sendAfter: now,
+        })
+        .onConflictDoNothing(),
+    );
   }
 
   /**

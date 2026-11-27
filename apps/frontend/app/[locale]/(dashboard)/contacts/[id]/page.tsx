@@ -10,12 +10,14 @@ import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import { formatDate, formatMoney, type InvoiceRow } from '@/lib/invoice-ui';
 import { EXPENSE_STATE_CLASSES, expenseState, type ExpensePage } from '@/lib/expense-ui';
 import { cn } from '@/lib/utils';
-import { fetchUsage } from '@/lib/tenant';
+import { fetchMyRole, fetchUsage } from '@/lib/tenant';
+import { auth } from '@/auth';
 import { lockOf } from '@/lib/usage';
 import type { Contact } from '../../invoices/new/types';
 import { InvoicesTable } from '../../invoices/invoices-table';
 import { ClientPortalCard } from './client-portal-card';
 import { ContactActions } from './contact-actions';
+import { ContactVisibilityCard, type TeamMemberOption } from './contact-visibility-card';
 import { SealButton } from '@/components/vault/seal-button';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -49,11 +51,17 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
   }
   if (!contact) notFound();
 
-  const [invoices, expensePage, usage] = await Promise.all([
+  const [invoices, expensePage, usage, role, session, team] = await Promise.all([
     apiFetch<InvoiceRow[]>(`/api/v1/invoices?contact_id=${contact.id}`).catch(() => [] as InvoiceRow[]),
     apiFetch<ExpensePage>('/api/v1/expenses?limit=100&page=1').catch(() => null),
-    fetchUsage()
+    fetchUsage(),
+    fetchMyRole().catch(() => null),
+    auth(),
+    apiFetch<{ members: { userId: string; name: string | null; email: string }[] }>('/api/v1/team').catch(() => null)
   ]);
+  const members: TeamMemberOption[] = (team?.members ?? []).map((m) => ({ userId: m.userId, name: m.name || m.email }));
+  // Same rule as the API (mayChangeContactVisibility): the company owner, or the member the client belongs to.
+  const canChangeVisibility = role === 'owner' || (!!contact.ownerUserId && contact.ownerUserId === session?.user?.id);
   const expenses = (expensePage?.data ?? []).filter((e) => e.supplierContactId === contact.id);
 
   // Per-currency stats over real (non-cancelled, non-quote) documents.
@@ -106,6 +114,7 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
             {contact.isStarred && <Star className="h-5 w-5 shrink-0 fill-warning text-warning" />}
             <ColorDot color={contact.color} className="h-3 w-3" />
             <span className="truncate">{contact.legalName}</span>
+            {contact.isPrivate && <Lock className="h-4 w-4 shrink-0 text-muted-foreground" aria-label={t('visibility.private')} />}
             {contact.aresVerifiedAt && <BadgeCheck className="h-5 w-5 shrink-0 text-primary" aria-label={t('aresVerified')} />}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -233,6 +242,13 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
               )}
             </dl>
           </section>
+          <ContactVisibilityCard
+            contactId={contact.id}
+            ownerUserId={contact.ownerUserId ?? null}
+            isPrivate={!!contact.isPrivate}
+            members={members}
+            canChange={canChangeVisibility}
+          />
           <ClientPortalCard contactId={contact.id} link={contact.portalLink ?? null} defaultLink={contact.portalLinkDefault ?? null} slug={contact.portalSlug ?? null} lock={lockOf(usage, 'client_portal')} />
           {/* ARES only knows Czech companies. */}
           {contact.ico && (contact.addressCountry || 'CZ') === 'CZ' && (

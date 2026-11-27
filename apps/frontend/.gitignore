@@ -19,3 +19,6 @@ next-env.d.ts
 
 # misc
 .DS_Store
+
+# written by scripts/vault-manifest.mjs after each build
+public/.well-known/billanta-vault.json

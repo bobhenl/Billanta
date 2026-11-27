@@ -33,6 +33,11 @@ const json = (method: string, body: unknown): RequestInit => ({
   body: JSON.stringify(body)
 });
 
+/** The company owner or whoever created it (the backend checks). */
+export async function setInvoicePrivate(id: string, isPrivate: boolean) {
+  return run<{ id: string; isPrivate: boolean }>(`/api/v1/invoices/${id}/private`, json('PATCH', { isPrivate }));
+}
+
 /** Owner/admin only (the backend checks); unlocking needs a fresh unlock first. */
 export async function setInvoiceLock(id: string, locked: boolean) {
   return run<{ id: string; locked: boolean }>(`/api/v1/invoices/${id}/lock`, json('PATCH', { locked }));

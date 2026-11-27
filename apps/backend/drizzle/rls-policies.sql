@@ -2057,14 +2057,16 @@ CREATE POLICY member_visibility ON contacts AS RESTRICTIVE
   END);
 
 -- A document is visible with its contact; one without a contact follows
--- the scope. The EXISTS runs under the contacts policies above.
+-- the scope. The EXISTS runs under the contacts policies above. An invoice
+-- marked private (0111) is left to the owner ('full') and its creator.
 DROP POLICY IF EXISTS member_visibility ON invoices;
 CREATE POLICY member_visibility ON invoices AS RESTRICTIVE
   USING (CASE (SELECT app_view_mode())
     WHEN 'full' THEN true
     ELSE created_by_user_id = nullif(current_setting('app.current_user_id', true), '')::uuid
-      OR (contact_id IS NULL AND (SELECT app_view_mode()) = 'all')
-      OR EXISTS (SELECT 1 FROM contacts c WHERE c.id = invoices.contact_id)
+      OR (NOT is_private AND (
+        (contact_id IS NULL AND (SELECT app_view_mode()) = 'all')
+        OR EXISTS (SELECT 1 FROM contacts c WHERE c.id = invoices.contact_id)))
   END);
 
 DROP POLICY IF EXISTS member_visibility ON expenses;
@@ -2103,6 +2105,98 @@ CREATE POLICY member_visibility ON bank_transactions AS RESTRICTIVE
     END
   END);
 
+-- Attachments follow their invoice, like the line items (0111): a private
+-- invoice's files are as hidden as the invoice itself.
+DROP POLICY IF EXISTS member_visibility ON invoice_attachments;
+CREATE POLICY member_visibility ON invoice_attachments AS RESTRICTIVE
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE EXISTS (SELECT 1 FROM invoices i WHERE i.id = invoice_attachments.invoice_id)
+  END);
+
+-- Receipts follow their expense the same way (0112).
+DROP POLICY IF EXISTS member_visibility ON expense_attachments;
+CREATE POLICY member_visibility ON expense_attachments AS RESTRICTIVE
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE EXISTS (SELECT 1 FROM expenses e WHERE e.id = expense_attachments.expense_id)
+  END);
+
+-- ---------------------------------------------------------------------------
+-- Change history and notifications name clients and invoices (0111)
+-- ---------------------------------------------------------------------------
+-- An entry about a client or an invoice the member can't see is hidden from
+-- them too, so the history and the bell don't spell out a private client's
+-- name. An entry about a record that no longer exists stays visible, as it
+-- always was: app_row_exists looks past the member's policies (SECURITY
+-- DEFINER, current tenant only, says yes or no and nothing else).
+CREATE OR REPLACE FUNCTION app_row_exists(p_kind text, p_id uuid)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT CASE p_kind
+    WHEN 'invoice' THEN EXISTS (SELECT 1 FROM invoices WHERE id = p_id AND tenant_id = nullif(current_setting('app.current_tenant_id', true), '')::uuid)
+    WHEN 'contact' THEN EXISTS (SELECT 1 FROM contacts WHERE id = p_id AND tenant_id = nullif(current_setting('app.current_tenant_id', true), '')::uuid)
+    WHEN 'expense' THEN EXISTS (SELECT 1 FROM expenses WHERE id = p_id AND tenant_id = nullif(current_setting('app.current_tenant_id', true), '')::uuid)
+    ELSE false
+  END;
+$$;
+
+REVOKE ALL ON FUNCTION app_row_exists(text, uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION app_row_exists(text, uuid) TO faktur_app;
+
+-- Runs as the caller, so the EXISTS sees what the member's policies show.
+CREATE OR REPLACE FUNCTION app_row_hidden(p_kind text, p_id uuid)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SET search_path = public
+AS $$
+  SELECT CASE p_kind
+    WHEN 'invoice' THEN NOT EXISTS (SELECT 1 FROM invoices WHERE id = p_id)
+    WHEN 'contact' THEN NOT EXISTS (SELECT 1 FROM contacts WHERE id = p_id)
+    WHEN 'expense' THEN NOT EXISTS (SELECT 1 FROM expenses WHERE id = p_id)
+    ELSE false
+  END AND app_row_exists(p_kind, p_id);
+$$;
+
+-- Notification links are app paths like /invoices/<uuid>.
+CREATE OR REPLACE FUNCTION app_link_hidden(p_link text)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SET search_path = public
+AS $$
+  SELECT CASE
+    WHEN p_link ~* '^/(invoices|contacts|expenses)/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' THEN
+      app_row_hidden(
+        CASE split_part(p_link, '/', 2) WHEN 'invoices' THEN 'invoice' WHEN 'contacts' THEN 'contact' ELSE 'expense' END,
+        substring(p_link from 11 for 36)::uuid)
+    ELSE false
+  END;
+$$;
+
+GRANT EXECUTE ON FUNCTION app_row_hidden(text, uuid) TO faktur_app;
+GRANT EXECUTE ON FUNCTION app_link_hidden(text) TO faktur_app;
+
+-- FOR SELECT only: writing an entry (always as the acting user) is not limited.
+DROP POLICY IF EXISTS member_visibility ON audit_log;
+CREATE POLICY member_visibility ON audit_log AS RESTRICTIVE FOR SELECT
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE entity_id IS NULL OR entity_type NOT IN ('invoice', 'contact') OR NOT app_row_hidden(entity_type, entity_id)
+  END);
+
+DROP POLICY IF EXISTS member_visibility ON notifications;
+CREATE POLICY member_visibility ON notifications AS RESTRICTIVE FOR SELECT
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE NOT app_link_hidden(link)
+  END);
+
 -- ---------------------------------------------------------------------------
 -- "Důvěrný režim" (migration 0101): standard tenant isolation. The rows hold
 -- only wrapped keys and a sealed check value; nothing here is readable
@@ -2118,5 +2212,19 @@ ALTER TABLE vault_key_wraps ENABLE ROW LEVEL SECURITY;
 ALTER TABLE vault_key_wraps FORCE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS tenant_isolation ON vault_key_wraps;
 CREATE POLICY tenant_isolation ON vault_key_wraps
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+-- Migration 0110: e-mails of encrypted documents waiting for a browser to add the PDF.
+ALTER TABLE vault_email_queue ENABLE ROW LEVEL SECURITY;
+ALTER TABLE vault_email_queue FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON vault_email_queue;
+CREATE POLICY tenant_isolation ON vault_email_queue
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+-- Migration 0112: files attached to expenses (receipts), possibly encrypted in the browser.
+ALTER TABLE expense_attachments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE expense_attachments FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON expense_attachments;
+CREATE POLICY tenant_isolation ON expense_attachments
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);

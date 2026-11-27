@@ -558,6 +558,19 @@ export class InvoicePdfService {
     return { png: await QRCode.toBuffer(sid, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" }), kind: "invoice" };
   }
 
+  /**
+   * The payment code alone (SPAYD or PAY by square), for the invoice and
+   * reminder e-mails. It carries account, amount, VS and dates, never the
+   * document's texts, so it works for an encrypted document too. Null when
+   * nothing is to be paid by transfer.
+   */
+  async paymentQr(invoice: InvoiceRow, contact: ContactRow, tenant: TenantRow, totals: InvoiceVatBreakdown): Promise<Buffer | null> {
+    if (!invoice.invoiceNumber || tenant.isDemo || pdfQrModeOf(tenant.invoiceFormPrefs) === "off") return null;
+    const lang: Lang = invoice.language === "sk" || invoice.language === "en" ? invoice.language : "cs";
+    const qr = await this.buildQrCode(invoice, contact, tenant, totals, asksForPayment(invoice, totals), "payment_only", lang);
+    return qr && (qr.kind === "spayd" || qr.kind === "pay_by_square") ? qr.png : null;
+  }
+
   /** A code that opens the invoice's web page; a draft has no working page yet. */
   private async buildLinkQr(invoice: InvoiceRow, tenant: TenantRow, lang: Lang): Promise<Buffer | null> {
     if (!invoice.invoiceNumber || !invoice.publicToken) return null;

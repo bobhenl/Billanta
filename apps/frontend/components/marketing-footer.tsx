@@ -103,9 +103,17 @@ export async function MarketingFooter() {
         { href: '/contact', label: t('legal.contact') }
       ],
       extra: (
-        <li>
-          <CookieSettingsButton label={t('legal.cookieSettings')} className={linkClass} />
-        </li>
+        <>
+          {/* A full page load, not a client-side one: that page's stricter CSP only applies to a document fetched with it. */}
+          <li>
+            <a href={`/${locale}/security/confidential`} className={linkClass}>
+              {t('legal.confidential')}
+            </a>
+          </li>
+          <li>
+            <CookieSettingsButton label={t('legal.cookieSettings')} className={linkClass} />
+          </li>
+        </>
       )
     },
     {

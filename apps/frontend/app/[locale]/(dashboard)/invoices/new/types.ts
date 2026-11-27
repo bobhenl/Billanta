@@ -23,6 +23,10 @@ export interface Contact {
   /** Private note, never printed. */
   internalNote?: string | null;
   portalToken?: string | null;
+  /** Team member the client belongs to (null = the whole company). */
+  ownerUserId?: string | null;
+  /** Seen only by the company owner and ownerUserId. */
+  isPrivate?: boolean;
 }
 
 export interface AresPrefill {
@@ -44,6 +48,8 @@ export interface ItemSuggestion {
   description: string;
   unitPrice: number;
   vatRate: number | null;
+  /** ISO time of the newest use; sorts plain and encrypted history together. */
+  lastUsed?: string;
 }
 
 export interface SuggestionResult {

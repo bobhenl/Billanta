@@ -24,11 +24,15 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
+import { VAULT_EMAILS_CHANGED } from '@/components/vault/vault-email-outbox';
 import { useCanDo, useCanWrite } from '@/components/access-provider';
 import { useVault } from '@/components/vault/vault-provider';
 import { fetchDecrypted } from '@/lib/vault/files';
+import { ClientLinkNotice, useClientLinkKey } from '@/components/vault/client-link';
+import { copyText } from '@/lib/clipboard';
 import { CONVERSIONS, type DocumentType, type InvoiceStatus } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
+import type { SealedDocument } from '@/lib/vault/content';
 import {
   cancelInvoice,
   convertInvoice,
@@ -69,7 +73,8 @@ export function InvoiceActions({
   editedAfterSend = false,
   hasCustomer = true,
   confidential = false,
-  encryptedAttachments = []
+  encryptedAttachments = [],
+  sealedDoc = null
 }: {
   id: string;
   documentType: DocumentType;
@@ -95,12 +100,23 @@ export function InvoiceActions({
   confidential?: boolean;
   /** Encrypted attachments marked "send with email": the server can only attach them if the browser decrypts them for this one e-mail. */
   encryptedAttachments?: { id: string; encMeta: string }[];
+  /** The printed texts when some are encrypted: the browser puts their key into the client link. */
+  sealedDoc?: SealedDocument | null;
 }) {
   const t = useTranslations('doc');
   const tVault = useTranslations('vault.actions');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [dialog, setDialog] = useState<Dialog>(null);
+  // An encrypted document's PDF waits for a browser with the key (backend vault/vault-email.ts).
+  const sentText = (data: unknown) => {
+    const vaultEmail = (data as { vaultEmail?: 'waiting' | 'pdf_follows' } | null)?.vaultEmail;
+    return vaultEmail === 'waiting' ? tVault('emailWaiting') : vaultEmail === 'pdf_follows' ? tVault('pdfFollows') : t('done.sent');
+  };
+  const afterSend = () => {
+    window.dispatchEvent(new Event(VAULT_EMAILS_CHANGED));
+    router.refresh();
+  };
   const { requestUnlock } = useVault();
   // Off by default: passing the files through the server is the member's explicit choice for this e-mail.
   const [passFiles, setPassFiles] = useState(false);
@@ -120,10 +136,25 @@ export function InvoiceActions({
         return { ok: false, error: tVault('decryptFailed') };
       }
       const res = await fetch(`/api/invoices/${id}/send-with-files`, { method: 'POST', body });
-      if (res.ok) return { ok: true, data: null };
+      if (res.ok) return { ok: true, data: (await res.json().catch(() => null)) as unknown };
       const json = await res.json().catch(() => ({}));
-      return { ok: false, error: String(json?.message?.error ?? json?.error ?? json?.message ?? res.status) };
-    }, t('done.sent'));
+      const code = String(typeof json?.message === 'string' ? json.message : (json?.message?.error ?? json?.error ?? res.status));
+      return { ok: false, error: code === 'pass_files_waiting' ? tVault('passFilesWaiting') : code };
+    }, sentText, afterSend);
+
+  const clientKey = useClientLinkKey(id, sealedDoc);
+  // Built here, never sent: the server-sent e-mail carries the same link without the #key.
+  const [origin, setOrigin] = useState('');
+  useEffect(() => setOrigin(window.location.origin), []);
+  const keyLink = clientKey.withKey(`${origin}/i/${publicLink}`);
+  const copyKeyLink = async () => {
+    try {
+      await copyText(keyLink);
+      toast({ text: tVault('linkCopied'), tone: 'ok' });
+    } catch {
+      toast({ text: t('actionFailed'), tone: 'err' });
+    }
+  };
   const [paidAt, setPaidAt] = useState(() => new Date().toISOString().slice(0, 10));
   const [templateName, setTemplateName] = useState(defaultTemplateName);
   const locale = useLocale();
@@ -156,7 +187,7 @@ export function InvoiceActions({
   const sendFirst = canSend && numbered && status === 'issued' && !sentAt && hasEmail;
   const conversions = !canEdit || status === 'cancelled' || (!numbered && documentType !== 'quote') ? [] : CONVERSIONS[documentType];
 
-  const act = <T,>(fn: () => Promise<ActionResult<T>>, okText: string, after?: (data: T) => void) =>
+  const act = <T,>(fn: () => Promise<ActionResult<T>>, okText: string | ((data: T) => string), after?: (data: T) => void) =>
     startTransition(async () => {
       const result = await fn();
       setDialog(null);
@@ -164,7 +195,7 @@ export function InvoiceActions({
         toast({ text: result.error === 'confidential_content' ? tVault('blocked') : `${t('actionFailed')}: ${result.error}`, tone: 'err' });
         return;
       }
-      toast({ text: okText, tone: 'ok' });
+      toast({ text: typeof okText === 'function' ? okText(result.data) : okText, tone: 'ok' });
       if (after) after(result.data);
       else router.refresh();
     });
@@ -313,7 +344,7 @@ export function InvoiceActions({
               </button>
             )}
             {numbered && (
-              <a href={`/i/${publicLink}?preview=1`} target="_blank" rel="noreferrer" className={menuItem}>
+              <a href={clientKey.withKey(`/i/${publicLink}?preview=1`)} target="_blank" rel="noreferrer" className={menuItem}>
                 <ExternalLink className="h-4 w-4" />
                 {t('actions.publicLink')}
               </a>
@@ -450,7 +481,11 @@ export function InvoiceActions({
             <button type="button" className={buttonClass.secondary} onClick={() => setDialog(null)}>
               {t('confirm.back')}
             </button>
-            <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => (passFiles && encryptedAttachments.length ? sendWithFiles() : act(() => sendInvoice(id), t('done.sent')))}>
+            <button
+              type="button"
+              className={buttonClass.primary}
+              disabled={pending}
+              onClick={() => (passFiles && encryptedAttachments.length ? sendWithFiles() : act(() => sendInvoice(id), sentText, afterSend))}>
               <Send className="h-4 w-4" />
               {editedAfterSend ? t('correction.send') : t('actions.send')}
             </button>
@@ -467,6 +502,26 @@ export function InvoiceActions({
               <span className="block text-xs text-muted-foreground">{tVault('passFilesHint')}</span>
             </span>
           </label>
+        )}
+        {sealedDoc && (
+          <>
+            {clientKey.state === 'ready' && (
+              <div className="mt-3 flex gap-2">
+                <input
+                  readOnly
+                  value={keyLink}
+                  onFocus={(e) => e.currentTarget.select()}
+                  aria-label={tVault('keyLink')}
+                  className="h-10 min-w-0 flex-1 rounded-lg border border-input bg-background px-3 font-mono text-xs"
+                />
+                <button type="button" onClick={copyKeyLink} className={buttonClass.secondary}>
+                  <Copy className="h-4 w-4" />
+                  {tVault('copyLink')}
+                </button>
+              </div>
+            )}
+            <ClientLinkNotice link={clientKey} serverEmail className="mt-3" />
+          </>
         )}
       </Modal>
 

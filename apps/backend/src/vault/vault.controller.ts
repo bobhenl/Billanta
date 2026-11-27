@@ -27,7 +27,9 @@ import {
   PlainAttachmentsQueryDto,
   PlainInvoicesQueryDto,
   RecoveryWrapDto,
+  RekeyInvoiceDto,
   SealInvoicesDto,
+  VaultDocumentsQueryDto,
   VaultSettingsDto,
 } from "./dto/vault.dto";
 import { encryptedLimit, type UploadedFileLike } from "./sealed-files";
@@ -89,6 +91,12 @@ export class VaultController {
     return this.vault.plainInvoices(req.tenantDb!, req.user!.tenantId, query);
   }
 
+  @Get("invoices/documents")
+  @ApiOperation({ summary: "Documents with their texts as stored (ciphertext stays ciphertext), for search, suggestions and export in the browser" })
+  documents(@Req() req: TenantScopedRequest, @Query() query: VaultDocumentsQueryDto) {
+    return this.vault.documents(req.tenantDb!, req.user!.tenantId, req.user!, query);
+  }
+
   @Post("invoices/seal")
   @RequirePlan("confidential_mode")
   @ApiOperation({ summary: "Store texts the browser encrypted (text columns only)" })
@@ -117,5 +125,13 @@ export class VaultController {
     if (kind !== "invoice" && kind !== "expense") throw new BadRequestException({ error: "bad_kind" });
     if (!file) throw new BadRequestException({ error: "no_file" });
     return this.vault.sealAttachment(req.tenantDb!, req.user!.tenantId, kind, id, file, encMeta);
+  }
+
+  // No plan check: it only replaces ciphertext with ciphertext, which a
+  // downgraded company must still be able to do for documents it already sealed.
+  @Post("invoices/:id/rekey")
+  @ApiOperation({ summary: "Store one document's texts re-encrypted under its own key, for the client link" })
+  rekey(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: RekeyInvoiceDto) {
+    return this.vault.rekey(req.tenantDb!, req.user!.tenantId, req.user!, id, dto);
   }
 }

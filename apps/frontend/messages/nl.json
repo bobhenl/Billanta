@@ -245,7 +245,8 @@
         "cookies": "Cookiebeleid",
         "cookieSettings": "Cookie-instellingen",
         "dpa": "Verwerkersovereenkomst",
-        "contact": "Contact"
+        "contact": "Contact",
+        "confidential": "Vertrouwelijke modus en beveiliging"
       },
       "account": {
         "title": "Account",
@@ -768,7 +769,15 @@
     "print": "Afdrukken / PDF",
     "downloadPdf": "PDF downloaden",
     "downloadPdfShort": "PDF",
-    "confidentialItem": "Vertrouwelijke regel"
+    "confidentialItem": "Vertrouwelijke regel",
+    "sealed": {
+      "noKey": "Sommige teksten zijn versleuteld. De volledige tekst staat in de link uit de oorspronkelijke e-mail.",
+      "openedLink": "De sleutel uit uw link heeft de versleutelde teksten geopend. Deze browser onthoudt hem, dus latere links openen het document ook.",
+      "openedStored": "Een sleutel die deze browser van een eerdere link heeft onthouden, heeft de versleutelde teksten geopend.",
+      "openedPreview": "Voorbeeld: de sleutel uit de link heeft de teksten geopend. Hij is niet in deze browser opgeslagen.",
+      "forget": "Sleutel in deze browser vergeten",
+      "forgotten": "De sleutel is uit deze browser verwijderd. De volledige tekst staat in de link uit de oorspronkelijke e-mail."
+    }
   },
   "expenses": {
     "title": "Kosten",
@@ -1355,7 +1364,25 @@
         "manage": "Link bewerken"
       },
       "contactPerson": "Contactpersoon",
-      "person": "Particulier"
+      "person": "Particulier",
+      "visibility": {
+        "title": "Wie deze klant ziet",
+        "hint": "Een privéklant en zijn documenten zijn alleen zichtbaar voor de eigenaar van het bedrijf en het teamlid bij wie de klant hoort. Anderen vinden hem niet in lijsten of in de geschiedenis.",
+        "owner": "Hoort bij",
+        "nobody": "Het hele bedrijf (niemand in het bijzonder)",
+        "formerMember": "Voormalig teamlid",
+        "private": "Privé – alleen zichtbaar voor de eigenaar van het bedrijf en degene bij wie de klant hoort",
+        "privateHint": "Anderen vinden hem niet in contacten, facturen, meldingen of de wijzigingsgeschiedenis.",
+        "ownedBy": "Hoort bij: {name}",
+        "ownerOnly": "Alleen de eigenaar van het bedrijf of degene bij wie de klant hoort kan dit wijzigen.",
+        "saved": "Opgeslagen",
+        "failed": "Opslaan mislukt",
+        "errors": {
+          "visibility_owner_only": "Alleen de eigenaar van het bedrijf of degene bij wie de klant hoort kan dit wijzigen.",
+          "visibility_would_hide": "Dan ziet u deze klant zelf niet meer. Alleen de eigenaar van het bedrijf kan een privéklant overdragen.",
+          "owner_not_member": "Deze persoon zit niet meer in het team."
+        }
+      }
     },
     "csv": {
       "import": "CSV importeren",
@@ -1420,7 +1447,8 @@
       "violet": "Violet",
       "pink": "Roze",
       "slate": "Grijs"
-    }
+    },
+    "privateBadge": "Privéklant"
   },
   "settings": {
     "title": "Instellingen",
@@ -2145,7 +2173,16 @@
         "ownerOnly": "Alleen eigenaar",
         "adminsOnly": "Alleen eigenaar en beheerders"
       },
-      "fillFromPreset": "Invullen vanuit"
+      "fillFromPreset": "Invullen vanuit",
+      "contactScope": {
+        "label": "Ziet klanten",
+        "all": "Hele bedrijf",
+        "own": "Alleen eigen",
+        "hint": "Alleen eigen = alleen de klanten die u aan deze persoon toewijst (Hoort bij) en documenten die hij zelf heeft gemaakt.",
+        "ownerOnly": "Alleen de eigenaar van het bedrijf kan dit wijzigen.",
+        "summary": "alleen eigen klanten",
+        "refused": "Alleen de eigenaar van het bedrijf kan dit wijzigen."
+      }
     },
     "exports": {
       "title": "Exports voor je boekhouder",
@@ -5354,15 +5391,26 @@
       "relock": "Opnieuw verbergen",
       "lockedToast": "Details verborgen",
       "unlockedToast": "Details worden zonder wachtwoord getoond",
-      "teamHint": "Dit beschermt tegen meekijken op een niet-vergrendelde of gedeelde computer, niet tegen collega's: elk teamlid maakt ze zichtbaar met zijn eigen wachtwoord. Moeten alleen bepaalde mensen een factuur zien, stel dan bij de klant in wie toegang heeft.",
+      "teamHint": "Dit beschermt tegen meekijken op een ontgrendelde of gedeelde computer, niet tegen collega’s: elk teamlid maakt ze zichtbaar met zijn eigen wachtwoord. Als alleen bepaalde mensen een factuur mogen zien, markeer hem als privé of stel in bij wie de klant hoort.",
       "teamLink": "Instellen wie in het team wat ziet",
       "errors": {
         "wrong_current": "Onjuist wachtwoord.",
         "reauth_required": "Je account heeft geen wachtwoord. Log uit en weer in en probeer het opnieuw.",
         "too_many_attempts": "Te veel pogingen. Probeer het over een paar minuten opnieuw.",
         "generic": "Dat lukte niet. Probeer het opnieuw."
-      }
-    }
+      },
+      "privacyLink": "Markeren als privé"
+    },
+    "privacy": {
+      "label": "Privéfactuur",
+      "hint": "Alleen zichtbaar voor de eigenaar van het bedrijf en wie hem heeft gemaakt, met regels, bijlagen en betalingen.",
+      "badge": "Privéfactuur",
+      "ownerOnly": "Alleen de eigenaar van het bedrijf of wie de factuur heeft gemaakt kan dit wijzigen.",
+      "failed": "Wijzigen mislukt",
+      "madePrivate": "De factuur is privé",
+      "madeShared": "Het team ziet de factuur weer"
+    },
+    "privateRow": "Privéfactuur"
   },
   "invite": {
     "title": "Uitnodiging voor het team",
@@ -7368,7 +7416,8 @@
         "buyer_details_submitted": "vulde de factuurgegevens in voor",
         "buyer_details_cancelled": "sloot het verzoek om klantgegevens voor",
         "profile_order": "aangemaakt via een bestelling op het openbare profiel:",
-        "link_renamed": "hernoemde de openbare link"
+        "link_renamed": "hernoemde de openbare link",
+        "send_waiting_pdf": "zette klaar voor verzending met pdf"
       },
       "tenant": {
         "updated": "bewerkte de bedrijfsgegevens",
@@ -14290,7 +14339,7 @@
       "lead": "Versleutelen – alleen jij en leden met de sleutel zien de inhoud, de server kan hem niet lezen.",
       "what": "Regelomschrijvingen en notities (boven, onder de regels en intern) worden versleuteld.",
       "keeps": "Rapporten en dashboards blijven werken: bedragen, datums en betalingskenmerken blijven onversleuteld.",
-      "loses": "Voor versleutelde documenten kan de server geen pdf of ISDOC maken, ze niet aan een e-mail toevoegen en ze niet vinden via tekstzoeken.",
+      "loses": "Voor versleutelde documenten kan de server geen pdf of ISDOC maken en ze niet aan een e-mail toevoegen. Zoeken op tekst gebeurt na ontgrendelen alleen in je browser.",
       "locked": "Vergrendelde documenten worden overgeslagen.",
       "done": "{n, plural, one {# document versleuteld} other {# documenten versleuteld}}.",
       "nothing": "Er viel niets te versleutelen.",
@@ -14301,20 +14350,27 @@
       "lockedLead": "Ontgrendel het om te bewerken. Het opent alleen in je browser.",
       "otherKey": "Dit document is versleuteld met een sleutel die dit bedrijf niet heeft.",
       "unlock": "Ontgrendelen",
-      "aiUnavailable": "Vooraf invullen met AI is niet beschikbaar in de Vertrouwelijke modus tijdens het versleutelen – de tekst zou naar de server moeten.",
       "sealFailed": "Het document kon niet worden versleuteld. Er is niets opgeslagen.",
       "sealToggle": "Dit document versleutelen",
-      "sealOnHint": "Alleen jij en leden met de sleutel zien regelomschrijvingen en notities. Pdf, ISDOC en regelsuggesties zijn niet beschikbaar.",
-      "sealOffHint": "Het document wordt zoals voorheen onversleuteld opgeslagen."
+      "sealOnHint": "Alleen jij en leden met de sleutel zien regelomschrijvingen en notities. Pdf en ISDOC zijn niet beschikbaar; regelsuggesties worden alleen in je browser gezocht.",
+      "sealOffHint": "Het document wordt zoals voorheen onversleuteld opgeslagen.",
+      "aiConsent": "Deze tekst naar AI sturen – hij gaat één keer naar de server en de AI-aanbieder en wordt niet opgeslagen",
+      "aiConsentHint": "De server slaat de tekst niet op en logt hem niet. Wat AI teruggeeft, wordt bij het opslaan in je browser versleuteld. De toestemming geldt alleen voor deze ene keer."
     },
     "actions": {
       "blocked": "Niet beschikbaar in de Vertrouwelijke modus: de server kan een versleuteld document niet lezen. Zet de pdf/ISDOC-bijlage uit in de e-mailinstellingen of stuur een link.",
       "pdfUnavailable": "Pdf is niet beschikbaar in de Vertrouwelijke modus. Je kunt de detailpagina vanuit je browser afdrukken (Ctrl+P).",
-      "sendHint": "Dit document is versleuteld: de e-mail gaat alleen met een link, de server kan geen pdf of ISDOC bijvoegen.",
+      "sendHint": "Dit document is versleuteld, dus de server kan zelf geen pdf of ISDOC maken. Afhankelijk van je instellingen gaat de link meteen en de pdf vanuit je browser, of gaat alleen de link.",
+      "linkCopied": "Link met sleutel gekopieerd",
+      "keyLink": "Klantlink met sleutel",
+      "copyLink": "Kopiëren",
+      "emailWaiting": "De e-mail wacht op de pdf. Hij gaat vanuit een browser met de modus ontgrendeld, zie de melding bovenaan.",
+      "pdfFollows": "Link verstuurd. Stuur de pdf als vervolgmail via de melding bovenaan.",
       "unlockFirst": "Zonder ontgrendelen kunnen versleutelde bijlagen niet worden meegestuurd.",
       "decryptFailed": "Een bijlage kon niet worden ontsleuteld.",
       "passFiles": "{n, plural, one {# versleutelde bijlage meesturen} other {# versleutelde bijlagen meesturen}}",
-      "passFilesHint": "Je browser ontsleutelt ze en ze gaan één keer via de server naar deze e-mail. De server bewaart ze niet en verwijdert ze na bezorging."
+      "passFilesHint": "Je browser ontsleutelt ze en ze gaan één keer via de server naar deze e-mail. De server bewaart ze niet en verwijdert ze na bezorging.",
+      "passFilesWaiting": "Dit document wacht tot een browser de pdf maakt, en de bijlagen mogen niet op de server wachten. Stuur de e-mail zonder ze, of stel de vertrouwelijke modus in om de link meteen te sturen."
     },
     "categories": {
       "recommended": "Aanbevolen",
@@ -14326,9 +14382,10 @@
         "loses": [
           "Pdf, ISDOC, UBL en Peppol gemaakt door de server",
           "Pdf/ISDOC-bijlage in e-mails",
-          "Zoeken op tekst van regels en notities, regelsuggesties",
-          "Documenten vooraf invullen met AI",
-          "Regelomschrijvingen op de openbare link en in exports voor de boekhouder (Pohoda, Money, CSV)"
+          "Zoeken op tekst en regelsuggesties op de server (na ontgrendelen doet je browser dat)",
+          "Vooraf invullen met AI zonder uitdrukkelijke klik (de tekst gaat alleen na je bevestiging één keer via de server naar AI en wordt niet opgeslagen)",
+          "Openbare link: uw klant ziet de volledige tekst alleen via de link met sleutel uit het documentdetail. Een link zonder sleutel (bijv. uit een automatische herinnering) toont hem alleen op een apparaat waar de klant de volledige link eerder heeft geopend",
+          "Leesbare teksten in de boekhoudexports van de server (Pohoda, Money en CSV tonen „[Důvěrný obsah]”; de export met ontsleutelde teksten maakt je browser)"
         ]
       },
       "attachments": {
@@ -14456,6 +14513,125 @@
       "categoriesMin": "Laat minstens één categorie aan staan.",
       "categoryOffConfirm": "Deze categorie uitzetten? Nieuwe bestanden en teksten worden niet meer versleuteld. Wat al versleuteld is, blijft versleuteld."
     },
+    "clientLink": {
+      "ready": "De link bevat de sleutel tot de versleutelde teksten (na het #). Uw klant ziet daarmee de volledige tekst, de server krijgt de sleutel nooit.",
+      "locked": "Dit document is versleuteld. Ontgrendel de kluis en de link krijgt de sleutel waarmee uw klant de volledige tekst ziet.",
+      "prepare": "Dit document is versleuteld voordat er klantsleutels waren. Geef het een eigen sleutel, daarna kunt u het in de link versturen. Naar de server gaan alleen opnieuw versleutelde teksten.",
+      "failed": "De klantsleutel kon niet worden voorbereid. Probeer het opnieuw.",
+      "loading": "Klantsleutel voorbereiden…",
+      "unlock": "Kluis ontgrendelen",
+      "prepareButton": "Klantlink voorbereiden",
+      "shareOnly": "Stuur hem alleen naar uw klant. Wie de volledige link heeft, kan ook de versleutelde teksten lezen.",
+      "serverEmail": "De e-mail die de server verstuurt, bevat de link zonder sleutel. Uw klant ziet daar de bedragen, maar niet de versleutelde teksten, tenzij hij de link met sleutel eerder in dezelfde browser heeft geopend. Stuur hem de link hierboven zelf, zodat hij ze kan lezen."
+    },
+    "search": {
+      "lockedHint": "{n, plural, one {# document heeft versleutelde teksten die de server niet kan doorzoeken.} other {# documenten hebben versleutelde teksten die de server niet kan doorzoeken.}} Ontgrendel en je browser doorzoekt ze.",
+      "unlock": "Ontgrendelen en zoeken",
+      "searching": "Versleutelde teksten worden in je browser doorzocht…",
+      "included": "De resultaten bevatten ook versleutelde teksten, alleen in je browser doorzocht.",
+      "failed": "De versleutelde teksten konden niet worden doorzocht. De resultaten gaan alleen over leesbare teksten.",
+      "skippedLocked": "{n, plural, one {# vergrendeld document is niet doorzocht.} other {# vergrendelde documenten zijn niet doorzocht.}}"
+    },
+    "export": {
+      "title": "Export met ontsleutelde teksten",
+      "lead": "Documenten uit de gekozen periode, met regelomschrijvingen en notities. Het bestand wordt in je browser gemaakt en direct op je computer opgeslagen; de server ziet het niet. Behandel het als een vertrouwelijk document.",
+      "csv": "CSV downloaden",
+      "json": "JSON downloaden",
+      "working": "Ontsleutelen…",
+      "done": "{n, plural, one {# document opgeslagen.} other {# documenten opgeslagen.}}",
+      "failed": "De export kon niet worden voorbereid. Probeer het opnieuw.",
+      "needsUnlock": "Voor de export vragen we je de Vertrouwelijke modus te ontgrendelen.",
+      "skippedLocked": "{n, plural, one {# vergrendeld document ontbreekt in de export.} other {# vergrendelde documenten ontbreken in de export.}}",
+      "unreadable": "[Niet te ontsleutelen]",
+      "unreadableCount": "{n, plural, one {# tekst kon niet worden ontsleuteld.} other {# teksten konden niet worden ontsleuteld.}}",
+      "accountingNote": "De exports voor de boekhouder hierboven (CSV, Pohoda, Money S3) maakt de server, daarom staat er „[Důvěrný obsah]” in plaats van versleutelde teksten. Bedragen, btw, datums en klanten zijn volledig.",
+      "columns": {
+        "documentType": "Documenttype",
+        "invoiceNumber": "Nummer",
+        "status": "Status",
+        "issueDate": "Factuurdatum",
+        "taxableSupplyDate": "Leveringsdatum",
+        "dueDate": "Vervaldatum",
+        "paidAt": "Betaald",
+        "contactName": "Klant",
+        "contactIco": "IČO",
+        "variableSymbol": "Variabel symbool",
+        "currency": "Valuta",
+        "totalWithoutVat": "Netto",
+        "totalVat": "Btw",
+        "total": "Totaal",
+        "noteAbove": "Tekst boven de regels",
+        "noteBelow": "Tekst onder de regels",
+        "internalNote": "Interne notitie",
+        "itemDescription": "Regel",
+        "itemCode": "Regelcode",
+        "quantity": "Aantal",
+        "unit": "Eenheid",
+        "unitPrice": "Prijs per eenheid",
+        "vatRate": "Btw-tarief %",
+        "discountPercent": "Korting %"
+      }
+    },
+    "outbox": {
+      "badge": "{n, plural, one {# e-mail wacht} other {# e-mails wachten}} om met de pdf verstuurd te worden",
+      "open": "Tonen",
+      "title": "E-mails die op de pdf wachten",
+      "back": "Sluiten",
+      "send": "Versturen ({n})",
+      "unlockAndSend": "Ontgrendelen en versturen ({n})",
+      "lead": "De server kan een versleuteld document niet zelf omzetten in een pdf. De pdf wordt hier gemaakt, in een browser met de Vertrouwelijke modus ontgrendeld.",
+      "passThroughPdf": "De pdf wordt in je browser gemaakt. De server stuurt hem één keer door naar de ontvanger en bewaart hem niet.",
+      "passThroughTexts": "Als je op Versturen klikt, gaan de ontsleutelde teksten van deze documenten één keer via de server: die maakt er de pdf van en mailt hem. Hij bewaart en logt ze niet.",
+      "unnumbered": "Zonder nummer",
+      "kind": {
+        "invoice": "Hele e-mail wacht",
+        "invoice_pdf": "Pdf bij een verstuurde link"
+      },
+      "dismiss": "Niet versturen",
+      "settingsHint": "Kies wanneer en hoe de pdf verstuurd wordt in de",
+      "settingsLink": "instellingen van de Vertrouwelijke modus",
+      "sent": "{n, plural, one {# e-mail verstuurd} other {# e-mails verstuurd}}",
+      "failed": "{n, plural, one {# e-mail kon niet verstuurd worden} other {# e-mails konden niet verstuurd worden}}"
+    },
+    "emailSettings": {
+      "title": "E-mails van versleutelde documenten",
+      "lead": "Wat er gebeurt als je een versleuteld document verstuurt. De link, het bedrag, de vervaldatum, de betalingskenmerk en de QR-betaling gaan altijd mee.",
+      "mode": {
+        "link_now": "Link nu, pdf later",
+        "wait": "Wachten en alles samen versturen",
+        "link_only": "Alleen link, nooit een pdf"
+      },
+      "modeHint": {
+        "link_now": "De klant krijgt meteen een e-mail met de link. De pdf volgt in een tweede e-mail zodra iemand uit het team hem verstuurt vanuit een browser met de modus ontgrendeld.",
+        "wait": "De e-mail gaat pas met de pdf, vanuit de browser van een teamlid met de modus ontgrendeld. Tot dan krijgt de klant niets.",
+        "link_only": "De klant krijgt alleen de link en opent het document daar. De server krijgt de teksten nooit."
+      },
+      "autoSend": "Pdf's automatisch versturen",
+      "autoSendHint": "Zodra iemand uit het team de app opent met de modus ontgrendeld, gaan wachtende pdf's zonder extra klik de deur uit.",
+      "passThrough": "Elke verstuurde pdf gaat één keer via de server, omdat de e-mail daarvandaan vertrekt. De server bewaart en logt hem niet.",
+      "saved": "Opgeslagen",
+      "failed": "Opslaan mislukt"
+    },
+    "device": {
+      "title": "Ontgrendeling op dit apparaat onthouden",
+      "hint": "De modus blijft ontgrendeld na het sluiten van de browser, zonder de limiet van 12 uur, zodat wachtende pdf's kunnen vertrekken wanneer je de app opent. De sleutel staat zo in de browser dat hij niet te lezen of te kopiëren is. Vergrendelen, deze optie uitzetten of uitloggen verwijdert hem.",
+      "risk": "Zet dit alleen aan op je eigen apparaat dat niemand anders gebruikt. Wie deze browser opent, ziet de versleutelde teksten.",
+      "on": "Dit apparaat onthoudt de ontgrendeling",
+      "off": "De ontgrendeling verloopt weer na 12 uur",
+      "failed": "Dat lukte niet. Ontgrendel eerst de modus."
+    },
+    "serverView": {
+      "title": "Wat de server ziet",
+      "lead": "Zo staan de teksten van dit document op de server. Alleen een browser met de modus ontgrendeld kan ze ontsleutelen.",
+      "server": "De server heeft:",
+      "you": "Jij ziet:",
+      "noteAbove": "Tekst boven de regels",
+      "noteBelow": "Tekst onder de regels",
+      "internalNote": "Interne notitie",
+      "item": "Regel {n}",
+      "notSealed": "De server ziet bedragen, datums, het documentnummer, kenmerken en klanten, om btw te berekenen, vervaldatums te bewaken en betalingen te koppelen.",
+      "more": "Hoe het werkt en hoe je het controleert"
+    },
     "sealFiles": {
       "button": "Bestaande bijlagen versleutelen",
       "title": "Bestaande bijlagen versleutelen",
@@ -14470,5 +14646,106 @@
       "nothing": "Er was niets te versleutelen.",
       "failed": "Versleutelen is mislukt. Bijlagen die al versleuteld zijn, blijven versleuteld."
     }
+  },
+  "vaultPublic": {
+    "integrity": {
+      "title": "Codecontrole",
+      "lead": "Bij elke build van de app worden de SHA-256-hashes vastgelegd van de versleutelingscode en van de bestanden die hem bevatten.",
+      "sourceHash": "Bronbestand {path}",
+      "repo": "Openbare broncode",
+      "repoPlanned": "We zijn van plan hem te publiceren in een eigen GitHub-repository.",
+      "chunks": "Bestanden die je browser laadt",
+      "check": "Controleren in deze browser",
+      "match": "Komt overeen",
+      "mismatch": "Komt niet overeen",
+      "error": "Bestand kon niet worden gedownload",
+      "loadedHere": "geladen op deze pagina",
+      "missing": "Het manifest is nog niet beschikbaar. Het wordt gemaakt door de productiebuild.",
+      "honest": "Dezelfde server stuurt het manifest en de bestanden, dus een overeenkomst laat alleen zien dat het manifest beschrijft wat er geleverd wordt. De echte controle is de hashes vergelijken met een build van de gepubliceerde broncode."
+    },
+    "demo": {
+      "label": "Typ een willekeurige zin",
+      "placeholder": "Bijvoorbeeld: Advies bij verkoop van het bedrijf, 12 uur",
+      "send": "Versleutelen en versturen",
+      "keyNote": "De sleutel wordt alleen voor deze pagina gemaakt en nooit verstuurd. Na herladen is hij weg.",
+      "typed": "Wat je typte",
+      "typedHint": "Blijft alleen in je browser.",
+      "sent": "Wat naar de server ging",
+      "sentHint": "De exacte body van het verzoek POST {path}.",
+      "received": "Wat de server kreeg (HTTP {status})",
+      "receivedHint": "De server geeft precies terug wat hij ontving. Hij bewaart niets.",
+      "open": "Hier ontsleutelen",
+      "openedAs": "Je browser ontsleutelde het terug naar:",
+      "rateLimited": "Te veel pogingen. Probeer het over een paar minuten.",
+      "failed": "Het verzoek is mislukt. Probeer het opnieuw.",
+      "devtoolsTitle": "Controleer het zelf in de browsertools",
+      "devtoolsSteps": [
+        "Druk op F12 (Cmd+Option+I op een Mac) en open het tabblad Netwerk (Network).",
+        "Klik opnieuw op Versleutelen en versturen.",
+        "Klik in de lijst op het verzoek \"echo\" en open Payload en Response (Antwoord).",
+        "Je ziet alleen een tekenreeks enc:v1:…, niet je zin. Ctrl+F in het tabblad Netwerk doorzoekt alle verzoeken: zoek daar een woord uit je zin."
+      ]
+    },
+    "csp": {
+      "liveTitle": "De Content-Security-Policy-header van deze pagina, zojuist opgehaald",
+      "liveMissing": "De header kon niet worden gelezen. Je vindt hem in de browsertools bij het verzoek voor deze pagina."
+    }
+  },
+  "securityPage": {
+    "seoTitle": "Vertrouwelijke modus: wat de server ziet en wat niet",
+    "eyebrow": "Beveiliging",
+    "title": "Vertrouwelijke modus: documentteksten die de server niet kan lezen",
+    "lead": "Regelomschrijvingen en notities worden in je browser versleuteld. De server krijgt alleen een versleutelde tekenreeks en heeft er geen sleutel voor. Hier kun je het zelf proberen en controleren.",
+    "featuresLink": "Alle functies",
+    "demoTitle": "Probeer het",
+    "demoLead": "Zonder inloggen. De pagina versleutelt je zin met dezelfde code als de app en stuurt hem echt naar de server. Je ziet naast elkaar wat je typte, wat er verstuurd werd en wat de server kreeg.",
+    "howTitle": "Hoe het werkt",
+    "howSteps": [
+      {
+        "title": "De sleutel ontstaat bij jou",
+        "body": "Bij het inschakelen maakt de browser een willekeurige AES-256-sleutel. De server krijgt alleen kopieën, vergrendeld met je wachtwoord, passkey of herstelcode."
+      },
+      {
+        "title": "Versleuteld voor verzending",
+        "body": "Een omschrijving of notitie wordt versleuteld voordat ze de browser verlaat. De server bewaart een tekenreeks enc:v1:… en doet er niets mee."
+      },
+      {
+        "title": "Alleen bij jou ontsleuteld",
+        "body": "Na ontgrendelen houdt de browser de sleutel zo vast dat de pagina hem kan gebruiken, maar de inhoud niet kan lezen."
+      }
+    ],
+    "hiddenTitle": "Wat de server niet ziet",
+    "hidden": [
+      "Regelomschrijvingen",
+      "Tekst boven en onder de regels",
+      "Interne notities",
+      "De sleutel en het wachtwoord dat hem ontgrendelt"
+    ],
+    "visibleTitle": "Wat de server ziet en waarom",
+    "visible": [
+      "Bedragen en btw – voor berekeningen, aangiftes en het koppelen van betalingen",
+      "Factuur- en vervaldatums – voor herinneringen",
+      "Documentnummer en betalingskenmerk",
+      "De klant en zijn e-mail – zodat het document verstuurd kan worden"
+    ],
+    "cspTitle": "De browser bepaalt waar de pagina gegevens heen mag sturen",
+    "cspBody": "De app, documentlinks en deze pagina worden geleverd met een Content-Security-Policy-header die connect-src 'self' bevat. De browser weigert dan zelf elk verzoek van zo'n pagina naar een andere server, ook als een script het probeert. Ontsleutelde tekst kan via die weg niet weg.",
+    "cspHow": "Iedereen kan de header lezen: klik in de browsertools (F12, tabblad Netwerk) op het eerste verzoek, de pagina zelf, en zoek Content-Security-Policy in de antwoordheaders.",
+    "limitsTitle": "Waar de grenzen liggen",
+    "limits": [
+      "Onze server levert de code van de app. Als hij gecompromitteerd was, kon hij andere code leveren. Code en hashes publiceren maakt zo'n wijziging zichtbaar, maar voorkomt hem niet vanzelf.",
+      "Als je een versleuteld document met pdf mailt, gaan de teksten één keer via de server, omdat de e-mail daarvandaan vertrekt. De app zegt het vooraf, en de server bewaart en logt ze niet. Stuur je alleen de link, dan krijgt de server de teksten nooit.",
+      "De modus versleutelt geen bedragen, datums, nummers of klanten, zie hierboven.",
+      "Voor versleutelde documenten maakt de server geen ISDOC of andere machineleesbare formaten.",
+      "De regel connect-src geldt voor een rechtstreeks geladen pagina. Ga je zonder herladen van de openbare site naar de app, dan geldt tot het herladen de regel van de vorige pagina.",
+      "Wie toegang heeft tot je ontgrendelde browser, ziet de teksten. De modus beschermt tegen de server, niet tegen iemand achter je computer.",
+      "Als je zowel het wachtwoord als de herstelcode vergeet en geen passkey hebt, kan niemand de teksten herstellen, ook wij niet."
+    ],
+    "verifyTitle": "Codecontrole",
+    "verifyLead": "Bij elke build schrijven we de SHA-256-hashes van de versleutelingscode in een openbaar bestand. Je browser kan ze hier opnieuw berekenen.",
+    "planned": [
+      "We publiceren de versleutelingscode (één bestand zonder afhankelijkheden) in een eigen GitHub-repository, zodat de hashes met een eigen build te vergelijken zijn.",
+      "Een onafhankelijke beoordeling van de code is gepland."
+    ]
   }
 }

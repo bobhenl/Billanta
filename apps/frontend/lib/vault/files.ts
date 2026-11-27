@@ -28,7 +28,7 @@ export async function fetchDecrypted(url: string, key: VaultKey, encMeta: string
 }
 
 /** Real names for a file list; a row that fails to open keeps no name (shown as encrypted). */
-export async function decryptNames(key: VaultKey, rows: { id: string; encMeta: string | null }[]): Promise<Record<string, { name: string; mime: string }>> {
+export async function decryptNames(key: VaultKey, rows: { id: string; encMeta?: string | null }[]): Promise<Record<string, { name: string; mime: string }>> {
   const out: Record<string, { name: string; mime: string }> = {};
   await Promise.all(
     rows.map(async (row) => {

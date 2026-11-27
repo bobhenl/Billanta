@@ -245,7 +245,8 @@
         "cookies": "Zásady cookies",
         "cookieSettings": "Nastavenia cookies",
         "dpa": "Zmluva o spracúvaní (DPA)",
-        "contact": "Kontakt"
+        "contact": "Kontakt",
+        "confidential": "Dôverný režim a zabezpečenie"
       },
       "account": {
         "title": "Účet",
@@ -769,7 +770,15 @@
     "print": "Tlač / PDF",
     "downloadPdf": "Stiahnuť PDF",
     "downloadPdfShort": "PDF",
-    "confidentialItem": "Dôverná položka"
+    "confidentialItem": "Dôverná položka",
+    "sealed": {
+      "noKey": "Niektoré texty sú zašifrované. Celé znenie je v odkaze z pôvodného e-mailu.",
+      "openedLink": "Zašifrované texty otvoril kľúč z vášho odkazu. Tento prehliadač si ho zapamätá, takže doklad otvorí aj z neskorších odkazov.",
+      "openedStored": "Zašifrované texty otvoril kľúč, ktorý si tento prehliadač zapamätal z predchádzajúceho odkazu.",
+      "openedPreview": "Náhľad: texty otvoril kľúč z odkazu. Do tohto prehliadača sa neuložil.",
+      "forget": "Zabudnúť kľúč v tomto prehliadači",
+      "forgotten": "Kľúč je z tohto prehliadača vymazaný. Celé znenie je v odkaze z pôvodného e-mailu."
+    }
   },
   "expenses": {
     "title": "Výdavky",
@@ -1356,7 +1365,25 @@
         "manage": "Upraviť odkaz"
       },
       "contactPerson": "Kontaktná osoba",
-      "person": "Súkromná osoba"
+      "person": "Súkromná osoba",
+      "visibility": {
+        "title": "Kto klienta vidí",
+        "hint": "Súkromného klienta a jeho doklady vidí len vlastník firmy a člen, ktorému klient patrí. Ostatní ho v zoznamoch ani v histórii nenájdu.",
+        "owner": "Patrí",
+        "nobody": "Celej firme (nikomu zvlášť)",
+        "formerMember": "Bývalý člen tímu",
+        "private": "Súkromný – vidí ho len vlastník firmy a ten, komu klient patrí",
+        "privateHint": "Ostatní ho nenájdu v kontaktoch, faktúrach, upozorneniach ani histórii zmien.",
+        "ownedBy": "Patrí: {name}",
+        "ownerOnly": "Meniť to môže len vlastník firmy alebo ten, komu klient patrí.",
+        "saved": "Uložené",
+        "failed": "Nepodarilo sa uložiť",
+        "errors": {
+          "visibility_owner_only": "Meniť to môže len vlastník firmy alebo ten, komu klient patrí.",
+          "visibility_would_hide": "Tým by ste klienta sami prestali vidieť. Odovzdať súkromného klienta môže len vlastník firmy.",
+          "owner_not_member": "Vybraný človek už nie je v tíme."
+        }
+      }
     },
     "csv": {
       "import": "Import CSV",
@@ -1421,7 +1448,8 @@
       "violet": "Fialová",
       "pink": "Ružová",
       "slate": "Sivá"
-    }
+    },
+    "privateBadge": "Súkromný klient"
   },
   "settings": {
     "title": "Nastavenia",
@@ -2146,7 +2174,16 @@
         "ownerOnly": "Len vlastník",
         "adminsOnly": "Len vlastník a administrátori"
       },
-      "fillFromPreset": "Vyplniť podľa"
+      "fillFromPreset": "Vyplniť podľa",
+      "contactScope": {
+        "label": "Vidí klientov",
+        "all": "Celá firma",
+        "own": "Len svojich",
+        "hint": "Len svojich = len klientov, ktorých mu priradíte (Patrí), a doklady, ktoré sám vystavil.",
+        "ownerOnly": "Meniť to môže len vlastník firmy.",
+        "summary": "len svojich klientov",
+        "refused": "Toto môže zmeniť len vlastník firmy."
+      }
     },
     "exports": {
       "title": "Exporty pre účtovníka",
@@ -5361,16 +5398,27 @@
       "relock": "Znova skryť",
       "lockedToast": "Detaily sú skryté",
       "unlockedToast": "Detaily sa zobrazujú bez hesla",
-      "teamHint": "Chráni pred cudzím pohľadom na nezamknutom alebo zdieľanom počítači, nie pred kolegami: každý člen tímu si ich odkryje vlastným heslom. Ak má faktúru vidieť len niekto z tímu, nastavte pri klientovi, kto k nemu má prístup.",
+      "teamHint": "Chráni pred cudzím pohľadom na nezamknutom alebo zdieľanom počítači, nie pred kolegami: každý člen tímu si ich odkryje vlastným heslom. Ak má faktúru vidieť len niekto z tímu, označte ju ako súkromnú alebo pri klientovi nastavte, komu patrí.",
       "teamLink": "Nastaviť, kto z tímu čo vidí",
       "errors": {
         "wrong_current": "Heslo nesedí.",
         "reauth_required": "Váš účet nemá heslo. Odhláste sa a znova sa prihláste, potom to skúste znova.",
         "too_many_attempts": "Príliš veľa pokusov. Skúste to o pár minút.",
         "generic": "Nepodarilo sa to. Skúste to znova."
-      }
+      },
+      "privacyLink": "Označiť ako súkromnú"
     },
-    "partnerDefaultShares": "predvolené podiely"
+    "partnerDefaultShares": "predvolené podiely",
+    "privacy": {
+      "label": "Súkromná faktúra",
+      "hint": "Vidí ju len vlastník firmy a ten, kto ju vystavil, aj s položkami, prílohami a platbami.",
+      "badge": "Súkromná faktúra",
+      "ownerOnly": "Meniť to môže len vlastník firmy alebo ten, kto faktúru vystavil.",
+      "failed": "Nepodarilo sa zmeniť",
+      "madePrivate": "Faktúra je súkromná",
+      "madeShared": "Faktúru opäť vidí tím"
+    },
+    "privateRow": "Súkromná faktúra"
   },
   "invite": {
     "title": "Pozvánka do tímu",
@@ -7376,7 +7424,8 @@
         "buyer_details_submitted": "doplnil(a) fakturačné údaje k",
         "buyer_details_cancelled": "zrušil(a) žiadosť o údaje odberateľa k",
         "profile_order": "vytvoril(a) objednávkou z verejného profilu koncept",
-        "link_renamed": "premenoval(a) verejný odkaz"
+        "link_renamed": "premenoval(a) verejný odkaz",
+        "send_waiting_pdf": "zaradil(a) na odoslanie s PDF"
       },
       "tenant": {
         "updated": "upravil(a) údaje firmy",
@@ -14199,7 +14248,7 @@
       "lead": "Zašifrovať – obsah uvidíte len vy a členovia s kľúčom, server ho neprečíta.",
       "what": "Šifrujú sa popisy položiek a poznámky (nad položkami, pod položkami a interné).",
       "keeps": "Prehľady a dashboardy fungujú ďalej: sumy, dátumy a variabilné symboly zostávajú nezašifrované.",
-      "loses": "Pri zašifrovaných dokladoch server nevytvorí PDF ani ISDOC, nepriloží ich k e-mailu a nenájde ich pri hľadaní podľa textu.",
+      "loses": "Pri zašifrovaných dokladoch server nevytvorí PDF ani ISDOC a nepriloží ich k e-mailu. Hľadanie podľa textu prebehne len vo vašom prehliadači po odomknutí.",
       "locked": "Uzamknuté doklady sa preskočia.",
       "done": "{n, plural, one {Zašifrovaný # doklad} few {Zašifrované # doklady} other {Zašifrovaných # dokladov}}.",
       "nothing": "Nebolo čo šifrovať.",
@@ -14210,20 +14259,27 @@
       "lockedLead": "Ak ho chcete upraviť, odomknite ho. Otvorí sa len vo vašom prehliadači.",
       "otherKey": "Doklad je zašifrovaný kľúčom, ktorý táto firma nemá.",
       "unlock": "Odomknúť",
-      "aiUnavailable": "AI predvyplnenie je pri šifrovaní dokladu nedostupné v Dôvernom režime – text by musel odísť na server.",
       "sealFailed": "Doklad sa nepodarilo zašifrovať. Nič sa neuložilo.",
       "sealToggle": "Zašifrovať tento doklad",
-      "sealOnHint": "Popisy položiek a poznámky uvidíte len vy a členovia s kľúčom. PDF, ISDOC a návrhy položiek nebudú dostupné.",
-      "sealOffHint": "Doklad sa uloží bez šifrovania, ako doteraz."
+      "sealOnHint": "Popisy položiek a poznámky uvidíte len vy a členovia s kľúčom. PDF a ISDOC nebudú dostupné, návrhy položiek sa hľadajú len vo vašom prehliadači.",
+      "sealOffHint": "Doklad sa uloží bez šifrovania, ako doteraz.",
+      "aiConsent": "Poslať tento text AI – jednorazovo odíde na server a k poskytovateľovi AI, neuloží sa",
+      "aiConsentHint": "Server text neukladá ani nezapisuje do logov. Čo AI vráti, sa pri uložení zašifruje vo vašom prehliadači. Súhlas platí len na jedno spustenie."
     },
     "actions": {
       "blocked": "Nedostupné v Dôvernom režime: server zašifrovaný doklad neprečíta. Vypnite prílohu PDF/ISDOC v nastaveniach e-mailov alebo pošlite odkaz.",
       "pdfUnavailable": "PDF je nedostupné v Dôvernom režime. Detail môžete vytlačiť z prehliadača (Ctrl+P).",
-      "sendHint": "Doklad je zašifrovaný: e-mail odíde len s odkazom, PDF ani ISDOC server priložiť nemôže.",
+      "sendHint": "Doklad je zašifrovaný: server sám PDF ani ISDOC nevytvorí. Podľa nastavenia Dôverného režimu odíde odkaz hneď a PDF z vášho prehliadača, alebo len odkaz.",
+      "linkCopied": "Odkaz s kľúčom skopírovaný",
+      "keyLink": "Odkaz pre klienta s kľúčom",
+      "copyLink": "Kopírovať",
+      "emailWaiting": "E-mail čaká na PDF. Odíde z prehliadača s odomknutým režimom, pozrite upozornenie hore.",
+      "pdfFollows": "Odkaz je odoslaný. PDF pošlete doplňujúcim e-mailom z upozornenia hore.",
       "unlockFirst": "Bez odomknutia nemožno zašifrované prílohy priložiť.",
       "decryptFailed": "Prílohu sa nepodarilo dešifrovať.",
       "passFiles": "{n, plural, one {Priložiť # zašifrovanú prílohu} few {Priložiť # zašifrované prílohy} other {Priložiť # zašifrovaných príloh}}",
-      "passFilesHint": "Prehliadač ich dešifruje a jednorazovo prejdú serverom do e-mailu. Server ich neuloží, po doručení ich zmaže."
+      "passFilesHint": "Prehliadač ich dešifruje a jednorazovo prejdú serverom do e-mailu. Server ich neuloží, po doručení ich zmaže.",
+      "passFilesWaiting": "Tento doklad čaká, kým PDF vytvorí prehliadač, a prílohy nesmú na serveri čakať. Pošlite e-mail bez nich, alebo v nastavení Dôverného režimu zvoľte odoslanie odkazu hneď."
     },
     "categories": {
       "recommended": "Odporúčané",
@@ -14235,9 +14291,10 @@
         "loses": [
           "PDF, ISDOC, UBL a Peppol vytvorené serverom",
           "Príloha PDF/ISDOC v e-maile",
-          "Hľadanie podľa textu položiek a poznámok, návrhy položiek",
-          "AI predvyplnenie dokladu",
-          "Popisy položiek na verejnom odkaze a v exportoch pre účtovníka (Pohoda, Money, CSV)"
+          "Hľadanie podľa textu a návrhy položiek na serveri (po odomknutí ich zvládne váš prehliadač)",
+          "AI predvyplnenie bez výslovného kliknutia (text jednorazovo prejde serverom k AI, len keď to potvrdíte, a neuloží sa)",
+          "Verejný odkaz: celé znenie vidí klient iba v odkaze s kľúčom z detailu dokladu. Odkaz bez kľúča (napr. z automatickej upomienky) ho ukáže iba v zariadení, kde klient predtým otvoril celý odkaz",
+          "Čitateľné texty v exportoch pre účtovníka zo servera (Pohoda, Money, CSV majú „[Důvěrný obsah]“; export s dešifrovanými textami vytvorí váš prehliadač)"
         ]
       },
       "attachments": {
@@ -14372,6 +14429,125 @@
       "downgradedTitle": "Šifrovanie ďalších dokladov je v tarifoch Plus a Firma",
       "downgradedBody": "Zašifrované doklady naďalej odomknete, prečítate aj upravíte. Nové doklady sa však ukladajú bez šifrovania."
     },
+    "clientLink": {
+      "ready": "Odkaz obsahuje kľúč k zašifrovaným textom (za znakom #). Klient s ním uvidí celé znenie, server kľúč nikdy nedostane.",
+      "locked": "Doklad je zašifrovaný. Odomknite trezor a odkaz dostane kľúč, s ktorým klient uvidí celé znenie.",
+      "prepare": "Tento doklad bol zašifrovaný ešte pred kľúčmi pre klientov. Pripravte mu vlastný kľúč, potom ho môžete poslať v odkaze. Na server odídu len znova zašifrované texty.",
+      "failed": "Kľúč pre klienta sa nepodarilo pripraviť. Skúste to znova.",
+      "loading": "Pripravujem kľúč pre klienta…",
+      "unlock": "Odomknúť trezor",
+      "prepareButton": "Pripraviť odkaz pre klienta",
+      "shareOnly": "Pošlite ho iba klientovi. Kto má celý odkaz, prečíta aj zašifrované texty.",
+      "serverEmail": "E-mail, ktorý odošle server, obsahuje odkaz bez kľúča. Klient v ňom uvidí sumy, ale nie zašifrované texty, ak predtým neotvoril odkaz s kľúčom v tom istom prehliadači. Aby ich videl, pošlite mu odkaz vyššie sami."
+    },
+    "search": {
+      "lockedHint": "{n, plural, one {# doklad má zašifrované texty, ktoré server nemôže prehľadať.} few {# doklady majú zašifrované texty, ktoré server nemôže prehľadať.} other {# dokladov má zašifrované texty, ktoré server nemôže prehľadať.}} Po odomknutí ich prehľadá váš prehliadač.",
+      "unlock": "Odomknúť a prehľadať",
+      "searching": "Prehľadávam zašifrované texty vo vašom prehliadači…",
+      "included": "Výsledky zahŕňajú aj zašifrované texty. Prehľadal ich len váš prehliadač.",
+      "failed": "Zašifrované texty sa nepodarilo prehľadať. Výsledky obsahujú len čitateľné texty.",
+      "skippedLocked": "{n, plural, one {# uzamknutý doklad sa neprehľadal.} few {# uzamknuté doklady sa neprehľadali.} other {# uzamknutých dokladov sa neprehľadalo.}}"
+    },
+    "export": {
+      "title": "Export s dešifrovanými textami",
+      "lead": "Doklady zo zvoleného obdobia vrátane popisov položiek a poznámok. Súbor sa zostaví vo vašom prehliadači a uloží rovno do počítača, server ho nevidí. Zaobchádzajte s ním ako s citlivým dokumentom.",
+      "csv": "Stiahnuť CSV",
+      "json": "Stiahnuť JSON",
+      "working": "Dešifrujem…",
+      "done": "{n, plural, one {Uložený # doklad.} few {Uložené # doklady.} other {Uložených # dokladov.}}",
+      "failed": "Export sa nepodarilo pripraviť. Skúste to znova.",
+      "needsUnlock": "Pred exportom vás požiadame o odomknutie Dôverného režimu.",
+      "skippedLocked": "{n, plural, one {# uzamknutý doklad v exporte chýba.} few {# uzamknuté doklady v exporte chýbajú.} other {# uzamknutých dokladov v exporte chýba.}}",
+      "unreadable": "[Nedá sa dešifrovať]",
+      "unreadableCount": "{n, plural, one {# text sa nepodarilo dešifrovať.} few {# texty sa nepodarilo dešifrovať.} other {# textov sa nepodarilo dešifrovať.}}",
+      "accountingNote": "Exporty pre účtovníka vyššie (CSV, Pohoda, Money S3) vytvára server, preto majú namiesto zašifrovaných textov „[Důvěrný obsah]“. Sumy, DPH, dátumy a odberatelia v nich sú úplné.",
+      "columns": {
+        "documentType": "Typ dokladu",
+        "invoiceNumber": "Číslo",
+        "status": "Stav",
+        "issueDate": "Dátum vyhotovenia",
+        "taxableSupplyDate": "Dátum dodania",
+        "dueDate": "Splatnosť",
+        "paidAt": "Uhradené",
+        "contactName": "Odberateľ",
+        "contactIco": "IČO",
+        "variableSymbol": "Variabilný symbol",
+        "currency": "Mena",
+        "totalWithoutVat": "Základ",
+        "totalVat": "DPH",
+        "total": "Spolu",
+        "noteAbove": "Text nad položkami",
+        "noteBelow": "Text pod položkami",
+        "internalNote": "Interná poznámka",
+        "itemDescription": "Položka",
+        "itemCode": "Kód položky",
+        "quantity": "Množstvo",
+        "unit": "Jednotka",
+        "unitPrice": "Cena za jednotku",
+        "vatRate": "Sadzba DPH %",
+        "discountPercent": "Zľava %"
+      }
+    },
+    "outbox": {
+      "badge": "{n, plural, one {# e-mail čaká} few {# e-maily čakajú} other {# e-mailov čaká}} na odoslanie s PDF",
+      "open": "Zobraziť",
+      "title": "E-maily čakajúce na PDF",
+      "back": "Zavrieť",
+      "send": "Odoslať ({n})",
+      "unlockAndSend": "Odomknúť a odoslať ({n})",
+      "lead": "Zašifrovaný doklad server sám do PDF neprevedie. PDF vznikne až tu, v prehliadači s odomknutým Dôverným režimom.",
+      "passThroughPdf": "PDF sa vytvorí vo vašom prehliadači. Server ho raz prepošle príjemcovi a neuloží ho.",
+      "passThroughTexts": "Po kliknutí na Odoslať prejdú dešifrované texty týchto dokladov raz serverom: ten z nich vytvorí PDF a pošle ho e-mailom. Neuloží ich ani nezapíše do logu.",
+      "unnumbered": "Bez čísla",
+      "kind": {
+        "invoice": "Celý e-mail čaká",
+        "invoice_pdf": "Doplnenie PDF k odkazu"
+      },
+      "dismiss": "Neposielať",
+      "settingsHint": "Kedy a ako sa PDF posiela, nastavíte v",
+      "settingsLink": "nastaveniach Dôverného režimu",
+      "sent": "{n, plural, one {Odoslaný # e-mail} few {Odoslané # e-maily} other {Odoslaných # e-mailov}}",
+      "failed": "{n, plural, one {# e-mail sa nepodarilo odoslať} few {# e-maily sa nepodarilo odoslať} other {# e-mailov sa nepodarilo odoslať}}"
+    },
+    "emailSettings": {
+      "title": "E-maily zašifrovaných dokladov",
+      "lead": "Čo sa stane, keď odošlete zašifrovaný doklad. Odkaz, suma, splatnosť, variabilný symbol a QR platba odchádzajú vždy.",
+      "mode": {
+        "link_now": "Odkaz hneď, PDF neskôr",
+        "wait": "Počkať a poslať všetko naraz",
+        "link_only": "Len odkaz, nikdy PDF"
+      },
+      "modeHint": {
+        "link_now": "Odberateľ dostane hneď e-mail s odkazom. PDF príde druhým e-mailom, len čo ho niekto z tímu odošle z prehliadača s odomknutým režimom.",
+        "wait": "E-mail odíde až s PDF, z prehliadača člena tímu s odomknutým režimom. Dovtedy odberateľ nič nedostane.",
+        "link_only": "Odberateľ dostane len odkaz a doklad si otvorí sám. Texty dokladu server nikdy nedostane."
+      },
+      "autoSend": "Posielať PDF automaticky",
+      "autoSendHint": "Len čo niekto z tímu otvorí aplikáciu s odomknutým režimom, čakajúce PDF odídu bez ďalšieho kliknutia.",
+      "passThrough": "Každé odoslané PDF raz prejde serverom, pretože e-mail odchádza odtiaľ. Server ho neuloží ani nezapíše do logu.",
+      "saved": "Uložené",
+      "failed": "Uloženie sa nepodarilo"
+    },
+    "device": {
+      "title": "Pamätať si odomknutie na tomto zariadení",
+      "hint": "Režim zostane odomknutý aj po zatvorení prehliadača, bez limitu 12 hodín, takže čakajúce PDF sa môžu odoslať vždy, keď aplikáciu otvoríte. Kľúč je v prehliadači uložený tak, že sa nedá prečítať ani skopírovať. Zruší ho tlačidlo Zamknúť, vypnutie tejto voľby alebo odhlásenie.",
+      "risk": "Zapínajte len na vlastnom zariadení, ku ktorému nemá prístup nikto iný. Kto otvorí tento prehliadač, uvidí zašifrované texty.",
+      "on": "Odomknutie si toto zariadenie pamätá",
+      "off": "Odomknutie sa opäť zruší po 12 hodinách",
+      "failed": "Nepodarilo sa. Najprv režim odomknite."
+    },
+    "serverView": {
+      "title": "Čo vidí server",
+      "lead": "Takto sú texty tohto dokladu uložené na serveri. Dešifrovať ich vie len prehliadač s odomknutým režimom.",
+      "server": "Server má:",
+      "you": "Vy vidíte:",
+      "noteAbove": "Text nad položkami",
+      "noteBelow": "Text pod položkami",
+      "internalNote": "Interná poznámka",
+      "item": "Položka {n}",
+      "notSealed": "Sumy, dátumy, číslo dokladu, symboly a odberateľov server vidí, aby mohol počítať DPH, sledovať splatnosť a párovať platby.",
+      "more": "Ako to funguje a ako si to overiť"
+    },
     "sealFiles": {
       "button": "Zašifrovať existujúce prílohy",
       "title": "Zašifrovať existujúce prílohy",
@@ -14386,5 +14562,106 @@
       "nothing": "Nebolo čo šifrovať.",
       "failed": "Šifrovanie sa nepodarilo. Už zašifrované prílohy zostávajú zašifrované."
     }
+  },
+  "vaultPublic": {
+    "integrity": {
+      "title": "Overenie kódu",
+      "lead": "Pri každom zostavení aplikácie sa vypočítajú odtlačky SHA-256 šifrovacieho kódu a súborov, ktoré ho obsahujú.",
+      "sourceHash": "Zdrojový súbor {path}",
+      "repo": "Verejný zdrojový kód",
+      "repoPlanned": "Plánujeme ho zverejniť v samostatnom repozitári na GitHube.",
+      "chunks": "Súbory, ktoré prehliadač načítava",
+      "check": "Skontrolovať v tomto prehliadači",
+      "match": "Zhoduje sa",
+      "mismatch": "Nezhoduje sa",
+      "error": "Súbor sa nepodarilo stiahnuť",
+      "loadedHere": "načítané na tejto stránke",
+      "missing": "Manifest zatiaľ nie je k dispozícii. Vzniká pri produkčnom zostavení.",
+      "honest": "Manifest aj súbory posiela ten istý server, takže zhoda len potvrdzuje, že manifest opisuje to, čo sa práve posiela. Skutočné overenie je porovnať odtlačky so zostavením zo zverejneného zdrojového kódu."
+    },
+    "demo": {
+      "label": "Napíšte ľubovoľnú vetu",
+      "placeholder": "Napríklad: Konzultácia k predaju firmy, 12 hodín",
+      "send": "Zašifrovať a odoslať",
+      "keyNote": "Kľúč vznikne len pre túto stránku a nikam sa neposiela. Po obnovení stránky zmizne.",
+      "typed": "Čo ste napísali",
+      "typedHint": "Zostáva len vo vašom prehliadači.",
+      "sent": "Čo odišlo na server",
+      "sentHint": "Presné telo požiadavky POST {path}.",
+      "received": "Čo server dostal (HTTP {status})",
+      "receivedHint": "Server vracia presne to, čo prijal. Nič neukladá.",
+      "open": "Dešifrovať tu",
+      "openedAs": "Váš prehliadač to dešifroval späť na:",
+      "rateLimited": "Príliš veľa pokusov. Skúste to o pár minút.",
+      "failed": "Požiadavka sa nepodarila. Skúste to znova.",
+      "devtoolsTitle": "Overte si to sami v nástrojoch prehliadača",
+      "devtoolsSteps": [
+        "Stlačte F12 (na Macu Cmd+Option+I) a otvorte kartu Sieť (Network).",
+        "Kliknite znova na Zašifrovať a odoslať.",
+        "V zozname kliknite na požiadavku „echo“ a otvorte Payload (Údaje) a Response (Odpoveď).",
+        "Uvidíte len reťazec enc:v1:…, vašu vetu nie. Ctrl+F v karte Sieť hľadá vo všetkých požiadavkách: skúste tam nájsť slovo z vašej vety."
+      ]
+    },
+    "csp": {
+      "liveTitle": "Hlavička Content-Security-Policy tejto stránky, načítaná práve teraz",
+      "liveMissing": "Hlavičku sa nepodarilo načítať. Nájdete ju v nástrojoch prehliadača pri požiadavke na túto stránku."
+    }
+  },
+  "securityPage": {
+    "seoTitle": "Dôverný režim: čo server vidí a čo nie",
+    "eyebrow": "Zabezpečenie",
+    "title": "Dôverný režim: texty dokladov, ktoré server neprečíta",
+    "lead": "Popisy položiek a poznámky sa šifrujú vo vašom prehliadači. Server dostane len zašifrovaný reťazec a kľúč k nemu nemá. Tu si to môžete sami vyskúšať a overiť.",
+    "featuresLink": "Všetky funkcie",
+    "demoTitle": "Vyskúšajte si to",
+    "demoLead": "Bez prihlásenia. Stránka zašifruje vašu vetu rovnakým kódom ako aplikácia a naozaj ju pošle na server. Vedľa seba uvidíte, čo ste napísali, čo odišlo a čo server dostal.",
+    "howTitle": "Ako to funguje",
+    "howSteps": [
+      {
+        "title": "Kľúč vznikne u vás",
+        "body": "Pri zapnutí režimu vytvorí prehliadač náhodný kľúč AES-256. Server dostane len jeho kópie zamknuté vaším heslom, passkey alebo záchranným kódom."
+      },
+      {
+        "title": "Šifruje sa pred odoslaním",
+        "body": "Popis položky alebo poznámka sa zašifruje skôr, než opustí prehliadač. Server uloží reťazec enc:v1:… a nič s ním nerobí."
+      },
+      {
+        "title": "Dešifruje sa len u vás",
+        "body": "Po odomknutí drží prehliadač kľúč tak, že ho stránka môže použiť, ale nemôže prečítať jeho obsah."
+      }
+    ],
+    "hiddenTitle": "Čo server nevidí",
+    "hidden": [
+      "Popisy položiek",
+      "Text nad a pod položkami",
+      "Interné poznámky",
+      "Kľúč ani heslo, ktorým sa odomyká"
+    ],
+    "visibleTitle": "Čo server vidí a prečo",
+    "visible": [
+      "Sumy a DPH – kvôli výpočtom, priznaniam a párovaniu platieb",
+      "Dátumy vystavenia a splatnosti – kvôli upomienkam",
+      "Číslo dokladu a variabilný symbol",
+      "Odberateľa a jeho e-mail – aby mohol doklad odoslať"
+    ],
+    "cspTitle": "Prehliadač stráži, kam smie stránka posielať údaje",
+    "cspBody": "Aplikácia, odkazy na doklady aj táto stránka chodia s hlavičkou Content-Security-Policy, ktorá obsahuje connect-src 'self'. Prehliadač potom sám odmietne každú požiadavku z takej stránky na iný server, aj keby sa o ňu nejaký skript pokúsil. Dešifrovaný text touto cestou inam neodíde.",
+    "cspHow": "Hlavičku si prečíta ktokoľvek: v nástrojoch prehliadača (F12, karta Sieť) kliknite na prvú požiadavku, teda na samotnú stránku, a v hlavičkách odpovede nájdite Content-Security-Policy.",
+    "limitsTitle": "Kde sú hranice",
+    "limits": [
+      "Kód aplikácie posiela náš server. Keby bol napadnutý, mohol by poslať iný kód. Zverejnenie kódu a odtlačkov umožňuje takú zmenu odhaliť, ale samo jej nezabráni.",
+      "Keď zašifrovaný doklad pošlete e-mailom s PDF, jeho texty raz prejdú serverom, pretože e-mail odchádza odtiaľ. Aplikácia to povie vopred a server ich neuloží ani nezapíše do logu. Keď pošlete len odkaz, server texty nedostane vôbec.",
+      "Sumy, dátumy, čísla a odberateľov režim nešifruje, pozrite vyššie.",
+      "Pre zašifrované doklady server nevytvorí ISDOC ani iné strojové formáty.",
+      "Pravidlo connect-src platí pre stránku načítanú priamo. Keď do aplikácie prejdete z verejného webu bez nového načítania, platí pravidlo stránky, z ktorej ste prišli, kým stránku neobnovíte.",
+      "Kto má prístup k vášmu odomknutému prehliadaču, texty uvidí. Režim chráni pred serverom, nie pred niekým pri vašom počítači.",
+      "Keď zabudnete heslo aj záchranný kód a nemáte passkey, texty nikto neobnoví, ani my."
+    ],
+    "verifyTitle": "Overenie kódu",
+    "verifyLead": "Pri každom zostavení zapíšeme odtlačky SHA-256 šifrovacieho kódu do verejného súboru. Váš prehliadač ich môže prepočítať priamo tu.",
+    "planned": [
+      "Šifrovací kód (jeden súbor bez závislostí) zverejníme v samostatnom repozitári na GitHube, aby sa dali odtlačky porovnať s vlastným zostavením.",
+      "Nezávislá kontrola kódu je v pláne."
+    ]
   }
 }

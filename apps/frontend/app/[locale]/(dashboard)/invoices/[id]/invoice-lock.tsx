@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Lock, LockOpen } from 'lucide-react';
+import { Lock, LockOpen, UserRoundCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { PasswordInput } from '@/components/password-input';
 import { toast } from '@/components/toaster';
 import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
-import { relockInvoices, setInvoiceLock, unlockInvoices } from '../actions';
+import { relockInvoices, setInvoiceLock, setInvoicePrivate, unlockInvoices } from '../actions';
 
 const KNOWN = ['wrong_current', 'reauth_required', 'too_many_attempts'];
 
@@ -59,21 +59,78 @@ export function UnlockInvoice() {
   );
 }
 
-/** People read "hidden" as "hidden from colleagues", so say plainly that it isn't and point to what is. */
-function TeamHint() {
+/**
+ * People read "hidden" as "hidden from colleagues", so say plainly that it
+ * isn't and point to what is: the private switch below when the viewer may
+ * use it, otherwise who sees which clients in the team settings.
+ */
+function TeamHint({ toPrivacy = false }: { toPrivacy?: boolean }) {
   const t = useTranslations('doc.lock');
+  const cls = 'font-medium text-primary underline-offset-2 hover:underline';
   return (
     <p className="mt-2 text-xs text-muted-foreground">
       {t('teamHint')}{' '}
-      <Link href="/settings/team" className="font-medium text-primary underline-offset-2 hover:underline">
-        {t('teamLink')}
-      </Link>
+      {toPrivacy ? (
+        <a href="#invoice-privacy" className={cls}>
+          {t('privacyLink')}
+        </a>
+      ) : (
+        <Link href="/settings/team" className={cls}>
+          {t('teamLink')}
+        </Link>
+      )}
     </p>
   );
 }
 
+/**
+ * "Soukromá faktura": only the company owner and whoever created it see it,
+ * with its items, files and payments. Only those two get the switch; the
+ * API refuses anyone else. Others see the badge.
+ */
+export function InvoicePrivacy({ id, isPrivate, canChange }: { id: string; isPrivate: boolean; canChange: boolean }) {
+  const t = useTranslations('doc.privacy');
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  if (!canChange && !isPrivate) return null;
+
+  function toggle(next: boolean) {
+    start(async () => {
+      const res = await setInvoicePrivate(id, next);
+      if (!res.ok) {
+        toast({ text: res.error.includes('visibility_owner_only') ? t('ownerOnly') : t('failed'), tone: 'err' });
+        return;
+      }
+      toast({ text: next ? t('madePrivate') : t('madeShared'), tone: 'ok' });
+      router.refresh();
+    });
+  }
+
+  return (
+    <div id="invoice-privacy" className="mb-3 scroll-mt-20 text-sm">
+      {canChange ? (
+        <label className="inline-flex items-start gap-2">
+          <input type="checkbox" className="mt-0.5 accent-primary" checked={isPrivate} disabled={pending} onChange={(e) => toggle(e.target.checked)} />
+          <span>
+            <span className="flex items-center gap-1 font-medium">
+              <UserRoundCheck className="h-3.5 w-3.5" aria-hidden="true" />
+              {t('label')}
+            </span>
+            <span className="block text-xs text-muted-foreground">{t('hint')}</span>
+          </span>
+        </label>
+      ) : (
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+          <UserRoundCheck className="h-3.5 w-3.5" aria-hidden="true" />
+          {t('badge')}
+        </span>
+      )}
+    </div>
+  );
+}
+
 /** Lock state on an open invoice; the toggle is for owners and admins. */
-export function InvoiceLockBar({ id, locked, canLock }: { id: string; locked: boolean; canLock: boolean }) {
+export function InvoiceLockBar({ id, locked, canLock, canPrivate = false }: { id: string; locked: boolean; canLock: boolean; canPrivate?: boolean }) {
   const t = useTranslations('doc.lock');
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -119,7 +176,7 @@ export function InvoiceLockBar({ id, locked, canLock }: { id: string; locked: bo
           </button>
         )}
       </div>
-      {locked && <TeamHint />}
+      {locked && <TeamHint toPrivacy={canPrivate} />}
     </div>
   );
 }

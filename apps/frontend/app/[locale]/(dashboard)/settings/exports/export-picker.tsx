@@ -5,6 +5,7 @@ import { Download, FileCode2, FileSpreadsheet, Receipt, UserPlus } from 'lucide-
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { FeatureBadge } from '@/components/plan-lock';
+import { DecryptedExport } from '@/components/vault/decrypted-export';
 import type { FeatureUsage } from '@/lib/usage';
 import { inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
@@ -22,6 +23,20 @@ function periodQuery(mode: Mode, month: string, quarter: string, year: string, f
   const lastMonth = Number(quarter) * 3;
   const lastDay = new Date(y, lastMonth, 0).getDate();
   return `from=${y}-${pad(lastMonth - 2)}-01&to=${y}-${pad(lastMonth)}-${pad(lastDay)}`;
+}
+
+/** The same period as plain days, for the export built in the browser. */
+function periodRange(query: string | null): { from: string; to: string } | null {
+  if (!query) return null;
+  const params = new URLSearchParams(query);
+  const month = params.get('month');
+  if (month) {
+    const [y, m] = month.split('-').map(Number);
+    return { from: `${month}-01`, to: `${month}-${pad(new Date(y!, m!, 0).getDate())}` };
+  }
+  const from = params.get('from');
+  const to = params.get('to');
+  return from && to ? { from, to } : null;
 }
 
 const FILES = [
@@ -115,6 +130,8 @@ export function ExportPicker({ home = 'CZK', accounting }: { home?: string; acco
           );
         })}
       </div>
+
+      <DecryptedExport range={periodRange(query)} />
 
       <section className="flex flex-wrap items-center gap-3 rounded-xl border border-dashed border-border p-4 text-sm">
         <UserPlus className="h-5 w-5 shrink-0 text-primary" />

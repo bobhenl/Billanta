@@ -1,5 +1,6 @@
 import { NotFoundException } from "@nestjs/common";
 import { describe, expect, it, vi } from "vitest";
+import { generateDataKey, generateDocumentKey, seal, sealWithDocumentKey } from "@faktur/cz-compliance";
 import { pdfFilename, PublicInvoicesService } from "./public-invoices.service";
 
 const TOKEN = "3f2504e0-4f89-41d3-9a0c-0305e82c3301";
@@ -77,12 +78,12 @@ describe("PublicInvoicesService.findByPublicToken totals", () => {
     customer_country: "CZ",
   });
 
-  function view(reverseCharge: boolean) {
+  function view(reverseCharge: boolean, items: typeof lines = lines) {
     const execute = vi.fn();
     for (const rows of [
       [{ blocked: false }],
       [header],
-      lines,
+      items,
       [{ company_name: "Dodavatel s.r.o.", bank_account_iban: "CZ6508000000192000145399", bank_account_number: null, bank_account_bank_code: null }],
       [],
       [qrRow(reverseCharge)],
@@ -105,6 +106,29 @@ describe("PublicInvoicesService.findByPublicToken totals", () => {
     expect(v.lineItems[0].discountPercent).toBe(10);
     expect(v.qrInvoice).toContain("*AM:2178.00*");
     expect(v.cardPayment).toBe(true);
+  });
+
+  it("never returns the text of a sealed item, only its ciphertext without the wrapped key", async () => {
+    const company = await generateDataKey();
+    const doc = await generateDocumentKey(company);
+    const docSealed = await sealWithDocumentKey(doc, "Tajný audit");
+    const companySealed = await seal(company, "Starší tajný text");
+    const v = await view(false, [
+      { ...lines[0], description: docSealed },
+      { ...lines[0], description: companySealed, sort_order: 1 },
+      { ...lines[0], description: "Plain", sort_order: 2 },
+    ]);
+    const [a, b, c] = v.lineItems;
+    expect(a.description).toBe("");
+    expect(a.confidential).toBe(true);
+    expect(a.sealed).toEqual({ cipher: docSealed.split(":").slice(0, 4).join(":"), keyId: doc.wrap.split(":")[0] });
+    expect(JSON.stringify(v)).not.toContain(doc.wrap.split(":")[1]);
+    expect(b.description).toBe("");
+    expect(b.sealed?.keyId).toBeNull();
+    expect(c).toMatchObject({ description: "Plain" });
+    expect(c.sealed).toBeUndefined();
+    // The amounts still count the sealed lines.
+    expect(v.subtotal).toBe(5400);
   });
 
   it("charges no VAT under reverse charge", async () => {

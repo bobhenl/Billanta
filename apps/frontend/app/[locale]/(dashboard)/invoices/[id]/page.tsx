@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { isSealed } from '@faktur/cz-compliance';
 import { ConfidentialText } from '@/components/vault/confidential-text';
 import { SealButton } from '@/components/vault/seal-button';
+import { ServerViewPanel } from '@/components/vault/server-view-panel';
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
 import { AlertTriangle, ArrowLeft, ArrowDownLeft, Lock, Building2, CheckCircle2, ChevronDown, ExternalLink, FileText, History, Link2, Wallet, XCircle } from 'lucide-react';
@@ -31,7 +32,8 @@ import { cn } from '@/lib/utils';
 import { homeCurrencyOf, lawUrl } from '@faktur/cz-compliance';
 import { AttachmentsPanel, type Attachment } from './attachments-panel';
 import { InvoiceActions } from './invoice-actions';
-import { InvoiceLockBar, UnlockInvoice } from './invoice-lock';
+import { InvoiceLockBar, InvoicePrivacy, UnlockInvoice } from './invoice-lock';
+import { auth } from '@/auth';
 import { BuyerDetailsRequest } from './buyer-details-request';
 import { PublicLinkPanel } from './public-link-panel';
 import { PartnerSplit } from './partner-split';
@@ -69,6 +71,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   const tBuyer = await getTranslations('invoices.buyerDetails');
   const tProfileOrder = await getTranslations('invoices.profileOrder');
   const tGloss = await getTranslations('glossary');
+  const tServer = await getTranslations('vault.serverView');
 
   let detail: InvoiceDetail;
   let attachments: Attachment[] | null = null;
@@ -111,7 +114,11 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
       : [];
   // Asking the customer for their details changes the draft, so a read-only member doesn't get the box.
   const canEdit = await fetchCanWrite('invoices');
-  const canLock = canManage(await fetchMyRole().catch(() => null));
+  const myRole = await fetchMyRole().catch(() => null);
+  const canLock = canManage(myRole);
+  // Same rule as the API (mayChangeInvoicePrivacy): the company owner or whoever created it.
+  const myId = (await auth())?.user?.id;
+  const canPrivate = myRole === 'owner' || (!!myId && invoice.createdByUserId === myId);
   // The partner split is owner/admin data like the "Po zdanění" report itself (the backend refuses others).
   const partners = canLock
     ? await apiFetch<{ model: TaxModel | null }>('/api/v1/tenants/me/tax-model')
@@ -142,6 +149,10 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   const texts = [invoice.noteAbove, invoice.noteBelow, invoice.internalNote, ...items.map((item) => item.description)];
   // The internal note is never printed, so only the printed texts count here (apps/backend/src/vault/sealed.ts).
   const confidential = [invoice.noteAbove, invoice.noteBelow, ...items.map((item) => item.description)].some(isSealed);
+  // The browser opens these to put the document key into the client link (components/vault/client-link.tsx).
+  const sealedDoc = confidential
+    ? { noteAbove: invoice.noteAbove ?? null, noteBelow: invoice.noteBelow ?? null, items: items.map((item) => ({ id: item.id, description: item.description })) }
+    : null;
   const hasPlainText = texts.some((text) => Boolean(text?.trim()) && !isSealed(text));
   const editedAfterSend = Boolean(invoice.sentAt && editedAt && invoice.status !== 'cancelled' && Date.parse(editedAt) > Date.parse(invoice.sentAt));
   // The buyer-details box below already says "waiting"/"submitted", so the status line skips it then.
@@ -216,7 +227,8 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
       </Link>
 
       <div className="mt-3">
-        <InvoiceLockBar id={invoice.id} locked={Boolean(invoice.lockedAt)} canLock={canLock} />
+        <InvoiceLockBar id={invoice.id} locked={Boolean(invoice.lockedAt)} canLock={canLock} canPrivate={canPrivate} />
+        <InvoicePrivacy id={invoice.id} isPrivate={Boolean(invoice.isPrivate)} canChange={canPrivate} />
       </div>
 
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -292,6 +304,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           hasCustomer={Boolean(contact)}
           confidential={confidential}
           encryptedAttachments={(attachments ?? []).filter((a) => a.encMeta && a.sendWithEmail).map((a) => ({ id: a.id, encMeta: a.encMeta! }))}
+          sealedDoc={sealedDoc}
         />
         {/* "Zašifrovat": only while some text of this document is still plain. */}
         {hasPlainText && <SealButton scope={{ kind: 'invoice', invoiceId: invoice.id }} compact className="mt-2" />}
@@ -301,6 +314,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
             link={detail.links.public}
             defaultLink={detail.links.publicDefault ?? detail.links.public}
             slug={invoice.publicSlug ?? null}
+            sealedDoc={sealedDoc}
           />
         )}
         {canEdit && (invoice.status === 'draft' || invoice.status === 'pending_review') && invoice.documentType !== 'credit_note' && (
@@ -721,6 +735,15 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               <p className="mt-2 whitespace-pre-line text-sm"><ConfidentialText value={invoice.internalNote} /></p>
             </section>
           )}
+
+          <ServerViewPanel
+            fields={[
+              { label: tServer('noteAbove'), value: invoice.noteAbove },
+              ...items.map((item, i) => ({ label: tServer('item', { n: i + 1 }), value: item.description })),
+              { label: tServer('noteBelow'), value: invoice.noteBelow },
+              { label: tServer('internalNote'), value: invoice.internalNote }
+            ]}
+          />
         </aside>
       </div>
 

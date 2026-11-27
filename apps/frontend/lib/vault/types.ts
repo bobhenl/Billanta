@@ -15,11 +15,19 @@ export type VaultStatus =
       /** False below Plus: the vault still unlocks, but nothing new gets encrypted. Missing from an older backend. */
       planAllowed?: boolean;
       sealNew: boolean;
+      /** What sending an encrypted document does about its PDF (backend vault/vault-email.ts). Missing from an older backend. */
+      emailMode?: VaultEmailMode;
+      /** Let the outbox send queued PDFs without a click, once the browser renders them itself. */
+      autoSendPdf?: boolean;
       categories: VaultCategory[];
       keyCheck: string;
       enabledAt: string;
       wraps: VaultWrapView[];
     };
+
+/** `link_now`: the link goes now, the PDF follows; `wait`: the whole e-mail waits; `link_only`: never a PDF. */
+export const VAULT_EMAIL_MODES = ['link_now', 'wait', 'link_only'] as const;
+export type VaultEmailMode = (typeof VAULT_EMAIL_MODES)[number];
 
 export type EnabledVault = Extract<VaultStatus, { enabled: true }>;
 
@@ -42,4 +50,46 @@ export interface PlainInvoice {
   noteBelow?: string;
   internalNote?: string;
   items: { id: string; description: string }[];
+  /** The document key its sealed texts already use (from the server); missing on an older backend. */
+  documentKeyWrap?: string | null;
+}
+
+/** `GET /api/v1/vault/invoices/documents`: one document with its texts exactly as stored, envelopes unopened. */
+export interface VaultDocument {
+  id: string;
+  documentType: string;
+  invoiceNumber: string | null;
+  status: string;
+  issueDate: string | null;
+  taxableSupplyDate: string | null;
+  dueDate: string | null;
+  paidAt: string | null;
+  currency: string;
+  variableSymbol: string | null;
+  contactName: string | null;
+  contactIco: string | null;
+  noteAbove: string | null;
+  noteBelow: string | null;
+  internalNote: string | null;
+  totalWithoutVat: number;
+  totalVat: number;
+  total: number;
+  createdAt: string;
+  items: {
+    description: string;
+    code: string | null;
+    quantity: number;
+    unit: string | null;
+    unitPrice: number;
+    vatRate: number | null;
+    discountPercent: number;
+    createdAt: string;
+  }[];
+}
+
+export interface VaultDocumentPage {
+  documents: VaultDocument[];
+  /** Locked documents the member has not re-authenticated for; left out of the page. */
+  skippedLocked: number;
+  next: string | null;
 }

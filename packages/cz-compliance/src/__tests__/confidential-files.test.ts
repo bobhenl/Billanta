@@ -48,7 +48,7 @@ describe('encrypted files', () => {
     const { body, encMeta } = await sealFile(key, pdf, { name: 'a.pdf', mime: 'application/pdf' });
     await expect(openFile(await generateDataKey(), body, encMeta)).rejects.toBeInstanceOf(VaultSecretError);
     const broken = body.slice();
-    broken[broken.length - 1] ^= 1;
+    broken[broken.length - 1]! ^= 1;
     await expect(openFile(key, broken, encMeta)).rejects.toBeInstanceOf(VaultSecretError);
   });
 

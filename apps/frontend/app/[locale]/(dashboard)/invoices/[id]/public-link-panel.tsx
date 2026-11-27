@@ -6,11 +6,26 @@ import { useTranslations } from 'next-intl';
 import { LinkNameField } from '@/components/link-name-field';
 import { toast } from '@/components/toaster';
 import { useCanDo, useCanWrite } from '@/components/access-provider';
+import { ClientLinkNotice, useClientLinkKey } from '@/components/vault/client-link';
 import { copyText } from '@/lib/clipboard';
+import type { SealedDocument } from '@/lib/vault/content';
 import { setInvoiceLinkName } from '../actions';
 
 /** The client link of an issued document: copy it, and give it a readable name of its own. */
-export function PublicLinkPanel({ id, link, defaultLink, slug }: { id: string; link: string; defaultLink: string; slug: string | null }) {
+export function PublicLinkPanel({
+  id,
+  link,
+  defaultLink,
+  slug,
+  sealedDoc = null
+}: {
+  id: string;
+  link: string;
+  defaultLink: string;
+  slug: string | null;
+  /** The printed texts when some are encrypted: the link then carries the document key after #. */
+  sealedDoc?: SealedDocument | null;
+}) {
   const t = useTranslations('linkName');
   // Copying the link is for everyone; renaming it changes the document.
   const canWriteInvoices = useCanWrite('invoices');
@@ -20,7 +35,8 @@ export function PublicLinkPanel({ id, link, defaultLink, slug }: { id: string; l
   // Same form as the {link} in e-mails (no locale: the page picks it up).
   const [base, setBase] = useState('/i/');
   useEffect(() => setBase(`${window.location.origin}/i/`), []);
-  const url = `${base}${link}`;
+  const clientKey = useClientLinkKey(id, sealedDoc);
+  const url = clientKey.withKey(`${base}${link}`);
 
   const copy = async () => {
     try {
@@ -54,6 +70,7 @@ export function PublicLinkPanel({ id, link, defaultLink, slug }: { id: string; l
           {t('copy')}
         </button>
       </div>
+      <ClientLinkNotice link={clientKey} className="mt-3" />
       {/* Renaming is rare, so it waits behind a link unless a name is already set. */}
       {canEdit &&
         (renaming ? (

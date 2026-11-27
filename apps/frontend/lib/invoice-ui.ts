@@ -48,11 +48,16 @@ export interface InvoiceRow {
   /** Locked by an owner/admin; until the viewer re-authenticates the customer and notes come back empty. */
   locked?: boolean;
   lockedAt?: string | null;
+  /** "Soukromá faktura": seen only by the company owner and createdByUserId. */
+  isPrivate?: boolean;
+  createdByUserId?: string | null;
   /** Open "customer fills in their details" link on a draft (null when none). */
   buyerDetailsToken?: string | null;
   buyerDetailsSubmittedAt?: string | null;
   /** Own "Po zdanění" split {partnerId: weight}; null = the tax model's default shares. */
   partnerShares?: Record<string, number> | null;
+  /** Důvěrný režim: the note / item filter may match encrypted texts here, which only the browser can check. */
+  sealedPending?: ('note' | 'item')[];
 }
 
 export interface BuyerDetailsOutcome {

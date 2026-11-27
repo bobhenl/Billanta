@@ -162,6 +162,9 @@ export const listInvoicesQuerySchema = z.object({
   item: z.string().trim().max(100).optional(),
   // Text in the internal note, the notes above/below the items or the customer's quote reply.
   note: z.string().trim().max(100).optional(),
+  // Důvěrný režim: with `item`/`note`, also return documents whose encrypted texts the
+  // browser has to check (marked `sealedPending`); the server cannot read them.
+  sealed: z.enum(["candidates"]).optional(),
   // Variable, constant or specific symbol (substring).
   symbol: z.string().trim().regex(/^[0-9]{1,10}$/).optional(),
   order_number: z.string().trim().max(60).optional(),

@@ -245,7 +245,8 @@
         "cookies": "Cookie-szabályzat",
         "cookieSettings": "Cookie-beállítások",
         "dpa": "Adatfeldolgozási megállapodás",
-        "contact": "Kapcsolat"
+        "contact": "Kapcsolat",
+        "confidential": "Bizalmas mód és biztonság"
       },
       "account": {
         "title": "Fiók",
@@ -768,7 +769,15 @@
     "print": "Nyomtatás / PDF",
     "downloadPdf": "PDF letöltése",
     "downloadPdfShort": "PDF",
-    "confidentialItem": "Bizalmas tétel"
+    "confidentialItem": "Bizalmas tétel",
+    "sealed": {
+      "noKey": "Néhány szöveg titkosított. A teljes szöveg az eredeti e-mailben kapott linkben van.",
+      "openedLink": "Az Ön linkjében lévő kulcs megnyitotta a titkosított szövegeket. Ez a böngésző megjegyzi, így a későbbi linkek is megnyitják a bizonylatot.",
+      "openedStored": "A titkosított szövegeket egy kulcs nyitotta meg, amelyet ez a böngésző egy korábbi linkből jegyzett meg.",
+      "openedPreview": "Előnézet: a szövegeket a link kulcsa nyitotta meg. Ebben a böngészőben nem lett elmentve.",
+      "forget": "Kulcs elfelejtése ebben a böngészőben",
+      "forgotten": "A kulcs törölve ebből a böngészőből. A teljes szöveg az eredeti e-mailben kapott linkben van."
+    }
   },
   "expenses": {
     "title": "Költségek",
@@ -1355,7 +1364,25 @@
         "manage": "Link szerkesztése"
       },
       "contactPerson": "Kapcsolattartó",
-      "person": "Magánszemély"
+      "person": "Magánszemély",
+      "visibility": {
+        "title": "Ki látja az ügyfelet",
+        "hint": "A privát ügyfelet és bizonylatait csak a cég tulajdonosa és az a tag látja, akié az ügyfél. Mások sem a listákban, sem az előzményekben nem találják.",
+        "owner": "Gazdája",
+        "nobody": "Az egész cég (senki külön)",
+        "formerMember": "Korábbi csapattag",
+        "private": "Privát – csak a cég tulajdonosa és az látja, akié az ügyfél",
+        "privateHint": "Mások nem találják a kapcsolatok, számlák, értesítések és a változásnapló között.",
+        "ownedBy": "Gazdája: {name}",
+        "ownerOnly": "Ezt csak a cég tulajdonosa vagy az ügyfél gazdája módosíthatja.",
+        "saved": "Mentve",
+        "failed": "Nem sikerült menteni",
+        "errors": {
+          "visibility_owner_only": "Ezt csak a cég tulajdonosa vagy az ügyfél gazdája módosíthatja.",
+          "visibility_would_hide": "Így Ön sem látná többé az ügyfelet. Privát ügyfelet csak a cég tulajdonosa adhat át.",
+          "owner_not_member": "Ez a személy már nincs a csapatban."
+        }
+      }
     },
     "csv": {
       "import": "CSV importálása",
@@ -1420,7 +1447,8 @@
       "violet": "Ibolya",
       "pink": "Rózsaszín",
       "slate": "Szürke"
-    }
+    },
+    "privateBadge": "Privát ügyfél"
   },
   "settings": {
     "title": "Beállítások",
@@ -2145,7 +2173,16 @@
         "ownerOnly": "Csak a tulajdonos",
         "adminsOnly": "Csak a tulajdonos és az adminisztrátorok"
       },
-      "fillFromPreset": "Kitöltés ez alapján:"
+      "fillFromPreset": "Kitöltés ez alapján:",
+      "contactScope": {
+        "label": "Látja az ügyfeleket",
+        "all": "Az egész cég",
+        "own": "Csak a sajátjait",
+        "hint": "Csak a sajátjait = csak a neki kiosztott ügyfeleket (Gazdája) és az általa kiállított bizonylatokat.",
+        "ownerOnly": "Ezt csak a cég tulajdonosa módosíthatja.",
+        "summary": "csak saját ügyfelek",
+        "refused": "Ezt csak a cég tulajdonosa módosíthatja."
+      }
     },
     "exports": {
       "title": "Exportok a könyvelőnek",
@@ -5354,15 +5391,26 @@
       "relock": "Újra elrejtés",
       "lockedToast": "Részletek elrejtve",
       "unlockedToast": "A részletek jelszó nélkül látszanak",
-      "teamHint": "Ez a zárolatlan vagy közös számítógépre pillantók ellen véd, nem a kollégák ellen: minden csapattag a saját jelszavával fedi fel őket. Ha egy számlát csak bizonyos emberek láthatnak, az ügyfélnél állítsa be, kinek van hozzáférése.",
+      "teamHint": "Ez a zárolatlan vagy közös számítógépre pillantók ellen véd, nem a kollégák ellen: minden csapattag a saját jelszavával felfedi őket. Ha egy számlát csak bizonyos emberek láthatnak, jelölje privátnak, vagy állítsa be, kié az ügyfél.",
       "teamLink": "Beállítás: ki mit lát a csapatban",
       "errors": {
         "wrong_current": "Hibás jelszó.",
         "reauth_required": "A fiókjához nincs jelszó. Jelentkezzen ki, majd be, és próbálja újra.",
         "too_many_attempts": "Túl sok próbálkozás. Próbálja újra néhány perc múlva.",
         "generic": "Nem sikerült. Próbálja újra."
-      }
-    }
+      },
+      "privacyLink": "Megjelölés privátként"
+    },
+    "privacy": {
+      "label": "Privát számla",
+      "hint": "Csak a cég tulajdonosa és a kiállítója látja, a tételekkel, mellékletekkel és fizetésekkel együtt.",
+      "badge": "Privát számla",
+      "ownerOnly": "Ezt csak a cég tulajdonosa vagy a számla kiállítója módosíthatja.",
+      "failed": "Nem sikerült módosítani",
+      "madePrivate": "A számla privát",
+      "madeShared": "A csapat újra látja a számlát"
+    },
+    "privateRow": "Privát számla"
   },
   "invite": {
     "title": "Meghívás a csapatba",
@@ -7368,7 +7416,8 @@
         "buyer_details_submitted": "kitöltötte számlázási adatait ehhez:",
         "buyer_details_cancelled": "lezárta a vevői adatkérést ehhez:",
         "profile_order": "a nyilvános profilon leadott rendeléssel létrehozva:",
-        "link_renamed": "átnevezte a nyilvános linket"
+        "link_renamed": "átnevezte a nyilvános linket",
+        "send_waiting_pdf": "PDF-fel küldésre sorba állította:"
       },
       "tenant": {
         "updated": "szerkesztette a cégadatokat",
@@ -14290,7 +14339,7 @@
       "lead": "Titkosítás – a tartalmat csak Ön és a kulccsal rendelkező tagok látják, a szerver nem tudja elolvasni.",
       "what": "A tételleírások és a megjegyzések (a tételek felett, alatt és a belsők) titkosítva lesznek.",
       "keeps": "A kimutatások és az irányítópultok továbbra is működnek: az összegek, dátumok és közlemények titkosítatlanok maradnak.",
-      "loses": "Titkosított bizonylathoz a szerver nem készít PDF-et vagy ISDOC-ot, nem csatolja e-mailhez, és szöveges kereséssel sem találja meg.",
+      "loses": "Titkosított bizonylathoz a szerver nem készít PDF-et vagy ISDOC-ot, és nem csatolja e-mailhez. A szöveges keresés feloldás után csak a böngészőjében fut.",
       "locked": "A zárolt bizonylatok kimaradnak.",
       "done": "{n, plural, one {# bizonylat titkosítva} other {# bizonylat titkosítva}}.",
       "nothing": "Nem volt mit titkosítani.",
@@ -14301,20 +14350,27 @@
       "lockedLead": "A szerkesztéshez oldja fel. Csak az Ön böngészőjében nyílik meg.",
       "otherKey": "Ez a bizonylat olyan kulccsal titkosított, amellyel ez a cég nem rendelkezik.",
       "unlock": "Feloldás",
-      "aiUnavailable": "Az AI-kitöltés titkosítás közben nem érhető el Bizalmas módban – a szövegnek a szerverre kellene kerülnie.",
       "sealFailed": "A bizonylatot nem sikerült titkosítani. Semmi sem mentődött.",
       "sealToggle": "A bizonylat titkosítása",
-      "sealOnHint": "A tételleírásokat és megjegyzéseket csak Ön és a kulccsal rendelkező tagok látják. PDF, ISDOC és tételjavaslatok nem lesznek elérhetők.",
-      "sealOffHint": "A bizonylat a korábbiakhoz hasonlóan titkosítás nélkül mentődik."
+      "sealOnHint": "A tételleírásokat és megjegyzéseket csak Ön és a kulccsal rendelkező tagok látják. PDF és ISDOC nem lesz elérhető, a tételjavaslatokat csak a böngészője keresi.",
+      "sealOffHint": "A bizonylat a korábbiakhoz hasonlóan titkosítás nélkül mentődik.",
+      "aiConsent": "A szöveg elküldése az AI-nak – egyszer eljut a szerverre és az AI-szolgáltatóhoz, nem kerül mentésre",
+      "aiConsentHint": "A szerver nem tárolja és nem naplózza a szöveget. Amit az AI visszaad, mentéskor a böngészőjében titkosítódik. A hozzájárulás csak erre az egy futtatásra érvényes."
     },
     "actions": {
       "blocked": "Bizalmas módban nem érhető el: a szerver nem tudja elolvasni a titkosított bizonylatot. Kapcsolja ki a PDF/ISDOC-mellékletet az e-mail-beállításokban, vagy küldjön linket.",
       "pdfUnavailable": "A PDF Bizalmas módban nem érhető el. A részleteket kinyomtathatja a böngészőből (Ctrl+P).",
-      "sendHint": "Ez a bizonylat titkosított: az e-mail csak linkkel megy ki, a szerver nem tud PDF-et vagy ISDOC-ot csatolni.",
+      "sendHint": "A bizonylat titkosított, ezért a szerver magától nem készít PDF-et vagy ISDOC-ot. A beállítástól függően a link azonnal megy, a PDF pedig az Ön böngészőjéből, vagy csak a link megy.",
+      "linkCopied": "Kulcsos link kimásolva",
+      "keyLink": "Ügyféllink kulccsal",
+      "copyLink": "Másolás",
+      "emailWaiting": "Az e-mail a PDF-re vár. Egy feloldott módú böngészőből megy ki, lásd a fenti értesítést.",
+      "pdfFollows": "Link elküldve. A PDF-et kiegészítő e-mailként küldheti a fenti értesítésből.",
       "unlockFirst": "Feloldás nélkül titkosított mellékletet nem lehet csatolni.",
       "decryptFailed": "Egy mellékletet nem sikerült visszafejteni.",
       "passFiles": "{n, plural, one {# titkosított melléklet csatolása} other {# titkosított melléklet csatolása}}",
-      "passFilesHint": "A böngésző visszafejti őket, és egyszer mennek át a szerveren ebbe az e-mailbe. A szerver nem tárolja őket, kézbesítés után törli."
+      "passFilesHint": "A böngésző visszafejti őket, és egyszer mennek át a szerveren ebbe az e-mailbe. A szerver nem tárolja őket, kézbesítés után törli.",
+      "passFilesWaiting": "Ez a bizonylat arra vár, hogy egy böngésző elkészítse a PDF-et, a mellékletek pedig nem várakozhatnak a szerveren. Küldje el az e-mailt nélkülük, vagy állítsa be a bizalmas módban, hogy a link azonnal menjen."
     },
     "categories": {
       "recommended": "Ajánlott",
@@ -14326,9 +14382,10 @@
         "loses": [
           "A szerver által készített PDF, ISDOC, UBL és Peppol",
           "PDF/ISDOC-melléklet az e-mailekben",
-          "Keresés a tételek és megjegyzések szövegében, tételjavaslatok",
-          "Bizonylat kitöltése AI-jal",
-          "Tételleírások a nyilvános linken és a könyvelőnek szóló exportokban (Pohoda, Money, CSV)"
+          "Szöveges keresés és tételjavaslatok a szerveren (feloldás után ezt a böngészője végzi)",
+          "AI-kitöltés kifejezett kattintás nélkül (a szöveg csak jóváhagyás után, egyszer megy át a szerveren az AI-hoz, és nem kerül mentésre)",
+          "Nyilvános link: ügyfele a teljes szöveget csak a bizonylat részleteiből kapott kulcsos linken látja. A kulcs nélküli link (pl. automatikus emlékeztetőből) csak olyan eszközön mutatja, ahol az ügyfél korábban megnyitotta a teljes linket",
+          "Olvasható szövegek a szerver könyvelési exportjaiban (a Pohoda, Money és CSV „[Důvěrný obsah]” szöveget mutat; a visszafejtett exportot a böngészője készíti)"
         ]
       },
       "attachments": {
@@ -14456,6 +14513,125 @@
       "categoriesMin": "Legalább egy kategória maradjon bekapcsolva.",
       "categoryOffConfirm": "Kikapcsolja ezt a kategóriát? Az új fájlok és szövegek már nem lesznek titkosítva. Ami titkosított, az titkosított marad."
     },
+    "clientLink": {
+      "ready": "A link tartalmazza a titkosított szövegek kulcsát (a # után). Ügyfele ezzel a teljes szöveget látja, a szerver soha nem kapja meg a kulcsot.",
+      "locked": "A bizonylat titkosított. Oldja fel a széfet, és a link megkapja a kulcsot, amellyel ügyfele a teljes szöveget látja.",
+      "prepare": "Ezt a bizonylatot még az ügyfélkulcsok előtt titkosították. Adjon neki saját kulcsot, utána elküldheti a linkben. A szerverre csak újratitkosított szövegek kerülnek.",
+      "failed": "Nem sikerült előkészíteni az ügyfélkulcsot. Próbálja újra.",
+      "loading": "Ügyfélkulcs előkészítése…",
+      "unlock": "Széf feloldása",
+      "prepareButton": "Ügyfélink előkészítése",
+      "shareOnly": "Csak az ügyfelének küldje el. Akinél a teljes link van, a titkosított szövegeket is elolvashatja.",
+      "serverEmail": "A szerver által küldött e-mailben a link kulcs nélkül szerepel. Ügyfele ott látja az összegeket, de a titkosított szövegeket nem, hacsak korábban meg nem nyitotta a kulcsos linket ugyanabban a böngészőben. Hogy lássa őket, küldje el neki a fenti linket saját maga."
+    },
+    "search": {
+      "lockedHint": "{n, plural, one {# bizonylatban titkosított szöveg van, amelyben a szerver nem tud keresni.} other {# bizonylatban titkosított szöveg van, amelyben a szerver nem tud keresni.}} Feloldás után a böngészője keres bennük.",
+      "unlock": "Feloldás és keresés",
+      "searching": "Keresés a titkosított szövegekben a böngészőjében…",
+      "included": "A találatok a titkosított szövegeket is tartalmazzák, ezekben csak a böngészője keresett.",
+      "failed": "A titkosított szövegekben nem sikerült keresni. A találatok csak az olvasható szövegekre vonatkoznak.",
+      "skippedLocked": "{n, plural, one {# zárolt bizonylatban nem történt keresés.} other {# zárolt bizonylatban nem történt keresés.}}"
+    },
+    "export": {
+      "title": "Exportálás visszafejtett szövegekkel",
+      "lead": "A kiválasztott időszak bizonylatai tételleírásokkal és megjegyzésekkel. A fájl a böngészőjében készül, és közvetlenül a gépére kerül, a szerver nem látja. Kezelje bizalmas dokumentumként.",
+      "csv": "CSV letöltése",
+      "json": "JSON letöltése",
+      "working": "Visszafejtés…",
+      "done": "{n, plural, one {# bizonylat mentve.} other {# bizonylat mentve.}}",
+      "failed": "Az exportot nem sikerült elkészíteni. Próbálja újra.",
+      "needsUnlock": "Exportálás előtt fel kell oldania a Bizalmas módot.",
+      "skippedLocked": "{n, plural, one {# zárolt bizonylat hiányzik az exportból.} other {# zárolt bizonylat hiányzik az exportból.}}",
+      "unreadable": "[Nem fejthető vissza]",
+      "unreadableCount": "{n, plural, one {# szöveget nem sikerült visszafejteni.} other {# szöveget nem sikerült visszafejteni.}}",
+      "accountingNote": "A fenti könyvelési exportokat (CSV, Pohoda, Money S3) a szerver készíti, ezért a titkosított szövegek helyén „[Důvěrný obsah]” áll. Az összegek, az áfa, a dátumok és a vevők teljesek.",
+      "columns": {
+        "documentType": "Bizonylattípus",
+        "invoiceNumber": "Szám",
+        "status": "Állapot",
+        "issueDate": "Kiállítás dátuma",
+        "taxableSupplyDate": "Teljesítés dátuma",
+        "dueDate": "Fizetési határidő",
+        "paidAt": "Kifizetve",
+        "contactName": "Vevő",
+        "contactIco": "IČO",
+        "variableSymbol": "Változó szimbólum",
+        "currency": "Pénznem",
+        "totalWithoutVat": "Nettó",
+        "totalVat": "Áfa",
+        "total": "Összesen",
+        "noteAbove": "Szöveg a tételek felett",
+        "noteBelow": "Szöveg a tételek alatt",
+        "internalNote": "Belső megjegyzés",
+        "itemDescription": "Tétel",
+        "itemCode": "Tételkód",
+        "quantity": "Mennyiség",
+        "unit": "Egység",
+        "unitPrice": "Egységár",
+        "vatRate": "Áfakulcs %",
+        "discountPercent": "Kedvezmény %"
+      }
+    },
+    "outbox": {
+      "badge": "{n} e-mail vár a PDF-fel együtt történő küldésre",
+      "open": "Megjelenítés",
+      "title": "PDF-re váró e-mailek",
+      "back": "Bezárás",
+      "send": "Küldés ({n})",
+      "unlockAndSend": "Feloldás és küldés ({n})",
+      "lead": "A titkosított bizonylatot a szerver nem tudja magától PDF-fé alakítani. A PDF itt készül, egy feloldott Bizalmas módú böngészőben.",
+      "passThroughPdf": "A PDF az Ön böngészőjében készül. A szerver egyszer továbbítja a címzettnek, és nem tárolja.",
+      "passThroughTexts": "A Küldés gombra kattintva ezeknek a bizonylatoknak a visszafejtett szövegei egyszer áthaladnak a szerveren: az elkészíti belőlük a PDF-et és e-mailben elküldi. Nem tárolja és nem naplózza őket.",
+      "unnumbered": "Szám nélkül",
+      "kind": {
+        "invoice": "Az egész e-mail vár",
+        "invoice_pdf": "PDF egy elküldött linkhez"
+      },
+      "dismiss": "Ne küldje",
+      "settingsHint": "Hogy mikor és hogyan menjen a PDF, itt állíthatja be:",
+      "settingsLink": "Bizalmas mód beállításai",
+      "sent": "{n} e-mail elküldve",
+      "failed": "{n} e-mailt nem sikerült elküldeni"
+    },
+    "emailSettings": {
+      "title": "Titkosított bizonylatok e-mailjei",
+      "lead": "Mi történik, ha titkosított bizonylatot küld. A link, az összeg, a határidő, a közlemény és a QR-fizetés mindig megy.",
+      "mode": {
+        "link_now": "Link most, PDF később",
+        "wait": "Várni és mindent egyszerre küldeni",
+        "link_only": "Csak link, soha PDF"
+      },
+      "modeHint": {
+        "link_now": "Az ügyfél azonnal kap egy e-mailt a linkkel. A PDF egy második e-mailben érkezik, amint valaki a csapatból elküldi egy feloldott módú böngészőből.",
+        "wait": "Az e-mail csak a PDF-fel együtt megy, egy feloldott módú csapattag böngészőjéből. Addig az ügyfél semmit sem kap.",
+        "link_only": "Az ügyfél csak a linket kapja, és ott nyitja meg a bizonylatot. A szerver soha nem kapja meg a szövegeit."
+      },
+      "autoSend": "PDF-ek automatikus küldése",
+      "autoSendHint": "Amint valaki a csapatból feloldott móddal megnyitja az alkalmazást, a várakozó PDF-ek további kattintás nélkül kimennek.",
+      "passThrough": "Minden elküldött PDF egyszer áthalad a szerveren, mert onnan megy az e-mail. A szerver nem tárolja és nem naplózza.",
+      "saved": "Mentve",
+      "failed": "A mentés nem sikerült"
+    },
+    "device": {
+      "title": "Feloldás megjegyzése ezen az eszközön",
+      "hint": "A mód a böngésző bezárása után is feloldva marad, 12 órás korlát nélkül, így a várakozó PDF-ek bármikor kimehetnek, amikor megnyitja az alkalmazást. A kulcsot a böngésző úgy tárolja, hogy nem olvasható ki és nem másolható. A Zárolás, ennek kikapcsolása vagy a kijelentkezés törli.",
+      "risk": "Csak saját, mások által nem használt eszközön kapcsolja be. Aki megnyitja ezt a böngészőt, látja a titkosított szövegeket.",
+      "on": "Ez az eszköz megjegyzi a feloldást",
+      "off": "A feloldás ismét 12 óra után lejár",
+      "failed": "Nem sikerült. Előbb oldja fel a módot."
+    },
+    "serverView": {
+      "title": "Mit lát a szerver",
+      "lead": "Így vannak tárolva a bizonylat szövegei a szerveren. Visszafejteni csak feloldott módú böngésző tudja őket.",
+      "server": "A szerveren:",
+      "you": "Ön ezt látja:",
+      "noteAbove": "Szöveg a tételek felett",
+      "noteBelow": "Szöveg a tételek alatt",
+      "internalNote": "Belső megjegyzés",
+      "item": "{n}. tétel",
+      "notSealed": "Az összegeket, dátumokat, a bizonylatszámot, a közleményt és az ügyfeleket a szerver látja, hogy ÁFÁ-t számoljon, figyelje a határidőket és párosítsa a fizetéseket.",
+      "more": "Hogyan működik és hogyan ellenőrizheti"
+    },
     "sealFiles": {
       "button": "Meglévő mellékletek titkosítása",
       "title": "Meglévő mellékletek titkosítása",
@@ -14470,5 +14646,106 @@
       "nothing": "Nem volt mit titkosítani.",
       "failed": "A titkosítás nem sikerült. A már titkosított mellékletek titkosítva maradnak."
     }
+  },
+  "vaultPublic": {
+    "integrity": {
+      "title": "Kódellenőrzés",
+      "lead": "Az alkalmazás minden buildjénél rögzítjük a titkosító kód és az azt tartalmazó fájlok SHA-256 lenyomatát.",
+      "sourceHash": "Forrásfájl: {path}",
+      "repo": "Nyilvános forráskód",
+      "repoPlanned": "Tervezzük, hogy külön GitHub-tárolóban tesszük közzé.",
+      "chunks": "A böngésző által betöltött fájlok",
+      "check": "Ellenőrzés ebben a böngészőben",
+      "match": "Egyezik",
+      "mismatch": "Nem egyezik",
+      "error": "A fájlt nem sikerült letölteni",
+      "loadedHere": "ezen az oldalon betöltve",
+      "missing": "A manifest még nem érhető el. Az éles build során készül.",
+      "honest": "A manifestet és a fájlokat ugyanaz a szerver küldi, így az egyezés csak azt mutatja, hogy a manifest azt írja le, amit kiszolgálnak. Az igazi ellenőrzés a lenyomatok összevetése a közzétett forrásból készült builddel."
+    },
+    "demo": {
+      "label": "Írjon be egy tetszőleges mondatot",
+      "placeholder": "Például: Tanácsadás a cég eladásához, 12 óra",
+      "send": "Titkosítás és küldés",
+      "keyNote": "A kulcs csak ehhez az oldalhoz készül, és sehová nem kerül elküldésre. Újratöltés után eltűnik.",
+      "typed": "Amit beírt",
+      "typedHint": "Csak az Ön böngészőjében marad.",
+      "sent": "Ami a szerverre ment",
+      "sentHint": "A POST {path} kérés pontos törzse.",
+      "received": "Amit a szerver kapott (HTTP {status})",
+      "receivedHint": "A szerver pontosan azt adja vissza, amit kapott. Semmit sem tárol.",
+      "open": "Visszafejtés itt",
+      "openedAs": "A böngészője ezt fejtette vissza:",
+      "rateLimited": "Túl sok próbálkozás. Próbálja újra néhány perc múlva.",
+      "failed": "A kérés nem sikerült. Próbálja újra.",
+      "devtoolsTitle": "Ellenőrizze saját maga a böngésző eszközeiben",
+      "devtoolsSteps": [
+        "Nyomja meg az F12-t (Macen Cmd+Option+I), és nyissa meg a Hálózat (Network) lapot.",
+        "Kattintson újra a Titkosítás és küldés gombra.",
+        "Kattintson a listában az „echo” kérésre, és nyissa meg a Payload (Adattartalom) és a Response (Válasz) részt.",
+        "Csak egy enc:v1:… karakterláncot lát, a mondatát nem. A Hálózat lapon a Ctrl+F minden kérésben keres: próbáljon meg rákeresni egy szóra a mondatából."
+      ]
+    },
+    "csp": {
+      "liveTitle": "Az oldal Content-Security-Policy fejléce, épp most lekérve",
+      "liveMissing": "A fejlécet nem sikerült beolvasni. Megtalálja a böngésző eszközeiben az oldal kérésénél."
+    }
+  },
+  "securityPage": {
+    "seoTitle": "Bizalmas mód: mit lát a szerver és mit nem",
+    "eyebrow": "Biztonság",
+    "title": "Bizalmas mód: bizonylatszövegek, amelyeket a szerver nem olvas el",
+    "lead": "A tételleírások és megjegyzések az Ön böngészőjében titkosítódnak. A szerver csak egy titkosított karakterláncot kap, és nincs hozzá kulcsa. Itt kipróbálhatja és ellenőrizheti.",
+    "featuresLink": "Minden funkció",
+    "demoTitle": "Próbálja ki",
+    "demoLead": "Bejelentkezés nélkül. Az oldal ugyanazzal a kóddal titkosítja a mondatát, mint az alkalmazás, és valóban elküldi a szerverre. Egymás mellett látja, mit írt be, mi ment el és mit kapott a szerver.",
+    "howTitle": "Hogyan működik",
+    "howSteps": [
+      {
+        "title": "A kulcs Önnél készül",
+        "body": "A mód bekapcsolásakor a böngésző véletlen AES-256 kulcsot hoz létre. A szerver csak a jelszavával, passkey-jével vagy helyreállítási kódjával lezárt másolatait kapja meg."
+      },
+      {
+        "title": "Küldés előtt titkosítva",
+        "body": "A tételleírás vagy megjegyzés titkosítódik, mielőtt elhagyja a böngészőt. A szerver egy enc:v1:… karakterláncot tárol, és nem csinál vele semmit."
+      },
+      {
+        "title": "Csak Önnél visszafejtve",
+        "body": "Feloldás után a böngésző úgy tartja a kulcsot, hogy az oldal használhatja, de a tartalmát nem olvashatja ki."
+      }
+    ],
+    "hiddenTitle": "Amit a szerver nem lát",
+    "hidden": [
+      "Tételleírások",
+      "Szöveg a tételek felett és alatt",
+      "Belső megjegyzések",
+      "A kulcs és az azt feloldó jelszó"
+    ],
+    "visibleTitle": "Amit a szerver lát, és miért",
+    "visible": [
+      "Összegek és ÁFA – számításokhoz, bevallásokhoz és fizetések párosításához",
+      "Kiállítási és fizetési határidő – emlékeztetőkhöz",
+      "Bizonylatszám és közlemény",
+      "Az ügyfél és e-mail-címe – hogy a bizonylat elküldhető legyen"
+    ],
+    "cspTitle": "A böngésző felügyeli, hová küldhet adatot az oldal",
+    "cspBody": "Az alkalmazás, a bizonylatlinkek és ez az oldal olyan Content-Security-Policy fejléccel érkeznek, amely tartalmazza a connect-src 'self' szabályt. A böngésző ekkor magától elutasít minden kérést, amelyet egy ilyen oldal más szerverre küldene, még ha egy szkript meg is próbálja. A visszafejtett szöveg ezen az úton nem juthat ki.",
+    "cspHow": "A fejlécet bárki elolvashatja: a böngésző eszközeiben (F12, Hálózat lap) kattintson az első kérésre, magára az oldalra, és a válaszfejlécek között keresse meg a Content-Security-Policy-t.",
+    "limitsTitle": "Hol vannak a határok",
+    "limits": [
+      "Az alkalmazás kódját a szerverünk szolgáltatja. Ha feltörnék, más kódot is küldhetne. A kód és a lenyomatok közzététele lehetővé teszi egy ilyen változás felismerését, de önmagában nem akadályozza meg.",
+      "Ha titkosított bizonylatot PDF-fel küld e-mailben, a szövegei egyszer áthaladnak a szerveren, mert onnan megy az e-mail. Az alkalmazás ezt előre jelzi, a szerver pedig nem tárolja és nem naplózza őket. Ha csak linket küld, a szerver egyáltalán nem kapja meg a szövegeket.",
+      "A mód nem titkosítja az összegeket, dátumokat, számokat és ügyfeleket, lásd fent.",
+      "Titkosított bizonylatokhoz a szerver nem készít ISDOC-ot vagy más gépi formátumot.",
+      "A connect-src szabály a közvetlenül betöltött oldalra vonatkozik. Ha újratöltés nélkül lép át a nyilvános oldalról az alkalmazásba, frissítésig az előző oldal szabálya érvényes.",
+      "Aki hozzáfér a feloldott böngészőjéhez, látja a szövegeket. A mód a szerver ellen véd, nem a gépénél ülő ember ellen.",
+      "Ha elfelejti a jelszót és a helyreállítási kódot is, és nincs passkey-je, a szövegeket senki sem tudja visszaállítani, mi sem."
+    ],
+    "verifyTitle": "Kódellenőrzés",
+    "verifyLead": "Minden buildnél egy nyilvános fájlba írjuk a titkosító kód SHA-256 lenyomatait. A böngészője itt újraszámolhatja őket.",
+    "planned": [
+      "A titkosító kódot (egyetlen, függőségek nélküli fájl) külön GitHub-tárolóban tesszük közzé, hogy a lenyomatok saját builddel összevethetők legyenek.",
+      "A kód független átvizsgálása tervben van."
+    ]
   }
 }

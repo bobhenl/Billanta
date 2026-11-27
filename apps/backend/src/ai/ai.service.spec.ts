@@ -3,10 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ContactsService } from "../contacts/contacts.service";
 import { AiService } from "./ai.service";
 
-const { parseMock, retrieveMock, ctorKeys, FakeAuthError } = vi.hoisted(() => {
+const { parseMock, retrieveMock, ctorKeys, ctorOpts, FakeAuthError } = vi.hoisted(() => {
   class FakeApiError extends Error {}
   class FakeAuthError extends FakeApiError {}
-  return { parseMock: vi.fn(), retrieveMock: vi.fn(), ctorKeys: [] as string[], FakeAuthError };
+  return { parseMock: vi.fn(), retrieveMock: vi.fn(), ctorKeys: [] as string[], ctorOpts: [] as { logLevel?: string }[], FakeAuthError };
 });
 
 // The credit counter is SQL with its own spec; here it records what it was asked.
@@ -26,8 +26,9 @@ vi.mock("@anthropic-ai/sdk", () => {
     static BadRequestError = class extends Error {};
     beta = { messages: { parse: parseMock } };
     models = { retrieve: retrieveMock };
-    constructor(opts: { apiKey: string }) {
+    constructor(opts: { apiKey: string; logLevel?: string }) {
       ctorKeys.push(opts.apiKey);
+      ctorOpts.push(opts);
     }
   }
   return { default: Anthropic };
@@ -77,6 +78,7 @@ describe("AiService", () => {
     parseMock.mockReset();
     retrieveMock.mockReset();
     ctorKeys.length = 0;
+    ctorOpts.length = 0;
     usage.consumeUsage.mockReset().mockResolvedValue({ ok: true, count: 1 });
     usage.refundUsage.mockClear();
   });
@@ -158,6 +160,19 @@ describe("AiService", () => {
       ServiceUnavailableException,
     );
     expect(parseMock).not.toHaveBeenCalled();
+  });
+
+  it("keeps the SDK from logging a text sent from an encrypted document, and stores nothing", async () => {
+    parseMock.mockResolvedValue({ stop_reason: "end_turn", parsed_output: { ...SUGGESTION, customer: { ico: null, name: null } } });
+    const { db, updates } = fakeDb([[TENANT], [TENANT]]);
+    const service = new AiService(contacts);
+
+    await service.suggestInvoice(db as never, "t1", "tajná konzultace", { confidential: true });
+    await service.suggestInvoice(db as never, "t1", "běžná konzultace");
+
+    expect(ctorOpts.map((o) => o.logLevel)).toEqual(["off", undefined]);
+    expect(updates).toHaveLength(0);
+    expect(db.update).not.toHaveBeenCalled();
   });
 
   it("caps platform-key use per tenant per day", async () => {

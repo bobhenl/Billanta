@@ -28,9 +28,10 @@ import { AmountsToggle, HIDE_AMOUNTS_SCRIPT } from '@/components/amounts-toggle'
 import { TrialBanner } from '@/components/trial-banner';
 import { UserMenu } from '@/components/user-menu';
 import { VaultProvider } from '@/components/vault/vault-provider';
+import { VaultEmailOutbox } from '@/components/vault/vault-email-outbox';
 import type { VaultStatus } from '@/lib/vault/types';
 import { NOINDEX } from '@/lib/seo';
-import { canDo, canManage, fetchMyAccess, fetchTenant, forbiddenSettings, hiddenSections, type TenantSettings } from '@/lib/tenant';
+import { canDo, canManage, canWrite, fetchMyAccess, fetchTenant, forbiddenSettings, hiddenSections, type TenantSettings } from '@/lib/tenant';
 import { apiFetch, fetchMyCompanies, isStudentCompanyOfOthers } from '@/lib/api-client';
 import { classroomEnabled, type StudentCompany } from '@/lib/classroom';
 import { PROMO_COOKIE } from '@/lib/promo';
@@ -176,6 +177,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
             )}
             {claimDemo && <DemoTransferClaim />}
             {claimGuest && <GuestInvoiceClaim />}
+            {/* "Důvěrný režim": e-mails of encrypted documents waiting for a browser with the key to add the PDF. */}
+            {vault?.enabled && <VaultEmailOutbox canSend={canDo(access, 'invoices.send') && canWrite(access, 'invoices')} />}
             {children}
           </main>
 

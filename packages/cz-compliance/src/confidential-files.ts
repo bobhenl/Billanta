@@ -1,4 +1,4 @@
-import { fromBase64, isSealed, open, seal, toBase64, VaultSecretError, type VaultKey } from './confidential.js';
+import { fromBase64, isSealed, open, seal, toBase64, VaultSecretError, type VaultKey } from './vault/confidential.js';
 
 /*
  * "Důvěrný režim", category "attachments": files attached to documents and
@@ -21,6 +21,8 @@ export const ENCRYPTED_FILE_MAGIC = new Uint8Array([0x42, 0x4c, 0x4e, 0x54, 0x45
 export const ENCRYPTED_FILE_OVERHEAD = ENCRYPTED_FILE_MAGIC.length + 12 + 16;
 
 const subtle = () => globalThis.crypto.subtle;
+/** What WebCrypto takes as bytes (BufferSource), without needing the DOM lib. */
+type WebBytes = Parameters<typeof globalThis.crypto.subtle.encrypt>[2];
 
 export interface FileMeta {
   name: string;
@@ -42,13 +44,13 @@ export function isEncryptedFile(bytes: Uint8Array | null | undefined): boolean {
   return true;
 }
 
-const fileKey = (raw: Uint8Array, usage: 'encrypt' | 'decrypt') => subtle().importKey('raw', raw as BufferSource, { name: 'AES-GCM' }, false, [usage]);
+const fileKey = (raw: Uint8Array, usage: 'encrypt' | 'decrypt') => subtle().importKey('raw', raw as WebBytes, { name: 'AES-GCM' }, false, [usage]);
 
 /** Encrypts one file: the body for upload and the sealed envelope with its key, name and type. */
 export async function sealFile(key: VaultKey, bytes: Uint8Array, meta: FileMeta): Promise<{ body: Uint8Array; encMeta: string }> {
   const raw = globalThis.crypto.getRandomValues(new Uint8Array(32));
   const iv = globalThis.crypto.getRandomValues(new Uint8Array(12));
-  const ct = new Uint8Array(await subtle().encrypt({ name: 'AES-GCM', iv }, await fileKey(raw, 'encrypt'), bytes as BufferSource));
+  const ct = new Uint8Array(await subtle().encrypt({ name: 'AES-GCM', iv }, await fileKey(raw, 'encrypt'), bytes as WebBytes));
   const body = new Uint8Array(ENCRYPTED_FILE_MAGIC.length + iv.length + ct.length);
   body.set(ENCRYPTED_FILE_MAGIC, 0);
   body.set(iv, ENCRYPTED_FILE_MAGIC.length);
@@ -85,9 +87,9 @@ export async function openFile(key: VaultKey, body: Uint8Array, encMeta: string)
   const start = ENCRYPTED_FILE_MAGIC.length;
   try {
     const plain = await subtle().decrypt(
-      { name: 'AES-GCM', iv: body.subarray(start, start + 12) as BufferSource },
+      { name: 'AES-GCM', iv: body.subarray(start, start + 12) as WebBytes },
       await fileKey(fromBase64(meta.k), 'decrypt'),
-      body.subarray(start + 12) as BufferSource
+      body.subarray(start + 12) as WebBytes
     );
     return { name: meta.n, mime: meta.m, bytes: new Uint8Array(plain) };
   } catch {

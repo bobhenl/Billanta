@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { loadPlanSummary } from "../billing/plan.guard";
 import { InvoiceAttachmentsService, passThroughFiles, storedFile } from "../invoices/invoice-attachments.service";
 import { assertPlainFile, classifyUpload, ENCRYPTED_FILENAME } from "./sealed-files";
+import { VaultService } from "./vault.service";
 
 vi.mock("../billing/plan.guard", () => ({ loadPlanSummary: vi.fn() }));
 
@@ -18,9 +19,14 @@ const upload = (buffer: Buffer, mimetype = "application/pdf", originalname = "sm
 function fakeDb(...answers: unknown[][]) {
   const wheres: SQL[] = [];
   const inserted: unknown[] = [];
+  const sets: unknown[] = [];
   const chain: Record<string, unknown> = {};
   const next = () => Promise.resolve(answers.shift() ?? []);
-  for (const m of ["select", "from", "innerJoin", "orderBy", "update", "set", "delete"]) chain[m] = () => chain;
+  for (const m of ["select", "from", "innerJoin", "orderBy", "update", "delete"]) chain[m] = () => chain;
+  chain.set = (v: unknown) => {
+    sets.push(v);
+    return chain;
+  };
   chain.where = (w: SQL) => {
     wheres.push(w);
     return chain;
@@ -33,7 +39,7 @@ function fakeDb(...answers: unknown[][]) {
     return chain;
   };
   chain.returning = next;
-  return { db: chain as never, wheres, inserted };
+  return { db: chain as never, wheres, inserted, sets };
 }
 
 describe("assertPlainFile", () => {
@@ -121,5 +127,32 @@ describe("e-mail attachments", () => {
   it("refuses to show an encrypted attachment in the client portal", async () => {
     const { db } = fakeDb([{ encMeta: envelope }]);
     await expect(new InvoiceAttachmentsService().update(db, "inv", "a1", { showInPortal: true })).rejects.toThrow("confidential_content");
+  });
+});
+
+describe("encrypting an existing file (bulk)", () => {
+  const plan = vi.mocked(loadPlanSummary);
+  beforeEach(() => plan.mockReset());
+
+  it("refuses a plain body, so a file is never marked encrypted while still readable", async () => {
+    plan.mockResolvedValue({ plan: "plus", enforced: true } as never);
+    const { db, sets } = fakeDb([{ tenantId: "t1" }], [{ categories: ["attachments"] }], [{ id: "a1" }]);
+    await expect(new VaultService().sealAttachment(db, "t1", "invoice", "a1", upload(Buffer.from("%PDF-1.7")), "")).rejects.toThrow(/Bad Request/);
+    expect(sets).toHaveLength(0);
+  });
+
+  it("is refused without the plan before the stored file changes", async () => {
+    plan.mockResolvedValue({ plan: "start", enforced: true } as never);
+    const { db, sets } = fakeDb([{ tenantId: "t1" }], [{ categories: ["attachments"] }], [{ id: "a1" }]);
+    const error = await new VaultService().sealAttachment(db, "t1", "expense", "a1", upload(cipherBody), envelope).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(ForbiddenException);
+    expect(sets).toHaveLength(0);
+  });
+
+  it("replaces a plain file with ciphertext and placeholders when allowed", async () => {
+    plan.mockResolvedValue({ plan: "plus", enforced: true } as never);
+    const { db, sets } = fakeDb([{ tenantId: "t1" }], [{ categories: ["attachments"] }], [{ id: "a1" }]);
+    await expect(new VaultService().sealAttachment(db, "t1", "invoice", "a1", upload(cipherBody), envelope)).resolves.toEqual({ sealed: 1 });
+    expect(sets[0]).toMatchObject({ filename: ENCRYPTED_FILENAME, encMeta: envelope, showInPortal: false });
   });
 });

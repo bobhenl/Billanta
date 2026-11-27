@@ -25,9 +25,12 @@ import { fieldKey, formattedVars, resolveVars } from '@/lib/custom-fields';
 import { InvoicePreview } from './invoice-preview';
 import { NetEstimate } from '@/components/net-estimate';
 import { CopyFromInvoicePanel } from './copy-from-invoice';
-import { fetchExchangeRate, saveInvoice, suggestInvoice, suggestItems } from './actions';
+import { fetchExchangeRate, recentItems, saveInvoice, suggestInvoice, suggestItems } from './actions';
 import type { VaultKey } from '@faktur/cz-compliance';
-import { sealDraft } from '@/lib/vault/content';
+import { useVault } from '@/components/vault/vault-provider';
+import { documentKeyFor, sealDraft } from '@/lib/vault/content';
+import { matchItemSuggestions } from '@/lib/vault/item-suggestions';
+import { invalidateSealedIndex, loadSealedIndex } from '@/lib/vault/sealed-index';
 import type {
   AiSettings,
   AresPrefill,
@@ -208,7 +211,7 @@ export function InvoiceForm({
   confidential
 }: {
   /** "Důvěrný režim" is on: texts can be encrypted in the browser before saving (ConfidentialInvoiceForm). */
-  confidential?: { sealByDefault: boolean; getKey: () => Promise<VaultKey | null> };
+  confidential?: { sealByDefault: boolean; getKey: () => Promise<VaultKey | null>; keySource?: InvoiceTemplate | null };
   mode?: InvoiceFormMode;
   defaults: FormDefaults;
   ai: AiSettings | null;
@@ -427,11 +430,30 @@ export function InvoiceForm({
   const [savingIntent, setSavingIntent] = useState<'draft' | 'issue' | null>(null);
 
   const [aiOpen, setAiOpen] = useState(false);
-  // Encrypt this document's texts on save. While on, nothing typed here goes to the server in plain text (no AI, no item suggestions).
+  // Encrypt this document's texts on save. While on, nothing typed here goes to the server in plain text,
+  // except an AI run the member ticks for (item suggestions are matched in the browser).
   const [sealIt, setSealIt] = useState(Boolean(confidential?.sealByDefault));
   const sealing = Boolean(confidential && sealIt);
+  const vaultSession = useVault();
+  const [recentPlain] = useState<{ list: Promise<ItemSuggestion[]> | null }>({ list: null });
+  // Encrypting: the item box asks nothing with the typed text. Plain history (fetched once, no query)
+  // and this browser's opened encrypted history are matched here. Encrypted history is offered only
+  // here, so its text never ends up in a plain document by a click.
+  const itemSuggestionsFor = async (q: string): Promise<ItemSuggestion[]> => {
+    if (!sealing) return suggestItems(q);
+    if (q.trim().length < 2) return [];
+    recentPlain.list ??= recentItems();
+    const { tenantId, key } = vaultSession;
+    const [plain, index] = await Promise.all([recentPlain.list, tenantId && key ? loadSealedIndex(tenantId, key).catch(() => null) : null]);
+    const opened = index
+      ? [...index.entries.values()].flatMap((e) => e.items.map((i) => ({ description: i.description, unitPrice: i.unitPrice, vatRate: i.vatRate, lastUsed: i.createdAt })))
+      : [];
+    return matchItemSuggestions([...opened, ...plain], q);
+  };
   const [copyOpen, setCopyOpen] = useState(false);
   const [aiText, setAiText] = useState('');
+  // Per run, never remembered: sending an encrypted document's text to AI is a choice made each time.
+  const [aiConsent, setAiConsent] = useState(false);
   const [aiBusy, startAi] = useTransition();
   const [aiError, setAiError] = useState<string | null>(null);
   const [aiNote, setAiNote] = useState<string | null>(null);
@@ -591,14 +613,18 @@ export function InvoiceForm({
   };
 
   const runAi = (text: string = aiText) => {
+    // Encrypting: the text leaves the browser only with this run's own tick.
+    if (sealing && !aiConsent) return;
     setAiError(null);
     setAiNote(null);
     // The text stays in the box, so it can be run once the connection is back.
     if (!navigator.onLine) return setAiError(tOffline('aiNeedsConnection'));
+    const confidentialRun = sealing;
+    setAiConsent(false);
     startAi(async () => {
       let response: Awaited<ReturnType<typeof suggestInvoice>>;
       try {
-        response = await suggestInvoice(text);
+        response = await suggestInvoice(text, { confidential: confidentialRun });
       } catch {
         setAiError(navigator.onLine ? t('errors.ai_provider_unavailable') : tOffline('aiNeedsConnection'));
         return;
@@ -722,7 +748,7 @@ export function InvoiceForm({
     const sealedInput = async (): Promise<InvoiceDraftInput | null> => {
       if (!sealing) return input;
       const key = await confidential!.getKey();
-      return key ? sealDraft(key, input) : null;
+      return key ? sealDraft(key, input, await documentKeyFor(key, confidential!.keySource)) : null;
     };
     const queue = async () => {
       const payload = await sealedInput();
@@ -780,6 +806,8 @@ export function InvoiceForm({
         setError(t.has(`errors.${result.error}`) ? t(`errors.${result.error}`) : t('errors.save_failed'));
         return;
       }
+      // The opened copy of the encrypted texts is now stale for search and suggestions.
+      invalidateSealedIndex();
       if (result.issueError) toast({ text: t('issueFailed', { reason: result.issueError }), tone: 'err' });
       else toast({ text: issue ? t('savedIssued') : editing ? t('savedChanges') : t('savedDraft'), tone: 'ok' });
       router.push(`/invoices/${result.id}`);
@@ -981,13 +1009,20 @@ export function InvoiceForm({
             {aiOpen && (
               <section className="mt-2 rounded-xl border border-primary/30 bg-accent/40 p-4">
                 {
-              (sealing ? (
-                <p className="mt-2 flex items-start gap-1.5 text-sm text-muted-foreground">
-                  <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                  {tVault('aiUnavailable')}
-                </p>
-              ) : aiUsable ? (
+              (aiUsable ? (
                 <>
+                  {sealing && (
+                    <label className="mb-2 flex items-start gap-2 text-sm">
+                      <input type="checkbox" className="mt-0.5" checked={aiConsent} onChange={(event) => setAiConsent(event.target.checked)} />
+                      <span>
+                        <span className="flex items-start gap-1.5 font-medium">
+                          <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                          {tVault('aiConsent')}
+                        </span>
+                        <span className="mt-0.5 block text-xs text-muted-foreground">{tVault('aiConsentHint')}</span>
+                      </span>
+                    </label>
+                  )}
                   <textarea
                     value={aiText}
                     onChange={(event) => setAiText(event.target.value)}
@@ -1002,14 +1037,15 @@ export function InvoiceForm({
                     <button
                       type="button"
                       onClick={() => runAi()}
-                      disabled={aiBusy || aiText.trim().length < 3 || !offline.online}
+                      disabled={aiBusy || aiText.trim().length < 3 || !offline.online || (sealing && !aiConsent)}
                       // Tinted, not solid: "Save and issue" stays the one solid button on the form.
                       className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-bold text-primary transition-colors hover:bg-primary/15 disabled:opacity-50"
                     >
                       {aiBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                       {aiBusy ? t('ai.working') : t('ai.run')}
                     </button>
-                    {voiceOffline ? (
+                    {/* Dictation and voice notes leave the browser before any consent, so not while encrypting. */}
+                    {sealing ? null : voiceOffline ? (
                       <VoiceNoteRecorder />
                     ) : (
                       <DictationButton
@@ -1185,8 +1221,7 @@ export function InvoiceForm({
                   onChange={(description) => updateRow(row.key, { description })}
                   ariaLabel={t('items.description')}
                   placeholder={t('items.description')}
-                  // While encrypting, what is typed here must not reach the server as a search query.
-                  fetchGroups={async (q) => (sealing ? [] : [{ items: await suggestItems(q) }])}
+                  fetchGroups={async (q) => [{ items: await itemSuggestionsFor(q) }]}
                   getKey={(s) => s.description}
                   onPick={(s) =>
                     updateRow(row.key, {

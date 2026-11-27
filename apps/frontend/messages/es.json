@@ -245,7 +245,8 @@
         "cookies": "Política de cookies",
         "cookieSettings": "Configuración de cookies",
         "dpa": "Acuerdo de tratamiento de datos",
-        "contact": "Contacto"
+        "contact": "Contacto",
+        "confidential": "Modo confidencial y seguridad"
       },
       "account": {
         "title": "Cuenta",
@@ -768,7 +769,15 @@
     "print": "Imprimir / PDF",
     "downloadPdf": "Descargar PDF",
     "downloadPdfShort": "PDF",
-    "confidentialItem": "Línea confidencial"
+    "confidentialItem": "Línea confidencial",
+    "sealed": {
+      "noKey": "Algunos textos están cifrados. El texto completo está en el enlace del correo original.",
+      "openedLink": "La clave de tu enlace abrió los textos cifrados. Este navegador la recuerda, así que los enlaces posteriores también abrirán el documento.",
+      "openedStored": "Una clave que este navegador recordó de un enlace anterior abrió los textos cifrados.",
+      "openedPreview": "Vista previa: la clave del enlace abrió los textos. No se guardó en este navegador.",
+      "forget": "Olvidar la clave en este navegador",
+      "forgotten": "La clave se ha borrado de este navegador. El texto completo está en el enlace del correo original."
+    }
   },
   "expenses": {
     "title": "Gastos",
@@ -1355,7 +1364,25 @@
         "manage": "Editar enlace"
       },
       "contactPerson": "Persona de contacto",
-      "person": "Particular"
+      "person": "Particular",
+      "visibility": {
+        "title": "Quién ve este cliente",
+        "hint": "Un cliente privado y sus documentos solo los ven el propietario de la empresa y el miembro al que pertenece. Los demás no lo encuentran en las listas ni en el historial.",
+        "owner": "Pertenece a",
+        "nobody": "Toda la empresa (nadie en concreto)",
+        "formerMember": "Antiguo miembro del equipo",
+        "private": "Privado – solo lo ven el propietario de la empresa y la persona a la que pertenece el cliente",
+        "privateHint": "Los demás no lo encuentran en contactos, facturas, notificaciones ni en el historial de cambios.",
+        "ownedBy": "Pertenece a: {name}",
+        "ownerOnly": "Solo el propietario de la empresa o la persona a la que pertenece el cliente puede cambiarlo.",
+        "saved": "Guardado",
+        "failed": "No se pudo guardar",
+        "errors": {
+          "visibility_owner_only": "Solo el propietario de la empresa o la persona a la que pertenece el cliente puede cambiarlo.",
+          "visibility_would_hide": "Usted mismo dejaría de ver este cliente. Solo el propietario de la empresa puede pasar un cliente privado a otra persona.",
+          "owner_not_member": "Esa persona ya no está en el equipo."
+        }
+      }
     },
     "csv": {
       "import": "Importar CSV",
@@ -1420,7 +1447,8 @@
       "violet": "Violeta",
       "pink": "Rosa",
       "slate": "Gris"
-    }
+    },
+    "privateBadge": "Cliente privado"
   },
   "settings": {
     "title": "Ajustes",
@@ -2145,7 +2173,16 @@
         "ownerOnly": "Solo el propietario",
         "adminsOnly": "Solo el propietario y los administradores"
       },
-      "fillFromPreset": "Rellenar desde"
+      "fillFromPreset": "Rellenar desde",
+      "contactScope": {
+        "label": "Ve clientes",
+        "all": "Toda la empresa",
+        "own": "Solo los suyos",
+        "hint": "Solo los suyos = solo los clientes que le asigne (Pertenece a) y los documentos que haya creado.",
+        "ownerOnly": "Solo el propietario de la empresa puede cambiarlo.",
+        "summary": "solo sus clientes",
+        "refused": "Solo el propietario de la empresa puede cambiarlo."
+      }
     },
     "exports": {
       "title": "Exportaciones para el contable",
@@ -5354,15 +5391,26 @@
       "relock": "Volver a ocultar",
       "lockedToast": "Detalles ocultos",
       "unlockedToast": "Los detalles se muestran sin contraseña",
-      "teamHint": "Protege frente a miradas en un ordenador desbloqueado o compartido, no frente a los compañeros: cada miembro del equipo los muestra con su propia contraseña. Si solo ciertas personas deben ver una factura, indica en el cliente quién tiene acceso.",
+      "teamHint": "Protege de miradas en un ordenador desbloqueado o compartido, no de los compañeros: cada miembro del equipo las muestra con su propia contraseña. Si una factura solo deben verla ciertas personas, márquela como privada o indique a quién pertenece el cliente.",
       "teamLink": "Definir quién ve qué en el equipo",
       "errors": {
         "wrong_current": "Contraseña incorrecta.",
         "reauth_required": "Tu cuenta no tiene contraseña. Cierra sesión, vuelve a entrar e inténtalo de nuevo.",
         "too_many_attempts": "Demasiados intentos. Inténtalo en unos minutos.",
         "generic": "No ha funcionado. Inténtalo de nuevo."
-      }
-    }
+      },
+      "privacyLink": "Marcar como privada"
+    },
+    "privacy": {
+      "label": "Factura privada",
+      "hint": "Solo la ven el propietario de la empresa y quien la creó, con sus líneas, adjuntos y pagos.",
+      "badge": "Factura privada",
+      "ownerOnly": "Solo el propietario de la empresa o quien creó la factura puede cambiarlo.",
+      "failed": "No se pudo cambiar",
+      "madePrivate": "La factura es privada",
+      "madeShared": "El equipo vuelve a ver la factura"
+    },
+    "privateRow": "Factura privada"
   },
   "invite": {
     "title": "Invitación al equipo",
@@ -7368,7 +7416,8 @@
         "buyer_details_submitted": "completó sus datos de facturación para",
         "buyer_details_cancelled": "cerró la solicitud de datos del cliente para",
         "profile_order": "creado mediante un pedido desde el perfil público:",
-        "link_renamed": "renombró el enlace público"
+        "link_renamed": "renombró el enlace público",
+        "send_waiting_pdf": "puso en cola para enviar con PDF"
       },
       "tenant": {
         "updated": "editó los datos de la empresa",
@@ -14290,7 +14339,7 @@
       "lead": "Cifrar – solo tú y los miembros con la clave veréis el contenido, el servidor no puede leerlo.",
       "what": "Se cifran las descripciones de las líneas y las notas (encima, debajo de las líneas e internas).",
       "keeps": "Los informes y paneles siguen funcionando: importes, fechas y referencias de pago quedan sin cifrar.",
-      "loses": "Para los documentos cifrados el servidor no puede crear PDF ni ISDOC, adjuntarlos a un correo ni encontrarlos al buscar por texto.",
+      "loses": "Para los documentos cifrados el servidor no puede crear PDF ni ISDOC ni adjuntarlos a un correo. La búsqueda por texto se hace solo en tu navegador tras desbloquear.",
       "locked": "Los documentos bloqueados se omiten.",
       "done": "{n, plural, one {# documento cifrado} other {# documentos cifrados}}.",
       "nothing": "No había nada que cifrar.",
@@ -14301,20 +14350,27 @@
       "lockedLead": "Desbloquéalo para editarlo. Solo se abre en tu navegador.",
       "otherKey": "Este documento está cifrado con una clave que esta empresa no tiene.",
       "unlock": "Desbloquear",
-      "aiUnavailable": "El autocompletado con IA no está disponible en el Modo confidencial mientras se cifra: el texto tendría que ir al servidor.",
       "sealFailed": "No se pudo cifrar el documento. No se guardó nada.",
       "sealToggle": "Cifrar este documento",
-      "sealOnHint": "Solo tú y los miembros con la clave veréis las descripciones y notas. PDF, ISDOC y sugerencias de líneas no estarán disponibles.",
-      "sealOffHint": "El documento se guarda sin cifrar, como hasta ahora."
+      "sealOnHint": "Solo tú y los miembros con la clave veréis las descripciones y notas. PDF e ISDOC no estarán disponibles; las sugerencias de líneas se buscan solo en tu navegador.",
+      "sealOffHint": "El documento se guarda sin cifrar, como hasta ahora.",
+      "aiConsent": "Enviar este texto a la IA: irá una sola vez al servidor y al proveedor de IA y no se guardará",
+      "aiConsentHint": "El servidor no guarda ni registra el texto. Lo que devuelva la IA se cifra en tu navegador al guardar. El consentimiento vale solo para esta ejecución."
     },
     "actions": {
       "blocked": "No disponible en el Modo confidencial: el servidor no puede leer un documento cifrado. Desactiva el adjunto PDF/ISDOC en los ajustes de correo o envía un enlace.",
       "pdfUnavailable": "El PDF no está disponible en el Modo confidencial. Puedes imprimir el detalle desde el navegador (Ctrl+P).",
-      "sendHint": "Este documento está cifrado: el correo sale solo con un enlace, el servidor no puede adjuntar PDF ni ISDOC.",
+      "sendHint": "El documento está cifrado, así que el servidor no puede crear el PDF ni el ISDOC. Según tus ajustes, el enlace sale ya y el PDF desde tu navegador, o solo sale el enlace.",
+      "linkCopied": "Enlace con clave copiado",
+      "keyLink": "Enlace del cliente con clave",
+      "copyLink": "Copiar",
+      "emailWaiting": "El correo espera el PDF. Saldrá desde un navegador con el modo desbloqueado, mira el aviso de arriba.",
+      "pdfFollows": "Enlace enviado. Envía el PDF como correo adicional desde el aviso de arriba.",
       "unlockFirst": "Sin desbloquear no se pueden adjuntar archivos cifrados.",
       "decryptFailed": "No se pudo descifrar un adjunto.",
       "passFiles": "{n, plural, one {Adjuntar # archivo cifrado} other {Adjuntar # archivos cifrados}}",
-      "passFilesHint": "Tu navegador los descifra y pasan una sola vez por el servidor, a este correo. El servidor no los guarda y los borra tras la entrega."
+      "passFilesHint": "Tu navegador los descifra y pasan una sola vez por el servidor, a este correo. El servidor no los guarda y los borra tras la entrega.",
+      "passFilesWaiting": "Este documento espera a que un navegador cree el PDF, y los adjuntos no pueden esperar en el servidor. Envía el correo sin ellos o configura el modo confidencial para enviar el enlace de inmediato."
     },
     "categories": {
       "recommended": "Recomendado",
@@ -14326,9 +14382,10 @@
         "loses": [
           "PDF, ISDOC, UBL y Peppol creados por el servidor",
           "Adjunto PDF/ISDOC en los correos",
-          "Búsqueda por texto de líneas y notas, sugerencias de líneas",
-          "Autocompletado de documentos con IA",
-          "Descripciones de líneas en el enlace público y en las exportaciones para el contable (Pohoda, Money, CSV)"
+          "Búsqueda por texto y sugerencias de líneas en el servidor (tras desbloquear, las hace tu navegador)",
+          "Autocompletado con IA sin un clic expreso (el texto pasa una vez por el servidor hacia la IA, solo cuando lo confirmas, y no se guarda)",
+          "Enlace público: tu cliente ve el texto completo solo con el enlace con clave del detalle del documento. Un enlace sin clave (p. ej. de un recordatorio automático) lo muestra solo en un dispositivo donde el cliente abrió antes el enlace completo",
+          "Textos legibles en las exportaciones contables del servidor (Pohoda, Money y CSV muestran «[Důvěrný obsah]»; la exportación con textos descifrados la crea tu navegador)"
         ]
       },
       "attachments": {
@@ -14456,6 +14513,125 @@
       "categoriesMin": "Deja activada al menos una categoría.",
       "categoryOffConfirm": "¿Desactivar esta categoría? Los archivos y textos nuevos ya no se cifrarán. Lo que ya está cifrado sigue cifrado."
     },
+    "clientLink": {
+      "ready": "El enlace lleva la clave de los textos cifrados (tras el #). Con ella tu cliente ve el texto completo; el servidor nunca recibe la clave.",
+      "locked": "Este documento está cifrado. Desbloquea la caja fuerte y el enlace tendrá la clave que tu cliente necesita para leer el texto completo.",
+      "prepare": "Este documento se cifró antes de que existieran las claves de cliente. Dale una clave propia y luego podrás enviarlo en el enlace. Al servidor solo llegan textos cifrados de nuevo.",
+      "failed": "No se pudo preparar la clave del cliente. Inténtalo de nuevo.",
+      "loading": "Preparando la clave del cliente…",
+      "unlock": "Desbloquear la caja fuerte",
+      "prepareButton": "Preparar el enlace del cliente",
+      "shareOnly": "Envíalo solo a tu cliente. Quien tenga el enlace completo también puede leer los textos cifrados.",
+      "serverEmail": "El correo que envía el servidor lleva el enlace sin la clave. Tu cliente verá ahí los importes, pero no los textos cifrados, salvo que antes haya abierto el enlace con clave en el mismo navegador. Para que los vea, envíale tú mismo el enlace de arriba."
+    },
+    "search": {
+      "lockedHint": "{n, plural, one {# documento tiene textos cifrados que el servidor no puede buscar.} many {# documentos tienen textos cifrados que el servidor no puede buscar.} other {# documentos tienen textos cifrados que el servidor no puede buscar.}} Desbloquea y tu navegador los buscará.",
+      "unlock": "Desbloquear y buscar",
+      "searching": "Buscando textos cifrados en tu navegador…",
+      "included": "Los resultados incluyen textos cifrados, buscados solo en tu navegador.",
+      "failed": "No se pudieron buscar los textos cifrados. Los resultados cubren solo textos legibles.",
+      "skippedLocked": "{n, plural, one {# documento bloqueado no se ha buscado.} many {# documentos bloqueados no se han buscado.} other {# documentos bloqueados no se han buscado.}}"
+    },
+    "export": {
+      "title": "Exportar con textos descifrados",
+      "lead": "Documentos del periodo elegido, con descripciones de líneas y notas. El archivo se genera en tu navegador y se guarda directamente en tu equipo; el servidor no lo ve. Trátalo como un documento sensible.",
+      "csv": "Descargar CSV",
+      "json": "Descargar JSON",
+      "working": "Descifrando…",
+      "done": "{n, plural, one {Guardado # documento.} many {Guardados # documentos.} other {Guardados # documentos.}}",
+      "failed": "No se pudo preparar la exportación. Inténtalo de nuevo.",
+      "needsUnlock": "Antes de exportar te pediremos desbloquear el Modo confidencial.",
+      "skippedLocked": "{n, plural, one {Falta # documento bloqueado en la exportación.} many {Faltan # documentos bloqueados en la exportación.} other {Faltan # documentos bloqueados en la exportación.}}",
+      "unreadable": "[No se puede descifrar]",
+      "unreadableCount": "{n, plural, one {# texto no se pudo descifrar.} many {# textos no se pudieron descifrar.} other {# textos no se pudieron descifrar.}}",
+      "accountingNote": "Las exportaciones contables de arriba (CSV, Pohoda, Money S3) las genera el servidor, así que muestran «[Důvěrný obsah]» en lugar de los textos cifrados. Importes, IVA, fechas y clientes están completos.",
+      "columns": {
+        "documentType": "Tipo de documento",
+        "invoiceNumber": "Número",
+        "status": "Estado",
+        "issueDate": "Fecha de emisión",
+        "taxableSupplyDate": "Fecha de devengo",
+        "dueDate": "Vencimiento",
+        "paidAt": "Pagado",
+        "contactName": "Cliente",
+        "contactIco": "IČO",
+        "variableSymbol": "Símbolo variable",
+        "currency": "Moneda",
+        "totalWithoutVat": "Base",
+        "totalVat": "IVA",
+        "total": "Total",
+        "noteAbove": "Texto sobre las líneas",
+        "noteBelow": "Texto bajo las líneas",
+        "internalNote": "Nota interna",
+        "itemDescription": "Línea",
+        "itemCode": "Código de línea",
+        "quantity": "Cantidad",
+        "unit": "Unidad",
+        "unitPrice": "Precio unitario",
+        "vatRate": "Tipo de IVA %",
+        "discountPercent": "Descuento %"
+      }
+    },
+    "outbox": {
+      "badge": "{n, plural, one {# correo espera} other {# correos esperan}} a enviarse con el PDF",
+      "open": "Mostrar",
+      "title": "Correos que esperan el PDF",
+      "back": "Cerrar",
+      "send": "Enviar ({n})",
+      "unlockAndSend": "Desbloquear y enviar ({n})",
+      "lead": "El servidor no puede convertir por sí solo un documento cifrado en PDF. El PDF se crea aquí, en un navegador con el Modo confidencial desbloqueado.",
+      "passThroughPdf": "El PDF se crea en tu navegador. El servidor lo reenvía una vez al destinatario y no lo guarda.",
+      "passThroughTexts": "Al pulsar Enviar, los textos descifrados de estos documentos pasan una vez por el servidor: crea con ellos el PDF y lo envía por correo. No los guarda ni los registra.",
+      "unnumbered": "Sin número",
+      "kind": {
+        "invoice": "Espera el correo entero",
+        "invoice_pdf": "PDF para un enlace enviado"
+      },
+      "dismiss": "No enviar",
+      "settingsHint": "Elige cuándo y cómo se envía el PDF en los",
+      "settingsLink": "ajustes del Modo confidencial",
+      "sent": "{n, plural, one {# correo enviado} other {# correos enviados}}",
+      "failed": "{n, plural, one {No se pudo enviar # correo} other {No se pudieron enviar # correos}}"
+    },
+    "emailSettings": {
+      "title": "Correos de documentos cifrados",
+      "lead": "Qué pasa al enviar un documento cifrado. El enlace, el importe, el vencimiento, la referencia de pago y el pago QR salen siempre.",
+      "mode": {
+        "link_now": "Enlace ahora, PDF después",
+        "wait": "Esperar y enviarlo todo junto",
+        "link_only": "Solo enlace, nunca PDF"
+      },
+      "modeHint": {
+        "link_now": "El cliente recibe enseguida un correo con el enlace. El PDF llega en un segundo correo cuando alguien del equipo lo envía desde un navegador con el modo desbloqueado.",
+        "wait": "El correo solo sale con el PDF, desde el navegador de un miembro del equipo con el modo desbloqueado. Hasta entonces el cliente no recibe nada.",
+        "link_only": "El cliente solo recibe el enlace y abre allí el documento. El servidor nunca recibe sus textos."
+      },
+      "autoSend": "Enviar los PDF automáticamente",
+      "autoSendHint": "En cuanto alguien del equipo abre la aplicación con el modo desbloqueado, los PDF pendientes salen sin otro clic.",
+      "passThrough": "Cada PDF enviado pasa una vez por el servidor, porque el correo sale de allí. El servidor no lo guarda ni lo registra.",
+      "saved": "Guardado",
+      "failed": "No se pudo guardar"
+    },
+    "device": {
+      "title": "Recordar el desbloqueo en este dispositivo",
+      "hint": "El modo sigue desbloqueado tras cerrar el navegador, sin el límite de 12 horas, para que los PDF pendientes puedan salir cada vez que abras la aplicación. La clave se guarda en el navegador de forma que no se puede leer ni copiar. Bloquear, desactivar esta opción o cerrar sesión la borra.",
+      "risk": "Actívalo solo en tu propio dispositivo, que no use nadie más. Quien abra este navegador verá los textos cifrados.",
+      "on": "Este dispositivo recuerda el desbloqueo",
+      "off": "El desbloqueo vuelve a caducar a las 12 horas",
+      "failed": "No funcionó. Desbloquea primero el modo."
+    },
+    "serverView": {
+      "title": "Qué ve el servidor",
+      "lead": "Así se guardan en el servidor los textos de este documento. Solo un navegador con el modo desbloqueado puede descifrarlos.",
+      "server": "El servidor tiene:",
+      "you": "Tú ves:",
+      "noteAbove": "Texto sobre las líneas",
+      "noteBelow": "Texto bajo las líneas",
+      "internalNote": "Nota interna",
+      "item": "Línea {n}",
+      "notSealed": "El servidor ve importes, fechas, el número del documento, referencias y clientes, para calcular el IVA, vigilar vencimientos y conciliar pagos.",
+      "more": "Cómo funciona y cómo comprobarlo"
+    },
     "sealFiles": {
       "button": "Cifrar adjuntos existentes",
       "title": "Cifrar adjuntos existentes",
@@ -14470,5 +14646,106 @@
       "nothing": "No había nada que cifrar.",
       "failed": "El cifrado falló. Los adjuntos ya cifrados siguen cifrados."
     }
+  },
+  "vaultPublic": {
+    "integrity": {
+      "title": "Comprobación del código",
+      "lead": "Cada build de la aplicación registra los hashes SHA-256 del código de cifrado y de los archivos que lo contienen.",
+      "sourceHash": "Archivo fuente {path}",
+      "repo": "Código fuente público",
+      "repoPlanned": "Tenemos previsto publicarlo en un repositorio propio de GitHub.",
+      "chunks": "Archivos que carga tu navegador",
+      "check": "Comprobar en este navegador",
+      "match": "Coincide",
+      "mismatch": "No coincide",
+      "error": "No se pudo descargar el archivo",
+      "loadedHere": "cargado en esta página",
+      "missing": "El manifiesto aún no está disponible. Lo crea el build de producción.",
+      "honest": "El mismo servidor envía el manifiesto y los archivos, así que una coincidencia solo muestra que el manifiesto describe lo que se sirve. La comprobación real es comparar los hashes con un build del código publicado."
+    },
+    "demo": {
+      "label": "Escribe cualquier frase",
+      "placeholder": "Por ejemplo: Asesoría para la venta de la empresa, 12 horas",
+      "send": "Cifrar y enviar",
+      "keyNote": "La clave se crea solo para esta página y nunca se envía. Desaparece al recargar.",
+      "typed": "Lo que escribiste",
+      "typedHint": "Se queda solo en tu navegador.",
+      "sent": "Lo que se envió al servidor",
+      "sentHint": "El cuerpo exacto de la petición POST {path}.",
+      "received": "Lo que recibió el servidor (HTTP {status})",
+      "receivedHint": "El servidor devuelve exactamente lo que recibió. No guarda nada.",
+      "open": "Descifrar aquí",
+      "openedAs": "Tu navegador lo descifró de vuelta a:",
+      "rateLimited": "Demasiados intentos. Espera unos minutos.",
+      "failed": "La petición falló. Inténtalo de nuevo.",
+      "devtoolsTitle": "Compruébalo tú en las herramientas del navegador",
+      "devtoolsSteps": [
+        "Pulsa F12 (Cmd+Option+I en Mac) y abre la pestaña Red (Network).",
+        "Pulsa de nuevo Cifrar y enviar.",
+        "Haz clic en la petición «echo» de la lista y abre Payload (Carga útil) y Response (Respuesta).",
+        "Solo verás una cadena enc:v1:…, no tu frase. Ctrl+F en la pestaña Red busca en todas las peticiones: intenta encontrar una palabra de tu frase."
+      ]
+    },
+    "csp": {
+      "liveTitle": "La cabecera Content-Security-Policy de esta página, leída ahora mismo",
+      "liveMissing": "No se pudo leer la cabecera. La encontrarás en las herramientas del navegador, en la petición de esta página."
+    }
+  },
+  "securityPage": {
+    "seoTitle": "Modo confidencial: qué ve el servidor y qué no",
+    "eyebrow": "Seguridad",
+    "title": "Modo confidencial: textos de documentos que el servidor no puede leer",
+    "lead": "Las descripciones de líneas y las notas se cifran en tu navegador. El servidor solo recibe una cadena cifrada y no tiene su clave. Aquí puedes probarlo y comprobarlo tú.",
+    "featuresLink": "Todas las funciones",
+    "demoTitle": "Pruébalo",
+    "demoLead": "Sin iniciar sesión. La página cifra tu frase con el mismo código que la aplicación y la envía de verdad al servidor. Ves lado a lado lo que escribiste, lo que salió y lo que recibió el servidor.",
+    "howTitle": "Cómo funciona",
+    "howSteps": [
+      {
+        "title": "La clave nace en tu lado",
+        "body": "Al activar el modo, el navegador crea una clave AES-256 aleatoria. El servidor solo recibe copias cerradas con tu contraseña, tu passkey o tu código de recuperación."
+      },
+      {
+        "title": "Cifrado antes de enviarse",
+        "body": "Una descripción o una nota se cifra antes de salir del navegador. El servidor guarda una cadena enc:v1:… y no hace nada con ella."
+      },
+      {
+        "title": "Descifrado solo en tu lado",
+        "body": "Tras desbloquear, el navegador guarda la clave de modo que la página puede usarla pero no leer su contenido."
+      }
+    ],
+    "hiddenTitle": "Lo que el servidor no ve",
+    "hidden": [
+      "Las descripciones de líneas",
+      "El texto sobre y bajo las líneas",
+      "Las notas internas",
+      "La clave y la contraseña que la desbloquea"
+    ],
+    "visibleTitle": "Lo que el servidor ve y por qué",
+    "visible": [
+      "Importes e IVA – para cálculos, declaraciones y conciliación de pagos",
+      "Fechas de emisión y vencimiento – para recordatorios",
+      "Número del documento y referencia de pago",
+      "El cliente y su correo – para poder enviar el documento"
+    ],
+    "cspTitle": "El navegador controla adónde puede enviar datos la página",
+    "cspBody": "La aplicación, los enlaces de documentos y esta página se sirven con una cabecera Content-Security-Policy que contiene connect-src 'self'. El navegador rechaza entonces por sí mismo cualquier petición de esa página a otro servidor, aunque un script lo intente. Un texto descifrado no puede salir por ahí.",
+    "cspHow": "Cualquiera puede leer la cabecera: en las herramientas del navegador (F12, pestaña Red) haz clic en la primera petición, la propia página, y busca Content-Security-Policy en las cabeceras de respuesta.",
+    "limitsTitle": "Dónde están los límites",
+    "limits": [
+      "El código de la aplicación lo entrega nuestro servidor. Si estuviera comprometido, podría entregar otro código. Publicar el código y los hashes permite detectar un cambio así, pero no lo impide por sí solo.",
+      "Cuando envías por correo un documento cifrado con su PDF, sus textos pasan una vez por el servidor, porque el correo sale de allí. La aplicación te lo dice antes, y el servidor no los guarda ni los registra. Si envías solo el enlace, el servidor nunca recibe los textos.",
+      "El modo no cifra importes, fechas, números ni clientes, ver arriba.",
+      "Para documentos cifrados el servidor no crea ISDOC ni otros formatos legibles por máquina.",
+      "La regla connect-src se aplica a una página cargada directamente. Si pasas del sitio público a la aplicación sin recargar, rige la regla de la página anterior hasta que recargues.",
+      "Quien tenga acceso a tu navegador desbloqueado verá los textos. El modo protege frente al servidor, no frente a alguien ante tu ordenador.",
+      "Si olvidas la contraseña y el código de recuperación y no tienes passkey, nadie puede recuperar los textos, ni siquiera nosotros."
+    ],
+    "verifyTitle": "Comprobación del código",
+    "verifyLead": "En cada build escribimos los hashes SHA-256 del código de cifrado en un archivo público. Tu navegador puede recalcularlos aquí mismo.",
+    "planned": [
+      "Publicaremos el código de cifrado (un solo archivo sin dependencias) en un repositorio propio de GitHub, para comparar los hashes con tu propio build.",
+      "Está prevista una revisión independiente del código."
+    ]
   }
 }

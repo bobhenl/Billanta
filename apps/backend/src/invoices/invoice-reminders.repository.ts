@@ -8,6 +8,7 @@ import { templateValues } from "../tenants/template-vars";
 import { clientPortalLinkOf, invoiceLinkOf } from "../public-links/public-link";
 import { applyBuyerSnapshot, applySellerSnapshot } from "./party-snapshot";
 import { reminderPrefsOf } from "../tenants/invoice-form-prefs";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
 import { planAllows } from "../billing/plan-access";
@@ -179,6 +180,14 @@ export class InvoiceRemindersRepository {
       }
       return results;
     });
+  }
+
+  /** One RLS-scoped transaction for an already-known tenant (the reminder's payment QR). */
+  async withTenant<T>(tenantId: string, fn: (db: PostgresJsDatabase<typeof schema>) => Promise<T>): Promise<T> {
+    return this.dbService.sql.begin(async (tx) => {
+      await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
+      return fn(drizzleTx(tx, schema));
+    }) as Promise<T>;
   }
 
   /** Throws when the tenant is suspended, paused or over today's e-mail cap (`abuse/sending-guard.ts`). */

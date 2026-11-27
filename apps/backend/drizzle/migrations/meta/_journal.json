@@ -726,6 +726,20 @@
     {
       "idx": 104,
       "version": "7",
+      "when": 1793601400000,
+      "tag": "0110_vault_email_queue",
+      "breakpoints": true
+    },
+    {
+      "idx": 105,
+      "version": "7",
+      "when": 1793601500000,
+      "tag": "0111_private_invoices",
+      "breakpoints": true
+    },
+    {
+      "idx": 106,
+      "version": "7",
       "when": 1793601600000,
       "tag": "0112_vault_attachments",
       "breakpoints": true
