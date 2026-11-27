@@ -57,6 +57,16 @@ export interface ExportBundle {
     settings: typeof schema.tenantVaults.$inferSelect;
     wraps: (typeof schema.vaultKeyWraps.$inferSelect)[];
   } | null;
+  /**
+   * Invoice and expense attachments, for the SQLite file only (the JSON
+   * bundles stay small). Rows as stored: an encrypted attachment keeps its
+   * ciphertext in `data` and its sealed name, type and file key in
+   * `enc_meta`; nothing is decrypted for the backup.
+   */
+  attachments?: {
+    invoices: (typeof schema.invoiceAttachments.$inferSelect)[];
+    expenses: (typeof schema.expenseAttachments.$inferSelect)[];
+  };
 }
 
 /** The key wraps a backup may carry: the recovery-code wrap only (see `ExportBundle.vault`). */
@@ -111,7 +121,7 @@ export class ExportService {
    * RLS-scoped `db` passed in. See this class's doc comment for why this is
    * safe by construction rather than by convention.
    */
-  async buildExportBundle(db: TenantDb, tenantId: string): Promise<ExportBundle> {
+  async buildExportBundle(db: TenantDb, tenantId: string, options: { attachments?: boolean } = {}): Promise<ExportBundle> {
     const [tenant] = await db
       .select({
         id: schema.tenants.id,
@@ -145,6 +155,9 @@ export class ExportService {
     const recurringTemplates = await db.select().from(schema.recurringInvoiceTemplates);
     const [vaultSettings] = await db.select().from(schema.tenantVaults).limit(1);
     const vaultWraps = vaultSettings ? backupWraps(await db.select().from(schema.vaultKeyWraps)) : [];
+    const attachments = options.attachments
+      ? { invoices: await db.select().from(schema.invoiceAttachments), expenses: await db.select().from(schema.expenseAttachments) }
+      : undefined;
 
     return {
       exportedAt: new Date().toISOString(),
@@ -157,6 +170,7 @@ export class ExportService {
       expenses,
       recurringTemplates,
       vault: vaultSettings ? { settings: vaultSettings, wraps: vaultWraps } : null,
+      ...(attachments ? { attachments } : {}),
     };
   }
 
@@ -188,7 +202,8 @@ export class ExportService {
     let recordCount = 0;
 
     try {
-      const bundle = await this.buildExportBundle(db, tenantId);
+      // SFTP gets the SQLite file, which carries the attachments too.
+      const bundle = await this.buildExportBundle(db, tenantId, { attachments: destination.type === "sftp" });
       recordCount = bundle.invoices.length + bundle.contacts.length + bundle.expenses.length;
 
       const encryptionKey = this.config.get<string>("BACKUP_CONFIG_ENCRYPTION_KEY");
@@ -314,7 +329,7 @@ export class ExportService {
     let file: LocalExportResult["file"] = null;
 
     try {
-      const bundle = await this.buildExportBundle(db, tenantId);
+      const bundle = await this.buildExportBundle(db, tenantId, { attachments: true });
       recordCount = bundle.invoices.length + bundle.contacts.length + bundle.expenses.length;
 
       const buffer = await this.sqliteExportService.buildSqliteFile(bundle);

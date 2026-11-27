@@ -1,9 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
+import { annualIncomeOf, buildSealedAccountingXml } from "@faktur/cz-compliance";
+import { computeVatBreakdown } from "../invoices/invoice-total.util";
 import { ExportsService } from "./exports.service";
 
 // The inputs the browser builds the CSV and the VAT filings from when amounts are sealed.
 
 const env = `enc:v1:AAAAAAAAAAAAAAAA:${"Q".repeat(24)}`;
+const creditEnv = `enc:v1:BBBBBBBBBBBBBBBB:${"Q".repeat(24)}`;
 
 /** A query builder whose every await hands out the next queued result, in query order. */
 function db(...results: unknown[]) {
@@ -121,5 +124,73 @@ describe("ExportsService.vatInputs", () => {
     await expect(new ExportsService().vatReturn(db(rows) as never, "dp3", period, { year: 2026, month: 9 }, tenant as never)).rejects.toMatchObject({
       status: 409,
     });
+  });
+});
+
+describe("ExportsService.accountingInputs", () => {
+  const accountingTenant = { ...tenant, ico: "87654321", country: "CZ" };
+  const doc = (id: string, over: Record<string, unknown> = {}) =>
+    invoice(id, { constantSymbol: null, specificSymbol: null, paymentMethod: "bank_transfer", noteBelow: null, ...over });
+  const line = (invoiceId: string, price: string, over: Record<string, unknown> = {}) => item(invoiceId, price, { description: "Práce", unit: "h", ...over });
+
+  it("keeps a sealed document in its place with its envelopes and no totals", async () => {
+    const rows = [
+      { invoice: doc("A"), contact },
+      { invoice: doc("S", { encAmounts: env }), contact },
+    ];
+    const items = [line("A", "1000"), line("S", "0", { vatRate: null, encAmounts: "enc:v1:item" })];
+    const out = await new ExportsService().accountingInputs(db(rows, items, []) as never, "pohoda", period, accountingTenant as never);
+    expect(out).toMatchObject({ format: "pohoda", ico: "87654321", home: "CZK", period: { from: period.from.toISOString() } });
+    const [plain, sealed] = out.invoices;
+    expect(plain).toMatchObject({ encAmounts: null, totals: { totalWithVat: 1210 } });
+    expect(plain!.lineItems[0]!.encAmounts).toBeNull();
+    expect(sealed).toMatchObject({ encAmounts: env, totals: null });
+    expect(sealed!.lineItems[0]).toMatchObject({ encAmounts: "enc:v1:item", unitPrice: "0" });
+  });
+
+  it("gives the browser what makes the same file as the server's once the envelopes are open", async () => {
+    const rows = [{ invoice: doc("A"), contact }];
+    const service = new ExportsService();
+    const server = await service.pohodaXml(db(rows, [line("A", "1000")], []) as never, period, accountingTenant as never);
+    const inputs = await service.accountingInputs(db(rows, [line("A", "1000")], []) as never, "pohoda", period, accountingTenant as never);
+    expect(buildSealedAccountingXml(inputs, new Map(), new Map()).body).toBe(server);
+  });
+
+  it("still refuses the Pohoda and Money S3 files themselves", async () => {
+    const rows = [{ invoice: doc("S", { encAmounts: env }), contact }];
+    await expect(new ExportsService().pohodaXml(db(rows) as never, period, accountingTenant as never)).rejects.toMatchObject({ status: 409 });
+    await expect(new ExportsService().moneyS3Xml(db(rows) as never, period, accountingTenant as never)).rejects.toMatchObject({ status: 409 });
+  });
+});
+
+describe("ExportsService.annualSummary with sealed amounts", () => {
+  const paid = (id: string, over: Record<string, unknown> = {}) => invoice(id, { status: "paid", paidAt: new Date(2026, 3, 1), createdAt: new Date(2026, 2, 1), ...over });
+  const opts = { vatPayer: true, flatRate: null };
+
+  it("sums the plain documents and hands out each sealed one with its envelope and rate", async () => {
+    const found = [paid("A"), paid("S", { encAmounts: env, currency: "EUR", exchangeRate: "25" }), paid("D", { encAmounts: creditEnv, documentType: "credit_note" })];
+    const out = await new ExportsService().annualSummary(db(found, [item("A", "1000")], []) as never, 2026, opts);
+    expect(out.plainIncome).toBe(1000);
+    expect(out.income).toBe(1000);
+    expect(out.sealed).toEqual({ count: 2, ids: ["S", "D"] });
+    expect(out.sealedDocs).toEqual([
+      { encAmounts: env, documentType: "invoice", rate: 25 },
+      { encAmounts: creditEnv, documentType: "credit_note", rate: 1 },
+    ]);
+  });
+
+  it("subtracts a plain credit note, as the browser does a sealed one", async () => {
+    const found = [paid("A"), paid("C", { documentType: "credit_note" })];
+    const out = await new ExportsService().annualSummary(db(found, [item("A", "1000"), item("C", "300")], []) as never, 2026, opts);
+    expect(out.plainIncome).toBe(700);
+  });
+
+  it("adds up, opened in the browser, to what the server sums for the same document in plain", async () => {
+    const foreign = { currency: "EUR", exchangeRate: "25" };
+    const plainYear = await new ExportsService().annualSummary(db([paid("A"), paid("S", foreign)], [item("A", "1000"), item("S", "400")], []) as never, 2026, opts);
+    const sealedYear = await new ExportsService().annualSummary(db([paid("A"), paid("S", { ...foreign, encAmounts: env })], [item("A", "1000")], []) as never, 2026, opts);
+    const opened = computeVatBreakdown([item("S", "400")] as never, { reverseCharge: false });
+    const doc = sealedYear.sealedDocs[0]!;
+    expect(sealedYear.plainIncome + annualIncomeOf(opened, doc.documentType, doc.rate!, true)).toBe(plainYear.income);
   });
 });

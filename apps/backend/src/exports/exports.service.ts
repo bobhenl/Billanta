@@ -10,7 +10,14 @@ import { computeVatBreakdown, type InvoiceVatBreakdown, round2 } from "../invoic
 import { type AccountingBasis, computeAnnualSummary, type FlatRate } from "./annual-summary";
 import { getHomeRate } from "./home-rates";
 import {
+  annualIncomeOf,
   buildCzVatFiling,
+  type SealedIncomeDoc,
+  moneyS3Xml,
+  pohodaXml,
+  type AccountingFileInput,
+  type AccountingFormat,
+  type SealedAccountingInputs,
   buildSkVatFiling,
   csvSheet,
   homeCurrencyOf,
@@ -34,34 +41,12 @@ import { amountsSealed, refuseSealedRows, splitSealed } from "../vault/sealed-am
 type Db = PostgresJsDatabase<typeof schema>;
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
 type InvoiceRow = typeof schema.invoices.$inferSelect;
-type ContactRow = typeof schema.contacts.$inferSelect;
 
 export interface ExportPeriod {
   from: Date;
   /** Exclusive. */
   to: Date;
 }
-
-const TYPE_LABEL: Record<InvoiceRow["documentType"], string> = {
-  invoice: "Faktura",
-  proforma: "Zálohová faktura",
-  credit_note: "Dobropis",
-  quote: "Nabídka",
-};
-
-const POHODA_INVOICE_TYPE: Partial<Record<InvoiceRow["documentType"], string>> = {
-  invoice: "issuedInvoice",
-  credit_note: "issuedCreditNotice",
-  proforma: "issuedAdvanceInvoice",
-};
-
-const POHODA_PAYMENT: Record<InvoiceRow["paymentMethod"], string> = {
-  bank_transfer: "draft",
-  cash: "cash",
-  card: "creditcard",
-  cash_on_delivery: "delivery",
-  other: "draft",
-};
 
 function isoDate(d: Date | null | undefined): string {
   if (!d) return "";
@@ -77,65 +62,8 @@ function csDate(d: Date | null | undefined): string {
 
 const csv = csvSheet;
 
-function xml(v: string | number | null | undefined): string {
-  if (v == null) return "";
-  return String(v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[c]!);
-}
-
-const MONEY_PAYMENT: Record<InvoiceRow["paymentMethod"], string> = {
-  bank_transfer: "převodem",
-  cash: "hotově",
-  card: "kartou",
-  cash_on_delivery: "dobírkou",
-  other: "jinak",
-};
-
-/** Closes a non-stock item; the XSD requires Protizapis (only meaningful for deposit deductions). */
-const NESKL_TAIL = "<Protizapis>false</Protizapis></NesklPolozka>";
-
-/** An optional XML element: omitted when the value is empty. */
-function el(tag: string, v: string | number | null | undefined): string {
-  return v == null || v === "" ? "" : `<${tag}>${xml(v)}</${tag}>`;
-}
-
-function money(n: number): string {
-  return round2(n).toFixed(2);
-}
-
-type RateBucket = { vatRatePercent: number; totalWithoutVat: number; vatAmount: number };
-
-/** Money's VAT summary: the reduced rate lives in the "5" slots, the standard one in "22". */
-export function moneyVatSummary(byRate: RateBucket[]): string {
-  const sum = (pick: (r: RateBucket) => boolean, key: "totalWithoutVat" | "vatAmount") =>
-    money(byRate.filter(pick).reduce((a, r) => a + r[key], 0));
-  const zero = (r: RateBucket) => r.vatRatePercent <= 0;
-  const low = (r: RateBucket) => r.vatRatePercent > 0 && r.vatRatePercent < 19;
-  const high = (r: RateBucket) => r.vatRatePercent >= 19;
-  return (
-    `<SouhrnDPH><Zaklad0>${sum(zero, "totalWithoutVat")}</Zaklad0>` +
-    `<Zaklad5>${sum(low, "totalWithoutVat")}</Zaklad5><Zaklad22>${sum(high, "totalWithoutVat")}</Zaklad22>` +
-    `<DPH5>${sum(low, "vatAmount")}</DPH5><DPH22>${sum(high, "vatAmount")}</DPH22></SouhrnDPH>`
-  );
-}
-
-/** Header totals: plain in the home currency, inside `Valuty` (with the stored rate, if any) for a foreign one. */
-export function moneyTotals(currency: string, rate: string | null, byRate: RateBucket[], total: number, home: HomeCurrency = "CZK"): string {
-  if (currency === home) return moneyVatSummary(byRate) + `<Celkem>${money(total)}</Celkem>`;
-  // Without a stored rate Money converts with its own exchange-rate list.
-  return (
-    `<Valuty><Mena><Kod>${xml(currency)}</Kod><Mnozstvi>1</Mnozstvi>` +
-    (rate ? `<Kurs>${Math.round(Number(rate) * 10000) / 10000}</Kurs>` : "") +
-    `</Mena>${moneyVatSummary(byRate)}<Celkem>${money(total)}</Celkem></Valuty>`
-  );
-}
-
-/** Pohoda's VAT rate classes; the exact percentage is sent alongside. */
-function pohodaRate(percent: number): string {
-  if (percent <= 0) return "none";
-  if (percent >= 19) return "high";
-  if (percent >= 10 && percent <= 15) return "low";
-  return "third";
-}
+// The XML builders are shared with the browser (sealed amounts): cz-compliance.
+export { moneyTotals, moneyVatSummary } from "@faktur/cz-compliance";
 
 /** Which date puts a document into the export period. */
 export type ExportDateBy = "issue" | "supply";
@@ -292,230 +220,95 @@ export class ExportsService {
     ]);
   }
 
-  async pohodaXml(db: Db, period: ExportPeriod, tenant: typeof schema.tenants.$inferSelect): Promise<string> {
+  /** The shared builders' input: plain documents with their totals. */
+  private async accountingFile(db: Db, period: ExportPeriod, tenant: typeof schema.tenants.$inferSelect): Promise<AccountingFileInput> {
     const invoices = await this.loadInvoices(db, period);
     const expenses = await this.loadExpenses(db, period);
-    const packId = `billanta-${isoDate(period.from)}`;
-    const home = tenantHomeCurrencyOf(tenant);
+    return { period, ico: tenant.ico, home: tenantHomeCurrencyOf(tenant), invoices, expenses };
+  }
 
-    const partner = (c: ContactRow | null) =>
-      c
-        ? `<inv:partnerIdentity><typ:address>` +
-          `<typ:company>${xml(c.legalName)}</typ:company>` +
-          `<typ:city>${xml(c.addressCity)}</typ:city>` +
-          `<typ:street>${xml(c.addressStreet)}</typ:street>` +
-          `<typ:zip>${xml(c.addressPostalCode)}</typ:zip>` +
-          (c.ico ? `<typ:ico>${xml(c.ico)}</typ:ico>` : "") +
-          (c.dic ? `<typ:dic>${xml(c.dic)}</typ:dic>` : "") +
-          `</typ:address></inv:partnerIdentity>`
-        : "";
-
-    const items: string[] = [];
-    for (const { invoice, contact, lineItems } of invoices) {
-      const type = POHODA_INVOICE_TYPE[invoice.documentType];
-      if (!type) continue;
-      const foreign = invoice.currency !== home;
-      const priceTag = foreign ? "inv:foreignCurrency" : "inv:homeCurrency";
-      const lines = lineItems
-        .map((li) => {
-          const rate = invoice.reverseCharge ? 0 : Number(li.vatRate ?? 0);
-          return (
-            `<inv:invoiceItem>` +
-            `<inv:text>${xml(li.description.slice(0, 90))}</inv:text>` +
-            `<inv:quantity>${Number(li.quantity)}</inv:quantity>` +
-            (li.unit ? `<inv:unit>${xml(li.unit)}</inv:unit>` : "") +
-            `<inv:payVAT>false</inv:payVAT>` +
-            `<inv:rateVAT>${pohodaRate(rate)}</inv:rateVAT>` +
-            (rate > 0 ? `<inv:percentVAT>${rate}</inv:percentVAT>` : "") +
-            (Number(li.discountPercent ?? 0) > 0
-              ? `<inv:discountPercentage>${Number(li.discountPercent)}</inv:discountPercentage>`
-              : "") +
-            `<${priceTag}><typ:unitPrice>${Math.round(Number(li.unitPrice) * 10000) / 10000}</typ:unitPrice></${priceTag}>` +
-            `</inv:invoiceItem>`
-          );
-        })
-        .join("");
-
-      items.push(
-        `<dat:dataPackItem id="${xml(invoice.invoiceNumber)}" version="2.0">` +
-          `<inv:invoice version="2.0"><inv:invoiceHeader>` +
-          `<inv:invoiceType>${type}</inv:invoiceType>` +
-          `<inv:number><typ:numberRequested>${xml(invoice.invoiceNumber)}</typ:numberRequested></inv:number>` +
-          (invoice.variableSymbol ? `<inv:symVar>${xml(invoice.variableSymbol)}</inv:symVar>` : "") +
-          `<inv:date>${isoDate(invoice.issueDate)}</inv:date>` +
-          (invoice.documentType !== "proforma"
-            ? `<inv:dateTax>${isoDate(invoice.taxableSupplyDate ?? invoice.issueDate)}</inv:dateTax>`
-            : "") +
-          (invoice.dueDate ? `<inv:dateDue>${isoDate(invoice.dueDate)}</inv:dateDue>` : "") +
-          `<inv:text>${xml((lineItems[0]?.description ?? TYPE_LABEL[invoice.documentType]).slice(0, 240))}</inv:text>` +
-          partner(contact) +
-          `<inv:paymentType><typ:paymentType>${POHODA_PAYMENT[invoice.paymentMethod]}</typ:paymentType></inv:paymentType>` +
-          (invoice.constantSymbol ? `<inv:symConst>${xml(invoice.constantSymbol)}</inv:symConst>` : "") +
-          (invoice.specificSymbol ? `<inv:symSpec>${xml(invoice.specificSymbol)}</inv:symSpec>` : "") +
-          (invoice.noteBelow ? `<inv:note>${xml(invoice.noteBelow)}</inv:note>` : "") +
-          (invoice.internalNote ? `<inv:intNote>${xml(invoice.internalNote)}</inv:intNote>` : "") +
-          `</inv:invoiceHeader>` +
-          `<inv:invoiceDetail>${lines}</inv:invoiceDetail>` +
-          `<inv:invoiceSummary><inv:roundingDocument>none</inv:roundingDocument>` +
-          (foreign
-            ? `<inv:foreignCurrency><typ:currency><typ:ids>${xml(invoice.currency)}</typ:ids></typ:currency></inv:foreignCurrency>`
-            : "") +
-          `</inv:invoiceSummary>` +
-          `</inv:invoice></dat:dataPackItem>`,
-      );
-    }
-
-    for (const e of expenses) {
-      // Reverse charge: the supplier's document carries no VAT, like our own
-      // reverse-charge invoices above. The accountant books the self-assessment.
-      const rate = e.reverseCharge ? 0 : Number(e.vatRate);
-      const foreign = e.currency !== home;
-      const priceTag = foreign ? "inv:foreignCurrency" : "inv:homeCurrency";
-      const ref = e.documentNumber || e.id.slice(0, 8);
-      items.push(
-        `<dat:dataPackItem id="exp-${xml(e.id)}" version="2.0">` +
-          `<inv:invoice version="2.0"><inv:invoiceHeader>` +
-          `<inv:invoiceType>receivedInvoice</inv:invoiceType>` +
-          `<inv:originalDocument>${xml(ref)}</inv:originalDocument>` +
-          (e.variableSymbol ? `<inv:symVar>${xml(e.variableSymbol)}</inv:symVar>` : "") +
-          `<inv:date>${isoDate(e.expenseDate)}</inv:date>` +
-          `<inv:dateTax>${isoDate(e.expenseDate)}</inv:dateTax>` +
-          (e.dueDate ? `<inv:dateDue>${isoDate(e.dueDate)}</inv:dateDue>` : "") +
-          `<inv:text>${xml(e.description.slice(0, 240))}</inv:text>` +
-          (e.supplierNameRaw || e.supplierIco
-            ? `<inv:partnerIdentity><typ:address>` +
-              `<typ:company>${xml(e.supplierNameRaw)}</typ:company>` +
-              (e.supplierIco ? `<typ:ico>${xml(e.supplierIco)}</typ:ico>` : "") +
-              `</typ:address></inv:partnerIdentity>`
-            : "") +
-          (e.note ? `<inv:intNote>${xml(e.note)}</inv:intNote>` : "") +
-          `</inv:invoiceHeader><inv:invoiceDetail><inv:invoiceItem>` +
-          `<inv:text>${xml(e.description.slice(0, 90))}</inv:text>` +
-          `<inv:quantity>1</inv:quantity>` +
-          `<inv:payVAT>true</inv:payVAT>` +
-          `<inv:rateVAT>${pohodaRate(rate)}</inv:rateVAT>` +
-          (rate > 0 ? `<inv:percentVAT>${rate}</inv:percentVAT>` : "") +
-          `<${priceTag}><typ:unitPrice>${round2(Number(e.amount))}</typ:unitPrice></${priceTag}>` +
-          `</inv:invoiceItem></inv:invoiceDetail>` +
-          `<inv:invoiceSummary><inv:roundingDocument>none</inv:roundingDocument>` +
-          (foreign
-            ? `<inv:foreignCurrency><typ:currency><typ:ids>${xml(e.currency)}</typ:ids></typ:currency></inv:foreignCurrency>`
-            : "") +
-          `</inv:invoiceSummary></inv:invoice></dat:dataPackItem>`,
-      );
-    }
-
-    return (
-      `<?xml version="1.0" encoding="UTF-8"?>\n` +
-      `<dat:dataPack id="${xml(packId)}" ico="${xml(tenant.ico)}" application="Billanta" version="2.0" ` +
-      `note="Export ${isoDate(period.from)} – ${isoDate(new Date(period.to.getTime() - 1))}" ` +
-      `xmlns:dat="http://www.stormware.cz/schema/version_2/data.xsd" ` +
-      `xmlns:inv="http://www.stormware.cz/schema/version_2/invoice.xsd" ` +
-      `xmlns:typ="http://www.stormware.cz/schema/version_2/type.xsd">\n` +
-      items.join("\n") +
-      `\n</dat:dataPack>\n`
-    );
+  async pohodaXml(db: Db, period: ExportPeriod, tenant: typeof schema.tenants.$inferSelect): Promise<string> {
+    return pohodaXml(await this.accountingFile(db, period, tenant));
   }
 
   /**
    * The same documents as a Money S3 `MoneyData` file (Soubor → Import →
-   * XML), element names and order per Solitea's published XSD. Discounts are
-   * folded into the unit price; reverse charge exports with a 0 % rate.
+   * XML), element names and order per Solitea's published XSD.
    */
   async moneyS3Xml(db: Db, period: ExportPeriod, tenant: typeof schema.tenants.$inferSelect): Promise<string> {
-    const invoices = await this.loadInvoices(db, period);
+    return moneyS3Xml(await this.accountingFile(db, period, tenant));
+  }
+
+  /**
+   * What the browser needs to build the Pohoda or Money S3 file when some
+   * amounts are sealed: the same documents in the same order, sealed ones
+   * with their totals envelope and each line's envelope instead of totals.
+   */
+  async accountingInputs(db: Db, format: AccountingFormat, period: ExportPeriod, tenant: typeof schema.tenants.$inferSelect): Promise<SealedAccountingInputs> {
+    const invoices = await this.loadInvoices(db, period, {}, "issue", "envelope");
     const expenses = await this.loadExpenses(db, period);
-    const home = tenantHomeCurrencyOf(tenant);
-
-    const issued = invoices.map(({ invoice, contact, lineItems, totals }) => {
-      const foreign = invoice.currency !== home;
-      const lines = lineItems
-        .map((li) => {
-          const rate = invoice.reverseCharge ? 0 : Number(li.vatRate ?? 0);
-          const unitPrice = Number(li.unitPrice) * (1 - Number(li.discountPercent ?? 0) / 100);
-          const price = Math.round(unitPrice * 10000) / 10000;
-          return (
-            `<Polozka>${el("Popis", li.description.slice(0, 50))}` +
-            (li.description.length > 50 ? el("Poznamka", li.description) : "") +
-            `<PocetMJ>${Number(li.quantity)}</PocetMJ><SazbaDPH>${rate}</SazbaDPH>` +
-            `<Cena>${foreign ? 0 : price}</Cena><CenaTyp>0</CenaTyp>` +
-            (foreign ? `<Valuty>${price}</Valuty>` : "") +
-            `<NesklPolozka>${el("MJ", li.unit?.slice(0, 10))}${NESKL_TAIL}</Polozka>`
-          );
-        })
-        .join("");
-      // Doklad holds at most 10 characters; a longer number goes to the note.
-      const note = [
-        invoice.invoiceNumber!.length > 10 ? `Číslo dokladu: ${invoice.invoiceNumber}` : "",
-        invoice.internalNote ?? "",
-      ].filter(Boolean);
-      return (
-        `<FaktVyd>` +
-        el("Doklad", invoice.invoiceNumber!.slice(0, 10)) +
-        el("Popis", (lineItems[0]?.description ?? TYPE_LABEL[invoice.documentType]).slice(0, 50)) +
-        el("Vystaveno", isoDate(invoice.issueDate)) +
-        (invoice.documentType !== "proforma"
-          ? el("PlnenoDPH", isoDate(invoice.taxableSupplyDate ?? invoice.issueDate))
-          : "") +
-        el("Splatno", isoDate(invoice.dueDate)) +
-        el("KonstSym", invoice.constantSymbol) +
-        el("VarSymbol", invoice.variableSymbol) +
-        el("SpecSymbol", invoice.specificSymbol) +
-        `<Druh>${invoice.documentType === "proforma" ? "Z" : "N"}</Druh>` +
-        (invoice.documentType === "credit_note" ? `<Dobropis>true</Dobropis>` : "") +
-        el("Uhrada", MONEY_PAYMENT[invoice.paymentMethod]) +
-        `<SazbaDPH1>12</SazbaDPH1><SazbaDPH2>21</SazbaDPH2>` +
-        moneyTotals(invoice.currency, invoice.exchangeRate, totals.byRate, totals.totalWithVat, home) +
-        el("Poznamka", note.join("\n")) +
-        el("TextZaFa", invoice.noteBelow) +
-        (contact
-          ? `<DodOdb>${el("ObchNazev", contact.legalName)}` +
-            `<ObchAdresa>${el("Ulice", contact.addressStreet)}${el("Misto", contact.addressCity)}` +
-            `${el("PSC", contact.addressPostalCode)}${el("Stat", contact.addressCountry)}</ObchAdresa>` +
-            `${el("ICO", contact.ico)}${el("DIC", contact.dic)}</DodOdb>`
-          : "") +
-        `<SeznamPolozek>${lines}</SeznamPolozek>` +
-        `</FaktVyd>`
-      );
-    });
-
-    const received = expenses.map((e) => {
-      const rate = e.reverseCharge ? 0 : Number(e.vatRate);
-      const total = Number(e.amount);
-      const base = total / (1 + rate / 100);
-      const foreign = e.currency !== home;
-      return (
-        `<FaktPrij>` +
-        el("Popis", e.description.slice(0, 50)) +
-        el("Vystaveno", isoDate(e.expenseDate)) +
-        el("PlnenoDPH", isoDate(e.expenseDate)) +
-        el("Splatno", isoDate(e.dueDate)) +
-        el("VarSymbol", e.variableSymbol) +
-        el("PrijatDokl", e.documentNumber) +
-        `<Druh>N</Druh><SazbaDPH1>12</SazbaDPH1><SazbaDPH2>21</SazbaDPH2>` +
-        moneyTotals(e.currency, null, [{ vatRatePercent: rate, totalWithoutVat: base, vatAmount: total - base }], total, home) +
-        el("Poznamka", e.note) +
-        (e.supplierNameRaw || e.supplierIco
-          ? `<DodOdb>${el("ObchNazev", e.supplierNameRaw)}${el("ICO", e.supplierIco)}</DodOdb>`
-          : "") +
-        `<SeznamPolozek><Polozka>${el("Popis", e.description.slice(0, 50))}<PocetMJ>1</PocetMJ>` +
-        `<SazbaDPH>${rate}</SazbaDPH><Cena>${foreign ? 0 : money(total)}</Cena><CenaTyp>1</CenaTyp>` +
-        (foreign ? `<Valuty>${money(total)}</Valuty>` : "") +
-        `<NesklPolozka>${NESKL_TAIL}</Polozka></SeznamPolozek>` +
-        `</FaktPrij>`
-      );
-    });
-
-    return (
-      `<?xml version="1.0" encoding="UTF-8"?>\n` +
-      `<MoneyData ${tenant.ico ? `ICAgendy="${xml(tenant.ico)}" ` : ""}` +
-      `description="Billanta ${isoDate(period.from)} – ${isoDate(new Date(period.to.getTime() - 1))}" ` +
-      `ExpZkratka="Billanta" ExpDate="${isoDate(new Date())}">\n` +
-      // The schema wants received invoices before issued ones.
-      (received.length ? `<SeznamFaktPrij>\n${received.join("\n")}\n</SeznamFaktPrij>\n` : "") +
-      (issued.length ? `<SeznamFaktVyd>\n${issued.join("\n")}\n</SeznamFaktVyd>\n` : "") +
-      `</MoneyData>\n`
-    );
+    return {
+      format,
+      period: { from: period.from.toISOString(), to: period.to.toISOString() },
+      ico: tenant.ico,
+      home: tenantHomeCurrencyOf(tenant),
+      invoices: invoices.map(({ invoice: i, contact: c, lineItems, totals, encAmounts }) => ({
+        invoice: {
+          invoiceNumber: i.invoiceNumber,
+          documentType: i.documentType,
+          variableSymbol: i.variableSymbol,
+          constantSymbol: i.constantSymbol,
+          specificSymbol: i.specificSymbol,
+          issueDate: i.issueDate,
+          taxableSupplyDate: i.taxableSupplyDate,
+          dueDate: i.dueDate,
+          paymentMethod: i.paymentMethod,
+          noteBelow: i.noteBelow,
+          internalNote: i.internalNote,
+          currency: i.currency,
+          exchangeRate: i.exchangeRate,
+          reverseCharge: i.reverseCharge,
+        },
+        contact: c
+          ? {
+              legalName: c.legalName,
+              addressStreet: c.addressStreet,
+              addressCity: c.addressCity,
+              addressPostalCode: c.addressPostalCode,
+              addressCountry: c.addressCountry,
+              ico: c.ico,
+              dic: c.dic,
+            }
+          : null,
+        lineItems: lineItems.map((li) => ({
+          description: li.description,
+          unit: li.unit,
+          quantity: li.quantity,
+          unitPrice: li.unitPrice,
+          vatRate: li.vatRate,
+          discountPercent: li.discountPercent,
+          encAmounts: encAmounts ? (li.encAmounts ?? null) : null,
+        })),
+        // A sealed document's plain totals are the placeholder's zeros.
+        totals: encAmounts ? null : { byRate: totals.byRate, totalWithVat: totals.totalWithVat },
+        encAmounts,
+      })),
+      expenses: expenses.map((e) => ({
+        id: e.id,
+        documentNumber: e.documentNumber,
+        variableSymbol: e.variableSymbol,
+        expenseDate: e.expenseDate,
+        dueDate: e.dueDate,
+        description: e.description,
+        supplierNameRaw: e.supplierNameRaw,
+        supplierIco: e.supplierIco,
+        note: e.note,
+        vatRate: e.vatRate,
+        amount: e.amount,
+        currency: e.currency,
+        reverseCharge: e.reverseCharge,
+      })),
+    };
   }
 
   // --- VAT filings (DPHDP3 / DPHKH1 / DPHSHV) -----------------------------
@@ -699,8 +492,15 @@ export class ExportsService {
             : [eq(schema.invoices.status, "paid"), gte(schema.invoices.paidAt, from), lt(schema.invoices.paidAt, to)]),
         ),
       );
-    // Sealed amounts are summed in the browser; the files built from this summary refuse them (controller).
+    // Sealed amounts are summed in the browser (`sealedDocs`, with the rate picked here); the files built from this summary refuse them (controller).
     const { plain: invoices, sealed } = splitSealed(found);
+    const rateDayOf = (invoice: InvoiceRow) => (accrual ? (invoice.taxableSupplyDate ?? invoice.issueDate) : invoice.paidAt) ?? invoice.createdAt;
+    const sealedDocs: SealedIncomeDoc[] = [];
+    for (const invoice of found) {
+      if (!amountsSealed(invoice)) continue;
+      const rate = await toHome(invoice.currency, Number(invoice.exchangeRate) || null, rateDayOf(invoice));
+      sealedDocs.push({ encAmounts: invoice.encAmounts!, documentType: invoice.documentType, rate });
+    }
     const ids = invoices.map((i) => i.id);
     const items = ids.length ? await db.select().from(schema.invoiceLineItems).where(inArray(schema.invoiceLineItems.invoiceId, ids)) : [];
     let income = 0;
@@ -710,14 +510,12 @@ export class ExportsService {
         items.filter((i) => i.invoiceId === invoice.id),
         { reverseCharge: invoice.reverseCharge },
       );
-      const amount = opts.vatPayer ? totals.totalWithoutVat : totals.totalWithVat;
-      const rateDay = (accrual ? (invoice.taxableSupplyDate ?? invoice.issueDate) : invoice.paidAt) ?? invoice.createdAt;
-      const rate = await toHome(invoice.currency, Number(invoice.exchangeRate) || null, rateDay);
+      const rate = await toHome(invoice.currency, Number(invoice.exchangeRate) || null, rateDayOf(invoice));
       if (rate == null) {
         missingRates++;
         continue;
       }
-      income += Math.abs(amount) * rate * (invoice.documentType === "credit_note" ? -1 : 1);
+      income += annualIncomeOf(totals, invoice.documentType, rate, opts.vatPayer);
     }
 
     const paidOn = accrual ? sql`${schema.expenses.expenseDate}` : sql`coalesce(${schema.expenses.paidAt}, ${schema.expenses.expenseDate})`;
@@ -750,8 +548,12 @@ export class ExportsService {
       currency: eur ? ("EUR" as const) : ("CZK" as const),
       counts: { invoices: invoices.length, expenses: expenses.length, missingRates },
       byCategory,
+      /** The plain documents' income before rounding, for the browser to add the sealed ones to. */
+      plainIncome: income,
       /** Documents with sealed amounts, left out of `income`. */
       sealed,
+      /** The same documents with their envelope and rate, for the browser. */
+      sealedDocs,
     };
   }
 
