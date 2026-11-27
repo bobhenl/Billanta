@@ -26,6 +26,7 @@ import { parseIdempotencyKey } from "../common/idempotency";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { COMPANY_REGISTRIES, ContactsService, registryPartOf, type CompanyRegistry } from "./contacts.service";
 import { AresLookupDto } from "./dto/ares-lookup.dto";
+import { ContactVisibilityDto } from "./dto/contact-visibility.dto";
 import { CreateContactDto } from "./dto/create-contact.dto";
 import { PortalSlugDto } from "./dto/portal-slug.dto";
 import { StarContactDto } from "./dto/star-contact.dto";
@@ -112,7 +113,7 @@ export class ContactsController {
   @Post(":id/portal")
   @ApiOperation({ summary: "Turn on the customer's client portal, or issue a new link (the old one stops working)" })
   enablePortal(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
-    return this.contactsService.setPortal(req.tenantDb!, id, true);
+    return this.contactsService.setPortal(req.tenantDb!, req.user!.tenantId, id, true);
   }
 
   @Patch(":id/portal")
@@ -124,7 +125,7 @@ export class ContactsController {
   @Delete(":id/portal")
   @ApiOperation({ summary: "Turn off the customer's client portal" })
   disablePortal(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
-    return this.contactsService.setPortal(req.tenantDb!, id, false);
+    return this.contactsService.setPortal(req.tenantDb!, req.user!.tenantId, id, false);
   }
 
   @Post()
@@ -154,6 +155,15 @@ export class ContactsController {
   @ApiOperation({ summary: "Update a contact (partial; null clears an optional field)" })
   update(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: UpdateContactDto) {
     return this.contactsService.update(req.tenantDb!, id, dto);
+  }
+
+  @Patch(":id/visibility")
+  @ApiOperation({
+    summary: "Who the client belongs to (ownerUserId) and whether it is private (isPrivate)",
+    description: "Company owner or the client's current owner only (403 visibility_owner_only). Audited.",
+  })
+  setVisibility(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: ContactVisibilityDto) {
+    return this.contactsService.setVisibility(req.tenantDb!, req.user!, id, dto);
   }
 
   @Delete(":id")

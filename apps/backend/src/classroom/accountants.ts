@@ -1,4 +1,4 @@
-import { PERMISSION_AREAS, type Permissions } from "../tenancy/permissions";
+import { PERMISSION_AREAS, type StoredPermissions } from "../tenancy/permissions";
 import type { ClassroomTrack } from "./tracks";
 
 /**
@@ -12,15 +12,15 @@ import type { ClassroomTrack } from "./tracks";
 export const ACCOUNTANT_MODES = ["review", "bookkeeper", "full"] as const;
 export type AccountantMode = (typeof ACCOUNTANT_MODES)[number];
 
-const PRESETS: Record<AccountantMode, Permissions | null> = {
-  review: Object.fromEntries(PERMISSION_AREAS.map((a) => [a, "read"])) as Permissions,
+const PRESETS: Record<AccountantMode, StoredPermissions | null> = {
+  review: Object.fromEntries(PERMISSION_AREAS.map((a) => [a, "read"])) as StoredPermissions,
   bookkeeper: { invoices: "read", contacts: "read", expenses: "write", bank: "write", reports: "write" },
   // The role's own defaults.
   full: null,
 };
 
 /** The membership's `permissions` for a mode (null = the accountant role's defaults). */
-export function accountantPermissions(mode: AccountantMode): Permissions | null {
+export function accountantPermissions(mode: AccountantMode): StoredPermissions | null {
   const preset = PRESETS[mode];
   return preset ? { ...preset } : null;
 }

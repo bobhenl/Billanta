@@ -9,6 +9,8 @@ import { Banner } from '@/components/banner';
 import { inputClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
 import { cn } from '@/lib/utils';
+import { FeatureBadge } from '@/components/plan-lock';
+import { planRequiredIn, type FeatureUsage } from '@/lib/usage';
 
 const FILES = [
   { key: 'dp3', path: 'dphdp3.xml' },
@@ -45,18 +47,22 @@ function vatWarnings(header: string | null): Map<string, string[]> {
 export function VatFilings({
   country = 'CZ',
   identified = false,
-  checked = VAT_INFO_CHECKED
+  checked = VAT_INFO_CHECKED,
+  usage
 }: {
   country?: 'CZ' | 'SK';
   /** Czech identifikovaná osoba: monthly přiznání and souhrnné hlášení only, no kontrolní hlášení (§ 101c ZDPH). */
   identified?: boolean;
   checked?: string;
+  /** Plus and up; lower plans get one download ever. */
+  usage?: FeatureUsage | null;
 }) {
   const sk = country === 'SK';
   const files = sk ? FILES_SK : identified ? FILES.filter((f) => f.key !== 'kh1') : FILES;
   const t = useTranslations(sk ? 'settings.exports.vat.sk' : 'settings.exports.vat');
   const common = useTranslations('settings.exports.vat');
   const locale = useLocale();
+  const tPlan = useTranslations('planLimits');
   const now = new Date();
   const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
   const [mode, setMode] = useState<'month' | 'quarter'>('month');
@@ -76,6 +82,11 @@ export function VatFilings({
     try {
       const res = await fetch(`/api/files/exports/${path}?${query}`);
       if (!res.ok) {
+        const plan = res.status === 403 ? planRequiredIn(await res.text()) : null;
+        if (plan) {
+          toast({ text: tPlan('planRequired', { plan: tPlan(`plans.${plan}`) }), tone: 'info' });
+          return;
+        }
         const reason =
           res.status === 404
             ? identified && key === 'dp3'
@@ -117,6 +128,7 @@ export function VatFilings({
         <div>
           <h2 className="font-bold">{t('title')}</h2>
           <p className="mt-1 text-sm text-muted-foreground">{t('hint')}</p>
+          <FeatureBadge usage={usage} className="mt-2" />
         </div>
       </div>
       <div className="mt-4 flex flex-wrap gap-3 text-sm">

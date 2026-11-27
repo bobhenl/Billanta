@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { SortHeader, useListSort } from '@/components/sort-header';
 import { toast } from '@/components/toaster';
-import { useCanWrite } from '@/components/access-provider';
+import { useCanDo, useCanWrite } from '@/components/access-provider';
 import { EmptyState } from '@/components/empty-state';
 import { ConfirmModal } from '@/components/modal';
 import { formatDate, formatMoney } from '@/lib/invoice-ui';
@@ -48,7 +48,11 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [pending, startTransition] = useTransition();
   // The checkboxes only feed bulk mark-paid/delete, so read-only gets a plain list.
-  const canEdit = useCanWrite('expenses');
+  const canWriteArea = useCanWrite('expenses');
+  const canCreate = useCanDo('expenses.create');
+  const canApprove = useCanDo('expenses.approve');
+  const canDelete = useCanDo('expenses.delete');
+  const canEdit = canWriteArea && (canApprove || canDelete);
   const { sort, cycle, sorted } = useListSort('billanta:expenses:sort', SORTABLE, rows, sortValue, ['amount']);
 
   const sums = useMemo(() => {
@@ -71,7 +75,8 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
         title={filtered ? t('emptyFiltered') : t('empty')}
         action={
           !filtered &&
-          canEdit && (
+          canWriteArea &&
+          canCreate && (
             <Link href="/expenses/new" className={buttonClass.primary}>
               <Plus className="h-4 w-4" aria-hidden />
               {t('newExpense')}
@@ -110,6 +115,7 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
       {selected.size > 0 && (
         <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2 text-sm">
           <span className="font-semibold">{t('selected', { count: selected.size })}</span>
+          {canApprove && (
           <button
             type="button"
             disabled={pending}
@@ -124,6 +130,8 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
             <CheckCircle2 className="h-3.5 w-3.5" />
             {t('detail.markPaid')}
           </button>
+          )}
+          {canDelete && (
           <button
             type="button"
             disabled={pending}
@@ -133,6 +141,7 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
             <Trash2 className="h-3.5 w-3.5" />
             {t('detail.delete')}
           </button>
+          )}
           <button type="button" className="ml-auto h-9 px-2 text-xs text-muted-foreground hover:text-primary" onClick={() => setSelected(new Set())}>
             {t('clearSelection')}
           </button>

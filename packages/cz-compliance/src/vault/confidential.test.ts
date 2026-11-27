@@ -17,7 +17,7 @@ import {
   wrapWithPassword,
   wrapWithRecoveryCode,
   wrapWithSecret
-} from '../index.js';
+} from './confidential.js';
 
 // Low iterations keep the suite fast; the default (600 000) is the same code path.
 const FAST = 1_000;
@@ -51,8 +51,11 @@ describe('sealed envelope', () => {
     const other = await generateDataKey();
     const sealed = await seal(key, 'tajné');
     await expect(open(other, sealed)).rejects.toBeInstanceOf(VaultSecretError);
-    const last = sealed.at(-3) === 'A' ? 'B' : 'A';
-    const tampered = sealed.slice(0, -3) + last + sealed.slice(-2);
+    // Change a character well inside the ciphertext: the one before the `==`
+    // padding is mostly padding bits, so changing it may decode to the same bytes.
+    const at = sealed.length - 8;
+    const swap = sealed[at] === 'A' ? 'B' : 'A';
+    const tampered = sealed.slice(0, at) + swap + sealed.slice(at + 1);
     await expect(open(key, tampered)).rejects.toBeInstanceOf(VaultSecretError);
   });
 

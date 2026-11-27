@@ -26,6 +26,8 @@ import { submitterFromTenant } from "./vat-returns";
 import { computeTaxReturnBasis, isLegalEntityName, normalizeTaxAdvances } from "@faktur/cz-compliance";
 import { taxReturnCsv, taxReturnFileName, taxReturnPdf, type TaxReturnReport } from "./tax-return-basis";
 import { tenantCountry, tenantHomeCurrencyOf } from "../tenants/home-currency";
+import { spendFeature } from "../billing/plan-limits";
+import type { PlanFeature } from "../billing/plans";
 
 const vatPeriodSchema = z.object({
   year: z.coerce.number().int().min(2000).max(2100),
@@ -177,6 +179,7 @@ export class ExportsController {
     const period = parsePeriod(query);
     const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
     const body = await this.exportsService.pohodaXml(req.tenantDb!, period, tenant!);
+    await this.spend(req, "accounting_export");
     this.send(res, body, "application/xml; charset=utf-8", `pohoda-${period.label}.xml`);
   }
 
@@ -186,6 +189,7 @@ export class ExportsController {
     const period = parsePeriod(query);
     const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
     const body = await this.exportsService.moneyS3Xml(req.tenantDb!, period, tenant!);
+    await this.spend(req, "accounting_export");
     this.send(res, body, "application/xml; charset=utf-8", `money-s3-${period.label}.xml`);
   }
 
@@ -231,6 +235,7 @@ export class ExportsController {
       ["Pozn.", "Orientační odhad bez záruky. Nenahrazuje daňové přiznání, přehledy pro ČSSZ a ZP ani daňového poradce. Údaje si před použitím ověřte."],
     ];
     const body = "﻿" + rows.map(([k, v]) => `${k};${v.includes(";") ? `"${v}"` : v}`).join("\r\n") + "\r\n";
+    await this.spend(req, "income_tax_export");
     this.send(res, body, "text/csv; charset=utf-8", `rocni-prehled-${s.year}.csv`);
   }
 
@@ -274,6 +279,7 @@ export class ExportsController {
   @ApiOperation({ summary: "The same tax-return basis as a CSV sheet for the accountant" })
   async taxReturnBasisCsv(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>, @Res() res: Response) {
     const r = await this.loadTaxReturn(req, query);
+    await this.spend(req, "income_tax_export");
     this.send(res, taxReturnCsv(r), "text/csv; charset=utf-8", `${taxReturnFileName(r)}.csv`);
   }
 
@@ -282,6 +288,7 @@ export class ExportsController {
   async taxReturnBasisPdf(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>, @Res() res: Response) {
     const r = await this.loadTaxReturn(req, query);
     const pdf = await taxReturnPdf(r);
+    await this.spend(req, "income_tax_export");
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="${taxReturnFileName(r)}.pdf"`);
     res.send(pdf);
@@ -362,6 +369,7 @@ export class ExportsController {
     if (!parsed.success) throw new BadRequestException("invalid_filings_query");
     const { lines, tenant } = await this.loadFilings(req, parsed.data);
     const xml = this.filingFile(() => generateDpfdp(lines.dpfo, { submitter: submitterFromTenant(tenant), ...parsed.data }));
+    await this.spend(req, "income_tax_export");
     this.send(res, xml, "application/xml; charset=utf-8", `dpfdp-${lines.dpfo.year}.xml`);
   }
 
@@ -373,6 +381,7 @@ export class ExportsController {
     if (!parsed.success) throw new BadRequestException("invalid_filings_query");
     const { lines, tenant } = await this.loadFilings(req, parsed.data);
     const xml = this.filingFile(() => generateCsszOsvc(lines.cssz, { submitter: submitterFromTenant(tenant), ...parsed.data }));
+    await this.spend(req, "income_tax_export");
     this.send(res, xml, "application/xml; charset=utf-8", `prehled-osvc-cssz-${lines.cssz.year}.xml`);
   }
 
@@ -471,6 +480,7 @@ export class ExportsController {
     }
     if (body == null) throw new NotFoundException("No EU supplies to report in this period");
     const name = { dph: "dphv25", kv: "kvdph", sv: "svdph" }[kind];
+    await this.spend(req, "vat_filings");
     this.send(res, body, "application/xml; charset=utf-8", `${name}-${period.label}.xml`);
   }
 
@@ -504,8 +514,18 @@ export class ExportsController {
     // the documents to fix (e.g. a reverse-charge invoice without kód
     // předmětu plnění, which EPO would reject). URI-encoded JSON, since
     // document numbers may hold non-ASCII characters.
+    await this.spend(req, "vat_filings");
     if (warnings.length) res.setHeader("X-Vat-Warnings", encodeURIComponent(JSON.stringify(warnings)));
     this.send(res, body, "application/xml; charset=utf-8", `${name}-${period.label}.xml`);
+  }
+
+  /**
+   * The plan check for a file download, as late as possible: the file is
+   * built first, so a 400/404 (no DIČ, nothing to report) costs no taste
+   * use. The on-screen figures (the JSON routes) stay open on every plan.
+   */
+  private async spend(req: TenantScopedRequest, feature: PlanFeature) {
+    await spendFeature(req.tenantDb!, req.user!.tenantId, feature);
   }
 
   private send(res: Response, body: string, type: string, filename: string) {

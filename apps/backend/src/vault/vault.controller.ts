@@ -4,7 +4,7 @@ import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { planAllows } from "../billing/plan-access";
 import { loadPlanSummary, RequirePlan } from "../billing/plan.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
-import { EnableVaultDto, MemberWrapDto, PlainInvoicesQueryDto, RecoveryWrapDto, SealInvoicesDto, VaultSettingsDto } from "./dto/vault.dto";
+import { EnableVaultDto, MemberWrapDto, PlainInvoicesQueryDto, RecoveryWrapDto, RekeyInvoiceDto, SealInvoicesDto, VaultDocumentsQueryDto, VaultSettingsDto } from "./dto/vault.dto";
 import { confidentialPlanRequired } from "./sealed";
 import { VaultService } from "./vault.service";
 
@@ -65,11 +65,25 @@ export class VaultController {
     return this.vault.plainInvoices(req.tenantDb!, req.user!.tenantId, query);
   }
 
+  @Get("invoices/documents")
+  @ApiOperation({ summary: "Documents with their texts as stored (ciphertext stays ciphertext), for search, suggestions and export in the browser" })
+  documents(@Req() req: TenantScopedRequest, @Query() query: VaultDocumentsQueryDto) {
+    return this.vault.documents(req.tenantDb!, req.user!.tenantId, req.user!, query);
+  }
+
   @Post("invoices/seal")
   @RequirePlan("confidential_mode")
   @ApiOperation({ summary: "Store texts the browser encrypted (text columns only)" })
   seal(@Req() req: TenantScopedRequest, @Body() dto: SealInvoicesDto) {
     return this.vault.seal(req.tenantDb!, req.user!.tenantId, dto);
+  }
+
+  // No plan check: it only replaces ciphertext with ciphertext, which a
+  // downgraded company must still be able to do for documents it already sealed.
+  @Post("invoices/:id/rekey")
+  @ApiOperation({ summary: "Store one document's texts re-encrypted under its own key, for the client link" })
+  rekey(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: RekeyInvoiceDto) {
+    return this.vault.rekey(req.tenantDb!, req.user!.tenantId, req.user!, id, dto);
   }
 
   private async requirePlan(req: TenantScopedRequest) {

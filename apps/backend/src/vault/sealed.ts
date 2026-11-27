@@ -1,5 +1,5 @@
-import { ConflictException, ForbiddenException } from "@nestjs/common";
-import { isSealed, sealedMaxLength } from "@faktur/cz-compliance";
+import { BadRequestException, ConflictException, ForbiddenException } from "@nestjs/common";
+import { documentKeyWrap, isSealed, sealedMaxLength } from "@faktur/cz-compliance";
 import { z } from "zod";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type * as schema from "../../drizzle/schema";
@@ -15,6 +15,19 @@ import { FEATURE_MIN_PLAN } from "../billing/plans";
  */
 
 export { isSealed };
+
+/**
+ * Which of a re-key's fields may be written: only ciphertext over
+ * ciphertext (plain text becomes sealed through "Zašifrovat", with its plan
+ * check), and every new envelope under one and the same document key, or
+ * the client link could open only part of the document. Throws on anything
+ * else, so a half-applied re-key can't happen.
+ */
+export function rekeyWrites(pairs: { incoming: string; stored: string | null | undefined }[]): void {
+  const wraps = new Set(pairs.map((p) => documentKeyWrap(p.incoming)));
+  if (wraps.has(null) || wraps.size > 1) throw new BadRequestException("rekey_one_document_key");
+  if (pairs.some((p) => !isSealed(p.stored))) throw new ConflictException("rekey_plain_text");
+}
 
 /** 409 code: the document holds encrypted text, so the server can't render it. */
 export const CONFIDENTIAL_CONTENT = "confidential_content";
@@ -35,6 +48,19 @@ export function printedTexts(invoice: { noteAbove: string | null; noteBelow: str
 /** Null for ciphertext: search and suggestions must not match random base64. */
 export function plainOrNull(value: string | null | undefined): string | null {
   return value == null || isSealed(value) ? null : value;
+}
+
+/**
+ * A text filter (item or note search) on one document. The server matches
+ * the plain texts; encrypted ones it cannot read. With `candidates` the
+ * browser asked to decide those itself: a document that missed on its plain
+ * texts but holds ciphertext comes back "pending", and the browser opens the
+ * texts after unlock and keeps or drops it. Ciphertext never counts as a
+ * match here, so a locked vault never shows a false hit.
+ */
+export function textFilterVerdict(plainHit: boolean, values: unknown[], candidates: boolean): "match" | "pending" | "miss" {
+  if (plainHit) return "match";
+  return candidates && values.some((v) => isSealed(v)) ? "pending" : "miss";
 }
 
 export function plainOr<T extends string | null | undefined>(value: T, placeholder: string): T | string {

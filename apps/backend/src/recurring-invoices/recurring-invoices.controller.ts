@@ -46,7 +46,7 @@ export class RecurringInvoicesController {
     @Param("id") id: string,
     @Body() dto: UpdateRecurringInvoiceDto,
   ) {
-    return this.recurringInvoicesService.update(req.tenantDb!, id, dto);
+    return this.recurringInvoicesService.update(req.tenantDb!, id, dto, req.user!.tenantId);
   }
 
   /**

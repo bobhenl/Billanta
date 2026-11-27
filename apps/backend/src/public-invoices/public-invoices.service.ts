@@ -2,7 +2,7 @@ import { ConflictException, Injectable, Logger, NotFoundException, Optional } fr
 import { sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
-import { czechAccountToIban, generateQrInvoiceString } from "@faktur/cz-compliance";
+import { clientCipher, czechAccountToIban, generateQrInvoiceString } from "@faktur/cz-compliance";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
 import { InvoicesService } from "../invoices/invoices.service";
@@ -75,9 +75,15 @@ type PublicQrDetailsRow = {
 };
 
 export interface PublicInvoiceLineItemView {
-  /** Empty when encrypted in Důvěrný režim (see `confidential`): the customer has no key. */
+  /** Empty when encrypted in Důvěrný režim (see `confidential`): the server has no key. */
   description: string;
   confidential?: true;
+  /**
+   * The ciphertext for the client's browser, which may hold the document
+   * key from the link fragment (`#k=`). The wrapped key is left out, and
+   * `keyId` is null for a text sealed with the company key the client never gets.
+   */
+  sealed?: { cipher: string; keyId: string | null };
   quantity: number;
   unitPrice: number;
   vatRate: number | null;
@@ -296,7 +302,7 @@ export class PublicInvoicesService {
 
     const lineItems: PublicInvoiceLineItemView[] = lineItemRows.map((row) => ({
       description: isSealed(row.description) ? "" : row.description,
-      ...(isSealed(row.description) ? { confidential: true as const } : {}),
+      ...(isSealed(row.description) ? { confidential: true as const, sealed: clientCipher(row.description) } : {}),
       quantity: Number(row.quantity),
       unitPrice: Number(row.unit_price),
       vatRate: row.vat_rate != null ? Number(row.vat_rate) : null,

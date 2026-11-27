@@ -28,12 +28,18 @@ export interface SendInvoiceEmailParams {
   language?: string | null;
   /** `invoices.document_type`; a credit note gets its own wording, since it asks for no payment. */
   documentType?: string | null;
+  /** Its own row, so the customer can pay from the e-mail alone. */
+  variableSymbol?: string | null;
+  /** PNG of the payment QR (SPAYD / PAY by square), shown inline as `cid:payment-qr`. */
+  paymentQr?: Buffer | null;
 }
 
 export interface EmailAttachment {
   filename: string;
   content: Buffer;
   contentType?: string;
+  /** An inline image the HTML shows as `cid:<id>`; not listed among the attachments. */
+  contentId?: string;
 }
 
 export interface EmailCustomization {
@@ -62,8 +68,6 @@ interface SendOptions {
 export interface EmailQueueOptions extends QueueContext {
   idempotencyKey?: string;
   userId?: string | null;
-  /** Deliver now and never store the attachments (`EmailOutboxService.sendNow`). */
-  direct?: boolean;
 }
 
 /** A claimed outbox row, ready for Resend. */
@@ -77,7 +81,7 @@ export interface DeliverableEmail {
   html: string;
   textBody: string;
   headers: Record<string, string>;
-  attachments: { filename: string; contentType?: string; content: string }[] | null;
+  attachments: { filename: string; contentType?: string; content: string; contentId?: string }[] | null;
 }
 
 export type DeliveryResult =
@@ -141,70 +145,24 @@ export class EmailService {
   }
 
   async sendInvoiceEmail(params: SendInvoiceEmailParams, queue: EmailQueueOptions): Promise<void> {
-    const lang = emailLangOf(params.language);
-    const l = EMAIL_LABELS[lang];
-    const creditNote = params.documentType === "credit_note";
-    const n = params.invoiceNumber;
-    const values = placeholderValues(params);
-    const c = params.custom;
-    const custom = c?.subject ? fillTemplate(c.subject, values) : null;
-    const subject = params.corrected
-      ? custom
-        ? `${l.correctionPrefix} ${custom}`
-        : l.correctedSubject(n)
-      : (custom ?? (creditNote ? l.creditNoteSubject(n) : l.invoiceSubject(n)));
-    const html = renderInvoiceEmailHtml({
-      lang,
-      creditNote,
-      heading: params.corrected ? l.correctedSubject(n) : creditNote ? l.creditNoteSubject(n) : l.invoiceHeading(n),
-      intro: c?.message
-        ? (params.corrected ? `${l.correctedNote}
-
-` : "") + fillTemplate(c.message, values)
-        : params.corrected
-          ? l.correctedNote
-          : creditNote
-            ? l.creditNoteIntro
-            : l.invoiceIntro,
-      invoiceNumber: params.invoiceNumber,
-      amount: params.amount,
-      dueDate: params.dueDate,
-      publicLink: params.publicLink,
-      clientPortalLink: params.clientPortalLink,
-      signature: c?.signature ? fillTemplate(c.signature, values) : undefined,
-      accent: c?.accent,
-      attachmentNames: c?.attachments?.map((a) => a.filename),
-      credit: params.credit,
-    });
-    await this.queue({ kind: "invoice", category: "transactional", to: params.to, subject, html, ...sendOptions(c) }, queue);
+    await this.queue(buildInvoiceEmail(params), queue);
   }
 
   async sendPaymentReminderEmail(params: SendPaymentReminderEmailParams, queue: EmailQueueOptions): Promise<void> {
-    const lang = emailLangOf(params.language);
-    const l = EMAIL_LABELS[lang];
-    const values = { ...placeholderValues(params), reminder_no: String(params.reminderCount) };
-    const c = params.custom;
-    const subject = c?.subject ? fillTemplate(c.subject, values) : l.reminderSubject(params.invoiceNumber);
-    const html = renderInvoiceEmailHtml({
-      lang,
-      creditNote: false,
-      heading: l.reminderHeading(params.invoiceNumber),
-      intro: c?.message
-        ? fillTemplate(c.message, values)
-        : params.reminderCount > 1
-          ? l.reminderAgain(params.reminderCount)
-          : l.reminderFirst,
-      invoiceNumber: params.invoiceNumber,
-      amount: params.amount,
-      dueDate: params.dueDate,
-      publicLink: params.publicLink,
-      clientPortalLink: params.clientPortalLink,
-      signature: c?.signature ? fillTemplate(c.signature, values) : undefined,
-      accent: c?.accent,
-      attachmentNames: c?.attachments?.map((a) => a.filename),
-      credit: params.credit,
-    });
-    await this.queue({ kind: "reminder", category: "transactional", to: params.to, subject, html, ...sendOptions(c) }, queue);
+    await this.queue(buildPaymentReminderEmail(params), queue);
+  }
+
+  /**
+   * Sends at once, past the outbox queue, an e-mail whose attachment must not
+   * be stored: the PDF of an encrypted document that a member's browser
+   * rendered. It goes through `EmailOutboxService.sendNow`, so the demo drop,
+   * the suppression list and the history apply as for queued mail, while the
+   * attachment content is never written. Throws when Resend refuses, so the
+   * member is told instead of the send being assumed.
+   */
+  sendNow(email: OutgoingEmail, queue: EmailQueueOptions): Promise<"sent" | "skipped" | "suppressed"> {
+    const row = { ...email, userId: queue.userId ?? null, ...(queue.idempotencyKey ? { idempotencyKey: queue.idempotencyKey } : {}) };
+    return this.outbox.sendNow(row, { tenantId: queue.tenantId, db: queue.db }, (deliverable) => this.deliver(deliverable));
   }
 
   /**
@@ -308,8 +266,7 @@ export class EmailService {
   private async queue(email: OutgoingEmail, queue: EmailQueueOptions): Promise<void> {
     const row = { ...email, userId: queue.userId ?? null, ...(queue.idempotencyKey ? { idempotencyKey: queue.idempotencyKey } : {}) };
     const ctx = { tenantId: queue.tenantId, db: queue.db };
-    if (queue.direct) await this.outbox.sendNow(row, ctx, (deliverable) => this.deliver(deliverable));
-    else await this.outbox.enqueue(row, ctx);
+    await this.outbox.enqueue(row, ctx);
   }
 
   /**
@@ -333,7 +290,7 @@ export class EmailService {
           ...(row.replyTo ? { replyTo: row.replyTo } : {}),
           ...(row.bcc ? { bcc: row.bcc } : {}),
           ...(row.attachments?.length
-            ? { attachments: row.attachments.map((a) => ({ filename: a.filename, content: a.content, contentType: a.contentType })) }
+            ? { attachments: row.attachments.map((a) => ({ filename: a.filename, content: a.content, contentType: a.contentType, ...(a.contentId ? { contentId: a.contentId } : {}) })) }
             : {}),
         },
         { idempotencyKey: `outbox-${row.id}` },
@@ -347,9 +304,93 @@ export class EmailService {
   }
 }
 
-function sendOptions(c: SendOptions | undefined): Pick<OutgoingEmail, "fromName" | "replyTo" | "bcc" | "attachments"> {
-  return { fromName: c?.fromName ?? null, replyTo: c?.replyTo ?? null, bcc: c?.bcc ?? null, attachments: c?.attachments };
+/**
+ * The invoice e-mail. `pdfFollowUp`: the PDF of an encrypted document, sent after
+ * the link e-mail once a member's browser rendered it (vault/vault-email-queue.service.ts).
+ */
+export function buildInvoiceEmail(params: SendInvoiceEmailParams, opts: { pdfFollowUp?: boolean } = {}): OutgoingEmail {
+  const lang = emailLangOf(params.language);
+  const l = EMAIL_LABELS[lang];
+  const creditNote = params.documentType === "credit_note";
+  const n = params.invoiceNumber;
+  const values = placeholderValues(params);
+  const c = params.custom;
+  const custom = c?.subject ? fillTemplate(c.subject, values) : null;
+  const subject = opts.pdfFollowUp
+    ? l.pdfFollowUpSubject(n)
+    : params.corrected
+      ? custom
+        ? `${l.correctionPrefix} ${custom}`
+        : l.correctedSubject(n)
+      : (custom ?? (creditNote ? l.creditNoteSubject(n) : l.invoiceSubject(n)));
+  const html = renderInvoiceEmailHtml({
+    lang,
+    creditNote,
+    heading: opts.pdfFollowUp ? l.pdfFollowUpSubject(n) : params.corrected ? l.correctedSubject(n) : creditNote ? l.creditNoteSubject(n) : l.invoiceHeading(n),
+    intro: opts.pdfFollowUp
+      ? l.pdfFollowUpIntro
+      : c?.message
+        ? (params.corrected ? `${l.correctedNote}
+
+` : "") + fillTemplate(c.message, values)
+        : params.corrected
+          ? l.correctedNote
+          : creditNote
+            ? l.creditNoteIntro
+            : l.invoiceIntro,
+    invoiceNumber: params.invoiceNumber,
+    amount: params.amount,
+    dueDate: params.dueDate,
+    variableSymbol: params.variableSymbol,
+    paymentQr: Boolean(params.paymentQr),
+    publicLink: params.publicLink,
+    clientPortalLink: params.clientPortalLink,
+    signature: c?.signature ? fillTemplate(c.signature, values) : undefined,
+    accent: c?.accent,
+    attachmentNames: c?.attachments?.filter((a) => !a.contentId).map((a) => a.filename),
+    credit: params.credit,
+  });
+  return { kind: "invoice", category: "transactional", to: params.to, subject, html, ...sendOptions(c, params.paymentQr) };
 }
+
+export function buildPaymentReminderEmail(params: SendPaymentReminderEmailParams): OutgoingEmail {
+  const lang = emailLangOf(params.language);
+  const l = EMAIL_LABELS[lang];
+  const values = { ...placeholderValues(params), reminder_no: String(params.reminderCount) };
+  const c = params.custom;
+  const subject = c?.subject ? fillTemplate(c.subject, values) : l.reminderSubject(params.invoiceNumber);
+  const html = renderInvoiceEmailHtml({
+    lang,
+    creditNote: false,
+    heading: l.reminderHeading(params.invoiceNumber),
+    intro: c?.message
+      ? fillTemplate(c.message, values)
+      : params.reminderCount > 1
+        ? l.reminderAgain(params.reminderCount)
+        : l.reminderFirst,
+    invoiceNumber: params.invoiceNumber,
+    amount: params.amount,
+    dueDate: params.dueDate,
+    variableSymbol: params.variableSymbol,
+    paymentQr: Boolean(params.paymentQr),
+    publicLink: params.publicLink,
+    clientPortalLink: params.clientPortalLink,
+    signature: c?.signature ? fillTemplate(c.signature, values) : undefined,
+    accent: c?.accent,
+    attachmentNames: c?.attachments?.filter((a) => !a.contentId).map((a) => a.filename),
+    credit: params.credit,
+  });
+  return { kind: "reminder", category: "transactional", to: params.to, subject, html, ...sendOptions(c, params.paymentQr) };
+}
+
+/** The QR goes along as an inline image (`cid:payment-qr`), after the company's own attachments. */
+function sendOptions(c: SendOptions | undefined, paymentQr?: Buffer | null): Pick<OutgoingEmail, "fromName" | "replyTo" | "bcc" | "attachments"> {
+  const qr = paymentQr ? [{ filename: "qr-platba.png", content: paymentQr, contentType: "image/png", contentId: PAYMENT_QR_CID }] : [];
+  const attachments = [...(c?.attachments ?? []), ...qr];
+  return { fromName: c?.fromName ?? null, replyTo: c?.replyTo ?? null, bcc: c?.bcc ?? null, attachments: attachments.length ? attachments : c?.attachments };
+}
+
+const PAYMENT_QR_CID = "payment-qr";
 
 export interface BillingNoticeDetail {
   label: string;
@@ -441,6 +482,10 @@ const EMAIL_LABELS: Record<
     documentNumber: string;
     amount: string;
     dueDate: string;
+    variableSymbol: string;
+    scanToPay: string;
+    pdfFollowUpSubject: (n: string) => string;
+    pdfFollowUpIntro: string;
     notStated: string;
     viewInvoice: string;
     viewDocument: string;
@@ -468,6 +513,10 @@ const EMAIL_LABELS: Record<
     documentNumber: "Číslo dokladu",
     amount: "Částka",
     dueDate: "Splatnost",
+    variableSymbol: "Variabilní symbol",
+    scanToPay: "Naskenujte v aplikaci své banky a zaplaťte",
+    pdfFollowUpSubject: (n) => `PDF k faktuře ${n}`,
+    pdfFollowUpIntro: "Posíláme PDF k faktuře, o které jsme vám už psali. Údaje k platbě zůstávají stejné.",
     notStated: "neuvedeno",
     viewInvoice: "Zobrazit fakturu",
     viewDocument: "Zobrazit doklad",
@@ -494,6 +543,10 @@ const EMAIL_LABELS: Record<
     documentNumber: "Číslo dokladu",
     amount: "Suma",
     dueDate: "Splatnosť",
+    variableSymbol: "Variabilný symbol",
+    scanToPay: "Naskenujte v aplikácii svojej banky a zaplaťte",
+    pdfFollowUpSubject: (n) => `PDF k faktúre ${n}`,
+    pdfFollowUpIntro: "Posielame PDF k faktúre, o ktorej sme vám už písali. Platobné údaje zostávajú rovnaké.",
     notStated: "neuvedená",
     viewInvoice: "Zobraziť faktúru",
     viewDocument: "Zobraziť doklad",
@@ -520,6 +573,10 @@ const EMAIL_LABELS: Record<
     documentNumber: "Document number",
     amount: "Amount",
     dueDate: "Due date",
+    variableSymbol: "Variable symbol",
+    scanToPay: "Scan with your banking app to pay",
+    pdfFollowUpSubject: (n) => `PDF of invoice ${n}`,
+    pdfFollowUpIntro: "Here is the PDF of the invoice we wrote to you about. The payment details stay the same.",
     notStated: "not stated",
     viewInvoice: "View invoice",
     viewDocument: "View document",
@@ -540,6 +597,9 @@ function renderInvoiceEmailHtml(params: {
   invoiceNumber: string;
   amount: string;
   dueDate: Date | null;
+  variableSymbol?: string | null;
+  /** The QR goes along as the inline `cid:payment-qr` attachment. */
+  paymentQr?: boolean;
   publicLink: string;
   clientPortalLink?: string | null;
   signature?: string;
@@ -578,9 +638,21 @@ function renderInvoiceEmailHtml(params: {
                 : `<tr>
               <td style="padding:6px 0; color:#666;">${l.dueDate}</td>
               <td style="padding:6px 0; text-align:right;">${escapeHtml(dueDateFormatted)}</td>
+            </tr>${
+              params.variableSymbol
+                ? `<tr>
+              <td style="padding:6px 0; color:#666;">${l.variableSymbol}</td>
+              <td style="padding:6px 0; text-align:right;"><strong>${escapeHtml(params.variableSymbol)}</strong></td>
             </tr>`
+                : ""
+            }`
             }
           </table>
+          ${
+            params.paymentQr && !params.creditNote
+              ? `<p style="text-align:center; margin:0 0 20px;"><img src="cid:${PAYMENT_QR_CID}" width="160" height="160" alt="QR" style="display:inline-block; width:160px; height:160px;"><br><span style="font-size:12px; color:#666;">${l.scanToPay}</span></p>`
+              : ""
+          }
           <p style="text-align:center; margin:0 0 8px;">
             <a href="${portalUrl}" style="display:inline-block; background:${accent}; color:#ffffff; text-decoration:none; padding:12px 24px; border-radius:6px; font-size:14px;">${params.creditNote ? l.viewDocument : l.viewInvoice}</a>
           </p>

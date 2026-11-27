@@ -3,6 +3,7 @@ import { Cron } from "@nestjs/schedule";
 import { EmailService } from "../email/email.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import { InvoiceRemindersRepository } from "./invoice-reminders.repository";
+import { InvoicesService } from "./invoices.service";
 import { computeInvoiceTotal, formatInvoiceAmount } from "./invoice-total.util";
 import { amountLeftToPay, isRemindableDocument } from "./invoice-reminders.util";
 
@@ -25,6 +26,7 @@ export class InvoiceRemindersCron {
     private readonly repository: InvoiceRemindersRepository,
     private readonly emailService: EmailService,
     @Optional() private readonly notifications?: NotificationsService,
+    @Optional() private readonly invoices?: InvoicesService,
   ) {}
 
   /** Runs daily at 09:00 server time. */
@@ -55,12 +57,20 @@ export class InvoiceRemindersCron {
         try {
           // Suspended/paused companies and ones over today's cap get nothing sent; retried tomorrow.
           await this.repository.assertCanSend(tenantId);
+          // The payment QR is a bonus: without it the reminder still goes out.
+          const invoices = this.invoices;
+          const paymentQr = invoices
+            ? await this.repository.withTenant(tenantId, (db) => invoices.paymentQrFor(db, tenantId, invoice.id)).catch(() => null)
+            : null;
           await this.emailService.sendPaymentReminderEmail(
             {
               to: contactEmail,
               invoiceNumber: invoice.invoiceNumber ?? invoice.id,
               amount: formatInvoiceAmount(left, invoice.currency),
               dueDate: invoice.dueDate,
+              // Amount, due date, VS, QR and the link all work for an encrypted document: none of it is its text.
+              variableSymbol: invoice.variableSymbol,
+              paymentQr,
               publicLink,
               clientPortalLink,
               reminderCount: invoice.reminderCount + 1,

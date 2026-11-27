@@ -1,6 +1,6 @@
-import { effectivePermissions, type Permissions } from "../tenancy/permissions";
+import { assertMayDo, effectivePermissions, mayDo, type Actor, type Permissions } from "../tenancy/permissions";
 import { publicUrlProblem } from "./public-url";
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { randomUUID } from "node:crypto";
 import { and, desc, eq, inArray, isNotNull, isNull, ne, notInArray, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
@@ -22,7 +22,8 @@ import { drizzleTx } from "../db/drizzle-tx";
 import { upcomingTaxEvents } from "../dashboard/tax-calendar";
 import { computeVatBreakdown, formatInvoiceAmount } from "../invoices/invoice-total.util";
 import { buildIcs, type IcsEvent } from "./ics";
-import { mergeWebhooks, sendWebhook, webhooksOf, type WebhookInput } from "./webhooks";
+import { addsWebhook, mergeWebhooks, sendWebhook, webhooksOf, type WebhookInput } from "./webhooks";
+import { assertPlanFeature } from "../billing/plan-limits";
 
 type Db = PostgresJsDatabase<typeof schema>;
 type Lang = "cs" | "sk" | "en";
@@ -161,12 +162,12 @@ interface FeedOwner {
 export class IntegrationsService {
   constructor(private readonly dbService: DbService) {}
 
-  async get(db: Db, tenantId: string, userId: string, role: string) {
+  async get(db: Db, tenantId: string, userId: string, actor: Actor) {
     const [m] = await db
       .select({ feedToken: schema.tenantMemberships.feedToken })
       .from(schema.tenantMemberships)
       .where(and(eq(schema.tenantMemberships.tenantId, tenantId), eq(schema.tenantMemberships.userId, userId)));
-    const admin = role === "owner" || role === "admin";
+    const admin = mayDo(actor, "settings.integrations");
     const [t] = await db.select({ webhooks: schema.tenants.webhooks }).from(schema.tenants).where(eq(schema.tenants.id, tenantId));
     return { feedToken: m?.feedToken ?? null, canManageWebhooks: admin, webhooks: admin ? webhooksOf(t?.webhooks) : [] };
   }
@@ -181,21 +182,24 @@ export class IntegrationsService {
     return { feedToken };
   }
 
-  async saveWebhooks(db: Db, tenantId: string, role: string, input: WebhookInput[]) {
-    this.assertAdmin(role);
+  async saveWebhooks(db: Db, tenantId: string, actor: Actor, input: WebhookInput[]) {
+    assertMayDo(actor, "settings.integrations");
     const [t] = await db.select({ webhooks: schema.tenants.webhooks }).from(schema.tenants).where(eq(schema.tenants.id, tenantId));
     for (const [index, h] of input.entries()) {
       const problem = await publicUrlProblem(h.url);
       if (problem) throw new BadRequestException({ error: problem, index });
     }
+    if (addsWebhook(webhooksOf(t?.webhooks), input)) await assertPlanFeature(db, tenantId, "webhooks");
     const merged = mergeWebhooks(webhooksOf(t?.webhooks), input);
     if ("error" in merged) throw new BadRequestException({ error: merged.error, index: merged.index });
     await db.update(schema.tenants).set({ webhooks: merged.webhooks, updatedAt: new Date() }).where(eq(schema.tenants.id, tenantId));
     return { webhooks: merged.webhooks };
   }
 
-  async testWebhook(db: Db, tenantId: string, role: string, id: string) {
-    this.assertAdmin(role);
+  async testWebhook(db: Db, tenantId: string, actor: Actor, id: string) {
+    assertMayDo(actor, "settings.integrations");
+    // Below Start no webhook fires, so a passing test would only mislead.
+    await assertPlanFeature(db, tenantId, "webhooks");
     const [t] = await db
       .select({ webhooks: schema.tenants.webhooks, company: schema.tenants.companyName })
       .from(schema.tenants)
@@ -209,10 +213,6 @@ export class IntegrationsService {
       { company: t!.company, siteUrl: siteUrl() },
     );
     return { ok: status >= 200 && status < 300, status };
-  }
-
-  private assertAdmin(role: string) {
-    if (role !== "owner" && role !== "admin") throw new ForbiddenException("Only an owner or admin can change webhooks");
   }
 
   // ------------------------------------------------------------ public feeds

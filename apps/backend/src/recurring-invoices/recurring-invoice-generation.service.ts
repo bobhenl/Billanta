@@ -6,15 +6,10 @@ import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
 import { advanceNextRunDate, isTemplateDue } from "./schedule";
+import { lineItemsFromSnapshot, type LineItemSnapshot } from "./snapshot-items";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 type RecurringTemplateRow = typeof schema.recurringInvoiceTemplates.$inferSelect;
-type LineItemSnapshot = {
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  vatRate?: number | null;
-};
 
 /**
  * Daily job that materializes real `invoices` (+ `invoice_line_items`) rows
@@ -156,19 +151,9 @@ export class RecurringInvoiceGenerationService {
       })
       .returning();
 
-    const lineItems = (template.lineItemsSnapshot ?? []) as LineItemSnapshot[];
+    const lineItems = lineItemsFromSnapshot(template.lineItemsSnapshot as LineItemSnapshot[] | null, tenantId, invoice.id);
     if (lineItems.length > 0) {
-      await db.insert(schema.invoiceLineItems).values(
-        lineItems.map((item, index) => ({
-          tenantId,
-          invoiceId: invoice.id,
-          description: item.description,
-          quantity: item.quantity.toString(),
-          unitPrice: item.unitPrice.toString(),
-          vatRate: item.vatRate != null ? item.vatRate.toString() : null,
-          sortOrder: index,
-        })),
-      );
+      await db.insert(schema.invoiceLineItems).values(lineItems);
     }
 
     const nextRunDate = advanceNextRunDate(

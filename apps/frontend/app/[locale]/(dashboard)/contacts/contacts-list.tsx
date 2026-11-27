@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { ArrowUpDown, ChevronRight, FilePlus2, Plus, Search, Star, User, Users } from 'lucide-react';
+import { ArrowUpDown, ChevronRight, FilePlus2, Lock, Plus, Search, Star, User, Users } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { toast } from '@/components/toaster';
 import { useCanWrite } from '@/components/access-provider';
@@ -251,6 +251,7 @@ export function ContactsList({
                   <ColorDot color={row.color} label={row.color ? tColors(row.color) : undefined} />
                   {row.isPerson && <User className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-label={t('editor.kindPerson')} />}
                   <span className="truncate group-hover:text-primary">{row.legalName}</span>
+                  {row.isPrivate && <Lock className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-label={t('privateBadge')} />}
                 </p>
                 <p className="truncate text-xs text-muted-foreground">
                   {[row.ico && `IČO ${row.ico}`, row.addressCity, row.email].filter(Boolean).join(' · ')}

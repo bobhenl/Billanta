@@ -21,13 +21,21 @@ import { demoConfig } from "../demo/demo-config";
 import type { AresContactPrefill } from "../contacts/ares-mapper.util";
 import type { DashboardRole } from "../tenancy/tenant-context.middleware";
 import type { UpdateAiSettingsDto } from "./dto/update-ai-settings.dto";
+import { planSummary } from "../billing/plan-access";
+import { upgradeFor } from "../billing/plans";
+import { remaining, usageLimit, usagePeriod } from "../billing/usage";
+import { consumeUsage, readUsage, refundUsage } from "../billing/usage.repository";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 type AiMode = (typeof schema.aiModeEnum.enumValues)[number];
 
 /** Overridable per deployment; the default is Anthropic's recommended model. */
 const MODEL = process.env.AI_MODEL ?? "claude-opus-5";
-/** Fair-use cap for Billanta's own key, per tenant per UTC day. Own-key tenants are not capped. */
+/**
+ * Abuse cap for Billanta's own key, per tenant per UTC day, on top of the
+ * plan's monthly AI credits (PLAN_LIMITS.ai_credits): it stops a script from
+ * burning a whole month in minutes. Own-key tenants are not capped.
+ */
 const PLATFORM_DAILY_LIMIT = Number(process.env.AI_PLATFORM_DAILY_LIMIT ?? 50);
 const MAX_INPUT_CHARS = 4000;
 const SETTINGS_ROLES: ReadonlyArray<DashboardRole | "service"> = ["owner", "admin"];
@@ -129,6 +137,7 @@ export class AiService {
       ownKeyLast4: tenant.aiApiKeyLast4,
       platformAvailable: this.platformAvailable,
       platformDailyLimit: PLATFORM_DAILY_LIMIT,
+      credits: await this.credits(db, tenant),
       model: MODEL,
     };
   }
@@ -174,14 +183,15 @@ export class AiService {
    * pre-fills the dashboard form, which the person reviews and submits
    * (same human-in-the-loop rule as the voice pipeline, blueprint §6/§9).
    */
-  async suggestInvoice(db: TenantDb, tenantId: string, text: string): Promise<InvoiceSuggestionResult> {
+  async suggestInvoice(db: TenantDb, tenantId: string, text: string, options: { confidential?: boolean } = {}): Promise<InvoiceSuggestionResult> {
     const input = text.trim().slice(0, MAX_INPUT_CHARS);
     if (!input) {
       throw new BadRequestException({ error: "empty_input" });
     }
     const tenant = await this.loadTenant(db, tenantId);
-    const client = this.clientFor(tenant.id, tenant.aiMode, tenant.aiApiKeyEncrypted);
+    const client = this.clientFor(tenant.aiMode, tenant.aiApiKeyEncrypted, providerOptions(options.confidential));
     if (tenant.isDemo) await this.consumeDemoQuota(tenant.id);
+    const refund = await this.spendCredit(db, tenant);
 
     const today = new Date().toISOString().slice(0, 10);
     const context = `Today is ${today}. The issuing business is ${tenant.dicVatPayer ? "a VAT payer" : "NOT a VAT payer, so vat_rate must be null"}.`;
@@ -201,11 +211,10 @@ export class AiService {
         throw new UnprocessableEntityException({ error: "ai_refused" });
       }
       parsed = response.parsed_output;
+      if (!parsed) throw new UnprocessableEntityException({ error: "ai_unparseable" });
     } catch (error) {
+      await refund();
       throw mapAnthropicError(error, tenant.aiMode);
-    }
-    if (!parsed) {
-      throw new UnprocessableEntityException({ error: "ai_unparseable" });
     }
 
     const { contact, ares } = await this.matchCustomer(db, parsed.customer);
@@ -260,8 +269,9 @@ export class AiService {
    */
   async readReceipt(db: TenantDb, tenantId: string, file: { buffer: Buffer; mediaType: ReceiptMediaType }) {
     const tenant = await this.loadTenant(db, tenantId);
-    const client = this.clientFor(tenant.id, tenant.aiMode, tenant.aiApiKeyEncrypted);
+    const client = this.clientFor(tenant.aiMode, tenant.aiApiKeyEncrypted);
     if (tenant.isDemo) await this.consumeDemoQuota(tenant.id);
+    const refund = await this.spendCredit(db, tenant);
     const data = file.buffer.toString("base64");
     const source =
       file.mediaType === "application/pdf"
@@ -288,11 +298,10 @@ export class AiService {
         throw new UnprocessableEntityException({ error: "ai_refused" });
       }
       parsed = response.parsed_output;
+      if (!parsed) throw new UnprocessableEntityException({ error: "ai_unparseable" });
     } catch (error) {
+      await refund();
       throw mapAnthropicError(error, tenant.aiMode);
-    }
-    if (!parsed) {
-      throw new UnprocessableEntityException({ error: "ai_unparseable" });
     }
     const { contact } = await this.matchCustomer(db, { ico: parsed.supplier.ico, name: parsed.supplier.name });
     return { suggestion: parsed, contact };
@@ -320,19 +329,52 @@ export class AiService {
     return { contact: null, ares: null };
   }
 
-  private clientFor(tenantId: string, mode: AiMode, encrypted: string | null): Anthropic {
+  private clientFor(mode: AiMode, encrypted: string | null, extra: ProviderOptions = {}): Anthropic {
     if (mode === "off") {
       throw new ForbiddenException({ error: "ai_disabled" });
     }
     if (mode === "own") {
       if (!encrypted) throw new BadRequestException({ error: "ai_key_missing" });
-      return new Anthropic({ apiKey: decryptSecret(encrypted, encryptionKey()) });
+      return new Anthropic({ ...extra, apiKey: decryptSecret(encrypted, encryptionKey()) });
     }
     if (!this.platformAvailable) {
       throw new ServiceUnavailableException({ error: "ai_platform_unavailable" });
     }
-    this.countPlatformUse(tenantId);
-    return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    return new Anthropic({ ...extra, apiKey: process.env.ANTHROPIC_API_KEY });
+  }
+
+  /**
+   * One AI credit for a call on Billanta's key, and one tick of the daily
+   * abuse cap. Own key and demos (their own quota) spend nothing. Returns
+   * the refund for when the provider fails: a call that gave nothing back
+   * shouldn't cost a credit. Runs on the request's transaction, which
+   * commits on an error too, so the refund sticks.
+   */
+  private async spendCredit(db: TenantDb, tenant: typeof schema.tenants.$inferSelect): Promise<() => Promise<void>> {
+    if (tenant.aiMode !== "platform" || tenant.isDemo) return async () => {};
+    const summary = planSummary(tenant);
+    const limit = usageLimit(summary, "ai_credits");
+    const period = usagePeriod();
+    const spent = await consumeUsage(db, tenant.id, "ai_credits", period, limit);
+    if (!spent.ok) {
+      throw new ForbiddenException({ error: "ai_credits_exhausted", limit, used: spent.count, plan: upgradeFor("ai_credits", summary.plan) });
+    }
+    const refund = () => refundUsage(db, tenant.id, "ai_credits", period);
+    try {
+      this.countPlatformUse(tenant.id);
+    } catch (error) {
+      await refund();
+      throw error;
+    }
+    return refund;
+  }
+
+  /** This month's credits on Billanta's key; limit null = not limited (older company). */
+  private async credits(db: TenantDb, tenant: typeof schema.tenants.$inferSelect) {
+    const limit = usageLimit(planSummary(tenant), "ai_credits");
+    const [row] = await readUsage(db, tenant.id, ["ai_credits"], usagePeriod());
+    const used = row?.count ?? 0;
+    return { used, limit, remaining: remaining(limit, used) };
   }
 
   /** In-memory, per process: enough for the single-VPS deployment; move to Redis if the backend scales out. */
@@ -380,6 +422,17 @@ export class AiService {
     if (!tenant) throw new ForbiddenException();
     return tenant;
   }
+}
+
+type ProviderOptions = { logLevel?: "off" };
+
+/**
+ * A text from an encrypted document ("Důvěrný režim") that the member chose
+ * to send once: nothing here stores it, and the SDK's own request logging
+ * (`ANTHROPIC_LOG=debug` prints bodies) stays off whatever the environment says.
+ */
+export function providerOptions(confidential?: boolean): ProviderOptions {
+  return confidential ? { logLevel: "off" } : {};
 }
 
 function encryptionKey(): string | undefined {

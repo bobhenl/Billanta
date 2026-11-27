@@ -9,7 +9,7 @@
  * same layout. pdfkit is passed in, so neither build is imported here.
  */
 import { BRAND_MARK_PNG_BASE64 } from './brand-mark.js';
-import { isSealed } from './confidential.js';
+import { isSealed } from './vault/confidential.js';
 import { fillTemplate } from './fill-template.js';
 
 /** Joins two label sets for a bilingual PDF; the renderer splits on it where space is tight. */

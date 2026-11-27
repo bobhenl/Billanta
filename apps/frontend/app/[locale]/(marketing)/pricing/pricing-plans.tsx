@@ -5,14 +5,14 @@ import { Check, ChevronDown, Gift, Minus } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
-import { PAYG_PRICE, transferPrice, type Plan, type PlanCurrency } from '@/lib/plans';
+import { transferPrice, type Plan, type PlanCurrency } from '@/lib/plans';
 
 /** The card names the five things that decide a plan; the table below has the rest. */
 const CARD_FEATURES = 5;
 
 export type PlanCopy = { name: string; tagline: string; cta: string; features: string[] };
 
-/** The comparison table, resolved on the server; string cells may hold `{payg}`. */
+/** The comparison table, resolved on the server. */
 export type CompareCopy = {
   title: string;
   feature: string;
@@ -33,8 +33,8 @@ type Labels = {
   billedMonthly: string;
   forever: string;
   popular: string;
-  /** Contains `{payg}`, replaced with the per-document price. */
-  paygNote: string;
+  /** What Free includes and what it lets you try once. */
+  limitsNote: string;
   aiCreditNote: string;
   /** Further one-line notes under the cards (trial terms, VAT). */
   notes: string[];
@@ -76,7 +76,6 @@ export function PricingPlans({
       minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
       maximumFractionDigits: 2
     }).format(value);
-  const payg = (text: string) => text.replace('{payg}', money(PAYG_PRICE[currency]));
 
   return (
     <>
@@ -140,7 +139,7 @@ export function PricingPlans({
                 {text.features.slice(0, CARD_FEATURES).map((feature) => (
                   <li key={feature} className="flex items-start gap-2">
                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-                    <span>{payg(feature)}</span>
+                    <span>{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -162,7 +161,7 @@ export function PricingPlans({
       </div>
 
       <ul className="mt-4 max-w-3xl space-y-1 text-sm text-muted-foreground">
-        {[payg(labels.paygNote), labels.aiCreditNote, ...labels.notes].map((note) => (
+        {[labels.limitsNote, labels.aiCreditNote, ...labels.notes].map((note) => (
           <li key={note}>{note}</li>
         ))}
       </ul>
@@ -216,7 +215,7 @@ export function PricingPlans({
                         ) : cell === false ? (
                           <Minus className="mx-auto h-4 w-4 text-muted-foreground/50" aria-label={comparison.no} />
                         ) : (
-                          <span className="text-xs font-medium sm:text-sm">{payg(cell)}</span>
+                          <span className="text-xs font-medium sm:text-sm">{cell}</span>
                         )}
                       </td>
                     ))}

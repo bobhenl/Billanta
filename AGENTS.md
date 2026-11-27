@@ -34,6 +34,23 @@ pnpm --filter @faktur/cz-compliance test
 Before you call a change done, run the typecheck (and tests) of every
 workspace you touched.
 
+### Git worktrees and parallel agents
+
+The repo is on a slow HDD. Several `pnpm install` runs at once block each
+other for hours, so **never run `pnpm install` in a worktree** (e.g.
+`.claude/worktrees/*`). Instead:
+
+- Link `node_modules` from the main checkout: the root `node_modules` as one
+  junction, and in `apps/backend`, `apps/frontend` and
+  `packages/cz-compliance` a real `node_modules` folder with a junction per
+  entry. `@faktur/*` entries must point at the worktree's own `packages/*`.
+  Remove a junction with `rmdir`, never by deleting its contents.
+- A new dependency gets installed once, in the main checkout, by whoever
+  coordinates the work.
+- Run typechecks and tests one after another, not in parallel.
+- `better-sqlite3` may not build in a worktree. Failures in
+  `sqlite-export.service.spec.ts` there are environmental.
+
 ## Rules that apply everywhere
 
 - **Tenant isolation is enforced by Postgres RLS**, not by `WHERE` clauses.

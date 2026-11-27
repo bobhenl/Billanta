@@ -709,6 +709,8 @@ export const invoices = pgTable(
     // Lists, totals and exports still count it.
     lockedAt: timestamp("locked_at", { withTimezone: true }),
     lockedBy: uuid("locked_by"),
+    // Seen only by the company owner and createdByUserId (0111, member_visibility in rls-policies.sql).
+    isPrivate: boolean("is_private").notNull().default(false),
     // Kept by the payment provider (PayPal, Stripe, Wise…), in the invoice currency.
     paymentFees: numeric("payment_fees", { precision: 14, scale: 2 }).notNull().default("0"),
     // What actually landed on the account, in CZK; null = not recorded.
@@ -1267,6 +1269,15 @@ export const tenantVaults = pgTable("tenant_vaults", {
   sealNew: boolean("seal_new").notNull().default(true),
   /** What the company encrypts (`VaultCategory`); only "texts" is implemented so far. */
   categories: text("categories").array().notNull().default(["texts"]),
+  /**
+   * Sending an encrypted document whose e-mail should carry its PDF, which the
+   * server cannot render: "link_now" sends the link e-mail and queues the PDF
+   * for a browser, "wait" holds the whole e-mail until a browser sends it with
+   * the PDF, "link_only" sends the link e-mail and nothing more.
+   */
+  emailMode: varchar("email_mode", { length: 16 }).notNull().default("link_now").$type<"link_now" | "wait" | "link_only">(),
+  /** A browser with the vault unlocked sends the queue without a click (the PDF still passes the server once). */
+  autoSendPdf: boolean("auto_send_pdf").notNull().default(false),
   enabledBy: uuid("enabled_by").references(() => users.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -1290,6 +1301,38 @@ export const vaultKeyWraps = pgTable("vault_key_wraps", {
   label: text("label"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// ---------------------------------------------------------------------------
+// vault_email_queue – tenant-scoped. E-mails of an encrypted document that
+// should carry its PDF, which only a browser with the vault unlocked can
+// render. A row holds no text of the document, only what to send to whom;
+// the PDF itself passes through the server once and is never stored.
+// ---------------------------------------------------------------------------
+export const vaultEmailQueue = pgTable(
+  "vault_email_queue",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    invoiceId: uuid("invoice_id")
+      .notNull()
+      .references(() => invoices.id, { onDelete: "cascade" }),
+    /** "invoice": nothing was sent yet; "invoice_pdf": the link e-mail went out, this is the PDF follow-up. */
+    kind: varchar("kind", { length: 16 }).notNull().$type<"invoice" | "invoice_pdf">(),
+    recipient: text("recipient").notNull(),
+    /** The customer already had the document: the e-mail says it replaces the earlier copy. */
+    corrected: boolean("corrected").notNull().default(false),
+    status: varchar("status", { length: 12 }).notNull().default("waiting").$type<"waiting" | "sent" | "dismissed">(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    doneAt: timestamp("done_at", { withTimezone: true }),
+    doneBy: uuid("done_by").references(() => users.id, { onDelete: "set null" }),
+  },
+  (t) => ({
+    waitingOnce: uniqueIndex("vault_email_queue_waiting_once").on(t.tenantId, t.invoiceId).where(sql`${t.status} = 'waiting'`),
+  }),
+);
 
 // ---------------------------------------------------------------------------
 // bank_connections — tenant-scoped. Read-only bank API tokens (Fio for now)
@@ -1496,7 +1539,8 @@ export const outboundEmails = pgTable("outbound_emails", {
 // finishes rows through SECURITY DEFINER functions (migration 0049).
 // Indexes and CHECKs live in the migration.
 // ---------------------------------------------------------------------------
-export type OutboxAttachment = { filename: string; contentType?: string; content: string };
+/** `contentId`: an inline image the HTML shows as `cid:<id>` (the payment QR). */
+export type OutboxAttachment = { filename: string; contentType?: string; content: string; contentId?: string };
 export type OutboxItem = { kind: string; title: string; body?: string | null; url?: string | null; at: string };
 
 export const emailOutbox = pgTable("email_outbox", {
@@ -2371,3 +2415,27 @@ export const einvoiceStatusEvents = pgTable("einvoice_status_events", {
   occurredAt: timestamp("occurred_at", { withTimezone: true }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// ---------------------------------------------------------------------------
+// tenant_usage – tenant-scoped counters for plan limits (0105): issued
+// documents, AI credits, API requests and the "taste" uses of a paid feature.
+// `period` is `YYYY-MM` (Prague calendar month) or `all` for a lifetime
+// allowance. Written only through src/billing/usage.repository.ts with an
+// upsert that checks the limit in the same statement; the app may not delete
+// rows, so a counter cannot be reset from code.
+// ---------------------------------------------------------------------------
+export const tenantUsage = pgTable(
+  "tenant_usage",
+  {
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    metric: varchar("metric", { length: 48 }).notNull(),
+    period: varchar("period", { length: 7 }).notNull(),
+    count: integer("count").notNull().default(0),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.tenantId, table.metric, table.period] }),
+  }),
+);

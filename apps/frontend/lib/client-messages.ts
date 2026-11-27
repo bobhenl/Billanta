@@ -13,7 +13,7 @@ import type { AbstractIntlMessages } from 'next-intl';
  */
 
 /** Read only by server components; never sent to the browser. */
-const SERVER_ONLY = ['legal', 'featurePages', 'municipalityPages', 'comparePage', 'pricing', 'accountants', 'about', 'partnerSegments', 'learnPages', 'embeds', 'paymentReminders', 'coworkingPoster'];
+const SERVER_ONLY = ['legal', 'featurePages', 'municipalityPages', 'comparePage', 'pricing', 'accountants', 'about', 'partnerSegments', 'learnPages', 'embeds', 'paymentReminders', 'coworkingPoster', 'securityPage'];
 
 /** Used only by client components of the signed-in app; the dashboard layout adds them. */
 const DASHBOARD_ONLY = [
@@ -27,6 +27,7 @@ const DASHBOARD_ONLY = [
   'expenses',
   'reports',
   'netIncome',
+  'planLimits',
   'palette',
   'time',
   'templates',

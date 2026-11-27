@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, NotFoundException } from "@nestjs/common";
 import { PgDialect } from "drizzle-orm/pg-core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { EmailService } from "../email/email.service";
@@ -17,7 +17,11 @@ vi.mock("../exports/cnb-rates", async (orig) => ({ ...(await orig<typeof import(
 const ecb = vi.hoisted(() => ({ getEcbFixing: vi.fn(async () => ({ rate: 25.2, day: "2026-03-13" })) }));
 vi.mock("../exports/ecb-rates", async (orig) => ({ ...(await orig<typeof import("../exports/ecb-rates")>()), getEcbFixing: ecb.getEcbFixing }));
 
-type MockEmailService = { sendInvoiceEmail: ReturnType<typeof vi.fn> };
+// The plan's document counter has its own SQL; here it allows unless a test says otherwise.
+const limits = vi.hoisted(() => ({ countIssuedDocument: vi.fn(async () => undefined) }));
+vi.mock("../billing/plan-limits", () => ({ countIssuedDocument: limits.countIssuedDocument }));
+
+type MockEmailService ={ sendInvoiceEmail: ReturnType<typeof vi.fn> };
 type MockInvoicePdfService = { generate: ReturnType<typeof vi.fn> };
 
 /**
@@ -175,6 +179,9 @@ describe("InvoicesService.sendInvoice", () => {
       clientPortalLink: "acme-s-r-o-Qw12Er34Ty56",
       language: "cs",
       documentType: "invoice",
+      variableSymbol: null,
+      // best effort: this fixture has no tenant data to build a QR from
+      paymentQr: null,
       credit: {
         label: "Vystaveno v aplikaci Billanta",
         url: expect.stringMatching(/\/cs\?utm_source=invoice&utm_medium=footer&utm_content=email&ref=AbCd1234$/),
@@ -379,6 +386,41 @@ describe("InvoicesService.issue", () => {
     expect(chains[0]!.values).toHaveBeenCalledWith({ tenantId: "tenant-1", series: "", year: 2026, month: 9, lastNumber: 1 });
     const setArg = (update.mock.results[0]!.value.set as ReturnType<typeof vi.fn>).mock.calls[0]![0];
     expect(setArg).toMatchObject({ invoiceNumber: "2/09/2026", variableSymbol: "2092026" });
+  });
+
+  it("counts the issued document against the plan", async () => {
+    limits.countIssuedDocument.mockClear();
+    const invoice = issuableInvoice();
+    const select = vi
+      .fn(() => makeSelectChain([]))
+      .mockReturnValueOnce(makeSelectChain([invoice]))
+      .mockReturnValueOnce(makeSelectChain(lineItems))
+      .mockReturnValueOnce(makeSelectChain([{ numberFormats: null }]))
+      .mockReturnValueOnce(makeSelectChain([]));
+    const update = vi.fn().mockReturnValue(makeUpdateChain([{ ...invoice, status: "issued" }]));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = { select, insert: vi.fn().mockReturnValue(makeSequenceInsertChain(1)), update } as any;
+
+    await service.issue(db, "tenant-1", "inv-1", "user-1");
+
+    expect(limits.countIssuedDocument).toHaveBeenCalledWith(db, "tenant-1", expect.any(Date));
+  });
+
+  it("stops at the plan's document limit before a number is taken", async () => {
+    const refusal = new ForbiddenException({ error: "plan_required", feature: "documents", plan: "start", limit: 10 });
+    limits.countIssuedDocument.mockRejectedValueOnce(refusal);
+    const select = vi
+      .fn(() => makeSelectChain([]))
+      .mockReturnValueOnce(makeSelectChain([issuableInvoice()]))
+      .mockReturnValueOnce(makeSelectChain(lineItems));
+    const insert = vi.fn();
+    const update = vi.fn();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = { select, insert, update } as any;
+
+    await expect(service.issue(db, "tenant-1", "inv-1", "user-1")).rejects.toBe(refusal);
+    expect(insert).not.toHaveBeenCalled(); // no number allocated, so no gap in the series
+    expect(update).not.toHaveBeenCalled();
   });
 
   it("rejects issuing an already-issued invoice (400), without touching the sequence or the row", async () => {
@@ -929,13 +971,13 @@ describe("InvoicesService.sendInvoice with browser-rendered files (Důvěrný re
 
   it("refuses files for a plain invoice: the server renders its own", async () => {
     const { emailService, service, db } = setup(makeInvoice(), lineItems);
-    await expect(service.sendInvoice(db, "inv-1", undefined, files)).rejects.toThrow("not_confidential");
+    await expect(service.sendInvoice(db, "inv-1", undefined, undefined, files)).rejects.toThrow("not_confidential");
     expect(emailService.sendInvoiceEmail).not.toHaveBeenCalled();
   });
 
   it("refuses files for a sealed draft that has no number yet", async () => {
     const { emailService, service, db } = setup(makeInvoice({ invoiceNumber: null, status: "draft" }), [sealedItem]);
-    await expect(service.sendInvoice(db, "inv-1", undefined, files)).rejects.toThrow("invoice_not_issued");
+    await expect(service.sendInvoice(db, "inv-1", undefined, undefined, files)).rejects.toThrow("invoice_not_issued");
     expect(emailService.sendInvoiceEmail).not.toHaveBeenCalled();
   });
 });

@@ -4,7 +4,7 @@ import { redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
 import { SettingsHeader } from '@/components/settings-header';
 import { NotSignedInError } from '@/lib/api-client';
-import { canManage, emailPrefsOf, fetchMyRole, fetchTenant, type TenantSettings } from '@/lib/tenant';
+import { canManage, fetchMayEditSettings, emailPrefsOf, fetchMyRole, fetchTenant, type TenantSettings } from '@/lib/tenant';
 import { EmailSettings } from './email-settings';
 import { settingsGate } from '@/components/settings-gate';
 
@@ -30,10 +30,12 @@ export default async function EmailSettingsPage() {
   }
   if (!tenant) return <Banner tone="err" title={t('loadError')} className="mt-6" />;
 
+  // Owners and admins, or a member with this settings section (Settings → Team).
+  const editable = canManage(role) || (role !== null && (await fetchMayEditSettings('emails')));
   return (
     <div className="mx-auto max-w-5xl">
       <SettingsHeader title={t('title')} description={t('description')} />
-      {!canManage(role) && (
+      {!editable && (
         <Banner tone="info" className="mt-4">
           {t('readOnly')}
         </Banner>
@@ -43,7 +45,7 @@ export default async function EmailSettingsPage() {
         companyName={tenant.companyName}
         companyEmail={tenant.email}
         customVars={tenant.templateVars ?? []}
-        readOnly={!canManage(role)}
+        readOnly={!editable}
       />
     </div>
   );

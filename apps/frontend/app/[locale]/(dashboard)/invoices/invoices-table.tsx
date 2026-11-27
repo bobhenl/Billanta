@@ -22,13 +22,14 @@ import {
   Repeat2,
   Send,
   Stamp,
-  Trash2
+  Trash2,
+  UserRoundCheck
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { buttonClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
-import { useCanWrite } from '@/components/access-provider';
+import { useCanDo, useCanWrite } from '@/components/access-provider';
 import { ColorDot } from '@/components/color-dot';
 import { EmptyState } from '@/components/empty-state';
 import { ConfirmModal } from '@/components/modal';
@@ -219,7 +220,10 @@ export function InvoicesTable({
   const [inline, setInline] = useState(false);
   const [pending, startTransition] = useTransition();
   // Selecting only feeds the bulk mark-paid/delete bar, so a read-only member gets no checkboxes at all.
-  const canEdit = useCanWrite('invoices');
+  const canWriteArea = useCanWrite('invoices');
+  const canCreate = useCanDo('invoices.create');
+  const canCancel = useCanDo('invoices.cancel');
+  const canEdit = canWriteArea && canCreate;
   const span = columns.length + (canEdit ? 2 : 1);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const empty = (
@@ -315,7 +319,13 @@ export function InvoicesTable({
   const cell = (row: InvoiceRow, column: Column) => {
     switch (column) {
       case 'number':
-        return <span className="whitespace-nowrap font-mono text-xs font-semibold">{row.invoiceNumber ?? <span className="font-sans font-normal italic text-muted-foreground">{t('unnumbered')}</span>}</span>;
+        return (
+          <span className="inline-flex items-center gap-1 whitespace-nowrap font-mono text-xs font-semibold">
+            {row.invoiceNumber ?? <span className="font-sans font-normal italic text-muted-foreground">{t('unnumbered')}</span>}
+            {/* Not the padlock: that one means "Skrýt detaily", this one who on the team sees it. */}
+            {row.isPrivate && <UserRoundCheck className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-label={t('privateRow')} />}
+          </span>
+        );
       case 'type':
         return <span title={tGloss(`type.${row.documentType}`)} className={cn('whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold', TYPE_BADGE_CLASSES[row.documentType])}>{t(`type.${row.documentType}`)}</span>;
       case 'customer':
@@ -396,7 +406,7 @@ export function InvoicesTable({
                   {t('actions.markPaid')} ({payable.length})
                 </button>
               )}
-              {deletable.length > 0 && (
+              {canCancel && deletable.length > 0 && (
                 <button
                   type="button"
                   disabled={pending}
@@ -726,6 +736,12 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
   const [pending, startTransition] = useTransition();
   const button = useRef<HTMLButtonElement>(null);
   const canEdit = useCanWrite('invoices');
+  const may: Record<'invoices.create' | 'invoices.issue' | 'invoices.send' | 'invoices.cancel', boolean> = {
+    'invoices.create': useCanDo('invoices.create'),
+    'invoices.issue': useCanDo('invoices.issue'),
+    'invoices.send': useCanDo('invoices.send'),
+    'invoices.cancel': useCanDo('invoices.cancel')
+  };
 
   useEffect(() => {
     if (!pos) return;
@@ -765,7 +781,8 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
   // `quick` items also get an icon button right in the row when inline actions are on.
   // `write` items change the document, so a read-only member never sees them (open and PDF stay).
   // `link` is an in-app route: a real link, so it also opens in a new tab or window.
-  type Item = { icon: typeof Copy; label: string; onSelect: () => void; danger?: boolean; href?: string; link?: string; quick?: boolean; write?: boolean };
+  // `need`: the finer permission the backend checks for it (Settings → Team); other write items need `invoices.create`.
+  type Item = { icon: typeof Copy; label: string; onSelect: () => void; danger?: boolean; href?: string; link?: string; quick?: boolean; write?: boolean; need?: keyof typeof may };
   const all: Item[] = [
     { icon: ExternalLink, label: t('actions.open'), link: `/invoices/${row.id}`, onSelect: () => setPos(null) },
     ...(isDraft
@@ -775,6 +792,7 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
             icon: Stamp,
             quick: true,
             write: true,
+            need: 'invoices.issue' as const,
             label: row.documentType === 'quote' ? t('actions.issueQuote') : t('actions.issue'),
             onSelect: () => act(() => issueInvoice(row.id), t('done.issued'))
           }
@@ -785,7 +803,7 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
       : []),
     ...(numbered ? [{ icon: Download, label: t('actions.downloadPdf'), quick: true, href: `/api/files/invoices/${row.id}/pdf`, onSelect: () => setPos(null) }] : []),
     ...(numbered && row.status !== 'cancelled'
-      ? [{ icon: Send, label: t('actions.send'), quick: true, write: true, onSelect: () => act(() => sendInvoice(row.id), t('done.sent')) }]
+      ? [{ icon: Send, label: t('actions.send'), quick: true, write: true, need: 'invoices.send' as const, onSelect: () => act(() => sendInvoice(row.id), t('done.sent')) }]
       : []),
     { icon: Copy, label: t('actions.duplicate'), write: true, onSelect: () => router.push(`/invoices/new?from=${row.id}`) },
     ...conversions.map((to) => ({
@@ -801,6 +819,7 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
             label: t('actions.cancel'),
             danger: true,
             write: true,
+            need: 'invoices.cancel' as const,
             onSelect: () => window.confirm(t('confirm.cancelBody')) && act(() => cancelInvoice(row.id), t('done.cancelled'))
           }
         ]
@@ -812,12 +831,13 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
             label: t('actions.delete'),
             danger: true,
             write: true,
+            need: 'invoices.cancel' as const,
             onSelect: () => window.confirm(t('confirm.deleteBody')) && act(() => deleteInvoice(row.id), t('done.deleted'))
           }
         ]
       : [])
   ];
-  const items = canEdit ? all : all.filter((item) => !item.write);
+  const items = all.filter((item) => !item.write || (canEdit && may[item.need ?? 'invoices.create']));
 
   const quickClass =
     'inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-primary disabled:opacity-50';

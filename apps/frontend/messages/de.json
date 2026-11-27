@@ -245,7 +245,8 @@
         "cookies": "Cookie-Richtlinie",
         "cookieSettings": "Cookie-Einstellungen",
         "dpa": "Auftragsverarbeitungsvertrag",
-        "contact": "Kontakt"
+        "contact": "Kontakt",
+        "confidential": "Vertraulicher Modus und Sicherheit"
       },
       "account": {
         "title": "Konto",
@@ -768,7 +769,15 @@
     "print": "Drucken / PDF",
     "downloadPdf": "PDF herunterladen",
     "downloadPdfShort": "PDF",
-    "confidentialItem": "Vertrauliche Position"
+    "confidentialItem": "Vertrauliche Position",
+    "sealed": {
+      "noKey": "Einige Texte sind verschlüsselt. Der volle Wortlaut steht im Link aus der ursprünglichen E-Mail.",
+      "openedLink": "Der Schlüssel aus Ihrem Link hat die verschlüsselten Texte geöffnet. Dieser Browser merkt ihn sich, spätere Links öffnen den Beleg also auch.",
+      "openedStored": "Ein Schlüssel, den sich dieser Browser von einem früheren Link gemerkt hat, hat die verschlüsselten Texte geöffnet.",
+      "openedPreview": "Vorschau: Der Schlüssel aus dem Link hat die Texte geöffnet. Er wurde in diesem Browser nicht gespeichert.",
+      "forget": "Schlüssel in diesem Browser vergessen",
+      "forgotten": "Der Schlüssel ist aus diesem Browser gelöscht. Der volle Wortlaut steht im Link aus der ursprünglichen E-Mail."
+    }
   },
   "expenses": {
     "title": "Ausgaben",
@@ -812,7 +821,8 @@
         "ai_key_missing": "Ihr eigener KI-API-Schlüssel fehlt",
         "unsupported_file_type": "Nicht unterstützter Dateityp (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "Die KI hat die Verarbeitung des Belegs abgelehnt",
-        "ai_unparseable": "Aus dem Beleg konnte nichts ausgelesen werden"
+        "ai_unparseable": "Aus dem Beleg konnte nichts ausgelesen werden",
+        "ai_credits_exhausted": "Die KI-Credits für diesen Monat sind aufgebraucht. Neue gibt es am 1., ein höherer Tarif hat mehr, oder nutzen Sie Ihren eigenen Schlüssel."
       },
       "supplierSection": "Lieferant & Beleg",
       "supplierLinked": "Mit einem Kontakt verknüpft",
@@ -1349,7 +1359,25 @@
         "manage": "Link bearbeiten"
       },
       "contactPerson": "Ansprechpartner",
-      "person": "Privatperson"
+      "person": "Privatperson",
+      "visibility": {
+        "title": "Wer den Kunden sieht",
+        "hint": "Einen privaten Kunden und seine Belege sehen nur der Firmeninhaber und das Mitglied, dem der Kunde gehört. Andere finden ihn weder in Listen noch im Verlauf.",
+        "owner": "Gehört",
+        "nobody": "Der ganzen Firma (niemandem bestimmten)",
+        "formerMember": "Ehemaliges Teammitglied",
+        "private": "Privat – nur für den Firmeninhaber und die Person, der der Kunde gehört",
+        "privateHint": "Andere finden ihn nicht in Kontakten, Rechnungen, Benachrichtigungen oder im Änderungsverlauf.",
+        "ownedBy": "Gehört: {name}",
+        "ownerOnly": "Nur der Firmeninhaber oder die Person, der der Kunde gehört, kann das ändern.",
+        "saved": "Gespeichert",
+        "failed": "Speichern fehlgeschlagen",
+        "errors": {
+          "visibility_owner_only": "Nur der Firmeninhaber oder die Person, der der Kunde gehört, kann das ändern.",
+          "visibility_would_hide": "Damit würden Sie den Kunden selbst nicht mehr sehen. Einen privaten Kunden übergeben kann nur der Firmeninhaber.",
+          "owner_not_member": "Diese Person ist nicht mehr im Team."
+        }
+      }
     },
     "csv": {
       "import": "CSV importieren",
@@ -1414,7 +1442,8 @@
       "violet": "Violett",
       "pink": "Rosa",
       "slate": "Grau"
-    }
+    },
+    "privateBadge": "Privater Kunde"
   },
   "settings": {
     "title": "Einstellungen",
@@ -2053,7 +2082,8 @@
         "expenses": "Assistenz für Ausgaben",
         "auditor": "Steuerberater/Prüfer",
         "viewer": "Nur lesen",
-        "custom": "Eigene Berechtigungen"
+        "custom": "Eigene Berechtigungen",
+        "assistant": "Assistenz (nur Entwürfe)"
       },
       "presetHints": {
         "admin": "Voller Zugriff einschließlich Team, Unternehmensdaten und Abrechnung.",
@@ -2062,7 +2092,8 @@
         "expenses": "Erfasst Ausgaben und Belege, sieht Rechnungen und Kontakte.",
         "auditor": "Sieht alles einschließlich Bank und Exporten, ändert nichts.",
         "viewer": "Sieht Rechnungen, Kontakte und Ausgaben. Keine Bank und keine Exporte.",
-        "custom": "Zugriff für jeden Bereich einzeln festlegen."
+        "custom": "Lege den Zugriff für jeden Bereich fest und klappe einen Bereich auf, um einzelne Aktionen zu wählen.",
+        "assistant": "Bereitet Rechnungsentwürfe und Kontakte vor. Ausstellen, Senden und Stornieren bleibt bei dir."
       },
       "presetsHint": "Wählen Sie ein fertiges Profil oder passen Sie den Zugriff eines Mitglieds pro Bereich an (Schieberegler-Symbol).",
       "areas": {
@@ -2071,7 +2102,10 @@
         "contacts": "Kontakte",
         "expenses": "Ausgaben",
         "bank": "Bank",
-        "reports": "Exporte"
+        "reports": "Exporte",
+        "projects": "Projekte und Zeit",
+        "recurring": "Wiederkehrende Rechnungen",
+        "settings": "Einstellungen"
       },
       "levels": {
         "none": "Kein Zugriff",
@@ -2080,7 +2114,7 @@
       },
       "editPermissions": "Berechtigungen bearbeiten",
       "editPermissionsFor": "Berechtigungen – {name}",
-      "permissionsHint": "Bearbeiten schließt Lesen ein. Nur Administratoren verwalten Team, Unternehmensdaten und Abrechnung.",
+      "permissionsHint": "Bearbeiten schließt Lesen ein. Klappe einen Bereich auf, um einzelne Aktionen ein- oder auszuschalten. Team, Module, Backups und Abo verwalten nur Administratoren.",
       "save": "Speichern",
       "directory": {
         "toggle": "Noch keine Buchhaltung? Wählen Sie eine geprüfte aus",
@@ -2094,7 +2128,56 @@
         "picked": "{email} ist eingetragen. Prüfen Sie die Rolle und senden Sie die Einladung."
       },
       "copyLink": "Link kopieren",
-      "seatLimit": "Ihr Tarif hat keinen freien Platz mehr. Plus hat 3 Nutzer, Business 10. Steuerberater zählen nicht mit (bis zu 2)."
+      "seatLimit": "Ihr Tarif hat keinen freien Platz mehr. Plus hat 3 Nutzer, Business 10. Steuerberater zählen nicht mit (bis zu 2).",
+      "actions": {
+        "invoices": {
+          "create": "Entwürfe erstellen und bearbeiten",
+          "issue": "Ausstellen (Nummer vergeben)",
+          "send": "An Kunden senden und erinnern",
+          "cancel": "Stornieren und löschen"
+        },
+        "expenses": {
+          "create": "Erfassen und bearbeiten",
+          "approve": "Freigeben (bezahlt, empfangene E-Rechnungen)",
+          "delete": "Löschen"
+        },
+        "bank": {
+          "match": "Zahlungen zuordnen und synchronisieren",
+          "connections": "Bankverbindungen verwalten"
+        },
+        "reports": {
+          "export": "Exporte herunterladen"
+        },
+        "settings": {
+          "company": "Firma und Bankkonten",
+          "numbering": "Belegnummerierung",
+          "templates": "Vorlagen, E-Mails und Variablen",
+          "paymentMethods": "Zahlungsarten",
+          "integrations": "Integrationen und Webhooks",
+          "apiKeys": "API-Schlüssel"
+        }
+      },
+      "actionHints": {
+        "apiKeys": "Ein Schlüssel hat vollen Zugriff auf das ganze Unternehmen, unabhängig von diesen Berechtigungen."
+      },
+      "actionsCount": "{granted}/{total}",
+      "summaryWithout": "ohne: {list}",
+      "locked": {
+        "backup": "Backups",
+        "billing": "Abo",
+        "ownerOnly": "Nur Inhaber",
+        "adminsOnly": "Nur Inhaber und Administratoren"
+      },
+      "fillFromPreset": "Ausfüllen aus",
+      "contactScope": {
+        "label": "Sieht Kunden",
+        "all": "Ganze Firma",
+        "own": "Nur eigene",
+        "hint": "Nur eigene = nur die Kunden, die Sie der Person zuweisen (Gehört), und Belege, die sie selbst erstellt hat.",
+        "ownerOnly": "Nur der Firmeninhaber kann das ändern.",
+        "summary": "nur eigene Kunden",
+        "refused": "Nur der Firmeninhaber kann das ändern."
+      }
     },
     "exports": {
       "title": "Exporte für die Buchhaltung",
@@ -4287,7 +4370,7 @@
     "title": "Preise",
     "lead": "Starten Sie kostenlos, ohne Karte. Wechseln Sie in einen höheren Tarif, wenn Sie ihn brauchen.",
     "seoTitle": "Preise für Rechnungssoftware – kostenlos starten",
-    "metaDescription": "Billanta-Preise: Free mit 10 Belegen pro Monat und Abrechnung nach Verbrauch darüber hinaus, Start ab 4,99 €, Plus mit KI ab 9,99 € und Business für Teams. Keine Karte nötig, Preise zzgl. USt.",
+    "metaDescription": "Billanta-Preise: Free mit 10 Belegen pro Monat, Start ab 4,99 €, Plus mit KI ab 9,99 € und Business für Teams. Keine Karte nötig, Preise zzgl. USt.",
     "yearly": "Jährlich",
     "monthly": "Monatlich",
     "yearlySave": "2 Monate gratis",
@@ -4307,7 +4390,7 @@
         "cta": "Kostenlos starten",
         "features": [
           "10 Belege pro Monat inklusive",
-          "Weitere Belege für je {payg}",
+          "1 Nutzer + Buchhaltung",
           "ISDOC, QR-Zahlung, Registerabfrage und VIES",
           "5 KI-Credits pro Monat",
           "Überwachung der USt.-Schwelle und Steuerkalender",
@@ -4325,8 +4408,10 @@
           "Wiederkehrende Rechnungen und Kundenportal",
           "Kennzahlen für die Einkommensteuer",
           "Export für Pohoda und Money S3",
+          "API und Webhooks (1.000 Anfragen)",
           "30 KI-Credits pro Monat",
-          "Kostenloser Zugang für die Buchhaltung"
+          "Kostenloser Zugang für die Buchhaltung",
+          "Rechnungen ohne Billanta-Fußzeile"
         ]
       },
       "plus": {
@@ -4336,7 +4421,7 @@
         "features": [
           "Alles aus Start",
           "150 KI-Credits pro Monat",
-          "USt.-Erklärung, Kontrollmeldung und Zusammenfassende Meldung",
+          "USt.-Erklärung, Kontrollmeldung und Zusammenfassende Meldung für CZ und SK",
           "Kartenzahlung auf Rechnungen",
           "3 Benutzer + Buchhaltung",
           "API und Webhooks (10.000 Anfragen)",
@@ -4349,7 +4434,7 @@
         "cta": "Business wählen",
         "features": [
           "Alles aus Plus",
-          "Bis zu 10 Unternehmen in einem Konto",
+          "Nettoeinkommen auf bis zu 10 Partner aufteilen",
           "10 Benutzer mit Rollen",
           "500 KI-Credits pro Monat",
           "API und Webhooks (50.000 Anfragen)",
@@ -4357,7 +4442,7 @@
         ]
       }
     },
-    "paygNote": "Im Free-Tarif zahlen Sie nur für Belege über 10 pro Monat, je {payg}. Ab etwa 34 Belegen im Monat ist Start günstiger.",
+    "limitsNote": "Im Free-Tarif stellen Sie 10 Belege pro Monat aus, Gutschriften zählen nicht mit. Den Export für Pohoda oder Money S3 können Sie einmal im Monat testen, die USt.-Dateien einmal.",
     "aiCreditNote": "Ein KI-Credit = eine Rechnung aus einer Sprach- oder Textnachricht oder ein aus einem Foto ausgelesener Beleg.",
     "compare": {
       "title": "Tarife vergleichen",
@@ -4389,30 +4474,37 @@
         "ownKey": "Eigener KI-Schlüssel, ohne Limit",
         "vatLimit": "Überwachung der USt.-Schwelle und Steuerkalender",
         "annual": "Kennzahlen für die Einkommensteuer",
-        "vatFilings": "USt.-Erklärung, Kontrollmeldung und Zusammenfassende Meldung",
+        "vatFilings": "USt.-Erklärung, Kontrollmeldung und Zusammenfassende Meldung (CZ)",
         "accountantExport": "Export für die Buchhaltung",
         "users": "Benutzer",
         "companies": "Unternehmen in einem Konto",
-        "api": "API und Webhooks (Anfragen pro Monat)",
+        "api": "API (Anfragen pro Monat)",
         "time": "Zeiterfassung",
-        "backups": "Datensicherung (Google Drive, Download)",
-        "support": "Support"
+        "backups": "Datensicherung (Google Drive, SFTP, verschlüsselt, Download)",
+        "support": "Support",
+        "invoiceLock": "Rechnungen mit Passwortschutz",
+        "brandFooter": "Ohne Fußzeile „Erstellt mit Billanta“",
+        "stripe": "Stripe-Zahlungen synchronisieren",
+        "vatFilingsSk": "USt.-Erklärung, Kontrollmeldung und Zusammenfassende Meldung (SK)",
+        "netIncome": "Nettoeinkommen: Partner in der Aufteilung",
+        "webhooks": "Webhooks"
       },
       "cell": {
-        "docsFree": "10 inklusive, danach je {payg}",
+        "docsFree": "10",
         "unlimited": "Unbegrenzt",
         "twoTemplates": "2 Vorlagen",
         "manual": "Manuell",
         "automatic": "Automatisch",
-        "csv": "CSV",
         "csvPlus": "CSV, Pohoda, Money S3",
-        "oneUser": "1",
-        "userAccountant": "1 + Buchhaltung",
         "threeAccountant": "3 + Buchhaltung",
-        "tenUsers": "10 mit Rollen",
-        "upTo10": "Bis zu 10",
         "email": "E-Mail",
-        "priority": "Bevorzugt"
+        "priority": "Bevorzugt",
+        "onScreen": "Auf dem Bildschirm",
+        "oneDownload": "1 Test-Download",
+        "csvTaste": "CSV, Pohoda und Money S3 1× im Monat",
+        "oneAccountant": "1 + Buchhaltung",
+        "tenAccountant": "10 + Buchhaltung",
+        "ownPlan": "Bis zu 10, jedes mit eigenem Tarif"
       }
     },
     "compareCompetitors": "Wie Billanta im Vergleich zu Fakturoid, iDoklad und anderen abschneidet",
@@ -4436,7 +4528,7 @@
       "items": [
         {
           "q": "Ist Billanta kostenlos?",
-          "a": "Ja. Der Free-Tarif ist zeitlich unbegrenzt und benötigt keine Karte. Er umfasst 10 Belege pro Monat; jeder weitere kostet {payg}. ISDOC, QR-Zahlungen und die Firmensuche im ARES-Register sind in jedem Tarif enthalten."
+          "a": "Ja. Der Free-Tarif ist zeitlich unbegrenzt und benötigt keine Karte. Er umfasst 10 Belege pro Monat. Wenn Sie mehr brauchen, hat Start keine Belegbegrenzung. ISDOC, QR-Zahlungen und die Firmensuche im ARES-Register sind in jedem Tarif enthalten."
         },
         {
           "q": "Sind die Preise inklusive USt.?",
@@ -4456,7 +4548,7 @@
         },
         {
           "q": "Braucht meine Buchhaltung einen eigenen Tarif?",
-          "a": "Nein. Ab dem Start-Tarif erhält eine Buchhalterin oder ein Buchhalter kostenlos Zugang zu Ihrem Unternehmen, als Teil Ihres Tarifs."
+          "a": "Nein. In jedem Tarif, auch in Free, können bis zu 2 Personen aus der Buchhaltung kostenlos auf Ihr Unternehmen zugreifen."
         },
         {
           "q": "Warum steht auf Rechnungen „Erstellt mit Billanta“?",
@@ -4669,7 +4761,8 @@
       "ai_provider_unavailable": "Die KI antwortet nicht. Versuchen Sie es gleich noch einmal.",
       "empty_input": "Beschreiben Sie, was Sie in Rechnung stellen möchten.",
       "symbol_invalid": "Symbole dürfen nur Ziffern enthalten (VS und SS bis 10, KS bis 4).",
-      "reason_required": "Geben Sie einen Grund für die Änderung an."
+      "reason_required": "Geben Sie einen Grund für die Änderung an.",
+      "ai_credits_exhausted": "Die KI-Credits für diesen Monat sind aufgebraucht. Neue gibt es am 1., ein höherer Tarif hat mehr, oder nutzen Sie Ihren eigenen Schlüssel."
     },
     "copy": {
       "title": "Aus einer anderen Rechnung vorausfüllen",
@@ -5283,15 +5376,26 @@
       "relock": "Wieder verbergen",
       "lockedToast": "Details verborgen",
       "unlockedToast": "Details werden ohne Passwort angezeigt",
-      "teamHint": "Das schützt vor Blicken auf einen nicht gesperrten oder geteilten Computer, nicht vor Kollegen: Jedes Teammitglied macht sie mit seinem eigenen Passwort sichtbar. Wenn nur bestimmte Personen eine Rechnung sehen sollen, legen Sie beim Kunden fest, wer Zugriff hat.",
+      "teamHint": "Das schützt vor Blicken auf einen nicht gesperrten oder geteilten Computer, nicht vor Kollegen: Jedes Teammitglied macht sie mit seinem eigenen Passwort sichtbar. Wenn nur bestimmte Personen eine Rechnung sehen sollen, markieren Sie sie als privat oder legen Sie fest, wem der Kunde gehört.",
       "teamLink": "Festlegen, wer im Team was sieht",
       "errors": {
         "wrong_current": "Falsches Passwort.",
         "reauth_required": "Ihr Konto hat kein Passwort. Melden Sie sich ab und wieder an und versuchen Sie es erneut.",
         "too_many_attempts": "Zu viele Versuche. Versuchen Sie es in ein paar Minuten erneut.",
         "generic": "Das hat nicht geklappt. Bitte versuchen Sie es erneut."
-      }
-    }
+      },
+      "privacyLink": "Als privat markieren"
+    },
+    "privacy": {
+      "label": "Private Rechnung",
+      "hint": "Nur der Firmeninhaber und wer sie erstellt hat sehen sie, samt Positionen, Anhängen und Zahlungen.",
+      "badge": "Private Rechnung",
+      "ownerOnly": "Nur der Firmeninhaber oder wer die Rechnung erstellt hat, kann das ändern.",
+      "failed": "Änderung fehlgeschlagen",
+      "madePrivate": "Die Rechnung ist privat",
+      "madeShared": "Das Team sieht die Rechnung wieder"
+    },
+    "privateRow": "Private Rechnung"
   },
   "invite": {
     "title": "Einladung ins Team",
@@ -7297,7 +7401,8 @@
         "buyer_details_submitted": "hat die Rechnungsangaben ausgefüllt für",
         "buyer_details_cancelled": "hat die Anfrage nach Kundenangaben geschlossen für",
         "profile_order": "erstellt durch eine Bestellung über das öffentliche Profil:",
-        "link_renamed": "hat den öffentlichen Link umbenannt"
+        "link_renamed": "hat den öffentlichen Link umbenannt",
+        "send_waiting_pdf": "zum Versand mit PDF vorgemerkt:"
       },
       "tenant": {
         "updated": "hat die Unternehmensdaten bearbeitet",
@@ -14146,6 +14251,20 @@
     "text": "Es gibt eine neue Version von Billanta. Laden Sie die Seite neu, damit alles funktioniert.",
     "reload": "Neu laden"
   },
+  "planLimits": {
+    "from": "Ab Tarif {plan}",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} von {limit} Belegen in diesem Monat",
+    "aiCredits": "Noch {remaining} von {limit} KI-Credits in diesem Monat",
+    "apiRequests": "{used} von {limit} API-Anfragen in diesem Monat",
+    "tasteLeft": "Kostenlos testen: {left}×",
+    "planRequired": "Das gibt es ab dem Tarif {plan}.",
+    "documentsOut": "Sie haben in diesem Monat alle {limit} Belege Ihres Tarifs ausgestellt. Weitere gibt es ab dem Tarif {plan} oder ab dem 1. des nächsten Monats."
+  },
   "vault": {
     "settingsLink": "Einstellungen des Vertraulichen Modus",
     "plan": {
@@ -14205,7 +14324,7 @@
       "lead": "Verschlüsseln – den Inhalt sehen nur Sie und Mitglieder mit Schlüssel, der Server kann ihn nicht lesen.",
       "what": "Verschlüsselt werden Positionsbeschreibungen und Notizen (über und unter den Positionen sowie interne).",
       "keeps": "Berichte und Dashboards funktionieren weiter: Beträge, Daten und Verwendungszwecke bleiben unverschlüsselt.",
-      "loses": "Für verschlüsselte Belege erstellt nur Ihr Browser PDF, ISDOC und UBL. Der Server hängt sie nur auf Ihren ausdrücklichen Wunsch an eine E-Mail an und findet sie nicht über die Textsuche.",
+      "loses": "Für verschlüsselte Belege erstellt nur Ihr Browser PDF, ISDOC und UBL. Der Server hängt sie nur dann an eine E-Mail an, wenn die Datei aus Ihrem Browser einmal durch ihn läuft, und speichert sie nicht. Die Textsuche läuft nach dem Entsperren nur in Ihrem Browser.",
       "locked": "Gesperrte Belege werden übersprungen.",
       "done": "{n, plural, one {# Beleg verschlüsselt} other {# Belege verschlüsselt}}.",
       "nothing": "Es gab nichts zu verschlüsseln.",
@@ -14216,15 +14335,21 @@
       "lockedLead": "Entsperren Sie ihn zum Bearbeiten. Er wird nur in Ihrem Browser geöffnet.",
       "otherKey": "Dieser Beleg ist mit einem Schlüssel verschlüsselt, den diese Firma nicht hat.",
       "unlock": "Entsperren",
-      "aiUnavailable": "Das KI-Vorausfüllen ist beim Verschlüsseln im Vertraulichen Modus nicht verfügbar – der Text müsste an den Server gehen.",
       "sealFailed": "Der Beleg konnte nicht verschlüsselt werden. Nichts wurde gespeichert.",
       "sealToggle": "Diesen Beleg verschlüsseln",
-      "sealOnHint": "Positionsbeschreibungen und Notizen sehen nur Sie und Mitglieder mit Schlüssel. PDF, ISDOC und UBL erstellt der Browser, Positionsvorschläge sind nicht verfügbar.",
-      "sealOffHint": "Der Beleg wird wie bisher unverschlüsselt gespeichert."
+      "sealOnHint": "Positionsbeschreibungen und Notizen sehen nur Sie und Mitglieder mit Schlüssel. PDF, ISDOC und UBL erstellt Ihr Browser, Positionsvorschläge werden nur in Ihrem Browser gesucht.",
+      "sealOffHint": "Der Beleg wird wie bisher unverschlüsselt gespeichert.",
+      "aiConsent": "Diesen Text an die KI senden – er geht einmalig an den Server und den KI-Anbieter und wird nicht gespeichert",
+      "aiConsentHint": "Der Server speichert und protokolliert den Text nicht. Was die KI zurückgibt, wird beim Speichern in Ihrem Browser verschlüsselt. Die Zustimmung gilt nur für diesen einen Lauf."
     },
     "actions": {
       "blocked": "Die verschlüsselten Texte ließen sich nicht öffnen. Entsperren Sie den Tresor mit dem richtigen Schlüssel und versuchen Sie es erneut.",
-      "sendHint": "Dieser Beleg ist verschlüsselt: Ohne Anhang enthält die E-Mail nur einen Link.",
+      "sendHint": "Das Dokument ist verschlüsselt, daher kann der Server weder PDF noch ISDOC selbst erstellen. Je nach Einstellung geht der Link sofort und das PDF aus Ihrem Browser, oder nur der Link.",
+      "linkCopied": "Link mit Schlüssel kopiert",
+      "keyLink": "Kundenlink mit Schlüssel",
+      "copyLink": "Kopieren",
+      "emailWaiting": "Die E-Mail wartet auf das PDF. Sie wird aus einem Browser mit entsperrtem Modus gesendet, siehe Hinweis oben.",
+      "pdfFollows": "Link gesendet. Das PDF senden Sie als Nachtrag über den Hinweis oben.",
       "pdfLocal": "Das PDF erstellt Ihr Browser, der Server sieht die verschlüsselten Texte nicht.",
       "isdocLocal": "Die ISDOC-Datei erstellt Ihr Browser, der Server sieht die verschlüsselten Texte nicht.",
       "attachOnce": "PDF/ISDOC anhängen – die Datei läuft zum Versand einmal über den Server und wird nicht gespeichert",
@@ -14240,13 +14365,14 @@
         "description": "Was Sie geliefert haben und die Notizen auf dem Beleg. Beträge, Daten und Symbole bleiben lesbar.",
         "loses": [
           "Versand über Peppol",
-          "Suche im Text von Positionen und Notizen, Positionsvorschläge",
-          "KI-Vorausfüllen von Belegen",
-          "Positionsbeschreibungen im öffentlichen Link und in Exporten für die Buchhaltung (Pohoda, Money, CSV)"
+          "Textsuche und Positionsvorschläge auf dem Server (nach dem Entsperren übernimmt das Ihr Browser)",
+          "KI-Vorausfüllen ohne ausdrücklichen Klick (der Text geht nur nach Ihrer Bestätigung einmalig über den Server zur KI und wird nicht gespeichert)",
+          "Öffentlicher Link: Ihr Kunde sieht den vollen Wortlaut nur über den Link mit Schlüssel aus der Belegansicht. Ein Link ohne Schlüssel (z. B. aus einer automatischen Mahnung) zeigt ihn nur auf einem Gerät, auf dem der Kunde vorher den vollständigen Link geöffnet hat",
+          "Lesbare Texte in den Buchhaltungsexporten des Servers (Pohoda, Money und CSV zeigen „[Důvěrný obsah]“; den Export mit entschlüsselten Texten erstellt Ihr Browser)"
         ],
         "changes": [
           "PDF, ISDOC und UBL erstellt Ihr Browser",
-          "PDF/ISDOC-Anhang in E-Mails nur, wenn Sie ihn ankreuzen – die Datei läuft einmal über den Server und wird nicht gespeichert"
+          "PDF/ISDOC-Anhang in E-Mails: Ihr Browser erstellt die Datei, sie läuft einmal durch den Server und wird nicht gespeichert"
         ]
       },
       "attachments": {
@@ -14364,6 +14490,226 @@
       "recoveryReplaced": "Der neue Wiederherstellungscode gilt",
       "categoriesTitle": "Was verschlüsselt wird",
       "categoriesLead": "Weitere Optionen folgen. Bei jeder sehen Sie, was nicht mehr funktionieren würde."
+    },
+    "clientLink": {
+      "ready": "Der Link enthält den Schlüssel zu den verschlüsselten Texten (nach dem #). Ihr Kunde sieht damit den vollen Wortlaut, der Server bekommt den Schlüssel nie.",
+      "locked": "Der Beleg ist verschlüsselt. Entsperren Sie den Tresor, dann bekommt der Link den Schlüssel, mit dem Ihr Kunde den vollen Wortlaut sieht.",
+      "prepare": "Dieser Beleg wurde verschlüsselt, bevor es Kundenschlüssel gab. Geben Sie ihm einen eigenen Schlüssel, dann können Sie ihn im Link senden. An den Server gehen nur neu verschlüsselte Texte.",
+      "failed": "Der Kundenschlüssel konnte nicht vorbereitet werden. Bitte versuchen Sie es erneut.",
+      "loading": "Kundenschlüssel wird vorbereitet…",
+      "unlock": "Tresor entsperren",
+      "prepareButton": "Kundenlink vorbereiten",
+      "shareOnly": "Senden Sie ihn nur an Ihren Kunden. Wer den ganzen Link hat, kann auch die verschlüsselten Texte lesen.",
+      "serverEmail": "Die E-Mail vom Server enthält den Link ohne Schlüssel. Ihr Kunde sieht dort die Beträge, aber nicht die verschlüsselten Texte, außer er hat den Link mit Schlüssel vorher im selben Browser geöffnet. Damit er sie lesen kann, senden Sie ihm den Link oben selbst."
+    },
+    "search": {
+      "lockedHint": "{n, plural, one {# Beleg hat verschlüsselte Texte, die der Server nicht durchsuchen kann.} other {# Belege haben verschlüsselte Texte, die der Server nicht durchsuchen kann.}} Nach dem Entsperren durchsucht Ihr Browser sie.",
+      "unlock": "Entsperren und suchen",
+      "searching": "Verschlüsselte Texte werden in Ihrem Browser durchsucht…",
+      "included": "Die Ergebnisse enthalten auch verschlüsselte Texte, durchsucht nur in Ihrem Browser.",
+      "failed": "Die verschlüsselten Texte konnten nicht durchsucht werden. Die Ergebnisse umfassen nur lesbare Texte.",
+      "skippedLocked": "{n, plural, one {# gesperrter Beleg wurde nicht durchsucht.} other {# gesperrte Belege wurden nicht durchsucht.}}"
+    },
+    "export": {
+      "title": "Export mit entschlüsselten Texten",
+      "lead": "Belege aus dem gewählten Zeitraum mit Positionsbeschreibungen und Notizen. Die Datei entsteht in Ihrem Browser und wird direkt auf Ihrem Computer gespeichert, der Server sieht sie nicht. Behandeln Sie sie als vertrauliches Dokument.",
+      "csv": "CSV herunterladen",
+      "json": "JSON herunterladen",
+      "working": "Wird entschlüsselt…",
+      "done": "{n, plural, one {# Beleg gespeichert.} other {# Belege gespeichert.}}",
+      "failed": "Der Export konnte nicht vorbereitet werden. Bitte versuchen Sie es erneut.",
+      "needsUnlock": "Vor dem Export werden Sie gebeten, den Vertraulichen Modus zu entsperren.",
+      "skippedLocked": "{n, plural, one {# gesperrter Beleg fehlt im Export.} other {# gesperrte Belege fehlen im Export.}}",
+      "unreadable": "[Nicht entschlüsselbar]",
+      "unreadableCount": "{n, plural, one {# Text konnte nicht entschlüsselt werden.} other {# Texte konnten nicht entschlüsselt werden.}}",
+      "accountingNote": "Die Exporte für die Buchhaltung oben (CSV, Pohoda, Money S3) erstellt der Server, daher steht dort statt verschlüsselter Texte „[Důvěrný obsah]“. Beträge, MwSt., Daten und Kunden sind darin vollständig.",
+      "columns": {
+        "documentType": "Belegart",
+        "invoiceNumber": "Nummer",
+        "status": "Status",
+        "issueDate": "Ausstellungsdatum",
+        "taxableSupplyDate": "Leistungsdatum",
+        "dueDate": "Fälligkeit",
+        "paidAt": "Bezahlt",
+        "contactName": "Kunde",
+        "contactIco": "IČO",
+        "variableSymbol": "Variabler Symbol",
+        "currency": "Währung",
+        "totalWithoutVat": "Netto",
+        "totalVat": "MwSt.",
+        "total": "Gesamt",
+        "noteAbove": "Text über den Positionen",
+        "noteBelow": "Text unter den Positionen",
+        "internalNote": "Interne Notiz",
+        "itemDescription": "Position",
+        "itemCode": "Positionscode",
+        "quantity": "Menge",
+        "unit": "Einheit",
+        "unitPrice": "Einzelpreis",
+        "vatRate": "MwSt.-Satz %",
+        "discountPercent": "Rabatt %"
+      }
+    },
+    "outbox": {
+      "badge": "{n, plural, one {# E-Mail wartet} other {# E-Mails warten}} auf den Versand mit PDF",
+      "open": "Anzeigen",
+      "title": "E-Mails, die auf das PDF warten",
+      "back": "Schließen",
+      "send": "Senden ({n})",
+      "unlockAndSend": "Entsperren und senden ({n})",
+      "lead": "Ein verschlüsseltes Dokument kann der Server nicht selbst in ein PDF umwandeln. Das PDF entsteht erst hier, in einem Browser mit entsperrtem Vertraulichen Modus.",
+      "passThroughPdf": "Das PDF wird in Ihrem Browser erstellt. Der Server leitet es einmal an den Empfänger weiter und speichert es nicht.",
+      "passThroughTexts": "Nach dem Klick auf Senden gehen die entschlüsselten Texte dieser Dokumente einmal über den Server: Er erstellt daraus das PDF und verschickt es per E-Mail. Er speichert und protokolliert sie nicht.",
+      "unnumbered": "Ohne Nummer",
+      "kind": {
+        "invoice": "Ganze E-Mail wartet",
+        "invoice_pdf": "PDF zu einem gesendeten Link"
+      },
+      "dismiss": "Nicht senden",
+      "settingsHint": "Wann und wie das PDF verschickt wird, legen Sie fest in den",
+      "settingsLink": "Einstellungen des Vertraulichen Modus",
+      "sent": "{n, plural, one {# E-Mail gesendet} other {# E-Mails gesendet}}",
+      "failed": "{n, plural, one {# E-Mail konnte nicht gesendet werden} other {# E-Mails konnten nicht gesendet werden}}"
+    },
+    "emailSettings": {
+      "title": "E-Mails zu verschlüsselten Dokumenten",
+      "lead": "Was passiert, wenn Sie ein verschlüsseltes Dokument senden. Link, Betrag, Fälligkeit, Verwendungszweck und QR-Zahlung gehen immer mit.",
+      "mode": {
+        "link_now": "Link sofort, PDF später",
+        "wait": "Warten und alles zusammen senden",
+        "link_only": "Nur Link, nie ein PDF"
+      },
+      "modeHint": {
+        "link_now": "Der Kunde bekommt sofort eine E-Mail mit dem Link. Das PDF folgt in einer zweiten E-Mail, sobald jemand aus dem Team es aus einem Browser mit entsperrtem Modus sendet.",
+        "wait": "Die E-Mail geht erst mit dem PDF raus, aus dem Browser eines Teammitglieds mit entsperrtem Modus. Bis dahin bekommt der Kunde nichts.",
+        "link_only": "Der Kunde bekommt nur den Link und öffnet das Dokument dort. Der Server erhält die Texte nie."
+      },
+      "autoSend": "PDFs automatisch senden",
+      "autoSendHint": "Sobald jemand aus dem Team die App mit entsperrtem Modus öffnet, gehen wartende PDFs ohne weiteren Klick raus.",
+      "passThrough": "Jedes gesendete PDF geht einmal über den Server, weil die E-Mail von dort verschickt wird. Der Server speichert und protokolliert es nicht.",
+      "saved": "Gespeichert",
+      "failed": "Speichern fehlgeschlagen"
+    },
+    "device": {
+      "title": "Entsperrung auf diesem Gerät merken",
+      "hint": "Der Modus bleibt auch nach dem Schließen des Browsers entsperrt, ohne 12-Stunden-Grenze, damit wartende PDFs rausgehen können, wann immer Sie die App öffnen. Der Schlüssel liegt so im Browser, dass er nicht gelesen oder kopiert werden kann. Sperren, Ausschalten dieser Option oder Abmelden entfernt ihn.",
+      "risk": "Nur auf einem eigenen Gerät einschalten, das sonst niemand nutzt. Wer diesen Browser öffnet, sieht die verschlüsselten Texte.",
+      "on": "Dieses Gerät merkt sich die Entsperrung",
+      "off": "Die Entsperrung läuft wieder nach 12 Stunden ab",
+      "failed": "Das hat nicht geklappt. Entsperren Sie zuerst den Modus."
+    },
+    "serverView": {
+      "title": "Was der Server sieht",
+      "lead": "So sind die Texte dieses Dokuments auf dem Server gespeichert. Entschlüsseln kann sie nur ein Browser mit entsperrtem Modus.",
+      "server": "Der Server hat:",
+      "you": "Sie sehen:",
+      "noteAbove": "Text über den Positionen",
+      "noteBelow": "Text unter den Positionen",
+      "internalNote": "Interne Notiz",
+      "item": "Position {n}",
+      "notSealed": "Beträge, Daten, Dokumentnummer, Verwendungszweck und Kunden sieht der Server, um die MwSt. zu berechnen, Fälligkeiten zu überwachen und Zahlungen zuzuordnen.",
+      "more": "Wie es funktioniert und wie Sie es prüfen"
     }
+  },
+  "vaultPublic": {
+    "integrity": {
+      "title": "Code-Prüfung",
+      "lead": "Bei jedem Build der App werden die SHA-256-Hashes des Verschlüsselungscodes und der Dateien, die ihn enthalten, festgehalten.",
+      "sourceHash": "Quelldatei {path}",
+      "repo": "Öffentlicher Quellcode",
+      "repoPlanned": "Wir planen, ihn in einem eigenen GitHub-Repository zu veröffentlichen.",
+      "chunks": "Dateien, die Ihr Browser lädt",
+      "check": "In diesem Browser prüfen",
+      "match": "Stimmt überein",
+      "mismatch": "Stimmt nicht überein",
+      "error": "Datei konnte nicht geladen werden",
+      "loadedHere": "auf dieser Seite geladen",
+      "missing": "Das Manifest ist noch nicht verfügbar. Es entsteht beim Produktions-Build.",
+      "honest": "Manifest und Dateien kommen vom selben Server, ein Treffer zeigt also nur, dass das Manifest beschreibt, was ausgeliefert wird. Die echte Prüfung ist der Vergleich der Hashes mit einem Build aus dem veröffentlichten Quellcode."
+    },
+    "demo": {
+      "label": "Schreiben Sie einen beliebigen Satz",
+      "placeholder": "Zum Beispiel: Beratung zum Firmenverkauf, 12 Stunden",
+      "send": "Verschlüsseln und senden",
+      "keyNote": "Der Schlüssel entsteht nur für diese Seite und wird nie gesendet. Nach dem Neuladen ist er weg.",
+      "typed": "Was Sie geschrieben haben",
+      "typedHint": "Bleibt nur in Ihrem Browser.",
+      "sent": "Was an den Server ging",
+      "sentHint": "Der genaue Inhalt der Anfrage POST {path}.",
+      "received": "Was der Server bekam (HTTP {status})",
+      "receivedHint": "Der Server gibt genau das zurück, was er erhalten hat. Er speichert nichts.",
+      "open": "Hier entschlüsseln",
+      "openedAs": "Ihr Browser hat es zurück entschlüsselt zu:",
+      "rateLimited": "Zu viele Versuche. Bitte warten Sie ein paar Minuten.",
+      "failed": "Die Anfrage ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "devtoolsTitle": "Prüfen Sie es selbst in den Browser-Werkzeugen",
+      "devtoolsSteps": [
+        "Drücken Sie F12 (auf dem Mac Cmd+Option+I) und öffnen Sie den Tab Netzwerk (Network).",
+        "Klicken Sie erneut auf Verschlüsseln und senden.",
+        "Klicken Sie in der Liste auf die Anfrage „echo“ und öffnen Sie Payload (Nutzlast) und Response (Antwort).",
+        "Sie sehen nur eine Zeichenkette enc:v1:…, nicht Ihren Satz. Strg+F im Netzwerk-Tab durchsucht alle Anfragen: Suchen Sie dort ein Wort aus Ihrem Satz."
+      ]
+    },
+    "csp": {
+      "liveTitle": "Der Content-Security-Policy-Header dieser Seite, gerade eben abgerufen",
+      "liveMissing": "Der Header konnte nicht gelesen werden. Sie finden ihn in den Browser-Werkzeugen bei der Anfrage für diese Seite."
+    }
+  },
+  "securityPage": {
+    "seoTitle": "Vertraulicher Modus: was der Server sieht und was nicht",
+    "eyebrow": "Sicherheit",
+    "title": "Vertraulicher Modus: Dokumenttexte, die der Server nicht lesen kann",
+    "lead": "Positionsbeschreibungen und Notizen werden in Ihrem Browser verschlüsselt. Der Server bekommt nur eine verschlüsselte Zeichenkette und hat keinen Schlüssel dafür. Hier können Sie es selbst ausprobieren und prüfen.",
+    "featuresLink": "Alle Funktionen",
+    "demoTitle": "Probieren Sie es aus",
+    "demoLead": "Ohne Anmeldung. Die Seite verschlüsselt Ihren Satz mit demselben Code wie die App und sendet ihn wirklich an den Server. Nebeneinander sehen Sie, was Sie geschrieben haben, was gesendet wurde und was der Server bekam.",
+    "howTitle": "So funktioniert es",
+    "howSteps": [
+      {
+        "title": "Der Schlüssel entsteht bei Ihnen",
+        "body": "Beim Einschalten erzeugt der Browser einen zufälligen AES-256-Schlüssel. Der Server bekommt nur Kopien davon, gesperrt mit Ihrem Passwort, Passkey oder Wiederherstellungscode."
+      },
+      {
+        "title": "Verschlüsselt vor dem Senden",
+        "body": "Eine Positionsbeschreibung oder Notiz wird verschlüsselt, bevor sie den Browser verlässt. Der Server speichert eine Zeichenkette enc:v1:… und macht nichts damit."
+      },
+      {
+        "title": "Entschlüsselt nur bei Ihnen",
+        "body": "Nach dem Entsperren hält der Browser den Schlüssel so, dass die Seite ihn nutzen, aber seinen Inhalt nicht lesen kann."
+      }
+    ],
+    "hiddenTitle": "Was der Server nicht sieht",
+    "hidden": [
+      "Positionsbeschreibungen",
+      "Text über und unter den Positionen",
+      "Interne Notizen",
+      "Den Schlüssel und das Passwort, das ihn entsperrt"
+    ],
+    "visibleTitle": "Was der Server sieht und warum",
+    "visible": [
+      "Beträge und MwSt. – für Berechnungen, Steuererklärungen und Zahlungsabgleich",
+      "Ausstellungs- und Fälligkeitsdatum – für Mahnungen",
+      "Dokumentnummer und Verwendungszweck",
+      "Den Kunden und seine E-Mail – damit das Dokument versendet werden kann"
+    ],
+    "cspTitle": "Der Browser kontrolliert, wohin die Seite Daten senden darf",
+    "cspBody": "Die App, Dokumentlinks und diese Seite werden mit einem Content-Security-Policy-Header ausgeliefert, der connect-src 'self' enthält. Der Browser lehnt dann selbst jede Anfrage einer solchen Seite an einen anderen Server ab, auch wenn ein Skript es versucht. Entschlüsselter Text kann auf diesem Weg nicht hinaus.",
+    "cspHow": "Jeder kann den Header lesen: Klicken Sie in den Browser-Werkzeugen (F12, Tab Netzwerk) auf die erste Anfrage, die Seite selbst, und suchen Sie in den Antwort-Headern Content-Security-Policy.",
+    "limitsTitle": "Wo die Grenzen liegen",
+    "limits": [
+      "Den Code der App liefert unser Server. Wäre er kompromittiert, könnte er anderen Code liefern. Die Veröffentlichung von Code und Hashes macht eine solche Änderung erkennbar, verhindert sie aber nicht von selbst.",
+      "Wenn Sie ein verschlüsseltes Dokument mit PDF per E-Mail senden, gehen seine Texte einmal über den Server, weil die E-Mail von dort verschickt wird. Die App sagt es vorher, und der Server speichert und protokolliert sie nicht. Senden Sie nur den Link, bekommt der Server die Texte nie.",
+      "Beträge, Daten, Nummern und Kunden verschlüsselt der Modus nicht, siehe oben.",
+      "Für verschlüsselte Dokumente erstellt der Server kein ISDOC und keine anderen maschinenlesbaren Formate.",
+      "Die Regel connect-src gilt für eine direkt geladene Seite. Wechseln Sie ohne Neuladen von der öffentlichen Website in die App, gilt bis zum Neuladen die Regel der vorherigen Seite.",
+      "Wer Zugang zu Ihrem entsperrten Browser hat, sieht die Texte. Der Modus schützt vor dem Server, nicht vor jemandem an Ihrem Computer.",
+      "Wenn Sie Passwort und Wiederherstellungscode vergessen und keinen Passkey haben, kann niemand die Texte wiederherstellen, auch wir nicht."
+    ],
+    "verifyTitle": "Code-Prüfung",
+    "verifyLead": "Bei jedem Build schreiben wir die SHA-256-Hashes des Verschlüsselungscodes in eine öffentliche Datei. Ihr Browser kann sie hier nachrechnen.",
+    "planned": [
+      "Den Verschlüsselungscode (eine Datei ohne Abhängigkeiten) veröffentlichen wir in einem eigenen GitHub-Repository, damit sich die Hashes mit einem eigenen Build vergleichen lassen.",
+      "Eine unabhängige Prüfung des Codes ist geplant."
+    ]
   }
 }

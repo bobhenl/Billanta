@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CombinedAuthGuard } from "../auth/combined-auth.guard";
 import { RequireActiveSubscription } from "../billing/require-active-subscription.guard";
+import { assertMayDo } from "../tenancy/permissions";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import {
   CreateProjectDto,
@@ -77,6 +78,8 @@ export class TimeTrackingController {
   @RequireActiveSubscription()
   @ApiOperation({ summary: "Draft invoice from unbilled entries (entry_ids, group_by=entry|project|day, contact_id?)" })
   invoice(@Req() req: TenantScopedRequest, @Body() dto: InvoiceTimeDto) {
+    // Billing time makes an invoice draft: the invoices permission applies too.
+    assertMayDo(req.user, "invoices.create");
     return this.service.invoice(req.tenantDb!, req.user!.tenantId, dto);
   }
 

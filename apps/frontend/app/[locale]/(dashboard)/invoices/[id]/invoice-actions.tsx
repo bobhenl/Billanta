@@ -24,11 +24,15 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
-import { useCanWrite } from '@/components/access-provider';
+import { VAULT_EMAILS_CHANGED } from '@/components/vault/vault-email-outbox';
+import { useCanDo, useCanWrite } from '@/components/access-provider';
+import { ClientLinkNotice, useClientLinkKey } from '@/components/vault/client-link';
+import { copyText } from '@/lib/clipboard';
 import { useVault } from '@/components/vault/vault-provider';
 import { DocumentError, renderSealedIsdoc, renderSealedPdf, renderSealedUbl, saveDocument, sendWithSealedFiles } from '@/lib/vault/documents';
 import { CONVERSIONS, type DocumentType, type InvoiceStatus } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
+import type { SealedDocument } from '@/lib/vault/content';
 import {
   cancelInvoice,
   convertInvoice,
@@ -68,7 +72,8 @@ export function InvoiceActions({
   sentAt = null,
   editedAfterSend = false,
   hasCustomer = true,
-  confidential = false
+  confidential = false,
+  sealedDoc = null
 }: {
   id: string;
   documentType: DocumentType;
@@ -92,12 +97,27 @@ export function InvoiceActions({
   hasCustomer?: boolean;
   /** Printed texts are encrypted ("Důvěrný režim"): the browser makes the PDF, ISDOC and UBL. */
   confidential?: boolean;
+  /** The printed texts when some are encrypted: the browser puts their key into the client link. */
+  sealedDoc?: SealedDocument | null;
 }) {
   const t = useTranslations('doc');
   const tVault = useTranslations('vault.actions');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [dialog, setDialog] = useState<Dialog>(null);
+  const clientKey = useClientLinkKey(id, sealedDoc);
+  // Built here, never sent: the server-sent e-mail carries the same link without the #key.
+  const [origin, setOrigin] = useState('');
+  useEffect(() => setOrigin(window.location.origin), []);
+  const keyLink = clientKey.withKey(`${origin}/i/${publicLink}`);
+  const copyKeyLink = async () => {
+    try {
+      await copyText(keyLink);
+      toast({ text: tVault('linkCopied'), tone: 'ok' });
+    } catch {
+      toast({ text: t('actionFailed'), tone: 'err' });
+    }
+  };
   const [paidAt, setPaidAt] = useState(() => new Date().toISOString().slice(0, 10));
   const [templateName, setTemplateName] = useState(defaultTemplateName);
   const locale = useLocale();
@@ -116,12 +136,18 @@ export function InvoiceActions({
   const num = (v: string) => Number(v.replace(/\s/g, '').replace(',', '.')) || undefined;
   const net = { fee: num(feeValue), receivedCzk: currency === home ? undefined : num(receivedValue) };
 
+  // The area level first, then the finer actions from Settings → Team (the backend checks the same).
+  const canWriteArea = useCanWrite('invoices');
+  const canCreate = useCanDo('invoices.create');
+  const canIssue = useCanDo('invoices.issue') && canWriteArea;
+  const canSend = useCanDo('invoices.send') && canWriteArea;
+  const canCancel = useCanDo('invoices.cancel') && canWriteArea;
+  const canEdit = canWriteArea && canCreate;
+  const isDraft = status === 'draft' || status === 'pending_review';
   const menuItem = 'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold hover:bg-secondary disabled:opacity-60';
-  const canEdit = useCanWrite('invoices');
-  const isDraft = canEdit && (status === 'draft' || status === 'pending_review');
   const canPay = canEdit && status === 'issued' && documentType !== 'quote';
   // Issued but not sent yet: sending is the next step, so it takes the one primary slot.
-  const sendFirst = canEdit && numbered && status === 'issued' && !sentAt && hasEmail;
+  const sendFirst = canSend && numbered && status === 'issued' && !sentAt && hasEmail;
   const conversions = !canEdit || status === 'cancelled' || (!numbered && documentType !== 'quote') ? [] : CONVERSIONS[documentType];
 
   const { requestUnlock } = useVault();
@@ -161,7 +187,7 @@ export function InvoiceActions({
       }
     });
 
-  const act = <T,>(fn: () => Promise<ActionResult<T>>, okText: string, after?: (data: T) => void) =>
+  const act = <T,>(fn: () => Promise<ActionResult<T>>, okText: string | ((data: T) => string), after?: (data: T) => void) =>
     startTransition(async () => {
       const result = await fn();
       setDialog(null);
@@ -169,7 +195,7 @@ export function InvoiceActions({
         toast({ text: result.error === 'confidential_content' ? tVault('blocked') : `${t('actionFailed')}: ${result.error}`, tone: 'err' });
         return;
       }
-      toast({ text: okText, tone: 'ok' });
+      toast({ text: typeof okText === 'function' ? okText(result.data) : okText, tone: 'ok' });
       if (after) after(result.data);
       else router.refresh();
     });
@@ -194,14 +220,18 @@ export function InvoiceActions({
         {sendFirst && sendButton}
         {isDraft && (
           <>
-            <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => setDialog('issue')}>
-              <Stamp className="h-4 w-4" />
-              {documentType === 'quote' ? t('actions.issueQuote') : t('actions.issue')}
-            </button>
-            <Link href={`/invoices/${id}/edit`} className={buttonClass.secondary} title={t('actions.edit')} aria-label={t('actions.edit')}>
-              <Pencil className="h-4 w-4" />
-              <span className="hidden sm:inline">{t('actions.edit')}</span>
-            </Link>
+            {canIssue && (
+              <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => setDialog('issue')}>
+                <Stamp className="h-4 w-4" />
+                {documentType === 'quote' ? t('actions.issueQuote') : t('actions.issue')}
+              </button>
+            )}
+            {canEdit && (
+              <Link href={`/invoices/${id}/edit`} className={buttonClass.secondary} title={t('actions.edit')} aria-label={t('actions.edit')}>
+                <Pencil className="h-4 w-4" />
+                <span className="hidden sm:inline">{t('actions.edit')}</span>
+              </Link>
+            )}
           </>
         )}
         {/* An issued document is final by law, but people still look for
@@ -239,10 +269,10 @@ export function InvoiceActions({
             PDF
           </a>
         )}
-        {canEdit && numbered && status !== 'cancelled' && !sendFirst && sendButton}
+        {canSend && numbered && status !== 'cancelled' && !sendFirst && sendButton}
         {/* The reminder email speaks of an overdue invoice, so it is offered only once the invoice is overdue,
             and never for a credit note, which pays money back. */}
-        {canPay && overdue && (documentType === 'invoice' || documentType === 'proforma') && (
+        {canSend && status === 'issued' && overdue && (documentType === 'invoice' || documentType === 'proforma') && (
           <button
             type="button"
             className={buttonClass.secondary}
@@ -255,7 +285,7 @@ export function InvoiceActions({
             <span className="hidden sm:inline">{t('actions.remind')}</span>
           </button>
         )}
-        {(canEdit || numbered) && (
+        {(canEdit || canSend || canCancel || numbered) && (
           <MoreMenu label={t('actions.more')}>
             {canEdit && status === 'paid' && (
               <button
@@ -328,26 +358,26 @@ export function InvoiceActions({
               </button>
             )}
             {numbered && (
-              <a href={`/i/${publicLink}?preview=1`} target="_blank" rel="noreferrer" className={menuItem}>
+              <a href={clientKey.withKey(`/i/${publicLink}?preview=1`)} target="_blank" rel="noreferrer" className={menuItem}>
                 <ExternalLink className="h-4 w-4" />
                 {t('actions.publicLink')}
               </a>
             )}
             {/* Actions that break or throw something away sit apart from the everyday ones. */}
-            {canEdit && (numbered || isDraft) && <div role="separator" className="my-1 border-t border-border" />}
-            {canEdit && numbered && (
+            {((canSend && numbered) || (canCancel && (status === 'issued' || isDraft))) && <div role="separator" className="my-1 border-t border-border" />}
+            {canSend && numbered && (
               <button type="button" className={menuItem} onClick={() => setDialog('rotate')}>
                 <RotateCcw className="h-4 w-4" />
                 {t('actions.rotateLink')}
               </button>
             )}
-            {canEdit && status === 'issued' && (
+            {canCancel && status === 'issued' && (
               <button type="button" className={`${menuItem} hover:text-destructive`} onClick={() => setDialog('cancel')}>
                 <Ban className="h-4 w-4" />
                 {t('actions.cancel')}
               </button>
             )}
-            {isDraft && (
+            {canCancel && isDraft && (
               <button type="button" className={`${menuItem} hover:text-destructive`} onClick={() => setDialog('delete')}>
                 <Trash2 className="h-4 w-4" />
                 {t('actions.delete')}
@@ -357,7 +387,7 @@ export function InvoiceActions({
         )}
       </div>
 
-      {canEdit && editedAfterSend && (
+      {canSend && editedAfterSend && (
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-warning/40 bg-warning/10 px-4 py-3 text-sm">
           <div className="min-w-0">
             <p className="font-semibold">{t('correction.title')}</p>
@@ -465,12 +495,22 @@ export function InvoiceActions({
             <button type="button" className={buttonClass.secondary} onClick={() => setDialog(null)}>
               {t('confirm.back')}
             </button>
-            <button
-              type="button"
-              className={buttonClass.primary}
-              disabled={pending}
-              onClick={() => (confidential && attachSealed ? sendSealed() : act(() => sendInvoice(id), t('done.sent')))}
-            >
+            <button type="button" className={buttonClass.primary} disabled={pending} onClick={() =>
+                confidential && attachSealed
+                  ? sendSealed()
+                  : act(
+                  () => sendInvoice(id),
+                  // An encrypted document's PDF waits for a browser with the key (backend vault/vault-email.ts).
+                  (data) => {
+                    const vaultEmail = (data as { vaultEmail?: 'waiting' | 'pdf_follows' } | null)?.vaultEmail;
+                    return vaultEmail === 'waiting' ? tVault('emailWaiting') : vaultEmail === 'pdf_follows' ? tVault('pdfFollows') : t('done.sent');
+                  },
+                  () => {
+                    window.dispatchEvent(new Event(VAULT_EMAILS_CHANGED));
+                    router.refresh();
+                  }
+                )
+              }>
               <Send className="h-4 w-4" />
               {editedAfterSend ? t('correction.send') : t('actions.send')}
             </button>
@@ -485,6 +525,26 @@ export function InvoiceActions({
               <span>{tVault('attachOnce')}</span>
             </label>
             <p className="mt-2 text-xs text-muted-foreground">{attachSealed ? tVault('attachOnceHint') : tVault('sendHint')}</p>
+          </>
+        )}
+        {sealedDoc && (
+          <>
+            {clientKey.state === 'ready' && (
+              <div className="mt-3 flex gap-2">
+                <input
+                  readOnly
+                  value={keyLink}
+                  onFocus={(e) => e.currentTarget.select()}
+                  aria-label={tVault('keyLink')}
+                  className="h-10 min-w-0 flex-1 rounded-lg border border-input bg-background px-3 font-mono text-xs"
+                />
+                <button type="button" onClick={copyKeyLink} className={buttonClass.secondary}>
+                  <Copy className="h-4 w-4" />
+                  {tVault('copyLink')}
+                </button>
+              </div>
+            )}
+            <ClientLinkNotice link={clientKey} serverEmail className="mt-3" />
           </>
         )}
       </Modal>

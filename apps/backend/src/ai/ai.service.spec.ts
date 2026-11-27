@@ -3,11 +3,19 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ContactsService } from "../contacts/contacts.service";
 import { AiService } from "./ai.service";
 
-const { parseMock, retrieveMock, ctorKeys, FakeAuthError } = vi.hoisted(() => {
+const { parseMock, retrieveMock, ctorKeys, ctorOpts, FakeAuthError } = vi.hoisted(() => {
   class FakeApiError extends Error {}
   class FakeAuthError extends FakeApiError {}
-  return { parseMock: vi.fn(), retrieveMock: vi.fn(), ctorKeys: [] as string[], FakeAuthError };
+  return { parseMock: vi.fn(), retrieveMock: vi.fn(), ctorKeys: [] as string[], ctorOpts: [] as { logLevel?: string }[], FakeAuthError };
 });
+
+// The credit counter is SQL with its own spec; here it records what it was asked.
+const usage = vi.hoisted(() => ({
+  consumeUsage: vi.fn(async () => ({ ok: true, count: 1 })),
+  refundUsage: vi.fn(async () => undefined),
+  readUsage: vi.fn(async () => [] as { metric: string; count: number }[]),
+}));
+vi.mock("../billing/usage.repository", () => usage);
 
 vi.mock("@anthropic-ai/sdk", () => {
   class Anthropic {
@@ -18,8 +26,9 @@ vi.mock("@anthropic-ai/sdk", () => {
     static BadRequestError = class extends Error {};
     beta = { messages: { parse: parseMock } };
     models = { retrieve: retrieveMock };
-    constructor(opts: { apiKey: string }) {
+    constructor(opts: { apiKey: string; logLevel?: string }) {
       ctorKeys.push(opts.apiKey);
+      ctorOpts.push(opts);
     }
   }
   return { default: Anthropic };
@@ -69,6 +78,9 @@ describe("AiService", () => {
     parseMock.mockReset();
     retrieveMock.mockReset();
     ctorKeys.length = 0;
+    ctorOpts.length = 0;
+    usage.consumeUsage.mockReset().mockResolvedValue({ ok: true, count: 1 });
+    usage.refundUsage.mockClear();
   });
   afterEach(() => {
     delete process.env.ANTHROPIC_API_KEY;
@@ -150,6 +162,19 @@ describe("AiService", () => {
     expect(parseMock).not.toHaveBeenCalled();
   });
 
+  it("keeps the SDK from logging a text sent from an encrypted document, and stores nothing", async () => {
+    parseMock.mockResolvedValue({ stop_reason: "end_turn", parsed_output: { ...SUGGESTION, customer: { ico: null, name: null } } });
+    const { db, updates } = fakeDb([[TENANT], [TENANT]]);
+    const service = new AiService(contacts);
+
+    await service.suggestInvoice(db as never, "t1", "tajná konzultace", { confidential: true });
+    await service.suggestInvoice(db as never, "t1", "běžná konzultace");
+
+    expect(ctorOpts.map((o) => o.logLevel)).toEqual(["off", undefined]);
+    expect(updates).toHaveLength(0);
+    expect(db.update).not.toHaveBeenCalled();
+  });
+
   it("caps platform-key use per tenant per day", async () => {
     parseMock.mockResolvedValue({ stop_reason: "end_turn", parsed_output: { ...SUGGESTION, customer: { ico: null, name: null } } });
     const service = new AiService(contacts);
@@ -158,5 +183,45 @@ describe("AiService", () => {
       await service.suggestInvoice(fakeDb([[TENANT]]).db as never, "t1", "x y z");
     }
     await expect(service.suggestInvoice(fakeDb([[TENANT]]).db as never, "t1", "x y z")).rejects.toBeInstanceOf(HttpException);
+  });
+
+  describe("AI credits", () => {
+    // A company on Free from after plan limits: 5 credits a month.
+    const FREE = { ...TENANT, planEnforced: true, subscriptionStatus: "none", isDemo: false };
+    const blank = { stop_reason: "end_turn", parsed_output: { ...SUGGESTION, customer: { ico: null, name: null } } };
+
+    it("spends one of the plan's credits per call on Billanta's key", async () => {
+      parseMock.mockResolvedValue(blank);
+      await new AiService(contacts).suggestInvoice(fakeDb([[FREE]]).db as never, "t1", "x y z");
+      expect(usage.consumeUsage).toHaveBeenCalledWith(expect.anything(), "t1", "ai_credits", expect.stringMatching(/^\d{4}-\d{2}$/), 5);
+    });
+
+    it("refuses with ai_credits_exhausted and never reaches the provider", async () => {
+      usage.consumeUsage.mockResolvedValue({ ok: false, count: 5 });
+      const err = await new AiService(contacts).suggestInvoice(fakeDb([[FREE]]).db as never, "t1", "x y z").catch((e: unknown) => e);
+      expect(err).toBeInstanceOf(ForbiddenException);
+      expect((err as ForbiddenException).getResponse()).toMatchObject({ error: "ai_credits_exhausted", limit: 5, used: 5, plan: "start" });
+      expect(parseMock).not.toHaveBeenCalled();
+    });
+
+    it("gives the credit back when the provider fails", async () => {
+      parseMock.mockRejectedValue(new Error("overloaded"));
+      await expect(new AiService(contacts).suggestInvoice(fakeDb([[FREE]]).db as never, "t1", "x y z")).rejects.toBeDefined();
+      expect(usage.refundUsage).toHaveBeenCalledWith(expect.anything(), "t1", "ai_credits", expect.any(String));
+    });
+
+    it("does not count calls on the company's own key", async () => {
+      const { encryptSecret } = await import("../backup-destinations/encryption.util");
+      parseMock.mockResolvedValue(blank);
+      const own = { ...FREE, aiMode: "own", aiApiKeyEncrypted: encryptSecret("sk-ant-own-key", ENC_KEY) };
+      await new AiService(contacts).suggestInvoice(fakeDb([[own]]).db as never, "t1", "x y z");
+      expect(usage.consumeUsage).not.toHaveBeenCalled();
+    });
+
+    it("counts a receipt read too", async () => {
+      parseMock.mockResolvedValue({ stop_reason: "end_turn", parsed_output: { supplier: { ico: null, name: null } } });
+      await new AiService(contacts).readReceipt(fakeDb([[FREE]]).db as never, "t1", { buffer: Buffer.from("x"), mediaType: "image/png" });
+      expect(usage.consumeUsage).toHaveBeenCalledWith(expect.anything(), "t1", "ai_credits", expect.any(String), 5);
+    });
   });
 });

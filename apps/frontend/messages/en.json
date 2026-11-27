@@ -245,7 +245,8 @@
         "cookies": "Cookie Policy",
         "cookieSettings": "Cookie settings",
         "dpa": "Data Processing Agreement",
-        "contact": "Contact"
+        "contact": "Contact",
+        "confidential": "Confidential mode and security"
       },
       "account": {
         "title": "Account",
@@ -769,7 +770,15 @@
     "print": "Print / PDF",
     "downloadPdf": "Download PDF",
     "downloadPdfShort": "PDF",
-    "confidentialItem": "Confidential item"
+    "confidentialItem": "Confidential item",
+    "sealed": {
+      "noKey": "Some texts are encrypted. The full text is in the link from the original e-mail.",
+      "openedLink": "The key from your link opened the encrypted texts. This browser remembers it, so later links open the document too.",
+      "openedStored": "A key this browser remembered from an earlier link opened the encrypted texts.",
+      "openedPreview": "Preview: the key from the link opened the texts. It was not saved in this browser.",
+      "forget": "Forget the key in this browser",
+      "forgotten": "The key is deleted from this browser. The full text is in the link from the original e-mail."
+    }
   },
   "expenses": {
     "title": "Expenses",
@@ -813,7 +822,8 @@
         "ai_key_missing": "Your own AI API key is missing",
         "unsupported_file_type": "Unsupported file type (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "AI declined to process the document",
-        "ai_unparseable": "Nothing could be read from the document"
+        "ai_unparseable": "Nothing could be read from the document",
+        "ai_credits_exhausted": "This month's AI credits are used up. New ones arrive on the 1st; a higher plan has more, or use your own key."
       },
       "supplierSection": "Supplier",
       "supplierLinked": "Linked to a contact",
@@ -1350,7 +1360,25 @@
         "manage": "Edit link"
       },
       "contactPerson": "Contact person",
-      "person": "Private person"
+      "person": "Private person",
+      "visibility": {
+        "title": "Who sees this client",
+        "hint": "A private client and their documents are seen only by the company owner and the member the client belongs to. Others won’t find it in lists or in the history.",
+        "owner": "Belongs to",
+        "nobody": "The whole company (no one in particular)",
+        "formerMember": "Former team member",
+        "private": "Private – seen only by the company owner and the person the client belongs to",
+        "privateHint": "Others won’t find it in contacts, invoices, notifications or the change history.",
+        "ownedBy": "Belongs to: {name}",
+        "ownerOnly": "Only the company owner or the person the client belongs to can change this.",
+        "saved": "Saved",
+        "failed": "Could not save",
+        "errors": {
+          "visibility_owner_only": "Only the company owner or the person the client belongs to can change this.",
+          "visibility_would_hide": "You would stop seeing this client yourself. Only the company owner can hand over a private client.",
+          "owner_not_member": "That person is no longer on the team."
+        }
+      }
     },
     "csv": {
       "import": "Import CSV",
@@ -1415,7 +1443,8 @@
       "violet": "Violet",
       "pink": "Pink",
       "slate": "Grey"
-    }
+    },
+    "privateBadge": "Private client"
   },
   "settings": {
     "title": "Settings",
@@ -2054,7 +2083,8 @@
         "expenses": "Expenses assistant",
         "auditor": "Tax advisor / auditor",
         "viewer": "Read-only",
-        "custom": "Custom permissions"
+        "custom": "Custom permissions",
+        "assistant": "Assistant (drafts only)"
       },
       "presetHints": {
         "admin": "Full access including the team, company details and billing.",
@@ -2063,7 +2093,8 @@
         "expenses": "Records expenses and receipts, views invoices and contacts.",
         "auditor": "Sees everything including bank and exports, changes nothing.",
         "viewer": "Views invoices, contacts and expenses. No bank or exports.",
-        "custom": "Set access for each area separately."
+        "custom": "Set access for each area, and expand an area for its individual actions.",
+        "assistant": "Prepares invoice drafts and contacts. Leaves issuing, sending and cancelling to you."
       },
       "presetsHint": "Pick a ready-made profile, or fine-tune a member's access per area (sliders icon).",
       "areas": {
@@ -2072,7 +2103,10 @@
         "contacts": "Contacts",
         "expenses": "Expenses",
         "bank": "Bank",
-        "reports": "Exports"
+        "reports": "Exports",
+        "projects": "Projects and time",
+        "recurring": "Recurring invoices",
+        "settings": "Settings"
       },
       "levels": {
         "none": "No access",
@@ -2081,7 +2115,7 @@
       },
       "editPermissions": "Edit permissions",
       "editPermissionsFor": "Permissions – {name}",
-      "permissionsHint": "Edit includes read. Only administrators manage the team, company details and billing.",
+      "permissionsHint": "Edit includes read. Expand an area to switch its individual actions on or off. Only admins manage the team, modules, backups and the subscription.",
       "save": "Save",
       "directory": {
         "toggle": "Don't have an accountant? Pick a verified one",
@@ -2095,7 +2129,56 @@
         "picked": "{email} is filled in. Check the role and send the invitation."
       },
       "copyLink": "Copy link",
-      "seatLimit": "Your plan has no free seat left. Plus has 3 users, Business 10. Accountants don't count (up to 2)."
+      "seatLimit": "Your plan has no free seat left. Plus has 3 users, Business 10. Accountants don't count (up to 2).",
+      "actions": {
+        "invoices": {
+          "create": "Create and edit drafts",
+          "issue": "Issue (assign a number)",
+          "send": "Send to clients and remind",
+          "cancel": "Cancel and delete"
+        },
+        "expenses": {
+          "create": "Record and edit",
+          "approve": "Approve (paid, received e-invoices)",
+          "delete": "Delete"
+        },
+        "bank": {
+          "match": "Match payments and sync",
+          "connections": "Manage bank connections"
+        },
+        "reports": {
+          "export": "Download exports"
+        },
+        "settings": {
+          "company": "Company and bank accounts",
+          "numbering": "Document numbering",
+          "templates": "Templates, emails and variables",
+          "paymentMethods": "Payment methods",
+          "integrations": "Integrations and webhooks",
+          "apiKeys": "API keys"
+        }
+      },
+      "actionHints": {
+        "apiKeys": "A key has full access to the whole company, whatever these permissions say."
+      },
+      "actionsCount": "{granted}/{total}",
+      "summaryWithout": "without: {list}",
+      "locked": {
+        "backup": "Backups",
+        "billing": "Subscription",
+        "ownerOnly": "Owner only",
+        "adminsOnly": "Owner and admins only"
+      },
+      "fillFromPreset": "Fill in from",
+      "contactScope": {
+        "label": "Sees clients",
+        "all": "Whole company",
+        "own": "Only their own",
+        "hint": "Only their own = only the clients you assign to them (Belongs to) and documents they created themselves.",
+        "ownerOnly": "Only the company owner can change this.",
+        "summary": "own clients only",
+        "refused": "Only the company owner can change this."
+      }
     },
     "exports": {
       "title": "Accountant exports",
@@ -4294,7 +4377,7 @@
     "title": "Pricing",
     "lead": "Start free, no card needed. Move up a plan when you need it.",
     "seoTitle": "Invoicing pricing – start free",
-    "metaDescription": "Billanta pricing: Free with 10 documents a month and pay-as-you-go beyond that, Start from €4.99, Plus with AI from €9.99 and Business for teams. No card needed, prices excl. VAT.",
+    "metaDescription": "Billanta pricing: Free with 10 documents a month, Start from €4.99, Plus with AI from €9.99 and Business for teams. No card needed, prices excl. VAT.",
     "yearly": "Yearly",
     "monthly": "Monthly",
     "yearlySave": "2 months free",
@@ -4314,7 +4397,7 @@
         "cta": "Start free",
         "features": [
           "10 documents a month included",
-          "More documents at {payg} each",
+          "1 user + accountant",
           "ISDOC, QR payment, registry lookup and VIES",
           "5 AI credits a month",
           "VAT threshold tracking and tax calendar",
@@ -4332,8 +4415,10 @@
           "Recurring invoices and client portal",
           "Income tax figures",
           "Export for Pohoda and Money S3",
+          "API and webhooks (1,000 requests)",
           "30 AI credits a month",
-          "Free accountant access"
+          "Free accountant access",
+          "Invoices without the Billanta footer"
         ]
       },
       "plus": {
@@ -4343,7 +4428,7 @@
         "features": [
           "Everything in Start",
           "150 AI credits a month",
-          "VAT return, control and summary statements",
+          "VAT return, control and summary statements for CZ and SK",
           "Card payments on invoices",
           "3 users + accountant",
           "API and webhooks (10,000 requests)",
@@ -4356,7 +4441,7 @@
         "cta": "Choose Business",
         "features": [
           "Everything in Plus",
-          "Up to 10 companies under one account",
+          "Net income split between up to 10 partners",
           "10 users with roles",
           "500 AI credits a month",
           "API and webhooks (50,000 requests)",
@@ -4364,7 +4449,7 @@
         ]
       }
     },
-    "paygNote": "On Free you only pay for documents beyond 10 a month, {payg} each. From about 34 documents a month, Start works out cheaper.",
+    "limitsNote": "Free covers 10 documents a month; credit notes don't count. You can try the Pohoda or Money S3 export once a month, and the VAT files once.",
     "aiCreditNote": "One AI credit = one invoice from a voice or text message, or one receipt read from a photo.",
     "compare": {
       "title": "Compare plans",
@@ -4396,30 +4481,37 @@
         "ownKey": "Your own AI key, no limit",
         "vatLimit": "VAT threshold tracking and tax calendar",
         "annual": "Income tax figures",
-        "vatFilings": "VAT return, control and summary statements",
+        "vatFilings": "VAT return, control and summary statements (CZ)",
         "accountantExport": "Export for your accountant",
         "users": "Users",
         "companies": "Companies under one account",
-        "api": "API and webhooks (requests per month)",
+        "api": "API (requests per month)",
         "time": "Time tracking",
-        "backups": "Data backups (Google Drive, download)",
-        "support": "Support"
+        "backups": "Data backups (Google Drive, SFTP, encrypted, download)",
+        "support": "Support",
+        "invoiceLock": "Password-locked invoices",
+        "brandFooter": "No “Made with Billanta” footer",
+        "stripe": "Stripe payment sync",
+        "vatFilingsSk": "VAT return, control and summary statements (SK)",
+        "netIncome": "Net income: partners in the split",
+        "webhooks": "Webhooks"
       },
       "cell": {
-        "docsFree": "10 included, then {payg} each",
+        "docsFree": "10",
         "unlimited": "Unlimited",
         "twoTemplates": "2 templates",
         "manual": "Manual",
         "automatic": "Automatic",
-        "csv": "CSV",
         "csvPlus": "CSV, Pohoda, Money S3",
-        "oneUser": "1",
-        "userAccountant": "1 + accountant",
         "threeAccountant": "3 + accountant",
-        "tenUsers": "10 with roles",
-        "upTo10": "Up to 10",
         "email": "E-mail",
-        "priority": "Priority"
+        "priority": "Priority",
+        "onScreen": "On screen",
+        "oneDownload": "1 trial download",
+        "csvTaste": "CSV, Pohoda and Money S3 once a month",
+        "oneAccountant": "1 + accountant",
+        "tenAccountant": "10 + accountant",
+        "ownPlan": "Up to 10, each on its own plan"
       }
     },
     "compareCompetitors": "How Billanta compares with Fakturoid, iDoklad and others",
@@ -4443,7 +4535,7 @@
       "items": [
         {
           "q": "Is Billanta free?",
-          "a": "Yes. The Free plan has no time limit and needs no card. It includes 10 documents a month; each extra one costs {payg}. ISDOC, QR payments and company lookup in the ARES registry are in every plan."
+          "a": "Yes. The Free plan has no time limit and needs no card. It includes 10 documents a month. If you need more, Start has no document limit. ISDOC, QR payments and company lookup in the ARES registry are in every plan."
         },
         {
           "q": "Do the prices include VAT?",
@@ -4463,7 +4555,7 @@
         },
         {
           "q": "Does my accountant need their own plan?",
-          "a": "No. From the Start plan, one accountant gets access to your company for free, as part of your plan."
+          "a": "No. On every plan, Free included, up to 2 accountants can access your company for free."
         },
         {
           "q": "Why do invoices say “Made with Billanta”?",
@@ -4676,7 +4768,8 @@
       "ai_provider_unavailable": "AI is not responding. Try again in a moment.",
       "empty_input": "Describe what to invoice.",
       "symbol_invalid": "Symbols may contain digits only (VS and SS up to 10, KS up to 4).",
-      "reason_required": "Enter a reason for the change."
+      "reason_required": "Enter a reason for the change.",
+      "ai_credits_exhausted": "This month's AI credits are used up. New ones arrive on the 1st; a higher plan has more, or use your own key."
     },
     "copy": {
       "title": "Prefill from another invoice",
@@ -5289,16 +5382,27 @@
       "relock": "Hide again",
       "lockedToast": "Details hidden",
       "unlockedToast": "Details now show without a password",
-      "teamHint": "This protects against someone looking at an unlocked or shared computer, not against colleagues: every team member reveals them with their own password. If only certain people should see an invoice, set who has access on the client.",
+      "teamHint": "This protects against someone looking at an unlocked or shared computer, not against colleagues: every team member reveals them with their own password. If only certain people should see an invoice, mark it private, or set who the client belongs to.",
       "teamLink": "Set who in the team sees what",
       "errors": {
         "wrong_current": "Wrong password.",
         "reauth_required": "Your account has no password. Sign out and back in, then try again.",
         "too_many_attempts": "Too many attempts. Try again in a few minutes.",
         "generic": "That didn't work. Please try again."
-      }
+      },
+      "privacyLink": "Mark as private"
     },
-    "partnerDefaultShares": "default shares"
+    "partnerDefaultShares": "default shares",
+    "privacy": {
+      "label": "Private invoice",
+      "hint": "Seen only by the company owner and whoever created it, including its items, attachments and payments.",
+      "badge": "Private invoice",
+      "ownerOnly": "Only the company owner or whoever created the invoice can change this.",
+      "failed": "Could not change it",
+      "madePrivate": "The invoice is private",
+      "madeShared": "The team can see the invoice again"
+    },
+    "privateRow": "Private invoice"
   },
   "invite": {
     "title": "Team invitation",
@@ -7304,7 +7408,8 @@
         "buyer_details_submitted": "filled in their billing details for",
         "buyer_details_cancelled": "closed the customer details request for",
         "profile_order": "created by ordering from the public profile:",
-        "link_renamed": "renamed the public link"
+        "link_renamed": "renamed the public link",
+        "send_waiting_pdf": "queued for sending with the PDF"
       },
       "tenant": {
         "updated": "edited the company details",
@@ -14157,6 +14262,20 @@
     "text": "There is a new version of Billanta. Reload the page so everything works.",
     "reload": "Reload"
   },
+  "planLimits": {
+    "from": "From the {plan} plan",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} of {limit} documents this month",
+    "aiCredits": "{remaining} of {limit} AI credits left this month",
+    "apiRequests": "{used} of {limit} API requests this month",
+    "tasteLeft": "Free to try: {left}×",
+    "planRequired": "This comes with the {plan} plan.",
+    "documentsOut": "You've issued all {limit} documents your plan includes this month. Issue more from the {plan} plan, or from the 1st of next month."
+  },
   "vault": {
     "settingsLink": "Confidential mode settings",
     "unlock": {
@@ -14209,7 +14328,7 @@
       "lead": "Encrypt – only you and members with the key will see the content, the server cannot read it.",
       "what": "Line descriptions and notes (above items, below items and internal) are encrypted.",
       "keeps": "Reports and dashboards keep working: amounts, dates and variable symbols stay unencrypted.",
-      "loses": "For encrypted documents only your browser creates the PDF, ISDOC and UBL. The server attaches them to an email only when you explicitly ask, and text search will not find them.",
+      "loses": "For encrypted documents only your browser creates the PDF, ISDOC and UBL. The server attaches them to an email only when the file from your browser passes through it once, and it does not store it. Text search runs only in your browser after unlock.",
       "locked": "Locked documents are skipped.",
       "done": "{n, plural, one {# document encrypted} other {# documents encrypted}}.",
       "nothing": "There was nothing to encrypt.",
@@ -14220,15 +14339,21 @@
       "lockedLead": "Unlock it to edit. It opens only in your browser.",
       "otherKey": "This document is encrypted with a key this company does not have.",
       "unlock": "Unlock",
-      "aiUnavailable": "AI prefill is unavailable in Confidential mode while encrypting – the text would have to go to the server.",
       "sealFailed": "The document could not be encrypted. Nothing was saved.",
       "sealToggle": "Encrypt this document",
-      "sealOnHint": "Only you and members with the key will see line descriptions and notes. The browser creates the PDF, ISDOC and UBL, item suggestions will not be available.",
-      "sealOffHint": "The document is saved without encryption, as before."
+      "sealOnHint": "Only you and members with the key will see line descriptions and notes. Your browser creates the PDF, ISDOC and UBL; item suggestions are matched in your browser only.",
+      "sealOffHint": "The document is saved without encryption, as before.",
+      "aiConsent": "Send this text to AI – it goes to the server and the AI provider once and is not stored",
+      "aiConsentHint": "The server does not store or log the text. Whatever AI returns is encrypted in your browser when you save. The consent covers this one run only."
     },
     "actions": {
       "blocked": "The encrypted texts could not be opened. Unlock the vault with the right key and try again.",
-      "sendHint": "This document is encrypted: without the attachment, the email goes out with a link only.",
+      "sendHint": "This document is encrypted, so the server cannot make the PDF or ISDOC itself. Depending on your Confidential mode settings, the link goes now and the PDF from your browser, or only the link goes.",
+      "linkCopied": "Link with key copied",
+      "keyLink": "Client link with key",
+      "copyLink": "Copy",
+      "emailWaiting": "The e-mail is waiting for the PDF. It goes out from a browser with the mode unlocked, see the notice at the top.",
+      "pdfFollows": "Link sent. Send the PDF as a follow-up e-mail from the notice at the top.",
       "pdfLocal": "Your browser creates the PDF, the server never sees the encrypted texts.",
       "isdocLocal": "Your browser creates the ISDOC, the server never sees the encrypted texts.",
       "attachOnce": "Attach PDF/ISDOC – the file passes through the server once to be sent and is not stored",
@@ -14244,13 +14369,14 @@
         "description": "What you supplied and the notes on the document. Amounts, dates and symbols stay readable.",
         "loses": [
           "Sending over Peppol",
-          "Search by item and note text, item suggestions",
-          "AI document prefill",
-          "Line descriptions on the public link and in accountant exports (Pohoda, Money, CSV)"
+          "Text search and item suggestions on the server (your browser handles them after unlock)",
+          "AI prefill without an explicit click (the text passes the server to AI once, only when you confirm, and is not stored)",
+          "Public link: your client sees the full text only through the link with the key from the document detail. A link without the key (e.g. from an automatic reminder) shows it only on a device where the client opened the full link before",
+          "Readable texts in the server’s accountant exports (Pohoda, Money and CSV show “[Důvěrný obsah]”; your browser builds the export with decrypted texts)"
         ],
         "changes": [
           "Your browser creates the PDF, ISDOC and UBL",
-          "PDF/ISDOC attachment in emails only when you tick it – the file passes through the server once and is not stored"
+          "PDF/ISDOC email attachment: your browser creates the file, it passes through the server once and is not stored"
         ]
       },
       "attachments": {
@@ -14375,6 +14501,226 @@
       "upgrade": "See plans",
       "downgradedTitle": "Encrypting more documents needs the Plus or Business plan",
       "downgradedBody": "You can still unlock, read and edit encrypted documents. New documents are saved without encryption."
+    },
+    "clientLink": {
+      "ready": "The link carries the key to the encrypted texts (after the #). Your client sees the full text with it; the server never gets the key.",
+      "locked": "This document is encrypted. Unlock the vault and the link gets the key your client needs to read the full text.",
+      "prepare": "This document was encrypted before client keys existed. Give it a key of its own, then you can send it in the link. Only re-encrypted texts go to the server.",
+      "failed": "Could not prepare the client key. Please try again.",
+      "loading": "Preparing the client key…",
+      "unlock": "Unlock the vault",
+      "prepareButton": "Prepare the client link",
+      "shareOnly": "Send it to your client only. Anyone with the full link can read the encrypted texts too.",
+      "serverEmail": "The e-mail the server sends has the link without the key. Your client sees the amounts there but not the encrypted texts, unless they opened the link with the key in the same browser before. To let them read the texts, send them the link above yourself."
+    },
+    "search": {
+      "lockedHint": "{n, plural, one {# document has encrypted texts the server cannot search.} other {# documents have encrypted texts the server cannot search.}} Unlock and your browser will search them.",
+      "unlock": "Unlock and search",
+      "searching": "Searching encrypted texts in your browser…",
+      "included": "Results include encrypted texts, searched only in your browser.",
+      "failed": "Could not search the encrypted texts. The results cover readable texts only.",
+      "skippedLocked": "{n, plural, one {# locked document was not searched.} other {# locked documents were not searched.}}"
+    },
+    "export": {
+      "title": "Export with decrypted texts",
+      "lead": "Documents from the selected period, including line descriptions and notes. The file is built in your browser and saved straight to your computer; the server never sees it. Treat it as a sensitive document.",
+      "csv": "Download CSV",
+      "json": "Download JSON",
+      "working": "Decrypting…",
+      "done": "{n, plural, one {Saved # document.} other {Saved # documents.}}",
+      "failed": "Could not prepare the export. Please try again.",
+      "needsUnlock": "You will be asked to unlock Confidential mode first.",
+      "skippedLocked": "{n, plural, one {# locked document is missing from the export.} other {# locked documents are missing from the export.}}",
+      "unreadable": "[Cannot decrypt]",
+      "unreadableCount": "{n, plural, one {# text could not be decrypted.} other {# texts could not be decrypted.}}",
+      "accountingNote": "The accountant exports above (CSV, Pohoda, Money S3) are built by the server, so they show “[Důvěrný obsah]” in place of encrypted texts. Amounts, VAT, dates and customers in them are complete.",
+      "columns": {
+        "documentType": "Document type",
+        "invoiceNumber": "Number",
+        "status": "Status",
+        "issueDate": "Issue date",
+        "taxableSupplyDate": "Taxable supply date",
+        "dueDate": "Due date",
+        "paidAt": "Paid",
+        "contactName": "Customer",
+        "contactIco": "Company ID",
+        "variableSymbol": "Variable symbol",
+        "currency": "Currency",
+        "totalWithoutVat": "Net",
+        "totalVat": "VAT",
+        "total": "Total",
+        "noteAbove": "Text above items",
+        "noteBelow": "Text below items",
+        "internalNote": "Internal note",
+        "itemDescription": "Item",
+        "itemCode": "Item code",
+        "quantity": "Quantity",
+        "unit": "Unit",
+        "unitPrice": "Unit price",
+        "vatRate": "VAT rate %",
+        "discountPercent": "Discount %"
+      }
+    },
+    "outbox": {
+      "badge": "{n, plural, one {# e-mail is} other {# e-mails are}} waiting to be sent with the PDF",
+      "open": "Show",
+      "title": "E-mails waiting for the PDF",
+      "back": "Close",
+      "send": "Send ({n})",
+      "unlockAndSend": "Unlock and send ({n})",
+      "lead": "The server cannot turn an encrypted document into a PDF by itself. The PDF is made here, in a browser with Confidential mode unlocked.",
+      "passThroughPdf": "The PDF is made in your browser. The server forwards it to the recipient once and does not store it.",
+      "passThroughTexts": "When you click Send, the decrypted texts of these documents pass through the server once: it makes the PDF from them and e-mails it. It does not store or log them.",
+      "unnumbered": "No number",
+      "kind": {
+        "invoice": "Whole e-mail waiting",
+        "invoice_pdf": "PDF for a sent link"
+      },
+      "dismiss": "Do not send",
+      "settingsHint": "Choose when and how the PDF is sent in",
+      "settingsLink": "Confidential mode settings",
+      "sent": "{n, plural, one {# e-mail sent} other {# e-mails sent}}",
+      "failed": "{n, plural, one {# e-mail could not be sent} other {# e-mails could not be sent}}"
+    },
+    "emailSettings": {
+      "title": "E-mails for encrypted documents",
+      "lead": "What happens when you send an encrypted document. The link, amount, due date, payment reference and QR payment always go.",
+      "mode": {
+        "link_now": "Link now, PDF later",
+        "wait": "Wait and send it all at once",
+        "link_only": "Link only, never a PDF"
+      },
+      "modeHint": {
+        "link_now": "The customer gets an e-mail with the link right away. The PDF follows in a second e-mail once a team member sends it from a browser with the mode unlocked.",
+        "wait": "The e-mail goes only with the PDF, from the browser of a team member with the mode unlocked. Until then the customer gets nothing.",
+        "link_only": "The customer gets only the link and opens the document there. The server never receives its texts."
+      },
+      "autoSend": "Send PDFs automatically",
+      "autoSendHint": "As soon as a team member opens the app with the mode unlocked, waiting PDFs go out without another click.",
+      "passThrough": "Every PDF sent passes through the server once, because that is where e-mail is sent from. The server does not store or log it.",
+      "saved": "Saved",
+      "failed": "Could not save"
+    },
+    "device": {
+      "title": "Remember unlock on this device",
+      "hint": "The mode stays unlocked after the browser closes, with no 12-hour limit, so waiting PDFs can go out whenever you open the app. The key is stored in the browser in a way that cannot be read or copied. Lock, turning this off or signing out removes it.",
+      "risk": "Only turn this on for your own device that nobody else uses. Anyone who opens this browser will see the encrypted texts.",
+      "on": "This device remembers the unlock",
+      "off": "The unlock expires after 12 hours again",
+      "failed": "That did not work. Unlock the mode first."
+    },
+    "serverView": {
+      "title": "What the server sees",
+      "lead": "This is how the texts of this document are stored on the server. Only a browser with the mode unlocked can decrypt them.",
+      "server": "The server has:",
+      "you": "You see:",
+      "noteAbove": "Text above the items",
+      "noteBelow": "Text below the items",
+      "internalNote": "Internal note",
+      "item": "Item {n}",
+      "notSealed": "The server sees amounts, dates, the document number, references and customers, so it can calculate VAT, track due dates and match payments.",
+      "more": "How it works and how to check it"
     }
+  },
+  "vaultPublic": {
+    "integrity": {
+      "title": "Code check",
+      "lead": "Every build of the app records the SHA-256 hashes of the encryption code and of the files that contain it.",
+      "sourceHash": "Source file {path}",
+      "repo": "Public source code",
+      "repoPlanned": "We plan to publish it in its own GitHub repository.",
+      "chunks": "Files your browser loads",
+      "check": "Check in this browser",
+      "match": "Matches",
+      "mismatch": "Does not match",
+      "error": "Could not download the file",
+      "loadedHere": "loaded on this page",
+      "missing": "The manifest is not available yet. It is made by the production build.",
+      "honest": "The same server sends the manifest and the files, so a match only shows that the manifest describes what is being served. The real check is to compare the hashes with a build of the published source."
+    },
+    "demo": {
+      "label": "Type any sentence",
+      "placeholder": "For example: Advice on selling the company, 12 hours",
+      "send": "Encrypt and send",
+      "keyNote": "The key is made for this page only and is never sent. It is gone when you reload.",
+      "typed": "What you typed",
+      "typedHint": "Stays in your browser only.",
+      "sent": "What was sent to the server",
+      "sentHint": "The exact body of the POST {path} request.",
+      "received": "What the server got (HTTP {status})",
+      "receivedHint": "The server returns exactly what it received. It stores nothing.",
+      "open": "Decrypt here",
+      "openedAs": "Your browser decrypted it back to:",
+      "rateLimited": "Too many tries. Please wait a few minutes.",
+      "failed": "The request failed. Please try again.",
+      "devtoolsTitle": "Check it yourself in your browser tools",
+      "devtoolsSteps": [
+        "Press F12 (Cmd+Option+I on a Mac) and open the Network tab.",
+        "Click Encrypt and send again.",
+        "Click the \"echo\" request in the list and open Payload and Response.",
+        "You will see only an enc:v1:… string, not your sentence. Ctrl+F in the Network tab searches every request: try to find a word from your sentence."
+      ]
+    },
+    "csp": {
+      "liveTitle": "The Content-Security-Policy header of this page, fetched just now",
+      "liveMissing": "Could not read the header. You can find it in your browser tools on the request for this page."
+    }
+  },
+  "securityPage": {
+    "seoTitle": "Confidential mode: what the server sees and what it does not",
+    "eyebrow": "Security",
+    "title": "Confidential mode: document texts the server cannot read",
+    "lead": "Item descriptions and notes are encrypted in your browser. The server gets only an encrypted string and has no key for it. You can try it and check it yourself here.",
+    "featuresLink": "All features",
+    "demoTitle": "Try it",
+    "demoLead": "No sign-in needed. The page encrypts your sentence with the same code as the app and really sends it to the server. You see side by side what you typed, what was sent and what the server got.",
+    "howTitle": "How it works",
+    "howSteps": [
+      {
+        "title": "The key is made on your side",
+        "body": "When the mode is switched on, the browser creates a random AES-256 key. The server gets only copies of it locked with your password, passkey or recovery code."
+      },
+      {
+        "title": "Encrypted before it is sent",
+        "body": "An item description or a note is encrypted before it leaves the browser. The server stores an enc:v1:… string and does nothing with it."
+      },
+      {
+        "title": "Decrypted only on your side",
+        "body": "After unlocking, the browser holds the key so that the page can use it but cannot read its contents."
+      }
+    ],
+    "hiddenTitle": "What the server does not see",
+    "hidden": [
+      "Item descriptions",
+      "Text above and below the items",
+      "Internal notes",
+      "The key or the password that unlocks it"
+    ],
+    "visibleTitle": "What the server sees and why",
+    "visible": [
+      "Amounts and VAT – for calculations, tax returns and matching payments",
+      "Issue and due dates – for reminders",
+      "Document number and payment reference",
+      "The customer and their e-mail – so the document can be sent"
+    ],
+    "cspTitle": "The browser controls where the page may send data",
+    "cspBody": "The app, document links and this page are served with a Content-Security-Policy header that contains connect-src 'self'. The browser itself then refuses any request from such a page to another server, even if a script tried. Decrypted text cannot leave that way.",
+    "cspHow": "Anyone can read the header: in your browser tools (F12, Network tab) click the first request, the page itself, and find Content-Security-Policy in the response headers.",
+    "limitsTitle": "Where the limits are",
+    "limits": [
+      "Our server delivers the app code. If it were compromised, it could deliver different code. Publishing the code and the hashes makes such a change detectable, but does not prevent it by itself.",
+      "When you e-mail an encrypted document with its PDF, its texts pass through the server once, because that is where e-mail is sent from. The app tells you first, and the server does not store or log them. If you send only the link, the server never gets the texts.",
+      "The mode does not encrypt amounts, dates, numbers or customers, see above.",
+      "For encrypted documents the server makes no ISDOC or other machine-readable formats.",
+      "The connect-src rule applies to a page loaded directly. If you move into the app from the public site without a reload, the rule of the page you came from applies until you reload.",
+      "Anyone with access to your unlocked browser can see the texts. The mode protects against the server, not against someone at your computer.",
+      "If you forget both the password and the recovery code and have no passkey, nobody can recover the texts, not even us."
+    ],
+    "verifyTitle": "Code check",
+    "verifyLead": "Every build writes the SHA-256 hashes of the encryption code into a public file. Your browser can recompute them right here.",
+    "planned": [
+      "We will publish the encryption code (one file with no dependencies) in its own GitHub repository, so the hashes can be compared with your own build.",
+      "An independent review of the code is planned."
+    ]
   }
 }

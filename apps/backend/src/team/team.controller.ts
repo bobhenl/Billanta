@@ -35,9 +35,12 @@ export class TeamController {
   }
 
   @Patch("members/:id")
-  @ApiOperation({ summary: "Change a member's role (not the owner's)" })
+  @ApiOperation({
+    summary: "Change a member's role (not the owner's)",
+    description: "contactScope (all | own) is for the company owner only: 403 owner_only for anyone else.",
+  })
   updateMember(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: UpdateMemberDto) {
-    return this.teamService.updateMember(req.tenantDb!, req.user!, id, dto.role, dto.permissions);
+    return this.teamService.updateMember(req.tenantDb!, req.user!, id, dto.role, dto.permissions, dto.contactScope);
   }
 
   @Delete("members/:id")

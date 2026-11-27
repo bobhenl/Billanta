@@ -12,19 +12,24 @@ import { setContactPortal, setContactPortalName } from '../actions';
 import { copyText } from '@/lib/clipboard';
 import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
+import { PlanLock } from '@/components/plan-lock';
+import type { PaidPlanKey } from '@/lib/plan';
 
 /** The customer's portal link (all their documents on one page): turn on, copy, rename, renew, turn off. */
 export function ClientPortalCard({
   contactId,
   link,
   defaultLink,
-  slug
+  slug,
+  lock = null
 }: {
   contactId: string;
   link: string | null;
   /** The link without the custom name (customer's name or nothing, per Settings). */
   defaultLink: string | null;
   slug: string | null;
+  /** Set when the plan doesn't include the portal: it can't be turned on (an existing link keeps working). */
+  lock?: PaidPlanKey | null;
 }) {
   const t = useTranslations('contacts.detail.portal');
   const locale = useLocale();
@@ -121,7 +126,8 @@ export function ClientPortalCard({
       ) : (
         <>
           <p className="mt-2 text-muted-foreground">{t('off')}</p>
-          {canEdit && (
+          {canEdit && lock && <PlanLock plan={lock} className="mt-3" />}
+          {canEdit && !lock && (
           <button
             type="button"
             disabled={pending}

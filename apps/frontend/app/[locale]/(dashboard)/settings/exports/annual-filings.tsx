@@ -1,5 +1,7 @@
 'use client';
 
+import { FeatureBadge } from '@/components/plan-lock';
+import { planRequiredIn, type FeatureUsage } from '@/lib/usage';
 import { useEffect, useState } from 'react';
 import { Download, FileText, Printer } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -80,7 +82,8 @@ function writeRemembered(v: Remembered | null) {
  * the POST body and never stored on the server. Filing itself is always the
  * user's step.
  */
-export function AnnualFilings({ prefill }: { prefill: AnnualFilingsPrefill }) {
+export function AnnualFilings({ prefill, usage }: { prefill: AnnualFilingsPrefill; usage?: FeatureUsage | null }) {
+  const tPlan = useTranslations('planLimits');
   const t = useTranslations('settings.exports.filings');
   const locale = useLocale();
   const now = new Date();
@@ -159,6 +162,11 @@ export function AnnualFilings({ prefill }: { prefill: AnnualFilingsPrefill }) {
       });
       if (!res.ok) {
         const text = await res.text().catch(() => '');
+        const plan = res.status === 403 ? planRequiredIn(text) : null;
+        if (plan) {
+          setError(tPlan('planRequired', { plan: tPlan(`plans.${plan}`) }));
+          return;
+        }
         const code = ERROR_CODES.find((c) => text.includes(c));
         setError(code ? t(`errors.${code}`) : t('errors.generic'));
         return;
@@ -210,6 +218,7 @@ export function AnnualFilings({ prefill }: { prefill: AnnualFilingsPrefill }) {
         <div>
           <h2 className="font-bold">{t('title', { year })}</h2>
           <p className="mt-1 text-sm text-muted-foreground print:hidden">{t('hint')}</p>
+          <FeatureBadge usage={usage} className="mt-2 print:hidden" />
         </div>
       </div>
 

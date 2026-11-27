@@ -4,6 +4,7 @@ import { z } from "zod";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { loadPlanSummary, RequirePlan } from "../billing/plan.guard";
 import { planAllows } from "../billing/plan-access";
+import { assertMayDo } from "../tenancy/permissions";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { CardPaymentsService } from "./card-payments.service";
 
@@ -32,6 +33,7 @@ export class CardPaymentsSettingsController {
   connect(@Req() req: TenantScopedRequest, @Body() body: unknown) {
     const parsed = connectSchema.safeParse(body);
     if (!parsed.success) throw new BadRequestException("invalid_key_format");
+    assertMayDo(req.user, "settings.paymentMethods");
     return this.service.connect(req.tenantDb!, req.user!.tenantId, parsed.data.secretKey);
   }
 
@@ -39,6 +41,7 @@ export class CardPaymentsSettingsController {
   @HttpCode(200)
   @ApiOperation({ summary: "Show or hide the 'Pay by card' button on invoice links" })
   async setEnabled(@Req() req: TenantScopedRequest, @Body() body: unknown) {
+    assertMayDo(req.user, "settings.paymentMethods");
     const parsed = enabledSchema.safeParse(body);
     if (!parsed.success) throw new BadRequestException("Invalid body");
     // Switching the button off is always allowed, switching it on needs Plus.
@@ -54,6 +57,7 @@ export class CardPaymentsSettingsController {
   @Delete()
   @ApiOperation({ summary: "Disconnect Stripe (deletes the stored key)" })
   disconnect(@Req() req: TenantScopedRequest) {
+    assertMayDo(req.user, "settings.paymentMethods");
     return this.service.disconnect(req.tenantDb!, req.user!.tenantId);
   }
 }

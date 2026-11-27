@@ -245,7 +245,8 @@
         "cookies": "Polityka cookies",
         "cookieSettings": "Ustawienia cookies",
         "dpa": "Umowa powierzenia przetwarzania danych",
-        "contact": "Kontakt"
+        "contact": "Kontakt",
+        "confidential": "Tryb poufny i bezpieczeństwo"
       },
       "account": {
         "title": "Konto",
@@ -768,7 +769,15 @@
     "print": "Drukuj / PDF",
     "downloadPdf": "Pobierz PDF",
     "downloadPdfShort": "PDF",
-    "confidentialItem": "Pozycja poufna"
+    "confidentialItem": "Pozycja poufna",
+    "sealed": {
+      "noKey": "Niektóre teksty są zaszyfrowane. Pełna treść jest w linku z pierwotnego e-maila.",
+      "openedLink": "Klucz z Twojego linku otworzył zaszyfrowane teksty. Ta przeglądarka go zapamięta, więc dokument otworzą też późniejsze linki.",
+      "openedStored": "Zaszyfrowane teksty otworzył klucz, który ta przeglądarka zapamiętała z wcześniejszego linku.",
+      "openedPreview": "Podgląd: teksty otworzył klucz z linku. Nie został zapisany w tej przeglądarce.",
+      "forget": "Zapomnij klucz w tej przeglądarce",
+      "forgotten": "Klucz został usunięty z tej przeglądarki. Pełna treść jest w linku z pierwotnego e-maila."
+    }
   },
   "expenses": {
     "title": "Wydatki",
@@ -812,7 +821,8 @@
         "ai_key_missing": "Brakuje Twojego własnego klucza API do AI",
         "unsupported_file_type": "Nieobsługiwany typ pliku (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "AI odmówiło przetworzenia dokumentu",
-        "ai_unparseable": "Z dokumentu nie udało się nic odczytać"
+        "ai_unparseable": "Z dokumentu nie udało się nic odczytać",
+        "ai_credits_exhausted": "Kredyty AI na ten miesiąc się skończyły. Nowe pojawią się 1. dnia, wyższy plan ma ich więcej, możesz też użyć własnego klucza."
       },
       "supplierSection": "Dostawca i dokument",
       "supplierLinked": "Powiązano z kontaktem",
@@ -1349,7 +1359,25 @@
         "manage": "Edytuj link"
       },
       "contactPerson": "Osoba kontaktowa",
-      "person": "Osoba prywatna"
+      "person": "Osoba prywatna",
+      "visibility": {
+        "title": "Kto widzi klienta",
+        "hint": "Prywatnego klienta i jego dokumenty widzi tylko właściciel firmy i członek, do którego klient należy. Inni nie znajdą go na listach ani w historii.",
+        "owner": "Należy do",
+        "nobody": "Całej firmy (nikogo konkretnego)",
+        "formerMember": "Były członek zespołu",
+        "private": "Prywatny – widzi go tylko właściciel firmy i osoba, do której klient należy",
+        "privateHint": "Inni nie znajdą go w kontaktach, fakturach, powiadomieniach ani historii zmian.",
+        "ownedBy": "Należy do: {name}",
+        "ownerOnly": "Zmienić to może tylko właściciel firmy lub osoba, do której klient należy.",
+        "saved": "Zapisano",
+        "failed": "Nie udało się zapisać",
+        "errors": {
+          "visibility_owner_only": "Zmienić to może tylko właściciel firmy lub osoba, do której klient należy.",
+          "visibility_would_hide": "Sam przestałbyś widzieć tego klienta. Przekazać prywatnego klienta może tylko właściciel firmy.",
+          "owner_not_member": "Ta osoba nie należy już do zespołu."
+        }
+      }
     },
     "csv": {
       "import": "Importuj CSV",
@@ -1414,7 +1442,8 @@
       "violet": "Fioletowy",
       "pink": "Różowy",
       "slate": "Szary"
-    }
+    },
+    "privateBadge": "Prywatny klient"
   },
   "settings": {
     "title": "Ustawienia",
@@ -2053,7 +2082,8 @@
         "expenses": "Asystent ds. wydatków",
         "auditor": "Doradca podatkowy / audytor",
         "viewer": "Tylko odczyt",
-        "custom": "Własne uprawnienia"
+        "custom": "Własne uprawnienia",
+        "assistant": "Asystent (tylko szkice)"
       },
       "presetHints": {
         "admin": "Pełny dostęp, łącznie z zespołem, danymi firmy i płatnościami za Billantę.",
@@ -2062,7 +2092,8 @@
         "expenses": "Wprowadza wydatki i paragony, przegląda faktury i kontakty.",
         "auditor": "Widzi wszystko, łącznie z bankiem i eksportami, niczego nie zmienia.",
         "viewer": "Przegląda faktury, kontakty i wydatki. Bez banku i eksportów.",
-        "custom": "Ustaw dostęp dla każdego obszaru osobno."
+        "custom": "Ustaw dostęp dla każdego obszaru, a po rozwinięciu obszaru także dla poszczególnych czynności.",
+        "assistant": "Przygotowuje szkice faktur i kontakty. Wystawianie, wysyłanie i anulowanie zostawia tobie."
       },
       "presetsHint": "Wybierz gotowy profil albo dostosuj dostęp członka do poszczególnych obszarów (ikona suwaków).",
       "areas": {
@@ -2071,7 +2102,10 @@
         "contacts": "Kontakty",
         "expenses": "Wydatki",
         "bank": "Bank",
-        "reports": "Eksporty"
+        "reports": "Eksporty",
+        "projects": "Projekty i czas",
+        "recurring": "Faktury cykliczne",
+        "settings": "Ustawienia"
       },
       "levels": {
         "none": "Brak dostępu",
@@ -2080,7 +2114,7 @@
       },
       "editPermissions": "Edytuj uprawnienia",
       "editPermissionsFor": "Uprawnienia – {name}",
-      "permissionsHint": "Edycja obejmuje odczyt. Zespołem, danymi firmy i płatnościami za Billantę zarządzają tylko administratorzy.",
+      "permissionsHint": "Edycja obejmuje odczyt. Rozwiń obszar, aby włączyć lub wyłączyć poszczególne czynności. Zespołem, modułami, kopiami zapasowymi i subskrypcją zarządzają tylko administratorzy.",
       "save": "Zapisz",
       "directory": {
         "toggle": "Nie masz księgowej? Wybierz sprawdzoną",
@@ -2094,7 +2128,56 @@
         "picked": "Wpisano {email}. Sprawdź rolę i wyślij zaproszenie."
       },
       "copyLink": "Kopiuj link",
-      "seatLimit": "Twój plan nie ma już wolnego miejsca. Plus ma 3 użytkowników, Business 10. Księgowi się nie liczą (do 2)."
+      "seatLimit": "Twój plan nie ma już wolnego miejsca. Plus ma 3 użytkowników, Business 10. Księgowi się nie liczą (do 2).",
+      "actions": {
+        "invoices": {
+          "create": "Tworzenie i edycja szkiców",
+          "issue": "Wystawianie (nadanie numeru)",
+          "send": "Wysyłanie klientom i przypomnienia",
+          "cancel": "Anulowanie i usuwanie"
+        },
+        "expenses": {
+          "create": "Dodawanie i edycja",
+          "approve": "Zatwierdzanie (opłacone, odebrane e-faktury)",
+          "delete": "Usuwanie"
+        },
+        "bank": {
+          "match": "Parowanie płatności i synchronizacja",
+          "connections": "Zarządzanie połączeniami z bankiem"
+        },
+        "reports": {
+          "export": "Pobieranie eksportów"
+        },
+        "settings": {
+          "company": "Firma i rachunki bankowe",
+          "numbering": "Numeracja dokumentów",
+          "templates": "Szablony, e-maile i zmienne",
+          "paymentMethods": "Metody płatności",
+          "integrations": "Integracje i webhooki",
+          "apiKeys": "Klucze API"
+        }
+      },
+      "actionHints": {
+        "apiKeys": "Klucz ma pełny dostęp do całej firmy, niezależnie od tych uprawnień."
+      },
+      "actionsCount": "{granted}/{total}",
+      "summaryWithout": "bez: {list}",
+      "locked": {
+        "backup": "Kopie zapasowe",
+        "billing": "Subskrypcja",
+        "ownerOnly": "Tylko właściciel",
+        "adminsOnly": "Tylko właściciel i administratorzy"
+      },
+      "fillFromPreset": "Wypełnij według",
+      "contactScope": {
+        "label": "Widzi klientów",
+        "all": "Cała firma",
+        "own": "Tylko swoich",
+        "hint": "Tylko swoich = tylko klientów, których mu przypiszesz (Należy do), i dokumenty, które sam wystawił.",
+        "ownerOnly": "Zmienić to może tylko właściciel firmy.",
+        "summary": "tylko swoich klientów",
+        "refused": "To może zmienić tylko właściciel firmy."
+      }
     },
     "exports": {
       "title": "Eksporty dla księgowej",
@@ -4287,7 +4370,7 @@
     "title": "Cennik",
     "lead": "Zacznij za darmo, bez karty. Przejdź na wyższy plan, gdy będzie potrzebny.",
     "seoTitle": "Cennik programu do faktur – zacznij za darmo",
-    "metaDescription": "Cennik Billanta: Free z 10 dokumentami miesięcznie i płatnością za każdy kolejny, Start od 4,99 €, Plus z AI od 9,99 € i Business dla zespołów. Bez karty, ceny netto (bez VAT).",
+    "metaDescription": "Cennik Billanta: Free z 10 dokumentami miesięcznie, Start od 4,99 €, Plus z AI od 9,99 € i Business dla zespołów. Bez karty, ceny netto (bez VAT).",
     "yearly": "Rocznie",
     "monthly": "Miesięcznie",
     "yearlySave": "2 miesiące gratis",
@@ -4307,7 +4390,7 @@
         "cta": "Zacznij za darmo",
         "features": [
           "10 dokumentów miesięcznie w cenie",
-          "Kolejne dokumenty po {payg} za sztukę",
+          "1 użytkownik + księgowa",
           "ISDOC, płatność QR, wyszukiwanie w rejestrze i VIES",
           "5 kredytów AI miesięcznie",
           "Śledzenie limitu VAT i kalendarz podatkowy",
@@ -4325,8 +4408,10 @@
           "Faktury cykliczne i portal klienta",
           "Dane do podatku dochodowego",
           "Eksport do Pohoda i Money S3",
+          "API i webhooki (1000 zapytań)",
           "30 kredytów AI miesięcznie",
-          "Bezpłatny dostęp dla księgowej"
+          "Bezpłatny dostęp dla księgowej",
+          "Faktury bez stopki Billanta"
         ]
       },
       "plus": {
@@ -4336,7 +4421,7 @@
         "features": [
           "Wszystko z planu Start",
           "150 kredytów AI miesięcznie",
-          "Deklaracja VAT, informacja kontrolna i podsumowująca",
+          "Deklaracja VAT, informacja kontrolna i podsumowująca dla CZ i SK",
           "Płatności kartą na fakturach",
           "3 użytkowników + księgowa",
           "API i webhooki (10 000 zapytań)",
@@ -4349,7 +4434,7 @@
         "cta": "Wybierz Business",
         "features": [
           "Wszystko z planu Plus",
-          "Do 10 firm na jednym koncie",
+          "Podział dochodu netto nawet między 10 wspólników",
           "10 użytkowników z rolami",
           "500 kredytów AI miesięcznie",
           "API i webhooki (50 000 zapytań)",
@@ -4357,7 +4442,7 @@
         ]
       }
     },
-    "paygNote": "W planie Free płacisz tylko za dokumenty powyżej 10 miesięcznie, po {payg} za sztukę. Od około 34 dokumentów miesięcznie taniej wychodzi plan Start.",
+    "limitsNote": "W planie Free wystawisz 10 dokumentów miesięcznie, korekty się nie liczą. Eksport do Pohody lub Money S3 wypróbujesz raz w miesiącu, a pliki VAT raz.",
     "aiCreditNote": "Jeden kredyt AI = jedna faktura z wiadomości głosowej lub tekstowej albo jeden paragon odczytany ze zdjęcia.",
     "compare": {
       "title": "Porównaj plany",
@@ -4389,30 +4474,37 @@
         "ownKey": "Własny klucz AI, bez limitu",
         "vatLimit": "Śledzenie limitu VAT i kalendarz podatkowy",
         "annual": "Dane do podatku dochodowego",
-        "vatFilings": "Deklaracja VAT, informacja kontrolna i podsumowująca",
+        "vatFilings": "Deklaracja VAT, informacja kontrolna i podsumowująca (CZ)",
         "accountantExport": "Eksport dla księgowej",
         "users": "Użytkownicy",
         "companies": "Firmy na jednym koncie",
-        "api": "API i webhooki (zapytania miesięcznie)",
+        "api": "API (zapytania miesięcznie)",
         "time": "Ewidencja czasu pracy",
-        "backups": "Kopie zapasowe danych (Google Drive, pobieranie)",
-        "support": "Wsparcie"
+        "backups": "Kopie zapasowe (Google Drive, SFTP, szyfrowane, pobieranie)",
+        "support": "Wsparcie",
+        "invoiceLock": "Faktury chronione hasłem",
+        "brandFooter": "Bez stopki „Utworzono w Billanta”",
+        "stripe": "Synchronizacja płatności ze Stripe",
+        "vatFilingsSk": "Deklaracja VAT, informacja kontrolna i podsumowująca (SK)",
+        "netIncome": "Dochód netto: wspólnicy w podziale",
+        "webhooks": "Webhooki"
       },
       "cell": {
-        "docsFree": "10 w cenie, potem po {payg}",
+        "docsFree": "10",
         "unlimited": "Bez limitu",
         "twoTemplates": "2 szablony",
         "manual": "Ręcznie",
         "automatic": "Automatycznie",
-        "csv": "CSV",
         "csvPlus": "CSV, Pohoda, Money S3",
-        "oneUser": "1",
-        "userAccountant": "1 + księgowa",
         "threeAccountant": "3 + księgowa",
-        "tenUsers": "10 z rolami",
-        "upTo10": "Do 10",
         "email": "E-mail",
-        "priority": "Priorytetowe"
+        "priority": "Priorytetowe",
+        "onScreen": "Na ekranie",
+        "oneDownload": "1 pobranie na próbę",
+        "csvTaste": "CSV, Pohoda i Money S3 1× w miesiącu",
+        "oneAccountant": "1 + księgowa",
+        "tenAccountant": "10 + księgowa",
+        "ownPlan": "Do 10, każda z własnym planem"
       }
     },
     "compareCompetitors": "Jak Billanta wypada na tle Fakturoid, iDoklad i innych",
@@ -4436,7 +4528,7 @@
       "items": [
         {
           "q": "Czy Billanta jest darmowa?",
-          "a": "Tak. Plan Free nie ma limitu czasu i nie wymaga karty. Obejmuje 10 dokumentów miesięcznie; każdy kolejny kosztuje {payg}. ISDOC, płatności QR i wyszukiwanie firm w rejestrze ARES są w każdym planie."
+          "a": "Tak. Plan Free nie ma limitu czasu i nie wymaga karty. Obejmuje 10 dokumentów miesięcznie. Jeśli potrzebujesz więcej, Start nie ma limitu dokumentów. ISDOC, płatności QR i wyszukiwanie firm w rejestrze ARES są w każdym planie."
         },
         {
           "q": "Czy ceny zawierają VAT?",
@@ -4456,7 +4548,7 @@
         },
         {
           "q": "Czy moja księgowa potrzebuje własnego planu?",
-          "a": "Nie. Od planu Start jedna księgowa otrzymuje dostęp do Twojej firmy za darmo, w ramach Twojego planu."
+          "a": "Nie. W każdym planie, także w Free, do Twojej firmy mogą mieć bezpłatny dostęp maksymalnie 2 księgowe."
         },
         {
           "q": "Dlaczego na fakturach jest napis „Stworzono w Billanta”?",
@@ -4669,7 +4761,8 @@
       "ai_provider_unavailable": "AI nie odpowiada. Spróbuj ponownie za chwilę.",
       "empty_input": "Opisz, co chcesz zafakturować.",
       "symbol_invalid": "Symbole mogą zawierać tylko cyfry (VS i SS do 10, KS do 4).",
-      "reason_required": "Podaj powód zmiany."
+      "reason_required": "Podaj powód zmiany.",
+      "ai_credits_exhausted": "Kredyty AI na ten miesiąc się skończyły. Nowe pojawią się 1. dnia, wyższy plan ma ich więcej, możesz też użyć własnego klucza."
     },
     "copy": {
       "title": "Wypełnij na podstawie innej faktury",
@@ -5283,15 +5376,26 @@
       "relock": "Ukryj ponownie",
       "lockedToast": "Szczegóły ukryte",
       "unlockedToast": "Szczegóły są widoczne bez hasła",
-      "teamHint": "Chroni przed spojrzeniem na niezablokowany lub wspólny komputer, a nie przed współpracownikami: każdy członek zespołu odkrywa je własnym hasłem. Jeśli fakturę mają widzieć tylko wybrane osoby, ustaw przy kliencie, kto ma do niego dostęp.",
+      "teamHint": "Chroni przed spojrzeniem na niezablokowany lub wspólny komputer, a nie przed współpracownikami: każdy członek zespołu odkrywa je własnym hasłem. Jeśli fakturę mają widzieć tylko wybrane osoby, oznacz ją jako prywatną albo ustaw, do kogo należy klient.",
       "teamLink": "Ustaw, kto w zespole co widzi",
       "errors": {
         "wrong_current": "Złe hasło.",
         "reauth_required": "Twoje konto nie ma hasła. Wyloguj się i zaloguj ponownie, a potem spróbuj jeszcze raz.",
         "too_many_attempts": "Zbyt wiele prób. Spróbuj za kilka minut.",
         "generic": "Nie udało się. Spróbuj ponownie."
-      }
-    }
+      },
+      "privacyLink": "Oznacz jako prywatną"
+    },
+    "privacy": {
+      "label": "Prywatna faktura",
+      "hint": "Widzi ją tylko właściciel firmy i osoba, która ją wystawiła, razem z pozycjami, załącznikami i płatnościami.",
+      "badge": "Prywatna faktura",
+      "ownerOnly": "Zmienić to może tylko właściciel firmy lub osoba, która wystawiła fakturę.",
+      "failed": "Nie udało się zmienić",
+      "madePrivate": "Faktura jest prywatna",
+      "madeShared": "Zespół znowu widzi fakturę"
+    },
+    "privateRow": "Prywatna faktura"
   },
   "invite": {
     "title": "Zaproszenie do zespołu",
@@ -7297,7 +7401,8 @@
         "buyer_details_submitted": "uzupełnił(a) swoje dane rozliczeniowe do",
         "buyer_details_cancelled": "zamknął/zamknęła prośbę o dane klienta do",
         "profile_order": "utworzono przez zamówienie z profilu publicznego:",
-        "link_renamed": "zmienił(a) nazwę publicznego linku"
+        "link_renamed": "zmienił(a) nazwę publicznego linku",
+        "send_waiting_pdf": "dodał(a) do wysłania z PDF"
       },
       "tenant": {
         "updated": "edytował(a) dane firmy",
@@ -14146,6 +14251,20 @@
     "text": "Jest nowa wersja Billanty. Odśwież stronę, żeby wszystko działało.",
     "reload": "Odśwież"
   },
+  "planLimits": {
+    "from": "Od planu {plan}",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} z {limit} dokumentów w tym miesiącu",
+    "aiCredits": "Zostało {remaining} z {limit} kredytów AI w tym miesiącu",
+    "apiRequests": "{used} z {limit} zapytań API w tym miesiącu",
+    "tasteLeft": "Za darmo na próbę: {left}×",
+    "planRequired": "To jest dostępne od planu {plan}.",
+    "documentsOut": "W tym miesiącu wystawiono już wszystkie {limit} dokumentów z Twojego planu. Kolejne wystawisz od planu {plan} albo od 1. dnia następnego miesiąca."
+  },
   "vault": {
     "settingsLink": "Ustawienia Trybu poufnego",
     "plan": {
@@ -14205,7 +14324,7 @@
       "lead": "Zaszyfruj – treść zobaczysz tylko Ty i członkowie z kluczem, serwer jej nie odczyta.",
       "what": "Szyfrowane są opisy pozycji i notatki (nad pozycjami, pod pozycjami i wewnętrzne).",
       "keeps": "Raporty i pulpity działają dalej: kwoty, daty i tytuły płatności pozostają niezaszyfrowane.",
-      "loses": "Dla zaszyfrowanych dokumentów PDF, ISDOC i UBL tworzy tylko Twoja przeglądarka. Serwer dołączy je do e-maila tylko na Twoją wyraźną prośbę i nie znajdzie ich w wyszukiwaniu tekstowym.",
+      "loses": "Dla zaszyfrowanych dokumentów PDF, ISDOC i UBL tworzy tylko Twoja przeglądarka. Serwer dołącza je do e-maila tylko wtedy, gdy plik z przeglądarki raz przez niego przejdzie, i go nie zapisuje. Wyszukiwanie tekstowe działa po odblokowaniu tylko w Twojej przeglądarce.",
       "locked": "Zablokowane dokumenty są pomijane.",
       "done": "{n, plural, one {Zaszyfrowano # dokument} few {Zaszyfrowano # dokumenty} other {Zaszyfrowano # dokumentów}}.",
       "nothing": "Nie było czego szyfrować.",
@@ -14216,15 +14335,21 @@
       "lockedLead": "Odblokuj go, aby edytować. Otworzy się tylko w Twojej przeglądarce.",
       "otherKey": "Ten dokument jest zaszyfrowany kluczem, którego ta firma nie ma.",
       "unlock": "Odblokuj",
-      "aiUnavailable": "Wypełnianie przez AI jest niedostępne w Trybie poufnym podczas szyfrowania – tekst musiałby trafić na serwer.",
       "sealFailed": "Nie udało się zaszyfrować dokumentu. Nic nie zapisano.",
       "sealToggle": "Zaszyfruj ten dokument",
-      "sealOnHint": "Opisy pozycji i notatki zobaczysz tylko Ty i członkowie z kluczem. PDF, ISDOC i UBL utworzy przeglądarka, podpowiedzi pozycji nie będą dostępne.",
-      "sealOffHint": "Dokument zapisze się bez szyfrowania, jak dotąd."
+      "sealOnHint": "Opisy pozycji i notatki zobaczysz tylko Ty i członkowie z kluczem. PDF, ISDOC i UBL utworzy Twoja przeglądarka, podpowiedzi pozycji są wyszukiwane tylko w Twojej przeglądarce.",
+      "sealOffHint": "Dokument zapisze się bez szyfrowania, jak dotąd.",
+      "aiConsent": "Wyślij ten tekst do AI – jednorazowo trafi na serwer i do dostawcy AI, nie zostanie zapisany",
+      "aiConsentHint": "Serwer nie zapisuje tekstu ani nie umieszcza go w logach. To, co zwróci AI, zostanie zaszyfrowane w Twojej przeglądarce przy zapisie. Zgoda dotyczy tylko tego jednego uruchomienia."
     },
     "actions": {
       "blocked": "Nie udało się otworzyć zaszyfrowanych tekstów. Odblokuj sejf właściwym kluczem i spróbuj ponownie.",
-      "sendHint": "Ten dokument jest zaszyfrowany: bez załącznika e-mail wyjdzie tylko z linkiem.",
+      "sendHint": "Dokument jest zaszyfrowany, więc serwer sam nie utworzy PDF ani ISDOC. Zależnie od ustawień link wyjdzie od razu, a PDF z Twojej przeglądarki, albo wyjdzie tylko link.",
+      "linkCopied": "Skopiowano link z kluczem",
+      "keyLink": "Link dla klienta z kluczem",
+      "copyLink": "Kopiuj",
+      "emailWaiting": "E-mail czeka na PDF. Wyjdzie z przeglądarki z odblokowanym trybem, zobacz komunikat u góry.",
+      "pdfFollows": "Link wysłany. PDF wyślesz dodatkowym e-mailem z komunikatu u góry.",
       "pdfLocal": "PDF utworzy Twoja przeglądarka, serwer nie zobaczy zaszyfrowanych tekstów.",
       "isdocLocal": "ISDOC utworzy Twoja przeglądarka, serwer nie zobaczy zaszyfrowanych tekstów.",
       "attachOnce": "Dołącz PDF/ISDOC – plik jednorazowo przejdzie przez serwer do wysyłki i nie zostanie zapisany",
@@ -14240,13 +14365,14 @@
         "description": "Co dostarczyłeś i notatki na dokumencie. Kwoty, daty i symbole pozostają czytelne.",
         "loses": [
           "Wysyłka przez Peppol",
-          "Wyszukiwanie po tekście pozycji i notatek, podpowiedzi pozycji",
-          "Wypełnianie dokumentu przez AI",
-          "Opisy pozycji w publicznym linku i w eksportach dla księgowej (Pohoda, Money, CSV)"
+          "Wyszukiwanie tekstowe i podpowiedzi pozycji na serwerze (po odblokowaniu zajmie się tym Twoja przeglądarka)",
+          "Wypełnianie przez AI bez wyraźnego kliknięcia (tekst jednorazowo przejdzie przez serwer do AI, tylko gdy to potwierdzisz, i nie zostanie zapisany)",
+          "Link publiczny: klient widzi pełną treść tylko w linku z kluczem ze szczegółów dokumentu. Link bez klucza (np. z automatycznego przypomnienia) pokaże ją tylko na urządzeniu, na którym klient wcześniej otworzył pełny link",
+          "Czytelne teksty w eksportach dla księgowej z serwera (Pohoda, Money i CSV mają „[Důvěrný obsah]”; eksport z odszyfrowanymi tekstami tworzy Twoja przeglądarka)"
         ],
         "changes": [
           "PDF, ISDOC i UBL tworzy Twoja przeglądarka",
-          "Załącznik PDF/ISDOC w e-mailach tylko po wyraźnym zaznaczeniu – plik raz przejdzie przez serwer i nie zostanie zapisany"
+          "Załącznik PDF/ISDOC w e-mailach: plik tworzy Twoja przeglądarka, raz przechodzi przez serwer i nie jest zapisywany"
         ]
       },
       "attachments": {
@@ -14364,6 +14490,226 @@
       "recoveryReplaced": "Nowy kod odzyskiwania obowiązuje",
       "categoriesTitle": "Co jest szyfrowane",
       "categoriesLead": "Kolejne opcje wkrótce. Przy każdej widać, co przestałoby działać."
+    },
+    "clientLink": {
+      "ready": "Link zawiera klucz do zaszyfrowanych tekstów (po znaku #). Klient zobaczy z nim pełną treść, serwer nigdy nie dostaje klucza.",
+      "locked": "Dokument jest zaszyfrowany. Odblokuj sejf, a link dostanie klucz, z którym klient zobaczy pełną treść.",
+      "prepare": "Ten dokument zaszyfrowano, zanim pojawiły się klucze dla klientów. Nadaj mu własny klucz, potem możesz wysłać go w linku. Na serwer trafią tylko ponownie zaszyfrowane teksty.",
+      "failed": "Nie udało się przygotować klucza dla klienta. Spróbuj ponownie.",
+      "loading": "Przygotowuję klucz dla klienta…",
+      "unlock": "Odblokuj sejf",
+      "prepareButton": "Przygotuj link dla klienta",
+      "shareOnly": "Wyślij go tylko klientowi. Kto ma cały link, przeczyta też zaszyfrowane teksty.",
+      "serverEmail": "E-mail wysłany przez serwer zawiera link bez klucza. Klient zobaczy w nim kwoty, ale nie zaszyfrowane teksty, chyba że wcześniej otworzył link z kluczem w tej samej przeglądarce. Żeby je zobaczył, wyślij mu link powyżej sam."
+    },
+    "search": {
+      "lockedHint": "{n, plural, one {# dokument ma zaszyfrowane teksty, których serwer nie może przeszukać.} few {# dokumenty mają zaszyfrowane teksty, których serwer nie może przeszukać.} many {# dokumentów ma zaszyfrowane teksty, których serwer nie może przeszukać.} other {# dokumentu ma zaszyfrowane teksty, których serwer nie może przeszukać.}} Po odblokowaniu przeszuka je Twoja przeglądarka.",
+      "unlock": "Odblokuj i szukaj",
+      "searching": "Przeszukuję zaszyfrowane teksty w Twojej przeglądarce…",
+      "included": "Wyniki obejmują też zaszyfrowane teksty, przeszukane tylko w Twojej przeglądarce.",
+      "failed": "Nie udało się przeszukać zaszyfrowanych tekstów. Wyniki obejmują tylko czytelne teksty.",
+      "skippedLocked": "{n, plural, one {# zablokowany dokument nie został przeszukany.} few {# zablokowane dokumenty nie zostały przeszukane.} many {# zablokowanych dokumentów nie przeszukano.} other {# zablokowanego dokumentu nie przeszukano.}}"
+    },
+    "export": {
+      "title": "Eksport z odszyfrowanymi tekstami",
+      "lead": "Dokumenty z wybranego okresu wraz z opisami pozycji i notatkami. Plik powstaje w Twojej przeglądarce i zapisuje się od razu na komputerze; serwer go nie widzi. Traktuj go jak poufny dokument.",
+      "csv": "Pobierz CSV",
+      "json": "Pobierz JSON",
+      "working": "Odszyfrowuję…",
+      "done": "{n, plural, one {Zapisano # dokument.} few {Zapisano # dokumenty.} many {Zapisano # dokumentów.} other {Zapisano # dokumentu.}}",
+      "failed": "Nie udało się przygotować eksportu. Spróbuj ponownie.",
+      "needsUnlock": "Przed eksportem poprosimy o odblokowanie Trybu poufnego.",
+      "skippedLocked": "{n, plural, one {W eksporcie brakuje # zablokowanego dokumentu.} few {W eksporcie brakuje # zablokowanych dokumentów.} many {W eksporcie brakuje # zablokowanych dokumentów.} other {W eksporcie brakuje # zablokowanego dokumentu.}}",
+      "unreadable": "[Nie można odszyfrować]",
+      "unreadableCount": "{n, plural, one {Nie udało się odszyfrować # tekstu.} few {Nie udało się odszyfrować # tekstów.} many {Nie udało się odszyfrować # tekstów.} other {Nie udało się odszyfrować # tekstu.}}",
+      "accountingNote": "Eksporty dla księgowej powyżej (CSV, Pohoda, Money S3) tworzy serwer, dlatego zamiast zaszyfrowanych tekstów jest w nich „[Důvěrný obsah]”. Kwoty, VAT, daty i kontrahenci są w nich kompletne.",
+      "columns": {
+        "documentType": "Typ dokumentu",
+        "invoiceNumber": "Numer",
+        "status": "Status",
+        "issueDate": "Data wystawienia",
+        "taxableSupplyDate": "Data dostawy",
+        "dueDate": "Termin płatności",
+        "paidAt": "Zapłacono",
+        "contactName": "Nabywca",
+        "contactIco": "IČO",
+        "variableSymbol": "Symbol zmienny",
+        "currency": "Waluta",
+        "totalWithoutVat": "Netto",
+        "totalVat": "VAT",
+        "total": "Razem",
+        "noteAbove": "Tekst nad pozycjami",
+        "noteBelow": "Tekst pod pozycjami",
+        "internalNote": "Notatka wewnętrzna",
+        "itemDescription": "Pozycja",
+        "itemCode": "Kod pozycji",
+        "quantity": "Ilość",
+        "unit": "Jednostka",
+        "unitPrice": "Cena jednostkowa",
+        "vatRate": "Stawka VAT %",
+        "discountPercent": "Rabat %"
+      }
+    },
+    "outbox": {
+      "badge": "{n, plural, one {# e-mail czeka} few {# e-maile czekają} many {# e-maili czeka} other {# e-maila czeka}} na wysłanie z PDF",
+      "open": "Pokaż",
+      "title": "E-maile czekające na PDF",
+      "back": "Zamknij",
+      "send": "Wyślij ({n})",
+      "unlockAndSend": "Odblokuj i wyślij ({n})",
+      "lead": "Serwer nie zamieni zaszyfrowanego dokumentu w PDF sam. PDF powstaje dopiero tutaj, w przeglądarce z odblokowanym Trybem poufnym.",
+      "passThroughPdf": "PDF powstaje w Twojej przeglądarce. Serwer raz przekaże go odbiorcy i go nie zapisze.",
+      "passThroughTexts": "Po kliknięciu Wyślij odszyfrowane teksty tych dokumentów raz przejdą przez serwer: utworzy z nich PDF i wyśle go e-mailem. Nie zapisze ich ani nie zapisze w logach.",
+      "unnumbered": "Bez numeru",
+      "kind": {
+        "invoice": "Czeka cały e-mail",
+        "invoice_pdf": "PDF do wysłanego linku"
+      },
+      "dismiss": "Nie wysyłaj",
+      "settingsHint": "Kiedy i jak wysyłać PDF, ustawisz w",
+      "settingsLink": "ustawieniach Trybu poufnego",
+      "sent": "{n, plural, one {Wysłano # e-mail} few {Wysłano # e-maile} many {Wysłano # e-maili} other {Wysłano # e-maila}}",
+      "failed": "{n, plural, one {Nie udało się wysłać # e-maila} other {Nie udało się wysłać # e-maili}}"
+    },
+    "emailSettings": {
+      "title": "E-maile zaszyfrowanych dokumentów",
+      "lead": "Co się dzieje, gdy wysyłasz zaszyfrowany dokument. Link, kwota, termin płatności, tytuł przelewu i płatność QR wychodzą zawsze.",
+      "mode": {
+        "link_now": "Link od razu, PDF później",
+        "wait": "Poczekaj i wyślij wszystko razem",
+        "link_only": "Tylko link, nigdy PDF"
+      },
+      "modeHint": {
+        "link_now": "Klient od razu dostaje e-mail z linkiem. PDF przyjdzie drugim e-mailem, gdy ktoś z zespołu wyśle go z przeglądarki z odblokowanym trybem.",
+        "wait": "E-mail wyjdzie dopiero z PDF, z przeglądarki członka zespołu z odblokowanym trybem. Do tego czasu klient nic nie dostanie.",
+        "link_only": "Klient dostaje tylko link i tam otwiera dokument. Serwer nigdy nie dostaje jego tekstów."
+      },
+      "autoSend": "Wysyłaj PDF automatycznie",
+      "autoSendHint": "Gdy ktoś z zespołu otworzy aplikację z odblokowanym trybem, czekające PDF wyjdą bez kolejnego kliknięcia.",
+      "passThrough": "Każdy wysłany PDF raz przechodzi przez serwer, bo stamtąd wychodzi e-mail. Serwer go nie zapisuje ani nie loguje.",
+      "saved": "Zapisano",
+      "failed": "Nie udało się zapisać"
+    },
+    "device": {
+      "title": "Zapamiętaj odblokowanie na tym urządzeniu",
+      "hint": "Tryb pozostaje odblokowany po zamknięciu przeglądarki, bez limitu 12 godzin, więc czekające PDF mogą wyjść za każdym razem, gdy otworzysz aplikację. Klucz jest zapisany w przeglądarce tak, że nie da się go odczytać ani skopiować. Usuwa go Zablokuj, wyłączenie tej opcji lub wylogowanie.",
+      "risk": "Włączaj tylko na własnym urządzeniu, z którego nikt inny nie korzysta. Kto otworzy tę przeglądarkę, zobaczy zaszyfrowane teksty.",
+      "on": "To urządzenie pamięta odblokowanie",
+      "off": "Odblokowanie znów wygaśnie po 12 godzinach",
+      "failed": "Nie udało się. Najpierw odblokuj tryb."
+    },
+    "serverView": {
+      "title": "Co widzi serwer",
+      "lead": "Tak teksty tego dokumentu są zapisane na serwerze. Odszyfrować je może tylko przeglądarka z odblokowanym trybem.",
+      "server": "Serwer ma:",
+      "you": "Ty widzisz:",
+      "noteAbove": "Tekst nad pozycjami",
+      "noteBelow": "Tekst pod pozycjami",
+      "internalNote": "Notatka wewnętrzna",
+      "item": "Pozycja {n}",
+      "notSealed": "Kwoty, daty, numer dokumentu, tytuł przelewu i klientów serwer widzi, żeby liczyć VAT, pilnować terminów i dopasowywać płatności.",
+      "more": "Jak to działa i jak to sprawdzić"
     }
+  },
+  "vaultPublic": {
+    "integrity": {
+      "title": "Weryfikacja kodu",
+      "lead": "Przy każdym buildzie aplikacji zapisujemy skróty SHA-256 kodu szyfrującego i plików, które go zawierają.",
+      "sourceHash": "Plik źródłowy {path}",
+      "repo": "Publiczny kod źródłowy",
+      "repoPlanned": "Planujemy opublikować go w osobnym repozytorium na GitHubie.",
+      "chunks": "Pliki, które ładuje przeglądarka",
+      "check": "Sprawdź w tej przeglądarce",
+      "match": "Zgadza się",
+      "mismatch": "Nie zgadza się",
+      "error": "Nie udało się pobrać pliku",
+      "loadedHere": "załadowany na tej stronie",
+      "missing": "Manifest nie jest jeszcze dostępny. Powstaje przy buildzie produkcyjnym.",
+      "honest": "Manifest i pliki wysyła ten sam serwer, więc zgodność pokazuje tylko, że manifest opisuje to, co jest wysyłane. Prawdziwa weryfikacja to porównanie skrótów z buildem z opublikowanego kodu."
+    },
+    "demo": {
+      "label": "Wpisz dowolne zdanie",
+      "placeholder": "Na przykład: Doradztwo przy sprzedaży firmy, 12 godzin",
+      "send": "Zaszyfruj i wyślij",
+      "keyNote": "Klucz powstaje tylko dla tej strony i nigdzie nie jest wysyłany. Po odświeżeniu znika.",
+      "typed": "Co wpisałeś",
+      "typedHint": "Zostaje tylko w Twojej przeglądarce.",
+      "sent": "Co poszło na serwer",
+      "sentHint": "Dokładna treść żądania POST {path}.",
+      "received": "Co dostał serwer (HTTP {status})",
+      "receivedHint": "Serwer zwraca dokładnie to, co otrzymał. Niczego nie zapisuje.",
+      "open": "Odszyfruj tutaj",
+      "openedAs": "Twoja przeglądarka odszyfrowała to z powrotem na:",
+      "rateLimited": "Za dużo prób. Spróbuj za kilka minut.",
+      "failed": "Żądanie się nie powiodło. Spróbuj ponownie.",
+      "devtoolsTitle": "Sprawdź to sam w narzędziach przeglądarki",
+      "devtoolsSteps": [
+        "Naciśnij F12 (na Macu Cmd+Option+I) i otwórz kartę Sieć (Network).",
+        "Kliknij ponownie Zaszyfruj i wyślij.",
+        "Kliknij na liście żądanie „echo” i otwórz Payload (Ładunek) oraz Response (Odpowiedź).",
+        "Zobaczysz tylko ciąg enc:v1:…, a nie swoje zdanie. Ctrl+F w karcie Sieć przeszukuje wszystkie żądania: spróbuj znaleźć słowo ze swojego zdania."
+      ]
+    },
+    "csp": {
+      "liveTitle": "Nagłówek Content-Security-Policy tej strony, pobrany przed chwilą",
+      "liveMissing": "Nie udało się odczytać nagłówka. Znajdziesz go w narzędziach przeglądarki przy żądaniu tej strony."
+    }
+  },
+  "securityPage": {
+    "seoTitle": "Tryb poufny: co widzi serwer, a czego nie",
+    "eyebrow": "Bezpieczeństwo",
+    "title": "Tryb poufny: teksty dokumentów, których serwer nie przeczyta",
+    "lead": "Opisy pozycji i notatki są szyfrowane w Twojej przeglądarce. Serwer dostaje tylko zaszyfrowany ciąg i nie ma do niego klucza. Tutaj możesz to sam wypróbować i sprawdzić.",
+    "featuresLink": "Wszystkie funkcje",
+    "demoTitle": "Wypróbuj",
+    "demoLead": "Bez logowania. Strona szyfruje Twoje zdanie tym samym kodem co aplikacja i naprawdę wysyła je na serwer. Obok siebie zobaczysz, co wpisałeś, co zostało wysłane i co dostał serwer.",
+    "howTitle": "Jak to działa",
+    "howSteps": [
+      {
+        "title": "Klucz powstaje u Ciebie",
+        "body": "Przy włączeniu trybu przeglądarka tworzy losowy klucz AES-256. Serwer dostaje tylko jego kopie zablokowane Twoim hasłem, passkey lub kodem odzyskiwania."
+      },
+      {
+        "title": "Szyfrowane przed wysłaniem",
+        "body": "Opis pozycji lub notatka jest szyfrowana, zanim opuści przeglądarkę. Serwer zapisuje ciąg enc:v1:… i nic z nim nie robi."
+      },
+      {
+        "title": "Odszyfrowane tylko u Ciebie",
+        "body": "Po odblokowaniu przeglądarka trzyma klucz tak, że strona może go używać, ale nie może odczytać jego zawartości."
+      }
+    ],
+    "hiddenTitle": "Czego serwer nie widzi",
+    "hidden": [
+      "Opisów pozycji",
+      "Tekstu nad i pod pozycjami",
+      "Notatek wewnętrznych",
+      "Klucza ani hasła, które go odblokowuje"
+    ],
+    "visibleTitle": "Co serwer widzi i dlaczego",
+    "visible": [
+      "Kwoty i VAT – do obliczeń, deklaracji i dopasowania płatności",
+      "Daty wystawienia i płatności – do przypomnień",
+      "Numer dokumentu i tytuł przelewu",
+      "Klienta i jego e-mail – żeby dokument mógł zostać wysłany"
+    ],
+    "cspTitle": "Przeglądarka pilnuje, dokąd strona może wysyłać dane",
+    "cspBody": "Aplikacja, linki do dokumentów i ta strona są wysyłane z nagłówkiem Content-Security-Policy, który zawiera connect-src 'self'. Przeglądarka sama odrzuca wtedy każde żądanie takiej strony do innego serwera, nawet gdyby próbował tego jakiś skrypt. Odszyfrowany tekst nie wyjdzie tą drogą.",
+    "cspHow": "Nagłówek może przeczytać każdy: w narzędziach przeglądarki (F12, karta Sieć) kliknij pierwsze żądanie, czyli samą stronę, i w nagłówkach odpowiedzi znajdź Content-Security-Policy.",
+    "limitsTitle": "Gdzie są granice",
+    "limits": [
+      "Kod aplikacji dostarcza nasz serwer. Gdyby został przejęty, mógłby dostarczyć inny kod. Publikacja kodu i skrótów pozwala taką zmianę wykryć, ale sama jej nie zapobiega.",
+      "Gdy wysyłasz zaszyfrowany dokument e-mailem z PDF, jego teksty raz przechodzą przez serwer, bo stamtąd wychodzi e-mail. Aplikacja mówi o tym wcześniej, a serwer ich nie zapisuje ani nie loguje. Gdy wysyłasz tylko link, serwer w ogóle nie dostaje tekstów.",
+      "Tryb nie szyfruje kwot, dat, numerów ani klientów, zobacz wyżej.",
+      "Dla zaszyfrowanych dokumentów serwer nie tworzy ISDOC ani innych formatów maszynowych.",
+      "Reguła connect-src dotyczy strony załadowanej bezpośrednio. Gdy przejdziesz do aplikacji z publicznej strony bez przeładowania, do odświeżenia obowiązuje reguła poprzedniej strony.",
+      "Kto ma dostęp do Twojej odblokowanej przeglądarki, zobaczy teksty. Tryb chroni przed serwerem, nie przed kimś przy Twoim komputerze.",
+      "Jeśli zapomnisz hasło i kod odzyskiwania i nie masz passkey, nikt nie odzyska tekstów, także my."
+    ],
+    "verifyTitle": "Weryfikacja kodu",
+    "verifyLead": "Przy każdym buildzie zapisujemy skróty SHA-256 kodu szyfrującego w publicznym pliku. Twoja przeglądarka może je przeliczyć tutaj.",
+    "planned": [
+      "Kod szyfrujący (jeden plik bez zależności) opublikujemy w osobnym repozytorium na GitHubie, żeby dało się porównać skróty z własnym buildem.",
+      "Niezależny przegląd kodu jest planowany."
+    ]
   }
 }

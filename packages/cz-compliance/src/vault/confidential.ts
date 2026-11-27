@@ -4,8 +4,17 @@
  * 256). The server stores only that key wrapped by a member's vault
  * password, a passkey (WebAuthn PRF) or the recovery code, and the text as
  * `enc:v1:<base64 iv>:<base64 ciphertext>`. Plain and sealed rows coexist,
- * so `isSealed` is what every reader checks. Design:
- * docs/research/client-side-encryption.md.
+ * so `isSealed` is what every reader checks. See README.md next to this file.
+ * This folder holds only generic crypto: it is published on its own, so
+ * nothing app-specific (plans, endpoints, categories) belongs here.
+ *
+ * Printed texts of a document are sealed with a key of that document
+ * instead, so the document's client can be given that one key in the link
+ * (`#k=…`) without getting the company's. Such an envelope carries the
+ * document key wrapped by the company key as two more segments:
+ * `enc:v1:<iv>:<ciphertext>:<wrap iv>:<wrapped key>`. Every text of the
+ * document carries the same wrap, so a copy the server makes of the texts
+ * (credit note, template, recurring) keeps opening with the same key.
  *
  * Only WebCrypto, so the same code runs in the browser and in Node (tests,
  * and the backend that only ever calls `isSealed`).
@@ -13,7 +22,10 @@
 
 const PREFIX = 'enc:v1:';
 /** 12-byte IV = 16 base64 chars without padding. */
-const SEALED_RE = /^enc:v1:[A-Za-z0-9+/]{16}:[A-Za-z0-9+/]+={0,2}$/;
+const SEALED_RE = /^enc:v1:[A-Za-z0-9+/]{16}:[A-Za-z0-9+/]+={0,2}(?::[A-Za-z0-9+/]{16}:[A-Za-z0-9+/]{64})?$/;
+/** A 32-byte key AES-GCM-encrypted is 48 bytes, 64 base64 chars. */
+const WRAP_RE = /^[A-Za-z0-9+/]{16}:[A-Za-z0-9+/]{64}$/;
+const DOCUMENT_KEY_AAD = 'billanta-document-key-v1';
 const KEY_CHECK_TEXT = 'billanta-vault-v1';
 /** OWASP 2023 figure for PBKDF2-HMAC-SHA256. */
 export const VAULT_PBKDF2_ITERATIONS = 600_000;
@@ -70,10 +82,11 @@ export function isSealed(value: unknown): value is `enc:v1:${string}` {
 
 /**
  * Longest envelope a plain text of `plainMax` UTF-16 units can become: at
- * most 3 UTF-8 bytes per unit, the 16-byte GCM tag, base64, prefix and IV.
+ * most 3 UTF-8 bytes per unit, the 16-byte GCM tag, base64, prefix and IV,
+ * plus the wrapped document key.
  */
 export function sealedMaxLength(plainMax: number): number {
-  return PREFIX.length + 16 + 1 + Math.ceil((plainMax * 3 + 16) / 3) * 4;
+  return PREFIX.length + 16 + 1 + Math.ceil((plainMax * 3 + 16) / 3) * 4 + 1 + 16 + 1 + 64;
 }
 
 const ALGO = { name: 'AES-GCM', length: 256 } as const;
@@ -97,16 +110,109 @@ export async function seal(key: VaultKey, plaintext: string): Promise<string> {
   return `${PREFIX}${toBase64(iv)}:${toBase64(ct)}`;
 }
 
-/** Plain text passes through unchanged; a sealed value is decrypted or throws VaultSecretError. */
-export async function open(key: VaultKey, value: string): Promise<string> {
-  if (!isSealed(value)) return value;
-  const [iv, ct] = value.slice(PREFIX.length).split(':') as [string, string];
+async function decryptParts(key: VaultKey, iv: string, ct: string): Promise<string> {
   try {
     const plain = await subtle().decrypt({ name: 'AES-GCM', iv: fromBase64(iv) }, key, fromBase64(ct));
     return new TextDecoder().decode(plain);
   } catch {
     throw new VaultSecretError('vault_undecryptable');
   }
+}
+
+/**
+ * Plain text passes through unchanged; a sealed value is decrypted with the
+ * company key (directly, or through the document key it carries) or throws
+ * VaultSecretError.
+ */
+export async function open(key: VaultKey, value: string): Promise<string> {
+  if (!isSealed(value)) return value;
+  const [iv, ct, wrapIv, wrapped] = value.slice(PREFIX.length).split(':') as [string, string, string?, string?];
+  if (!wrapIv || !wrapped) return decryptParts(key, iv, ct);
+  const doc = await unwrapDocumentKey(key, `${wrapIv}:${wrapped}`);
+  return decryptParts(doc.key, iv, ct);
+}
+
+/**
+ * A document's own key. `raw` goes into the client link fragment and
+ * nowhere else; `wrap` (the key encrypted with the company key) is what the
+ * server stores inside each envelope.
+ */
+export interface DocumentKey {
+  key: VaultKey;
+  raw: Uint8Array;
+  /** `<wrap iv>:<wrapped key>`, the same in every envelope of the document. */
+  wrap: string;
+}
+
+/** A fresh key for one document, wrapped with the (unlocked) company key. */
+export async function generateDocumentKey(companyKey: VaultKey): Promise<DocumentKey> {
+  const raw = random(32);
+  const iv = random(12);
+  const wrapped = new Uint8Array(await subtle().encrypt({ name: 'AES-GCM', iv, additionalData: utf8.encode(DOCUMENT_KEY_AAD) }, companyKey, raw));
+  return { key: await importDocumentKey(raw), raw, wrap: `${toBase64(iv)}:${toBase64(wrapped)}` };
+}
+
+// Opening every text of a list would otherwise unwrap the same key again and again.
+const unwrapped = new WeakMap<VaultKey, Map<string, Promise<DocumentKey>>>();
+
+export function unwrapDocumentKey(companyKey: VaultKey, wrap: string): Promise<DocumentKey> {
+  let cache = unwrapped.get(companyKey);
+  if (!cache) unwrapped.set(companyKey, (cache = new Map()));
+  const hit = cache.get(wrap);
+  if (hit) return hit;
+  const pending = (async () => {
+    if (!WRAP_RE.test(wrap)) throw new VaultSecretError('vault_undecryptable');
+    const [iv, wrapped] = wrap.split(':') as [string, string];
+    let raw: Uint8Array;
+    try {
+      raw = new Uint8Array(
+        await subtle().decrypt({ name: 'AES-GCM', iv: fromBase64(iv), additionalData: utf8.encode(DOCUMENT_KEY_AAD) }, companyKey, fromBase64(wrapped))
+      );
+    } catch {
+      throw new VaultSecretError('vault_undecryptable');
+    }
+    return { key: await importDocumentKey(raw), raw, wrap };
+  })();
+  // A failure is not kept: it says nothing about the next try.
+  pending.catch(() => cache.delete(wrap));
+  cache.set(wrap, pending);
+  return pending;
+}
+
+/** Non-extractable, so a script can decrypt with it but not read it back. */
+export async function importDocumentKey(raw: Uint8Array): Promise<VaultKey> {
+  if (raw.length !== 32) throw new VaultSecretError('vault_document_key');
+  return (await subtle().importKey('raw', raw, ALGO, false, USAGES)) as VaultKey;
+}
+
+export async function sealWithDocumentKey(doc: DocumentKey, plaintext: string): Promise<string> {
+  const iv = random(12);
+  const ct = new Uint8Array(await subtle().encrypt({ name: 'AES-GCM', iv }, doc.key, utf8.encode(plaintext)));
+  return `${PREFIX}${toBase64(iv)}:${toBase64(ct)}:${doc.wrap}`;
+}
+
+/** The wrapped document key an envelope carries, or null (plain text, or sealed with the company key). */
+export function documentKeyWrap(value: unknown): string | null {
+  if (!isSealed(value)) return null;
+  const parts = value.slice(PREFIX.length).split(':');
+  return parts.length === 4 ? `${parts[2]}:${parts[3]}` : null;
+}
+
+/**
+ * What the client's page gets for a sealed text: the ciphertext without the
+ * wrapped key (useless to the client), and a non-secret id of the document
+ * key (the wrap's random IV), so the browser can find a key it kept earlier.
+ */
+export function clientCipher(value: string): { cipher: string; keyId: string | null } {
+  const [iv, ct, wrapIv] = value.slice(PREFIX.length).split(':') as [string, string, string?];
+  return { cipher: `${PREFIX}${iv}:${ct}`, keyId: wrapIv ?? null };
+}
+
+/** On the client's page: decrypts a text sealed with this document key (`clientCipher` output or a full envelope). */
+export async function openWithDocumentKey(key: VaultKey, value: string): Promise<string> {
+  if (!isSealed(value)) return value;
+  const [iv, ct] = value.slice(PREFIX.length).split(':') as [string, string];
+  return decryptParts(key, iv, ct);
 }
 
 /** Stored next to the wraps, so an unwrapped key can be checked against the company's. */
@@ -207,19 +313,3 @@ export function unwrapWithRecoveryCode(wrap: VaultWrap, code: string, extractabl
 export function wrapWithRecoveryCode(key: VaultKey, code: string): Promise<VaultWrap> {
   return wrapWithSecret(key, recoveryCodeSecret(code), 'recovery');
 }
-
-/**
- * What a company can choose to encrypt. Each category switches off the server
- * features that need to read it (the enable screen lists them), so the choice
- * is the customer's. `available: false` ones are planned, not built.
- */
-export const VAULT_CATEGORIES = [
-  { id: 'texts', available: true, default: true },
-  { id: 'attachments', available: false, default: false },
-  { id: 'contacts', available: false, default: false },
-  { id: 'amounts', available: false, default: false },
-] as const;
-
-export type VaultCategory = (typeof VAULT_CATEGORIES)[number]['id'];
-
-export const AVAILABLE_VAULT_CATEGORIES = VAULT_CATEGORIES.filter((c) => c.available).map((c) => c.id);

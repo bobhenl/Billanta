@@ -2,9 +2,12 @@ import { dispatchWebhooks } from "../integrations/webhooks";
 import { Injectable, Logger } from "@nestjs/common";
 import { and, count, desc, eq, inArray, isNull } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import type { TransactionSql } from "postgres";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
+import { planAllows } from "../billing/plan-access";
+import { loadPlanSummary } from "../billing/plan.guard";
 import { appUrlOf, emailLocaleOf, type EmailLocale } from "../email/email-render";
 import { EmailOutboxService } from "../email/email-outbox.service";
 import { emailTypesView, type EmailTypeInfo } from "../email/email-types";
@@ -19,6 +22,32 @@ import {
 import type { EmailPrefsPatch } from "./email-prefs.schema";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
+
+/** A link to one client, invoice or expense, which some members may not be allowed to see. */
+export const linksToRecord = (link: string | null | undefined): link is string =>
+  !!link && /^\/(invoices|contacts|expenses)\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(link);
+
+/**
+ * The members who can't see the record a notification links to (a private
+ * client or invoice, a member limited to their own clients). They get
+ * neither the bell entry nor the e-mail, which would name it. Asked of the
+ * database as each member in turn (app_link_hidden in rls-policies.sql),
+ * so the answer is exactly what their own requests would see.
+ */
+export async function membersNotSeeing(tx: TransactionSql, userIds: string[], link: string | null | undefined): Promise<Set<string>> {
+  const hidden = new Set<string>();
+  if (!linksToRecord(link)) return hidden;
+  try {
+    for (const userId of userIds) {
+      await tx`SELECT set_config('app.current_user_id', ${userId}, true)`;
+      const [row] = await tx<{ hidden: boolean }[]>`SELECT app_link_hidden(${link}) AS hidden`;
+      if (row?.hidden) hidden.add(userId);
+    }
+  } finally {
+    await tx`SELECT set_config('app.current_user_id', '', true)`;
+  }
+  return hidden;
+}
 
 async function tenantEmailLocale(db: TenantDb, tenantId: string): Promise<EmailLocale> {
   const [t] = await db.select({ locale: schema.tenants.defaultLocale }).from(schema.tenants).where(eq(schema.tenants.id, tenantId));
@@ -63,6 +92,7 @@ export class NotificationsService {
     let emails = 0;
     let inApp = 0;
     let hooks: { webhooks: unknown; company: string; locale: string | null } | undefined;
+    let webhooksOn = false;
     await this.dbService.sql.begin(async (tx) => {
       await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
       const db = drizzleTx(tx, schema);
@@ -75,12 +105,17 @@ export class NotificationsService {
         .from(schema.tenantMemberships)
         .innerJoin(schema.users, eq(schema.users.id, schema.tenantMemberships.userId))
         .where(eq(schema.tenantMemberships.tenantId, tenantId));
+      const notSeeing = await membersNotSeeing(tx, members.map((m) => m.userId), payload.link);
+      // Webhooks fire on Start and up; a downgraded company keeps them stored.
+      const plan = await loadPlanSummary(db, tenantId);
+      webhooksOn = !plan || planAllows(plan, "webhooks");
       [hooks] = await db
         .select({ webhooks: schema.tenants.webhooks, company: schema.tenants.companyName, locale: schema.tenants.defaultLocale })
         .from(schema.tenants)
         .where(eq(schema.tenants.id, tenantId));
       const rows: (typeof schema.notifications.$inferInsert)[] = [];
       for (const m of members) {
+        if (notSeeing.has(m.userId)) continue;
         const prefs = notificationPrefsOf(m.prefs);
         const channels = prefs.events[kind];
         if (channels.app) {
@@ -114,7 +149,7 @@ export class NotificationsService {
       inApp = rows.length;
     });
     let hooked = 0;
-    if (hooks) {
+    if (hooks && webhooksOn) {
       hooked = await dispatchWebhooks(hooks.webhooks, kind, payload, { company: hooks.company, siteUrl }).catch((err) => {
         this.logger.warn(`Webhook dispatch failed: ${err instanceof Error ? err.message : err}`);
         return 0;

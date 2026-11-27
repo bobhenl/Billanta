@@ -19,6 +19,7 @@ import { appUrlOf, emailLocaleOf } from "../email/email-render";
 import { EmailService } from "../email/email.service";
 import { accessSummary } from "../tenancy/permissions";
 import { NotificationsService } from "../notifications/notifications.service";
+import type { StoredPermissions } from "../tenancy/permissions";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
 import type { CreateInvitationDto } from "./dto/create-invitation.dto";
 import { seatRefusal } from "./seats";
@@ -35,6 +36,24 @@ function requireManager(user: AuthenticatedUser) {
   if (user.role !== "owner" && user.role !== "admin") {
     throw new ForbiddenException("Only the owner or an admin can manage the team");
   }
+}
+
+/**
+ * Which clients a member sees is the company owner's call alone. Admins
+ * manage the team, so they may not lift a limit the owner set, neither by
+ * switching the scope nor by making a limited member an admin (admins
+ * always see the whole company) or by removing and re-inviting them.
+ * The trigger in migrations/0111 holds the same line in the database.
+ */
+export function scopeChangeRefused(
+  actorRole: string,
+  member: { role: string; contactScope: string },
+  next: { role?: string; contactScope?: string; removed?: boolean },
+): boolean {
+  if (actorRole === "owner") return false;
+  if (next.contactScope !== undefined && next.contactScope !== member.contactScope) return true;
+  if (member.contactScope !== "own") return false;
+  return next.removed === true || (next.role === "admin" && member.role !== "admin");
 }
 
 type PreviewRow = { company_name: string; role: string; email: string; expired: boolean; accepted: boolean; permissions: unknown };
@@ -65,6 +84,7 @@ export class TeamService {
         image: schema.users.image,
         role: schema.tenantMemberships.role,
         permissions: schema.tenantMemberships.permissions,
+        contactScope: schema.tenantMemberships.contactScope,
         createdAt: schema.tenantMemberships.createdAt,
       })
       .from(schema.tenantMemberships)
@@ -186,22 +206,25 @@ export class TeamService {
     user: AuthenticatedUser,
     membershipId: string,
     role: "admin" | "accountant" | "viewer",
-    permissions?: Record<string, string> | null,
+    permissions?: StoredPermissions | null,
+    contactScope?: "all" | "own",
   ) {
     requireManager(user);
     const member = await this.requireMember(db, membershipId);
     if (member.role === "owner") throw new BadRequestException("The owner's role cannot be changed");
+    if (scopeChangeRefused(user.role, member, { role, contactScope })) throw new ForbiddenException("owner_only");
     // Turning an accountant into a member (or back) moves them between allowances.
     if ((member.role === "accountant") !== (role === "accountant")) await this.assertSeatFree(db, user.tenantId, { membershipId }, role);
     await db
       .update(schema.tenantMemberships)
-      .set({ role, permissions: role === "admin" ? null : permissions ?? null })
+      .set({ role, permissions: role === "admin" ? null : permissions ?? null, ...(contactScope ? { contactScope } : {}) })
       .where(eq(schema.tenantMemberships.id, membershipId));
     const changes = [
       ...(member.role !== role ? [{ field: "role", from: member.role, to: role }] : []),
       ...(JSON.stringify(member.permissions ?? null) !== JSON.stringify(role === "admin" ? null : permissions ?? null)
         ? [{ field: "permissions", from: null, to: null }]
         : []),
+      ...(contactScope && contactScope !== member.contactScope ? [{ field: "contactScope", from: member.contactScope, to: contactScope }] : []),
     ];
     if (changes.length > 0) {
       await this.audit?.record(db, user.tenantId, {
@@ -220,6 +243,8 @@ export class TeamService {
     // Anyone may leave; removing someone else needs owner/admin.
     if (member.userId !== user.id) requireManager(user);
     if (member.role === "owner") throw new BadRequestException("The owner cannot be removed");
+    // Leaving is always possible; showing a limited member out (to invite them back unlimited) is not.
+    if (member.userId !== user.id && scopeChangeRefused(user.role, member, { removed: true })) throw new ForbiddenException("owner_only");
     const label = await this.memberEmail(db, member.userId);
     await db.delete(schema.tenantMemberships).where(eq(schema.tenantMemberships.id, membershipId));
     await this.audit?.record(db, user.tenantId, {

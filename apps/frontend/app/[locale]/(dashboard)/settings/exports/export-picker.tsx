@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { Download, FileCode2, FileSpreadsheet, Receipt, UserPlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import { FeatureBadge } from '@/components/plan-lock';
+import { DecryptedExport } from '@/components/vault/decrypted-export';
+import type { FeatureUsage } from '@/lib/usage';
 import { inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 
@@ -22,14 +25,29 @@ function periodQuery(mode: Mode, month: string, quarter: string, year: string, f
   return `from=${y}-${pad(lastMonth - 2)}-01&to=${y}-${pad(lastMonth)}-${pad(lastDay)}`;
 }
 
+/** The same period as plain days, for the export built in the browser. */
+function periodRange(query: string | null): { from: string; to: string } | null {
+  if (!query) return null;
+  const params = new URLSearchParams(query);
+  const month = params.get('month');
+  if (month) {
+    const [y, m] = month.split('-').map(Number);
+    return { from: `${month}-01`, to: `${month}-${pad(new Date(y!, m!, 0).getDate())}` };
+  }
+  const from = params.get('from');
+  const to = params.get('to');
+  return from && to ? { from, to } : null;
+}
+
 const FILES = [
   { key: 'invoices', path: 'invoices.csv', icon: FileSpreadsheet },
   { key: 'expenses', path: 'expenses.csv', icon: Receipt },
-  { key: 'pohoda', path: 'pohoda.xml', icon: FileCode2 },
-  { key: 'moneyS3', path: 'money-s3.xml', icon: FileCode2 }
+  { key: 'pohoda', path: 'pohoda.xml', icon: FileCode2, gated: true },
+  { key: 'moneyS3', path: 'money-s3.xml', icon: FileCode2, gated: true }
 ] as const;
 
-export function ExportPicker({ home = 'CZK' }: { home?: string }) {
+/** `accounting` is the Pohoda/Money S3 plan access; CSV is on every plan. */
+export function ExportPicker({ home = 'CZK', accounting }: { home?: string; accounting?: FeatureUsage | null }) {
   const t = useTranslations('settings.exports');
   const now = new Date();
   const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -87,16 +105,19 @@ export function ExportPicker({ home = 'CZK' }: { home?: string }) {
         </div>
       </section>
 
+      <FeatureBadge usage={accounting} className="-mb-2 justify-end" />
       <div className="grid gap-3 sm:grid-cols-2">
-        {FILES.map(({ key, path, icon: Icon }) => (
+        {FILES.map(({ key, path, icon: Icon, ...file }) => {
+          const open = !!query && !('gated' in file && accounting?.access === 'locked');
+          return (
           <a
             key={key}
-            href={query ? `/api/files/exports/${path}?${query}` : undefined}
+            href={open ? `/api/files/exports/${path}?${query}` : undefined}
             download
-            aria-disabled={!query}
+            aria-disabled={!open}
             className={cn(
               'flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors',
-              query ? 'hover:border-primary hover:shadow-md' : 'pointer-events-none opacity-50'
+              open ? 'hover:border-primary hover:shadow-md' : 'pointer-events-none opacity-50'
             )}
           >
             <Icon className="mt-0.5 h-6 w-6 shrink-0 text-primary" aria-hidden="true" />
@@ -106,8 +127,11 @@ export function ExportPicker({ home = 'CZK' }: { home?: string }) {
             </span>
             <Download className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-label={t('download')} />
           </a>
-        ))}
+          );
+        })}
       </div>
+
+      <DecryptedExport range={periodRange(query)} />
 
       <section className="flex flex-wrap items-center gap-3 rounded-xl border border-dashed border-border p-4 text-sm">
         <UserPlus className="h-5 w-5 shrink-0 text-primary" />

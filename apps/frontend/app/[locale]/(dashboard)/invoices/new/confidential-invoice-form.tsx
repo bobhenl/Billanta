@@ -63,7 +63,12 @@ export function ConfidentialInvoiceForm(props: ComponentProps<typeof InvoiceForm
     <InvoiceForm
       {...props}
       template={opened === 'failed' ? null : opened}
-      confidential={{ sealByDefault: (sealed && mayKeepSealed) || (vault.sealNew && vault.planAllowed !== false), getKey: requestUnlock }}
+      confidential={{
+        sealByDefault: (sealed && mayKeepSealed) || (vault.sealNew && vault.planAllowed !== false),
+        getKey: requestUnlock,
+        // An edit keeps the document's key, so a client link sent before still opens it; a copy gets its own.
+        keySource: props.mode?.kind === 'edit' ? template : null
+      }}
     />
   );
 }

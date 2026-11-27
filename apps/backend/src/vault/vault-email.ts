@@ -1,0 +1,69 @@
+import { isSealed, printedTexts } from "./sealed";
+
+/** `tenant_vaults.email_mode`: what sending an encrypted document does about its PDF. */
+export const VAULT_EMAIL_MODES = ["link_now", "wait", "link_only"] as const;
+export type VaultEmailMode = (typeof VAULT_EMAIL_MODES)[number];
+
+/** The PDF a browser renders for a waiting e-mail; a few pages of pdf-lib output stay far below this. */
+export const VAULT_PDF_MAX_BYTES = 5 * 1024 * 1024;
+
+/** Whether the server cannot print the document: any of its printed texts is ciphertext. */
+export function documentIsSealed(invoice: { noteAbove: string | null; noteBelow: string | null }, items: { description: string }[]): boolean {
+  return printedTexts(invoice, items).some((t) => isSealed(t));
+}
+
+export interface SealedSendPlan {
+  /** Send the e-mail now, without the PDF the server cannot render. */
+  sendNow: boolean;
+  /** What waits for a member's browser: the whole e-mail, only its PDF, or nothing. */
+  queue: "invoice" | "invoice_pdf" | null;
+}
+
+/**
+ * Sending an encrypted document whose e-mail should carry its PDF. The
+ * server never renders it (it would print ciphertext, or need the key), so
+ * the e-mail either goes out with the link alone and the PDF follows from a
+ * browser, waits whole for a browser, or goes out with the link only.
+ * An unknown mode falls back to the default rather than to holding mail.
+ */
+export function sealedSendPlan(mode: string | null | undefined, wantsPdf: boolean): SealedSendPlan {
+  if (!wantsPdf || mode === "link_only") return { sendNow: true, queue: null };
+  if (mode === "wait") return { sendNow: false, queue: "invoice" };
+  return { sendNow: true, queue: "invoice_pdf" };
+}
+
+/** The decrypted texts a member's browser sends for one PDF; they live only in this request's memory. */
+export interface OpenedTexts {
+  noteAbove?: string | null;
+  noteBelow?: string | null;
+  items?: { id: string; description: string }[];
+}
+
+/**
+ * The document with its encrypted texts replaced by what the browser
+ * decrypted, for printing it once. Only envelopes are replaced: a plain text
+ * stays as stored, so the browser cannot rewrite what the server can read.
+ * Throws `texts_missing` when an envelope has no text, rather than printing
+ * ciphertext or a gap.
+ */
+export function withOpenedTexts<I extends { noteAbove: string | null; noteBelow: string | null }, L extends { id: string; description: string }>(
+  invoice: I,
+  items: L[],
+  opened: OpenedTexts,
+): { invoice: I; items: L[] } {
+  const open = (stored: string | null, given: string | null | undefined): string | null => {
+    if (!isSealed(stored)) return stored;
+    if (typeof given !== "string") throw new Error("texts_missing");
+    return given;
+  };
+  const byId = new Map((opened.items ?? []).map((i) => [i.id, i.description]));
+  return {
+    invoice: { ...invoice, noteAbove: open(invoice.noteAbove, opened.noteAbove), noteBelow: open(invoice.noteBelow, opened.noteBelow) },
+    items: items.map((item) => ({ ...item, description: open(item.description, byId.get(item.id)) as string })),
+  };
+}
+
+/** A real PDF, not anything else a client could upload in its place. */
+export function looksLikePdf(content: Buffer): boolean {
+  return content.length > 8 && content.subarray(0, 5).toString("latin1") === "%PDF-";
+}

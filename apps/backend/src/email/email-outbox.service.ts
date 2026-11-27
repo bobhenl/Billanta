@@ -19,6 +19,8 @@ export interface OutgoingAttachment {
   filename: string;
   content: Buffer;
   contentType?: string;
+  /** An inline image the HTML shows as `cid:<id>` (the payment QR). */
+  contentId?: string;
 }
 
 export interface OutgoingEmail {
@@ -103,7 +105,12 @@ export class EmailOutboxService {
           textBody: email.text ?? htmlToText(email.html),
           headers: email.headers ?? {},
           attachments: email.attachments?.length
-            ? email.attachments.map((a) => ({ filename: a.filename, contentType: a.contentType, content: a.content.toString("base64") }))
+            ? email.attachments.map((a) => ({
+                filename: a.filename,
+                contentType: a.contentType,
+                content: a.content.toString("base64"),
+                ...(a.contentId ? { contentId: a.contentId } : {}),
+              }))
             : null,
           maxAttempts: OUTBOX.maxAttempts,
           sendAfter,
@@ -174,7 +181,13 @@ export class EmailOutboxService {
         html: row.html,
         textBody: row.textBody,
         headers: row.headers,
-        attachments: email.attachments?.map((a) => ({ filename: a.filename, contentType: a.contentType, content: a.content.toString("base64") })) ?? null,
+        attachments:
+          email.attachments?.map((a) => ({
+            filename: a.filename,
+            contentType: a.contentType,
+            content: a.content.toString("base64"),
+            ...(a.contentId ? { contentId: a.contentId } : {}),
+          })) ?? null,
       });
       if (!result.ok) {
         // The provider's message only, never the e-mail or its files.

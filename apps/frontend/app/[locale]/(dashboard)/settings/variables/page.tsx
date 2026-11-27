@@ -4,7 +4,7 @@ import { redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
 import { SettingsHeader } from '@/components/settings-header';
 import { NotSignedInError } from '@/lib/api-client';
-import { canManage, fetchMyRole, fetchTenant, type TenantSettings } from '@/lib/tenant';
+import { canManage, fetchMayEditSettings, fetchMyRole, fetchTenant, type TenantSettings } from '@/lib/tenant';
 import { VariablesEditor } from './variables-editor';
 import { settingsGate } from '@/components/settings-gate';
 
@@ -30,10 +30,12 @@ export default async function VariablesPage() {
   }
   if (!tenant) return <Banner tone="err" title={t('loadError')} className="mt-6" />;
 
+  // Owners and admins, or a member with this settings section (Settings → Team).
+  const editable = canManage(role) || (role !== null && (await fetchMayEditSettings('variables')));
   return (
     <div className="mx-auto max-w-4xl">
       <SettingsHeader title={t('title')} description={t('description')} />
-      {!canManage(role) && (
+      {!editable && (
         <Banner tone="info" className="mt-4">
           {t('readOnly')}
         </Banner>
@@ -41,7 +43,7 @@ export default async function VariablesPage() {
       <VariablesEditor
         initial={tenant.templateVars ?? []}
         company={{ companyName: tenant.companyName, ico: tenant.ico, dic: tenant.dic, email: tenant.email }}
-        readOnly={!canManage(role)}
+        readOnly={!editable}
       />
     </div>
   );

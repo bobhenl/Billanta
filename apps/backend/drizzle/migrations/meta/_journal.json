@@ -719,7 +719,28 @@
     {
       "idx": 103,
       "version": "7",
-      "when": 1793601100000,
+      "when": 1793601000000,
+      "tag": "0105_tenant_usage",
+      "breakpoints": true
+    },
+    {
+      "idx": 104,
+      "version": "7",
+      "when": 1793601400000,
+      "tag": "0110_vault_email_queue",
+      "breakpoints": true
+    },
+    {
+      "idx": 105,
+      "version": "7",
+      "when": 1793601500000,
+      "tag": "0111_private_invoices",
+      "breakpoints": true
+    },
+    {
+      "idx": 106,
+      "version": "7",
+      "when": 1793601510700,
       "tag": "0107_email_send_suppressed",
       "breakpoints": true
     }

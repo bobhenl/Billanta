@@ -52,6 +52,7 @@ import { NotificationsModule } from "./notifications/notifications.module";
 import { AuditModule } from "./audit/audit.module";
 import { VaultModule } from "./vault/vault.module";
 import { VaultController } from "./vault/vault.controller";
+import { VaultEmailQueueController } from "./invoices/vault-email-queue.controller";
 import { AuditController } from "./audit/audit.controller";
 import { IntegrationsController } from "./integrations/integrations.controller";
 import { IntegrationsModule } from "./integrations/integrations.module";
@@ -250,6 +251,7 @@ export class AppModule implements NestModule {
         BankConnectionsController,
         BankRulesController,
         VaultController,
+        VaultEmailQueueController,
         BackupDestinationsController,
         TeamController,
         DashboardController,

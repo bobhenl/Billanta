@@ -8,8 +8,11 @@ import { templateValues } from "../tenants/template-vars";
 import { clientPortalLinkOf, invoiceLinkOf } from "../public-links/public-link";
 import { applyBuyerSnapshot, applySellerSnapshot } from "./party-snapshot";
 import { reminderPrefsOf } from "../tenants/invoice-form-prefs";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
+import { planAllows } from "../billing/plan-access";
+import { loadPlanSummary } from "../billing/plan.guard";
 import { drizzleTx } from "../db/drizzle-tx";
 import { BRAND_CREDIT_TENANT_FIELDS, brandCreditFor, creditLangOf, type BrandCredit } from "./brand-credit";
 
@@ -125,6 +128,10 @@ export class InvoiceRemindersRepository {
         .limit(1);
       const rules = reminderPrefsOf(tenant?.prefs);
       if (!rules.enabled) return [];
+      // Automatic reminders are a Start feature; below it the person still
+      // sends a reminder by hand from the invoice.
+      const plan = await loadPlanSummary(db, tenantId);
+      if (plan && !planAllows(plan, "auto_reminders")) return [];
       const cooldownCutoff = new Date(Date.now() - rules.intervalDays * 24 * 60 * 60 * 1000);
 
       const rows = await db
@@ -173,6 +180,14 @@ export class InvoiceRemindersRepository {
       }
       return results;
     });
+  }
+
+  /** One RLS-scoped transaction for an already-known tenant (the reminder's payment QR). */
+  async withTenant<T>(tenantId: string, fn: (db: PostgresJsDatabase<typeof schema>) => Promise<T>): Promise<T> {
+    return this.dbService.sql.begin(async (tx) => {
+      await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
+      return fn(drizzleTx(tx, schema));
+    }) as Promise<T>;
   }
 
   /** Throws when the tenant is suspended, paused or over today's e-mail cap (`abuse/sending-guard.ts`). */

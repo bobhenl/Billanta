@@ -5,8 +5,9 @@ import { redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
 import { SettingsHeader } from '@/components/settings-header';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
-import { type BankAccount, bankAccountLine, canManage, fetchBankAccounts, fetchMyAccess, fetchMyRole, fetchTenant, taxCountryOf, type TenantSettings } from '@/lib/tenant';
+import { type BankAccount, bankAccountLine, canManage, fetchMayEditSettings, fetchBankAccounts, fetchMyAccess, fetchMyRole, fetchTenant, taxCountryOf, type TenantSettings } from '@/lib/tenant';
 import { vatStatusOf } from '@/lib/vat-status';
+import { featureLock } from '@/lib/usage';
 import { formPrefs, loadContact } from '../../invoices/new/load';
 import { RATE_CURRENCIES } from '../../invoices/new/types';
 import type { UniformYear } from './exchange-rate-settings';
@@ -52,11 +53,14 @@ export default async function InvoiceSettingsPage() {
   ]);
   // Same rule as showsBrandCredit in the backend: only an enforced free plan must keep the line.
   const canHideCredit = !plan || !plan.enforced || plan.plan !== 'free';
+  const remindersLock = featureLock(plan, 'auto_reminders');
 
+  // Owners and admins, or a member with this settings section (Settings → Team).
+  const editable = canManage(role) || (role !== null && (await fetchMayEditSettings('invoices')));
   return (
     <div className="mx-auto max-w-3xl">
       <SettingsHeader title={t('title')} description={t('description')} />
-      {!canManage(role) && (
+      {!editable && (
         <Banner tone="info" className="mt-4">
           {t('readOnly')}
         </Banner>
@@ -77,7 +81,8 @@ export default async function InvoiceSettingsPage() {
         uniformRates={uniformRates}
         linkCompany={tenant.publicProfile?.slug || tenant.companyName}
         canHideCredit={canHideCredit}
-        readOnly={!canManage(role)}
+        remindersLock={remindersLock}
+        readOnly={!editable}
       />
     </div>
   );

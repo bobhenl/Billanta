@@ -1,10 +1,14 @@
-import { Injectable, Logger, NotFoundException, Optional } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Logger, NotFoundException, Optional } from "@nestjs/common";
 import { and, desc, eq, isNull, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { AuditService } from "../audit/audit.service";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
+import { loadPlanSummary } from "../billing/plan.guard";
+import { upgradeFor } from "../billing/plans";
+import { usageLimit, usagePeriod } from "../billing/usage";
+import { consumeUsage } from "../billing/usage.repository";
 import { generateApiKey, hashApiKey } from "./api-key.util";
 import type { CreateApiKeyDto } from "./dto/create-api-key.dto";
 
@@ -158,5 +162,26 @@ export class ApiKeysService {
       .catch((err: unknown) => {
         this.logger.warn(`Failed to update last_used_at for api key ${apiKeyId}: ${String(err)}`);
       });
+  }
+
+  /**
+   * Counts one API-key request against the plan's monthly quota and refuses
+   * it with 429 `api_quota_exceeded` once the quota is used. Its own short
+   * transaction, committed before the request runs: the counter row is
+   * locked only for this one statement, so parallel requests of a company
+   * don't queue behind each other's whole request.
+   */
+  async countRequest(tenantId: string, now = new Date()): Promise<void> {
+    const refused = await this.dbService.sql.begin(async (tx) => {
+      await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
+      const db = drizzleTx(tx, schema);
+      const summary = await loadPlanSummary(db, tenantId, now);
+      const limit = usageLimit(summary, "api_requests");
+      const spent = await consumeUsage(db, tenantId, "api_requests", usagePeriod(now), limit);
+      return spent.ok ? null : { limit, used: spent.count, plan: summary ? upgradeFor("api_requests", summary.plan) : null };
+    });
+    if (refused) {
+      throw new HttpException({ error: "api_quota_exceeded", message: "The monthly API quota of this plan is used up", ...refused }, HttpStatus.TOO_MANY_REQUESTS);
+    }
   }
 }

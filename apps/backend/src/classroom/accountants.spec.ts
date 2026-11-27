@@ -15,6 +15,9 @@ describe("classroom accountants", () => {
       expenses: "write",
       bank: "write",
       reports: "write",
+      projects: "read",
+      recurring: "read",
+      settings: "read",
     });
   });
 
