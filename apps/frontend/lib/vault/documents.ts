@@ -35,13 +35,20 @@ async function getJson<T>(path: string): Promise<T> {
   return (await res.json()) as T;
 }
 
-let fonts: Promise<{ regular: ArrayBuffer; bold: ArrayBuffer } | null> | null = null;
+type Fonts = { regular: ArrayBuffer; bold: ArrayBuffer };
+const fontLoads = new Map<string, Promise<Fonts | null>>();
 
-/** DejaVu Sans, as on the server's PDFs; without it Czech letters would be missing. */
-function pdfFonts() {
-  fonts ??= Promise.all(
+/**
+ * DejaVu Sans, as on the server's PDFs; without it Czech letters would be
+ * missing. The dashboard loads it through the session proxy, the client's
+ * public page through `/api/public/pdf-fonts`.
+ */
+function pdfFonts(base = '/api/files/invoices/pdf-fonts') {
+  const cached = fontLoads.get(base);
+  if (cached) return cached;
+  const load = Promise.all(
     (['regular', 'bold'] as const).map((weight) =>
-      fetch(`/api/files/invoices/pdf-fonts/${weight}`).then((r) => {
+      fetch(`${base}/${weight}`).then((r) => {
         if (!r.ok) throw new Error('font');
         return r.arrayBuffer();
       })
@@ -49,18 +56,35 @@ function pdfFonts() {
   )
     .then(([regular, bold]) => ({ regular: regular!, bold: bold! }))
     .catch(() => {
-      fonts = null;
+      fontLoads.delete(base);
       return null;
     });
-  return fonts;
+  fontLoads.set(base, load);
+  return load;
+}
+
+async function drawPdf(model: InvoicePdfModel, fontBase?: string): Promise<Uint8Array> {
+  // pdfkit is large; only someone downloading a sealed invoice loads it.
+  const [{ default: PDFDocument }, f] = await Promise.all([import('pdfkit/js/pdfkit.standalone'), pdfFonts(fontBase)]);
+  return renderInvoicePdf(PDFDocument, model, f);
 }
 
 export async function renderSealedPdf(key: VaultKey, invoiceId: string): Promise<RenderedDocument> {
   const { filename, model } = await getJson<{ filename: string; model: InvoicePdfModel }>(`invoices/${invoiceId}/pdf-model`);
-  const opened = await openInvoicePdfModel(model, (value) => open(key, value));
-  // pdfkit is large; only someone downloading a sealed invoice loads it.
-  const [{ default: PDFDocument }, f] = await Promise.all([import('pdfkit/js/pdfkit.standalone'), pdfFonts()]);
-  const pdf = await renderInvoicePdf(PDFDocument, opened, f);
+  const pdf = await drawPdf(await openInvoicePdfModel(model, (value) => open(key, value)));
+  return { filename, blob: new Blob([pdf as BlobPart], { type: 'application/pdf' }) };
+}
+
+/**
+ * The client's /i/ page: the PDF of an encrypted document, with the item
+ * texts the page already opened with its link key (`openItem` maps a
+ * ciphertext to its text, or throws when it stayed closed).
+ */
+export async function renderClientPdf(token: string, openItem: (cipher: string) => Promise<string>): Promise<RenderedDocument> {
+  const res = await fetch(`/api/public/invoices/${encodeURIComponent(token)}/pdf-model`, { cache: 'no-store' });
+  if (!res.ok) throw new DocumentError('download_failed');
+  const { filename, model } = (await res.json()) as { filename: string; model: InvoicePdfModel };
+  const pdf = await drawPdf(await openInvoicePdfModel(model, openItem), '/api/public/pdf-fonts');
   return { filename, blob: new Blob([pdf as BlobPart], { type: 'application/pdf' }) };
 }
 

@@ -1,7 +1,8 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, HttpStatus, Ip, Param, Post, Req, Res } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, HttpStatus, Ip, NotFoundException, Param, Post, Req, Res } from "@nestjs/common";
 import { z } from "zod";
 import type { Request, Response } from "express";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { PDF_FONT_FILES } from "../invoices/invoice-pdf.service";
 import { PublicInvoicesService } from "./public-invoices.service";
 import { SlidingWindowLimiter, visitorBucket, visitorIp } from "../guest-invoices/guest-limits";
 
@@ -93,6 +94,26 @@ export class PublicInvoicesController {
       "Cache-Control": "private, no-store",
     });
     res.send(pdf.content);
+  }
+
+  @Get(":token/pdf-model")
+  @ApiOperation({
+    summary: "The layout data of an encrypted document's PDF, for the client's browser to draw",
+    description:
+      "No authentication required. The same token checks and limit as `GET :token/pdf`. Item texts stay " +
+      "ciphertext the browser opens with the key from the link's fragment, which never reaches the server.",
+  })
+  pdfModel(@Param("token") token: string, @Ip() ip: string, @Req() req: Request) {
+    if (!this.pdfLimiter.hit(visitorIp(ip, req))) throw new HttpException("Too many requests", HttpStatus.TOO_MANY_REQUESTS);
+    return this.publicInvoicesService.pdfModel(token);
+  }
+
+  @Get("pdf-fonts/:weight")
+  @ApiOperation({ summary: "DejaVu Sans (regular | bold), for the client's browser that draws an encrypted document's PDF" })
+  pdfFont(@Param("weight") weight: string, @Res() res: Response): void {
+    if ((weight !== "regular" && weight !== "bold") || !PDF_FONT_FILES) throw new NotFoundException("font_not_found");
+    res.set({ "Content-Type": "font/ttf", "Cache-Control": "public, max-age=604800, immutable", "X-Content-Type-Options": "nosniff" });
+    res.sendFile(PDF_FONT_FILES[weight]);
   }
 
   @Get(":token/attachments/:attachmentId")

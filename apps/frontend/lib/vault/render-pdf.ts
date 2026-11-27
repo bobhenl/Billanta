@@ -1,5 +1,8 @@
 'use client';
 
+import type { VaultKey } from '@faktur/cz-compliance';
+import { renderSealedPdf } from './documents';
+
 /** The decrypted texts of one encrypted document, as the browser opened them. */
 export interface OpenedInvoiceTexts {
   noteAbove: string | null;
@@ -8,16 +11,13 @@ export interface OpenedInvoiceTexts {
 }
 
 /**
- * The one place that renders the PDF of an encrypted document in the
- * browser, so the decrypted texts never leave it. There is no browser
- * renderer yet, so this returns null and the outbox falls back to sending
- * the texts once through the server (after the member confirms). When a
- * renderer lands, plug it in here and the outbox uploads the finished PDF
- * instead.
+ * The PDF of an encrypted document, drawn in this browser by the same
+ * renderer the server uses for plain documents (lib/vault/documents.ts), so
+ * the outbox uploads a finished PDF and the decrypted texts never leave the tab.
  */
-export async function renderSealedInvoicePdf(_invoiceId: string, _texts: OpenedInvoiceTexts): Promise<Blob | null> {
-  return null;
+export async function renderSealedInvoicePdf(key: VaultKey, invoiceId: string): Promise<Blob> {
+  return (await renderSealedPdf(key, invoiceId)).blob;
 }
 
 /** Whether the browser can render the PDF itself, which decides what the outbox tells the member. */
-export const browserRendersPdf = false;
+export const browserRendersPdf = true;

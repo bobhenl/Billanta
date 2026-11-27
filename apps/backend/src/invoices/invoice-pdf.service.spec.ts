@@ -544,7 +544,11 @@ describe("InvoicePdfService Důvěrný režim (sealed texts)", () => {
 
   it("refuses to render a sealed invoice on the server", async () => {
     const { invoice, lineItems, totals } = await sealedInvoice();
-    await expect(new InvoicePdfService().generate(invoice, makeContact(), makeTenant(), lineItems, totals)).rejects.toThrow("confidential_content");
+    const service = new InvoicePdfService();
+    // Before any of the layout work: the shared renderer refusing too is only the second line.
+    const build = vi.spyOn(service, "buildModel");
+    await expect(service.generate(invoice, makeContact(), makeTenant(), lineItems, totals)).rejects.toThrow("confidential_content");
+    expect(build).not.toHaveBeenCalled();
   });
 
   it("hands the browser a model with the envelopes untouched, which only renders once opened", async () => {
