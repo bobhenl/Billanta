@@ -1815,6 +1815,10 @@
         "confidential": {
           "title": "Modo confidencial",
           "description": "Cifrar documentos, anexos, contactos e valores no navegador"
+        },
+        "eet": {
+          "title": "EET",
+          "description": "Registo de vendas em numerário (EET 2.0)"
         }
       },
       "managedByAdmins": "Os dados da empresa, a equipa, a subscrição e outras definições da empresa são geridos pelo proprietário ou por um administrador."
@@ -3668,6 +3672,88 @@
       "body": "Com a função “{role}” não pode alterar estas definições da empresa. Se for necessário alterá-las, peça ao proprietário da empresa ou a um administrador.",
       "bodyGeneric": "A sua função nesta empresa não tem acesso a esta definição. Peça ao proprietário da empresa ou a um administrador.",
       "back": "Voltar às definições"
+    },
+    "eet": {
+      "title": "EET 2.0",
+      "lead": "Registo de vendas pagas em numerário ou com cartão presencialmente.",
+      "loadError": "Não foi possível carregar as definições do EET.",
+      "saved": "Guardado",
+      "scope": "O EET 2.0 aplica-se a partir de 1 de janeiro de 2027. A Billanta regista um pagamento quando marca uma fatura como paga em numerário (ou com cartão presencialmente, se o ativar abaixo). Transferências, pagamento à cobrança e pagamentos com cartão online não são registados.",
+      "certificate": {
+        "title": "Pokladní certifikát",
+        "eic": "EIČ",
+        "validity": "Válido",
+        "validRange": "{from} – {to}",
+        "issuer": "Emitido por",
+        "none": "Ainda não carregou nenhum certificado. Gera-o na aplicação DIS+ do portal fiscal.",
+        "eicMismatch": "O EIČ do certificado não corresponde ao DIČ da empresa. Verifique se é o certificado desta empresa.",
+        "file": "Ficheiro do certificado (.p12)",
+        "password": "Palavra-passe do certificado",
+        "upload": "Carregar",
+        "replace": "Substituir",
+        "uploaded": "Certificado carregado",
+        "storage": "O certificado e a palavra-passe são guardados cifrados e nunca voltam a ser mostrados. Servem apenas para assinar as vendas registadas.",
+        "remove": "Eliminar certificado (desativa o EET)"
+      },
+      "register": {
+        "title": "Evidenční jednotka e caixa",
+        "idJednotky": "Número da evidenční jednotka",
+        "idJednotkyHint": "O DIS+ atribui-o quando regista um estabelecimento ou outra unidade.",
+        "idPokl": "Nome da caixa",
+        "idPoklHint": "O seu próprio nome, até 20 caracteres: letras sem acentos, dígitos, espaço e . , : ; / # - _",
+        "save": "Guardar"
+      },
+      "sending": {
+        "title": "Envio",
+        "cardInPerson": "Aceito pagamentos com cartão presencialmente",
+        "cardInPersonHint": "Um pagamento com cartão no seu terminal é um pagamento presencial e é registado. Um pagamento com cartão online não.",
+        "environment": "Ambiente",
+        "playground": "Teste (Playground)",
+        "production": "Produção",
+        "environmentHint": "No ambiente de teste nada é registado de verdade. Mude para produção quando tiver um certificado do DIS+.",
+        "enabled": "Registar vendas",
+        "enabledHint": "Requer um certificado carregado, o número da evidenční jednotka e o nome da caixa."
+      },
+      "records": {
+        "title": "Registos enviados",
+        "overdueWarning": "Sem confirmação após 48 horas: {count, plural, one {# registo} other {# registos}}. Tente enviá-los de novo.",
+        "empty": "Ainda não foi enviada nenhuma venda.",
+        "status": {
+          "confirmed": "Confirmado",
+          "pending": "A aguardar resposta",
+          "overdue": "Mais de 48 h",
+          "rejected": "Recusado"
+        },
+        "invoice": "Documento",
+        "resend": "Enviar de novo",
+        "confirmedNow": "A venda está confirmada",
+        "stillPending": "Ainda sem resposta. Tentaremos de novo automaticamente.",
+        "errors": {
+          "timeout": "A resposta não chegou a tempo",
+          "network": "Não foi possível ligar ao servidor do EET",
+          "soap_fault": "O servidor do EET devolveu um erro",
+          "other": "Erro: {code}"
+        }
+      },
+      "errors": {
+        "save_failed": "Não foi possível guardar.",
+        "certificate_missing": "Carregue primeiro o pokladní certifikát.",
+        "eet_not_configured": "Preencha o número da evidenční jednotka e o nome da caixa.",
+        "certificate_expired": "O certificado expirou. Gere um novo no DIS+.",
+        "eet_cz_only": "O EET é apenas para empresas na Chéquia.",
+        "eet_not_for_demo": "Não é possível ativar o EET numa empresa de demonstração.",
+        "invalid_id_jednotky": "O DIS+ não atribui este número. Verifique-o.",
+        "invalid_id_pokl": "O nome da caixa pode ter até 20 caracteres: letras sem acentos, dígitos, espaço e . , : ; / # - _",
+        "wrong_password": "A palavra-passe do certificado não corresponde.",
+        "invalid_p12": "O ficheiro não é um certificado .p12 válido.",
+        "no_certificate": "Falta o certificado no ficheiro.",
+        "no_key": "Falta a chave privada no ficheiro.",
+        "unsupported_algorithm": "Não conseguimos ler este formato .p12. Gere o certificado de novo no DIS+.",
+        "certificate_not_eet": "Isto não é um pokladní certifikát para o EET.",
+        "eet_record_not_pending": "O registo já está resolvido.",
+        "eet_record_not_found": "Registo não encontrado.",
+        "invalid_body": "Dados inválidos."
+      }
     }
   },
   "billing": {
@@ -5072,7 +5158,8 @@
       "orderNumber": "N.º de encomenda",
       "paidAt": "Pago em",
       "sentAt": "Enviado",
-      "internalNote": "Nota interna"
+      "internalNote": "Nota interna",
+      "eetPok": "POK EET"
     },
     "items": {
       "description": "Artigo",

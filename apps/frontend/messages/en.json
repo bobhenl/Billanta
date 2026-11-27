@@ -1816,6 +1816,10 @@
         "confidential": {
           "title": "Confidential mode",
           "description": "Encrypt documents, attachments, contacts and amounts in the browser"
+        },
+        "eet": {
+          "title": "EET",
+          "description": "Recording cash sales (EET 2.0)"
         }
       },
       "managedByAdmins": "Company details, the team, the subscription and other company settings are managed by the owner or an admin."
@@ -3675,6 +3679,88 @@
       "body": "With the “{role}” role you can’t change these company settings. If they need changing, ask the company’s owner or an admin.",
       "bodyGeneric": "Your role in this company has no access to this setting. Ask the company’s owner or an admin.",
       "back": "Back to settings"
+    },
+    "eet": {
+      "title": "EET 2.0",
+      "lead": "Recording of sales paid in cash or by card in person.",
+      "loadError": "EET settings couldn't be loaded.",
+      "saved": "Saved",
+      "scope": "EET 2.0 applies from 1 January 2027. Billanta records a payment when you mark an invoice paid in cash (or by card in person, if you turn that on below). Bank transfers, cash on delivery and online card payments are not recorded.",
+      "certificate": {
+        "title": "Pokladní certifikát",
+        "eic": "EIČ",
+        "validity": "Valid",
+        "validRange": "{from} – {to}",
+        "issuer": "Issued by",
+        "none": "You haven't uploaded a certificate yet. You can generate one in the DIS+ app on the tax portal.",
+        "eicMismatch": "The EIČ in the certificate doesn't match the company's DIČ. Check that this is the certificate of this company.",
+        "file": "Certificate file (.p12)",
+        "password": "Certificate password",
+        "upload": "Upload",
+        "replace": "Replace",
+        "uploaded": "Certificate uploaded",
+        "storage": "The certificate and its password are stored encrypted and never shown back. They are only used to sign recorded sales.",
+        "remove": "Delete certificate (turns EET off)"
+      },
+      "register": {
+        "title": "Evidenční jednotka and pokladna",
+        "idJednotky": "Evidenční jednotka number",
+        "idJednotkyHint": "DIS+ assigns it when you register a premises or another unit.",
+        "idPokl": "Pokladna label",
+        "idPoklHint": "Your own label, up to 20 characters: letters without accents, digits, space and . , : ; / # - _",
+        "save": "Save"
+      },
+      "sending": {
+        "title": "Sending",
+        "cardInPerson": "I take card payments in person",
+        "cardInPersonHint": "A card paid at your terminal is a contact payment and is recorded. An online card payment is not.",
+        "environment": "Environment",
+        "playground": "Test (Playground)",
+        "production": "Production",
+        "environmentHint": "Nothing is really recorded in the test environment. Switch to production once you have a certificate from DIS+.",
+        "enabled": "Record sales",
+        "enabledHint": "Needs an uploaded certificate, the evidenční jednotka number and the pokladna label."
+      },
+      "records": {
+        "title": "Sent records",
+        "overdueWarning": "No confirmation after 48 hours: {count, plural, one {# record} other {# records}}. Try sending again.",
+        "empty": "No sale has been sent yet.",
+        "status": {
+          "confirmed": "Confirmed",
+          "pending": "Waiting for an answer",
+          "overdue": "Past 48 h",
+          "rejected": "Rejected"
+        },
+        "invoice": "Document",
+        "resend": "Send again",
+        "confirmedNow": "The sale is confirmed",
+        "stillPending": "No answer yet. We will try again automatically.",
+        "errors": {
+          "timeout": "The answer didn't come in time",
+          "network": "Couldn't connect to the EET server",
+          "soap_fault": "The EET server returned an error",
+          "other": "Error: {code}"
+        }
+      },
+      "errors": {
+        "save_failed": "Couldn't save.",
+        "certificate_missing": "Upload the pokladní certifikát first.",
+        "eet_not_configured": "Fill in the evidenční jednotka number and the pokladna label.",
+        "certificate_expired": "The certificate has expired. Generate a new one in DIS+.",
+        "eet_cz_only": "EET is only for companies in the Czech Republic.",
+        "eet_not_for_demo": "EET can't be turned on in a demo company.",
+        "invalid_id_jednotky": "DIS+ doesn't assign this evidenční jednotka number. Please check it.",
+        "invalid_id_pokl": "The pokladna label may have up to 20 characters: letters without accents, digits, space and . , : ; / # - _",
+        "wrong_password": "The certificate password doesn't match.",
+        "invalid_p12": "The file is not a valid .p12 certificate.",
+        "no_certificate": "The file has no certificate in it.",
+        "no_key": "The file has no private key in it.",
+        "unsupported_algorithm": "We can't read this .p12 format. Generate the certificate in DIS+ again.",
+        "certificate_not_eet": "This is not a pokladní certifikát for EET.",
+        "eet_record_not_pending": "The record has already been settled.",
+        "eet_record_not_found": "Record not found.",
+        "invalid_body": "Invalid data."
+      }
     }
   },
   "billing": {
@@ -5079,7 +5165,8 @@
       "orderNumber": "Order number",
       "paidAt": "Paid on",
       "sentAt": "Sent",
-      "internalNote": "Internal note"
+      "internalNote": "Internal note",
+      "eetPok": "EET POK"
     },
     "items": {
       "description": "Item",

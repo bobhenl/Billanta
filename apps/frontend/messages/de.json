@@ -1815,6 +1815,10 @@
         "confidential": {
           "title": "Vertraulicher Modus",
           "description": "Belege, Anhänge, Kontakte und Beträge im Browser verschlüsseln"
+        },
+        "eet": {
+          "title": "EET",
+          "description": "Erfassung von Barumsätzen (EET 2.0)"
         }
       },
       "managedByAdmins": "Unternehmensdaten, Team, Abonnement und weitere Unternehmenseinstellungen verwaltet der Inhaber oder ein Administrator."
@@ -3668,6 +3672,88 @@
       "body": "Mit der Rolle „{role}“ können Sie diese Unternehmenseinstellungen nicht ändern. Falls eine Änderung nötig ist, wenden Sie sich an den Inhaber oder einen Administrator des Unternehmens.",
       "bodyGeneric": "Ihre Rolle in diesem Unternehmen hat keinen Zugriff auf diese Einstellung. Wenden Sie sich an den Inhaber oder einen Administrator des Unternehmens.",
       "back": "Zurück zu den Einstellungen"
+    },
+    "eet": {
+      "title": "EET 2.0",
+      "lead": "Erfassung von Umsätzen, die bar oder vor Ort mit Karte bezahlt werden.",
+      "loadError": "Die EET-Einstellungen konnten nicht geladen werden.",
+      "saved": "Gespeichert",
+      "scope": "EET 2.0 gilt ab dem 1. 1. 2027. Billanta erfasst eine Zahlung, wenn Sie eine Rechnung als bar bezahlt markieren (oder mit Karte vor Ort, wenn Sie das unten einschalten). Überweisungen, Nachnahme und Online-Kartenzahlungen werden nicht erfasst.",
+      "certificate": {
+        "title": "Pokladní certifikát",
+        "eic": "EIČ",
+        "validity": "Gültig",
+        "validRange": "{from} – {to}",
+        "issuer": "Aussteller",
+        "none": "Sie haben noch kein Zertifikat hochgeladen. Sie erstellen es in der App DIS+ im Steuerportal.",
+        "eicMismatch": "Die EIČ im Zertifikat passt nicht zur DIČ der Firma. Prüfen Sie, ob es das Zertifikat dieser Firma ist.",
+        "file": "Zertifikatsdatei (.p12)",
+        "password": "Passwort des Zertifikats",
+        "upload": "Hochladen",
+        "replace": "Ersetzen",
+        "uploaded": "Zertifikat hochgeladen",
+        "storage": "Zertifikat und Passwort werden verschlüsselt gespeichert und nie wieder angezeigt. Sie dienen nur zum Signieren der erfassten Umsätze.",
+        "remove": "Zertifikat löschen (schaltet EET aus)"
+      },
+      "register": {
+        "title": "Evidenční jednotka und Kasse",
+        "idJednotky": "Nummer der evidenční jednotka",
+        "idJednotkyHint": "DIS+ vergibt sie, wenn Sie eine Betriebsstätte oder andere Einheit registrieren.",
+        "idPokl": "Bezeichnung der Kasse",
+        "idPoklHint": "Ihre eigene Bezeichnung, bis zu 20 Zeichen: Buchstaben ohne Akzente, Ziffern, Leerzeichen und . , : ; / # - _",
+        "save": "Speichern"
+      },
+      "sending": {
+        "title": "Senden",
+        "cardInPerson": "Ich nehme Kartenzahlungen vor Ort an",
+        "cardInPersonHint": "Eine Kartenzahlung an Ihrem Terminal ist eine Kontaktzahlung und wird erfasst. Eine Online-Kartenzahlung nicht.",
+        "environment": "Umgebung",
+        "playground": "Test (Playground)",
+        "production": "Produktiv",
+        "environmentHint": "In der Testumgebung wird nichts wirklich erfasst. Wechseln Sie zu Produktiv, sobald Sie ein Zertifikat aus DIS+ haben.",
+        "enabled": "Umsätze erfassen",
+        "enabledHint": "Erfordert ein hochgeladenes Zertifikat, die Nummer der evidenční jednotka und die Kassenbezeichnung."
+      },
+      "records": {
+        "title": "Gesendete Datensätze",
+        "overdueWarning": "Nach 48 Stunden keine Bestätigung: {count, plural, one {# Datensatz} other {# Datensätze}}. Versuchen Sie es erneut.",
+        "empty": "Noch kein Umsatz gesendet.",
+        "status": {
+          "confirmed": "Bestätigt",
+          "pending": "Wartet auf Antwort",
+          "overdue": "Über 48 h",
+          "rejected": "Abgelehnt"
+        },
+        "invoice": "Beleg",
+        "resend": "Erneut senden",
+        "confirmedNow": "Der Umsatz ist bestätigt",
+        "stillPending": "Noch keine Antwort. Wir versuchen es automatisch erneut.",
+        "errors": {
+          "timeout": "Die Antwort kam nicht rechtzeitig",
+          "network": "Keine Verbindung zum EET-Server",
+          "soap_fault": "Der EET-Server hat einen Fehler gemeldet",
+          "other": "Fehler: {code}"
+        }
+      },
+      "errors": {
+        "save_failed": "Speichern fehlgeschlagen.",
+        "certificate_missing": "Laden Sie zuerst das pokladní certifikát hoch.",
+        "eet_not_configured": "Geben Sie die Nummer der evidenční jednotka und die Kassenbezeichnung ein.",
+        "certificate_expired": "Das Zertifikat ist abgelaufen. Erstellen Sie in DIS+ ein neues.",
+        "eet_cz_only": "EET gilt nur für Firmen in Tschechien.",
+        "eet_not_for_demo": "In einer Demo-Firma lässt sich EET nicht einschalten.",
+        "invalid_id_jednotky": "Diese Nummer vergibt DIS+ nicht. Bitte prüfen Sie sie.",
+        "invalid_id_pokl": "Die Kassenbezeichnung darf bis zu 20 Zeichen haben: Buchstaben ohne Akzente, Ziffern, Leerzeichen und . , : ; / # - _",
+        "wrong_password": "Das Passwort des Zertifikats stimmt nicht.",
+        "invalid_p12": "Die Datei ist kein gültiges .p12-Zertifikat.",
+        "no_certificate": "In der Datei fehlt das Zertifikat.",
+        "no_key": "In der Datei fehlt der private Schlüssel.",
+        "unsupported_algorithm": "Dieses .p12-Format können wir nicht lesen. Erstellen Sie das Zertifikat in DIS+ neu.",
+        "certificate_not_eet": "Das ist kein pokladní certifikát für EET.",
+        "eet_record_not_pending": "Der Datensatz ist bereits erledigt.",
+        "eet_record_not_found": "Datensatz nicht gefunden.",
+        "invalid_body": "Ungültige Angaben."
+      }
     }
   },
   "billing": {
@@ -5072,7 +5158,8 @@
       "orderNumber": "Bestellnummer",
       "paidAt": "Bezahlt am",
       "sentAt": "Gesendet",
-      "internalNote": "Interne Notiz"
+      "internalNote": "Interne Notiz",
+      "eetPok": "EET POK"
     },
     "items": {
       "description": "Position",
