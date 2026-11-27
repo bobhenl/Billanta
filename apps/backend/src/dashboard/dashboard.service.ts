@@ -8,6 +8,7 @@ import { ReportRates } from "../exports/uniform-rate";
 import { isOverdue } from "../invoices/invoices.service";
 import { amountLeftToPay } from "../invoices/invoice-reminders.util";
 import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
+import { amountsSealed } from "../vault/sealed-amounts";
 import { earliestDay, filterOptions, localDay, periodBreakdown, periodTotals, type StatsDoc, type StatsExpense } from "./period-stats";
 import { hasDocumentFilters, matchesFilters, type ReportFilters } from "./report-filters";
 import { tenantHomeCurrency } from "../tenants/home-currency";
@@ -130,7 +131,9 @@ export class DashboardService {
     const dueSoonLimit = new Date(today.getFullYear(), today.getMonth(), today.getDate() + DUE_SOON_DAYS + 1);
 
     let foreignCurrencyCount = 0;
-    const enriched: ((typeof invoices)[number]["invoice"] & { contactName: string | null; contactColor: string | null; total: number; isOverdue: boolean })[] = [];
+    const enriched: ((typeof invoices)[number]["invoice"] & { contactName: string | null; contactColor: string | null; total: number | null; isOverdue: boolean })[] = [];
+    // Documents with sealed amounts: they add 0 to every sum here, the browser adds them after unlock.
+    const sealedIds: string[] = [];
     const dueSoon: typeof enriched = [];
     const customers = new Map<string, { contactId: string; name: string; total: number; count: number }>();
 
@@ -139,7 +142,9 @@ export class DashboardService {
       const overdue = isOverdue(invoice);
       // The unpaid tiles count what the customer still owes, as the reports do (period-stats `unpaidPart`).
       const open = amountLeftToPay(totals.totalWithVat, invoice.amountPaid);
-      const row = { ...invoice, contactName, contactColor, total: totals.totalWithVat, isOverdue: overdue };
+      const sealed = amountsSealed(invoice);
+      // Null, not the placeholder's 0: the browser opens `encAmounts` for the real total.
+      const row = { ...invoice, contactName, contactColor, total: sealed ? null : totals.totalWithVat, isOverdue: overdue };
       enriched.push(row);
 
       // Waiting on the customer: issued, not paid, not a credit note.
@@ -164,6 +169,15 @@ export class DashboardService {
 
       if (invoice.currency !== home) {
         foreignCurrencyCount++;
+        continue;
+      }
+      if (sealed) {
+        sealedIds.push(invoice.id);
+        // The counts are no secret; only the sums wait for the browser.
+        if (invoice.status === "issued" && invoice.documentType !== "credit_note") {
+          kpi.unpaidCount++;
+          if (overdue) kpi.overdueCount++;
+        }
         continue;
       }
 
@@ -230,6 +244,8 @@ export class DashboardService {
         .sort((a, b) => b.total - a.total)
         .slice(0, 5)
         .map((c) => ({ ...c, total: round2(c.total) })),
+      /** Home-currency documents with sealed amounts, left out of the KPIs, the chart and the top customers. */
+      sealed: { count: sealedIds.length, ids: sealedIds },
     };
   }
 
@@ -272,7 +288,9 @@ export class DashboardService {
     const byInvoice = new Map<string, LineItemRow[]>();
     for (const item of items) byInvoice.set(item.invoiceId, [...(byInvoice.get(item.invoiceId) ?? []), item]);
 
-    const allDocs: StatsDoc[] = rows.map(({ invoice, contactName }) => {
+    // Sealed amounts would count as 0 in every total; they are listed for the browser instead.
+    const sealedRows = rows.filter((r) => amountsSealed(r.invoice));
+    const allDocs: StatsDoc[] = rows.filter((r) => !amountsSealed(r.invoice)).map(({ invoice, contactName }) => {
       const totals = computeVatBreakdown(byInvoice.get(invoice.id) ?? [], { reverseCharge: invoice.reverseCharge });
       return {
         documentType: invoice.documentType,
@@ -327,6 +345,8 @@ export class DashboardService {
       current: periodTotals(docs, expenses, start, end, currency, today, home),
       previous: periodTotals(docs, expenses, previousFrom, start, currency, today, home),
       ...periodBreakdown(docs, expenses, start, end, currency, today, home),
+      /** Issued or paid documents with sealed amounts, all of them (the browser filters by period). */
+      sealed: { count: sealedRows.length, ids: sealedRows.map((r) => r.invoice.id) },
     };
   }
 

@@ -54,6 +54,8 @@ export type PublicInvoiceLineItemRow = {
   vat_rate: string | null;
   sort_order: number;
   discount_percent?: string | null;
+  /** Category "amounts": the item's sealed quantity, price, rate and discount. */
+  enc_amounts?: string | null;
 };
 
 type PublicInvoiceSupplierRow = {
@@ -87,6 +89,8 @@ export interface PublicInvoiceLineItemView {
    * `keyId` is null for a text sealed with the company key the client never gets.
    */
   sealed?: { cipher: string; keyId: string | null };
+  /** Category "amounts": the item's amounts as client ciphertext; the plain numbers are then the placeholder. */
+  sealedAmounts?: { cipher: string; keyId: string | null };
   quantity: number;
   unitPrice: number;
   vatRate: number | null;
@@ -113,9 +117,13 @@ export interface PublicInvoiceView {
    *  columns (see the note in `drizzle/rls-policies.sql`'s
    *  `get_public_invoice_view` comment), so these are computed here rather
    *  than sourced from any column. */
-  subtotal: number;
-  vatTotal: number;
-  total: number;
+  subtotal: number | null;
+  vatTotal: number | null;
+  total: number | null;
+  /** Důvěrný režim "amounts": the totals are null and the browser computes them from `sealedAmounts`. */
+  amountsSealed: boolean;
+  /** Reverse charge (no VAT), for the browser's own totals of sealed amounts. */
+  reverseCharge: boolean;
   /** Received so far (partial payments); the QR/portal ask for the rest. */
   amountPaid: number;
   /** Built-in method key, plus the custom label/instructions (Settings → Způsoby úhrady). */
@@ -318,14 +326,18 @@ export class PublicInvoicesService {
       vatRate: row.vat_rate != null ? Number(row.vat_rate) : null,
       discountPercent: Number(row.discount_percent ?? 0),
       sortOrder: row.sort_order,
+      ...(isSealed(row.enc_amounts) ? { sealedAmounts: clientCipher(row.enc_amounts!) } : {}),
     }));
+    // The items are sealed all together or not at all (the API refuses a mix).
+    const amountsSealed = lineItemRows.some((row) => isSealed(row.enc_amounts));
 
     const supplierRow = supplierRows[0];
     const qr = qrRows[0];
     const breakdown = publicInvoiceBreakdown(lineItemRows, qr?.reverse_charge === true);
     const total = breakdown.totalWithVat;
     let qrInvoice: string | null = null;
-    if (header.invoice_number && header.issue_date && qr) {
+    // QR Faktura carries the totals, which the server doesn't know for sealed amounts.
+    if (header.invoice_number && header.issue_date && qr && !amountsSealed) {
       qrInvoice = generateQrInvoiceString({
         invoiceNumber: header.invoice_number,
         issueDate: new Date(header.issue_date),
@@ -363,9 +375,11 @@ export class PublicInvoicesService {
       currency: header.currency,
       status: header.status,
       lineItems,
-      subtotal: breakdown.totalWithoutVat,
-      vatTotal: breakdown.totalVat,
-      total,
+      subtotal: amountsSealed ? null : breakdown.totalWithoutVat,
+      vatTotal: amountsSealed ? null : breakdown.totalVat,
+      total: amountsSealed ? null : total,
+      amountsSealed,
+      reverseCharge: qr?.reverse_charge === true,
       amountPaid: Number(header.amount_paid ?? 0),
       paymentMethod: header.payment_method,
       paymentMethodLabel: header.payment_method_label,
@@ -391,6 +405,7 @@ export class PublicInvoicesService {
           }
         : null,
       cardPayment:
+        !amountsSealed &&
         header.status === "issued" &&
         ["invoice", "proforma"].includes(cardRows[0]?.document_type ?? "") &&
         total - Number(header.amount_paid ?? 0) > 0.005,
@@ -513,6 +528,10 @@ export function clientPdfModel(model: InvoicePdfModel): InvoicePdfModel {
       ...model.table,
       items: model.table.items.map((i) => (isSealed(i.description) ? { ...i, description: clientCipher(i.description).cipher } : i)),
     },
+    // Sealed amounts go out like the item texts, without the company-key wrap.
+    ...(model.sealedAmounts
+      ? { sealedAmounts: { ...model.sealedAmounts, items: model.sealedAmounts.items.map((c) => (isSealed(c) ? clientCipher(c).cipher : c)) } }
+      : {}),
   };
 }
 

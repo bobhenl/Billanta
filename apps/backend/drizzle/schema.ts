@@ -705,6 +705,11 @@ export const invoices = pgTable(
     buyerDetailsRequired: text("buyer_details_required").array(),
     // Sum received so far (partial payments); the status flips to "paid" once it reaches the total.
     amountPaid: numeric("amount_paid", { precision: 14, scale: 2 }).notNull().default("0"),
+    // Důvěrný režim, category "amounts": the document's totals sealed in the
+    // browser (`enc:v1:`, under the document key). Set means every line item
+    // holds its amounts in `invoice_line_items.enc_amounts` and placeholders
+    // in the plain columns, so server sums of this document are 0, not real.
+    encAmounts: text("enc_amounts"),
     paidAt: timestamp("paid_at", { withTimezone: true }),
     // Locked by an owner/admin: opening it needs a fresh re-auth (src/invoices/invoice-lock.ts).
     // Lists, totals and exports still count it.
@@ -863,6 +868,9 @@ export const invoiceLineItems = pgTable("invoice_line_items", {
   // Item / product code (SKU, EAN, catalogue number), printed as its own column.
   code: varchar("code", { length: 32 }),
   discountPercent: numeric("discount_percent", { precision: 5, scale: 2 }).notNull().default("0"),
+  // Sealed quantity, unit price, VAT rate and discount (category "amounts");
+  // the plain columns then hold SEALED_ITEM_PLACEHOLDER.
+  encAmounts: text("enc_amounts"),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -1088,6 +1096,8 @@ export const recurringInvoiceTemplates = pgTable("recurring_invoice_templates", 
   // that materializes a real invoice from this template is responsible for
   // copying these into proper `invoice_line_items` rows.
   lineItemsSnapshot: jsonb("line_items_snapshot").notNull().default(sql`'[]'::jsonb`),
+  // Sealed totals copied as they are into every draft (category "amounts").
+  encAmounts: text("enc_amounts"),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),

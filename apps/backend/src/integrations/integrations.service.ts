@@ -21,6 +21,7 @@ import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
 import { upcomingTaxEvents } from "../dashboard/tax-calendar";
 import { computeVatBreakdown, formatInvoiceAmount } from "../invoices/invoice-total.util";
+import { amountsSealed } from "../vault/sealed-amounts";
 import { buildIcs, type IcsEvent } from "./ics";
 import { addsWebhook, mergeWebhooks, sendWebhook, webhooksOf, type WebhookInput } from "./webhooks";
 import { assertPlanFeature } from "../billing/plan-limits";
@@ -317,7 +318,8 @@ export class IntegrationsService {
         events.push({
           uid: `invoice-${invoice.id}@billanta`,
           date: iso(invoice.dueDate!),
-          summary: `${t.due} ${invoice.invoiceNumber ?? ""} · ${plainName(contactName) ?? ""} · ${formatInvoiceAmount(total, invoice.currency)}`.replace(/\s+·\s+·/, " ·"),
+          // Sealed amounts: no sum in a feed the server builds.
+          summary: `${t.due} ${invoice.invoiceNumber ?? ""} · ${plainName(contactName) ?? ""} · ${amountsSealed(invoice) ? "–" : formatInvoiceAmount(total, invoice.currency)}`.replace(/\s+·\s+·/, " ·"),
           url: `${siteUrl()}/${lang}/invoices/${invoice.id}`,
           categories: [t.invoices!],
         });
@@ -366,7 +368,7 @@ export class IntegrationsService {
         ).totalWithVat;
         const overdue = invoice.status === "issued" && invoice.dueDate && invoice.dueDate < new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const state = overdue ? t.overdue : (t[invoice.status] ?? invoice.status);
-        const title = `${invoice.invoiceNumber ?? ""} · ${plainName(contactName) ?? ""} · ${formatInvoiceAmount(total, invoice.currency)} · ${state}`;
+        const title = `${invoice.invoiceNumber ?? ""} · ${plainName(contactName) ?? ""} · ${amountsSealed(invoice) ? "–" : formatInvoiceAmount(total, invoice.currency)} · ${state}`;
         const link = `${site}/${lang}/invoices/${invoice.id}`;
         const when = invoice.paidAt ?? invoice.cancelledAt ?? invoice.issuedAt ?? invoice.updatedAt;
         return [

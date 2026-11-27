@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { eq } from "drizzle-orm";
 import type { Response } from "express";
 import { z } from "zod";
+import { refuseSealedSet } from "../vault/sealed-amounts";
 import * as schema from "../../drizzle/schema";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
@@ -203,6 +204,7 @@ export class ExportsController {
   @ApiOperation({ summary: "The same year estimate as a CSV sheet" })
   async annualCsv(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>, @Res() res: Response) {
     const s = await this.loadAnnual(req, query);
+    refuseSealedSet(s.sealed);
     // The sheet follows Czech rules (DPFO, ČSSZ); the card offers its own CSV for a Slovak company.
     if (s.country !== "CZ") throw new BadRequestException("country_not_supported");
     const n = (v: number | null) => (v == null ? "" : v.toFixed(2).replace(".", ","));
@@ -318,6 +320,7 @@ export class ExportsController {
         rates: ReportRates.fromPrefs(tenant?.invoiceFormPrefs, new Date(), tenantHomeCurrencyOf(tenant)),
         homeCurrency: tenantHomeCurrencyOf(tenant),
       });
+      refuseSealedSet(s.sealed);
       const b = computeTaxReturnBasis({
         country,
         year,
@@ -396,6 +399,8 @@ export class ExportsController {
 
   private async loadFilings(req: TenantScopedRequest, q: z.infer<typeof filingsQuerySchema>) {
     const summary = await this.loadAnnual(req, q);
+    // Filings prefilled without the sealed income would understate it.
+    refuseSealedSet(summary.sealed);
     const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
     if (!tenant) throw new NotFoundException("tenant_not_found");
     // DPFO, přehled ČSSZ and ZP are Czech filings; a Slovak company's amounts are in euros.

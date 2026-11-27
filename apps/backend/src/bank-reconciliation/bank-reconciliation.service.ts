@@ -18,6 +18,7 @@ import {
   type MatchOutcome,
   type PaidLinkCandidate,
 } from "./matching";
+import { amountsSealed } from "../vault/sealed-amounts";
 import { appendNoteLine, paypalPaymentNote } from "./payment-note";
 import { convertHeldPayments, type BalanceConversion } from "./paypal-conversions";
 import { pairTransfers } from "./transfer-pairing";
@@ -345,6 +346,11 @@ export class BankReconciliationService {
           this.logger.warn(
             `Bank transaction ${tx.id} (import ${importRow.id}, tenant ${tenantId}) has multiple ` +
               "equally-good invoice match candidates – left unmatched for manual review.",
+          );
+        } else if (outcome.reason === "sealed_amount") {
+          this.logger.log(
+            `Bank transaction ${tx.id} (tenant ${tenantId}) carries the VS of invoice ${outcome.invoiceId}, ` +
+              "whose amounts are encrypted – left for manual review.",
           );
         } else if (outcome.reason === "amount_mismatch") {
           this.logger.log(
@@ -929,6 +935,7 @@ export class BankReconciliationService {
         computeInvoiceTotal(lineItemsByInvoice.get(invoice.id) ?? [], { reverseCharge: invoice.reverseCharge }) -
           Number(invoice.amountPaid),
       ),
+      amountsSealed: amountsSealed(invoice),
     }));
   }
 }

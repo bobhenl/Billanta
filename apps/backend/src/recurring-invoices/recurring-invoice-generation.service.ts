@@ -146,6 +146,8 @@ export class RecurringInvoiceGenerationService {
         contactId: template.contactId,
         buyerContactPerson: contact?.contactPerson ?? null,
         currency: template.currency,
+        // Sealed amounts stay sealed: the draft gets the template's totals envelope as it is.
+        encAmounts: template.encAmounts ?? null,
         status: "draft",
         source: "recurring",
       })

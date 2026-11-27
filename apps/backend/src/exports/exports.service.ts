@@ -29,6 +29,7 @@ import { generateSkDphV25, generateSkKvDphV25, generateSkSvDphV20, skSubmitterFr
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 import { redactSealedInvoice, redactSealedItem } from "../vault/sealed";
 import { redactSealedContact } from "../vault/sealed-contacts";
+import { refuseSealedRows, splitSealed } from "../vault/sealed-amounts";
 
 type Db = PostgresJsDatabase<typeof schema>;
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
@@ -268,6 +269,8 @@ export class ExportsService {
     // The rest of the filters (status "overdue" needs today) run in memory, on the same rule as the report.
     const today = new Date();
     const kept = rows.filter((r) => r.invoice.documentType !== "quote" && matchesFilters(r.invoice, filters, today));
+    // Sealed amounts would export as 0: the accountant's file is refused rather than quietly wrong.
+    refuseSealedRows(kept.map((r) => r.invoice));
     const ids = kept.map((r) => r.invoice.id);
     const items = ids.length
       ? await db
@@ -595,6 +598,8 @@ export class ExportsService {
         ),
       )
       .orderBy(asc(schema.invoices.invoiceNumber));
+    // A VAT return without the sealed documents would be a wrong filing; the browser can't add to the XML yet.
+    refuseSealedRows(rows.map((r) => r.invoice));
     const ids = rows.map((r) => r.invoice.id);
     const items = ids.length
       ? await db.select().from(schema.invoiceLineItems).where(inArray(schema.invoiceLineItems.invoiceId, ids))
@@ -725,7 +730,7 @@ export class ExportsService {
     const to = new Date(year + 1, 0, 1);
     const accrual = opts.basis === "accrual";
     const earnedOn = sql`coalesce(${schema.invoices.taxableSupplyDate}, ${schema.invoices.issueDate})`;
-    const invoices = await db
+    const found = await db
       .select()
       .from(schema.invoices)
       .where(
@@ -741,6 +746,8 @@ export class ExportsService {
             : [eq(schema.invoices.status, "paid"), gte(schema.invoices.paidAt, from), lt(schema.invoices.paidAt, to)]),
         ),
       );
+    // Sealed amounts are summed in the browser; the files built from this summary refuse them (controller).
+    const { plain: invoices, sealed } = splitSealed(found);
     const ids = invoices.map((i) => i.id);
     const items = ids.length ? await db.select().from(schema.invoiceLineItems).where(inArray(schema.invoiceLineItems.invoiceId, ids)) : [];
     let income = 0;
@@ -790,6 +797,8 @@ export class ExportsService {
       currency: eur ? ("EUR" as const) : ("CZK" as const),
       counts: { invoices: invoices.length, expenses: expenses.length, missingRates },
       byCategory,
+      /** Documents with sealed amounts, left out of `income`. */
+      sealed,
     };
   }
 

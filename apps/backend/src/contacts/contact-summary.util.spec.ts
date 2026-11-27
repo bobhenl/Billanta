@@ -111,6 +111,13 @@ describe("ContactsService.summary", () => {
     expect(result).toMatchObject({ legalName: "Novák s.r.o.", invoiceCount: 1, byCurrency: [{ currency: "CZK", invoiced: 1210 }] });
   });
 
+  it("leaves documents with sealed amounts out of the sums and lists them instead", async () => {
+    const sealedRow = { ...bucket({ invoiceId: "i2", base: "0", vatRate: null }), amountsSealed: true };
+    const { db } = makeDb([{ id: "c1", legalName: "Novák s.r.o.", email: null, ico: null, country: "CZ" }], [bucket({}), sealedRow as ContactSummaryBucket]);
+    const result = await service.summary(db, "tenant-A", "c1");
+    expect(result).toMatchObject({ invoiceCount: 1, byCurrency: [{ currency: "CZK", invoiced: 1210 }], sealed: { count: 1, ids: ["i2"] } });
+  });
+
   it("404s for a contact outside the tenant without running the aggregate", async () => {
     const { db, select } = makeDb([], []);
     await expect(service.summary(db, "tenant-B", "c1")).rejects.toBeInstanceOf(NotFoundException);

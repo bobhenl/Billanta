@@ -1,5 +1,6 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
+import { sealedEnvelope } from "../../vault/sealed";
 
 /**
  * Line-item shape mirrors `src/invoices/dto/create-invoice-draft.dto.ts`'s
@@ -17,6 +18,8 @@ const lineItemSchema = z.object({
   // null/undefined = no VAT rate captured yet — same "never silently
   // defaulted" convention as the AI-draft line items.
   vatRate: z.coerce.number().min(0).max(100).nullish(),
+  // Confidential mode "amounts": the item's envelope; the plain fields then hold the placeholder.
+  encAmounts: sealedEnvelope(400).nullish(),
 });
 
 // Kept as a literal tuple (not `schema.recurringFrequencyEnum.enumValues`)
@@ -32,6 +35,8 @@ export const createRecurringInvoiceSchema = z.object({
   nextRunDate: z.coerce.date().optional(),
   currency: z.string().length(3).default("CZK"),
   lineItems: z.array(lineItemSchema).min(1),
+  // The totals envelope that goes with sealed item amounts (copied into every draft).
+  encAmounts: sealedEnvelope(4000).nullish(),
 });
 
 export class CreateRecurringInvoiceDto extends createZodDto(createRecurringInvoiceSchema) {}

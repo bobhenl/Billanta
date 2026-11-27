@@ -39,6 +39,8 @@ export function vaultDocumentView(
     totalVat: totals.totalVat,
     total: totals.totalWithVat,
     createdAt: invoice.createdAt,
+    // Category "amounts": the totals above are the placeholder's 0; the browser opens these instead.
+    encAmounts: invoice.encAmounts ?? null,
     items: [...items]
       .sort((a, b) => a.sortOrder - b.sortOrder)
       .map((l) => ({
@@ -49,6 +51,7 @@ export function vaultDocumentView(
         unitPrice: Number(l.unitPrice),
         vatRate: l.vatRate == null ? null : Number(l.vatRate),
         discountPercent: Number(l.discountPercent),
+        encAmounts: l.encAmounts ?? null,
         createdAt: l.createdAt,
       })),
   };

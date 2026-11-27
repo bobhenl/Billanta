@@ -15,15 +15,19 @@ import { openablePage, vaultDocumentView } from "./documents";
 import { SEALED_BUYER_SNAPSHOT_FIELDS, SEALED_CONTACT_FIELDS } from "@faktur/cz-compliance";
 import { SEALED_PLACEHOLDER } from "./sealed";
 import { assertContactShape, assertContactsCategory } from "./sealed-contacts";
+import { amountPaidOnSeal, assertAmountsCategory, assertAmountsShape } from "./sealed-amounts";
+import { SEALED_ITEM_PLACEHOLDER } from "@faktur/cz-compliance";
 import { assertInvoiceOpen } from "../invoices/invoice-lock";
 import type {
   EnableVaultDto,
   MemberWrapDto,
+  PlainAmountsQueryDto,
   PlainAttachmentsQueryDto,
   PlainContactsQueryDto,
   PlainInvoicesQueryDto,
   RecoveryWrapDto,
   RekeyInvoiceDto,
+  SealAmountsDto,
   SealContactsDto,
   SealInvoicesDto,
   VaultDocumentsQueryDto,
@@ -554,6 +558,120 @@ export class VaultService {
   }
 
   /**
+   * What "Zašifrovat stávající částky" still has to do, a page at a time:
+   * documents whose amounts are plain, with the numbers the browser seals.
+   * Locked documents are left out (they need a fresh re-auth to open), and
+   * so are partly paid ones: the server would no longer know what is left
+   * (`amountPaidOnSeal`). `skippedPartlyPaid` says how many, so the button
+   * can explain why they stay.
+   */
+  async plainAmounts(db: TenantDb, tenantId: string, query: PlainAmountsQueryDto) {
+    const vault = await this.requireVault(db, tenantId);
+    if (!vault.categories.includes("amounts")) throw new ForbiddenException("vault_category_off");
+    const i = schema.invoices;
+    const li = schema.invoiceLineItems;
+    const base = and(isNull(i.encAmounts), isNull(i.lockedAt), query.invoice_id ? eq(i.id, query.invoice_id) : undefined);
+    const partlyPaid = sql`(COALESCE(${i.amountPaid}, 0) <> 0 AND ${i.status} <> 'paid')`;
+    const where = and(base, sql`NOT ${partlyPaid}`);
+    const [[{ remaining } = { remaining: 0 }], [{ skipped } = { skipped: 0 }]] = await Promise.all([
+      db.select({ remaining: sql<number>`count(*)::int` }).from(i).where(where),
+      db.select({ skipped: sql<number>`count(*)::int` }).from(i).where(and(base, partlyPaid)),
+    ]);
+    const rows = await db
+      .select({ id: i.id, invoiceNumber: i.invoiceNumber, reverseCharge: i.reverseCharge, noteAbove: i.noteAbove, noteBelow: i.noteBelow })
+      .from(i)
+      .where(where)
+      .orderBy(asc(i.createdAt), asc(i.id))
+      .limit(query.limit);
+    const items = rows.length ? await db.select().from(li).where(inArray(li.invoiceId, rows.map((r) => r.id))) : [];
+    return {
+      remaining,
+      skippedPartlyPaid: skipped,
+      invoices: rows.map((r) => {
+        const own = items.filter((it) => it.invoiceId === r.id).sort((a, b) => a.sortOrder - b.sortOrder);
+        return {
+          id: r.id,
+          invoiceNumber: r.invoiceNumber,
+          reverseCharge: r.reverseCharge,
+          items: own.map((it) => ({
+            id: it.id,
+            quantity: Number(it.quantity),
+            unitPrice: Number(it.unitPrice),
+            vatRate: it.vatRate == null ? null : Number(it.vatRate),
+            discountPercent: Number(it.discountPercent),
+          })),
+          // The key the document's sealed texts already use, so the amounts join it (one key per client link).
+          documentKeyWrap: [r.noteAbove, r.noteBelow, ...own.map((it) => it.description)].map(documentKeyWrap).find(Boolean) ?? null,
+        };
+      }),
+    };
+  }
+
+  /**
+   * Writes the envelopes back and puts the placeholder into the plain
+   * columns. A document changes only while its amounts are still plain and
+   * it is not locked, re-checked in the UPDATE itself, so a retry or a
+   * second tab is a no-op. Every item must come back sealed, or the document
+   * is skipped untouched. Not `updated_at`: the document reads the same.
+   */
+  async sealAmounts(db: TenantDb, tenantId: string, dto: SealAmountsDto) {
+    await this.requireVault(db, tenantId);
+    await assertAmountsCategory(db, tenantId);
+    const i = schema.invoices;
+    const li = schema.invoiceLineItems;
+    let sealed = 0;
+    let skipped = 0;
+    for (const given of dto.invoices) {
+      const [row] = await db
+        .select({ id: i.id, invoiceNumber: i.invoiceNumber, status: i.status, amountPaid: i.amountPaid, noteAbove: i.noteAbove, noteBelow: i.noteBelow })
+        .from(i)
+        .where(and(eq(i.id, given.id), isNull(i.encAmounts), isNull(i.lockedAt)))
+        .limit(1);
+      if (!row) continue;
+      let amountPaid: "0" | null;
+      try {
+        amountPaid = amountPaidOnSeal(row);
+      } catch {
+        skipped++;
+        continue;
+      }
+      const items = await db.select({ id: li.id, description: li.description }).from(li).where(eq(li.invoiceId, row.id));
+      const byId = new Map(given.items.map((it) => [it.id, it.encAmounts]));
+      if (items.length !== given.items.length || items.some((it) => !byId.has(it.id))) {
+        skipped++;
+        continue;
+      }
+      // One document key for everything a client link opens.
+      assertOneDocumentKey([given.encAmounts, ...given.items.map((it) => it.encAmounts), row.noteAbove, row.noteBelow, ...items.map((it) => it.description)]);
+      const placeholder = {
+        quantity: String(SEALED_ITEM_PLACEHOLDER.quantity),
+        unitPrice: String(SEALED_ITEM_PLACEHOLDER.unitPrice),
+        vatRate: null,
+        discountPercent: String(SEALED_ITEM_PLACEHOLDER.discountPercent),
+      };
+      assertAmountsShape(
+        { encAmounts: given.encAmounts, amountPaid: amountPaid ?? row.amountPaid },
+        items.map((it) => ({ ...placeholder, encAmounts: byId.get(it.id)! })),
+      );
+      const updated = await db
+        .update(i)
+        .set({ encAmounts: given.encAmounts, ...(amountPaid != null ? { amountPaid } : {}) })
+        .where(and(eq(i.id, row.id), isNull(i.encAmounts), isNull(i.lockedAt)))
+        .returning({ id: i.id });
+      if (!updated.length) continue;
+      for (const it of items) {
+        await db
+          .update(li)
+          .set({ ...placeholder, encAmounts: byId.get(it.id)! })
+          .where(and(eq(li.id, it.id), eq(li.invoiceId, row.id)));
+      }
+      await this.audit?.record(db, tenantId, { entityType: "invoice", entityId: row.id, entityLabel: row.invoiceNumber, action: "sealed" });
+      sealed++;
+    }
+    return { sealed, skipped };
+  }
+
+  /**
    * Stores one document's printed texts re-encrypted under its own key (see
    * `rekeyWrites`). Like `seal`, only text columns change and not
    * `updated_at`. A locked document needs the usual fresh re-auth. The
@@ -571,17 +689,20 @@ export class VaultService {
         noteBelow: schema.invoices.noteBelow,
         buyerSnapshot: schema.invoices.buyerSnapshot,
         buyerContactPerson: schema.invoices.buyerContactPerson,
+        encAmounts: schema.invoices.encAmounts,
       })
       .from(schema.invoices)
       .where(and(eq(schema.invoices.id, id), eq(schema.invoices.tenantId, tenantId)))
       .limit(1);
     if (!invoice) throw new NotFoundException("Invoice not found");
     const stored = await db
-      .select({ id: schema.invoiceLineItems.id, description: schema.invoiceLineItems.description })
+      .select({ id: schema.invoiceLineItems.id, description: schema.invoiceLineItems.description, encAmounts: schema.invoiceLineItems.encAmounts })
       .from(schema.invoiceLineItems)
       .where(eq(schema.invoiceLineItems.invoiceId, id));
     const byId = new Map(stored.map((i) => [i.id, i.description]));
-    if (dto.items.some((i) => !byId.has(i.id))) throw new NotFoundException("rekey_unknown_item");
+    const amountsById = new Map(stored.map((i) => [i.id, i.encAmounts]));
+    const itemAmounts = dto.itemAmounts ?? [];
+    if (dto.items.some((i) => !byId.has(i.id)) || itemAmounts.some((i) => !byId.has(i.id))) throw new NotFoundException("rekey_unknown_item");
     const snapshot = (invoice.buyerSnapshot ?? {}) as Record<string, unknown>;
     const buyer = Object.entries(dto.buyer ?? {}).filter((e): e is [string, `enc:v1:${string}`] => typeof e[1] === "string");
     rekeyWrites([
@@ -590,6 +711,9 @@ export class VaultService {
       ...dto.items.map((i) => ({ incoming: i.description, stored: byId.get(i.id) })),
       ...buyer.map(([k, v]) => ({ incoming: v, stored: snapshot[k] as string | undefined })),
       ...(dto.buyerContactPerson ? [{ incoming: dto.buyerContactPerson, stored: invoice.buyerContactPerson }] : []),
+      // Only amounts that are sealed already: a re-key never seals plain amounts (that is "seal-amounts").
+      ...(dto.encAmounts ? [{ incoming: dto.encAmounts, stored: invoice.encAmounts }] : []),
+      ...itemAmounts.map((i) => ({ incoming: i.encAmounts, stored: amountsById.get(i.id) })),
     ]);
     const nextSnapshot = buyer.length ? { ...snapshot, ...Object.fromEntries(buyer) } : null;
     // What the document prints afterwards, the texts this re-key left alone included.
@@ -599,12 +723,15 @@ export class VaultService {
       ...stored.map((s) => dto.items.find((i) => i.id === s.id)?.description ?? s.description),
       ...SEALED_BUYER_SNAPSHOT_FIELDS.map((k) => (nextSnapshot ?? snapshot)[k] as string | undefined),
       dto.buyerContactPerson ?? invoice.buyerContactPerson,
+      dto.encAmounts ?? invoice.encAmounts,
+      ...stored.map((s) => itemAmounts.find((i) => i.id === s.id)?.encAmounts ?? s.encAmounts),
     ]);
     const notes = {
       ...(dto.noteAbove ? { noteAbove: dto.noteAbove } : {}),
       ...(dto.noteBelow ? { noteBelow: dto.noteBelow } : {}),
       ...(nextSnapshot ? { buyerSnapshot: nextSnapshot as typeof invoice.buyerSnapshot } : {}),
       ...(dto.buyerContactPerson ? { buyerContactPerson: dto.buyerContactPerson } : {}),
+      ...(dto.encAmounts ? { encAmounts: dto.encAmounts } : {}),
     };
     if (Object.keys(notes).length) await db.update(schema.invoices).set(notes).where(eq(schema.invoices.id, id));
     for (const item of dto.items) {
@@ -613,7 +740,16 @@ export class VaultService {
         .set({ description: item.description })
         .where(and(eq(schema.invoiceLineItems.id, item.id), eq(schema.invoiceLineItems.invoiceId, id)));
     }
+    for (const item of itemAmounts) {
+      await db
+        .update(schema.invoiceLineItems)
+        .set({ encAmounts: item.encAmounts })
+        .where(and(eq(schema.invoiceLineItems.id, item.id), eq(schema.invoiceLineItems.invoiceId, id)));
+    }
     await this.audit?.record(db, tenantId, { entityType: "invoice", entityId: id, entityLabel: invoice.invoiceNumber, action: "sealed" });
-    return { rekeyed: [dto.noteAbove, dto.noteBelow, dto.buyerContactPerson].filter(Boolean).length + buyer.length + dto.items.length };
+    return {
+      rekeyed:
+        [dto.noteAbove, dto.noteBelow, dto.buyerContactPerson, dto.encAmounts].filter(Boolean).length + buyer.length + dto.items.length + itemAmounts.length,
+    };
   }
 }

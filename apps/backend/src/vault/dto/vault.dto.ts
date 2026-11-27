@@ -1,7 +1,7 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 import { AVAILABLE_VAULT_CATEGORIES, type VaultCategory } from "@faktur/cz-compliance";
-import { isSealed } from "../sealed";
+import { isSealed, sealedEnvelope } from "../sealed";
 import { VAULT_EMAIL_MODES } from "../vault-email";
 
 const b64 = (max: number) => z.string().max(max).regex(/^[A-Za-z0-9+/]+={0,2}$/, "base64");
@@ -145,6 +145,9 @@ export const rekeyInvoiceSchema = z.object({
     .strict()
     .optional(),
   buyerContactPerson: sealed.optional(),
+  /** Category "amounts": the totals and each item's amounts under the same document key. */
+  encAmounts: sealed.optional(),
+  itemAmounts: z.array(z.object({ id: z.string().uuid(), encAmounts: sealed })).max(500).default([]),
 });
 export class RekeyInvoiceDto extends createZodDto(rekeyInvoiceSchema) {}
 
@@ -186,3 +189,28 @@ export const sealContactsSchema = z.object({
     .default([]),
 });
 export class SealContactsDto extends createZodDto(sealContactsSchema) {}
+
+export const plainAmountsQuerySchema = z.object({
+  invoice_id: z.string().uuid().optional(),
+  limit: z.coerce.number().int().min(1).max(50).default(20),
+});
+export class PlainAmountsQueryDto extends createZodDto(plainAmountsQuerySchema) {}
+
+/**
+ * "Zašifrovat stávající částky": per document the totals envelope and one
+ * envelope per item. Every item of the document must come back, or nothing
+ * of it changes.
+ */
+export const sealAmountsSchema = z.object({
+  invoices: z
+    .array(
+      z.object({
+        id: z.string().uuid(),
+        encAmounts: sealedEnvelope(4000),
+        items: z.array(z.object({ id: z.string().uuid(), encAmounts: sealedEnvelope(400) })).max(200),
+      }),
+    )
+    .min(1)
+    .max(50),
+});
+export class SealAmountsDto extends createZodDto(sealAmountsSchema) {}

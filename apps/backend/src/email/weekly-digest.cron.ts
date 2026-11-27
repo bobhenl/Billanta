@@ -17,6 +17,7 @@ import { drizzleTx } from "../db/drizzle-tx";
 import { upcomingTaxEvents, type TaxEvent } from "../dashboard/tax-calendar";
 import { TAX_LABELS } from "../integrations/integrations.service";
 import { computeVatBreakdown, formatInvoiceAmount, round2 } from "../invoices/invoice-total.util";
+import { amountsSealed } from "../vault/sealed-amounts";
 import { notificationPrefsOf } from "../notifications/notification-prefs";
 import { effectivePermissions } from "../tenancy/permissions";
 import { emailLocaleOf, type EmailLocale } from "./email-render";
@@ -188,6 +189,18 @@ export class WeeklyDigestCron {
         { reverseCharge: invoice.reverseCharge },
       ).totalWithVat;
       const base = { number: invoice.invoiceNumber ?? "–", customer: plainName(customer), url: url(invoice.id) };
+      // Sealed amounts: listed and counted, but with no sum (the e-mail never carries one).
+      if (amountsSealed(invoice)) {
+        if (invoice.status === "issued") {
+          unpaidCount++;
+          if (invoice.dueDate && invoice.dueDate.getTime() < now.getTime() - DAY / 2) {
+            overdue.push({ ...base, amount: "–", date: invoice.dueDate, sort: invoice.dueDate.getTime() });
+          }
+        } else if (invoice.paidAt) {
+          paid.push({ ...base, amount: "–", date: invoice.paidAt, sort: -invoice.paidAt.getTime() });
+        }
+        continue;
+      }
       if (invoice.status === "issued") {
         const outstanding = round2(total - Number(invoice.amountPaid ?? 0));
         if (outstanding <= 0) continue;

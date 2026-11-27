@@ -757,6 +757,13 @@
       "when": 1793601800000,
       "tag": "0114_vault_contacts",
       "breakpoints": true
+    },
+    {
+      "idx": 109,
+      "version": "7",
+      "when": 1793601900000,
+      "tag": "0115_vault_amounts",
+      "breakpoints": true
     }
   ]
 }

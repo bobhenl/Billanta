@@ -186,4 +186,19 @@ describe("findInvoiceMatch", () => {
 
     expect(result).toEqual({ type: "matched", invoiceId: "inv-1", matchedBy: "amount_and_due_date" });
   });
+
+  // Sealed amounts are 0 on the server; the fixtures give them the payment's amount so only the flag can decide.
+  it("leaves a VS match on sealed amounts for a human, never matched on the sum", () => {
+    const candidates = [invoice({ id: "inv-1", variableSymbol: "2026001", amountDue: 1500, amountsSealed: true })];
+    expect(findInvoiceMatch(transaction({ variableSymbol: "2026001", amount: 1500 }), candidates)).toEqual({
+      type: "unmatched",
+      reason: "sealed_amount",
+      invoiceId: "inv-1",
+    });
+  });
+
+  it("never matches sealed amounts by amount and due date", () => {
+    const candidates = [invoice({ id: "inv-1", amountDue: 1500, dueDate: new Date("2026-09-02"), amountsSealed: true })];
+    expect(findInvoiceMatch(transaction({ amount: 1500 }), candidates)).toEqual({ type: "unmatched", reason: "no_candidate" });
+  });
 });

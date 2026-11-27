@@ -6,8 +6,19 @@ import type { CreateRecurringInvoiceDto } from "./dto/create-recurring-invoice.d
 import type { UpdateRecurringInvoiceDto } from "./dto/update-recurring-invoice.dto";
 import type { LineItemSnapshot } from "./snapshot-items";
 import { assertSealingAllowed } from "../vault/sealed";
+import { assertAmountsWrite } from "../vault/sealed-amounts";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
+
+function snapshotOf(items: CreateRecurringInvoiceDto["lineItems"]): LineItemSnapshot[] {
+  return items.map((item) => ({
+    description: item.description,
+    quantity: item.quantity,
+    unitPrice: item.unitPrice,
+    vatRate: item.vatRate ?? null,
+    encAmounts: item.encAmounts ?? null,
+  }));
+}
 
 @Injectable()
 export class RecurringInvoicesService {
@@ -28,12 +39,8 @@ export class RecurringInvoicesService {
   async create(db: TenantDb, tenantId: string, dto: CreateRecurringInvoiceDto) {
     // Encrypted descriptions are copied into every draft as they are; storing new ones needs the plan.
     await assertSealingAllowed(db, tenantId, dto.lineItems.map((i) => i.description));
-    const lineItemsSnapshot: LineItemSnapshot[] = dto.lineItems.map((item) => ({
-      description: item.description,
-      quantity: item.quantity,
-      unitPrice: item.unitPrice,
-      vatRate: item.vatRate ?? null,
-    }));
+    await assertAmountsWrite(db, tenantId, { encAmounts: dto.encAmounts, items: dto.lineItems }, null);
+    const lineItemsSnapshot = snapshotOf(dto.lineItems);
 
     const [template] = await db
       .insert(schema.recurringInvoiceTemplates)
@@ -47,6 +54,7 @@ export class RecurringInvoicesService {
         nextRunDate: dto.nextRunDate ?? new Date(),
         currency: dto.currency,
         lineItemsSnapshot,
+        encAmounts: dto.encAmounts ?? null,
       })
       .returning();
 
@@ -61,6 +69,13 @@ export class RecurringInvoicesService {
         return ((stored?.lineItemsSnapshot ?? []) as LineItemSnapshot[]).map((i) => i.description);
       });
     }
+    if ((dto.lineItems || dto.encAmounts !== undefined) && tenantId) {
+      // Items and totals are sealed together, so a change of either is checked as one write.
+      const [stored] = await this.findOne(db, id);
+      const items = dto.lineItems ?? ((stored?.lineItemsSnapshot ?? []) as LineItemSnapshot[]);
+      const encAmounts = dto.encAmounts !== undefined ? dto.encAmounts : (stored?.encAmounts ?? null);
+      await assertAmountsWrite(db, tenantId, { encAmounts, items }, stored ?? null);
+    }
     const patch: Partial<typeof schema.recurringInvoiceTemplates.$inferInsert> = {
       updatedAt: new Date(),
     };
@@ -70,14 +85,8 @@ export class RecurringInvoicesService {
     if (dto.intervalCount !== undefined) patch.intervalCount = dto.intervalCount;
     if (dto.nextRunDate !== undefined) patch.nextRunDate = dto.nextRunDate;
     if (dto.currency !== undefined) patch.currency = dto.currency;
-    if (dto.lineItems !== undefined) {
-      patch.lineItemsSnapshot = dto.lineItems.map((item) => ({
-        description: item.description,
-        quantity: item.quantity,
-        unitPrice: item.unitPrice,
-        vatRate: item.vatRate ?? null,
-      }));
-    }
+    if (dto.lineItems !== undefined) patch.lineItemsSnapshot = snapshotOf(dto.lineItems);
+    if (dto.encAmounts !== undefined) patch.encAmounts = dto.encAmounts ?? null;
 
     const [template] = await db
       .update(schema.recurringInvoiceTemplates)

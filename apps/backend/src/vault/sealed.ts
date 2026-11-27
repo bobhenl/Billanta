@@ -105,6 +105,13 @@ export function sealableText(max: number) {
     });
 }
 
+/** Only an envelope of a plain text of at most `max` characters (sealed JSON such as amounts). */
+export function sealedEnvelope(max: number) {
+  return z
+    .string()
+    .refine((v) => isSealed(v) && v.length <= sealedMaxLength(max), { message: "Expected an encrypted value" });
+}
+
 /**
  * Whether a save may store the incoming ciphertext. Sealing is a Plus
  * feature, but a document that already holds encrypted text stays editable
