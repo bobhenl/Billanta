@@ -14367,7 +14367,7 @@
       "lead": "Zašifrovat – obsah uvidíte jen vy a členové s klíčem, server ho nepřečte.",
       "what": "Šifrují se popisy položek a poznámky (nad položkami, pod položkami a interní).",
       "keeps": "Přehledy a dashboardy fungují dál: částky, data a variabilní symboly zůstávají nešifrované.",
-      "loses": "U zašifrovaných dokladů nevytvoří server PDF ani ISDOC a nepřiloží je k e-mailu. Hledání podle textu proběhne jen ve vašem prohlížeči po odemčení.",
+      "loses": "U zašifrovaných dokladů vytvoří PDF, ISDOC a UBL jen váš prohlížeč. K e-mailu je server přiloží, jen když soubor z prohlížeče jednou projde serverem, a neuloží ho. Hledání podle textu proběhne jen ve vašem prohlížeči po odemčení.",
       "locked": "Zamčené doklady se přeskočí.",
       "done": "{n, plural, one {Zašifrován # doklad} few {Zašifrovány # doklady} other {Zašifrováno # dokladů}}.",
       "nothing": "Nebylo co šifrovat.",
@@ -14380,14 +14380,13 @@
       "unlock": "Odemknout",
       "sealFailed": "Doklad se nepodařilo zašifrovat. Nic se neuložilo.",
       "sealToggle": "Zašifrovat tento doklad",
-      "sealOnHint": "Popisy položek a poznámky uvidíte jen vy a členové s klíčem. PDF a ISDOC nebudou dostupné, návrhy položek se hledají jen ve vašem prohlížeči.",
+      "sealOnHint": "Popisy položek a poznámky uvidíte jen vy a členové s klíčem. PDF, ISDOC a UBL vytvoří váš prohlížeč, návrhy položek se hledají jen ve vašem prohlížeči.",
       "sealOffHint": "Doklad se uloží bez šifrování, jako dřív.",
       "aiConsent": "Poslat tento text AI – jednorázově odejde na server a k poskytovateli AI, neuloží se",
       "aiConsentHint": "Server text neukládá ani nezapisuje do logů. Co AI vrátí, se při uložení zašifruje ve vašem prohlížeči. Souhlas platí jen pro jedno spuštění."
     },
     "actions": {
-      "blocked": "Nedostupné v Důvěrném režimu: server zašifrovaný doklad nepřečte. Vypněte přílohu PDF/ISDOC v nastavení e-mailů, nebo pošlete odkaz.",
-      "pdfUnavailable": "PDF je nedostupné v Důvěrném režimu. Detail můžete vytisknout z prohlížeče (Ctrl+P).",
+      "blocked": "Zašifrované texty se nepodařilo otevřít. Odemkněte trezor správným klíčem a zkuste to znovu.",
       "sendHint": "Doklad je zašifrovaný: server sám PDF ani ISDOC nevytvoří. Podle nastavení Důvěrného režimu odejde odkaz hned a PDF z vašeho prohlížeče, nebo jen odkaz.",
       "linkCopied": "Odkaz s klíčem zkopírován",
       "keyLink": "Odkaz pro klienta s klíčem",
@@ -14397,8 +14396,13 @@
       "unlockFirst": "Bez odemčení nelze zašifrované přílohy přiložit.",
       "decryptFailed": "Přílohu se nepodařilo dešifrovat.",
       "passFiles": "{n, plural, one {Přiložit # zašifrovanou přílohu} few {Přiložit # zašifrované přílohy} other {Přiložit # zašifrovaných příloh}}",
-      "passFilesHint": "Prohlížeč je dešifruje a jednorázově projdou serverem do e-mailu. Server je neuloží, smaže je po doručení.",
-      "passFilesWaiting": "Tento doklad čeká, až PDF vytvoří prohlížeč, a přílohy nesmí na serveru čekat. Pošlete e-mail bez nich, nebo v nastavení Důvěrného režimu zvolte odeslání odkazu hned."
+      "passFilesHint": "Prohlížeč je dešifruje a jednorázově projdou serverem do e-mailu. Server je nikam neuloží ani nezapíše do logů.",
+      "passFilesWaiting": "Tento doklad čeká, až PDF vytvoří prohlížeč, a přílohy nesmí na serveru čekat. Zaškrtněte i přiložení PDF/ISDOC a odejde všechno najednou, nebo pošlete e-mail bez příloh.",
+      "pdfLocal": "PDF vytvoří váš prohlížeč, server zašifrované texty neuvidí.",
+      "isdocLocal": "ISDOC vytvoří váš prohlížeč, server zašifrované texty neuvidí.",
+      "attachOnce": "Přiložit PDF/ISDOC – soubor jednorázově projde serverem k odeslání, neuloží se",
+      "attachOnceHint": "PDF a ISDOC vytvoří váš prohlížeč. Server je jednou předá v e-mailu zákazníkovi, nikam je neuloží a nezapíše do logů.",
+      "ublLocal": "UBL vytvoří váš prohlížeč, server zašifrované texty neuvidí."
     },
     "categories": {
       "recommended": "Doporučeno",
@@ -14408,12 +14412,15 @@
         "title": "Popisy položek a poznámky",
         "description": "Co jste dodali a poznámky na dokladu. Částky, data a symboly zůstávají čitelné.",
         "loses": [
-          "PDF, ISDOC, UBL a Peppol vytvořené serverem",
-          "Příloha PDF/ISDOC v e-mailu",
+          "Odeslání přes Peppol",
           "Hledání podle textu a návrhy položek na serveru (po odemčení je zvládne váš prohlížeč)",
           "AI předvyplnění bez výslovného kliknutí (text jednorázově projde serverem k AI, jen když to potvrdíte, a neuloží se)",
           "Veřejný odkaz: plné znění vidí klient jen v odkazu s klíčem z detailu dokladu. Odkaz bez klíče (např. z automatické upomínky) ho ukáže jen v zařízení, kde klient dřív otevřel celý odkaz",
           "Čitelné texty v exportech pro účetní ze serveru (Pohoda, Money, CSV mají „[Důvěrný obsah]“; export s dešifrovanými texty vytvoří váš prohlížeč)"
+        ],
+        "changes": [
+          "PDF, ISDOC a UBL vytvoří váš prohlížeč",
+          "Příloha PDF/ISDOC v e-mailu: soubor vytvoří váš prohlížeč, jednou projde serverem a neuloží se"
         ]
       },
       "attachments": {
@@ -14452,7 +14459,8 @@
           "Upomínky s částkou a QR platba vytvořená serverem"
         ]
       },
-      "howTitle": "Jak to funguje:"
+      "howTitle": "Jak to funguje:",
+      "changesTitle": "Funguje jinak:"
     },
     "enable": {
       "offTitle": "Důvěrný režim je vypnutý",

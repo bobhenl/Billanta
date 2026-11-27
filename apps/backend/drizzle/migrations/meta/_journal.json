@@ -743,6 +743,13 @@
       "when": 1793601600000,
       "tag": "0112_vault_attachments",
       "breakpoints": true
+    },
+    {
+      "idx": 107,
+      "version": "7",
+      "when": 1793601610700,
+      "tag": "0107_email_send_suppressed",
+      "breakpoints": true
     }
   ]
 }

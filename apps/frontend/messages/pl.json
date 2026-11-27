@@ -14363,7 +14363,7 @@
       "lead": "Zaszyfruj – treść zobaczysz tylko Ty i członkowie z kluczem, serwer jej nie odczyta.",
       "what": "Szyfrowane są opisy pozycji i notatki (nad pozycjami, pod pozycjami i wewnętrzne).",
       "keeps": "Raporty i pulpity działają dalej: kwoty, daty i tytuły płatności pozostają niezaszyfrowane.",
-      "loses": "Dla zaszyfrowanych dokumentów serwer nie utworzy PDF ani ISDOC i nie dołączy ich do e-maila. Wyszukiwanie tekstowe działa po odblokowaniu tylko w Twojej przeglądarce.",
+      "loses": "Dla zaszyfrowanych dokumentów PDF, ISDOC i UBL tworzy tylko Twoja przeglądarka. Serwer dołącza je do e-maila tylko wtedy, gdy plik z przeglądarki raz przez niego przejdzie, i go nie zapisuje. Wyszukiwanie tekstowe działa po odblokowaniu tylko w Twojej przeglądarce.",
       "locked": "Zablokowane dokumenty są pomijane.",
       "done": "{n, plural, one {Zaszyfrowano # dokument} few {Zaszyfrowano # dokumenty} other {Zaszyfrowano # dokumentów}}.",
       "nothing": "Nie było czego szyfrować.",
@@ -14376,14 +14376,13 @@
       "unlock": "Odblokuj",
       "sealFailed": "Nie udało się zaszyfrować dokumentu. Nic nie zapisano.",
       "sealToggle": "Zaszyfruj ten dokument",
-      "sealOnHint": "Opisy pozycji i notatki zobaczysz tylko Ty i członkowie z kluczem. PDF i ISDOC nie będą dostępne, podpowiedzi pozycji są wyszukiwane tylko w Twojej przeglądarce.",
+      "sealOnHint": "Opisy pozycji i notatki zobaczysz tylko Ty i członkowie z kluczem. PDF, ISDOC i UBL utworzy Twoja przeglądarka, podpowiedzi pozycji są wyszukiwane tylko w Twojej przeglądarce.",
       "sealOffHint": "Dokument zapisze się bez szyfrowania, jak dotąd.",
       "aiConsent": "Wyślij ten tekst do AI – jednorazowo trafi na serwer i do dostawcy AI, nie zostanie zapisany",
       "aiConsentHint": "Serwer nie zapisuje tekstu ani nie umieszcza go w logach. To, co zwróci AI, zostanie zaszyfrowane w Twojej przeglądarce przy zapisie. Zgoda dotyczy tylko tego jednego uruchomienia."
     },
     "actions": {
-      "blocked": "Niedostępne w Trybie poufnym: serwer nie odczyta zaszyfrowanego dokumentu. Wyłącz załącznik PDF/ISDOC w ustawieniach e-maili albo wyślij link.",
-      "pdfUnavailable": "PDF jest niedostępny w Trybie poufnym. Szczegóły możesz wydrukować z przeglądarki (Ctrl+P).",
+      "blocked": "Nie udało się otworzyć zaszyfrowanych tekstów. Odblokuj sejf właściwym kluczem i spróbuj ponownie.",
       "sendHint": "Dokument jest zaszyfrowany, więc serwer sam nie utworzy PDF ani ISDOC. Zależnie od ustawień link wyjdzie od razu, a PDF z Twojej przeglądarki, albo wyjdzie tylko link.",
       "linkCopied": "Skopiowano link z kluczem",
       "keyLink": "Link dla klienta z kluczem",
@@ -14393,8 +14392,13 @@
       "unlockFirst": "Bez odblokowania nie można dołączyć zaszyfrowanych załączników.",
       "decryptFailed": "Nie udało się odszyfrować załącznika.",
       "passFiles": "{n, plural, one {Dołącz # zaszyfrowany załącznik} few {Dołącz # zaszyfrowane załączniki} many {Dołącz # zaszyfrowanych załączników} other {Dołącz # zaszyfrowanego załącznika}}",
-      "passFilesHint": "Przeglądarka je odszyfruje i jednorazowo przejdą przez serwer do tego e-maila. Serwer ich nie zapisuje i usuwa je po doręczeniu.",
-      "passFilesWaiting": "Ten dokument czeka, aż przeglądarka utworzy PDF, a załączniki nie mogą czekać na serwerze. Wyślij e-mail bez nich albo ustaw w trybie poufnym natychmiastowe wysyłanie linku."
+      "passFilesHint": "Przeglądarka je odszyfruje i jednorazowo przejdą przez serwer do e-maila. Serwer ich nie zapisuje ani nie loguje.",
+      "passFilesWaiting": "Ten dokument czeka, aż przeglądarka utworzy PDF, a załączniki nie mogą czekać na serwerze. Zaznacz też dołączenie PDF/ISDOC, a wszystko wyjdzie naraz, albo wyślij e-mail bez załączników.",
+      "pdfLocal": "PDF utworzy Twoja przeglądarka, serwer nie zobaczy zaszyfrowanych tekstów.",
+      "isdocLocal": "ISDOC utworzy Twoja przeglądarka, serwer nie zobaczy zaszyfrowanych tekstów.",
+      "attachOnce": "Dołącz PDF/ISDOC – plik jednorazowo przejdzie przez serwer do wysyłki i nie zostanie zapisany",
+      "attachOnceHint": "PDF i ISDOC utworzy Twoja przeglądarka. Serwer przekaże je klientowi w tym jednym e-mailu, nie zapisze ich ani nie zaloguje.",
+      "ublLocal": "UBL utworzy Twoja przeglądarka, serwer nie zobaczy zaszyfrowanych tekstów."
     },
     "categories": {
       "recommended": "Zalecane",
@@ -14404,12 +14408,15 @@
         "title": "Opisy pozycji i notatki",
         "description": "Co dostarczyłeś i notatki na dokumencie. Kwoty, daty i symbole pozostają czytelne.",
         "loses": [
-          "PDF, ISDOC, UBL i Peppol tworzone przez serwer",
-          "Załącznik PDF/ISDOC w e-mailach",
+          "Wysyłka przez Peppol",
           "Wyszukiwanie tekstowe i podpowiedzi pozycji na serwerze (po odblokowaniu zajmie się tym Twoja przeglądarka)",
           "Wypełnianie przez AI bez wyraźnego kliknięcia (tekst jednorazowo przejdzie przez serwer do AI, tylko gdy to potwierdzisz, i nie zostanie zapisany)",
           "Link publiczny: klient widzi pełną treść tylko w linku z kluczem ze szczegółów dokumentu. Link bez klucza (np. z automatycznego przypomnienia) pokaże ją tylko na urządzeniu, na którym klient wcześniej otworzył pełny link",
           "Czytelne teksty w eksportach dla księgowej z serwera (Pohoda, Money i CSV mają „[Důvěrný obsah]”; eksport z odszyfrowanymi tekstami tworzy Twoja przeglądarka)"
+        ],
+        "changes": [
+          "PDF, ISDOC i UBL tworzy Twoja przeglądarka",
+          "Załącznik PDF/ISDOC w e-mailach: plik tworzy Twoja przeglądarka, raz przechodzi przez serwer i nie jest zapisywany"
         ]
       },
       "attachments": {
@@ -14448,7 +14455,8 @@
           "Przypomnienia z kwotą i płatności QR tworzone przez serwer"
         ]
       },
-      "howTitle": "Jak to działa:"
+      "howTitle": "Jak to działa:",
+      "changesTitle": "Działa inaczej:"
     },
     "enable": {
       "offTitle": "Tryb poufny jest wyłączony",

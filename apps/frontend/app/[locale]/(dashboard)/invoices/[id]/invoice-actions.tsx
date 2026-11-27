@@ -26,10 +26,11 @@ import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { VAULT_EMAILS_CHANGED } from '@/components/vault/vault-email-outbox';
 import { useCanDo, useCanWrite } from '@/components/access-provider';
-import { useVault } from '@/components/vault/vault-provider';
 import { fetchDecrypted } from '@/lib/vault/files';
 import { ClientLinkNotice, useClientLinkKey } from '@/components/vault/client-link';
 import { copyText } from '@/lib/clipboard';
+import { useVault } from '@/components/vault/vault-provider';
+import { DocumentError, renderSealedIsdoc, renderSealedPdf, renderSealedUbl, saveDocument, sendWithSealedFiles } from '@/lib/vault/documents';
 import { CONVERSIONS, type DocumentType, type InvoiceStatus } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
 import type { SealedDocument } from '@/lib/vault/content';
@@ -96,7 +97,7 @@ export function InvoiceActions({
   editedAfterSend?: boolean;
   /** A draft's PDF preview needs a customer to print. */
   hasCustomer?: boolean;
-  /** Printed texts are encrypted ("Důvěrný režim"): the server can't make the PDF, ISDOC or UBL. */
+  /** Printed texts are encrypted ("Důvěrný režim"): the browser makes the PDF, ISDOC and UBL. */
   confidential?: boolean;
   /** Encrypted attachments marked "send with email": the server can only attach them if the browser decrypts them for this one e-mail. */
   encryptedAttachments?: { id: string; encMeta: string }[];
@@ -117,30 +118,8 @@ export function InvoiceActions({
     window.dispatchEvent(new Event(VAULT_EMAILS_CHANGED));
     router.refresh();
   };
-  const { requestUnlock } = useVault();
   // Off by default: passing the files through the server is the member's explicit choice for this e-mail.
   const [passFiles, setPassFiles] = useState(false);
-
-  /** Decrypts the encrypted attachments here and sends them once with the e-mail; nothing is stored. */
-  const sendWithFiles = () =>
-    act(async (): Promise<ActionResult<unknown>> => {
-      const key = await requestUnlock();
-      if (!key) return { ok: false, error: tVault('unlockFirst') };
-      const body = new FormData();
-      try {
-        for (const a of encryptedAttachments) {
-          const file = await fetchDecrypted(`/api/files/invoices/${id}/attachments/${a.id}`, key, a.encMeta);
-          body.append('files', file, file.name);
-        }
-      } catch {
-        return { ok: false, error: tVault('decryptFailed') };
-      }
-      const res = await fetch(`/api/invoices/${id}/send-with-files`, { method: 'POST', body });
-      if (res.ok) return { ok: true, data: (await res.json().catch(() => null)) as unknown };
-      const json = await res.json().catch(() => ({}));
-      const code = String(typeof json?.message === 'string' ? json.message : (json?.message?.error ?? json?.error ?? res.status));
-      return { ok: false, error: code === 'pass_files_waiting' ? tVault('passFilesWaiting') : code };
-    }, sentText, afterSend);
 
   const clientKey = useClientLinkKey(id, sealedDoc);
   // Built here, never sent: the server-sent e-mail carries the same link without the #key.
@@ -186,6 +165,63 @@ export function InvoiceActions({
   // Issued but not sent yet: sending is the next step, so it takes the one primary slot.
   const sendFirst = canSend && numbered && status === 'issued' && !sentAt && hasEmail;
   const conversions = !canEdit || status === 'cancelled' || (!numbered && documentType !== 'quote') ? [] : CONVERSIONS[documentType];
+
+  const { requestUnlock } = useVault();
+  // Důvěrný režim: tick to attach the PDF/ISDOC drawn here; they pass through the server once.
+  const [attachSealed, setAttachSealed] = useState(false);
+  const sealedError = (error: unknown) =>
+    toast({
+      text: error instanceof DocumentError && error.message === 'confidential_content' ? tVault('blocked') : `${t('actionFailed')}: ${error instanceof Error ? error.message : String(error)}`,
+      tone: 'err'
+    });
+
+  /** The key stays in this tab: the server sends the encrypted texts, the browser opens and draws them. */
+  const downloadSealed = (kind: 'pdf' | 'isdoc' | 'ubl') =>
+    startTransition(async () => {
+      const key = await requestUnlock();
+      if (!key) return;
+      try {
+        const render = kind === 'pdf' ? renderSealedPdf : kind === 'isdoc' ? renderSealedIsdoc : renderSealedUbl;
+        saveDocument(await render(key, id));
+      } catch (error) {
+        sealedError(error);
+      }
+    });
+
+  /**
+   * What the dialog's ticks allow, in one e-mail: the PDF/ISDOC drawn here and
+   * the encrypted attachments decrypted here. Both pass through the server
+   * once and are not stored.
+   */
+  const sendOnce = (withDocuments: boolean, withAttachments: boolean) =>
+    startTransition(async () => {
+      const key = await requestUnlock();
+      if (!key) {
+        if (withAttachments) toast({ text: tVault('unlockFirst'), tone: 'err' });
+        return;
+      }
+      const attachments: File[] = [];
+      try {
+        for (const a of withAttachments ? encryptedAttachments : []) {
+          attachments.push(await fetchDecrypted(`/api/files/invoices/${id}/attachments/${a.id}`, key, a.encMeta));
+        }
+      } catch {
+        toast({ text: tVault('decryptFailed'), tone: 'err' });
+        return;
+      }
+      try {
+        const [pdf, isdoc] = withDocuments ? await Promise.all([renderSealedPdf(key, id), renderSealedIsdoc(key, id)]) : [];
+        const data = await sendWithSealedFiles(id, { pdf, isdoc, attachments });
+        setDialog(null);
+        toast({ text: sentText(data), tone: 'ok' });
+        afterSend();
+      } catch (error) {
+        if (error instanceof DocumentError && error.message === 'pass_files_waiting') toast({ text: tVault('passFilesWaiting'), tone: 'err' });
+        else sealedError(error);
+      }
+    });
+  const withDocuments = !!confidential && attachSealed;
+  const withAttachments = passFiles && encryptedAttachments.length > 0;
 
   const act = <T,>(fn: () => Promise<ActionResult<T>>, okText: string | ((data: T) => string), after?: (data: T) => void) =>
     startTransition(async () => {
@@ -251,10 +287,10 @@ export function InvoiceActions({
         )}
         {/* A draft opens a stamped preview: no number, no payment QR yet. */}
         {confidential && (numbered || (isDraft && hasCustomer)) && (
-          <span className={cn(buttonClass.secondary, 'cursor-not-allowed px-3 opacity-60')} title={tVault('pdfUnavailable')} aria-disabled="true">
+          <button type="button" className={cn(buttonClass.secondary, 'px-3')} disabled={pending} title={tVault('pdfLocal')} onClick={() => downloadSealed('pdf')}>
             <FileText className="h-4 w-4" />
             PDF
-          </span>
+          </button>
         )}
         {!confidential && (numbered || (isDraft && hasCustomer)) && (
           <a
@@ -297,6 +333,20 @@ export function InvoiceActions({
                 <Undo2 className="h-4 w-4" />
                 {t('actions.markUnpaid')}
               </button>
+            )}
+            {numbered && confidential && (
+              <>
+                <button type="button" className={menuItem} disabled={pending} title={tVault('isdocLocal')} onClick={() => downloadSealed('isdoc')}>
+                  <FileCode2 className="h-4 w-4" />
+                  ISDOC
+                </button>
+                {(documentType === 'invoice' || documentType === 'credit_note') && (
+                  <button type="button" className={menuItem} disabled={pending} title={tVault('ublLocal')} onClick={() => downloadSealed('ubl')}>
+                    <FileCode2 className="h-4 w-4" />
+                    UBL
+                  </button>
+                )}
+              </>
             )}
             {numbered && !confidential && (
               <>
@@ -485,7 +535,7 @@ export function InvoiceActions({
               type="button"
               className={buttonClass.primary}
               disabled={pending}
-              onClick={() => (passFiles && encryptedAttachments.length ? sendWithFiles() : act(() => sendInvoice(id), sentText, afterSend))}>
+              onClick={() => (withDocuments || withAttachments ? sendOnce(withDocuments, withAttachments) : act(() => sendInvoice(id), sentText, afterSend))}>
               <Send className="h-4 w-4" />
               {editedAfterSend ? t('correction.send') : t('actions.send')}
             </button>
@@ -493,7 +543,15 @@ export function InvoiceActions({
         }
       >
         <p className="text-muted-foreground">{editedAfterSend ? t('correction.sendBody') : t('confirm.sendBody')}</p>
-        {confidential && <p className="mt-2 text-xs text-muted-foreground">{tVault('sendHint')}</p>}
+        {confidential && (
+          <>
+            <label className="mt-3 flex items-start gap-2 text-sm">
+              <input type="checkbox" className="mt-0.5 h-4 w-4 accent-primary" checked={attachSealed} onChange={(e) => setAttachSealed(e.target.checked)} />
+              <span>{tVault('attachOnce')}</span>
+            </label>
+            <p className="mt-2 text-xs text-muted-foreground">{attachSealed ? tVault('attachOnceHint') : tVault('sendHint')}</p>
+          </>
+        )}
         {encryptedAttachments.length > 0 && (
           <label className="mt-3 flex items-start gap-2 rounded-lg border border-border p-3 text-sm">
             <input type="checkbox" checked={passFiles} onChange={(e) => setPassFiles(e.target.checked)} className="mt-0.5" />

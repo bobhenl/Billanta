@@ -1,5 +1,4 @@
-import { randomUUID } from "node:crypto";
-import { Injectable, Logger, ServiceUnavailableException } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Resend } from "resend";
 import { fillTemplate } from "../tenants/email-prefs";
@@ -156,37 +155,14 @@ export class EmailService {
   /**
    * Sends at once, past the outbox queue, an e-mail whose attachment must not
    * be stored: the PDF of an encrypted document that a member's browser
-   * rendered. The outbox gets a record of the send without the attachment
-   * content, so the e-mail history stays complete. Throws when Resend
-   * refuses, so the member is told instead of the send being assumed.
+   * rendered. It goes through `EmailOutboxService.sendNow`, so the demo drop,
+   * the suppression list and the history apply as for queued mail, while the
+   * attachment content is never written. Throws when Resend refuses, so the
+   * member is told instead of the send being assumed.
    */
-  async sendNow(email: OutgoingEmail, queue: EmailQueueOptions): Promise<void> {
-    const id = randomUUID();
-    const textBody = email.text ?? htmlToText(email.html);
-    const result = await this.deliver({
-      id,
-      recipient: email.to.trim(),
-      fromName: email.fromName ?? null,
-      replyTo: email.replyTo ?? null,
-      bcc: email.bcc ?? null,
-      subject: email.subject.slice(0, 300),
-      html: email.html,
-      textBody,
-      headers: email.headers ?? {},
-      attachments: email.attachments?.length
-        ? email.attachments.map((a) => ({ filename: a.filename, contentType: a.contentType, content: a.content.toString("base64"), ...(a.contentId ? { contentId: a.contentId } : {}) }))
-        : null,
-    });
-    if (!result.ok) {
-      // Only the provider's error name: the body may echo the recipient, never the attachment.
-      this.logger.warn(`direct send failed: ${result.name}`);
-      throw new ServiceUnavailableException("email_send_failed");
-    }
-    await this.outbox.recordSent(
-      { ...email, text: textBody, userId: queue.userId ?? null, ...(queue.idempotencyKey ? { idempotencyKey: queue.idempotencyKey } : {}) },
-      { id, providerId: result.providerId },
-      { tenantId: queue.tenantId, db: queue.db },
-    );
+  sendNow(email: OutgoingEmail, queue: EmailQueueOptions): Promise<"sent" | "skipped" | "suppressed"> {
+    const row = { ...email, userId: queue.userId ?? null, ...(queue.idempotencyKey ? { idempotencyKey: queue.idempotencyKey } : {}) };
+    return this.outbox.sendNow(row, { tenantId: queue.tenantId, db: queue.db }, (deliverable) => this.deliver(deliverable));
   }
 
   /**
@@ -288,10 +264,9 @@ export class EmailService {
   }
 
   private async queue(email: OutgoingEmail, queue: EmailQueueOptions): Promise<void> {
-    await this.outbox.enqueue(
-      { ...email, userId: queue.userId ?? null, ...(queue.idempotencyKey ? { idempotencyKey: queue.idempotencyKey } : {}) },
-      { tenantId: queue.tenantId, db: queue.db },
-    );
+    const row = { ...email, userId: queue.userId ?? null, ...(queue.idempotencyKey ? { idempotencyKey: queue.idempotencyKey } : {}) };
+    const ctx = { tenantId: queue.tenantId, db: queue.db };
+    await this.outbox.enqueue(row, ctx);
   }
 
   /**

@@ -1,8 +1,8 @@
-import { generateIsdocXml, generateUblInvoiceXml } from "@faktur/cz-compliance";
+import { generateIsdocXml, generateUblInvoiceXml, isSealed } from "@faktur/cz-compliance";
 import { describe, expect, it } from "vitest";
 import * as schema from "../../drizzle/schema";
 import { computeVatBreakdown } from "./invoice-total.util";
-import { buildIsdocInvoiceInput } from "./isdoc-input.builder";
+import { buildIsdocInvoiceInput, buildIsdocInvoiceInputSealed } from "./isdoc-input.builder";
 
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 type ContactRow = typeof schema.contacts.$inferSelect;
@@ -63,5 +63,25 @@ describe("buildIsdocInvoiceInput buyer contact person", () => {
     const built = input({ buyerContactPerson: null }, { contactPerson: "Někdo Jiný" });
     expect(built.customer.contactName).toBeUndefined();
     expect(generateIsdocXml(built)).not.toContain("Někdo Jiný");
+  });
+});
+
+describe("buildIsdocInvoiceInput Důvěrný režim", () => {
+  const sealed = [{ ...lineItems[0]!, description: "enc:v1:AAAAAAAAAAAAAAAA:BBBBBBBBBBBBBBBBBBBBBBBB" }] as LineItemRow[];
+  const args = [
+    { invoiceNumber: "2026-0001", issueDate: new Date("2026-09-09"), dueDate: new Date("2026-09-23"), currency: "CZK", source: "manual", reverseCharge: false, documentType: "invoice" } as InvoiceRow,
+    { legalName: "ACME s.r.o.", addressCountry: "CZ" } as ContactRow,
+    tenant,
+    sealed,
+    computeVatBreakdown(sealed),
+  ] as const;
+
+  it("refuses a sealed item text for the server-side generators", () => {
+    expect(isSealed(sealed[0]!.description)).toBe(true);
+    expect(() => buildIsdocInvoiceInput(...args)).toThrow("confidential_content");
+  });
+
+  it("passes the envelope through for the browser, which opens it", () => {
+    expect(buildIsdocInvoiceInputSealed(...args).lineItems[0]!.description).toBe(sealed[0]!.description);
   });
 });

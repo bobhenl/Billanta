@@ -6,6 +6,7 @@ import {
   ForbiddenException,
   Get,
   Headers,
+  NotFoundException,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -18,7 +19,10 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
+import { FileFieldsInterceptor, FileInterceptor } from "@nestjs/platform-express";
+import { PDF_FONT_FILES } from "./invoice-pdf.service";
+import { MAX_ONE_TIME_FILE_BYTES, MAX_ONE_TIME_FILES, sealedSendFiles, type UploadedPart } from "./sealed-send-files";
+import type { UploadedFileLike } from "../vault/sealed-files";
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Response } from "express";
 import { createZodDto } from "nestjs-zod";
@@ -40,7 +44,7 @@ import { CreateInvoiceDraftDto } from "./dto/create-invoice-draft.dto";
 import { getHomeRate } from "../exports/home-rates";
 import { tenantHomeCurrency } from "../tenants/home-currency";
 import { encryptedLimit } from "../vault/sealed-files";
-import { InvoiceAttachmentsService, MAX_ATTACHMENT_BYTES, MAX_ATTACHMENTS_PER_INVOICE, passThroughFiles } from "./invoice-attachments.service";
+import { InvoiceAttachmentsService, MAX_ATTACHMENT_BYTES, MAX_ATTACHMENTS_PER_INVOICE } from "./invoice-attachments.service";
 import { InvoiceImportService } from "./invoice-import.service";
 import { guestInvoiceSchema } from "../guest-invoices/guest-invoices.service";
 import { IMPORT_FIELDS } from "./invoice-import.util";
@@ -175,6 +179,16 @@ export class InvoicesController {
   @ApiOperation({ summary: "Custom fields with a short list of values, for the list filter" })
   customFieldOptions(@Req() req: TenantScopedRequest) {
     return this.invoicesService.customFieldOptions(req.tenantDb!);
+  }
+
+  /** The PDF's two fonts, for the browser that draws a sealed invoice itself. */
+  @Get("pdf-fonts/:weight")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "DejaVu Sans (regular | bold) used by the invoice PDF" })
+  pdfFont(@Param("weight") weight: string, @Res() res: Response): void {
+    if ((weight !== "regular" && weight !== "bold") || !PDF_FONT_FILES) throw new NotFoundException("font_not_found");
+    res.set({ "Content-Type": "font/ttf", "Cache-Control": "private, max-age=604800, immutable", "X-Content-Type-Options": "nosniff" });
+    res.sendFile(PDF_FONT_FILES[weight]);
   }
 
   @Get("item-suggestions")
@@ -578,24 +592,33 @@ export class InvoicesController {
   }
 
   /**
-   * The same send, with files the browser decrypted for this one e-mail
-   * ("Důvěrný režim" attachments). They go into the outbox row only until
-   * delivery (finish_email_outbox clears it) and are never stored or logged
-   * anywhere else.
+   * Důvěrný režim: sends the invoice with files the browser made or decrypted
+   * for this one e-mail: a sealed invoice's PDF/ISDOC and decrypted
+   * attachments, in one request. The dialog says they pass through the server
+   * once; they are delivered from memory and never stored or logged.
    */
   @Post(":id/send-with-files")
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FilesInterceptor("files", MAX_ATTACHMENTS_PER_INVOICE, { limits: { fileSize: MAX_ATTACHMENT_BYTES } }))
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: "pdf", maxCount: 1 },
+        { name: "isdoc", maxCount: 1 },
+        { name: "files", maxCount: MAX_ATTACHMENTS_PER_INVOICE },
+      ],
+      { limits: { fileSize: MAX_ONE_TIME_FILE_BYTES, files: MAX_ONE_TIME_FILES, fields: 0, parts: MAX_ONE_TIME_FILES } },
+    ),
+  )
   @ApiConsumes("multipart/form-data")
-  @ApiOperation({ summary: "Email an invoice with one-time attachments decrypted in the browser (not stored)" })
+  @ApiOperation({ summary: "Email an invoice with browser-made PDF/ISDOC and decrypted attachments, sent once and not stored" })
   async sendWithFiles(
     @Req() req: TenantScopedRequest,
     @Param("id", ParseUUIDPipe) id: string,
-    @UploadedFiles() files?: { buffer: Buffer; size: number; mimetype: string; originalname: string }[],
+    @UploadedFiles() parts?: { pdf?: UploadedPart[]; isdoc?: UploadedPart[]; files?: UploadedFileLike[] },
   ) {
     assertMayDo(req.user, "invoices.send");
     await assertInvoiceOpen(req.tenantDb!, id, req.user!);
-    return this.invoicesService.sendInvoice(req.tenantDb!, id, req.user!.tenantId, req.user!.id, passThroughFiles(files ?? []));
+    return this.invoicesService.sendInvoice(req.tenantDb!, id, req.user!.tenantId, req.user!.id, sealedSendFiles(parts));
   }
 
   @Post(":id/remind")
@@ -733,6 +756,33 @@ export class InvoicesController {
       "Content-Disposition": `inline; filename="${pdf.filename}"`,
     });
     res.send(pdf.content);
+  }
+
+  /** Důvěrný režim: the PDF's content with sealed texts as envelopes, for the browser to draw. */
+  @Get(":id/pdf-model")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "The invoice PDF's layout data, sealed texts left encrypted" })
+  async pdfModel(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
+    return this.invoicesService.invoicePdfModel(req.tenantDb!, req.user!.tenantId, id);
+  }
+
+  /** Důvěrný režim: the UBL input with sealed item texts left encrypted. */
+  @Get(":id/ubl-input")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "The UBL export's input, sealed texts left encrypted" })
+  async ublInput(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
+    return this.invoicesService.invoiceUblInput(req.tenantDb!, req.user!.tenantId, id);
+  }
+
+  /** Důvěrný režim: the ISDOC input with sealed item texts left encrypted. */
+  @Get(":id/isdoc-input")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "The ISDOC export's input, sealed texts left encrypted" })
+  async isdocInput(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    await assertInvoiceOpen(req.tenantDb!, id, req.user!);
+    return this.invoicesService.invoiceIsdocInput(req.tenantDb!, req.user!.tenantId, id);
   }
 
   /**

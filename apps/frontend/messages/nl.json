@@ -14362,7 +14362,7 @@
       "lead": "Versleutelen – alleen jij en leden met de sleutel zien de inhoud, de server kan hem niet lezen.",
       "what": "Regelomschrijvingen en notities (boven, onder de regels en intern) worden versleuteld.",
       "keeps": "Rapporten en dashboards blijven werken: bedragen, datums en betalingskenmerken blijven onversleuteld.",
-      "loses": "Voor versleutelde documenten kan de server geen pdf of ISDOC maken en ze niet aan een e-mail toevoegen. Zoeken op tekst gebeurt na ontgrendelen alleen in je browser.",
+      "loses": "Voor versleutelde documenten maakt alleen je browser de pdf, ISDOC en UBL. De server voegt ze alleen aan een e-mail toe als het bestand uit je browser er één keer doorheen gaat, en bewaart het niet. Zoeken op tekst gebeurt na ontgrendelen alleen in je browser.",
       "locked": "Vergrendelde documenten worden overgeslagen.",
       "done": "{n, plural, one {# document versleuteld} other {# documenten versleuteld}}.",
       "nothing": "Er viel niets te versleutelen.",
@@ -14375,14 +14375,13 @@
       "unlock": "Ontgrendelen",
       "sealFailed": "Het document kon niet worden versleuteld. Er is niets opgeslagen.",
       "sealToggle": "Dit document versleutelen",
-      "sealOnHint": "Alleen jij en leden met de sleutel zien regelomschrijvingen en notities. Pdf en ISDOC zijn niet beschikbaar; regelsuggesties worden alleen in je browser gezocht.",
+      "sealOnHint": "Alleen jij en leden met de sleutel zien regelomschrijvingen en notities. Je browser maakt de pdf, ISDOC en UBL; regelsuggesties worden alleen in je browser gezocht.",
       "sealOffHint": "Het document wordt zoals voorheen onversleuteld opgeslagen.",
       "aiConsent": "Deze tekst naar AI sturen – hij gaat één keer naar de server en de AI-aanbieder en wordt niet opgeslagen",
       "aiConsentHint": "De server slaat de tekst niet op en logt hem niet. Wat AI teruggeeft, wordt bij het opslaan in je browser versleuteld. De toestemming geldt alleen voor deze ene keer."
     },
     "actions": {
-      "blocked": "Niet beschikbaar in de Vertrouwelijke modus: de server kan een versleuteld document niet lezen. Zet de pdf/ISDOC-bijlage uit in de e-mailinstellingen of stuur een link.",
-      "pdfUnavailable": "Pdf is niet beschikbaar in de Vertrouwelijke modus. Je kunt de detailpagina vanuit je browser afdrukken (Ctrl+P).",
+      "blocked": "De versleutelde teksten konden niet worden geopend. Ontgrendel de kluis met de juiste sleutel en probeer het opnieuw.",
       "sendHint": "Dit document is versleuteld, dus de server kan zelf geen pdf of ISDOC maken. Afhankelijk van je instellingen gaat de link meteen en de pdf vanuit je browser, of gaat alleen de link.",
       "linkCopied": "Link met sleutel gekopieerd",
       "keyLink": "Klantlink met sleutel",
@@ -14392,8 +14391,13 @@
       "unlockFirst": "Zonder ontgrendelen kunnen versleutelde bijlagen niet worden meegestuurd.",
       "decryptFailed": "Een bijlage kon niet worden ontsleuteld.",
       "passFiles": "{n, plural, one {# versleutelde bijlage meesturen} other {# versleutelde bijlagen meesturen}}",
-      "passFilesHint": "Je browser ontsleutelt ze en ze gaan één keer via de server naar deze e-mail. De server bewaart ze niet en verwijdert ze na bezorging.",
-      "passFilesWaiting": "Dit document wacht tot een browser de pdf maakt, en de bijlagen mogen niet op de server wachten. Stuur de e-mail zonder ze, of stel de vertrouwelijke modus in om de link meteen te sturen."
+      "passFilesHint": "Je browser ontsleutelt ze en ze gaan één keer via de server mee in deze e-mail. De server bewaart en logt ze niet.",
+      "passFilesWaiting": "Dit document wacht tot een browser de pdf maakt, en de bijlagen mogen niet op de server wachten. Vink ook PDF/ISDOC bijvoegen aan om alles tegelijk te versturen, of verstuur de e-mail zonder bijlagen.",
+      "pdfLocal": "Je browser maakt de pdf, de server ziet de versleutelde teksten niet.",
+      "isdocLocal": "Je browser maakt de ISDOC, de server ziet de versleutelde teksten niet.",
+      "attachOnce": "Pdf/ISDOC bijvoegen – het bestand gaat één keer via de server om te verzenden en wordt niet bewaard",
+      "attachOnceHint": "Je browser maakt de pdf en ISDOC. De server stuurt ze in deze ene e-mail naar de klant en bewaart of logt ze niet.",
+      "ublLocal": "Je browser maakt de UBL, de server ziet de versleutelde teksten niet."
     },
     "categories": {
       "recommended": "Aanbevolen",
@@ -14403,12 +14407,15 @@
         "title": "Regelomschrijvingen en notities",
         "description": "Wat je hebt geleverd en de notities op het document. Bedragen, datums en kenmerken blijven leesbaar.",
         "loses": [
-          "Pdf, ISDOC, UBL en Peppol gemaakt door de server",
-          "Pdf/ISDOC-bijlage in e-mails",
+          "Verzenden via Peppol",
           "Zoeken op tekst en regelsuggesties op de server (na ontgrendelen doet je browser dat)",
           "Vooraf invullen met AI zonder uitdrukkelijke klik (de tekst gaat alleen na je bevestiging één keer via de server naar AI en wordt niet opgeslagen)",
           "Openbare link: uw klant ziet de volledige tekst alleen via de link met sleutel uit het documentdetail. Een link zonder sleutel (bijv. uit een automatische herinnering) toont hem alleen op een apparaat waar de klant de volledige link eerder heeft geopend",
           "Leesbare teksten in de boekhoudexports van de server (Pohoda, Money en CSV tonen „[Důvěrný obsah]”; de export met ontsleutelde teksten maakt je browser)"
+        ],
+        "changes": [
+          "Je browser maakt de pdf, ISDOC en UBL",
+          "Pdf/ISDOC-bijlage in e-mails: je browser maakt het bestand, het gaat één keer door de server en wordt niet bewaard"
         ]
       },
       "attachments": {
@@ -14447,7 +14454,8 @@
           "Herinneringen met bedrag en QR-betalingen gemaakt door de server"
         ]
       },
-      "howTitle": "Zo werkt het:"
+      "howTitle": "Zo werkt het:",
+      "changesTitle": "Werkt anders:"
     },
     "enable": {
       "offTitle": "De Vertrouwelijke modus staat uit",

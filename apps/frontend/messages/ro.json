@@ -14362,7 +14362,7 @@
       "lead": "Criptați – conținutul îl veți vedea doar dvs. și membrii cu cheie, serverul nu îl poate citi.",
       "what": "Se criptează descrierile pozițiilor și notele (deasupra, sub poziții și interne).",
       "keeps": "Rapoartele și tablourile de bord funcționează în continuare: sumele, datele și referințele de plată rămân necriptate.",
-      "loses": "Pentru documentele criptate, serverul nu poate crea PDF sau ISDOC și nu le poate atașa la e-mail. Căutarea după text se face doar în browserul dvs., după deblocare.",
+      "loses": "Pentru documentele criptate, doar browserul dvs. creează PDF, ISDOC și UBL. Serverul le atașează la e-mail doar când fișierul din browser trece o singură dată prin el, fără să-l păstreze. Căutarea după text se face doar în browserul dvs., după deblocare.",
       "locked": "Documentele blocate sunt sărite.",
       "done": "{n, plural, one {# document criptat} few {# documente criptate} other {# de documente criptate}}.",
       "nothing": "Nu era nimic de criptat.",
@@ -14375,14 +14375,13 @@
       "unlock": "Deblocați",
       "sealFailed": "Documentul nu a putut fi criptat. Nu s-a salvat nimic.",
       "sealToggle": "Criptați acest document",
-      "sealOnHint": "Descrierile pozițiilor și notele le veți vedea doar dvs. și membrii cu cheie. PDF și ISDOC nu vor fi disponibile; sugestiile de poziții se caută doar în browserul dvs.",
+      "sealOnHint": "Descrierile pozițiilor și notele le veți vedea doar dvs. și membrii cu cheie. PDF, ISDOC și UBL le creează browserul dvs.; sugestiile de poziții se caută doar în browserul dvs.",
       "sealOffHint": "Documentul se salvează fără criptare, ca până acum.",
       "aiConsent": "Trimiteți acest text la AI – ajunge o singură dată la server și la furnizorul AI și nu se salvează",
       "aiConsentHint": "Serverul nu salvează și nu înregistrează textul. Ce returnează AI se criptează în browserul dvs. la salvare. Acordul este valabil doar pentru această rulare."
     },
     "actions": {
-      "blocked": "Indisponibil în Modul confidențial: serverul nu poate citi un document criptat. Dezactivați atașamentul PDF/ISDOC în setările e-mail sau trimiteți un link.",
-      "pdfUnavailable": "PDF-ul nu este disponibil în Modul confidențial. Puteți tipări detaliul din browser (Ctrl+P).",
+      "blocked": "Textele criptate nu au putut fi deschise. Deblocați seiful cu cheia corectă și încercați din nou.",
       "sendHint": "Documentul este criptat, deci serverul nu poate crea singur PDF sau ISDOC. În funcție de setări, linkul pleacă imediat și PDF-ul din browserul dvs., sau pleacă doar linkul.",
       "linkCopied": "Link cu cheie copiat",
       "keyLink": "Link pentru client cu cheie",
@@ -14392,8 +14391,13 @@
       "unlockFirst": "Fără deblocare, atașamentele criptate nu pot fi adăugate.",
       "decryptFailed": "Un atașament nu a putut fi decriptat.",
       "passFiles": "{n, plural, one {Atașați # fișier criptat} few {Atașați # fișiere criptate} other {Atașați # de fișiere criptate}}",
-      "passFilesHint": "Browserul le decriptează și trec o singură dată prin server, în acest e-mail. Serverul nu le păstrează și le șterge după livrare.",
-      "passFilesWaiting": "Acest document așteaptă ca un browser să creeze PDF-ul, iar atașamentele nu pot aștepta pe server. Trimiteți e-mailul fără ele sau setați în modul confidențial trimiterea imediată a linkului."
+      "passFilesHint": "Browserul le decriptează și trec o singură dată prin server, în acest e-mail. Serverul nu le stochează și nu le înregistrează în jurnale.",
+      "passFilesWaiting": "Acest document așteaptă ca un browser să creeze PDF-ul, iar atașamentele nu pot aștepta pe server. Bifați și atașarea PDF/ISDOC și totul pleacă deodată, sau trimiteți e-mailul fără atașamente.",
+      "pdfLocal": "PDF-ul îl creează browserul dvs., serverul nu vede textele criptate.",
+      "isdocLocal": "ISDOC-ul îl creează browserul dvs., serverul nu vede textele criptate.",
+      "attachOnce": "Atașează PDF/ISDOC – fișierul trece o singură dată prin server pentru trimitere și nu se salvează",
+      "attachOnceHint": "PDF-ul și ISDOC-ul le creează browserul dvs. Serverul le trimite clientului în acest e-mail, fără să le salveze sau să le înregistreze.",
+      "ublLocal": "UBL-ul îl creează browserul dvs., serverul nu vede textele criptate."
     },
     "categories": {
       "recommended": "Recomandat",
@@ -14403,12 +14407,15 @@
         "title": "Descrierile pozițiilor și notele",
         "description": "Ce ați livrat și notele de pe document. Sumele, datele și referințele rămân lizibile.",
         "loses": [
-          "PDF, ISDOC, UBL și Peppol create de server",
-          "Atașamentul PDF/ISDOC în e-mailuri",
+          "Trimiterea prin Peppol",
           "Căutarea după text și sugestiile de poziții pe server (după deblocare, le face browserul dvs.)",
           "Completarea cu AI fără un clic explicit (textul trece o singură dată prin server către AI, doar când confirmați, și nu se salvează)",
           "Link public: clientul vede textul complet doar prin linkul cu cheie din detaliul documentului. Un link fără cheie (de ex. dintr-un memento automat) îl arată doar pe un dispozitiv pe care clientul a deschis înainte linkul complet",
           "Texte lizibile în exporturile contabile ale serverului (Pohoda, Money și CSV afișează „[Důvěrný obsah]”; exportul cu texte decriptate îl creează browserul dvs.)"
+        ],
+        "changes": [
+          "PDF-ul, ISDOC-ul și UBL-ul le creează browserul dvs.",
+          "Atașamentul PDF/ISDOC în e-mailuri: fișierul îl creează browserul dvs., trece o singură dată prin server și nu se păstrează"
         ]
       },
       "attachments": {
@@ -14447,7 +14454,8 @@
           "Mementouri cu sumă și plăți QR create de server"
         ]
       },
-      "howTitle": "Cum funcționează:"
+      "howTitle": "Cum funcționează:",
+      "changesTitle": "Funcționează altfel:"
     },
     "enable": {
       "offTitle": "Modul confidențial este dezactivat",

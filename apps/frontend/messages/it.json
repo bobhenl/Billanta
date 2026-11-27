@@ -14362,7 +14362,7 @@
       "lead": "Cifra – il contenuto lo vedrete solo tu e i membri con la chiave, il server non può leggerlo.",
       "what": "Vengono cifrate le descrizioni delle righe e le note (sopra, sotto le righe e interne).",
       "keeps": "Report e dashboard continuano a funzionare: importi, date e causali restano in chiaro.",
-      "loses": "Per i documenti cifrati il server non può creare PDF o ISDOC né allegarli a un’e-mail. La ricerca testuale avviene solo nel tuo browser dopo lo sblocco.",
+      "loses": "Per i documenti cifrati PDF, ISDOC e UBL li crea solo il tuo browser. Il server li allega a un’e-mail solo quando il file del tuo browser passa una volta dal server, e non lo salva. La ricerca testuale avviene solo nel tuo browser dopo lo sblocco.",
       "locked": "I documenti bloccati vengono saltati.",
       "done": "{n, plural, one {# documento cifrato} other {# documenti cifrati}}.",
       "nothing": "Non c'era niente da cifrare.",
@@ -14375,14 +14375,13 @@
       "unlock": "Sblocca",
       "sealFailed": "Impossibile cifrare il documento. Non è stato salvato nulla.",
       "sealToggle": "Cifra questo documento",
-      "sealOnHint": "Descrizioni delle righe e note le vedrete solo tu e i membri con la chiave. PDF e ISDOC non saranno disponibili; i suggerimenti di righe si cercano solo nel tuo browser.",
+      "sealOnHint": "Descrizioni delle righe e note le vedrete solo tu e i membri con la chiave. PDF, ISDOC e UBL li crea il tuo browser; i suggerimenti di righe si cercano solo nel tuo browser.",
       "sealOffHint": "Il documento viene salvato senza cifratura, come prima.",
       "aiConsent": "Invia questo testo all’IA – andrà una sola volta al server e al fornitore di IA e non verrà salvato",
       "aiConsentHint": "Il server non salva né registra il testo. Ciò che l’IA restituisce viene cifrato nel tuo browser al salvataggio. Il consenso vale solo per questa esecuzione."
     },
     "actions": {
-      "blocked": "Non disponibile nella Modalità riservata: il server non può leggere un documento cifrato. Disattiva l'allegato PDF/ISDOC nelle impostazioni e-mail oppure invia un link.",
-      "pdfUnavailable": "Il PDF non è disponibile nella Modalità riservata. Puoi stampare il dettaglio dal browser (Ctrl+P).",
+      "blocked": "Impossibile aprire i testi cifrati. Sblocca la cassaforte con la chiave giusta e riprova.",
       "sendHint": "Il documento è cifrato, quindi il server non può creare né PDF né ISDOC. A seconda delle impostazioni, il link parte subito e il PDF dal tuo browser, oppure parte solo il link.",
       "linkCopied": "Link con chiave copiato",
       "keyLink": "Link per il cliente con chiave",
@@ -14392,8 +14391,13 @@
       "unlockFirst": "Senza sblocco non si possono allegare file cifrati.",
       "decryptFailed": "Non è stato possibile decifrare un allegato.",
       "passFiles": "{n, plural, one {Allega # file cifrato} other {Allega # file cifrati}}",
-      "passFilesHint": "Il browser li decifra e passano una sola volta dal server, in questa e-mail. Il server non li conserva e li cancella dopo la consegna.",
-      "passFilesWaiting": "Questo documento aspetta che un browser crei il PDF, e gli allegati non possono restare in attesa sul server. Invia l’e-mail senza di essi, oppure imposta la modalità riservata per inviare subito il link."
+      "passFilesHint": "Il browser li decifra e passano una sola volta dal server, in questa e-mail. Il server non li salva e non li registra.",
+      "passFilesWaiting": "Questo documento aspetta che un browser crei il PDF, e gli allegati non possono attendere sul server. Spunta anche «Allega PDF/ISDOC» per inviare tutto insieme, oppure invia l'e-mail senza allegati.",
+      "pdfLocal": "Il PDF lo crea il tuo browser, il server non vede i testi cifrati.",
+      "isdocLocal": "L'ISDOC lo crea il tuo browser, il server non vede i testi cifrati.",
+      "attachOnce": "Allega PDF/ISDOC – il file passa una volta dal server per l'invio e non viene salvato",
+      "attachOnceHint": "Il tuo browser crea PDF e ISDOC. Il server li inoltra al cliente in questa e-mail, senza salvarli né registrarli.",
+      "ublLocal": "L'UBL lo crea il tuo browser, il server non vede i testi cifrati."
     },
     "categories": {
       "recommended": "Consigliato",
@@ -14403,12 +14407,15 @@
         "title": "Descrizioni delle righe e note",
         "description": "Ciò che hai fornito e le note del documento. Importi, date e riferimenti restano leggibili.",
         "loses": [
-          "PDF, ISDOC, UBL e Peppol creati dal server",
-          "Allegato PDF/ISDOC nelle e-mail",
+          "Invio tramite Peppol",
           "Ricerca testuale e suggerimenti di righe sul server (dopo lo sblocco li gestisce il tuo browser)",
           "Compilazione con IA senza un clic esplicito (il testo passa una volta dal server all’IA, solo quando confermi, e non viene salvato)",
           "Link pubblico: il cliente vede il testo completo solo con il link con chiave dal dettaglio del documento. Un link senza chiave (ad es. da un sollecito automatico) lo mostra solo su un dispositivo dove il cliente ha già aperto il link completo",
           "Testi leggibili nelle esportazioni contabili del server (Pohoda, Money e CSV mostrano «[Důvěrný obsah]»; l’esportazione con testi decifrati la crea il tuo browser)"
+        ],
+        "changes": [
+          "PDF, ISDOC e UBL li crea il tuo browser",
+          "Allegato PDF/ISDOC nelle e-mail: il file lo crea il tuo browser, passa una volta dal server e non viene salvato"
         ]
       },
       "attachments": {
@@ -14447,7 +14454,8 @@
           "Solleciti con importo e pagamenti QR creati dal server"
         ]
       },
-      "howTitle": "Come funziona:"
+      "howTitle": "Come funziona:",
+      "changesTitle": "Funziona diversamente:"
     },
     "enable": {
       "offTitle": "La Modalità riservata è disattivata",

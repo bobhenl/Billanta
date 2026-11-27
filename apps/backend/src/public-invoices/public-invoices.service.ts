@@ -2,7 +2,7 @@ import { ConflictException, Injectable, Logger, NotFoundException, Optional } fr
 import { sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
-import { clientCipher, czechAccountToIban, generateQrInvoiceString } from "@faktur/cz-compliance";
+import { clientCipher, czechAccountToIban, generateQrInvoiceString, type InvoicePdfModel } from "@faktur/cz-compliance";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
 import { InvoicesService } from "../invoices/invoices.service";
@@ -412,6 +412,29 @@ export class PublicInvoicesService {
     return { filename: pdfFilename(hit.invoice_number), content: content as Buffer };
   }
 
+  /**
+   * Důvěrný režim: what the client's browser needs to draw the PDF of an
+   * encrypted document with the key from its link (the server cannot print
+   * it). Item texts go out as the same document-key ciphertext the page
+   * already gets; sealed notes are left out, as on the page, since the
+   * link's key is only for the items.
+   */
+  async pdfModel(link: string): Promise<{ filename: string; model: InvoicePdfModel }> {
+    const token = await resolveInvoiceToken(this.dbService.db, link);
+    if (!token || !this.invoices || (await this.isBlocked(token))) throw new NotFoundException("Invoice not found");
+    const rows = await this.dbService.db.execute<{ id: string; tenant_id: string; invoice_number: string | null; status: string }>(
+      sql`SELECT id, tenant_id, invoice_number, status FROM get_public_invoice_view(${token})`,
+    );
+    const hit = rows[0];
+    if (!hit || !hit.invoice_number || ["draft", "pending_review"].includes(hit.status)) throw new NotFoundException("Invoice not found");
+    const invoices = this.invoices;
+    const { model } = await this.dbService.sql.begin(async (tx) => {
+      await tx`SELECT set_config('app.current_tenant_id', ${hit.tenant_id}, true)`;
+      return invoices.invoicePdfModel(drizzleTx(tx, schema) as PostgresJsDatabase<typeof schema>, hit.tenant_id, hit.id);
+    });
+    return { filename: pdfFilename(hit.invoice_number), model: clientPdfModel(model) };
+  }
+
   /** One portal attachment by token + id (`get_public_invoice_attachment`); 404 for anything else. */
   async downloadAttachment(link: string, attachmentId: string) {
     const token = UUID_PATTERN.test(attachmentId) ? await resolveInvoiceToken(this.dbService.db, link) : null;
@@ -423,6 +446,24 @@ export class PublicInvoicesService {
     if (!row) throw new NotFoundException("Attachment not found");
     return { filename: row.filename, mime: row.mime, content: Buffer.from(row.data, "base64") };
   }
+}
+
+/**
+ * The PDF model as the client may see it: sealed item texts without the
+ * company-key wrap (`clientCipher`, as on the page), sealed notes dropped.
+ * A plain document comes back unchanged.
+ */
+export function clientPdfModel(model: InvoicePdfModel): InvoicePdfModel {
+  const note = (v: string | null) => (isSealed(v) ? null : v);
+  return {
+    ...model,
+    noteAbove: note(model.noteAbove),
+    notes: { ...model.notes, noteBelow: note(model.notes.noteBelow) },
+    table: {
+      ...model.table,
+      items: model.table.items.map((i) => (isSealed(i.description) ? { ...i, description: clientCipher(i.description).cipher } : i)),
+    },
+  };
 }
 
 /** `<invoice number>.pdf`, safe inside a quoted Content-Disposition filename (ASCII only, no quotes or path parts). */

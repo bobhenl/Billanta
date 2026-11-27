@@ -47,4 +47,6 @@ export * from './tenant-country.js';
 export * from './vault/confidential.js';
 export * from './client-link-key.js';
 export * from './vault-categories.js';
+export * from './fill-template.js';
+export * from './invoice-pdf.js';
 export * from './confidential-files.js';

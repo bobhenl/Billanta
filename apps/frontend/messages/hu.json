@@ -14362,7 +14362,7 @@
       "lead": "Titkosítás – a tartalmat csak Ön és a kulccsal rendelkező tagok látják, a szerver nem tudja elolvasni.",
       "what": "A tételleírások és a megjegyzések (a tételek felett, alatt és a belsők) titkosítva lesznek.",
       "keeps": "A kimutatások és az irányítópultok továbbra is működnek: az összegek, dátumok és közlemények titkosítatlanok maradnak.",
-      "loses": "Titkosított bizonylathoz a szerver nem készít PDF-et vagy ISDOC-ot, és nem csatolja e-mailhez. A szöveges keresés feloldás után csak a böngészőjében fut.",
+      "loses": "Titkosított bizonylatnál a PDF-et, az ISDOC-ot és az UBL-t csak a böngészője készíti el. A szerver csak akkor csatolja őket e-mailhez, ha a böngészőből érkező fájl egyszer áthalad rajta, és nem tárolja. A szöveges keresés feloldás után csak a böngészőjében fut.",
       "locked": "A zárolt bizonylatok kimaradnak.",
       "done": "{n, plural, one {# bizonylat titkosítva} other {# bizonylat titkosítva}}.",
       "nothing": "Nem volt mit titkosítani.",
@@ -14375,14 +14375,13 @@
       "unlock": "Feloldás",
       "sealFailed": "A bizonylatot nem sikerült titkosítani. Semmi sem mentődött.",
       "sealToggle": "A bizonylat titkosítása",
-      "sealOnHint": "A tételleírásokat és megjegyzéseket csak Ön és a kulccsal rendelkező tagok látják. PDF és ISDOC nem lesz elérhető, a tételjavaslatokat csak a böngészője keresi.",
+      "sealOnHint": "A tételleírásokat és megjegyzéseket csak Ön és a kulccsal rendelkező tagok látják. A PDF-et, az ISDOC-ot és az UBL-t a böngészője készíti, a tételjavaslatokat csak a böngészője keresi.",
       "sealOffHint": "A bizonylat a korábbiakhoz hasonlóan titkosítás nélkül mentődik.",
       "aiConsent": "A szöveg elküldése az AI-nak – egyszer eljut a szerverre és az AI-szolgáltatóhoz, nem kerül mentésre",
       "aiConsentHint": "A szerver nem tárolja és nem naplózza a szöveget. Amit az AI visszaad, mentéskor a böngészőjében titkosítódik. A hozzájárulás csak erre az egy futtatásra érvényes."
     },
     "actions": {
-      "blocked": "Bizalmas módban nem érhető el: a szerver nem tudja elolvasni a titkosított bizonylatot. Kapcsolja ki a PDF/ISDOC-mellékletet az e-mail-beállításokban, vagy küldjön linket.",
-      "pdfUnavailable": "A PDF Bizalmas módban nem érhető el. A részleteket kinyomtathatja a böngészőből (Ctrl+P).",
+      "blocked": "A titkosított szövegeket nem sikerült megnyitni. Oldja fel a széfet a megfelelő kulccsal, és próbálja újra.",
       "sendHint": "A bizonylat titkosított, ezért a szerver magától nem készít PDF-et vagy ISDOC-ot. A beállítástól függően a link azonnal megy, a PDF pedig az Ön böngészőjéből, vagy csak a link megy.",
       "linkCopied": "Kulcsos link kimásolva",
       "keyLink": "Ügyféllink kulccsal",
@@ -14392,8 +14391,13 @@
       "unlockFirst": "Feloldás nélkül titkosított mellékletet nem lehet csatolni.",
       "decryptFailed": "Egy mellékletet nem sikerült visszafejteni.",
       "passFiles": "{n, plural, one {# titkosított melléklet csatolása} other {# titkosított melléklet csatolása}}",
-      "passFilesHint": "A böngésző visszafejti őket, és egyszer mennek át a szerveren ebbe az e-mailbe. A szerver nem tárolja őket, kézbesítés után törli.",
-      "passFilesWaiting": "Ez a bizonylat arra vár, hogy egy böngésző elkészítse a PDF-et, a mellékletek pedig nem várakozhatnak a szerveren. Küldje el az e-mailt nélkülük, vagy állítsa be a bizalmas módban, hogy a link azonnal menjen."
+      "passFilesHint": "A böngésző visszafejti őket, és egyszer haladnak át a szerveren ebbe az e-mailbe. A szerver nem tárolja és nem naplózza őket.",
+      "passFilesWaiting": "Ez a bizonylat arra vár, hogy egy böngésző elkészítse a PDF-et, a mellékletek pedig nem várakozhatnak a szerveren. Jelölje be a PDF/ISDOC csatolását is, és minden egyszerre megy el, vagy küldje el az e-mailt mellékletek nélkül.",
+      "pdfLocal": "A PDF-et a böngészője készíti, a szerver nem látja a titkosított szövegeket.",
+      "isdocLocal": "Az ISDOC-ot a böngészője készíti, a szerver nem látja a titkosított szövegeket.",
+      "attachOnce": "PDF/ISDOC csatolása – a fájl a küldéshez egyszer áthalad a szerveren, és nem tárolódik",
+      "attachOnceHint": "A PDF-et és az ISDOC-ot a böngészője készíti. A szerver ebben az egy e-mailben továbbítja az ügyfélnek, nem tárolja és nem naplózza.",
+      "ublLocal": "Az UBL-t a böngészője készíti, a szerver nem látja a titkosított szövegeket."
     },
     "categories": {
       "recommended": "Ajánlott",
@@ -14403,12 +14407,15 @@
         "title": "Tételleírások és megjegyzések",
         "description": "Amit szállított, és a bizonylat megjegyzései. Az összegek, dátumok és azonosítók olvashatók maradnak.",
         "loses": [
-          "A szerver által készített PDF, ISDOC, UBL és Peppol",
-          "PDF/ISDOC-melléklet az e-mailekben",
+          "Küldés Peppolon keresztül",
           "Szöveges keresés és tételjavaslatok a szerveren (feloldás után ezt a böngészője végzi)",
           "AI-kitöltés kifejezett kattintás nélkül (a szöveg csak jóváhagyás után, egyszer megy át a szerveren az AI-hoz, és nem kerül mentésre)",
           "Nyilvános link: ügyfele a teljes szöveget csak a bizonylat részleteiből kapott kulcsos linken látja. A kulcs nélküli link (pl. automatikus emlékeztetőből) csak olyan eszközön mutatja, ahol az ügyfél korábban megnyitotta a teljes linket",
           "Olvasható szövegek a szerver könyvelési exportjaiban (a Pohoda, Money és CSV „[Důvěrný obsah]” szöveget mutat; a visszafejtett exportot a böngészője készíti)"
+        ],
+        "changes": [
+          "A PDF-et, az ISDOC-ot és az UBL-t a böngészője készíti",
+          "PDF/ISDOC-melléklet az e-mailekben: a fájlt a böngészője készíti, egyszer áthalad a szerveren, és nem tárolódik"
         ]
       },
       "attachments": {
@@ -14447,7 +14454,8 @@
           "Összeget tartalmazó emlékeztetők és a szerver által készített QR-fizetés"
         ]
       },
-      "howTitle": "Hogyan működik:"
+      "howTitle": "Hogyan működik:",
+      "changesTitle": "Másképp működik:"
     },
     "enable": {
       "offTitle": "A Bizalmas mód ki van kapcsolva",

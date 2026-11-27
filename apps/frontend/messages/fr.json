@@ -14362,7 +14362,7 @@
       "lead": "Chiffrer – seuls vous et les membres disposant de la clé verront le contenu, le serveur ne peut pas le lire.",
       "what": "Les descriptions de lignes et les notes (au-dessus, en dessous des lignes et internes) sont chiffrées.",
       "keeps": "Les rapports et tableaux de bord continuent de fonctionner : montants, dates et références de paiement restent en clair.",
-      "loses": "Pour les documents chiffrés, le serveur ne peut ni créer de PDF ou d’ISDOC, ni les joindre à un e-mail. La recherche de texte se fait uniquement dans votre navigateur après déverrouillage.",
+      "loses": "Pour les documents chiffrés, seul votre navigateur crée le PDF, l’ISDOC et l’UBL. Le serveur ne les joint à un e-mail que si le fichier de votre navigateur passe une fois par lui, et il ne le conserve pas. La recherche de texte se fait uniquement dans votre navigateur après déverrouillage.",
       "locked": "Les documents verrouillés sont ignorés.",
       "done": "{n, plural, one {# document chiffré} other {# documents chiffrés}}.",
       "nothing": "Il n'y avait rien à chiffrer.",
@@ -14375,14 +14375,13 @@
       "unlock": "Déverrouiller",
       "sealFailed": "Impossible de chiffrer le document. Rien n'a été enregistré.",
       "sealToggle": "Chiffrer ce document",
-      "sealOnHint": "Seuls vous et les membres disposant de la clé verront les descriptions de lignes et les notes. PDF et ISDOC ne seront pas disponibles ; les suggestions de lignes sont cherchées uniquement dans votre navigateur.",
+      "sealOnHint": "Seuls vous et les membres disposant de la clé verront les descriptions de lignes et les notes. Votre navigateur crée le PDF, l’ISDOC et l’UBL ; les suggestions de lignes sont cherchées uniquement dans votre navigateur.",
       "sealOffHint": "Le document est enregistré sans chiffrement, comme avant.",
       "aiConsent": "Envoyer ce texte à l’IA – il part une seule fois vers le serveur et le fournisseur d’IA, sans être enregistré",
       "aiConsentHint": "Le serveur n’enregistre pas le texte et ne le journalise pas. Ce que l’IA renvoie est chiffré dans votre navigateur à l’enregistrement. L’accord ne vaut que pour cette exécution."
     },
     "actions": {
-      "blocked": "Indisponible en Mode confidentiel : le serveur ne peut pas lire un document chiffré. Désactivez la pièce jointe PDF/ISDOC dans les réglages des e-mails ou envoyez un lien.",
-      "pdfUnavailable": "Le PDF n'est pas disponible en Mode confidentiel. Vous pouvez imprimer le détail depuis votre navigateur (Ctrl+P).",
+      "blocked": "Impossible d'ouvrir les textes chiffrés. Déverrouillez le coffre avec la bonne clé et réessayez.",
       "sendHint": "Ce document est chiffré, le serveur ne peut donc créer ni PDF ni ISDOC. Selon vos réglages, le lien part tout de suite et le PDF depuis votre navigateur, ou seul le lien part.",
       "linkCopied": "Lien avec clé copié",
       "keyLink": "Lien client avec clé",
@@ -14392,8 +14391,13 @@
       "unlockFirst": "Sans déverrouillage, les pièces jointes chiffrées ne peuvent pas être ajoutées.",
       "decryptFailed": "Une pièce jointe n’a pas pu être déchiffrée.",
       "passFiles": "{n, plural, one {Joindre # fichier chiffré} other {Joindre # fichiers chiffrés}}",
-      "passFilesHint": "Votre navigateur les déchiffre et ils passent une seule fois par le serveur, dans cet e-mail. Le serveur ne les garde pas et les supprime après la remise.",
-      "passFilesWaiting": "Ce document attend qu’un navigateur crée le PDF, et les pièces jointes ne doivent pas attendre sur le serveur. Envoyez l’e-mail sans elles, ou réglez le mode confidentiel pour envoyer le lien tout de suite."
+      "passFilesHint": "Votre navigateur les déchiffre et ils passent une seule fois par le serveur, dans cet e-mail. Le serveur ne les stocke pas et ne les journalise pas.",
+      "passFilesWaiting": "Ce document attend qu'un navigateur crée le PDF, et les pièces jointes ne doivent pas attendre sur le serveur. Cochez aussi « Joindre PDF/ISDOC » pour tout envoyer en une fois, ou envoyez l'e-mail sans elles.",
+      "pdfLocal": "Votre navigateur crée le PDF, le serveur ne voit pas les textes chiffrés.",
+      "isdocLocal": "Votre navigateur crée l'ISDOC, le serveur ne voit pas les textes chiffrés.",
+      "attachOnce": "Joindre le PDF/ISDOC – le fichier passe une fois par le serveur pour l'envoi et n'est pas conservé",
+      "attachOnceHint": "Votre navigateur crée le PDF et l'ISDOC. Le serveur les transmet au client dans cet e-mail, sans les conserver ni les journaliser.",
+      "ublLocal": "Votre navigateur crée l'UBL, le serveur ne voit pas les textes chiffrés."
     },
     "categories": {
       "recommended": "Recommandé",
@@ -14403,12 +14407,15 @@
         "title": "Descriptions de lignes et notes",
         "description": "Ce que vous avez fourni et les notes du document. Montants, dates et références restent lisibles.",
         "loses": [
-          "PDF, ISDOC, UBL et Peppol créés par le serveur",
-          "Pièce jointe PDF/ISDOC dans les e-mails",
+          "Envoi via Peppol",
           "Recherche de texte et suggestions de lignes côté serveur (après déverrouillage, votre navigateur s’en charge)",
           "Pré-remplissage par IA sans clic explicite (le texte passe une fois par le serveur vers l’IA, seulement quand vous confirmez, et n’est pas enregistré)",
           "Lien public : votre client voit le texte complet uniquement via le lien avec clé du détail du document. Un lien sans clé (par ex. d’une relance automatique) ne l’affiche que sur un appareil où le client a déjà ouvert le lien complet",
           "Textes lisibles dans les exports comptables du serveur (Pohoda, Money et CSV affichent « [Důvěrný obsah] » ; l’export avec textes déchiffrés est créé par votre navigateur)"
+        ],
+        "changes": [
+          "Votre navigateur crée le PDF, l'ISDOC et l'UBL",
+          "Pièce jointe PDF/ISDOC dans les e-mails : votre navigateur crée le fichier, il passe une fois par le serveur et n’est pas conservé"
         ]
       },
       "attachments": {
@@ -14447,7 +14454,8 @@
           "Relances avec montant et paiements QR créés par le serveur"
         ]
       },
-      "howTitle": "Comment ça marche :"
+      "howTitle": "Comment ça marche :",
+      "changesTitle": "Fonctionne autrement :"
     },
     "enable": {
       "offTitle": "Le Mode confidentiel est désactivé",

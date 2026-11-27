@@ -9,6 +9,8 @@ import {
   validatePeppolInvoice,
   type PeppolIssue,
   type RequirementIssue,
+  type IsdocInvoiceInput,
+  type InvoicePdfModel,
   type UblOptions,
 } from "@faktur/cz-compliance";
 import { and, asc, desc, eq, gt, gte, ilike, inArray, isNotNull, isNull, lt, ne, notInArray, or, sql } from "drizzle-orm";
@@ -52,7 +54,7 @@ import {
   sellerSnapshotOf,
   snapshotDiffers,
 } from "./party-snapshot";
-import { buildIsdocInvoiceInput, contactToIsdocParty, tenantToIsdocParty } from "./isdoc-input.builder";
+import { buildIsdocInvoiceInput, buildIsdocInvoiceInputSealed, contactToIsdocParty, tenantToIsdocParty } from "./isdoc-input.builder";
 import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 import { buyerDetailsLinkOf, clientPortalLinkOf, invoiceLinkOf, newShortKey } from "../public-links/public-link";
 import { paymentDraftDescriptionAlwaysOf, paymentDraftDescriptionOf } from "../tenants/invoice-form-prefs";
@@ -332,11 +334,12 @@ export class InvoicesService {
     invoice: typeof schema.invoices.$inferSelect,
     contact: typeof schema.contacts.$inferSelect,
     kind: "invoice" | "reminder",
-    opts: { sealed?: boolean; extra?: EmailAttachment[] } = {},
+    opts: { sealed?: boolean } = {},
   ): Promise<EmailCustomization> {
     const [liveTenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
     const prefs = emailPrefsOf(liveTenant?.emailPrefs);
     const attachments: EmailAttachment[] = [];
+    const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, invoice.id));
     // An encrypted document: the server can make neither file (both print its texts).
     if (kind === "invoice" && invoice.invoiceNumber && !opts.sealed) {
       const base = invoiceFileBase(invoice);
@@ -351,9 +354,6 @@ export class InvoicesService {
     if (kind === "invoice" && this.attachmentsService) {
       attachments.push(...(await this.attachmentsService.forEmail(db, invoice.id)));
     }
-    // Decrypted in the browser for this e-mail only (send-with-files).
-    if (kind === "invoice" && opts.extra) attachments.push(...opts.extra);
-    const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, invoice.id));
     const breakdown = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
     // {company}, {ico}, {iban}, {customer}… as on the document (its snapshot, if issued).
     const tenant = liveTenant ? documentParties(invoice, await resolveTenantForInvoice(db, liveTenant, invoice), contact).tenant : undefined;
@@ -1479,7 +1479,12 @@ export class InvoicesService {
    * for the no-auth client-portal view), emails it via
    * `EmailService.sendInvoiceEmail`, then stamps `sent_at`.
    */
-  async sendInvoice(db: TenantDb, id: string, tenantId?: string, userId?: string, extra: EmailAttachment[] = []) {
+  /**
+   * `files`: what the browser made or decrypted for this one e-mail – a sealed
+   * invoice's PDF/ISDOC and decrypted attachments. They are delivered straight
+   * away and never written to the outbox or a log.
+   */
+  async sendInvoice(db: TenantDb, id: string, tenantId?: string, userId?: string, files?: SealedDocumentFiles) {
     const [invoice] = await db.select().from(schema.invoices).where(eq(schema.invoices.id, id)).limit(1);
     if (!invoice) {
       throw new NotFoundException(`Invoice ${id} not found`);
@@ -1503,6 +1508,13 @@ export class InvoicesService {
       .select()
       .from(schema.invoiceLineItems)
       .where(eq(schema.invoiceLineItems.invoiceId, id));
+    const documents = !!(files?.pdf || files?.isdoc);
+    const extra = files?.extra ?? [];
+    if (documents) {
+      // Only for what the server cannot render itself: a plain invoice's files are its own.
+      if (!documentIsSealed(invoice, lineItems)) throw new BadRequestException("not_confidential");
+      if (!invoice.invoiceNumber) throw new BadRequestException("invoice_not_issued");
+    }
 
     // Already in the customer's hands and edited since ("Přesto upravit"):
     // the email says it is a corrected copy that replaces the earlier one.
@@ -1512,22 +1524,32 @@ export class InvoicesService {
     // Instead of failing, the e-mail goes out with the link and the PDF waits
     // for a member's browser, or the whole e-mail waits (vault/vault-email.ts).
     const sealed = documentIsSealed(invoice, lineItems);
-    const plan = sealed ? sealedSendPlan(await this.vaultEmailMode(db), await this.attachesPdf(db, invoice.tenantId)) : null;
+    // With the browser's own PDF/ISDOC nothing has to wait, whatever the mode.
+    const plan = sealed && !documents ? sealedSendPlan(await this.vaultEmailMode(db), await this.attachesPdf(db, invoice.tenantId)) : null;
 
     await assertCanSendEmail(db, invoice.tenantId);
     // Files decrypted in the browser can't wait in a queue: the server must not keep them.
+    // In the "wait" mode the browser sends the PDF along, so this is only a request without it.
     if (extra.length && plan && !plan.sendNow) throw new ConflictException("pass_files_waiting");
     if (plan?.queue) await this.queueForBrowser(db, invoice, contact.email, plan.queue, corrected, userId);
     if (plan && !plan.sendNow) {
       await this.log(db, invoice, "send_waiting_pdf", [{ field: "email", from: null, to: contact.email }]);
       return { ...invoice, vaultEmail: "waiting" as const };
     }
-    const params = await this.invoiceEmailParams(db, invoice, contact, lineItems, tenantId, corrected, { sealed, extra });
+    const params = await this.invoiceEmailParams(db, invoice, contact, lineItems, tenantId, corrected, { sealed });
     // Collapses a double-click into one e-mail; a deliberate resend a minute later still goes out.
-    const queue = { tenantId: invoice.tenantId, db, idempotencyKey: `invoice:${invoice.id}:${Math.floor(Date.now() / 60_000)}` };
-    // Like the browser-made PDF, they go straight to Resend; the outbox records the send without them.
-    if (extra.length) await this.emailService.sendNow(buildInvoiceEmail(params), { ...queue, userId });
-    else await this.emailService.sendInvoiceEmail(params, queue);
+    const queue = { tenantId: invoice.tenantId, db, userId, idempotencyKey: `invoice:${invoice.id}:${Math.floor(Date.now() / 60_000)}` };
+    if (files) {
+      const base = invoiceFileBase(invoice);
+      const own: EmailAttachment[] = [];
+      if (files.pdf) own.push({ filename: `${base}.pdf`, content: files.pdf, contentType: "application/pdf" });
+      if (files.isdoc) own.push({ filename: `${base}.isdoc`, content: files.isdoc, contentType: "application/xml" });
+      const attachments = [...own, ...(params.custom?.attachments ?? []), ...extra];
+      // Straight from memory to the provider: the outbox records the send without the files.
+      await this.emailService.sendNow(buildInvoiceEmail({ ...params, custom: { ...params.custom, attachments } }), queue);
+    } else {
+      await this.emailService.sendInvoiceEmail(params, queue);
+    }
     await recordEmailSent(db, invoice.tenantId, "invoice", contact.email);
 
     const [updated] = await db
@@ -1549,7 +1571,7 @@ export class InvoicesService {
     lineItems: (typeof schema.invoiceLineItems.$inferSelect)[],
     tenantId: string | undefined,
     corrected: boolean,
-    opts: { sealed: boolean; extra?: EmailAttachment[] },
+    opts: { sealed: boolean },
   ): Promise<SendInvoiceEmailParams> {
     const total = computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge });
     return {
@@ -2171,6 +2193,30 @@ export class InvoicesService {
   }
 
   /**
+   * Důvěrný režim: what the browser needs to draw the PDF of a sealed
+   * invoice itself. The notes and item texts stay envelopes; the browser
+   * opens them with the vault key, which never comes here.
+   */
+  async invoicePdfModel(db: TenantDb, tenantId: string, invoiceId: string): Promise<{ filename: string; model: InvoicePdfModel }> {
+    const { invoice, contact, tenant, lineItems, related } = await this.loadIssuedInvoiceForDocument(db, tenantId, invoiceId, true);
+    const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
+    const model = await this.invoicePdfService.buildModel(invoice, contact, tenant, lineItems, totals, related);
+    return { filename: `${invoiceFileBase(invoice)}.pdf`, model };
+  }
+
+  /** The ISDOC input with envelopes as they are, for the browser to finish (see `invoicePdfModel`). */
+  async invoiceIsdocInput(db: TenantDb, tenantId: string, invoiceId: string): Promise<{ filename: string; input: IsdocInvoiceInput }> {
+    const { invoice, contact, tenant, lineItems, related } = await this.loadIssuedInvoiceForDocument(db, tenantId, invoiceId);
+    const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
+    const input = buildIsdocInvoiceInputSealed(invoice, contact, tenant, lineItems, totals);
+    const deposit = proformaDeposit(invoice, related);
+    return {
+      filename: `${invoiceFileBase(invoice)}.isdoc`,
+      input: deposit ? { ...input, totals: { ...input.totals, paidDepositsAmount: deposit } } : input,
+    };
+  }
+
+  /**
    * UBL 2.1 / Peppol BIS Billing 3.0 XML of an issued invoice or credit note,
    * for the SK e-invoicing mandate (1 January 2027). Built from the same
    * input as the ISDOC export. A credit note becomes a UBL CreditNote that
@@ -2182,7 +2228,13 @@ export class InvoicesService {
     return generateUblInvoiceXml(input, options);
   }
 
-  private async ublInput(db: TenantDb, tenantId: string, invoiceId: string) {
+  /** The UBL input with envelopes as they are, for the browser to finish (see `invoicePdfModel`). */
+  async invoiceUblInput(db: TenantDb, tenantId: string, invoiceId: string): Promise<{ filename: string; input: IsdocInvoiceInput; options: UblOptions }> {
+    const { invoice, input, options } = await this.ublInput(db, tenantId, invoiceId, true);
+    return { filename: `${invoiceFileBase(invoice)}.xml`, input, options };
+  }
+
+  private async ublInput(db: TenantDb, tenantId: string, invoiceId: string, keepSealed = false) {
     const { invoice, contact, tenant, lineItems, related } = await this.loadIssuedInvoiceForDocument(
       db,
       tenantId,
@@ -2192,7 +2244,7 @@ export class InvoicesService {
       throw new BadRequestException("ubl_invoice_only");
     }
     const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
-    const input = buildIsdocInvoiceInput(invoice, contact, tenant, lineItems, totals);
+    const input = (keepSealed ? buildIsdocInvoiceInputSealed : buildIsdocInvoiceInput)(invoice, contact, tenant, lineItems, totals);
     // An invoice's related document is the proforma it came from, which is
     // not a preceding invoice in the EN 16931 sense.
     const preceding =
@@ -2207,7 +2259,7 @@ export class InvoicesService {
       paymentMethod: invoice.paymentMethod,
       paymentMethodLabel: invoice.paymentMethodLabel,
     };
-    return { input, options };
+    return { invoice, input, options };
   }
 
   /**
@@ -2267,6 +2319,13 @@ const FILE_PREFIX: Record<"cs" | "sk" | "en", Record<"invoice" | "proforma" | "c
  * "faktura-2_11_2026": the kind of document in the language it is written in (not the
  * language of whoever downloads it) and its number, safe in a file name and a mail header.
  */
+/** What the browser made or decrypted for one e-mail (see `sendInvoice`): a sealed invoice's PDF/ISDOC, decrypted attachments. */
+export interface SealedDocumentFiles {
+  pdf?: Buffer;
+  isdoc?: Buffer;
+  extra?: EmailAttachment[];
+}
+
 export function invoiceFileBase(invoice: { invoiceNumber: string | null; documentType: string; language: string }): string {
   const lang = invoice.language === "sk" || invoice.language === "en" ? invoice.language : "cs";
   const prefix = FILE_PREFIX[lang][invoice.documentType as keyof (typeof FILE_PREFIX)["cs"]] ?? FILE_PREFIX[lang].invoice;
