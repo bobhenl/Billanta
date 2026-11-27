@@ -107,6 +107,9 @@ export async function resolveOgCard(locale: string, path: string[]): Promise<OgC
     if (!x || !isPublishedIn(x, l)) return null;
     return { title: t('paymentReminders.items.' + x.key + '.title'), subtitle: t('paymentReminders.items.' + x.key + '.description'), section: s.reminders };
   }
+  if (first === 'security' && second === 'confidential') {
+    return { title: t('securityPage.title'), subtitle: t('securityPage.lead'), section: t('securityPage.eyebrow') };
+  }
   if (first === 'legal' && LEGAL[second]) {
     return { title: t(`${LEGAL[second]}.title`), section: s.legal };
   }

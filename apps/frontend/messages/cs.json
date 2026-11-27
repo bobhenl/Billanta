@@ -14873,7 +14873,6 @@
       "lead": "Při každém sestavení aplikace se spočítají otisky SHA-256 šifrovacího kódu a souborů, které ho obsahují.",
       "sourceHash": "Zdrojový soubor {path}",
       "repo": "Veřejný zdrojový kód",
-      "repoPlanned": "Plánujeme ho zveřejnit v samostatném repozitáři na GitHubu.",
       "chunks": "Soubory, které prohlížeč načítá",
       "check": "Zkontrolovat v tomto prohlížeči",
       "match": "Shoduje se",
@@ -14881,7 +14880,8 @@
       "error": "Soubor se nepodařilo stáhnout",
       "loadedHere": "načteno na této stránce",
       "missing": "Manifest zatím není k dispozici. Vzniká při produkčním sestavení.",
-      "honest": "Manifest i soubory posílá stejný server, takže shoda jen potvrzuje, že manifest popisuje to, co se právě posílá. Skutečné ověření je porovnat otisky se sestavením ze zveřejněného zdrojového kódu."
+      "honest": "Manifest i soubory posílá stejný server, takže shoda jen potvrzuje, že manifest popisuje to, co se právě posílá. Skutečné ověření je porovnat otisky se sestavením ze zveřejněného zdrojového kódu.",
+      "download": "Stáhnout zdrojový soubor (confidential.ts)"
     },
     "demo": {
       "label": "Napište libovolnou větu",
@@ -15012,7 +15012,7 @@
     "verifyTitle": "Ověření kódu",
     "verifyLead": "Při každém sestavení zapíšeme otisky SHA-256 šifrovacího kódu do veřejného souboru. Váš prohlížeč je může přepočítat přímo tady.",
     "planned": [
-      "Šifrovací kód (jeden soubor bez závislostí) zveřejníme v samostatném repozitáři na GitHubu, aby šlo otisky porovnat s vlastním sestavením."
+      "Kopii šifrovacího kódu zveřejníme i v samostatném repozitáři na GitHubu. Jeho historie pak bude veřejná i mimo náš server."
     ]
   },
   "stepUp": {

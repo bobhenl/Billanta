@@ -6,6 +6,8 @@ import { useTranslations } from 'next-intl';
 import { buttonClass } from '@/lib/ui-classes';
 
 export const VAULT_MANIFEST_PATH = '/.well-known/billanta-vault.json';
+/** The crypto source as built, copied next to the manifest by scripts/vault-manifest.mjs. */
+const VAULT_SOURCE_PATH = '/.well-known/billanta-vault-source.txt';
 
 interface Manifest {
   source: { repo: string | null; path: string; sha256: string };
@@ -53,6 +55,11 @@ export function VaultIntegrity() {
     setBusy(true);
     setLoaded(loadedHere());
     const next: Record<string, Outcome> = {};
+    try {
+      next[VAULT_SOURCE_PATH] = (await sha256(VAULT_SOURCE_PATH)) === manifest.source.sha256 ? 'match' : 'mismatch';
+    } catch {
+      next[VAULT_SOURCE_PATH] = 'error';
+    }
     for (const chunk of manifest.chunks) {
       try {
         next[chunk.path] = (await sha256(chunk.path)) === chunk.sha256 ? 'match' : 'mismatch';
@@ -79,18 +86,27 @@ export function VaultIntegrity() {
             <div>
               <dt className="font-semibold">{t('sourceHash', { path: manifest.source.path })}</dt>
               <dd className="break-all font-mono text-muted-foreground">{manifest.source.sha256}</dd>
+              {checks[VAULT_SOURCE_PATH] && (
+                <dd className={checks[VAULT_SOURCE_PATH] === 'match' ? 'mt-1 flex items-center gap-1 font-semibold text-success' : 'mt-1 flex items-center gap-1 font-semibold text-destructive'}>
+                  {checks[VAULT_SOURCE_PATH] === 'match' ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : <X className="h-3.5 w-3.5" aria-hidden="true" />}
+                  {t(checks[VAULT_SOURCE_PATH])}
+                </dd>
+              )}
             </div>
             <div>
               <dt className="font-semibold">{t('repo')}</dt>
               <dd className="text-muted-foreground">
-                {manifest.source.repo ? (
+                <a href={VAULT_SOURCE_PATH} download="confidential.ts" className="underline underline-offset-2">
+                  {t('download')}
+                </a>
+              </dd>
+              {manifest.source.repo && (
+                <dd className="text-muted-foreground">
                   <a href={manifest.source.repo} rel="noopener" target="_blank" className="break-all underline underline-offset-2">
                     {manifest.source.repo}
                   </a>
-                ) : (
-                  t('repoPlanned')
-                )}
-              </dd>
+                </dd>
+              )}
             </div>
             <div>
               <dt className="font-semibold">{t('chunks')}</dt>

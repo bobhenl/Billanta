@@ -14873,7 +14873,6 @@
       "lead": "Every build of the app records the SHA-256 hashes of the encryption code and of the files that contain it.",
       "sourceHash": "Source file {path}",
       "repo": "Public source code",
-      "repoPlanned": "We plan to publish it in its own GitHub repository.",
       "chunks": "Files your browser loads",
       "check": "Check in this browser",
       "match": "Matches",
@@ -14881,7 +14880,8 @@
       "error": "Could not download the file",
       "loadedHere": "loaded on this page",
       "missing": "The manifest is not available yet. It is made by the production build.",
-      "honest": "The same server sends the manifest and the files, so a match only shows that the manifest describes what is being served. The real check is to compare the hashes with a build of the published source."
+      "honest": "The same server sends the manifest and the files, so a match only shows that the manifest describes what is being served. The real check is to compare the hashes with a build of the published source.",
+      "download": "Download the source file (confidential.ts)"
     },
     "demo": {
       "label": "Type any sentence",
@@ -15012,7 +15012,7 @@
     "verifyTitle": "Code check",
     "verifyLead": "Every build writes the SHA-256 hashes of the encryption code into a public file. Your browser can recompute them right here.",
     "planned": [
-      "We will publish the encryption code (one file with no dependencies) in its own GitHub repository, so the hashes can be compared with your own build."
+      "We will also publish a copy of the encryption code in its own GitHub repository, so its history is public outside our server too."
     ]
   },
   "stepUp": {

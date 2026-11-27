@@ -14861,7 +14861,6 @@
       "lead": "Bij elke build van de app worden de SHA-256-hashes vastgelegd van de versleutelingscode en van de bestanden die hem bevatten.",
       "sourceHash": "Bronbestand {path}",
       "repo": "Openbare broncode",
-      "repoPlanned": "We zijn van plan hem te publiceren in een eigen GitHub-repository.",
       "chunks": "Bestanden die je browser laadt",
       "check": "Controleren in deze browser",
       "match": "Komt overeen",
@@ -14869,7 +14868,8 @@
       "error": "Bestand kon niet worden gedownload",
       "loadedHere": "geladen op deze pagina",
       "missing": "Het manifest is nog niet beschikbaar. Het wordt gemaakt door de productiebuild.",
-      "honest": "Dezelfde server stuurt het manifest en de bestanden, dus een overeenkomst laat alleen zien dat het manifest beschrijft wat er geleverd wordt. De echte controle is de hashes vergelijken met een build van de gepubliceerde broncode."
+      "honest": "Dezelfde server stuurt het manifest en de bestanden, dus een overeenkomst laat alleen zien dat het manifest beschrijft wat er geleverd wordt. De echte controle is de hashes vergelijken met een build van de gepubliceerde broncode.",
+      "download": "Bronbestand downloaden (confidential.ts)"
     },
     "demo": {
       "label": "Typ een willekeurige zin",
@@ -15000,7 +15000,7 @@
     "verifyTitle": "Codecontrole",
     "verifyLead": "Bij elke build schrijven we de SHA-256-hashes van de versleutelingscode in een openbaar bestand. Je browser kan ze hier opnieuw berekenen.",
     "planned": [
-      "We publiceren de versleutelingscode (één bestand zonder afhankelijkheden) in een eigen GitHub-repository, zodat de hashes met een eigen build te vergelijken zijn."
+      "We publiceren een kopie van de versleutelingscode ook in een eigen GitHub-repository, zodat de geschiedenis ervan ook buiten onze server openbaar is."
     ]
   },
   "stepUp": {

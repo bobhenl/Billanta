@@ -14861,7 +14861,6 @@
       "lead": "Ogni build dell'app registra gli hash SHA-256 del codice di cifratura e dei file che lo contengono.",
       "sourceHash": "File sorgente {path}",
       "repo": "Codice sorgente pubblico",
-      "repoPlanned": "Prevediamo di pubblicarlo in un repository GitHub dedicato.",
       "chunks": "File caricati dal browser",
       "check": "Verifica in questo browser",
       "match": "Corrisponde",
@@ -14869,7 +14868,8 @@
       "error": "Impossibile scaricare il file",
       "loadedHere": "caricato in questa pagina",
       "missing": "Il manifest non è ancora disponibile. Viene creato dal build di produzione.",
-      "honest": "Lo stesso server invia manifest e file, quindi una corrispondenza mostra solo che il manifest descrive ciò che viene servito. La vera verifica è confrontare gli hash con un build del codice pubblicato."
+      "honest": "Lo stesso server invia manifest e file, quindi una corrispondenza mostra solo che il manifest descrive ciò che viene servito. La vera verifica è confrontare gli hash con un build del codice pubblicato.",
+      "download": "Scarica il file sorgente (confidential.ts)"
     },
     "demo": {
       "label": "Scrivi una frase qualsiasi",
@@ -15000,7 +15000,7 @@
     "verifyTitle": "Verifica del codice",
     "verifyLead": "A ogni build scriviamo gli hash SHA-256 del codice di cifratura in un file pubblico. Il tuo browser può ricalcolarli proprio qui.",
     "planned": [
-      "Pubblicheremo il codice di cifratura (un solo file senza dipendenze) in un repository GitHub dedicato, per confrontare gli hash con un tuo build."
+      "Pubblicheremo una copia del codice di cifratura anche in un repository GitHub separato, così la sua cronologia sarà pubblica anche fuori dal nostro server."
     ]
   },
   "stepUp": {

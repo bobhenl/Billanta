@@ -109,7 +109,10 @@ function ogSegments(url: string): { locale: string; path: string[] } {
 export async function GET(req: Request) {
   const { locale, path } = ogSegments(req.url);
   const card: Card | null =
-    path[0] === 'p' && path.length === 2 ? await resolveProfileCard(locale, path[1]!) : await resolveOgCard(locale, path);
+    path[0] === 'p' && path.length === 2
+      ? await resolveProfileCard(locale, path[1]!)
+      : // A public page without its own card still gets the home page card, never a broken preview.
+        ((await resolveOgCard(locale, path)) ?? (path.length <= 3 && path.every((p) => /^[a-z0-9-]+$/.test(p)) ? await resolveOgCard(locale, []) : null));
   if (!card) return new Response('Not found', { status: 404 });
   const [regular, bold] = await loadFonts();
   const title = clip(card.title, 90);

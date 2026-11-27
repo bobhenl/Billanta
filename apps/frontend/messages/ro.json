@@ -14861,7 +14861,6 @@
       "lead": "La fiecare build al aplicației se înregistrează amprentele SHA-256 ale codului de criptare și ale fișierelor care îl conțin.",
       "sourceHash": "Fișier sursă {path}",
       "repo": "Cod sursă public",
-      "repoPlanned": "Plănuim să îl publicăm într-un depozit GitHub separat.",
       "chunks": "Fișierele încărcate de browser",
       "check": "Verifică în acest browser",
       "match": "Corespunde",
@@ -14869,7 +14868,8 @@
       "error": "Fișierul nu a putut fi descărcat",
       "loadedHere": "încărcat pe această pagină",
       "missing": "Manifestul nu este încă disponibil. Se creează la buildul de producție.",
-      "honest": "Manifestul și fișierele vin de la același server, deci o potrivire arată doar că manifestul descrie ce se servește. Verificarea reală este compararea amprentelor cu un build din sursa publicată."
+      "honest": "Manifestul și fișierele vin de la același server, deci o potrivire arată doar că manifestul descrie ce se servește. Verificarea reală este compararea amprentelor cu un build din sursa publicată.",
+      "download": "Descărcați fișierul sursă (confidential.ts)"
     },
     "demo": {
       "label": "Scrieți orice propoziție",
@@ -15000,7 +15000,7 @@
     "verifyTitle": "Verificarea codului",
     "verifyLead": "La fiecare build scriem amprentele SHA-256 ale codului de criptare într-un fișier public. Browserul dvs. le poate recalcula chiar aici.",
     "planned": [
-      "Vom publica codul de criptare (un singur fișier fără dependențe) într-un depozit GitHub separat, ca amprentele să poată fi comparate cu propriul build."
+      "Vom publica o copie a codului de criptare și într-un depozit separat pe GitHub, astfel încât istoricul lui să fie public și în afara serverului nostru."
     ]
   },
   "stepUp": {

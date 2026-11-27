@@ -14861,7 +14861,6 @@
       "lead": "Cada build de la aplicación registra los hashes SHA-256 del código de cifrado y de los archivos que lo contienen.",
       "sourceHash": "Archivo fuente {path}",
       "repo": "Código fuente público",
-      "repoPlanned": "Tenemos previsto publicarlo en un repositorio propio de GitHub.",
       "chunks": "Archivos que carga tu navegador",
       "check": "Comprobar en este navegador",
       "match": "Coincide",
@@ -14869,7 +14868,8 @@
       "error": "No se pudo descargar el archivo",
       "loadedHere": "cargado en esta página",
       "missing": "El manifiesto aún no está disponible. Lo crea el build de producción.",
-      "honest": "El mismo servidor envía el manifiesto y los archivos, así que una coincidencia solo muestra que el manifiesto describe lo que se sirve. La comprobación real es comparar los hashes con un build del código publicado."
+      "honest": "El mismo servidor envía el manifiesto y los archivos, así que una coincidencia solo muestra que el manifiesto describe lo que se sirve. La comprobación real es comparar los hashes con un build del código publicado.",
+      "download": "Descargar el archivo fuente (confidential.ts)"
     },
     "demo": {
       "label": "Escribe cualquier frase",
@@ -15000,7 +15000,7 @@
     "verifyTitle": "Comprobación del código",
     "verifyLead": "En cada build escribimos los hashes SHA-256 del código de cifrado en un archivo público. Tu navegador puede recalcularlos aquí mismo.",
     "planned": [
-      "Publicaremos el código de cifrado (un solo archivo sin dependencias) en un repositorio propio de GitHub, para comparar los hashes con tu propio build."
+      "También publicaremos una copia del código de cifrado en un repositorio propio en GitHub, para que su historial sea público fuera de nuestro servidor."
     ]
   },
   "stepUp": {

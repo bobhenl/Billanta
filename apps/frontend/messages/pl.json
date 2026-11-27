@@ -14862,7 +14862,6 @@
       "lead": "Przy każdym buildzie aplikacji zapisujemy skróty SHA-256 kodu szyfrującego i plików, które go zawierają.",
       "sourceHash": "Plik źródłowy {path}",
       "repo": "Publiczny kod źródłowy",
-      "repoPlanned": "Planujemy opublikować go w osobnym repozytorium na GitHubie.",
       "chunks": "Pliki, które ładuje przeglądarka",
       "check": "Sprawdź w tej przeglądarce",
       "match": "Zgadza się",
@@ -14870,7 +14869,8 @@
       "error": "Nie udało się pobrać pliku",
       "loadedHere": "załadowany na tej stronie",
       "missing": "Manifest nie jest jeszcze dostępny. Powstaje przy buildzie produkcyjnym.",
-      "honest": "Manifest i pliki wysyła ten sam serwer, więc zgodność pokazuje tylko, że manifest opisuje to, co jest wysyłane. Prawdziwa weryfikacja to porównanie skrótów z buildem z opublikowanego kodu."
+      "honest": "Manifest i pliki wysyła ten sam serwer, więc zgodność pokazuje tylko, że manifest opisuje to, co jest wysyłane. Prawdziwa weryfikacja to porównanie skrótów z buildem z opublikowanego kodu.",
+      "download": "Pobierz plik źródłowy (confidential.ts)"
     },
     "demo": {
       "label": "Wpisz dowolne zdanie",
@@ -15001,7 +15001,7 @@
     "verifyTitle": "Weryfikacja kodu",
     "verifyLead": "Przy każdym buildzie zapisujemy skróty SHA-256 kodu szyfrującego w publicznym pliku. Twoja przeglądarka może je przeliczyć tutaj.",
     "planned": [
-      "Kod szyfrujący (jeden plik bez zależności) opublikujemy w osobnym repozytorium na GitHubie, żeby dało się porównać skróty z własnym buildem."
+      "Kopię kodu szyfrującego opublikujemy też w osobnym repozytorium na GitHubie. Jego historia będzie wtedy publiczna także poza naszym serwerem."
     ]
   },
   "stepUp": {

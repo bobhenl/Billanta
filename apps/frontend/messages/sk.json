@@ -14777,7 +14777,6 @@
       "lead": "Pri každom zostavení aplikácie sa vypočítajú odtlačky SHA-256 šifrovacieho kódu a súborov, ktoré ho obsahujú.",
       "sourceHash": "Zdrojový súbor {path}",
       "repo": "Verejný zdrojový kód",
-      "repoPlanned": "Plánujeme ho zverejniť v samostatnom repozitári na GitHube.",
       "chunks": "Súbory, ktoré prehliadač načítava",
       "check": "Skontrolovať v tomto prehliadači",
       "match": "Zhoduje sa",
@@ -14785,7 +14784,8 @@
       "error": "Súbor sa nepodarilo stiahnuť",
       "loadedHere": "načítané na tejto stránke",
       "missing": "Manifest zatiaľ nie je k dispozícii. Vzniká pri produkčnom zostavení.",
-      "honest": "Manifest aj súbory posiela ten istý server, takže zhoda len potvrdzuje, že manifest opisuje to, čo sa práve posiela. Skutočné overenie je porovnať odtlačky so zostavením zo zverejneného zdrojového kódu."
+      "honest": "Manifest aj súbory posiela ten istý server, takže zhoda len potvrdzuje, že manifest opisuje to, čo sa práve posiela. Skutočné overenie je porovnať odtlačky so zostavením zo zverejneného zdrojového kódu.",
+      "download": "Stiahnuť zdrojový súbor (confidential.ts)"
     },
     "demo": {
       "label": "Napíšte ľubovoľnú vetu",
@@ -14916,7 +14916,7 @@
     "verifyTitle": "Overenie kódu",
     "verifyLead": "Pri každom zostavení zapíšeme odtlačky SHA-256 šifrovacieho kódu do verejného súboru. Váš prehliadač ich môže prepočítať priamo tu.",
     "planned": [
-      "Šifrovací kód (jeden súbor bez závislostí) zverejníme v samostatnom repozitári na GitHube, aby sa dali odtlačky porovnať s vlastným zostavením."
+      "Kópiu šifrovacieho kódu zverejníme aj v samostatnom repozitári na GitHube. Jeho história potom bude verejná aj mimo nášho servera."
     ]
   },
   "stepUp": {

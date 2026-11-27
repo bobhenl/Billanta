@@ -6,7 +6,7 @@
 //
 // `repo` comes from lib/vault/source.json and stays null until the crypto
 // folder is published as its own public repository.
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildManifest, markedFiles, VAULT_MARKER } from '../../../packages/cz-compliance/src/vault/manifest.mjs';
@@ -22,8 +22,9 @@ if (chunks.length === 0) {
   process.exit(1);
 }
 
+const sourceFile = join(app, '../..', source.path, source.file);
 const manifest = buildManifest({
-  sourceFile: join(app, '../..', source.path, source.file),
+  sourceFile,
   sourcePath: `${source.path}/${source.file}`,
   repo: source.repo,
   build: process.env.NEXT_PUBLIC_BUILD_STAMP,
@@ -33,4 +34,8 @@ const manifest = buildManifest({
 const out = join(app, 'public/.well-known/billanta-vault.json');
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, `${JSON.stringify(manifest, null, 2)}\n`);
+// The source itself, byte for byte, so its hash can be checked against the
+// manifest without waiting for a separate repository. .txt, because a .ts
+// file would be served as a video stream.
+copyFileSync(sourceFile, join(app, 'public/.well-known/billanta-vault-source.txt'));
 console.log(`vault-manifest: ${chunks.length} chunk(s) → ${relative(app, out)}`);

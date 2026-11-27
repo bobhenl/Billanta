@@ -14861,7 +14861,6 @@
       "lead": "Chaque build de l'application enregistre les empreintes SHA-256 du code de chiffrement et des fichiers qui le contiennent.",
       "sourceHash": "Fichier source {path}",
       "repo": "Code source public",
-      "repoPlanned": "Nous prévoyons de le publier dans un dépôt GitHub dédié.",
       "chunks": "Fichiers chargés par votre navigateur",
       "check": "Vérifier dans ce navigateur",
       "match": "Correspond",
@@ -14869,7 +14868,8 @@
       "error": "Impossible de télécharger le fichier",
       "loadedHere": "chargé sur cette page",
       "missing": "Le manifeste n'est pas encore disponible. Il est créé par le build de production.",
-      "honest": "Le même serveur envoie le manifeste et les fichiers, donc une correspondance montre seulement que le manifeste décrit ce qui est servi. La vraie vérification consiste à comparer les empreintes avec un build du code source publié."
+      "honest": "Le même serveur envoie le manifeste et les fichiers, donc une correspondance montre seulement que le manifeste décrit ce qui est servi. La vraie vérification consiste à comparer les empreintes avec un build du code source publié.",
+      "download": "Télécharger le fichier source (confidential.ts)"
     },
     "demo": {
       "label": "Tapez une phrase quelconque",
@@ -15000,7 +15000,7 @@
     "verifyTitle": "Vérification du code",
     "verifyLead": "À chaque build, nous écrivons les empreintes SHA-256 du code de chiffrement dans un fichier public. Votre navigateur peut les recalculer ici même.",
     "planned": [
-      "Nous publierons le code de chiffrement (un seul fichier sans dépendances) dans un dépôt GitHub dédié, pour comparer les empreintes avec votre propre build."
+      "Nous publierons aussi une copie du code de chiffrement dans un dépôt GitHub à part, pour que son historique soit public hors de notre serveur."
     ]
   },
   "stepUp": {

@@ -14861,7 +14861,6 @@
       "lead": "Cada build da aplicação regista os hashes SHA-256 do código de cifragem e dos ficheiros que o contêm.",
       "sourceHash": "Ficheiro fonte {path}",
       "repo": "Código-fonte público",
-      "repoPlanned": "Planeamos publicá-lo num repositório próprio no GitHub.",
       "chunks": "Ficheiros que o navegador carrega",
       "check": "Verificar neste navegador",
       "match": "Coincide",
@@ -14869,7 +14868,8 @@
       "error": "Não foi possível descarregar o ficheiro",
       "loadedHere": "carregado nesta página",
       "missing": "O manifesto ainda não está disponível. É criado pelo build de produção.",
-      "honest": "O mesmo servidor envia o manifesto e os ficheiros, por isso uma coincidência só mostra que o manifesto descreve o que é servido. A verificação real é comparar os hashes com um build do código publicado."
+      "honest": "O mesmo servidor envia o manifesto e os ficheiros, por isso uma coincidência só mostra que o manifesto descreve o que é servido. A verificação real é comparar os hashes com um build do código publicado.",
+      "download": "Transferir o ficheiro de origem (confidential.ts)"
     },
     "demo": {
       "label": "Escreva uma frase qualquer",
@@ -15000,7 +15000,7 @@
     "verifyTitle": "Verificação do código",
     "verifyLead": "Em cada build escrevemos os hashes SHA-256 do código de cifragem num ficheiro público. O seu navegador pode recalculá-los aqui mesmo.",
     "planned": [
-      "Vamos publicar o código de cifragem (um único ficheiro sem dependências) num repositório próprio no GitHub, para comparar os hashes com um build seu."
+      "Também vamos publicar uma cópia do código de encriptação num repositório próprio no GitHub, para que o seu histórico seja público fora do nosso servidor."
     ]
   },
   "stepUp": {

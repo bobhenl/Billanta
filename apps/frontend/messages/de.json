@@ -14862,7 +14862,6 @@
       "lead": "Bei jedem Build der App werden die SHA-256-Hashes des Verschlüsselungscodes und der Dateien, die ihn enthalten, festgehalten.",
       "sourceHash": "Quelldatei {path}",
       "repo": "Öffentlicher Quellcode",
-      "repoPlanned": "Wir planen, ihn in einem eigenen GitHub-Repository zu veröffentlichen.",
       "chunks": "Dateien, die Ihr Browser lädt",
       "check": "In diesem Browser prüfen",
       "match": "Stimmt überein",
@@ -14870,7 +14869,8 @@
       "error": "Datei konnte nicht geladen werden",
       "loadedHere": "auf dieser Seite geladen",
       "missing": "Das Manifest ist noch nicht verfügbar. Es entsteht beim Produktions-Build.",
-      "honest": "Manifest und Dateien kommen vom selben Server, ein Treffer zeigt also nur, dass das Manifest beschreibt, was ausgeliefert wird. Die echte Prüfung ist der Vergleich der Hashes mit einem Build aus dem veröffentlichten Quellcode."
+      "honest": "Manifest und Dateien kommen vom selben Server, ein Treffer zeigt also nur, dass das Manifest beschreibt, was ausgeliefert wird. Die echte Prüfung ist der Vergleich der Hashes mit einem Build aus dem veröffentlichten Quellcode.",
+      "download": "Quelldatei herunterladen (confidential.ts)"
     },
     "demo": {
       "label": "Schreiben Sie einen beliebigen Satz",
@@ -15001,7 +15001,7 @@
     "verifyTitle": "Code-Prüfung",
     "verifyLead": "Bei jedem Build schreiben wir die SHA-256-Hashes des Verschlüsselungscodes in eine öffentliche Datei. Ihr Browser kann sie hier nachrechnen.",
     "planned": [
-      "Den Verschlüsselungscode (eine Datei ohne Abhängigkeiten) veröffentlichen wir in einem eigenen GitHub-Repository, damit sich die Hashes mit einem eigenen Build vergleichen lassen."
+      "Eine Kopie des Verschlüsselungscodes veröffentlichen wir auch in einem eigenen GitHub-Repository. So ist seine Historie auch außerhalb unseres Servers öffentlich."
     ]
   },
   "stepUp": {

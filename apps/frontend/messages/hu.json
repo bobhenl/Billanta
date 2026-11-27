@@ -14861,7 +14861,6 @@
       "lead": "Az alkalmazás minden buildjénél rögzítjük a titkosító kód és az azt tartalmazó fájlok SHA-256 lenyomatát.",
       "sourceHash": "Forrásfájl: {path}",
       "repo": "Nyilvános forráskód",
-      "repoPlanned": "Tervezzük, hogy külön GitHub-tárolóban tesszük közzé.",
       "chunks": "A böngésző által betöltött fájlok",
       "check": "Ellenőrzés ebben a böngészőben",
       "match": "Egyezik",
@@ -14869,7 +14868,8 @@
       "error": "A fájlt nem sikerült letölteni",
       "loadedHere": "ezen az oldalon betöltve",
       "missing": "A manifest még nem érhető el. Az éles build során készül.",
-      "honest": "A manifestet és a fájlokat ugyanaz a szerver küldi, így az egyezés csak azt mutatja, hogy a manifest azt írja le, amit kiszolgálnak. Az igazi ellenőrzés a lenyomatok összevetése a közzétett forrásból készült builddel."
+      "honest": "A manifestet és a fájlokat ugyanaz a szerver küldi, így az egyezés csak azt mutatja, hogy a manifest azt írja le, amit kiszolgálnak. Az igazi ellenőrzés a lenyomatok összevetése a közzétett forrásból készült builddel.",
+      "download": "Forrásfájl letöltése (confidential.ts)"
     },
     "demo": {
       "label": "Írjon be egy tetszőleges mondatot",
@@ -15000,7 +15000,7 @@
     "verifyTitle": "Kódellenőrzés",
     "verifyLead": "Minden buildnél egy nyilvános fájlba írjuk a titkosító kód SHA-256 lenyomatait. A böngészője itt újraszámolhatja őket.",
     "planned": [
-      "A titkosító kódot (egyetlen, függőségek nélküli fájl) külön GitHub-tárolóban tesszük közzé, hogy a lenyomatok saját builddel összevethetők legyenek."
+      "A titkosító kód egy példányát külön GitHub-tárolóban is közzétesszük, így a története a szerverünkön kívül is nyilvános lesz."
     ]
   },
   "stepUp": {
