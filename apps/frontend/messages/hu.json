@@ -7442,7 +7442,8 @@
         "vault_seal_new_off": "kikapcsolta az új bizonylatok titkosítását",
         "vault_recovery_replaced": "lecserélte a széf helyreállítási kódját",
         "vault_enabled": "bekapcsolta a bizalmas módot",
-        "vault_categories_changed": "módosította a bizalmas mód kategóriáit"
+        "vault_categories_changed": "módosította a bizalmas mód kategóriáit",
+        "vault_passkey_added": "hozzáadott egy hozzáférési kulcsot, amely megerősíti az érzékeny módosításokat"
       },
       "bank_account": {
         "created": "hozzáadta a bankszámlát",
@@ -14560,7 +14561,9 @@
       "categoriesTitle": "Mi titkosítódik",
       "categoriesLead": "Kategóriát később is hozzáadhat. A kikapcsolás csak az új adatok titkosítását állítja le, a titkosítottak titkosítva maradnak.",
       "categoriesMin": "Legalább egy kategória maradjon bekapcsolva.",
-      "categoryOffConfirm": "Kikapcsolja ezt a kategóriát? Az új fájlok és szövegek már nem lesznek titkosítva. Ami titkosított, az titkosított marad."
+      "categoryOffConfirm": "Kikapcsolja ezt a kategóriát? Az új fájlok és szövegek már nem lesznek titkosítva. Ami titkosított, az titkosított marad.",
+      "passkeyStepUp": "Feloldja a széfet és megerősíti az érzékeny módosításokat",
+      "passkeyUnlockOnly": "Csak a széfet oldja fel. Hogy az érzékeny módosításokat is megerősítse, adja hozzá újra, és távolítsa el ezt."
     },
     "clientLink": {
       "ready": "A link tartalmazza a titkosított szövegek kulcsát (a # után). Ügyfele ezzel a teljes szöveget látja, a szerver soha nem kapja meg a kulcsot.",
@@ -14848,7 +14851,9 @@
       "wrong_current": "A jelszó nem egyezik.",
       "reauth_required": "Jelentkezzen be újra, és ismételje meg a módosítást.",
       "too_many_attempts": "Túl sok próbálkozás. Próbálja újra néhány perc múlva.",
-      "generic": "A megerősítés nem sikerült."
-    }
+      "generic": "A megerősítés nem sikerült.",
+      "passkey_failed": "A hozzáférési kulcsot nem sikerült ellenőrizni. Próbálja újra, vagy adja meg a kódot vagy a jelszót."
+    },
+    "usePasskey": "Megerősítés hozzáférési kulccsal"
   }
 }

@@ -7450,7 +7450,8 @@
         "vault_seal_new_off": "turned off encryption of new documents",
         "vault_recovery_replaced": "replaced the vault recovery code",
         "vault_enabled": "turned on Confidential mode",
-        "vault_categories_changed": "changed the Confidential mode categories"
+        "vault_categories_changed": "changed the Confidential mode categories",
+        "vault_passkey_added": "added a passkey that confirms sensitive changes"
       },
       "bank_account": {
         "created": "added the bank account",
@@ -14565,7 +14566,9 @@
       "categoriesTitle": "What is encrypted",
       "categoriesLead": "You can add a category later. Turning one off only stops encrypting new data; what is encrypted stays encrypted.",
       "categoriesMin": "Keep at least one category on.",
-      "categoryOffConfirm": "Turn this category off? New files and texts will no longer be encrypted. Anything already encrypted stays encrypted."
+      "categoryOffConfirm": "Turn this category off? New files and texts will no longer be encrypted. Anything already encrypted stays encrypted.",
+      "passkeyStepUp": "Unlocks the vault and confirms sensitive changes",
+      "passkeyUnlockOnly": "Only unlocks the vault. To let it confirm sensitive changes too, add it again and remove this one."
     },
     "plan": {
       "title": "Confidential mode is part of the Plus and Business plans",
@@ -14860,7 +14863,9 @@
       "wrong_current": "The password does not match.",
       "reauth_required": "Please sign in again and repeat the change.",
       "too_many_attempts": "Too many attempts. Try again in a few minutes.",
-      "generic": "The confirmation failed."
-    }
+      "generic": "The confirmation failed.",
+      "passkey_failed": "The passkey could not be verified. Try again, or enter your code or password."
+    },
+    "usePasskey": "Confirm with a passkey"
   }
 }

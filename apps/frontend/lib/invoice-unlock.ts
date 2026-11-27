@@ -26,8 +26,8 @@ function key(): Uint8Array {
 }
 
 /** How the person proved themselves: what the backend's step-up accepts. */
-export type StepUpMethod = 'totp' | 'recovery' | 'password' | 'recent_sign_in';
-const METHODS: readonly StepUpMethod[] = ['totp', 'recovery', 'password', 'recent_sign_in'];
+export type StepUpMethod = 'totp' | 'recovery' | 'password' | 'recent_sign_in' | 'passkey';
+const METHODS: readonly StepUpMethod[] = ['totp', 'recovery', 'password', 'recent_sign_in', 'passkey'];
 
 export interface Reauth {
   /** Re-authenticated within the last UNLOCK_MINUTES: locked invoices open. */

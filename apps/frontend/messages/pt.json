@@ -7442,7 +7442,8 @@
         "vault_seal_new_off": "desativou a encriptação de documentos novos",
         "vault_recovery_replaced": "substituiu o código de recuperação do cofre",
         "vault_enabled": "ativou o modo confidencial",
-        "vault_categories_changed": "alterou as categorias do modo confidencial"
+        "vault_categories_changed": "alterou as categorias do modo confidencial",
+        "vault_passkey_added": "adicionou uma chave de acesso que confirma alterações sensíveis"
       },
       "bank_account": {
         "created": "adicionou a conta bancária",
@@ -14560,7 +14561,9 @@
       "categoriesTitle": "O que é cifrado",
       "categoriesLead": "Pode adicionar uma categoria mais tarde. Desligá-la só deixa de cifrar dados novos; o que está cifrado continua cifrado.",
       "categoriesMin": "Mantenha pelo menos uma categoria ligada.",
-      "categoryOffConfirm": "Desligar esta categoria? Os ficheiros e textos novos deixam de ser cifrados. O que já está cifrado continua cifrado."
+      "categoryOffConfirm": "Desligar esta categoria? Os ficheiros e textos novos deixam de ser cifrados. O que já está cifrado continua cifrado.",
+      "passkeyStepUp": "Desbloqueia o cofre e confirma alterações sensíveis",
+      "passkeyUnlockOnly": "Só desbloqueia o cofre. Para que também confirme alterações sensíveis, adicione-a de novo e remova esta."
     },
     "clientLink": {
       "ready": "O link leva a chave dos textos cifrados (depois do #). Com ela o seu cliente vê o texto completo; o servidor nunca recebe a chave.",
@@ -14848,7 +14851,9 @@
       "wrong_current": "A palavra-passe não coincide.",
       "reauth_required": "Inicie sessão novamente e repita a alteração.",
       "too_many_attempts": "Demasiadas tentativas. Tente dentro de alguns minutos.",
-      "generic": "A confirmação falhou."
-    }
+      "generic": "A confirmação falhou.",
+      "passkey_failed": "Não foi possível verificar a chave de acesso. Tente de novo ou introduza o código ou a palavra-passe."
+    },
+    "usePasskey": "Confirmar com chave de acesso"
   }
 }

@@ -24,6 +24,7 @@ import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import {
   EnableVaultDto,
   MemberWrapDto,
+  PasskeyStepUpDto,
   PlainAttachmentsQueryDto,
   PlainContactsQueryDto,
   PlainInvoicesQueryDto,
@@ -65,6 +66,18 @@ export class VaultController {
   @ApiOperation({ summary: "Remove one of the caller's own unlock methods" })
   removeWrap(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
     return this.vault.removeWrap(req.tenantDb!, req.user!.tenantId, req.user!, id);
+  }
+
+  @Post("me/passkey/challenge")
+  @ApiOperation({ summary: "A single-use challenge for confirming a sensitive change with a vault passkey" })
+  passkeyChallenge(@Req() req: TenantScopedRequest) {
+    return this.vault.passkeyChallenge(req.tenantDb!, req.user!.tenantId, req.user!);
+  }
+
+  @Post("me/passkey/step-up")
+  @ApiOperation({ summary: "Check a passkey assertion over that challenge (the frontend then records the step-up)" })
+  passkeyStepUp(@Req() req: TenantScopedRequest, @Body() dto: PasskeyStepUpDto) {
+    return this.vault.passkeyStepUp(req.tenantDb!, req.user!.tenantId, req.user!, dto);
   }
 
   @Post("enable")

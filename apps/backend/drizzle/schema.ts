@@ -1337,9 +1337,38 @@ export const vaultKeyWraps = pgTable("vault_key_wraps", {
   wrappedKey: text("wrapped_key").notNull(),
   /** Passkey wraps: the WebAuthn credential id (base64url) to ask the authenticator for. */
   credentialId: text("credential_id"),
+  /**
+   * Passkey wraps that can confirm a step-up: the credential's public key
+   * (SPKI DER, base64url), its COSE algorithm (-7 ES256, -257 RS256) and the
+   * last signature counter. Null on passkeys added before 0113: those only unlock.
+   */
+  publicKey: text("public_key"),
+  publicKeyAlg: integer("public_key_alg"),
+  signCount: bigint("sign_count", { mode: "number" }).notNull().default(0),
   label: text("label"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// ---------------------------------------------------------------------------
+// webauthn_challenges – tenant-scoped. One challenge per passkey step-up
+// attempt, tied to the member, short-lived and deleted when used, so an
+// assertion can't be replayed (src/vault/passkey-step-up.ts).
+// ---------------------------------------------------------------------------
+export const webauthnChallenges = pgTable(
+  "webauthn_challenges",
+  {
+    challenge: text("challenge").primaryKey(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({ userIdx: index("webauthn_challenges_user_idx").on(t.userId) }),
+);
 
 // ---------------------------------------------------------------------------
 // vault_email_queue – tenant-scoped. E-mails of an encrypted document that

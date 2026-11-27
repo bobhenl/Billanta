@@ -7443,7 +7443,8 @@
         "vault_seal_new_off": "hat die Verschlüsselung neuer Belege ausgeschaltet",
         "vault_recovery_replaced": "hat den Wiederherstellungscode des Tresors ersetzt",
         "vault_enabled": "hat den vertraulichen Modus eingeschaltet",
-        "vault_categories_changed": "hat die Kategorien des vertraulichen Modus geändert"
+        "vault_categories_changed": "hat die Kategorien des vertraulichen Modus geändert",
+        "vault_passkey_added": "hat einen Passkey hinzugefügt, der sensible Änderungen bestätigt"
       },
       "bank_account": {
         "created": "hat das Bankkonto hinzugefügt",
@@ -14561,7 +14562,9 @@
       "categoriesTitle": "Was verschlüsselt wird",
       "categoriesLead": "Eine Kategorie können Sie auch später hinzufügen. Ausschalten verschlüsselt nur neue Daten nicht mehr, Verschlüsseltes bleibt verschlüsselt.",
       "categoriesMin": "Lassen Sie mindestens eine Kategorie eingeschaltet.",
-      "categoryOffConfirm": "Diese Kategorie ausschalten? Neue Dateien und Texte werden nicht mehr verschlüsselt. Bereits Verschlüsseltes bleibt verschlüsselt."
+      "categoryOffConfirm": "Diese Kategorie ausschalten? Neue Dateien und Texte werden nicht mehr verschlüsselt. Bereits Verschlüsseltes bleibt verschlüsselt.",
+      "passkeyStepUp": "Entsperrt den Tresor und bestätigt sensible Änderungen",
+      "passkeyUnlockOnly": "Entsperrt nur den Tresor. Damit er auch sensible Änderungen bestätigt, fügen Sie ihn neu hinzu und entfernen Sie diesen."
     },
     "clientLink": {
       "ready": "Der Link enthält den Schlüssel zu den verschlüsselten Texten (nach dem #). Ihr Kunde sieht damit den vollen Wortlaut, der Server bekommt den Schlüssel nie.",
@@ -14849,7 +14852,9 @@
       "wrong_current": "Das Passwort stimmt nicht.",
       "reauth_required": "Bitte melden Sie sich erneut an und wiederholen Sie die Änderung.",
       "too_many_attempts": "Zu viele Versuche. Versuchen Sie es in ein paar Minuten erneut.",
-      "generic": "Die Bestätigung ist fehlgeschlagen."
-    }
+      "generic": "Die Bestätigung ist fehlgeschlagen.",
+      "passkey_failed": "Der Passkey konnte nicht geprüft werden. Versuchen Sie es erneut oder geben Sie Ihren Code oder Ihr Passwort ein."
+    },
+    "usePasskey": "Mit Passkey bestätigen"
   }
 }

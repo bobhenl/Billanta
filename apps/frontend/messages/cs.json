@@ -7450,7 +7450,8 @@
         "vault_seal_new_off": "vypnul(a) šifrování nových dokladů",
         "vault_recovery_replaced": "vyměnil(a) záchranný kód trezoru",
         "vault_enabled": "zapnul(a) důvěrný režim",
-        "vault_categories_changed": "změnil(a) kategorie důvěrného režimu"
+        "vault_categories_changed": "změnil(a) kategorie důvěrného režimu",
+        "vault_passkey_added": "přidal(a) passkey, který potvrzuje citlivé změny"
       },
       "bank_account": {
         "created": "přidal(a) bankovní účet",
@@ -14565,7 +14566,9 @@
       "categoriesTitle": "Co se šifruje",
       "categoriesLead": "Kategorii můžete přidat i později. Vypnutí jen přestane šifrovat nová data, zašifrovaná zůstanou zašifrovaná.",
       "categoriesMin": "Nechte zapnutou aspoň jednu kategorii.",
-      "categoryOffConfirm": "Vypnout tuto kategorii? Nové soubory a texty se už nebudou šifrovat. Co je zašifrované, zůstane zašifrované."
+      "categoryOffConfirm": "Vypnout tuto kategorii? Nové soubory a texty se už nebudou šifrovat. Co je zašifrované, zůstane zašifrované.",
+      "passkeyStepUp": "Odemyká trezor a potvrzuje citlivé změny",
+      "passkeyUnlockOnly": "Jen odemyká trezor. Aby potvrzoval i citlivé změny, přidejte ho znovu a tento odeberte."
     },
     "plan": {
       "title": "Důvěrný režim je v tarifech Plus a Firma",
@@ -14860,7 +14863,9 @@
       "wrong_current": "Heslo nesedí.",
       "reauth_required": "Přihlaste se prosím znovu a změnu zopakujte.",
       "too_many_attempts": "Příliš mnoho pokusů. Zkuste to za pár minut.",
-      "generic": "Ověření se nepodařilo."
-    }
+      "generic": "Ověření se nepodařilo.",
+      "passkey_failed": "Passkey se nepodařilo ověřit. Zkuste to znovu, nebo zadejte kód či heslo."
+    },
+    "usePasskey": "Potvrdit passkeyem"
   }
 }

@@ -7442,7 +7442,8 @@
         "vault_seal_new_off": "ha disattivato la cifratura dei nuovi documenti",
         "vault_recovery_replaced": "ha sostituito il codice di recupero della cassaforte",
         "vault_enabled": "ha attivato la modalità riservata",
-        "vault_categories_changed": "ha cambiato le categorie della modalità riservata"
+        "vault_categories_changed": "ha cambiato le categorie della modalità riservata",
+        "vault_passkey_added": "ha aggiunto una passkey che conferma le modifiche sensibili"
       },
       "bank_account": {
         "created": "ha aggiunto il conto bancario",
@@ -14560,7 +14561,9 @@
       "categoriesTitle": "Cosa viene cifrato",
       "categoriesLead": "Puoi aggiungere una categoria anche più tardi. Disattivarla smette solo di cifrare i dati nuovi; ciò che è cifrato resta cifrato.",
       "categoriesMin": "Lascia attiva almeno una categoria.",
-      "categoryOffConfirm": "Disattivare questa categoria? I nuovi file e testi non verranno più cifrati. Ciò che è già cifrato resta cifrato."
+      "categoryOffConfirm": "Disattivare questa categoria? I nuovi file e testi non verranno più cifrati. Ciò che è già cifrato resta cifrato.",
+      "passkeyStepUp": "Sblocca la cassaforte e conferma le modifiche sensibili",
+      "passkeyUnlockOnly": "Sblocca solo la cassaforte. Perché confermi anche le modifiche sensibili, aggiungila di nuovo e rimuovi questa."
     },
     "clientLink": {
       "ready": "Il link contiene la chiave dei testi cifrati (dopo il #). Con essa il cliente vede il testo completo, il server non riceve mai la chiave.",
@@ -14848,7 +14851,9 @@
       "wrong_current": "La password non corrisponde.",
       "reauth_required": "Acceda di nuovo e ripeta la modifica.",
       "too_many_attempts": "Troppi tentativi. Riprovi tra qualche minuto.",
-      "generic": "La conferma non è riuscita."
-    }
+      "generic": "La conferma non è riuscita.",
+      "passkey_failed": "Non è stato possibile verificare la passkey. Riprova oppure inserisci il codice o la password."
+    },
+    "usePasskey": "Conferma con passkey"
   }
 }

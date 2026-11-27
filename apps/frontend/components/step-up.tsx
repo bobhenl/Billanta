@@ -1,12 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Loader2, ShieldCheck } from 'lucide-react';
+import { Fingerprint, Loader2, ShieldCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Modal } from '@/components/modal';
 import { PasswordInput } from '@/components/password-input';
 import { Link } from '@/i18n/navigation';
-import { confirmStepUp, stepUpInfo } from '@/lib/step-up-actions';
+import { confirmPasskeyStepUp, confirmStepUp, passkeyStepUpChallenge, stepUpInfo } from '@/lib/step-up-actions';
+import { passkeyStepUpAssertion } from '@/lib/vault/passkey';
 import type { StepUpKind } from '@/lib/reauth';
 import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
@@ -51,6 +52,7 @@ export function useStepUp() {
 function StepUpDialog({ open, onDone }: { open: boolean; onDone: (ok: boolean) => void }) {
   const t = useTranslations('stepUp');
   const [kind, setKind] = useState<StepUpKind | null>(null);
+  const [passkey, setPasskey] = useState(false);
   const [secret, setSecret] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -59,8 +61,28 @@ function StepUpDialog({ open, onDone }: { open: boolean; onDone: (ok: boolean) =
     if (!open) return;
     setSecret('');
     setError(null);
-    void stepUpInfo().then((r) => setKind(r.ok ? r.data.kind : 'password'));
+    void stepUpInfo().then((r) => {
+      setKind(r.ok ? r.data.kind : 'password');
+      setPasskey(r.ok && r.data.passkey && typeof window !== 'undefined' && !!window.PublicKeyCredential);
+    });
   }, [open]);
+
+  async function confirmWithPasskey() {
+    setBusy(true);
+    setError(null);
+    try {
+      const challenge = await passkeyStepUpChallenge();
+      const assertion = challenge.ok ? await passkeyStepUpAssertion(challenge.data.challenge, challenge.data.credentialIds) : null;
+      const r = assertion ? await confirmPasskeyStepUp(assertion) : null;
+      if (r?.ok) return onDone(true);
+      setError(r && ERRORS.has(r.error) ? t(`errors.${r.error}`) : t('errors.passkey_failed'));
+    } catch {
+      // The person closed the browser's passkey prompt, or it timed out.
+      setError(t('errors.passkey_failed'));
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -102,6 +124,12 @@ function StepUpDialog({ open, onDone }: { open: boolean; onDone: (ok: boolean) =
             autoFocus
             className={inputClass}
           />
+        )}
+        {passkey && (
+          <button type="button" onClick={confirmWithPasskey} disabled={busy} className={cn(buttonClass.secondary, 'w-full justify-center')}>
+            <Fingerprint className="h-4 w-4" aria-hidden="true" />
+            {t('usePasskey')}
+          </button>
         )}
         {error && <p className="text-sm font-semibold text-destructive">{error}</p>}
         {kind && kind !== 'totp' && (

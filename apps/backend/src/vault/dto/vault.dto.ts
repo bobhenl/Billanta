@@ -28,10 +28,15 @@ const recoveryWrap = z.object({
   wrappedKey: b64(128),
 });
 
+const b64url = (max: number) => z.string().min(1).max(max).regex(/^[A-Za-z0-9_-]+$/, "base64url");
+
 const passkeyWrap = recoveryWrap.extend({
   kind: z.literal("passkey"),
-  credentialId: z.string().min(16).max(1024).regex(/^[A-Za-z0-9_-]+$/, "base64url"),
+  credentialId: b64url(1024).refine((s) => s.length >= 16, "base64url"),
   label: z.string().trim().max(60).nullish(),
+  /** With these two the passkey can also confirm a step-up (src/vault/passkey-step-up.ts). */
+  publicKey: b64url(2048).optional(),
+  publicKeyAlg: z.union([z.literal(-7), z.literal(-257)]).optional(),
 });
 
 export const enableVaultSchema = z.object({
@@ -48,6 +53,15 @@ export class EnableVaultDto extends createZodDto(enableVaultSchema) {}
 // Wrapped in an object: a DTO class cannot extend a bare union.
 export const memberWrapSchema = z.object({ wrap: z.discriminatedUnion("kind", [passwordWrap, passkeyWrap]) });
 export class MemberWrapDto extends createZodDto(memberWrapSchema) {}
+
+/** A WebAuthn assertion over a challenge from `POST me/passkey/challenge`. */
+export const passkeyStepUpSchema = z.object({
+  credentialId: b64url(1024),
+  clientDataJSON: b64url(4096),
+  authenticatorData: b64url(4096),
+  signature: b64url(1024),
+});
+export class PasskeyStepUpDto extends createZodDto(passkeyStepUpSchema) {}
 
 export const recoveryWrapSchema = z.object({ recovery: recoveryWrap });
 export class RecoveryWrapDto extends createZodDto(recoveryWrapSchema) {}

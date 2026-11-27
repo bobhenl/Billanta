@@ -32,7 +32,7 @@ export async function enableVault(input: { keyCheck: string; password: VaultWrap
   return result;
 }
 
-export async function addVaultWrap(wrap: VaultWrap & { credentialId?: string; label?: string | null }) {
+export async function addVaultWrap(wrap: VaultWrap & { credentialId?: string; label?: string | null; publicKey?: string; publicKeyAlg?: -7 | -257 }) {
   const result = await call<VaultStatus>('/api/v1/vault/me/wraps', json('POST', { wrap }));
   if (result.ok) revalidatePath('/', 'layout');
   return result;

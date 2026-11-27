@@ -2228,3 +2228,10 @@ DROP POLICY IF EXISTS tenant_isolation ON expense_attachments;
 CREATE POLICY tenant_isolation ON expense_attachments
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+-- Migration 0113: single-use WebAuthn challenges for a passkey step-up.
+ALTER TABLE webauthn_challenges ENABLE ROW LEVEL SECURITY;
+ALTER TABLE webauthn_challenges FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON webauthn_challenges;
+CREATE POLICY tenant_isolation ON webauthn_challenges
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);

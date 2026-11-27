@@ -7442,7 +7442,8 @@
         "vault_seal_new_off": "zette de versleuteling van nieuwe documenten uit",
         "vault_recovery_replaced": "verving de herstelcode van de kluis",
         "vault_enabled": "zette de vertrouwelijke modus aan",
-        "vault_categories_changed": "wijzigde de categorieën van de vertrouwelijke modus"
+        "vault_categories_changed": "wijzigde de categorieën van de vertrouwelijke modus",
+        "vault_passkey_added": "voegde een passkey toe die gevoelige wijzigingen bevestigt"
       },
       "bank_account": {
         "created": "voegde de bankrekening toe",
@@ -14560,7 +14561,9 @@
       "categoriesTitle": "Wat wordt versleuteld",
       "categoriesLead": "Je kunt een categorie ook later toevoegen. Uitzetten stopt alleen met het versleutelen van nieuwe gegevens; wat versleuteld is, blijft versleuteld.",
       "categoriesMin": "Laat minstens één categorie aan staan.",
-      "categoryOffConfirm": "Deze categorie uitzetten? Nieuwe bestanden en teksten worden niet meer versleuteld. Wat al versleuteld is, blijft versleuteld."
+      "categoryOffConfirm": "Deze categorie uitzetten? Nieuwe bestanden en teksten worden niet meer versleuteld. Wat al versleuteld is, blijft versleuteld.",
+      "passkeyStepUp": "Ontgrendelt de kluis en bevestigt gevoelige wijzigingen",
+      "passkeyUnlockOnly": "Ontgrendelt alleen de kluis. Voeg hem opnieuw toe en verwijder deze, zodat hij ook gevoelige wijzigingen bevestigt."
     },
     "clientLink": {
       "ready": "De link bevat de sleutel tot de versleutelde teksten (na het #). Uw klant ziet daarmee de volledige tekst, de server krijgt de sleutel nooit.",
@@ -14848,7 +14851,9 @@
       "wrong_current": "Het wachtwoord klopt niet.",
       "reauth_required": "Meld je opnieuw aan en herhaal de wijziging.",
       "too_many_attempts": "Te veel pogingen. Probeer het over een paar minuten opnieuw.",
-      "generic": "De bevestiging is mislukt."
-    }
+      "generic": "De bevestiging is mislukt.",
+      "passkey_failed": "De passkey kon niet worden gecontroleerd. Probeer het opnieuw of voer je code of wachtwoord in."
+    },
+    "usePasskey": "Bevestigen met passkey"
   }
 }

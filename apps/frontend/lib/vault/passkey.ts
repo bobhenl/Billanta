@@ -67,7 +67,46 @@ export async function createPasskeyWrap(key: VaultKey, user: { id: string; name:
   const secret = results.prf.results?.first ? new Uint8Array(results.prf.results.first) : await prfOutput(rawId, salt);
   if (!secret) return null;
   const wrap = await wrapWithSecret(key, secret, 'passkey', salt);
-  return { ...wrap, credentialId: b64url(rawId) };
+  return { ...wrap, credentialId: b64url(rawId), ...stepUpKey(credential) };
+}
+
+/**
+ * The public key that lets the server check this passkey for a step-up
+ * (backend src/vault/passkey-step-up.ts). Browsers without `getPublicKey`
+ * leave it out: the passkey then only unlocks.
+ */
+function stepUpKey(credential: PublicKeyCredential): { publicKey: string; publicKeyAlg: -7 | -257 } | Record<string, never> {
+  const response = credential.response as AuthenticatorAttestationResponse;
+  const spki = response.getPublicKey?.();
+  const alg = response.getPublicKeyAlgorithm?.();
+  if (!spki || (alg !== -7 && alg !== -257)) return {};
+  return { publicKey: b64url(new Uint8Array(spki)), publicKeyAlg: alg };
+}
+
+export interface PasskeyAssertion {
+  credentialId: string;
+  clientDataJSON: string;
+  authenticatorData: string;
+  signature: string;
+}
+
+/** Signs the server's challenge with one of the member's step-up passkeys (PIN or biometrics required). */
+export async function passkeyStepUpAssertion(challenge: string, credentialIds: string[]): Promise<PasskeyAssertion | null> {
+  const assertion = (await navigator.credentials.get({
+    publicKey: {
+      challenge: fromB64url(challenge) as BufferSource,
+      allowCredentials: credentialIds.map((id) => ({ type: 'public-key' as const, id: fromB64url(id) as BufferSource })),
+      userVerification: 'required'
+    }
+  })) as PublicKeyCredential | null;
+  if (!assertion) return null;
+  const response = assertion.response as AuthenticatorAssertionResponse;
+  return {
+    credentialId: b64url(new Uint8Array(assertion.rawId)),
+    clientDataJSON: b64url(new Uint8Array(response.clientDataJSON)),
+    authenticatorData: b64url(new Uint8Array(response.authenticatorData)),
+    signature: b64url(new Uint8Array(response.signature))
+  };
 }
 
 /** Unlocks with one of the member's passkeys; the browser lets them pick. */

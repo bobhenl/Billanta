@@ -7442,7 +7442,8 @@
         "vault_seal_new_off": "a dezactivat criptarea documentelor noi",
         "vault_recovery_replaced": "a înlocuit codul de recuperare al seifului",
         "vault_enabled": "a activat modul confidențial",
-        "vault_categories_changed": "a schimbat categoriile modului confidențial"
+        "vault_categories_changed": "a schimbat categoriile modului confidențial",
+        "vault_passkey_added": "a adăugat o cheie de acces care confirmă modificările sensibile"
       },
       "bank_account": {
         "created": "a adăugat contul bancar",
@@ -14560,7 +14561,9 @@
       "categoriesTitle": "Ce se criptează",
       "categoriesLead": "Puteți adăuga o categorie și mai târziu. Dezactivarea doar oprește criptarea datelor noi, ce este criptat rămâne criptat.",
       "categoriesMin": "Lăsați activată cel puțin o categorie.",
-      "categoryOffConfirm": "Dezactivați această categorie? Fișierele și textele noi nu vor mai fi criptate. Ce este deja criptat rămâne criptat."
+      "categoryOffConfirm": "Dezactivați această categorie? Fișierele și textele noi nu vor mai fi criptate. Ce este deja criptat rămâne criptat.",
+      "passkeyStepUp": "Deblochează seiful și confirmă modificările sensibile",
+      "passkeyUnlockOnly": "Doar deblochează seiful. Ca să confirme și modificările sensibile, adăugați-o din nou și eliminați-o pe aceasta."
     },
     "clientLink": {
       "ready": "Linkul conține cheia textelor criptate (după #). Clientul vede cu ea textul complet, serverul nu primește niciodată cheia.",
@@ -14848,7 +14851,9 @@
       "wrong_current": "Parola nu se potrivește.",
       "reauth_required": "Autentificați-vă din nou și repetați modificarea.",
       "too_many_attempts": "Prea multe încercări. Încercați peste câteva minute.",
-      "generic": "Confirmarea nu a reușit."
-    }
+      "generic": "Confirmarea nu a reușit.",
+      "passkey_failed": "Cheia de acces nu a putut fi verificată. Încercați din nou sau introduceți codul ori parola."
+    },
+    "usePasskey": "Confirmare cu cheie de acces"
   }
 }

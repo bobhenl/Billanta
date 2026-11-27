@@ -6,7 +6,8 @@ import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
  * Step-up: changes that weaken a protection (Confidential mode, vault key
  * wraps, an invoice lock, who sees which clients and invoices) need a proof
  * from the last few minutes on top of the session: the TOTP code when the
- * person has two-factor sign-in on, otherwise their password. Someone who
+ * person has two-factor sign-in on, otherwise their password, or a vault
+ * passkey with user verification (src/vault/passkey-step-up.ts). Someone who
  * only knows the login password, or sits at an unlocked laptop, then cannot
  * quietly open things up.
  *
@@ -22,7 +23,7 @@ const WINDOW_MS = STEP_UP_WINDOW_MINUTES * 60 * 1000;
 /** Allowance for the frontend's clock running a little ahead of ours. */
 const CLOCK_SKEW_MS = 30 * 1000;
 
-export const STEP_UP_METHODS = ["totp", "recovery", "password", "recent_sign_in"] as const;
+export const STEP_UP_METHODS = ["totp", "recovery", "password", "recent_sign_in", "passkey"] as const;
 export type StepUpMethod = (typeof STEP_UP_METHODS)[number];
 
 type StepUpUser = Pick<AuthenticatedUser, "stepUpAt" | "stepUpMethod">;

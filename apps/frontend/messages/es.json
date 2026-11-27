@@ -7442,7 +7442,8 @@
         "vault_seal_new_off": "desactivó el cifrado de documentos nuevos",
         "vault_recovery_replaced": "sustituyó el código de recuperación de la caja fuerte",
         "vault_enabled": "activó el modo confidencial",
-        "vault_categories_changed": "cambió las categorías del modo confidencial"
+        "vault_categories_changed": "cambió las categorías del modo confidencial",
+        "vault_passkey_added": "añadió una llave de acceso que confirma cambios sensibles"
       },
       "bank_account": {
         "created": "añadió la cuenta bancaria",
@@ -14560,7 +14561,9 @@
       "categoriesTitle": "Qué se cifra",
       "categoriesLead": "Puedes añadir una categoría más tarde. Desactivarla solo deja de cifrar datos nuevos; lo cifrado sigue cifrado.",
       "categoriesMin": "Deja activada al menos una categoría.",
-      "categoryOffConfirm": "¿Desactivar esta categoría? Los archivos y textos nuevos ya no se cifrarán. Lo que ya está cifrado sigue cifrado."
+      "categoryOffConfirm": "¿Desactivar esta categoría? Los archivos y textos nuevos ya no se cifrarán. Lo que ya está cifrado sigue cifrado.",
+      "passkeyStepUp": "Desbloquea la caja fuerte y confirma cambios sensibles",
+      "passkeyUnlockOnly": "Solo desbloquea la caja fuerte. Para que también confirme cambios sensibles, añádela de nuevo y elimina esta."
     },
     "clientLink": {
       "ready": "El enlace lleva la clave de los textos cifrados (tras el #). Con ella tu cliente ve el texto completo; el servidor nunca recibe la clave.",
@@ -14848,7 +14851,9 @@
       "wrong_current": "La contraseña no coincide.",
       "reauth_required": "Vuelva a iniciar sesión y repita el cambio.",
       "too_many_attempts": "Demasiados intentos. Inténtelo dentro de unos minutos.",
-      "generic": "La confirmación ha fallado."
-    }
+      "generic": "La confirmación ha fallado.",
+      "passkey_failed": "No se pudo verificar la llave de acceso. Inténtalo de nuevo o introduce tu código o contraseña."
+    },
+    "usePasskey": "Confirmar con llave de acceso"
   }
 }

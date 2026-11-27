@@ -1,9 +1,10 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException, Optional } from "@nestjs/common";
-import { and, asc, desc, eq, gt, gte, inArray, isNull, lt, or, sql } from "drizzle-orm";
+import { randomBytes } from "node:crypto";
+import { and, asc, desc, eq, gt, gte, inArray, isNotNull, isNull, lt, or, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { AuditService } from "../audit/audit.service";
-import { assertStepUp, stepUpChange } from "../auth/step-up";
+import { assertStepUp, stepUpChange, type StepUpMethod } from "../auth/step-up";
 import { planAllows } from "../billing/plan-access";
 import { loadPlanSummary } from "../billing/plan.guard";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
@@ -15,10 +16,12 @@ import { openablePage, vaultDocumentView } from "./documents";
 import { SEALED_BUYER_SNAPSHOT_FIELDS, SEALED_CONTACT_FIELDS } from "@faktur/cz-compliance";
 import { SEALED_PLACEHOLDER } from "./sealed";
 import { assertContactShape, assertContactsCategory } from "./sealed-contacts";
+import { b64url, CHALLENGE_TTL_MS, parsePasskeyPublicKey, passkeyOrigin, verifyPasskeyAssertion } from "./passkey-step-up";
 import { assertInvoiceOpen } from "../invoices/invoice-lock";
 import type {
   EnableVaultDto,
   MemberWrapDto,
+  PasskeyStepUpDto,
   PlainAttachmentsQueryDto,
   PlainContactsQueryDto,
   PlainInvoicesQueryDto,
@@ -39,7 +42,17 @@ type WrapRow = typeof schema.vaultKeyWraps.$inferSelect;
 /** At most this many passkeys per member: enough for a laptop, a phone and two keys. */
 const MAX_PASSKEYS = 5;
 
-const notSealed = (column: unknown) => sql`(${column} IS NOT NULL AND ${column} <> '' AND ${column} NOT LIKE 'enc:v1:%')`;
+/** The challenge an assertion says it answers; only used to find (and burn) the row we issued. */
+function claimedChallenge(clientDataJSON: string): string | null {
+  try {
+    const challenge = (JSON.parse(Buffer.from(clientDataJSON, "base64url").toString("utf8")) as { challenge?: unknown }).challenge;
+    return typeof challenge === "string" && challenge.length <= 128 ? challenge : null;
+  } catch {
+    return null;
+  }
+}
+
+const notSealed =(column: unknown) => sql`(${column} IS NOT NULL AND ${column} <> '' AND ${column} NOT LIKE 'enc:v1:%')`;
 
 /** What the browser needs to unwrap: never anything secret, the server has nothing secret. */
 export function wrapView(w: WrapRow) {
@@ -52,6 +65,8 @@ export function wrapView(w: WrapRow) {
     iv: w.iv,
     wrappedKey: w.wrappedKey,
     credentialId: w.credentialId,
+    /** A passkey that can confirm a step-up; older ones only unlock until added again. */
+    stepUp: w.kind === "passkey" && w.publicKey !== null,
     label: w.label,
     createdAt: w.createdAt,
   };
@@ -153,9 +168,104 @@ export class VaultService {
         .from(schema.vaultKeyWraps)
         .where(and(eq(schema.vaultKeyWraps.tenantId, tenantId), eq(schema.vaultKeyWraps.userId, userId), eq(schema.vaultKeyWraps.kind, "passkey")));
       if (own.length >= MAX_PASSKEYS) throw new ConflictException("vault_passkey_limit");
-      await db.insert(schema.vaultKeyWraps).values({ tenantId, userId, ...dto, iterations: null, label: dto.label ?? null });
+      const { publicKey, publicKeyAlg, ...wrap } = dto;
+      // A passkey that can confirm step-ups is itself a way past them, so
+      // adding one needs a step-up; an unlock-only passkey does not.
+      let stepUp: StepUpMethod | null = null;
+      if (publicKey !== undefined || publicKeyAlg !== undefined) {
+        if (publicKey === undefined || publicKeyAlg === undefined) throw new BadRequestException("passkey_public_key_invalid");
+        parsePasskeyPublicKey(publicKey, publicKeyAlg);
+        stepUp = assertStepUp(user);
+      }
+      await db.insert(schema.vaultKeyWraps).values({
+        tenantId,
+        userId,
+        ...wrap,
+        iterations: null,
+        label: dto.label ?? null,
+        publicKey: publicKey ?? null,
+        publicKeyAlg: publicKeyAlg ?? null,
+      });
+      if (stepUp) {
+        await this.audit?.record(db, tenantId, {
+          entityType: "tenant",
+          entityId: tenantId,
+          entityLabel: dto.label ?? null,
+          action: "vault_passkey_added",
+          changes: [{ field: "vaultWrap", from: null, to: "passkey" }, stepUpChange(stepUp)],
+        });
+      }
     }
     return this.status(db, tenantId, userId);
+  }
+
+  /**
+   * A fresh challenge for a passkey step-up, plus which of the caller's
+   * passkeys can answer it. Any older challenge of theirs goes: one attempt
+   * at a time, and expired rows don't pile up.
+   */
+  async passkeyChallenge(db: TenantDb, tenantId: string, user: AuthenticatedUser) {
+    await this.requireVault(db, tenantId);
+    const keys = await db
+      .select({ credentialId: schema.vaultKeyWraps.credentialId })
+      .from(schema.vaultKeyWraps)
+      .where(
+        and(
+          eq(schema.vaultKeyWraps.tenantId, tenantId),
+          eq(schema.vaultKeyWraps.userId, user.id),
+          eq(schema.vaultKeyWraps.kind, "passkey"),
+          isNotNull(schema.vaultKeyWraps.publicKey),
+        ),
+      );
+    if (!keys.length) throw new NotFoundException("passkey_step_up_unavailable");
+    await db
+      .delete(schema.webauthnChallenges)
+      .where(or(eq(schema.webauthnChallenges.userId, user.id), lt(schema.webauthnChallenges.expiresAt, new Date())));
+    const challenge = b64url(randomBytes(32));
+    await db.insert(schema.webauthnChallenges).values({ challenge, tenantId, userId: user.id, expiresAt: new Date(Date.now() + CHALLENGE_TTL_MS) });
+    return { challenge, credentialIds: keys.map((k) => k.credentialId!) };
+  }
+
+  /**
+   * Checks a passkey assertion. The challenge is deleted before anything
+   * else, so it works once even when the check then fails. On success the
+   * frontend writes the step-up cookie with method `passkey`.
+   */
+  async passkeyStepUp(db: TenantDb, tenantId: string, user: AuthenticatedUser, dto: PasskeyStepUpDto) {
+    const fail = new ForbiddenException("passkey_step_up_failed");
+    const claimed = claimedChallenge(dto.clientDataJSON);
+    if (!claimed) throw fail;
+    const [issued] = await db
+      .delete(schema.webauthnChallenges)
+      .where(
+        and(
+          eq(schema.webauthnChallenges.challenge, claimed),
+          eq(schema.webauthnChallenges.userId, user.id),
+          gt(schema.webauthnChallenges.expiresAt, new Date()),
+        ),
+      )
+      .returning({ challenge: schema.webauthnChallenges.challenge });
+    if (!issued) throw fail;
+    const [wrap] = await db
+      .select()
+      .from(schema.vaultKeyWraps)
+      .where(
+        and(
+          eq(schema.vaultKeyWraps.tenantId, tenantId),
+          eq(schema.vaultKeyWraps.userId, user.id),
+          eq(schema.vaultKeyWraps.kind, "passkey"),
+          eq(schema.vaultKeyWraps.credentialId, dto.credentialId),
+        ),
+      )
+      .limit(1);
+    if (!wrap?.publicKey || wrap.publicKeyAlg === null) throw fail;
+    const { signCount } = verifyPasskeyAssertion(
+      dto,
+      { publicKey: wrap.publicKey, publicKeyAlg: wrap.publicKeyAlg, signCount: wrap.signCount },
+      { challenge: issued.challenge, origin: passkeyOrigin() },
+    );
+    await db.update(schema.vaultKeyWraps).set({ signCount }).where(eq(schema.vaultKeyWraps.id, wrap.id));
+    return { ok: true as const, method: "passkey" as const };
   }
 
   /** Removes one of the caller's own wraps (step-up first); the recovery wrap is replaced, never removed. */

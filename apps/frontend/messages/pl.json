@@ -7443,7 +7443,8 @@
         "vault_seal_new_off": "wyłączył(a) szyfrowanie nowych dokumentów",
         "vault_recovery_replaced": "wymienił(a) kod odzyskiwania sejfu",
         "vault_enabled": "włączył(a) tryb poufny",
-        "vault_categories_changed": "zmienił(a) kategorie trybu poufnego"
+        "vault_categories_changed": "zmienił(a) kategorie trybu poufnego",
+        "vault_passkey_added": "dodał(a) klucz dostępu, który potwierdza wrażliwe zmiany"
       },
       "bank_account": {
         "created": "dodał(a) konto bankowe",
@@ -14561,7 +14562,9 @@
       "categoriesTitle": "Co jest szyfrowane",
       "categoriesLead": "Kategorię możesz dodać także później. Wyłączenie tylko przestaje szyfrować nowe dane, zaszyfrowane pozostają zaszyfrowane.",
       "categoriesMin": "Zostaw włączoną co najmniej jedną kategorię.",
-      "categoryOffConfirm": "Wyłączyć tę kategorię? Nowe pliki i teksty nie będą już szyfrowane. To, co zaszyfrowane, pozostanie zaszyfrowane."
+      "categoryOffConfirm": "Wyłączyć tę kategorię? Nowe pliki i teksty nie będą już szyfrowane. To, co zaszyfrowane, pozostanie zaszyfrowane.",
+      "passkeyStepUp": "Odblokowuje sejf i potwierdza wrażliwe zmiany",
+      "passkeyUnlockOnly": "Tylko odblokowuje sejf. Aby potwierdzał też wrażliwe zmiany, dodaj go ponownie i usuń ten."
     },
     "clientLink": {
       "ready": "Link zawiera klucz do zaszyfrowanych tekstów (po znaku #). Klient zobaczy z nim pełną treść, serwer nigdy nie dostaje klucza.",
@@ -14849,7 +14852,9 @@
       "wrong_current": "Hasło się nie zgadza.",
       "reauth_required": "Zaloguj się ponownie i powtórz zmianę.",
       "too_many_attempts": "Zbyt wiele prób. Spróbuj za kilka minut.",
-      "generic": "Potwierdzenie się nie powiodło."
-    }
+      "generic": "Potwierdzenie się nie powiodło.",
+      "passkey_failed": "Nie udało się zweryfikować klucza dostępu. Spróbuj ponownie albo wpisz kod lub hasło."
+    },
+    "usePasskey": "Potwierdź kluczem dostępu"
   }
 }

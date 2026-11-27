@@ -4,6 +4,8 @@ import type { VaultCategory, VaultWrap } from '@faktur/cz-compliance';
 export interface VaultWrapView extends VaultWrap {
   id: string;
   credentialId: string | null;
+  /** A passkey that can also confirm sensitive changes. False on older passkeys (they only unlock); missing from an older backend. */
+  stepUp?: boolean;
   label: string | null;
   createdAt: string;
 }

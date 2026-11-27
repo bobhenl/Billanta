@@ -87,6 +87,10 @@ describe("the sa and sm claims", () => {
     expect(read({ sa: "1800000000", sm: "totp" }).stepUpAt).toBeUndefined();
     expect(read({ sa: 1_800_000_000, sm: "sms" }).stepUpMethod).toBeUndefined();
   });
+
+  it("know a vault passkey as a method", () => {
+    expect(read({ sa: 1_800_000_000, sm: "passkey" })).toMatchObject({ stepUpMethod: "passkey" });
+  });
 });
 
 describe("removing an invoice lock", () => {

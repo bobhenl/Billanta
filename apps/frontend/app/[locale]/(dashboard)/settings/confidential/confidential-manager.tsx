@@ -475,7 +475,12 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
           {passkeys.map((p) => (
             <li key={p.id} className="flex flex-wrap items-center gap-2 py-2">
               <Fingerprint className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-              <span className="flex-1">{p.label || t('passkeyUnnamed')}</span>
+              <span className="flex-1">
+                {p.label || t('passkeyUnnamed')}
+                {p.stepUp !== undefined && (
+                  <span className="block text-xs text-muted-foreground">{p.stepUp ? t('passkeyStepUp') : t('passkeyUnlockOnly')}</span>
+                )}
+              </span>
               <button
                 type="button"
                 onClick={async () => {
@@ -537,7 +542,10 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
                   wrap = null;
                 }
                 if (!wrap) return void toast({ text: t('passkeyNoPrf'), tone: 'err' });
-                const r = await addVaultWrap({ ...wrap, label: passkeyLabel.trim() || null });
+                const label = passkeyLabel.trim() || null;
+                // One that can confirm changes is itself a way past them: the backend asks for a step-up first.
+                const r = await withStepUp(() => addVaultWrap({ ...wrap, label }));
+                if (!r) return;
                 setPasskeyLabel('');
                 report(r.ok, t('passkeyAdded'));
               }}
