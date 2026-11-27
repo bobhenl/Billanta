@@ -3890,9 +3890,8 @@
     }
   },
   "legal": {
-    "draftNotice": "Wersja robocza. Przed uruchomieniem musi ją sprawdzić prawnik. Dane w nawiasach kwadratowych zostaną uzupełnione.",
-    "updated": "Obowiązuje od: [data]",
-    "operator": "[Nazwa operatora], numer firmy [00000000], siedziba [adres], wpisany do [rejestr], e-mail [contact@billanta.cz]",
+    "updated": "Obowiązuje od: 27.11.2026",
+    "operator": "Tom Vejmelka, numer firmy (IČO) 17319790, z siedzibą Příkop 843/4, 602 00 Brno, Czechy, przedsiębiorca wpisany do czeskiego rejestru działalności gospodarczej, e-mail hello@billanta.com",
     "toc": "Spis treści",
     "related": "Powiązane dokumenty",
     "terms": {
@@ -4023,7 +4022,7 @@
           "body": [
             "Umowa podlega prawu Republiki Czeskiej z wyłączeniem norm kolizyjnych i Konwencji Narodów Zjednoczonych o umowach międzynarodowej sprzedaży towarów. Spory rozstrzygają sądy czeskie właściwe dla siedziby operatora.",
             "Operator może przenieść umowę na następcę, który przejmie prowadzenie usługi; użytkownik wyraża na to zgodę z góry i zostanie o tym poinformowany.",
-            "Niniejszy regulamin jest wydawany w języku czeskim, słowackim i angielskim. W razie rozbieżności rozstrzyga wersja czeska.",
+            "Warunki są wydane w kilku językach. W razie rozbieżności rozstrzyga wersja czeska.",
             "Jeśli którekolwiek postanowienie jest nieważne, pozostałe pozostają w mocy."
           ]
         },
@@ -4085,7 +4084,8 @@
             "Świadczenie usługi na podstawie umowy (art. 6 ust. 1 lit. b RODO).",
             "Obowiązki prawne, zwłaszcza księgowe i podatkowe. Zapisy płatności za subskrypcję są przechowywane przez 10 lat (art. 6 ust. 1 lit. c).",
             "Prawnie uzasadniony interes: bezpieczeństwo usługi, zapobieganie nadużyciom i dochodzenie roszczeń (art. 6 ust. 1 lit. f).",
-            "Zgoda: analityczne pliki cookie w regionach, w których jest wymagana (art. 6 ust. 1 lit. a); zgodę można w każdej chwili wycofać. Gdzie indziej nasz prawnie uzasadniony interes w ulepszaniu strony (art. 6 ust. 1 lit. f), wobec którego możesz w każdej chwili wnieść sprzeciw, wyłączając analitykę w ustawieniach plików cookie."
+            "Zgoda: analityczne pliki cookie w regionach, w których jest wymagana (art. 6 ust. 1 lit. a); zgodę można w każdej chwili wycofać. Gdzie indziej nasz prawnie uzasadniony interes w ulepszaniu strony (art. 6 ust. 1 lit. f), wobec którego możesz w każdej chwili wnieść sprzeciw, wyłączając analitykę w ustawieniach plików cookie.",
+            "Dane konta są nam potrzebne do zawarcia i wykonania umowy. Bez nich nie można założyć konta. Nie dochodzi do zautomatyzowanego podejmowania decyzji ani profilowania wywołującego wobec Ciebie skutki prawne. Operator nie wyznaczył inspektora ochrony danych, ponieważ RODO tego od niego nie wymaga."
           ]
         },
         {
@@ -4095,11 +4095,11 @@
             "Resend: wysyłanie e-maili (faktury, przypomnienia, weryfikacja konta).",
             "Stripe i GoPay: płatności za subskrypcję. Dane kart przetwarzają wyłącznie te bramki; Billanta nigdy ich nie widzi.",
             "Anthropic: szkice faktur tworzone przez AI z tekstu i obrazów. OpenAI: transkrypcja wiadomości głosowych na tekst. Oba tylko wtedy, gdy użytkownik korzysta z funkcji AI.",
-            "Google: logowanie przez Google i kopie zapasowe na własnym Dysku Google użytkownika, tylko jeśli je włączy. Przechowujemy też szyfrowane nocne kopie zapasowe całej bazy danych na Dysku Google operatora, zob. punkt 10.",
+            "Google: logowanie przez Google i kopie zapasowe na własny Dysk Google użytkownika, tylko jeśli użytkownik je włączy.",
             "Telegram i Meta (WhatsApp): tylko jeśli użytkownik połączy swoje konto z komunikatorem.",
             "Microsoft (Clarity): analityka na stronach publicznych (tylko za zgodą tam, gdzie jest wymagana).",
             "Poza tym dane trafiają tylko tam, dokąd wyśle je użytkownik: do jego banku lub PayPala przez połączenie, które włączył (Fio, PSD2 przez Enable Banking, PayPal), do jego własnych webhooków i magazynów kopii zapasowych oraz w e-mailach do jego klientów. Zapytania do publicznych rejestrów (ARES, RPO, VIES) zawierają tylko numer firmy lub NIP.",
-            "Aktualna lista podmiotów przetwarzających wraz z datą ostatniej zmiany jest zawsze prowadzona w tym punkcie."
+            "Lista podmiotów przetwarzających w tym artykule jest aktualna na dzień wejścia w życie podany na górze. O zmianach informujemy zgodnie z Umową powierzenia przetwarzania."
           ]
         },
         {
@@ -4128,7 +4128,7 @@
           "title": "Twoje prawa",
           "body": [
             "Masz prawo dostępu, sprostowania, usunięcia, ograniczenia przetwarzania i przenoszenia danych oraz prawo sprzeciwu wobec przetwarzania opartego na prawnie uzasadnionym interesie. Zgodę możesz w każdej chwili wycofać.",
-            "Wnioski wysyłaj na adres [contact@billanta.cz]. Odpowiemy w ciągu jednego miesiąca. Możesz złożyć skargę do czeskiego Urzędu Ochrony Danych Osobowych (www.uoou.cz) lub do organu nadzorczego w swoim kraju."
+            "Wnioski wysyłaj na adres hello@billanta.com. Odpowiemy w ciągu jednego miesiąca. Możesz złożyć skargę do czeskiego Urzędu Ochrony Danych Osobowych (www.uoou.cz) lub do organu nadzorczego w swoim kraju."
           ]
         },
         {
@@ -4140,7 +4140,7 @@
         {
           "title": "Kopie zapasowe",
           "body": [
-            "Każdej nocy wykonujemy kopię zapasową całej bazy danych usługi. Kopia jest szyfrowana na serwerze narzędziem age przy użyciu klucza publicznego. Klucz prywatny, który otwiera kopię, nie znajduje się na serwerze; operator przechowuje go offline. Zaszyfrowane kopie są przechowywane na serwerze, a ich kopia na Dysku Google operatora. Bez klucza prywatnego nikt nie może ich odczytać, nawet osoba z dostępem do serwera lub konta Google. Kopie zapasowe są usuwane najpóźniej po 90 dniach (punkt 6).",
+            "Każdej nocy wykonujemy kopię zapasową całej bazy danych usługi. Kopia jest szyfrowana jeszcze na serwerze narzędziem age kluczem publicznym. Klucz prywatny, którym można ją otworzyć, nie znajduje się na serwerze; operator przechowuje go offline. Zaszyfrowane kopie są przechowywane na serwerze usługi i nie są nigdzie indziej wysyłane. Usuwamy je najpóźniej po 90 dniach (artykuł 6).",
             "Niezależnie od tego firma może włączyć kopie zapasowe własnych danych: na własny Dysk Google, na własny serwer SFTP, przez webhook lub do pobrania. Te kopie trafiają tylko tam, gdzie ustawi użytkownik, a użytkownik może je zaszyfrować własnym kluczem age lub hasłem. Na Dysku Google Billanta ma dostęp tylko do plików, które sama utworzyła. Za wybrany magazyn odpowiada użytkownik."
           ]
         },

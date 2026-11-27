@@ -3890,9 +3890,8 @@
     }
   },
   "legal": {
-    "draftNotice": "Borrador de trabajo. Un abogado debe revisarlo antes del lanzamiento. Los datos entre corchetes se completarán.",
-    "updated": "Vigente desde: [fecha]",
-    "operator": "[Nombre del operador], número de identificación de empresa [00000000], domicilio social [dirección], inscrito en [registro], correo electrónico [contact@billanta.cz]",
+    "updated": "Vigente desde: 27/11/2026",
+    "operator": "Tom Vejmelka, número de identificación (IČO) 17319790, con domicilio en Příkop 843/4, 602 00 Brno, República Checa, empresario individual inscrito en el Registro Mercantil de Oficios checo, correo hello@billanta.com",
     "toc": "Índice",
     "related": "Documentos relacionados",
     "terms": {
@@ -4023,7 +4022,7 @@
           "body": [
             "El contrato se rige por el derecho de la República Checa, con exclusión de las normas de conflicto de leyes y de la Convención de las Naciones Unidas sobre los Contratos de Compraventa Internacional de Mercaderías. Los litigios se resolverán ante los tribunales checos competentes según el domicilio social del operador.",
             "El operador puede ceder el contrato a un sucesor que asuma la explotación del servicio; el usuario lo consiente por adelantado y será informado de ello.",
-            "Estas condiciones se publican en checo, eslovaco e inglés. En caso de discrepancia, prevalece la versión checa.",
+            "Las condiciones se publican en varios idiomas. En caso de discrepancia prevalece la versión checa.",
             "Si alguna disposición es inválida, las demás siguen en vigor."
           ]
         },
@@ -4085,7 +4084,8 @@
             "Prestación del servicio en virtud del contrato (art. 6.1.b del RGPD).",
             "Obligaciones legales, en especial contables y fiscales. Los registros de pagos de suscripciones se conservan durante 10 años (art. 6.1.c).",
             "Interés legítimo: seguridad del servicio, prevención de abusos y defensa de reclamaciones (art. 6.1.f).",
-            "Consentimiento: cookies de analítica en las regiones donde se exige (art. 6.1.a); el consentimiento puede retirarse en cualquier momento. En las demás, nuestro interés legítimo en mejorar el sitio (art. 6.1.f), al que puede oponerse en cualquier momento desactivando la analítica en la Configuración de cookies."
+            "Consentimiento: cookies de analítica en las regiones donde se exige (art. 6.1.a); el consentimiento puede retirarse en cualquier momento. En las demás, nuestro interés legítimo en mejorar el sitio (art. 6.1.f), al que puede oponerse en cualquier momento desactivando la analítica en la Configuración de cookies.",
+            "Necesitamos los datos de la cuenta para celebrar y cumplir el contrato. Sin ellos no se puede crear una cuenta. No hay decisiones automatizadas ni elaboración de perfiles con efectos jurídicos para usted. El operador no ha designado un delegado de protección de datos porque el RGPD no lo exige."
           ]
         },
         {
@@ -4095,11 +4095,11 @@
             "Resend: envío de correos electrónicos (facturas, recordatorios, verificación de la cuenta).",
             "Stripe y GoPay: pagos de suscripciones. Los datos de la tarjeta solo los tratan estas pasarelas; Billanta nunca los ve.",
             "Anthropic: borradores de factura con IA a partir de texto e imágenes. OpenAI: transcripción de mensajes de voz a texto. Ambos solo cuando el usuario utiliza una función de IA.",
-            "Google: inicio de sesión con Google y copias de seguridad en el propio Google Drive del usuario, solo si este las activa. También guardamos copias de seguridad nocturnas cifradas de toda la base de datos en el Google Drive del operador, véase el apartado 10.",
+            "Google: inicio de sesión con Google y copias de seguridad en el Google Drive propio del usuario, solo si el usuario las activa.",
             "Telegram y Meta (WhatsApp): solo si el usuario vincula su cuenta a una aplicación de chat.",
             "Microsoft (Clarity): analítica en las páginas públicas (solo con consentimiento donde se exige).",
             "Aparte de esto, los datos solo van donde el usuario los envía: a su banco o a PayPal mediante una conexión que haya habilitado (Fio, PSD2 a través de Enable Banking, PayPal), a sus propios webhooks y almacenamientos de copias de seguridad, y en correos a sus clientes. Las consultas en registros públicos (ARES, RPO, VIES) solo contienen un número de identificación de empresa o un número de IVA.",
-            "La lista actualizada de encargados, con la fecha de su último cambio, se mantiene siempre en este apartado."
+            "La lista de encargados de este apartado está actualizada a la fecha de vigencia indicada arriba. Informamos de los cambios según el Contrato de encargo del tratamiento."
           ]
         },
         {
@@ -4128,7 +4128,7 @@
           "title": "Sus derechos",
           "body": [
             "Tiene derecho de acceso, rectificación, supresión, limitación del tratamiento y portabilidad de los datos, así como derecho a oponerse al tratamiento basado en el interés legítimo. Puede retirar su consentimiento en cualquier momento.",
-            "Envíe sus solicitudes a [contact@billanta.cz]. Le responderemos en el plazo de un mes. Puede presentar una reclamación ante la Oficina checa de Protección de Datos Personales (www.uoou.cz) o ante la autoridad de control de su país."
+            "Envíe sus solicitudes a hello@billanta.com. Le responderemos en el plazo de un mes. Puede presentar una reclamación ante la Oficina checa de Protección de Datos Personales (www.uoou.cz) o ante la autoridad de control de su país."
           ]
         },
         {
@@ -4140,7 +4140,7 @@
         {
           "title": "Copias de seguridad",
           "body": [
-            "Hacemos una copia de seguridad de toda la base de datos del servicio cada noche. La copia se cifra en el servidor con age, mediante una clave pública. La clave privada que abre una copia no está en el servidor; el operador la guarda sin conexión. Las copias cifradas se guardan en el servidor, con una copia en el Google Drive del operador. Sin la clave privada nadie puede leerlas, ni siquiera alguien con acceso al servidor o a la cuenta de Google. Las copias se eliminan como máximo a los 90 días (apartado 6).",
+            "Hacemos cada noche una copia de seguridad de toda la base de datos del servicio. La copia se cifra ya en el servidor con la herramienta age y una clave pública. La clave privada que abre la copia no está en el servidor; el operador la guarda fuera de línea. Las copias cifradas se guardan en el servidor del servicio y no se envían a ningún otro lugar. Las borramos como máximo a los 90 días (apartado 6).",
             "Por otro lado, una empresa puede activar copias de seguridad de sus propios datos: en su propio Google Drive, en su propio servidor SFTP, mediante un webhook o como descarga. Estas copias solo van donde el usuario indica, y el usuario puede cifrarlas con su propia clave age o con una frase de contraseña. En Google Drive, Billanta solo puede acceder a los archivos que ha creado. El usuario es responsable del almacenamiento que elija."
           ]
         },

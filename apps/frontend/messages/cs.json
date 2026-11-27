@@ -3897,9 +3897,8 @@
     }
   },
   "legal": {
-    "draftNotice": "Pracovní návrh. Před spuštěním ho musí zkontrolovat advokát. Údaje v hranatých závorkách se doplní.",
-    "updated": "Účinné od: [datum]",
-    "operator": "[Název provozovatele], IČO [00000000], se sídlem [adresa], zapsaný v [rejstřík], e-mail [kontakt@billanta.cz]",
+    "updated": "Účinné od: 27. 11. 2026",
+    "operator": "Tom Vejmelka, IČO 17319790, se sídlem Příkop 843/4, 602 00 Brno, fyzická osoba zapsaná v živnostenském rejstříku, e-mail hello@billanta.com",
     "toc": "Obsah",
     "related": "Související dokumenty",
     "terms": {
@@ -4030,7 +4029,7 @@
           "body": [
             "Smlouva se řídí právem České republiky, s vyloučením kolizních norem a Úmluvy OSN o smlouvách o mezinárodní koupi zboží. Spory rozhodují obecné soudy České republiky příslušné podle sídla provozovatele.",
             "Provozovatel může smlouvu postoupit nástupci, který převezme provoz služby. Uživatel s tím předem souhlasí. Provozovatel o tom uživatele vyrozumí.",
-            "Podmínky jsou vydány v češtině, slovenštině a angličtině. V případě rozporu rozhoduje česká verze.",
+            "Podmínky jsou vydány ve více jazycích. V případě rozporu rozhoduje česká verze.",
             "Je-li některé ustanovení neplatné, ostatní zůstávají v platnosti."
           ]
         },
@@ -4092,7 +4091,8 @@
             "Poskytování služby podle smlouvy (čl. 6 odst. 1 písm. b GDPR).",
             "Plnění právních povinností, zejména účetních a daňových. Doklady o platbách za předplatné uchováváme 10 let (čl. 6 odst. 1 písm. c).",
             "Oprávněný zájem: zabezpečení služby, prevence zneužití a vymáhání nároků (čl. 6 odst. 1 písm. f).",
-            "Souhlas: analytické cookies v oblastech, kde se vyžaduje (čl. 6 odst. 1 písm. a); souhlas lze kdykoli odvolat. Jinde oprávněný zájem na zlepšování webu (čl. 6 odst. 1 písm. f), proti kterému můžete kdykoli vznést námitku vypnutím v Nastavení cookies."
+            "Souhlas: analytické cookies v oblastech, kde se vyžaduje (čl. 6 odst. 1 písm. a); souhlas lze kdykoli odvolat. Jinde oprávněný zájem na zlepšování webu (čl. 6 odst. 1 písm. f), proti kterému můžete kdykoli vznést námitku vypnutím v Nastavení cookies.",
+            "Údaje o účtu potřebujeme k uzavření a plnění smlouvy. Bez nich účet založit nejde. Nedochází k automatizovanému rozhodování ani profilování, které by pro vás mělo právní účinky. Pověřence pro ochranu osobních údajů provozovatel nejmenoval, protože mu to GDPR neukládá."
           ]
         },
         {
@@ -4102,11 +4102,11 @@
             "Resend: odesílání e-mailů (faktury, upomínky, ověření účtu).",
             "Stripe a GoPay: platby předplatného. Údaje o platebních kartách zpracovávají jen tyto brány, Billanta je nevidí.",
             "Anthropic: AI návrhy faktur z textu a obrázků. OpenAI: přepis hlasových zpráv na text. Obojí jen tehdy, když uživatel AI funkci použije.",
-            "Google: přihlášení přes Google a zálohy na vlastní Google Disk uživatele, jen pokud je uživatel zapne. Na Google Disk provozovatele ukládáme také šifrované noční zálohy celé databáze, viz článek 10.",
+            "Google: přihlášení přes Google a zálohy na vlastní Google Disk uživatele, jen pokud je uživatel zapne.",
             "Telegram a Meta (WhatsApp): jen pokud uživatel propojí účet s chatovou aplikací.",
             "Microsoft (Clarity): analytika veřejných stránek (jen se souhlasem tam, kde se vyžaduje).",
             "Údaje se dále předávají jen tam, kam je pošle sám uživatel: banka nebo PayPal přes zapnuté napojení (Fio, PSD2 přes Enable Banking, PayPal), vlastní webhooky a úložiště záloh, e-maily odběratelům. Dotazy do veřejných registrů (ARES, VIES) obsahují jen IČO nebo DIČ.",
-            "Aktuální seznam zpracovatelů s datem poslední změny je vždy v tomto článku."
+            "Seznam zpracovatelů v tomto článku je aktuální k datu účinnosti uvedenému nahoře. O změnách informujeme podle Zpracovatelské smlouvy."
           ]
         },
         {
@@ -4135,7 +4135,7 @@
           "title": "Vaše práva",
           "body": [
             "Máte právo na přístup k údajům, opravu, výmaz, omezení zpracování, přenositelnost a právo vznést námitku proti zpracování na základě oprávněného zájmu. Souhlas můžete kdykoli odvolat.",
-            "Žádosti posílejte na [kontakt@billanta.cz]. Vyřídíme je do jednoho měsíce. Stížnost můžete podat u Úřadu pro ochranu osobních údajů (www.uoou.cz), na Slovensku u Úradu na ochranu osobných údajov SR."
+            "Žádosti posílejte na hello@billanta.com. Vyřídíme je do jednoho měsíce. Stížnost můžete podat u Úřadu pro ochranu osobních údajů (www.uoou.cz), na Slovensku u Úradu na ochranu osobných údajov SR."
           ]
         },
         {
@@ -4147,7 +4147,7 @@
         {
           "title": "Zálohy",
           "body": [
-            "Celou databázi služby zálohujeme každou noc. Záloha se ještě na serveru zašifruje nástrojem age veřejným klíčem. Soukromý klíč, kterým jde zálohu otevřít, na serveru není, provozovatel ho uchovává offline. Zašifrované zálohy jsou na serveru a jejich kopie na Google Disku provozovatele. Bez soukromého klíče je nepřečte ani ten, kdo má přístup k serveru nebo k účtu Google. Zálohy mažeme nejpozději po 90 dnech (článek 6).",
+            "Celou databázi služby zálohujeme každou noc. Záloha se ještě na serveru zašifruje nástrojem age veřejným klíčem. Soukromý klíč, kterým jde zálohu otevřít, na serveru není, provozovatel ho uchovává offline. Zašifrované zálohy jsou uložené na serveru služby a nikam jinam se neposílají. Mažeme je nejpozději po 90 dnech (článek 6).",
             "Vedle toho si firma může sama zapnout zálohy svých dat: na vlastní Google Disk, na vlastní SFTP server, přes webhook, nebo si zálohu stáhnout. Takové zálohy jdou jen tam, kam je uživatel nastaví, a může je zašifrovat vlastním klíčem age nebo heslem. U Google Disku má Billanta přístup jen k souborům, které sama vytvořila. Za úložiště, které si uživatel zvolí, odpovídá on."
           ]
         },

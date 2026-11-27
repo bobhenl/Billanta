@@ -3890,9 +3890,8 @@
     }
   },
   "legal": {
-    "draftNotice": "Versiune de lucru. Înainte de lansare trebuie revizuită de un avocat. Detaliile din parantezele pătrate vor fi completate.",
-    "updated": "În vigoare de la: [dată]",
-    "operator": "[Numele operatorului], IČO [00000000], cu sediul la [adresă], înregistrat în [registru], e-mail [contact@billanta.cz]",
+    "updated": "În vigoare de la: 27.11.2026",
+    "operator": "Tom Vejmelka, IČO 17319790, cu sediul în Příkop 843/4, 602 00 Brno, Republica Cehă, întreprinzător individual înregistrat în registrul ceh al meseriilor, e-mail hello@billanta.com",
     "toc": "Cuprins",
     "related": "Documente conexe",
     "terms": {
@@ -4023,7 +4022,7 @@
           "body": [
             "Contractul este guvernat de legislația Republicii Cehe, cu excluderea normelor conflictuale și a Convenției ONU privind contractele de vânzare internațională de mărfuri. Litigiile sunt soluționate de instanțele cehe competente pentru sediul operatorului.",
             "Operatorul poate ceda contractul unui succesor care preia operarea serviciului; utilizatorul își dă acordul în prealabil și va fi informat.",
-            "Acești termeni sunt emiși în limba cehă, slovacă și engleză. În caz de neconcordanță, prevalează versiunea în limba cehă.",
+            "Termenii sunt publicați în mai multe limbi. În caz de neconcordanță, prevalează versiunea cehă.",
             "Dacă o prevedere este nulă, celelalte rămân în vigoare."
           ]
         },
@@ -4085,7 +4084,8 @@
             "Furnizarea serviciului în baza contractului (art. 6 alin. (1) lit. b) GDPR).",
             "Obligații legale, în special contabile și fiscale. Evidențele plăților pentru abonament se păstrează 10 ani (art. 6 alin. (1) lit. c)).",
             "Interes legitim: securitatea serviciului, prevenirea abuzurilor și valorificarea pretențiilor (art. 6 alin. (1) lit. f)).",
-            "Consimțământ: cookie-uri de analiză în regiunile în care este necesar (art. 6 alin. (1) lit. a)); consimțământul poate fi retras oricând. În rest, interesul nostru legitim de a îmbunătăți site-ul (art. 6 alin. (1) lit. f)), căruia vă puteți opune oricând dezactivând analizele în Setările cookie-urilor."
+            "Consimțământ: cookie-uri de analiză în regiunile în care este necesar (art. 6 alin. (1) lit. a)); consimțământul poate fi retras oricând. În rest, interesul nostru legitim de a îmbunătăți site-ul (art. 6 alin. (1) lit. f)), căruia vă puteți opune oricând dezactivând analizele în Setările cookie-urilor.",
+            "Avem nevoie de datele contului pentru încheierea și executarea contractului. Fără ele nu se poate crea un cont. Nu există decizii automatizate și nici creare de profiluri cu efecte juridice asupra dumneavoastră. Operatorul nu a numit un responsabil cu protecția datelor, deoarece GDPR nu îi impune acest lucru."
           ]
         },
         {
@@ -4095,11 +4095,11 @@
             "Resend: trimiterea e-mailurilor (facturi, remindere, verificarea contului).",
             "Stripe și GoPay: plățile pentru abonament. Datele cardului sunt prelucrate doar de aceste procesatoare de plăți; Billanta nu le vede niciodată.",
             "Anthropic: ciorne de facturi generate de AI din text și imagini. OpenAI: transcrierea mesajelor vocale în text. Ambele doar când utilizatorul folosește o funcție AI.",
-            "Google: conectarea cu Google și backupurile în propriul Google Drive al utilizatorului, doar dacă utilizatorul le activează. Păstrăm și backupuri criptate zilnice (în fiecare noapte) ale întregii baze de date în Google Drive-ul operatorului, vedeți secțiunea 10.",
+            "Google: autentificare cu Google și backup în propriul Google Drive al utilizatorului, doar dacă utilizatorul le activează.",
             "Telegram și Meta (WhatsApp): doar dacă utilizatorul își conectează contul la o aplicație de chat.",
             "Microsoft (Clarity): analize pe paginile publice (doar cu consimțământ, acolo unde este necesar).",
             "În rest, datele ajung doar acolo unde le trimite utilizatorul: la banca sa sau la PayPal printr-o conexiune pe care a activat-o (Fio, PSD2 prin Enable Banking, PayPal), la propriile webhookuri și spații de stocare pentru backup și în e-mailurile către clienții săi. Interogările în registrele publice (ARES, RPO, VIES) conțin doar IČO sau codul de TVA.",
-            "Lista actuală a persoanelor împuternicite, cu data ultimei modificări, este menținută întotdeauna în această secțiune."
+            "Lista persoanelor împuternicite din acest articol este actualizată la data intrării în vigoare indicată sus. Anunțăm modificările conform Acordului de prelucrare a datelor."
           ]
         },
         {
@@ -4128,7 +4128,7 @@
           "title": "Drepturile dumneavoastră",
           "body": [
             "Aveți dreptul de acces, de rectificare, de ștergere, de restricționare a prelucrării și de portabilitate a datelor, precum și dreptul de a vă opune prelucrării bazate pe interesul legitim. Vă puteți retrage consimțământul oricând.",
-            "Trimiteți cererile la [contact@billanta.cz]. Vă vom răspunde în termen de o lună. Puteți depune o plângere la Oficiul ceh pentru protecția datelor cu caracter personal (www.uoou.cz) sau la autoritatea de supraveghere din țara dumneavoastră."
+            "Trimiteți cererile la hello@billanta.com. Vă vom răspunde în termen de o lună. Puteți depune o plângere la Oficiul ceh pentru protecția datelor cu caracter personal (www.uoou.cz) sau la autoritatea de supraveghere din țara dumneavoastră."
           ]
         },
         {
@@ -4140,7 +4140,7 @@
         {
           "title": "Backupuri",
           "body": [
-            "În fiecare noapte facem backup întregii baze de date a serviciului. Backupul este criptat pe server cu age, folosind o cheie publică. Cheia privată care deschide un backup nu se află pe server; operatorul o păstrează offline. Backupurile criptate sunt păstrate pe server, cu o copie în Google Drive-ul operatorului. Fără cheia privată nimeni nu le poate citi, nici măcar cineva cu acces la server sau la contul Google. Backupurile sunt șterse cel târziu după 90 de zile (secțiunea 6).",
+            "În fiecare noapte facem backup întregii baze de date a serviciului. Backupul este criptat încă pe server cu instrumentul age și o cheie publică. Cheia privată care deschide backupul nu se află pe server; operatorul o păstrează offline. Backupurile criptate sunt stocate pe serverul serviciului și nu sunt trimise în altă parte. Le ștergem cel târziu după 90 de zile (articolul 6).",
             "Separat, o firmă poate activa backupuri ale propriilor date: în propriul Google Drive, pe propriul server SFTP, printr-un webhook sau ca descărcare. Aceste backupuri ajung doar acolo unde le setează utilizatorul, care le poate cripta cu propria cheie age sau cu o frază de acces. În Google Drive, Billanta are acces doar la fișierele pe care le-a creat. Utilizatorul răspunde de spațiul de stocare ales."
           ]
         },

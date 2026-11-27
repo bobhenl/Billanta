@@ -3890,9 +3890,8 @@
     }
   },
   "legal": {
-    "draftNotice": "Arbeitsentwurf. Vor dem Start muss ihn ein Anwalt prüfen. Angaben in eckigen Klammern werden noch ergänzt.",
-    "updated": "Gültig ab: [Datum]",
-    "operator": "[Name des Betreibers], IČO [00000000], Sitz [Adresse], eingetragen in [Register], E-Mail [contact@billanta.cz]",
+    "updated": "Gültig ab: 27. 11. 2026",
+    "operator": "Tom Vejmelka, IČO 17319790, Sitz Příkop 843/4, 602 00 Brno, Tschechische Republik, Einzelunternehmer, eingetragen im tschechischen Gewerberegister, E-Mail hello@billanta.com",
     "toc": "Inhalt",
     "related": "Zugehörige Dokumente",
     "terms": {
@@ -4023,7 +4022,7 @@
           "body": [
             "Der Vertrag unterliegt dem Recht der Tschechischen Republik unter Ausschluss der Kollisionsnormen und des UN-Kaufrechts (CISG). Für Streitigkeiten sind die tschechischen Gerichte am Sitz des Betreibers zuständig.",
             "Der Betreiber kann den Vertrag auf einen Rechtsnachfolger übertragen, der den Betrieb des Dienstes übernimmt; der Nutzer stimmt dem im Voraus zu und wird darüber informiert.",
-            "Diese Bedingungen werden auf Tschechisch, Slowakisch und Englisch herausgegeben. Bei Widersprüchen gilt die tschechische Fassung.",
+            "Die Bedingungen werden in mehreren Sprachen veröffentlicht. Bei Widersprüchen gilt die tschechische Fassung.",
             "Ist eine Bestimmung unwirksam, bleiben die übrigen in Kraft."
           ]
         },
@@ -4085,7 +4084,8 @@
             "Erbringung des Dienstes auf Grundlage des Vertrags (Art. 6 Abs. 1 lit. b DSGVO).",
             "Rechtliche Pflichten, insbesondere im Bereich Buchhaltung und Steuern. Aufzeichnungen über Abozahlungen werden 10 Jahre aufbewahrt (Art. 6 Abs. 1 lit. c).",
             "Berechtigtes Interesse: Sicherheit des Dienstes, Missbrauchsverhinderung und Durchsetzung von Ansprüchen (Art. 6 Abs. 1 lit. f).",
-            "Einwilligung: Analyse-Cookies in den Regionen, in denen sie erforderlich ist (Art. 6 Abs. 1 lit. a); die Einwilligung kann jederzeit widerrufen werden. Anderswo unser berechtigtes Interesse an der Verbesserung der Website (Art. 6 Abs. 1 lit. f), dem Sie jederzeit widersprechen können, indem Sie die Analyse in den Cookie-Einstellungen ausschalten."
+            "Einwilligung: Analyse-Cookies in den Regionen, in denen sie erforderlich ist (Art. 6 Abs. 1 lit. a); die Einwilligung kann jederzeit widerrufen werden. Anderswo unser berechtigtes Interesse an der Verbesserung der Website (Art. 6 Abs. 1 lit. f), dem Sie jederzeit widersprechen können, indem Sie die Analyse in den Cookie-Einstellungen ausschalten.",
+            "Die Kontodaten benötigen wir für den Abschluss und die Erfüllung des Vertrags. Ohne sie lässt sich kein Konto anlegen. Es findet keine automatisierte Entscheidungsfindung und kein Profiling mit rechtlicher Wirkung für Sie statt. Einen Datenschutzbeauftragten hat der Betreiber nicht benannt, weil die DSGVO das nicht verlangt."
           ]
         },
         {
@@ -4095,11 +4095,11 @@
             "Resend: E-Mail-Versand (Rechnungen, Zahlungserinnerungen, Kontobestätigung).",
             "Stripe und GoPay: Abozahlungen. Kartendaten werden nur von diesen Zahlungsdiensten verarbeitet; Billanta sieht sie nie.",
             "Anthropic: KI-Rechnungsentwürfe aus Text und Bildern. OpenAI: Umwandlung von Sprachnachrichten in Text. Beide nur, wenn der Nutzer eine KI-Funktion verwendet.",
-            "Google: Google-Anmeldung und Backups in das eigene Google Drive des Nutzers, nur wenn der Nutzer sie aktiviert. Außerdem speichern wir verschlüsselte nächtliche Backups der gesamten Datenbank im Google Drive des Betreibers, siehe Abschnitt 10.",
+            "Google: Anmeldung mit Google und Sicherungen auf das eigene Google Drive des Nutzers, nur wenn der Nutzer sie einschaltet.",
             "Telegram und Meta (WhatsApp): nur wenn der Nutzer sein Konto mit einer Chat-App verknüpft.",
             "Microsoft (Clarity): Analyse auf öffentlichen Seiten (nur mit Einwilligung, wo diese erforderlich ist).",
             "Darüber hinaus gelangen Daten nur dorthin, wohin der Nutzer sie sendet: an seine Bank oder PayPal über eine von ihm aktivierte Verbindung (Fio, PSD2 über Enable Banking, PayPal), an eigene Webhooks und Backup-Speicher sowie per E-Mail an seine Kunden. Abfragen in öffentlichen Registern (ARES, RPO, VIES) enthalten nur eine Firmennummer oder USt-IdNr.",
-            "Die aktuelle Liste der Auftragsverarbeiter mit dem Datum ihrer letzten Änderung wird stets in diesem Abschnitt geführt."
+            "Die Liste der Auftragsverarbeiter in diesem Abschnitt ist zum oben angegebenen Gültigkeitsdatum aktuell. Über Änderungen informieren wir nach dem Auftragsverarbeitungsvertrag."
           ]
         },
         {
@@ -4128,7 +4128,7 @@
           "title": "Ihre Rechte",
           "body": [
             "Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung und Datenübertragbarkeit sowie das Recht, einer auf berechtigtem Interesse beruhenden Verarbeitung zu widersprechen. Eine Einwilligung können Sie jederzeit widerrufen.",
-            "Senden Sie Anfragen an [contact@billanta.cz]. Wir antworten innerhalb eines Monats. Sie können sich beim tschechischen Amt für den Schutz personenbezogener Daten (www.uoou.cz) oder bei der Aufsichtsbehörde in Ihrem Land beschweren."
+            "Senden Sie Anfragen an hello@billanta.com. Wir antworten innerhalb eines Monats. Sie können sich beim tschechischen Amt für den Schutz personenbezogener Daten (www.uoou.cz) oder bei der Aufsichtsbehörde in Ihrem Land beschweren."
           ]
         },
         {
@@ -4140,7 +4140,7 @@
         {
           "title": "Backups",
           "body": [
-            "Wir sichern jede Nacht die gesamte Datenbank des Dienstes. Das Backup wird auf dem Server mit age und einem öffentlichen Schlüssel verschlüsselt. Der private Schlüssel, mit dem sich ein Backup öffnen lässt, liegt nicht auf dem Server; der Betreiber bewahrt ihn offline auf. Die verschlüsselten Backups werden auf dem Server gespeichert, eine Kopie im Google Drive des Betreibers. Ohne den privaten Schlüssel kann niemand sie lesen, auch nicht jemand mit Zugriff auf den Server oder das Google-Konto. Backups werden spätestens nach 90 Tagen gelöscht (Abschnitt 6).",
+            "Wir sichern jede Nacht die gesamte Datenbank des Dienstes. Die Sicherung wird noch auf dem Server mit dem Werkzeug age und einem öffentlichen Schlüssel verschlüsselt. Der private Schlüssel, mit dem sich die Sicherung öffnen lässt, liegt nicht auf dem Server; der Betreiber bewahrt ihn offline auf. Die verschlüsselten Sicherungen liegen auf dem Server des Dienstes und werden nirgendwohin sonst übertragen. Wir löschen sie spätestens nach 90 Tagen (Abschnitt 6).",
             "Unabhängig davon kann ein Unternehmen Backups seiner eigenen Daten aktivieren: in sein eigenes Google Drive, auf seinen eigenen SFTP-Server, über einen Webhook oder als Download. Diese Backups gehen nur dorthin, wohin der Nutzer sie leitet, und der Nutzer kann sie mit seinem eigenen age-Schlüssel oder einer Passphrase verschlüsseln. In Google Drive hat Billanta nur Zugriff auf die Dateien, die es selbst erstellt hat. Für den gewählten Speicher ist der Nutzer verantwortlich."
           ]
         },

@@ -3890,9 +3890,8 @@
     }
   },
   "legal": {
-    "draftNotice": "Munkaváltozat. Az indulás előtt jogásznak kell átnéznie. A szögletes zárójelben lévő adatok később kerülnek kitöltésre.",
-    "updated": "Hatályos: [dátum]",
-    "operator": "[Üzemeltető neve], cégazonosító (IČO) [00000000], székhely [cím], nyilvántartva: [nyilvántartás], e-mail [contact@billanta.cz]",
+    "updated": "Hatályos: 2026. 11. 27-től",
+    "operator": "Tom Vejmelka, cégazonosító (IČO) 17319790, székhely: Příkop 843/4, 602 00 Brno, Csehország, a cseh iparűzési nyilvántartásba bejegyzett egyéni vállalkozó, e-mail hello@billanta.com",
     "toc": "Tartalom",
     "related": "Kapcsolódó dokumentumok",
     "terms": {
@@ -4023,7 +4022,7 @@
           "body": [
             "A szerződésre a Cseh Köztársaság joga irányadó, a kollíziós szabályok és az áruk nemzetközi adásvételi szerződéseiről szóló ENSZ-egyezmény kizárásával. A jogvitákban az üzemeltető székhelye szerint illetékes cseh bíróságok döntenek.",
             "Az üzemeltető a szerződést átruházhatja a szolgáltatás működtetését átvevő jogutódra; a felhasználó ehhez előre hozzájárul, és erről értesítést kap.",
-            "Ezek a feltételek cseh, szlovák és angol nyelven készülnek. Eltérés esetén a cseh változat az irányadó.",
+            "A feltételek több nyelven jelennek meg. Eltérés esetén a cseh változat az irányadó.",
             "Ha valamely rendelkezés érvénytelen, a többi rendelkezés hatályban marad."
           ]
         },
@@ -4085,7 +4084,8 @@
             "A szolgáltatás nyújtása a szerződés alapján (GDPR 6. cikk (1) bekezdés b) pont).",
             "Jogi kötelezettségek, különösen számviteli és adózási kötelezettségek. Az előfizetési befizetések nyilvántartását 10 évig őrizzük (6. cikk (1) bekezdés c) pont).",
             "Jogos érdek: a szolgáltatás biztonsága, a visszaélések megelőzése és az igények érvényesítése (6. cikk (1) bekezdés f) pont).",
-            "Hozzájárulás: analitikai sütik azokban a régiókban, ahol ez kötelező (6. cikk (1) bekezdés a) pont); a hozzájárulás bármikor visszavonható. Máshol a weboldal fejlesztéséhez fűződő jogos érdekünk (6. cikk (1) bekezdés f) pont), amely ellen bármikor tiltakozhat, ha a Sütibeállításokban kikapcsolja az analitikát."
+            "Hozzájárulás: analitikai sütik azokban a régiókban, ahol ez kötelező (6. cikk (1) bekezdés a) pont); a hozzájárulás bármikor visszavonható. Máshol a weboldal fejlesztéséhez fűződő jogos érdekünk (6. cikk (1) bekezdés f) pont), amely ellen bármikor tiltakozhat, ha a Sütibeállításokban kikapcsolja az analitikát.",
+            "A fiókadatokra a szerződés megkötéséhez és teljesítéséhez van szükségünk. Nélkülük nem hozható létre fiók. Nincs olyan automatizált döntéshozatal vagy profilalkotás, amely Önre joghatással járna. Az üzemeltető nem jelölt ki adatvédelmi tisztviselőt, mert a GDPR ezt nem írja elő számára."
           ]
         },
         {
@@ -4095,11 +4095,11 @@
             "Resend: e-mailek küldése (számlák, emlékeztetők, fiókellenőrzés).",
             "Stripe és GoPay: előfizetési díjak fizetése. A kártyaadatokat kizárólag ezek a fizetési kapuk kezelik; a Billanta soha nem látja őket.",
             "Anthropic: AI-alapú számlapiszkozatok szövegből és képekből. OpenAI: hangüzenetek szöveggé alakítása. Mindkettő csak akkor, ha a felhasználó AI-funkciót használ.",
-            "Google: Google-bejelentkezés és biztonsági mentés a felhasználó saját Google Drive-jára, csak ha a felhasználó bekapcsolja őket. Emellett a teljes adatbázisról titkosított éjszakai biztonsági mentéseket tárolunk az üzemeltető Google Drive-ján, lásd a 10. pontot.",
+            "Google: bejelentkezés Google-fiókkal és mentés a felhasználó saját Google Drive-jára, csak ha a felhasználó bekapcsolja.",
             "Telegram és Meta (WhatsApp): csak ha a felhasználó csevegőalkalmazáshoz kapcsolja a fiókját.",
             "Microsoft (Clarity): analitika a nyilvános oldalakon (ahol kötelező, csak hozzájárulással).",
             "Ezen túl az adatok csak oda kerülnek, ahová a felhasználó küldi őket: a bankjához vagy a PayPalhoz az általa engedélyezett kapcsolaton keresztül (Fio, PSD2 az Enable Bankingen keresztül, PayPal), a saját webhookjaihoz és mentési tárhelyéhez, valamint e-mailben a vevőihez. A nyilvános nyilvántartásokban (ARES, RPO, VIES) végzett lekérdezések csak cégazonosítót vagy adószámot tartalmaznak.",
-            "Az adatfeldolgozók aktuális listáját, az utolsó módosítás dátumával együtt, mindig ebben a pontban tartjuk nyilván."
+            "Az e cikkben szereplő adatfeldolgozók listája a fent megadott hatálybalépés napján érvényes. A változásokról az Adatfeldolgozási szerződés szerint tájékoztatunk."
           ]
         },
         {
@@ -4128,7 +4128,7 @@
           "title": "Az Ön jogai",
           "body": [
             "Önt megilleti a hozzáférés, a helyesbítés, a törlés, az adatkezelés korlátozása és az adathordozhatóság joga, valamint a jogos érdeken alapuló adatkezeléssel szembeni tiltakozás joga. A hozzájárulását bármikor visszavonhatja.",
-            "Kérelmeit a [contact@billanta.cz] címre küldje. Egy hónapon belül válaszolunk. Panaszt nyújthat be a cseh Személyes Adatok Védelmének Hivatalához (www.uoou.cz) vagy az Ön országának felügyeleti hatóságához."
+            "Kérelmeit a hello@billanta.com címre küldje. Egy hónapon belül válaszolunk. Panaszt nyújthat be a cseh Személyes Adatok Védelmének Hivatalához (www.uoou.cz) vagy az Ön országának felügyeleti hatóságához."
           ]
         },
         {
@@ -4140,7 +4140,7 @@
         {
           "title": "Biztonsági mentések",
           "body": [
-            "A szolgáltatás teljes adatbázisáról minden éjjel biztonsági mentést készítünk. A mentést a szerveren age titkosítással, nyilvános kulccsal titkosítjuk. A mentés megnyitásához szükséges privát kulcs nincs a szerveren; az üzemeltető offline őrzi. A titkosított mentéseket a szerveren tároljuk, egy példányukat pedig az üzemeltető Google Drive-ján. A privát kulcs nélkül senki nem tudja elolvasni őket, még az sem, aki hozzáfér a szerverhez vagy a Google-fiókhoz. A mentéseket legkésőbb 90 nap után töröljük (6. pont).",
+            "A szolgáltatás teljes adatbázisáról minden éjjel biztonsági mentés készül. A mentést még a szerveren titkosítjuk az age eszközzel, nyilvános kulccsal. A mentést megnyitó privát kulcs nincs a szerveren, az üzemeltető offline őrzi. A titkosított mentések a szolgáltatás szerverén vannak, és máshová nem kerülnek. Legkésőbb 90 nap után töröljük őket (6. cikk).",
             "Ettől függetlenül egy vállalkozás bekapcsolhatja saját adatainak mentését: a saját Google Drive-jára, a saját SFTP-szerverére, webhookon keresztül vagy letöltésként. Ezek a mentések csak oda kerülnek, ahová a felhasználó beállítja őket, és a felhasználó saját age kulccsal vagy jelmondattal titkosíthatja őket. A Google Drive-on a Billanta csak az általa létrehozott fájlokhoz fér hozzá. A választott tárhelyért a felhasználó felel."
           ]
         },

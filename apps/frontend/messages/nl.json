@@ -3890,9 +3890,8 @@
     }
   },
   "legal": {
-    "draftNotice": "Werkversie. Een jurist moet deze tekst nakijken voor de lancering. Gegevens tussen vierkante haken worden nog ingevuld.",
-    "updated": "Geldig vanaf: [datum]",
-    "operator": "[Naam exploitant], bedrijfsnummer (IČO) [00000000], statutaire zetel [adres], ingeschreven in [register], e-mail [contact@billanta.cz]",
+    "updated": "Geldig vanaf: 27-11-2026",
+    "operator": "Tom Vejmelka, bedrijfsnummer (IČO) 17319790, gevestigd te Příkop 843/4, 602 00 Brno, Tsjechië, eenmanszaak ingeschreven in het Tsjechische handelsregister voor ambachten, e-mail hello@billanta.com",
     "toc": "Inhoud",
     "related": "Gerelateerde documenten",
     "terms": {
@@ -4023,7 +4022,7 @@
           "body": [
             "Op de overeenkomst is het recht van de Tsjechische Republiek van toepassing, met uitsluiting van de regels van internationaal privaatrecht en het Weens Koopverdrag. Geschillen worden beslecht door de Tsjechische rechter die bevoegd is voor de statutaire zetel van de exploitant.",
             "De exploitant mag de overeenkomst overdragen aan een opvolger die de exploitatie van de dienst overneemt; de gebruiker stemt daar vooraf mee in en wordt op de hoogte gebracht.",
-            "Deze voorwaarden worden uitgegeven in het Tsjechisch, Slowaaks en Engels. Bij tegenstrijdigheid gaat de Tsjechische versie voor.",
+            "De voorwaarden worden in meerdere talen uitgegeven. Bij tegenstrijdigheid gaat de Tsjechische versie voor.",
             "Als een bepaling ongeldig is, blijft de rest van kracht."
           ]
         },
@@ -4085,7 +4084,8 @@
             "Het leveren van de dienst op grond van de overeenkomst (art. 6 lid 1 sub b AVG).",
             "Wettelijke verplichtingen, vooral op het gebied van boekhouding en belasting. Gegevens over abonnementsbetalingen worden 10 jaar bewaard (art. 6 lid 1 sub c).",
             "Gerechtvaardigd belang: beveiliging van de dienst, voorkomen van misbruik en het afdwingen van vorderingen (art. 6 lid 1 sub f).",
-            "Toestemming: analytische cookies in de regio’s waar dat vereist is (art. 6 lid 1 sub a); toestemming kan op elk moment worden ingetrokken. Elders ons gerechtvaardigd belang bij het verbeteren van de website (art. 6 lid 1 sub f), waartegen je op elk moment bezwaar kunt maken door analyse uit te zetten in de cookie-instellingen."
+            "Toestemming: analytische cookies in de regio’s waar dat vereist is (art. 6 lid 1 sub a); toestemming kan op elk moment worden ingetrokken. Elders ons gerechtvaardigd belang bij het verbeteren van de website (art. 6 lid 1 sub f), waartegen je op elk moment bezwaar kunt maken door analyse uit te zetten in de cookie-instellingen.",
+            "De accountgegevens hebben we nodig om de overeenkomst te sluiten en uit te voeren. Zonder die gegevens kan geen account worden aangemaakt. Er is geen geautomatiseerde besluitvorming of profilering met rechtsgevolgen voor u. De exploitant heeft geen functionaris voor gegevensbescherming aangesteld, omdat de AVG dat niet verplicht."
           ]
         },
         {
@@ -4095,11 +4095,11 @@
             "Resend: versturen van e-mail (facturen, herinneringen, accountverificatie).",
             "Stripe en GoPay: abonnementsbetalingen. Kaartgegevens worden alleen door deze betaalproviders verwerkt; Billanta ziet ze nooit.",
             "Anthropic: AI-conceptfacturen uit tekst en afbeeldingen. OpenAI: omzetten van spraakberichten naar tekst. Beide alleen als de gebruiker een AI-functie gebruikt.",
-            "Google: inloggen met Google en back-ups naar de eigen Google Drive van de gebruiker, alleen als de gebruiker die inschakelt. We bewaren ook versleutelde nachtelijke back-ups van de hele database op de Google Drive van de exploitant, zie artikel 10.",
+            "Google: inloggen met Google en back-ups naar de eigen Google Drive van de gebruiker, alleen als de gebruiker die aanzet.",
             "Telegram en Meta (WhatsApp): alleen als de gebruiker zijn account aan een chatapp koppelt.",
             "Microsoft (Clarity): analyse op openbare pagina’s (alleen met toestemming waar die vereist is).",
             "Verder gaan gegevens alleen naar waar de gebruiker ze naartoe stuurt: zijn bank of PayPal via een koppeling die hij heeft ingeschakeld (Fio, PSD2 via Enable Banking, PayPal), zijn eigen webhooks en back-upopslag, en e-mails aan zijn klanten. Opvragingen in openbare registers (ARES, RPO, VIES) bevatten alleen een bedrijfsnummer of btw-nummer.",
-            "De actuele lijst van verwerkers, met de datum van de laatste wijziging, staat altijd in dit artikel."
+            "De lijst van verwerkers in dit artikel is actueel op de ingangsdatum die bovenaan staat. Wijzigingen melden we volgens de verwerkersovereenkomst."
           ]
         },
         {
@@ -4128,7 +4128,7 @@
           "title": "Je rechten",
           "body": [
             "Je hebt recht op inzage, rectificatie, verwijdering, beperking van de verwerking en overdraagbaarheid van gegevens, en het recht om bezwaar te maken tegen verwerking op grond van gerechtvaardigd belang. Je kunt je toestemming op elk moment intrekken.",
-            "Stuur verzoeken naar [contact@billanta.cz]. We reageren binnen een maand. Je kunt een klacht indienen bij de Tsjechische toezichthouder voor de bescherming van persoonsgegevens (www.uoou.cz) of bij de toezichthouder in je eigen land."
+            "Stuur verzoeken naar hello@billanta.com. We reageren binnen een maand. Je kunt een klacht indienen bij de Tsjechische toezichthouder voor de bescherming van persoonsgegevens (www.uoou.cz) of bij de toezichthouder in je eigen land."
           ]
         },
         {
@@ -4140,7 +4140,7 @@
         {
           "title": "Back-ups",
           "body": [
-            "We maken elke nacht een back-up van de hele database van de dienst. De back-up wordt op de server versleuteld met age, met een publieke sleutel. De privésleutel waarmee een back-up kan worden geopend, staat niet op de server; de exploitant bewaart die offline. De versleutelde back-ups worden op de server bewaard, met een kopie op de Google Drive van de exploitant. Zonder de privésleutel kan niemand ze lezen, ook niet wie toegang heeft tot de server of het Google-account. Back-ups worden uiterlijk na 90 dagen verwijderd (artikel 6).",
+            "We maken elke nacht een back-up van de hele database van de dienst. De back-up wordt nog op de server versleuteld met het hulpmiddel age en een publieke sleutel. De privésleutel die de back-up opent staat niet op de server; de exploitant bewaart hem offline. De versleutelde back-ups staan op de server van de dienst en worden nergens anders naartoe gestuurd. We verwijderen ze uiterlijk na 90 dagen (artikel 6).",
             "Daarnaast kan een bedrijf back-ups van zijn eigen gegevens inschakelen: naar zijn eigen Google Drive, naar zijn eigen SFTP-server, via een webhook of als download. Deze back-ups gaan alleen naar waar de gebruiker ze instelt, en de gebruiker kan ze versleutelen met een eigen age-sleutel of een wachtwoordzin. Op Google Drive heeft Billanta alleen toegang tot de bestanden die het zelf heeft gemaakt. De gebruiker is verantwoordelijk voor de opslag die hij kiest."
           ]
         },

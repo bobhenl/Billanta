@@ -3890,9 +3890,8 @@
     }
   },
   "legal": {
-    "draftNotice": "Version de travail. Un avocat doit la relire avant le lancement. Les informations entre crochets seront complétées.",
-    "updated": "En vigueur à partir du : [date]",
-    "operator": "[Nom de l’exploitant], IČO [00000000], siège [adresse], immatriculé au [registre], e-mail [contact@billanta.cz]",
+    "updated": "En vigueur à partir du : 27/11/2026",
+    "operator": "Tom Vejmelka, IČO 17319790, siège Příkop 843/4, 602 00 Brno, République tchèque, entrepreneur individuel inscrit au registre tchèque des métiers, e-mail hello@billanta.com",
     "toc": "Sommaire",
     "related": "Documents associés",
     "terms": {
@@ -4023,7 +4022,7 @@
           "body": [
             "Le contrat est régi par le droit de la République tchèque, à l’exclusion des règles de conflit de lois et de la Convention des Nations unies sur les contrats de vente internationale de marchandises. Les litiges sont tranchés par les tribunaux tchèques compétents pour le siège de l’exploitant.",
             "L’exploitant peut céder le contrat à un successeur reprenant l’exploitation du service ; l’utilisateur y consent par avance et en sera informé.",
-            "Les présentes conditions sont publiées en tchèque, en slovaque et en anglais. En cas de divergence, la version tchèque prévaut.",
+            "Les conditions sont publiées en plusieurs langues. En cas de divergence, la version tchèque prévaut.",
             "Si une disposition est invalide, les autres restent en vigueur."
           ]
         },
@@ -4085,7 +4084,8 @@
             "Fourniture du service en exécution du contrat (art. 6, par. 1, point b) du RGPD).",
             "Obligations légales, notamment comptables et fiscales. Les justificatifs de paiement des abonnements sont conservés 10 ans (art. 6, par. 1, point c)).",
             "Intérêt légitime : sécurité du service, prévention des abus et exercice de droits en justice (art. 6, par. 1, point f)).",
-            "Consentement : cookies de mesure d’audience dans les régions où il est requis (art. 6, par. 1, point a)) ; le consentement peut être retiré à tout moment. Ailleurs, notre intérêt légitime à améliorer le site (art. 6, par. 1, point f)), auquel vous pouvez vous opposer à tout moment en désactivant la mesure d’audience dans les Paramètres des cookies."
+            "Consentement : cookies de mesure d’audience dans les régions où il est requis (art. 6, par. 1, point a)) ; le consentement peut être retiré à tout moment. Ailleurs, notre intérêt légitime à améliorer le site (art. 6, par. 1, point f)), auquel vous pouvez vous opposer à tout moment en désactivant la mesure d’audience dans les Paramètres des cookies.",
+            "Nous avons besoin des données du compte pour conclure et exécuter le contrat. Sans elles, aucun compte ne peut être créé. Il n’y a ni décision automatisée ni profilage produisant des effets juridiques à votre égard. L’exploitant n’a pas désigné de délégué à la protection des données, car le RGPD ne l’exige pas."
           ]
         },
         {
@@ -4095,11 +4095,11 @@
             "Resend : envoi d’e-mails (factures, relances, vérification du compte).",
             "Stripe et GoPay : paiement des abonnements. Les données de carte sont traitées uniquement par ces passerelles ; Billanta ne les voit jamais.",
             "Anthropic : brouillons de facture par IA à partir de textes et d’images. OpenAI : transcription des messages vocaux en texte. Les deux uniquement lorsque l’utilisateur utilise une fonction d’IA.",
-            "Google : connexion avec Google et sauvegardes sur le Google Drive de l’utilisateur, uniquement s’il les active. Nous conservons aussi des sauvegardes nocturnes chiffrées de toute la base de données sur le Google Drive de l’exploitant, voir l’article 10.",
+            "Google : connexion avec Google et sauvegardes sur le Google Drive propre de l’utilisateur, seulement si l’utilisateur les active.",
             "Telegram et Meta (WhatsApp) : uniquement si l’utilisateur associe son compte à une application de messagerie.",
             "Microsoft (Clarity) : mesure d’audience sur les pages publiques (uniquement avec consentement là où il est requis).",
             "Au-delà, les données ne vont que là où l’utilisateur les envoie : à sa banque ou à PayPal via une connexion qu’il a activée (Fio, PSD2 via Enable Banking, PayPal), à ses propres webhooks et stockages de sauvegarde, et dans les e-mails à ses clients. Les recherches dans les registres publics (ARES, RPO, VIES) ne contiennent qu’un IČO ou un numéro de TVA.",
-            "La liste à jour des sous-traitants, avec la date de sa dernière modification, figure toujours dans le présent article."
+            "La liste des sous-traitants de cet article est à jour à la date d’entrée en vigueur indiquée en haut. Nous annonçons les changements selon l’Accord de traitement des données."
           ]
         },
         {
@@ -4128,7 +4128,7 @@
           "title": "Vos droits",
           "body": [
             "Vous disposez d’un droit d’accès, de rectification, d’effacement, de limitation du traitement et de portabilité des données, ainsi que du droit de vous opposer au traitement fondé sur l’intérêt légitime. Vous pouvez retirer votre consentement à tout moment.",
-            "Adressez vos demandes à [contact@billanta.cz]. Nous répondons dans un délai d’un mois. Vous pouvez introduire une réclamation auprès de l’Office tchèque pour la protection des données personnelles (www.uoou.cz) ou de l’autorité de contrôle de votre pays."
+            "Adressez vos demandes à hello@billanta.com. Nous répondons dans un délai d’un mois. Vous pouvez introduire une réclamation auprès de l’Office tchèque pour la protection des données personnelles (www.uoou.cz) ou de l’autorité de contrôle de votre pays."
           ]
         },
         {
@@ -4140,7 +4140,7 @@
         {
           "title": "Sauvegardes",
           "body": [
-            "Nous sauvegardons chaque nuit l’ensemble de la base de données du service. La sauvegarde est chiffrée sur le serveur avec age, au moyen d’une clé publique. La clé privée qui permet d’ouvrir une sauvegarde ne se trouve pas sur le serveur ; l’exploitant la conserve hors ligne. Les sauvegardes chiffrées sont conservées sur le serveur, avec une copie sur le Google Drive de l’exploitant. Sans la clé privée, personne ne peut les lire, pas même quelqu’un qui aurait accès au serveur ou au compte Google. Les sauvegardes sont supprimées au plus tard après 90 jours (article 6).",
+            "Nous sauvegardons chaque nuit l’ensemble de la base de données du service. La sauvegarde est chiffrée sur le serveur même avec l’outil age et une clé publique. La clé privée qui ouvre la sauvegarde n’est pas sur le serveur ; l’exploitant la conserve hors ligne. Les sauvegardes chiffrées sont stockées sur le serveur du service et ne sont envoyées nulle part ailleurs. Nous les supprimons au plus tard après 90 jours (article 6).",
             "Par ailleurs, une entreprise peut activer des sauvegardes de ses propres données : sur son propre Google Drive, sur son propre serveur SFTP, via un webhook ou en téléchargement. Ces sauvegardes ne vont que là où l’utilisateur l’a choisi, et il peut les chiffrer avec sa propre clé age ou une phrase secrète. Sur Google Drive, Billanta n’a accès qu’aux fichiers qu’il a lui-même créés. L’utilisateur est responsable du stockage qu’il choisit."
           ]
         },

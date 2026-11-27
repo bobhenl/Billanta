@@ -1,4 +1,3 @@
-import { AlertTriangle } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { chipClass } from '@/components/chip-row';
 import { Link } from '@/i18n/navigation';
@@ -32,10 +31,6 @@ const PATHS: Record<LegalDocKey, string> = {
  * `legal.<doc>.sections` as an array of { title, body[] } read with `t.raw`,
  * so adding a clause is a message-only change. `{operator}` inside a body is
  * replaced with the operator identity from `legal.operator`.
- *
- * The wording is a working draft, not attorney-reviewed: the banner says so
- * and must stay until a lawyer has signed off and the bracketed operator
- * placeholders are filled in.
  */
 export async function LegalDocument({ doc }: { doc: LegalDocKey }) {
   const t = await getTranslations('legal');
@@ -60,11 +55,6 @@ export async function LegalDocument({ doc }: { doc: LegalDocKey }) {
       <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t(`${doc}.title`)}</h1>
       <p className="mt-3 text-muted-foreground sm:text-lg">{t(`${doc}.intro`)}</p>
       <p className="mt-2 text-xs text-muted-foreground">{t('updated')}</p>
-
-      <div className="mt-6 flex items-start gap-2 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 text-sm font-medium text-warning">
-        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-        <span>{t('draftNotice')}</span>
-      </div>
 
       <nav aria-label={t('toc')} className="mt-8 rounded-xl border border-border bg-card p-5">
         <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('toc')}</p>

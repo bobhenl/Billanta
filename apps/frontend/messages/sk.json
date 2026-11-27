@@ -3897,9 +3897,8 @@
     }
   },
   "legal": {
-    "draftNotice": "Pracovný návrh. Pred spustením ho musí skontrolovať advokát. Údaje v hranatých zátvorkách sa doplnia.",
-    "updated": "Účinné od: [dátum]",
-    "operator": "[Názov prevádzkovateľa], IČO [00000000], so sídlom [adresa], zapísaný v [register], e-mail [kontakt@billanta.cz]",
+    "updated": "Účinné od: 27. 11. 2026",
+    "operator": "Tom Vejmelka, IČO 17319790, so sídlom Příkop 843/4, 602 00 Brno, Česká republika, fyzická osoba zapísaná v živnostenskom registri ČR, e-mail hello@billanta.com",
     "toc": "Obsah",
     "related": "Súvisiace dokumenty",
     "terms": {
@@ -4030,7 +4029,7 @@
           "body": [
             "Zmluva sa riadi právom Českej republiky, s vylúčením kolíznych noriem a Dohovoru OSN o zmluvách o medzinárodnej kúpe tovaru. Spory rozhodujú všeobecné súdy Českej republiky príslušné podľa sídla prevádzkovateľa.",
             "Prevádzkovateľ môže zmluvu postúpiť nástupcovi, ktorý prevezme prevádzku služby. Používateľ s tým vopred súhlasí. Prevádzkovateľ ho o tom upovedomí.",
-            "Podmienky sú vydané v češtine, slovenčine a angličtine. V prípade rozporu rozhoduje česká verzia.",
+            "Podmienky sú vydané vo viacerých jazykoch. V prípade rozporu rozhoduje česká verzia.",
             "Ak je niektoré ustanovenie neplatné, ostatné zostávajú v platnosti."
           ]
         },
@@ -4092,7 +4091,8 @@
             "Poskytovanie služby podľa zmluvy (čl. 6 ods. 1 písm. b GDPR).",
             "Plnenie zákonných povinností, najmä účtovných a daňových. Doklady o platbách za predplatné uchovávame 10 rokov (čl. 6 ods. 1 písm. c).",
             "Oprávnený záujem: zabezpečenie služby, prevencia zneužitia a vymáhanie nárokov (čl. 6 ods. 1 písm. f).",
-            "Súhlas: analytické cookies v oblastiach, kde sa vyžaduje (čl. 6 ods. 1 písm. a); súhlas možno kedykoľvek odvolať. Inde oprávnený záujem na zlepšovaní webu (čl. 6 ods. 1 písm. f), proti ktorému môžete kedykoľvek namietať vypnutím v Nastaveniach cookies."
+            "Súhlas: analytické cookies v oblastiach, kde sa vyžaduje (čl. 6 ods. 1 písm. a); súhlas možno kedykoľvek odvolať. Inde oprávnený záujem na zlepšovaní webu (čl. 6 ods. 1 písm. f), proti ktorému môžete kedykoľvek namietať vypnutím v Nastaveniach cookies.",
+            "Údaje o účte potrebujeme na uzavretie a plnenie zmluvy. Bez nich sa účet založiť nedá. Nedochádza k automatizovanému rozhodovaniu ani profilovaniu, ktoré by pre vás malo právne účinky. Zodpovednú osobu prevádzkovateľ nevymenoval, pretože mu to GDPR neukladá."
           ]
         },
         {
@@ -4102,11 +4102,11 @@
             "Resend: odosielanie e-mailov (faktúry, upomienky, overenie účtu).",
             "Stripe a GoPay: platby predplatného. Údaje o platobných kartách spracúvajú len tieto brány, Billanta ich nevidí.",
             "Anthropic: AI návrhy faktúr z textu a obrázkov. OpenAI: prepis hlasových správ na text. Oboje len vtedy, keď používateľ AI funkciu použije.",
-            "Google: prihlásenie cez Google a zálohy na vlastný Google Disk používateľa, len ak ich používateľ zapne. Na Google Disk Billanty ukladáme aj šifrované nočné zálohy celej databázy, pozri článok 10.",
+            "Google: prihlásenie cez Google a zálohy na vlastný Google Disk používateľa, len ak ich používateľ zapne.",
             "Telegram a Meta (WhatsApp): len ak používateľ prepojí účet s chatovou aplikáciou.",
             "Microsoft (Clarity): analytika verejných stránok (len so súhlasom tam, kde sa vyžaduje).",
             "Údaje sa ďalej odovzdávajú len tam, kam ich pošle sám používateľ: banka alebo PayPal cez zapnuté napojenie (Fio, PSD2 cez Enable Banking, PayPal), vlastné webhooky a úložiská záloh, e-maily odberateľom. Dopyty do verejných registrov (ARES, RPO, VIES) obsahujú len IČO alebo DIČ.",
-            "Aktuálny zoznam sprostredkovateľov s dátumom poslednej zmeny je vždy v tomto článku."
+            "Zoznam sprostredkovateľov v tomto článku je aktuálny k dátumu účinnosti uvedenému hore. O zmenách informujeme podľa Zmluvy o spracúvaní."
           ]
         },
         {
@@ -4135,7 +4135,7 @@
           "title": "Vaše práva",
           "body": [
             "Máte právo na prístup k údajom, opravu, vymazanie, obmedzenie spracúvania, prenosnosť a právo namietať proti spracúvaniu na základe oprávneného záujmu. Súhlas môžete kedykoľvek odvolať.",
-            "Žiadosti posielajte na [kontakt@billanta.cz]. Vybavíme ich do jedného mesiaca. Sťažnosť môžete podať na Úrade na ochranu osobných údajov SR (dataprotection.gov.sk), v Česku na Úřade pro ochranu osobních údajů."
+            "Žiadosti posielajte na hello@billanta.com. Vybavíme ich do jedného mesiaca. Sťažnosť môžete podať na Úrade na ochranu osobných údajov SR (dataprotection.gov.sk), v Česku na Úřade pro ochranu osobních údajů."
           ]
         },
         {
@@ -4147,7 +4147,7 @@
         {
           "title": "Zálohy",
           "body": [
-            "Celú databázu služby zálohujeme každú noc. Záloha sa ešte na serveri zašifruje nástrojom age verejným kľúčom. Súkromný kľúč, ktorým sa dá záloha otvoriť, na serveri nie je, Billanta ho uchováva offline. Šifrované zálohy sú na serveri a ich kópia na Google Disku Billanty. Bez súkromného kľúča ich neprečíta ani ten, kto má prístup k serveru alebo k účtu Google. Zálohy mažeme najneskôr po 90 dňoch (článok 6).",
+            "Celú databázu služby zálohujeme každú noc. Záloha sa ešte na serveri zašifruje nástrojom age verejným kľúčom. Súkromný kľúč, ktorým sa dá záloha otvoriť, na serveri nie je, prevádzkovateľ ho uchováva offline. Zašifrované zálohy sú uložené na serveri služby a nikam inam sa neposielajú. Mažeme ich najneskôr po 90 dňoch (článok 6).",
             "Okrem toho si firma môže sama zapnúť zálohy svojich údajov: na vlastný Google Disk, na vlastný SFTP server, cez webhook, alebo si zálohu stiahnuť. Takéto zálohy idú len tam, kam ich používateľ nastaví, a môže ich zašifrovať vlastným kľúčom age alebo heslom. Pri Google Disku má Billanta prístup len k súborom, ktoré sama vytvorila. Za úložisko, ktoré si používateľ zvolí, zodpovedá on."
           ]
         },
