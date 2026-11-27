@@ -25,6 +25,7 @@ import { planSummary } from "../billing/plan-access";
 import { upgradeFor } from "../billing/plans";
 import { remaining, usageLimit, usagePeriod } from "../billing/usage";
 import { consumeUsage, readUsage, refundUsage } from "../billing/usage.repository";
+import { assertPlainFile } from "../vault/sealed-files";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 type AiMode = (typeof schema.aiModeEnum.enumValues)[number];
@@ -267,7 +268,14 @@ export class AiService {
    * Photo/PDF of a received invoice -> expense form fields. Like
    * suggestInvoice, nothing is saved; the expense form is pre-filled.
    */
+  /**
+   * Reads one receipt and forgets it: the file goes to the model and back,
+   * nothing here stores or logs it. In "Důvěrný režim" the browser decrypts
+   * a receipt and sends it only after the member's explicit one-time choice;
+   * ciphertext itself is refused, the model would read noise.
+   */
   async readReceipt(db: TenantDb, tenantId: string, file: { buffer: Buffer; mediaType: ReceiptMediaType }) {
+    assertPlainFile(file.buffer);
     const tenant = await this.loadTenant(db, tenantId);
     const client = this.clientFor(tenant.aiMode, tenant.aiApiKeyEncrypted);
     if (tenant.isDemo) await this.consumeDemoQuota(tenant.id);

@@ -1,7 +1,7 @@
 'use client';
 
 import { type FormEvent, useRef, useState, useTransition } from 'react';
-import { ChevronDown, Link2, Loader2, QrCode, ScanLine, Upload } from 'lucide-react';
+import { ChevronDown, Link2, Loader2, LockKeyhole, QrCode, ScanLine, Upload } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { REVERSE_CHARGE_CODE_VALUES, isReverseChargeCode } from '@faktur/cz-compliance';
 import { useRouter } from '@/i18n/navigation';
@@ -15,6 +15,8 @@ import { cn } from '@/lib/utils';
 import { EXPENSE_CATEGORIES, isKnownCategory, vatOfGross, type Expense } from '@/lib/expense-ui';
 import { QrCameraScanner } from '@/components/qr-camera-scanner';
 import { scanInvoiceFile, type ScannedInvoice } from '@/lib/qr-scan';
+import { useVault } from '@/components/vault/vault-provider';
+import { encryptedUpload, encryptsFiles } from '@/lib/vault/files';
 import { createExpense, updateExpense, type ExpenseInput } from './actions';
 
 export interface SupplierOption {
@@ -84,6 +86,12 @@ export function ExpenseForm({
   const [aiFilled, setAiFilled] = useState(false);
   const [qrFilled, setQrFilled] = useState<ScannedInvoice['format'] | null>(null);
   const [cameraOpen, setCameraOpen] = useState(autoScan);
+  // Důvěrný režim, "attachments": the receipt is stored encrypted after saving,
+  // and the AI reads it only when the member ticks the one-time opt-in.
+  const { vault, requestUnlock } = useVault();
+  const encrypts = encryptsFiles(vault);
+  const [aiOptIn, setAiOptIn] = useState(false);
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
 
   const [supplierContactId, setSupplierContactId] = useState(src?.supplierContactId ?? null);
   const [supplierName, setSupplierName] = useState(
@@ -152,6 +160,7 @@ export function ExpenseForm({
 
   async function readReceipt(file: File) {
     setReading(true);
+    if (encrypts) setReceiptFile(file);
     const scan = await scanInvoiceFile(file);
     // QR Faktura carries the whole invoice: no need to bother the AI.
     if (scan && scan.format !== 'spayd') {
@@ -161,6 +170,16 @@ export function ExpenseForm({
       toast({ text: t('qrFound'), tone: 'ok' });
       return;
     }
+    // Encrypted receipts never reach the server readable unless the member said so for this one file.
+    if (encrypts && !aiOptIn) {
+      if (scan) applyScan(scan);
+      setReading(false);
+      if (fileRef.current) fileRef.current.value = '';
+      toast({ text: t('receiptKeptLocal'), tone: 'ok' });
+      return;
+    }
+    // The opt-in covers one receipt only.
+    setAiOptIn(false);
     try {
       const body = new FormData();
       body.set('file', file);
@@ -204,6 +223,22 @@ export function ExpenseForm({
     }
   }
 
+  /** Stores the read receipt with the saved expense, encrypted here first. */
+  async function attachEncrypted(expenseId: string, file: File) {
+    const key = await requestUnlock();
+    if (!key) {
+      toast({ text: t('receiptNotStored'), tone: 'err' });
+      return;
+    }
+    try {
+      const res = await fetch(`/api/expenses/${expenseId}/attachments`, { method: 'POST', body: await encryptedUpload(key, file, file.name) });
+      if (!res.ok) throw new Error(String(res.status));
+      setReceiptFile(null);
+    } catch {
+      toast({ text: t('receiptNotStored'), tone: 'err' });
+    }
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const input: ExpenseInput = {
@@ -234,6 +269,7 @@ export function ExpenseForm({
         return;
       }
       toast({ text: t('saved'), tone: 'ok' });
+      if (receiptFile && encrypts) await attachEncrypted(result.data.id, receiptFile);
       router.push(`/expenses/${result.data.id}`);
       router.refresh();
     });
@@ -282,6 +318,23 @@ export function ExpenseForm({
         </span>
         <Upload className="ml-auto hidden h-5 w-5 shrink-0 text-primary sm:block" />
       </button>
+      {encrypts && (
+        <div className="mt-2 space-y-1 rounded-lg border border-border p-3 text-sm">
+          <label className="flex items-start gap-2">
+            <input type="checkbox" checked={aiOptIn} onChange={(e) => setAiOptIn(e.target.checked)} className="mt-0.5" />
+            <span>
+              <span className="font-semibold">{t('aiOptIn')}</span>
+              <span className="block text-xs text-muted-foreground">{t('aiOptInHint')}</span>
+            </span>
+          </label>
+          {receiptFile && (
+            <p className="flex items-center gap-1 text-xs text-muted-foreground">
+              <LockKeyhole className="h-3 w-3 shrink-0" aria-hidden="true" />
+              {t('receiptWillEncrypt', { name: receiptFile.name })}
+            </p>
+          )}
+        </div>
+      )}
       <InfoHint hint={t('qrHint')} label={t('qrCamera')} className="mt-2" rowClassName="gap-2">
         <button type="button" className={buttonClass.secondary} onClick={() => setCameraOpen(true)} disabled={reading}>
           <QrCode className="h-4 w-4" />

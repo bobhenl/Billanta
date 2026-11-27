@@ -1471,8 +1471,9 @@ export class InvoicesService {
    * `EmailService.sendInvoiceEmail`, then stamps `sent_at`.
    */
   /**
-   * `files`: a sealed invoice's PDF/ISDOC, rendered in the browser and attached to this one
-   * e-mail. They are delivered straight away and never written to the outbox or a log.
+   * `files`: what the browser made or decrypted for this one e-mail – a sealed
+   * invoice's PDF/ISDOC and decrypted attachments. They are delivered straight
+   * away and never written to the outbox or a log.
    */
   async sendInvoice(db: TenantDb, id: string, tenantId?: string, userId?: string, files?: SealedDocumentFiles) {
     const [invoice] = await db.select().from(schema.invoices).where(eq(schema.invoices.id, id)).limit(1);
@@ -1498,7 +1499,9 @@ export class InvoicesService {
       .select()
       .from(schema.invoiceLineItems)
       .where(eq(schema.invoiceLineItems.invoiceId, id));
-    if (files) {
+    const documents = !!(files?.pdf || files?.isdoc);
+    const extra = files?.extra ?? [];
+    if (documents) {
       // Only for what the server cannot render itself: a plain invoice's files are its own.
       if (!documentIsSealed(invoice, lineItems)) throw new BadRequestException("not_confidential");
       if (!invoice.invoiceNumber) throw new BadRequestException("invoice_not_issued");
@@ -1512,9 +1515,13 @@ export class InvoicesService {
     // Instead of failing, the e-mail goes out with the link and the PDF waits
     // for a member's browser, or the whole e-mail waits (vault/vault-email.ts).
     const sealed = documentIsSealed(invoice, lineItems);
-    const plan = sealed && !files ? sealedSendPlan(await this.vaultEmailMode(db), await this.attachesPdf(db, invoice.tenantId)) : null;
+    // With the browser's own PDF/ISDOC nothing has to wait, whatever the mode.
+    const plan = sealed && !documents ? sealedSendPlan(await this.vaultEmailMode(db), await this.attachesPdf(db, invoice.tenantId)) : null;
 
     await assertCanSendEmail(db, invoice.tenantId);
+    // Files decrypted in the browser can't wait in a queue: the server must not keep them.
+    // In the "wait" mode the browser sends the PDF along, so this is only a request without it.
+    if (extra.length && plan && !plan.sendNow) throw new ConflictException("pass_files_waiting");
     if (plan?.queue) await this.queueForBrowser(db, invoice, contact.email, plan.queue, corrected, userId);
     if (plan && !plan.sendNow) {
       await this.log(db, invoice, "send_waiting_pdf", [{ field: "email", from: null, to: contact.email }]);
@@ -1528,8 +1535,9 @@ export class InvoicesService {
       const own: EmailAttachment[] = [];
       if (files.pdf) own.push({ filename: `${base}.pdf`, content: files.pdf, contentType: "application/pdf" });
       if (files.isdoc) own.push({ filename: `${base}.isdoc`, content: files.isdoc, contentType: "application/xml" });
-      const email = buildInvoiceEmail({ ...params, custom: { ...params.custom, attachments: [...own, ...(params.custom?.attachments ?? [])] } });
-      await this.emailService.sendNow(email, queue);
+      const attachments = [...own, ...(params.custom?.attachments ?? []), ...extra];
+      // Straight from memory to the provider: the outbox records the send without the files.
+      await this.emailService.sendNow(buildInvoiceEmail({ ...params, custom: { ...params.custom, attachments } }), queue);
     } else {
       await this.emailService.sendInvoiceEmail(params, queue);
     }
@@ -2302,10 +2310,11 @@ const FILE_PREFIX: Record<"cs" | "sk" | "en", Record<"invoice" | "proforma" | "c
  * "faktura-2_11_2026": the kind of document in the language it is written in (not the
  * language of whoever downloads it) and its number, safe in a file name and a mail header.
  */
-/** A sealed invoice's PDF/ISDOC from the browser, for one e-mail (see `sendInvoice`). */
+/** What the browser made or decrypted for one e-mail (see `sendInvoice`): a sealed invoice's PDF/ISDOC, decrypted attachments. */
 export interface SealedDocumentFiles {
   pdf?: Buffer;
   isdoc?: Buffer;
+  extra?: EmailAttachment[];
 }
 
 export function invoiceFileBase(invoice: { invoiceNumber: string | null; documentType: string; language: string }): string {

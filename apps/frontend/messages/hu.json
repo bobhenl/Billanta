@@ -849,7 +849,12 @@
       "qrFound": "Adatok betöltve a QR-kódból",
       "qrCheck": "A QR-számlából kitöltve – a szállító, az összeg, az ÁFA és a dátumok pontosan megegyeznek a bizonylattal. Adjon meg leírást és kategóriát.",
       "qrCheckPayment": "A QR fizetési kódból megvan az összeg, a változó szimbólum és a fizetési határidő. Töltse ki a többit, vagy töltse fel a teljes bizonylatot.",
-      "qrDescription": "{number} számú számla"
+      "qrDescription": "{number} számú számla",
+      "aiOptIn": "Blokk küldése az MI-nek – egyszer megy át a szerveren, nem tárolódik",
+      "aiOptInHint": "Bejelölés nélkül csak a QR-kódot olvassa, közvetlenül a böngészőben, a többit Ön tölti ki.",
+      "receiptKeptLocal": "A blokk a böngészőben maradt. Mentéskor titkosítva csatoljuk a költséghez.",
+      "receiptWillEncrypt": "Mentéskor titkosítva csatoljuk: {name}",
+      "receiptNotStored": "A költség mentve, de a blokkot nem sikerült csatolni. Adja hozzá a költség részleteinél."
     },
     "noTenant": "Először állítsa be a cégét.",
     "loadError": "A költségeket nem sikerült betölteni",
@@ -5262,8 +5267,19 @@
         "bad_type": "Ez a fájltípus nem csatolható.",
         "too_big": "A fájl nagyobb 5 MB-nál.",
         "too_many": "Egy számlához legfeljebb 10 melléklet tartozhat.",
-        "generic": "A mellékletet nem sikerült menteni."
-      }
+        "generic": "A mellékletet nem sikerült menteni.",
+        "plan_required": "A mellékletek titkosítása a Plus csomag része.",
+        "vault_category_off": "A mellékletek titkosítása nincs bekapcsolva a bizalmas módban."
+      },
+      "hintExpense": "A költséghez tartozó blokk vagy bejövő számla. PDF, képek, Office, CSV/XML/TXT, legfeljebb 5 MB, legfeljebb 10 fájl.",
+      "encryptsNew": "Az új fájlokat feltöltés előtt a böngészője titkosítja.",
+      "encryptedName": "Titkosított fájl",
+      "encrypted": "Titkosítva",
+      "openEncrypted": "Megnyitás (a böngészőjében lesz visszafejtve)",
+      "decryptFailed": "A fájlt nem sikerült visszafejteni.",
+      "emailOnEncrypted": "Titkosított: csak akkor megy az e-maillel, ha küldéskor megerősíti (kattintással kikapcsolja)",
+      "portalEncrypted": "Titkosított mellékletet az ügyfél a megosztott linken nem tud megnyitni",
+      "previewLocal": "Az előnézet csak az Ön böngészőjében készült. A szerver nem olvasta a fájlt."
     },
     "quoteResponse": {
       "title": "Az ügyfél válasza",
@@ -14349,6 +14365,11 @@
       "copyLink": "Másolás",
       "emailWaiting": "Az e-mail a PDF-re vár. Egy feloldott módú böngészőből megy ki, lásd a fenti értesítést.",
       "pdfFollows": "Link elküldve. A PDF-et kiegészítő e-mailként küldheti a fenti értesítésből.",
+      "unlockFirst": "Feloldás nélkül titkosított mellékletet nem lehet csatolni.",
+      "decryptFailed": "Egy mellékletet nem sikerült visszafejteni.",
+      "passFiles": "{n, plural, one {# titkosított melléklet csatolása} other {# titkosított melléklet csatolása}}",
+      "passFilesHint": "A böngésző visszafejti őket, és egyszer haladnak át a szerveren ebbe az e-mailbe. A szerver nem tárolja és nem naplózza őket.",
+      "passFilesWaiting": "Ez a bizonylat arra vár, hogy egy böngésző elkészítse a PDF-et, a mellékletek pedig nem várakozhatnak a szerveren. Jelölje be a PDF/ISDOC csatolását is, és minden egyszerre megy el, vagy küldje el az e-mailt mellékletek nélkül.",
       "pdfLocal": "A PDF-et a böngészője készíti, a szerver nem látja a titkosított szövegeket.",
       "isdocLocal": "Az ISDOC-ot a böngészője készíti, a szerver nem látja a titkosított szövegeket.",
       "attachOnce": "PDF/ISDOC csatolása – a fájl a küldéshez egyszer áthalad a szerveren, és nem tárolódik",
@@ -14376,11 +14397,18 @@
       },
       "attachments": {
         "title": "Mellékletek és nyugták",
-        "description": "Bizonylatokhoz és költségekhez csatolt fájlok.",
+        "description": "Fájlok a bizonylatoknál és blokkok a költségeknél.",
         "loses": [
-          "Nyugták AI-alapú beolvasása",
-          "Mellékletek előnézete",
-          "Mellékletek e-mailben küldése és átadása a könyvelőnek"
+          "Az MI csak egyszeri hozzájárulással olvassa a blokkot: a fájl átmegy a szerveren, és nem tárolódik",
+          "A titkosított mellékletek nincsenek az ügyfélnek szóló megosztott linken",
+          "A számla e-mail csak akkor csatolja őket, ha küldéskor feloldja és megerősíti",
+          "A könyvelő csak csapattagként, saját kulccsal nyitja meg őket, az exportok nem tartalmaznak fájlokat"
+        ],
+        "how": [
+          "Minden fájlt a böngészője saját kulccsal titkosít, mielőtt a szerverre kerül.",
+          "A fájl neve és típusa is titkosított. A szerver csak a méretet és a feltöltés dátumát ismeri.",
+          "Az előnézet és a letöltés csak az Ön böngészőjében fejti vissza a fájlt.",
+          "A korábbi mellékletek olvashatók maradnak, amíg a Meglévő mellékletek titkosítása gombbal nem titkosítja őket."
         ]
       },
       "contacts": {
@@ -14403,6 +14431,7 @@
           "Összeget tartalmazó emlékeztetők és a szerver által készített QR-fizetés"
         ]
       },
+      "howTitle": "Hogyan működik:",
       "changesTitle": "Másképp működik:"
     },
     "enable": {
@@ -14488,7 +14517,9 @@
       "recoveryNew": "Új helyreállító kód létrehozása",
       "recoveryReplaced": "Az új helyreállító kód érvényes",
       "categoriesTitle": "Mi titkosítódik",
-      "categoriesLead": "További lehetőségek jönnek. Mindegyiknél látja, mi nem működne."
+      "categoriesLead": "Kategóriát később is hozzáadhat. A kikapcsolás csak az új adatok titkosítását állítja le, a titkosítottak titkosítva maradnak.",
+      "categoriesMin": "Legalább egy kategória maradjon bekapcsolva.",
+      "categoryOffConfirm": "Kikapcsolja ezt a kategóriát? Az új fájlok és szövegek már nem lesznek titkosítva. Ami titkosított, az titkosított marad."
     },
     "clientLink": {
       "ready": "A link tartalmazza a titkosított szövegek kulcsát (a # után). Ügyfele ezzel a teljes szöveget látja, a szerver soha nem kapja meg a kulcsot.",
@@ -14608,6 +14639,20 @@
       "item": "{n}. tétel",
       "notSealed": "Az összegeket, dátumokat, a bizonylatszámot, a közleményt és az ügyfeleket a szerver látja, hogy ÁFÁ-t számoljon, figyelje a határidőket és párosítsa a fizetéseket.",
       "more": "Hogyan működik és hogyan ellenőrizheti"
+    },
+    "sealFiles": {
+      "button": "Meglévő mellékletek titkosítása",
+      "title": "Meglévő mellékletek titkosítása",
+      "what": "A böngésző letölti a bizonylatok mellékleteit és a költségek blokkjait, amelyeket a szerver még olvasni tud, titkosítja őket, és visszatölti az eredetiek helyére.",
+      "loses": "A titkosított mellékletek eltűnnek az ügyfél megosztott linkjéről, és a számla e-mail csak küldéskori megerősítés után csatolja őket.",
+      "resumable": "A zárolt bizonylatok mellékleteit kihagyja. Ha bezárja az ablakot, legközelebb ott folytatja, ahol abbahagyta.",
+      "cancel": "Vissza",
+      "confirm": "Titkosítás",
+      "progress": "Titkosítás… {n}",
+      "done": "{n, plural, one {# melléklet titkosítva} other {# melléklet titkosítva}}.",
+      "partial": "{n} titkosítva, {failed} nem sikerült. Próbálja újra később.",
+      "nothing": "Nem volt mit titkosítani.",
+      "failed": "A titkosítás nem sikerült. A már titkosított mellékletek titkosítva maradnak."
     }
   },
   "vaultPublic": {

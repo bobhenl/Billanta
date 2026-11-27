@@ -3,13 +3,16 @@ import { sameOrigin } from '@/lib/demo';
 import { forwardJson } from '@/lib/forward-json';
 
 const UUID = /^[0-9a-f-]{36}$/i;
-// The backend checks content and size again; this only stops an oversized body early.
-const MAX_BYTES = 7 * 1024 * 1024;
+const MAX_FILES = 10;
+// PDF 5 MB + ISDOC 2 MB + ten 5 MB attachments, plus multipart overhead. The
+// backend checks content and size again; this only stops an oversized body early.
+const MAX_BYTES = 58 * 1024 * 1024;
 
 /**
- * Důvěrný režim: sends a sealed invoice with the PDF/ISDOC rendered in the
- * browser, forwarded to `POST /api/v1/invoices/:id/send-with-files`. A Route
- * Handler because of the multipart body. Nothing here keeps or logs the files.
+ * Důvěrný režim: sends the invoice e-mail with files the browser made or
+ * decrypted for this one e-mail – a sealed invoice's PDF/ISDOC and decrypted
+ * attachments – forwarded to `POST /api/v1/invoices/:id/send-with-files`. A
+ * Route Handler because of the multipart body. Nothing here keeps or logs them.
  */
 export async function POST(request: Request, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -23,6 +26,9 @@ export async function POST(request: Request, props: { params: Promise<{ id: stri
     const file = incoming.get(name);
     if (file instanceof Blob) body.set(name, file, name === 'pdf' ? 'invoice.pdf' : 'invoice.isdoc');
   }
-  if (!body.has('pdf') && !body.has('isdoc')) return NextResponse.json({ error: 'no_file' }, { status: 400 });
+  const files = incoming.getAll('files').filter((f): f is File => f instanceof File);
+  if (files.length > MAX_FILES) return NextResponse.json({ error: 'too_many' }, { status: 400 });
+  for (const file of files) body.append('files', file, file.name);
+  if (!body.has('pdf') && !body.has('isdoc') && !files.length) return NextResponse.json({ error: 'no_file' }, { status: 400 });
   return forwardJson(`/api/v1/invoices/${params.id}/send-with-files`, { method: 'POST', body });
 }

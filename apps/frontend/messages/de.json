@@ -849,7 +849,12 @@
       "qrFound": "Angaben aus dem QR-Code geladen",
       "qrCheck": "Aus der QR-Rechnung übernommen – Lieferant, Betrag, USt. und Daten entsprechen exakt dem Beleg. Ergänzen Sie Beschreibung und Kategorie.",
       "qrCheckPayment": "Der QR-Zahlungscode lieferte Betrag, variables Symbol und Fälligkeit. Ergänzen Sie den Rest oder laden Sie den ganzen Beleg hoch.",
-      "qrDescription": "Rechnung {number}"
+      "qrDescription": "Rechnung {number}",
+      "aiOptIn": "Beleg an die KI senden – geht einmalig über den Server, wird nicht gespeichert",
+      "aiOptInHint": "Ohne Häkchen wird nur ein QR-Code direkt im Browser gelesen, den Rest füllen Sie selbst aus.",
+      "receiptKeptLocal": "Der Beleg ist in Ihrem Browser geblieben. Beim Speichern wird er verschlüsselt angehängt.",
+      "receiptWillEncrypt": "Wird beim Speichern verschlüsselt angehängt: {name}",
+      "receiptNotStored": "Die Ausgabe ist gespeichert, der Beleg konnte aber nicht angehängt werden. Fügen Sie ihn in der Detailansicht hinzu."
     },
     "noTenant": "Richten Sie zuerst Ihr Unternehmen ein.",
     "loadError": "Die Ausgaben konnten nicht geladen werden",
@@ -5263,8 +5268,19 @@
         "bad_type": "Dieser Dateityp kann nicht angehängt werden.",
         "too_big": "Die Datei ist größer als 5 MB.",
         "too_many": "Eine Rechnung kann höchstens 10 Anhänge haben.",
-        "generic": "Der Anhang konnte nicht gespeichert werden."
-      }
+        "generic": "Der Anhang konnte nicht gespeichert werden.",
+        "plan_required": "Das Verschlüsseln von Anlagen gehört zum Plus-Tarif.",
+        "vault_category_off": "Die Verschlüsselung von Anlagen ist im vertraulichen Modus nicht eingeschaltet."
+      },
+      "hintExpense": "Beleg oder Eingangsrechnung zu dieser Ausgabe. PDF, Bilder, Office, CSV/XML/TXT, max. 5 MB, höchstens 10 Dateien.",
+      "encryptsNew": "Neue Dateien werden vor dem Hochladen in Ihrem Browser verschlüsselt.",
+      "encryptedName": "Verschlüsselte Datei",
+      "encrypted": "Verschlüsselt",
+      "openEncrypted": "Öffnen (wird in Ihrem Browser entschlüsselt)",
+      "decryptFailed": "Die Datei konnte nicht entschlüsselt werden.",
+      "emailOnEncrypted": "Verschlüsselt: geht nur mit der E-Mail mit, wenn Sie es beim Senden bestätigen (zum Ausschalten klicken)",
+      "portalEncrypted": "Eine verschlüsselte Anlage kann der Kunde im geteilten Link nicht öffnen",
+      "previewLocal": "Die Vorschau entstand nur in Ihrem Browser. Der Server hat die Datei nicht gelesen."
     },
     "quoteResponse": {
       "title": "Antwort des Kunden",
@@ -14350,6 +14366,11 @@
       "copyLink": "Kopieren",
       "emailWaiting": "Die E-Mail wartet auf das PDF. Sie wird aus einem Browser mit entsperrtem Modus gesendet, siehe Hinweis oben.",
       "pdfFollows": "Link gesendet. Das PDF senden Sie als Nachtrag über den Hinweis oben.",
+      "unlockFirst": "Ohne Entsperren lassen sich verschlüsselte Anlagen nicht anhängen.",
+      "decryptFailed": "Eine Anlage konnte nicht entschlüsselt werden.",
+      "passFiles": "{n, plural, one {# verschlüsselte Anlage anhängen} other {# verschlüsselte Anlagen anhängen}}",
+      "passFilesHint": "Ihr Browser entschlüsselt sie, und sie gehen einmalig über den Server in diese E-Mail. Der Server speichert und protokolliert sie nicht.",
+      "passFilesWaiting": "Dieses Dokument wartet darauf, dass ein Browser das PDF erstellt, und die Anhänge dürfen nicht auf dem Server warten. Haken Sie auch „PDF/ISDOC anhängen“ an, dann geht alles auf einmal raus, oder senden Sie die E-Mail ohne Anhänge.",
       "pdfLocal": "Das PDF erstellt Ihr Browser, der Server sieht die verschlüsselten Texte nicht.",
       "isdocLocal": "Die ISDOC-Datei erstellt Ihr Browser, der Server sieht die verschlüsselten Texte nicht.",
       "attachOnce": "PDF/ISDOC anhängen – die Datei läuft zum Versand einmal über den Server und wird nicht gespeichert",
@@ -14377,11 +14398,18 @@
       },
       "attachments": {
         "title": "Anhänge und Quittungen",
-        "description": "Dateien an Belegen und Ausgaben.",
+        "description": "Dateien an Belegen und Quittungen an Ausgaben.",
         "loses": [
-          "KI-Auslesen von Quittungen",
-          "Vorschau von Anhängen",
-          "Versand von Anhängen per E-Mail und Übergabe an die Buchhaltung"
+          "Die KI liest einen Beleg nur nach einmaliger Zustimmung: die Datei geht über den Server und wird nicht gespeichert",
+          "Verschlüsselte Anlagen sind nicht im geteilten Link für den Kunden",
+          "Die Rechnungs-E-Mail enthält sie nur, wenn Sie beim Senden entsperren und bestätigen",
+          "Ihre Buchhaltung öffnet sie nur als Teammitglied mit eigenem Schlüssel, Exporte enthalten keine Dateien"
+        ],
+        "how": [
+          "Jede Datei wird in Ihrem Browser mit einem eigenen Schlüssel verschlüsselt, bevor sie zum Server geht.",
+          "Auch Dateiname und Typ sind verschlüsselt. Der Server kennt nur Größe und Upload-Datum.",
+          "Vorschau und Download werden erst in Ihrem Browser entschlüsselt.",
+          "Ältere Anlagen bleiben lesbar, bis Sie sie mit Vorhandene Anlagen verschlüsseln verschlüsseln."
         ]
       },
       "contacts": {
@@ -14404,6 +14432,7 @@
           "Mahnungen mit Betrag und vom Server erstellte QR-Zahlungen"
         ]
       },
+      "howTitle": "So funktioniert es:",
       "changesTitle": "Funktioniert anders:"
     },
     "enable": {
@@ -14489,7 +14518,9 @@
       "recoveryNew": "Neuen Wiederherstellungscode erstellen",
       "recoveryReplaced": "Der neue Wiederherstellungscode gilt",
       "categoriesTitle": "Was verschlüsselt wird",
-      "categoriesLead": "Weitere Optionen folgen. Bei jeder sehen Sie, was nicht mehr funktionieren würde."
+      "categoriesLead": "Eine Kategorie können Sie auch später hinzufügen. Ausschalten verschlüsselt nur neue Daten nicht mehr, Verschlüsseltes bleibt verschlüsselt.",
+      "categoriesMin": "Lassen Sie mindestens eine Kategorie eingeschaltet.",
+      "categoryOffConfirm": "Diese Kategorie ausschalten? Neue Dateien und Texte werden nicht mehr verschlüsselt. Bereits Verschlüsseltes bleibt verschlüsselt."
     },
     "clientLink": {
       "ready": "Der Link enthält den Schlüssel zu den verschlüsselten Texten (nach dem #). Ihr Kunde sieht damit den vollen Wortlaut, der Server bekommt den Schlüssel nie.",
@@ -14609,6 +14640,20 @@
       "item": "Position {n}",
       "notSealed": "Beträge, Daten, Dokumentnummer, Verwendungszweck und Kunden sieht der Server, um die MwSt. zu berechnen, Fälligkeiten zu überwachen und Zahlungen zuzuordnen.",
       "more": "Wie es funktioniert und wie Sie es prüfen"
+    },
+    "sealFiles": {
+      "button": "Vorhandene Anlagen verschlüsseln",
+      "title": "Vorhandene Anlagen verschlüsseln",
+      "what": "Ihr Browser lädt die Anlagen von Belegen und die Quittungen von Ausgaben herunter, die der Server noch lesen kann, verschlüsselt sie und lädt sie an ihrer Stelle wieder hoch.",
+      "loses": "Verschlüsselte Anlagen verschwinden aus dem geteilten Link für den Kunden, und die Rechnungs-E-Mail enthält sie nur nach Bestätigung beim Senden.",
+      "resumable": "Anlagen gesperrter Belege werden übersprungen. Wenn Sie das Fenster schließen, geht es beim nächsten Mal dort weiter.",
+      "cancel": "Zurück",
+      "confirm": "Verschlüsseln",
+      "progress": "Verschlüssele… {n}",
+      "done": "{n, plural, one {# Anlage verschlüsselt} other {# Anlagen verschlüsselt}}.",
+      "partial": "{n} verschlüsselt, {failed} fehlgeschlagen. Versuchen Sie es später erneut.",
+      "nothing": "Es gab nichts zu verschlüsseln.",
+      "failed": "Die Verschlüsselung ist fehlgeschlagen. Bereits verschlüsselte Anlagen bleiben verschlüsselt."
     }
   },
   "vaultPublic": {

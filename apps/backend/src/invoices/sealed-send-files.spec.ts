@@ -1,4 +1,5 @@
-import { BadRequestException, PayloadTooLargeException } from "@nestjs/common";
+import { BadRequestException, ConflictException, PayloadTooLargeException } from "@nestjs/common";
+import { ENCRYPTED_FILE_MAGIC } from "@faktur/cz-compliance";
 import { describe, expect, it } from "vitest";
 import { MAX_SEALED_ISDOC_BYTES, MAX_SEALED_PDF_BYTES, sealedSendFiles, type UploadedPart } from "./sealed-send-files";
 
@@ -47,5 +48,16 @@ describe("sealedSendFiles", () => {
     expect(code(() => sealedSendFiles({ pdf: [part(bigPdf, "application/pdf")] }))).toEqual({ type: PayloadTooLargeException, message: "file_too_large" });
     const bigIsdoc = Buffer.concat([isdoc().buffer, Buffer.alloc(MAX_SEALED_ISDOC_BYTES)]);
     expect(code(() => sealedSendFiles({ isdoc: [part(bigIsdoc, "application/xml")] }))).toEqual({ type: PayloadTooLargeException, message: "file_too_large" });
+  });
+
+  it("takes decrypted attachments alone or next to the documents, and refuses ones that are still ciphertext", () => {
+    const attachment = (buffer: Buffer) => ({ buffer, size: buffer.length, mimetype: "application/pdf", originalname: "smlouva.pdf" });
+    const plain = attachment(Buffer.from("%PDF-1.7 decrypted"));
+    expect(sealedSendFiles({ files: [plain] }).extra?.map((f) => f.filename)).toEqual(["smlouva.pdf"]);
+    const both = sealedSendFiles({ pdf: [pdf()], files: [plain] });
+    expect(both.pdf).toBeDefined();
+    expect(both.extra).toHaveLength(1);
+    const cipher = attachment(Buffer.concat([Buffer.from(ENCRYPTED_FILE_MAGIC), Buffer.alloc(128, 7)]));
+    expect(code(() => sealedSendFiles({ pdf: [pdf()], files: [cipher] }))).toEqual({ type: ConflictException, message: "encrypted_file" });
   });
 });

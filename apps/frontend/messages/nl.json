@@ -849,7 +849,12 @@
       "qrFound": "Gegevens geladen uit de QR-code",
       "qrCheck": "Ingevuld uit de QR-factuur – leverancier, bedrag, btw en data komen exact overeen met het document. Voeg een omschrijving en categorie toe.",
       "qrCheckPayment": "De QR-betaalcode gaf het bedrag, het variabel symbool en de vervaldatum. Vul de rest aan of upload het hele document.",
-      "qrDescription": "Factuur {number}"
+      "qrDescription": "Factuur {number}",
+      "aiOptIn": "Bon naar AI sturen – gaat één keer via de server en wordt niet opgeslagen",
+      "aiOptInHint": "Zonder vinkje wordt alleen een QR-code gelezen, direct in je browser, en vul je de rest zelf in.",
+      "receiptKeptLocal": "De bon is in je browser gebleven. Bij opslaan wordt hij versleuteld bijgevoegd.",
+      "receiptWillEncrypt": "Wordt bij opslaan versleuteld bijgevoegd: {name}",
+      "receiptNotStored": "De uitgave is opgeslagen, maar de bon kon niet worden bijgevoegd. Voeg hem toe op de pagina van de uitgave."
     },
     "noTenant": "Stel eerst je bedrijf in.",
     "loadError": "Kosten konden niet worden geladen",
@@ -5262,8 +5267,19 @@
         "bad_type": "Dit bestandstype kan niet worden bijgevoegd.",
         "too_big": "Het bestand is groter dan 5 MB.",
         "too_many": "Een factuur kan maximaal 10 bijlagen hebben.",
-        "generic": "De bijlage kon niet worden opgeslagen."
-      }
+        "generic": "De bijlage kon niet worden opgeslagen.",
+        "plan_required": "Bijlagen versleutelen hoort bij het Plus-abonnement.",
+        "vault_category_off": "Versleuteling van bijlagen staat niet aan in de vertrouwelijke modus."
+      },
+      "hintExpense": "De bon of inkoopfactuur bij deze uitgave. PDF, afbeeldingen, Office, CSV/XML/TXT, max. 5 MB, hooguit 10 bestanden.",
+      "encryptsNew": "Nieuwe bestanden worden vóór het uploaden in je browser versleuteld.",
+      "encryptedName": "Versleuteld bestand",
+      "encrypted": "Versleuteld",
+      "openEncrypted": "Openen (ontsleuteld in je browser)",
+      "decryptFailed": "Het bestand kon niet worden ontsleuteld.",
+      "emailOnEncrypted": "Versleuteld: gaat alleen mee met de e-mail als je dat bij verzenden bevestigt (klik om uit te zetten)",
+      "portalEncrypted": "Een versleutelde bijlage kan de klant in de gedeelde link niet openen",
+      "previewLocal": "Deze voorbeeldweergave is alleen in je browser gemaakt. De server heeft het bestand niet gelezen."
     },
     "quoteResponse": {
       "title": "Antwoord van de klant",
@@ -14349,6 +14365,11 @@
       "copyLink": "Kopiëren",
       "emailWaiting": "De e-mail wacht op de pdf. Hij gaat vanuit een browser met de modus ontgrendeld, zie de melding bovenaan.",
       "pdfFollows": "Link verstuurd. Stuur de pdf als vervolgmail via de melding bovenaan.",
+      "unlockFirst": "Zonder ontgrendelen kunnen versleutelde bijlagen niet worden meegestuurd.",
+      "decryptFailed": "Een bijlage kon niet worden ontsleuteld.",
+      "passFiles": "{n, plural, one {# versleutelde bijlage meesturen} other {# versleutelde bijlagen meesturen}}",
+      "passFilesHint": "Je browser ontsleutelt ze en ze gaan één keer via de server mee in deze e-mail. De server bewaart en logt ze niet.",
+      "passFilesWaiting": "Dit document wacht tot een browser de pdf maakt, en de bijlagen mogen niet op de server wachten. Vink ook PDF/ISDOC bijvoegen aan om alles tegelijk te versturen, of verstuur de e-mail zonder bijlagen.",
       "pdfLocal": "Je browser maakt de pdf, de server ziet de versleutelde teksten niet.",
       "isdocLocal": "Je browser maakt de ISDOC, de server ziet de versleutelde teksten niet.",
       "attachOnce": "Pdf/ISDOC bijvoegen – het bestand gaat één keer via de server om te verzenden en wordt niet bewaard",
@@ -14376,11 +14397,18 @@
       },
       "attachments": {
         "title": "Bijlagen en bonnetjes",
-        "description": "Bestanden bij documenten en uitgaven.",
+        "description": "Bestanden bij documenten en bonnen bij uitgaven.",
         "loses": [
-          "Bonnetjes uitlezen met AI",
-          "Voorbeelden van bijlagen",
-          "Bijlagen e-mailen en doorgeven aan de boekhouder"
+          "AI leest een bon alleen met je eenmalige toestemming: het bestand gaat via de server en wordt niet opgeslagen",
+          "Versleutelde bijlagen staan niet in de gedeelde link voor je klant",
+          "De factuurmail neemt ze alleen mee als je ze bij verzenden ontgrendelt en bevestigt",
+          "Je boekhouder opent ze alleen als teamlid met een eigen sleutel; exports bevatten geen bestanden"
+        ],
+        "how": [
+          "Elk bestand wordt in je browser met een eigen sleutel versleuteld voordat het naar de server gaat.",
+          "Ook de naam en het type van het bestand zijn versleuteld. De server kent alleen de grootte en uploaddatum.",
+          "Voorbeeld en download ontsleutelen het bestand in je browser.",
+          "Oudere bijlagen blijven leesbaar tot je ze versleutelt met Bestaande bijlagen versleutelen."
         ]
       },
       "contacts": {
@@ -14403,6 +14431,7 @@
           "Herinneringen met bedrag en QR-betalingen gemaakt door de server"
         ]
       },
+      "howTitle": "Zo werkt het:",
       "changesTitle": "Werkt anders:"
     },
     "enable": {
@@ -14488,7 +14517,9 @@
       "recoveryNew": "Nieuwe herstelcode maken",
       "recoveryReplaced": "De nieuwe herstelcode geldt",
       "categoriesTitle": "Wat wordt versleuteld",
-      "categoriesLead": "Meer opties volgen. Bij elke zie je wat er niet meer zou werken."
+      "categoriesLead": "Je kunt een categorie ook later toevoegen. Uitzetten stopt alleen met het versleutelen van nieuwe gegevens; wat versleuteld is, blijft versleuteld.",
+      "categoriesMin": "Laat minstens één categorie aan staan.",
+      "categoryOffConfirm": "Deze categorie uitzetten? Nieuwe bestanden en teksten worden niet meer versleuteld. Wat al versleuteld is, blijft versleuteld."
     },
     "clientLink": {
       "ready": "De link bevat de sleutel tot de versleutelde teksten (na het #). Uw klant ziet daarmee de volledige tekst, de server krijgt de sleutel nooit.",
@@ -14608,6 +14639,20 @@
       "item": "Regel {n}",
       "notSealed": "De server ziet bedragen, datums, het documentnummer, kenmerken en klanten, om btw te berekenen, vervaldatums te bewaken en betalingen te koppelen.",
       "more": "Hoe het werkt en hoe je het controleert"
+    },
+    "sealFiles": {
+      "button": "Bestaande bijlagen versleutelen",
+      "title": "Bestaande bijlagen versleutelen",
+      "what": "Je browser downloadt de bijlagen van documenten en de bonnen van uitgaven die de server nog kan lezen, versleutelt ze en uploadt ze terug op hun plaats.",
+      "loses": "Versleutelde bijlagen verdwijnen uit de gedeelde link voor de klant, en de factuurmail neemt ze alleen mee na bevestiging bij verzenden.",
+      "resumable": "Bijlagen van vergrendelde documenten worden overgeslagen. Sluit je het venster, dan gaat het de volgende keer verder waar je was.",
+      "cancel": "Terug",
+      "confirm": "Versleutelen",
+      "progress": "Versleutelen… {n}",
+      "done": "{n, plural, one {# bijlage versleuteld} other {# bijlagen versleuteld}}.",
+      "partial": "{n} versleuteld, {failed} mislukt. Probeer het later opnieuw.",
+      "nothing": "Er was niets te versleutelen.",
+      "failed": "Versleutelen is mislukt. Bijlagen die al versleuteld zijn, blijven versleuteld."
     }
   },
   "vaultPublic": {

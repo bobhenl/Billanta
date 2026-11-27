@@ -849,7 +849,12 @@
       "qrFound": "Dane wczytane z kodu QR",
       "qrCheck": "Uzupełniono z faktury QR – dostawca, kwota, VAT i daty dokładnie odpowiadają dokumentowi. Dodaj opis i kategorię.",
       "qrCheckPayment": "Płatność QR podała kwotę, symbol zmienny i termin płatności. Uzupełnij resztę lub wgraj cały dokument.",
-      "qrDescription": "Faktura {number}"
+      "qrDescription": "Faktura {number}",
+      "aiOptIn": "Wyślij paragon do AI – jednorazowo przejdzie przez serwer, nie zostanie zapisany",
+      "aiOptInHint": "Bez zaznaczenia czytany jest tylko kod QR, bezpośrednio w przeglądarce, a resztę uzupełniasz sam.",
+      "receiptKeptLocal": "Paragon został w przeglądarce. Po zapisaniu zostanie dołączony w postaci zaszyfrowanej.",
+      "receiptWillEncrypt": "Po zapisaniu zostanie dołączony zaszyfrowany: {name}",
+      "receiptNotStored": "Koszt jest zapisany, ale nie udało się dołączyć paragonu. Dodaj go w szczegółach kosztu."
     },
     "noTenant": "Najpierw skonfiguruj swoją firmę.",
     "loadError": "Nie udało się wczytać wydatków",
@@ -5263,8 +5268,19 @@
         "bad_type": "Tego typu pliku nie można załączyć.",
         "too_big": "Plik jest większy niż 5 MB.",
         "too_many": "Faktura może mieć maksymalnie 10 załączników.",
-        "generic": "Nie udało się zapisać załącznika."
-      }
+        "generic": "Nie udało się zapisać załącznika.",
+        "plan_required": "Szyfrowanie załączników jest w planie Plus.",
+        "vault_category_off": "Szyfrowanie załączników nie jest włączone w trybie poufnym."
+      },
+      "hintExpense": "Paragon lub faktura zakupu do tego kosztu. PDF, obrazy, Office, CSV/XML/TXT, maks. 5 MB, najwyżej 10 plików.",
+      "encryptsNew": "Nowe pliki są szyfrowane w przeglądarce przed wysłaniem.",
+      "encryptedName": "Zaszyfrowany plik",
+      "encrypted": "Zaszyfrowano",
+      "openEncrypted": "Otwórz (odszyfrowanie w Twojej przeglądarce)",
+      "decryptFailed": "Nie udało się odszyfrować pliku.",
+      "emailOnEncrypted": "Zaszyfrowany: trafi do e-maila tylko po potwierdzeniu przy wysyłce (kliknij, aby wyłączyć)",
+      "portalEncrypted": "Klient nie otworzy zaszyfrowanego załącznika w udostępnionym linku",
+      "previewLocal": "Podgląd powstał tylko w Twojej przeglądarce. Serwer nie czytał pliku."
     },
     "quoteResponse": {
       "title": "Odpowiedź klienta",
@@ -14350,6 +14366,11 @@
       "copyLink": "Kopiuj",
       "emailWaiting": "E-mail czeka na PDF. Wyjdzie z przeglądarki z odblokowanym trybem, zobacz komunikat u góry.",
       "pdfFollows": "Link wysłany. PDF wyślesz dodatkowym e-mailem z komunikatu u góry.",
+      "unlockFirst": "Bez odblokowania nie można dołączyć zaszyfrowanych załączników.",
+      "decryptFailed": "Nie udało się odszyfrować załącznika.",
+      "passFiles": "{n, plural, one {Dołącz # zaszyfrowany załącznik} few {Dołącz # zaszyfrowane załączniki} many {Dołącz # zaszyfrowanych załączników} other {Dołącz # zaszyfrowanego załącznika}}",
+      "passFilesHint": "Przeglądarka je odszyfruje i jednorazowo przejdą przez serwer do e-maila. Serwer ich nie zapisuje ani nie loguje.",
+      "passFilesWaiting": "Ten dokument czeka, aż przeglądarka utworzy PDF, a załączniki nie mogą czekać na serwerze. Zaznacz też dołączenie PDF/ISDOC, a wszystko wyjdzie naraz, albo wyślij e-mail bez załączników.",
       "pdfLocal": "PDF utworzy Twoja przeglądarka, serwer nie zobaczy zaszyfrowanych tekstów.",
       "isdocLocal": "ISDOC utworzy Twoja przeglądarka, serwer nie zobaczy zaszyfrowanych tekstów.",
       "attachOnce": "Dołącz PDF/ISDOC – plik jednorazowo przejdzie przez serwer do wysyłki i nie zostanie zapisany",
@@ -14377,11 +14398,18 @@
       },
       "attachments": {
         "title": "Załączniki i paragony",
-        "description": "Pliki przy dokumentach i wydatkach.",
+        "description": "Pliki przy dokumentach i paragony przy kosztach.",
         "loses": [
-          "Odczytywanie paragonów przez AI",
-          "Podgląd załączników",
-          "Wysyłanie załączników e-mailem i przekazywanie księgowej"
+          "AI odczyta paragon tylko po jednorazowej zgodzie: plik przejdzie przez serwer i nie zostanie zapisany",
+          "Zaszyfrowanych załączników nie ma w udostępnionym linku dla klienta",
+          "E-mail z fakturą dołączy je tylko, gdy przy wysyłce je odblokujesz i potwierdzisz",
+          "Księgowa otworzy je tylko jako członek zespołu z własnym kluczem, eksporty nie zawierają plików"
+        ],
+        "how": [
+          "Każdy plik jest szyfrowany w przeglądarce własnym kluczem, zanim trafi na serwer.",
+          "Zaszyfrowane są też nazwa i typ pliku. Serwer zna tylko rozmiar i datę wysłania.",
+          "Podgląd i pobieranie odszyfrowują plik dopiero w Twojej przeglądarce.",
+          "Starsze załączniki pozostają czytelne, dopóki nie zaszyfrujesz ich przyciskiem Zaszyfruj istniejące załączniki."
         ]
       },
       "contacts": {
@@ -14404,6 +14432,7 @@
           "Przypomnienia z kwotą i płatności QR tworzone przez serwer"
         ]
       },
+      "howTitle": "Jak to działa:",
       "changesTitle": "Działa inaczej:"
     },
     "enable": {
@@ -14489,7 +14518,9 @@
       "recoveryNew": "Utwórz nowy kod odzyskiwania",
       "recoveryReplaced": "Nowy kod odzyskiwania obowiązuje",
       "categoriesTitle": "Co jest szyfrowane",
-      "categoriesLead": "Kolejne opcje wkrótce. Przy każdej widać, co przestałoby działać."
+      "categoriesLead": "Kategorię możesz dodać także później. Wyłączenie tylko przestaje szyfrować nowe dane, zaszyfrowane pozostają zaszyfrowane.",
+      "categoriesMin": "Zostaw włączoną co najmniej jedną kategorię.",
+      "categoryOffConfirm": "Wyłączyć tę kategorię? Nowe pliki i teksty nie będą już szyfrowane. To, co zaszyfrowane, pozostanie zaszyfrowane."
     },
     "clientLink": {
       "ready": "Link zawiera klucz do zaszyfrowanych tekstów (po znaku #). Klient zobaczy z nim pełną treść, serwer nigdy nie dostaje klucza.",
@@ -14609,6 +14640,20 @@
       "item": "Pozycja {n}",
       "notSealed": "Kwoty, daty, numer dokumentu, tytuł przelewu i klientów serwer widzi, żeby liczyć VAT, pilnować terminów i dopasowywać płatności.",
       "more": "Jak to działa i jak to sprawdzić"
+    },
+    "sealFiles": {
+      "button": "Zaszyfruj istniejące załączniki",
+      "title": "Zaszyfruj istniejące załączniki",
+      "what": "Przeglądarka pobierze załączniki dokumentów i paragony kosztów, które serwer nadal może odczytać, zaszyfruje je i wyśle z powrotem w miejsce oryginałów.",
+      "loses": "Zaszyfrowane załączniki znikną z udostępnionego linku dla klienta, a e-mail z fakturą dołączy je tylko po potwierdzeniu przy wysyłce.",
+      "resumable": "Załączniki zablokowanych dokumentów są pomijane. Gdy zamkniesz okno, następnym razem praca będzie kontynuowana od tego miejsca.",
+      "cancel": "Wstecz",
+      "confirm": "Zaszyfruj",
+      "progress": "Szyfruję… {n}",
+      "done": "{n, plural, one {Zaszyfrowano # załącznik} few {Zaszyfrowano # załączniki} many {Zaszyfrowano # załączników} other {Zaszyfrowano # załącznika}}.",
+      "partial": "Zaszyfrowano {n}, {failed} się nie udało. Spróbuj ponownie później.",
+      "nothing": "Nie było czego szyfrować.",
+      "failed": "Szyfrowanie nie powiodło się. Już zaszyfrowane załączniki pozostają zaszyfrowane."
     }
   },
   "vaultPublic": {

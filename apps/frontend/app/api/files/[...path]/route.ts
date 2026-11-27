@@ -14,6 +14,7 @@ const ALLOWED = [
   /^invoices\/[0-9a-fA-F-]{36}\/(pdf-model|isdoc-input|ubl-input)$/,
   /^invoices\/pdf-fonts\/(regular|bold)$/,
   /^invoices\/[0-9a-fA-F-]{36}\/attachments\/[0-9a-fA-F-]{36}$/,
+  /^expenses\/[0-9a-fA-F-]{36}\/attachments\/[0-9a-fA-F-]{36}$/,
   /^tenants\/me\/logo$/,
   /^contacts\/export\.csv$/,
   /^classroom\/classes\/[0-9a-fA-F-]{36}\/progress\.csv$/,

@@ -21,7 +21,8 @@ import {
 } from "@nestjs/common";
 import { FileFieldsInterceptor, FileInterceptor } from "@nestjs/platform-express";
 import { PDF_FONT_FILES } from "./invoice-pdf.service";
-import { MAX_SEALED_PDF_BYTES, sealedSendFiles, type UploadedPart } from "./sealed-send-files";
+import { MAX_ONE_TIME_FILE_BYTES, MAX_ONE_TIME_FILES, sealedSendFiles, type UploadedPart } from "./sealed-send-files";
+import type { UploadedFileLike } from "../vault/sealed-files";
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Response } from "express";
 import { createZodDto } from "nestjs-zod";
@@ -42,7 +43,8 @@ import {
 import { CreateInvoiceDraftDto } from "./dto/create-invoice-draft.dto";
 import { getHomeRate } from "../exports/home-rates";
 import { tenantHomeCurrency } from "../tenants/home-currency";
-import { InvoiceAttachmentsService, MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
+import { encryptedLimit } from "../vault/sealed-files";
+import { InvoiceAttachmentsService, MAX_ATTACHMENT_BYTES, MAX_ATTACHMENTS_PER_INVOICE } from "./invoice-attachments.service";
 import { InvoiceImportService } from "./invoice-import.service";
 import { guestInvoiceSchema } from "../guest-invoices/guest-invoices.service";
 import { IMPORT_FIELDS } from "./invoice-import.util";
@@ -590,9 +592,10 @@ export class InvoicesController {
   }
 
   /**
-   * Důvěrný režim: sends a sealed invoice with the PDF/ISDOC the browser
-   * rendered. The user ticked that the files pass through the server once;
-   * they go into this one e-mail and are not stored or logged.
+   * Důvěrný režim: sends the invoice with files the browser made or decrypted
+   * for this one e-mail: a sealed invoice's PDF/ISDOC and decrypted
+   * attachments, in one request. The dialog says they pass through the server
+   * once; they are delivered from memory and never stored or logged.
    */
   @Post(":id/send-with-files")
   @UseGuards(JwtAuthGuard)
@@ -601,17 +604,19 @@ export class InvoicesController {
       [
         { name: "pdf", maxCount: 1 },
         { name: "isdoc", maxCount: 1 },
+        { name: "files", maxCount: MAX_ATTACHMENTS_PER_INVOICE },
       ],
-      { limits: { fileSize: MAX_SEALED_PDF_BYTES, files: 2, fields: 0, parts: 2 } },
+      { limits: { fileSize: MAX_ONE_TIME_FILE_BYTES, files: MAX_ONE_TIME_FILES, fields: 0, parts: MAX_ONE_TIME_FILES } },
     ),
   )
   @ApiConsumes("multipart/form-data")
-  @ApiOperation({ summary: "Email a sealed invoice with browser-rendered PDF/ISDOC attached once" })
+  @ApiOperation({ summary: "Email an invoice with browser-made PDF/ISDOC and decrypted attachments, sent once and not stored" })
   async sendWithFiles(
     @Req() req: TenantScopedRequest,
     @Param("id", ParseUUIDPipe) id: string,
-    @UploadedFiles() parts?: { pdf?: UploadedPart[]; isdoc?: UploadedPart[] },
+    @UploadedFiles() parts?: { pdf?: UploadedPart[]; isdoc?: UploadedPart[]; files?: UploadedFileLike[] },
   ) {
+    assertMayDo(req.user, "invoices.send");
     await assertInvoiceOpen(req.tenantDb!, id, req.user!);
     return this.invoicesService.sendInvoice(req.tenantDb!, id, req.user!.tenantId, req.user!.id, sealedSendFiles(parts));
   }
@@ -663,17 +668,27 @@ export class InvoicesController {
 
   @Post(":id/attachments")
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor("file", { limits: { fileSize: MAX_ATTACHMENT_BYTES } }))
+  @UseInterceptors(FileInterceptor("file", { limits: { fileSize: encryptedLimit(MAX_ATTACHMENT_BYTES) } }))
   @ApiConsumes("multipart/form-data")
-  @ApiBody({ schema: { type: "object", properties: { file: { type: "string", format: "binary" } }, required: ["file"] } })
-  @ApiOperation({ summary: "Attach a file (PDF, image, Office, CSV/XML/TXT; ≤ 5 MB, ≤ 10 per invoice)" })
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: {
+        file: { type: "string", format: "binary" },
+        enc_meta: { type: "string", description: "Důvěrný režim: the sealed file key, name and type; the file is then ciphertext" },
+      },
+      required: ["file"],
+    },
+  })
+  @ApiOperation({ summary: "Attach a file (PDF, image, Office, CSV/XML/TXT; ≤ 5 MB, ≤ 10 per invoice), plain or encrypted in the browser" })
   addAttachment(
     @Req() req: TenantScopedRequest,
     @Param("id", ParseUUIDPipe) id: string,
     @UploadedFile() file?: { buffer: Buffer; size: number; mimetype: string; originalname: string },
+    @Body("enc_meta") encMeta?: unknown,
   ) {
     if (!file) throw new BadRequestException({ error: "no_file" });
-    return this.attachmentsService.add(req.tenantDb!, req.user!.tenantId, id, file);
+    return this.attachmentsService.add(req.tenantDb!, req.user!.tenantId, id, file, encMeta);
   }
 
   @Patch(":id/attachments/:attachmentId")

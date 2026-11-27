@@ -120,16 +120,25 @@ export function saveDocument(doc: RenderedDocument): void {
 }
 
 /**
- * Sends a sealed invoice with the files made above. They pass through the
- * server once for this e-mail; the user said yes to that in the send dialog.
+ * Sends the invoice with what this browser made or decrypted for this one
+ * e-mail: a sealed invoice's PDF/ISDOC (made above) and decrypted
+ * attachments, in one request. They pass through the server once; the user
+ * said yes to that in the send dialog. Returns the backend's answer.
  */
-export async function sendWithSealedFiles(invoiceId: string, files: { pdf?: RenderedDocument; isdoc?: RenderedDocument }): Promise<void> {
+export async function sendWithSealedFiles(
+  invoiceId: string,
+  files: { pdf?: RenderedDocument; isdoc?: RenderedDocument; attachments?: File[] }
+): Promise<unknown> {
   const form = new FormData();
   if (files.pdf) form.append('pdf', files.pdf.blob, files.pdf.filename);
   if (files.isdoc) form.append('isdoc', files.isdoc.blob, files.isdoc.filename);
+  for (const file of files.attachments ?? []) form.append('files', file, file.name);
   const res = await fetch(`/api/invoices/${invoiceId}/send-with-files`, { method: 'POST', body: form });
+  const body = (await res.json().catch(() => null)) as { message?: unknown; error?: unknown } | null;
   if (!res.ok) {
-    const body = (await res.json().catch(() => null)) as { message?: unknown; error?: unknown } | null;
-    throw new DocumentError(typeof body?.message === 'string' ? body.message : typeof body?.error === 'string' ? body.error : 'send_failed');
+    const nested = body?.message && typeof body.message === 'object' ? (body.message as { error?: unknown }).error : undefined;
+    const code = [body?.message, nested, body?.error].find((v): v is string => typeof v === 'string');
+    throw new DocumentError(code ?? 'send_failed');
   }
+  return body;
 }

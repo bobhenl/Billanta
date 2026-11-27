@@ -1,8 +1,29 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
+  Req,
+  Res,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
+import type { Response } from "express";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { MAX_ATTACHMENT_BYTES } from "../invoices/invoice-attachments.service";
 import { assertMayDo } from "../tenancy/permissions";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
+import { encryptedLimit, type UploadedFileLike } from "../vault/sealed-files";
+import { ExpenseAttachmentsService } from "./expense-attachments.service";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { ListExpensesQueryDto } from "./dto/list-expenses-query.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
@@ -13,7 +34,10 @@ import { ExpensesService } from "./expenses.service";
 @UseGuards(JwtAuthGuard)
 @Controller("v1/expenses")
 export class ExpensesController {
-  constructor(private readonly expensesService: ExpensesService) {}
+  constructor(
+    private readonly expensesService: ExpensesService,
+    private readonly attachmentsService: ExpenseAttachmentsService,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: "List expenses for the current tenant (paginated)" })
@@ -50,5 +74,52 @@ export class ExpensesController {
   remove(@Req() req: TenantScopedRequest, @Param("id") id: string) {
     assertMayDo(req.user, "expenses.delete");
     return this.expensesService.remove(req.tenantDb!, id);
+  }
+
+  @Get(":id/attachments")
+  @ApiOperation({ summary: "List an expense's files (without contents)" })
+  listAttachments(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    return this.attachmentsService.list(req.tenantDb!, id);
+  }
+
+  @Post(":id/attachments")
+  @UseInterceptors(FileInterceptor("file", { limits: { fileSize: encryptedLimit(MAX_ATTACHMENT_BYTES) } }))
+  @ApiConsumes("multipart/form-data")
+  @ApiOperation({ summary: "Attach a receipt or supplier invoice (≤ 5 MB), plain or encrypted in the browser" })
+  addAttachment(
+    @Req() req: TenantScopedRequest,
+    @Param("id", ParseUUIDPipe) id: string,
+    @UploadedFile() file?: UploadedFileLike,
+    @Body("enc_meta") encMeta?: unknown,
+  ) {
+    if (!file) throw new BadRequestException({ error: "no_file" });
+    return this.attachmentsService.add(req.tenantDb!, req.user!.tenantId, id, file, encMeta);
+  }
+
+  @Delete(":id/attachments/:attachmentId")
+  @ApiOperation({ summary: "Remove an expense file" })
+  removeAttachment(
+    @Req() req: TenantScopedRequest,
+    @Param("id", ParseUUIDPipe) id: string,
+    @Param("attachmentId", ParseUUIDPipe) attachmentId: string,
+  ) {
+    return this.attachmentsService.remove(req.tenantDb!, id, attachmentId);
+  }
+
+  @Get(":id/attachments/:attachmentId")
+  @ApiOperation({ summary: "Download an expense file (ciphertext when it was uploaded encrypted)" })
+  async downloadAttachment(
+    @Req() req: TenantScopedRequest,
+    @Param("id", ParseUUIDPipe) id: string,
+    @Param("attachmentId", ParseUUIDPipe) attachmentId: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    const file = await this.attachmentsService.download(req.tenantDb!, id, attachmentId);
+    res.set({
+      "Content-Type": file.mime,
+      "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(file.filename)}`,
+      "X-Content-Type-Options": "nosniff",
+    });
+    res.send(file.content);
   }
 }
