@@ -6749,6 +6749,10 @@
       "partners": "Partners",
       "coworkings": "Coworkingruimtes",
       "schools": "Scholen en leraren"
+    },
+    "confidential": {
+      "name": "Vertrouwelijke modus",
+      "description": "Versleutel documentteksten, bijlagen, contacten en bedragen direct in uw browser. De server krijgt alleen versleutelde gegevens en heeft er geen sleutel voor."
     }
   },
   "guestInvoice": {

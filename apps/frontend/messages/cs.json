@@ -6757,6 +6757,10 @@
       "partners": "Pro partnery",
       "coworkings": "Pro coworkingy",
       "schools": "Pro školy a učitele"
+    },
+    "confidential": {
+      "name": "Důvěrný režim",
+      "description": "Texty dokladů, přílohy, kontakty a částky můžete šifrovat přímo v prohlížeči. Server dostane jen zašifrovaná data a klíč k nim nemá."
     }
   },
   "guestInvoice": {

@@ -6750,6 +6750,10 @@
       "partners": "Partnerów",
       "coworkings": "Przestrzeni coworkingowych",
       "schools": "Szkół i nauczycieli"
+    },
+    "confidential": {
+      "name": "Tryb poufny",
+      "description": "Teksty dokumentów, załączniki, kontakty i kwoty możesz szyfrować bezpośrednio w przeglądarce. Serwer dostaje tylko zaszyfrowane dane i nie ma do nich klucza."
     }
   },
   "guestInvoice": {

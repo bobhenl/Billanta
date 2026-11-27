@@ -6749,6 +6749,10 @@
       "partners": "Parteneri",
       "coworkings": "Spații de coworking",
       "schools": "Școli și profesori"
+    },
+    "confidential": {
+      "name": "Modul confidențial",
+      "description": "Textele documentelor, atașamentele, contactele și sumele le puteți cripta direct în browser. Serverul primește doar date criptate și nu are cheia lor."
     }
   },
   "guestInvoice": {

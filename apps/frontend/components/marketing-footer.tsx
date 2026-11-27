@@ -64,7 +64,15 @@ export async function MarketingFooter() {
         { href: '/invoicing-for-advanced', label: t('product.advanced') },
         { href: '/team-roles', label: t('product.teamRoles') },
         { href: '/#faq', label: t('product.faq') }
-      ]
+      ],
+      extra: (
+        /* A full page load, not a client-side one: that page's stricter CSP only applies to a document fetched with it. */
+        <li>
+          <a href={`/${locale}/security/confidential`} className={linkClass}>
+            {t('legal.confidential')}
+          </a>
+        </li>
+      )
     },
     {
       title: tTools('menu.resources'),
@@ -104,12 +112,6 @@ export async function MarketingFooter() {
       ],
       extra: (
         <>
-          {/* A full page load, not a client-side one: that page's stricter CSP only applies to a document fetched with it. */}
-          <li>
-            <a href={`/${locale}/security/confidential`} className={linkClass}>
-              {t('legal.confidential')}
-            </a>
-          </li>
           <li>
             <CookieSettingsButton label={t('legal.cookieSettings')} className={linkClass} />
           </li>

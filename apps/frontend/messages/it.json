@@ -6749,6 +6749,10 @@
       "partners": "Partner",
       "coworkings": "Spazi di coworking",
       "schools": "Scuole e insegnanti"
+    },
+    "confidential": {
+      "name": "Modalità riservata",
+      "description": "Cifra testi dei documenti, allegati, contatti e importi direttamente nel browser. Il server riceve solo dati cifrati e non ha la chiave."
     }
   },
   "guestInvoice": {

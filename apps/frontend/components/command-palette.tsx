@@ -121,7 +121,7 @@ const PAGES: Entry[] = [
   { key: 'reports', href: '/reports', icon: BarChart3, label: 'nav.reports' },
   { key: 'netIncome', href: '/reports/net-income', icon: Wallet, label: 'palette.pages.netIncome', section: 'manage' },
   { key: 'taxReturn', href: '/reports/tax-return', icon: FileStack, label: 'palette.pages.taxReturn' },
-  { key: 'flatTax', href: '/dashboard/calculators/flat-tax', icon: Scale, label: 'palette.pages.flatTax' },
+  { key: 'flatTax', href: '/dashboard/calculators/flat-tax', icon: Scale, label: 'palette.pages.flatTax', section: 'czFlatTax' },
   { key: 'bank', href: '/bank', icon: Landmark, label: 'nav.bank', section: 'bank', shortcut: 'G B' },
   { key: 'bankRules', href: '/bank/rules', icon: ListFilter, label: 'bankRules.title', section: 'bank' },
   { key: 'time', href: '/time', icon: Timer, label: 'nav.time', section: 'time', shortcut: 'G T' },

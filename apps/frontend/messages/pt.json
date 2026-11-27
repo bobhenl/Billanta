@@ -6749,6 +6749,10 @@
       "partners": "Parceiros",
       "coworkings": "Espaços de cowork",
       "schools": "Escolas e professores"
+    },
+    "confidential": {
+      "name": "Modo confidencial",
+      "description": "Encripte os textos dos documentos, anexos, contactos e valores diretamente no navegador. O servidor só recebe dados encriptados e não tem a chave."
     }
   },
   "guestInvoice": {

@@ -6757,6 +6757,10 @@
       "partners": "Partners",
       "coworkings": "Coworking spaces",
       "schools": "Schools and teachers"
+    },
+    "confidential": {
+      "name": "Confidential mode",
+      "description": "Encrypt document texts, attachments, contacts and amounts right in your browser. The server only gets encrypted data and has no key to it."
     }
   },
   "guestInvoice": {

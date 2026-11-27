@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, LockKeyhole } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
@@ -45,7 +45,22 @@ export default async function FeaturesIndexPage({ params }: { params: Promise<{ 
       <h1 className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl">{t('indexHeading')}</h1>
       <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{t('indexLead')}</p>
 
-      <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {/* A full page load, not a client-side one: that page's stricter CSP only applies to a document fetched with it. */}
+      <a
+        href={`/${locale}/security/confidential`}
+        className="group mt-8 flex items-start gap-4 rounded-xl border border-primary/30 bg-primary/5 p-5 transition-colors hover:border-primary/60"
+      >
+        <LockKeyhole className="mt-0.5 h-6 w-6 shrink-0 text-primary" aria-hidden="true" />
+        <span className="min-w-0 flex-1">
+          <span className="flex items-center justify-between gap-2 text-base font-bold">
+            {t('confidential.name')}
+            <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" aria-hidden="true" />
+          </span>
+          <span className="mt-1.5 block text-sm leading-relaxed text-muted-foreground">{t('confidential.description')}</span>
+        </span>
+      </a>
+
+      <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {FEATURE_PAGES.map(({ slug, key }) => (
           <li key={slug}>
             <Link

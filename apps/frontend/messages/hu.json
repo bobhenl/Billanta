@@ -6749,6 +6749,10 @@
       "partners": "Partnerek",
       "coworkings": "Coworking irodák",
       "schools": "Iskolák és tanárok"
+    },
+    "confidential": {
+      "name": "Bizalmas mód",
+      "description": "A bizonylatok szövegét, a mellékleteket, a kontaktokat és az összegeket közvetlenül a böngészőben titkosíthatja. A szerver csak titkosított adatot kap, kulcsa nincs hozzá."
     }
   },
   "guestInvoice": {

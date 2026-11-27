@@ -6750,6 +6750,10 @@
       "partners": "Partner",
       "coworkings": "Coworking-Spaces",
       "schools": "Schulen und Lehrkräfte"
+    },
+    "confidential": {
+      "name": "Vertraulicher Modus",
+      "description": "Belegtexte, Anhänge, Kontakte und Beträge verschlüsseln Sie direkt im Browser. Der Server erhält nur verschlüsselte Daten und hat keinen Schlüssel dazu."
     }
   },
   "guestInvoice": {

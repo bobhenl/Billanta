@@ -31,7 +31,8 @@ import { VaultProvider } from '@/components/vault/vault-provider';
 import { VaultEmailOutbox } from '@/components/vault/vault-email-outbox';
 import type { VaultStatus } from '@/lib/vault/types';
 import { NOINDEX } from '@/lib/seo';
-import { canDo, canManage, canWrite, fetchMyAccess, fetchTenant, forbiddenSettings, hiddenSections, type TenantSettings } from '@/lib/tenant';
+import { canDo, canManage, canWrite, fetchMyAccess, fetchTenant, forbiddenSettings, hiddenSections, taxCountryOf, type TenantSettings } from '@/lib/tenant';
+import { isLegalEntityName } from '@/lib/tax-deadlines';
 import { apiFetch, fetchMyCompanies, isStudentCompanyOfOthers } from '@/lib/api-client';
 import { classroomEnabled, type StudentCompany } from '@/lib/classroom';
 import { PROMO_COOKIE } from '@/lib/promo';
@@ -78,11 +79,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // The backend enforces access (RoleAccessGuard); the shell just leaves out
   // what this member can't open or the company switched off, and tells a
   // viewer up front that they can only look.
-  const [access, companies, vault] = await Promise.all([
+  const [access, companies, vault, tenant] = await Promise.all([
     fetchMyAccess().catch(() => null),
     fetchMyCompanies().catch(() => null),
     // "Důvěrný režim": only wrapped keys come back; the browser unlocks them (components/vault).
-    apiFetch<VaultStatus>('/api/v1/vault/me').catch(() => null)
+    apiFetch<VaultStatus>('/api/v1/vault/me').catch(() => null),
+    demo ? Promise.resolve(demo) : fetchTenant().catch(() => null)
   ]);
   const role = access?.role ?? null;
   // A practice company of a class shows the class strip instead of the demo countdown.
@@ -115,6 +117,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
     if (!canManage(access.role)) paletteHidden.push('manage');
     if (forbiddenSettings(access).has('integrations')) paletteHidden.push('integrations');
   }
+  // Paušální daň is for Czech self-employed only, as on the calculator page itself.
+  if (tenant && (taxCountryOf(tenant) !== 'CZ' || isLegalEntityName(tenant.legalName))) paletteHidden.push('czFlatTax');
   // The account menu's shortcuts follow the settings hub.
   const menuHidden: string[] = [...forbiddenSettings(access)];
   if (paletteHidden.includes('exports')) menuHidden.push('exports');
