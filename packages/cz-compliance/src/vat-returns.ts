@@ -130,6 +130,15 @@ const upKc = (n: number) => String(taxKc(n));
 const kc2 = (n: number) => String(haler(n) + 0);
 export const czDate = (d: Date) =>
   `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`;
+/** Today in Prague as d.m.yyyy. The server clock is UTC, so between midnight and 1–2 a.m. it would still say yesterday. */
+export const pragueToday = (now = new Date()) => {
+  const p = Object.fromEntries(
+    new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Prague", day: "2-digit", month: "2-digit", year: "numeric" })
+      .formatToParts(now)
+      .map((x) => [x.type, x.value]),
+  );
+  return `${p.day}.${p.month}.${p.year}`;
+};
 /** DIČ without the country prefix, as EPO wants it. */
 export const dicNumber = (dic: string) => dic.replace(/^[A-Z]{2}/i, "");
 const dicCountry = (dic: string | null) => (dic && /^[A-Z]{2}/i.test(dic) ? dic.slice(0, 2).toUpperCase() : null);
@@ -299,7 +308,7 @@ export function generateDphDp3(input: {
 
   return `${header("41.6.1")}
 <DPHDP3 verzePis="${VAT_FORM_VERSIONS.DPHDP3}">
-  <VetaD k_uladis="DPH" dokument="DP3" rok="${input.period.year}" ${periodAttr(input.period)} d_poddp="${czDate(input.today ?? new Date())}" dapdph_forma="B" typ_platce="P" trans="A" />
+  <VetaD k_uladis="DPH" dokument="DP3" rok="${input.period.year}" ${periodAttr(input.period)} d_poddp="${input.today ? czDate(input.today) : pragueToday()}" dapdph_forma="B" typ_platce="P" trans="A" />
   ${vetaP(input.submitter)}${veta("Veta1", [
     ["obrat23", obrat23],
     ["dan23", dan23],
@@ -414,7 +423,7 @@ export function generateDphDp3Identified(input: {
 
   const xml = `${header("41.6.1")}
 <DPHDP3 verzePis="${VAT_FORM_VERSIONS.DPHDP3}">
-  <VetaD k_uladis="DPH" dokument="DP3" rok="${input.period.year}" ${periodAttr(input.period)} d_poddp="${czDate(input.today ?? new Date())}" dapdph_forma="B" typ_platce="I" trans="A" />
+  <VetaD k_uladis="DPH" dokument="DP3" rok="${input.period.year}" ${periodAttr(input.period)} d_poddp="${input.today ? czDate(input.today) : pragueToday()}" dapdph_forma="B" typ_platce="I" trans="A" />
   ${vetaP(input.submitter)}${line("Veta1", veta1)}${line("Veta2", veta2)}
   <Veta6 dan_zocelk="${danZocelk}" dano="0" dano_da="${danZocelk}" dano_no="0" />
 </DPHDP3>
@@ -564,7 +573,7 @@ export function generateDphKh1(input: {
 
   const xml = `${header("41.16.3")}
 <DPHKH1 verzePis="${VAT_FORM_VERSIONS.DPHKH1}">
-  <VetaD k_uladis="DPH" dokument="KH1" rok="${input.period.year}" ${periodAttr(input.period)} d_poddp="${czDate(input.today ?? new Date())}" khdph_forma="B" />
+  <VetaD k_uladis="DPH" dokument="KH1" rok="${input.period.year}" ${periodAttr(input.period)} d_poddp="${input.today ? czDate(input.today) : pragueToday()}" khdph_forma="B" />
   ${vetaP(input.submitter)}
   ${rows.join("\n  ")}
 </DPHKH1>
@@ -604,7 +613,7 @@ export function generateDphShv(input: {
   );
   return `${header("45.5.1")}
 <DPHSHV verzePis="${VAT_FORM_VERSIONS.DPHSHV}">
-  <VetaD k_uladis="DPH" dokument="SHV" rok="${input.period.year}" ${periodAttr(input.period)} shvies_forma="R" d_poddp="${czDate(input.today ?? new Date())}" />
+  <VetaD k_uladis="DPH" dokument="SHV" rok="${input.period.year}" ${periodAttr(input.period)} shvies_forma="R" d_poddp="${input.today ? czDate(input.today) : pragueToday()}" />
   ${vetaP(input.submitter)}
   ${vetaR.join("\n  ")}
 </DPHSHV>

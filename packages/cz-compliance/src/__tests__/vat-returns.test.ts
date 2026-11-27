@@ -6,6 +6,7 @@ import {
   generateDphDp3Identified,
   generateDphKh1,
   generateDphShv,
+  pragueToday,
   splitCzStreet,
   submitterFromTenant,
   supplierOrigin,
@@ -541,5 +542,14 @@ describe("EPO structures of 2026", () => {
     expect(submitterFromTenant({ ...withHome, legalName: "Acme s.r.o." })).toMatchObject({ obec: "Brno", ulice: "Masarykova", psc: "602 00" });
     // Empty residence fields keep the business address.
     expect(submitterFromTenant({ ...tenant, residenceStreet: " ", residenceCity: null })).toMatchObject({ obec: "Brno", cPop: "12" });
+  });
+});
+
+describe("pragueToday", () => {
+  it("gives the Czech day, not the UTC one", () => {
+    // 23:30 UTC on 27 Nov is already 28 Nov in Prague (CET).
+    expect(pragueToday(new Date("2026-11-27T23:30:00Z"))).toBe("28.11.2026");
+    // Summer time: 22:30 UTC on 30 Jun is 1 Jul in Prague (CEST).
+    expect(pragueToday(new Date("2026-06-30T22:30:00Z"))).toBe("01.07.2026");
   });
 });
