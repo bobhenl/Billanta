@@ -14502,9 +14502,9 @@
         "title": "Montants",
         "description": "Quantités, prix unitaires, taux de TVA, remises et totaux des documents. Le numéro du document, le symbole variable (VS), l’échéance, la devise et le statut restent lisibles.",
         "loses": [
-          "Rapprochement automatique des paiements par montant : un paiement portant le VS d’un document chiffré attend votre confirmation manuelle",
-          "Paiements partiels : un document chiffré ne peut être marqué que comme payé en totalité, sans frais ni montant crédité",
-          "Envoi via Peppol, suggestions de l’IA avec montants et paiement par carte",
+          "Le rapprochement automatique sur le serveur : après le déverrouillage, votre navigateur propose des rapprochements et vous les confirmez",
+          "Les paiements ne sont calculés que dans votre navigateur : pour un document chiffré, le serveur ne connaît que la date du paiement et le statut, pas le montant ni les frais",
+          "L'envoi via Peppol et les suggestions IA avec montants. Le paiement par carte seulement sur un document où vous l'autorisez – le montant à payer part alors lisible chez Billanta et Stripe",
           "Le revenu net ne compte que les documents non chiffrés et indique combien il en a laissé de côté. Le calculateur de l’impôt forfaitaire ne préremplit alors rien",
           "Les relances, le résumé hebdomadaire et les totaux en retard dans les e-mails n’indiquent pas le montant"
         ],
@@ -14786,28 +14786,69 @@
       "what": "Le navigateur charge les documents dont les montants sont lisibles sur le serveur, chiffre les quantités, prix, taux de TVA, remises et totaux, puis les enregistre. Des zéros restent à leur place sur le serveur.",
       "keeps": "Le numéro du document, le VS, l’échéance, la devise et le statut restent lisibles, vous retrouvez donc toujours les paiements par VS.",
       "loses": "Le serveur ne créera plus de PDF, d’ISDOC ni d’exports pour ces documents ; votre navigateur les crée une fois le coffre déverrouillé. Le revenu net ne les compte pas. Un document payé reste payé.",
-      "resumable": "Les documents verrouillés et partiellement payés sont ignorés. Si vous fermez la fenêtre, la prochaine fois reprend là où vous vous êtes arrêté.",
+      "resumable": "Les documents verrouillés sont ignorés. Ce qui a déjà été payé est chiffré comme un seul paiement du document. Si vous fermez la fenêtre, la prochaine fois reprend là où vous vous êtes arrêté.",
       "cancel": "Retour",
       "confirm": "Chiffrer",
       "progress": "Chiffrement… {n}",
       "done": "{n, plural, one {Montants de # document chiffrés} other {Montants de # documents chiffrés}}.",
       "nothing": "Rien à chiffrer.",
-      "failed": "Le chiffrement a échoué. Les documents déjà chiffrés restent chiffrés.",
-      "partlyPaid": "{n, plural, one {# document partiellement payé est resté lisible} other {# documents partiellement payés sont restés lisibles}}. Ils pourront être chiffrés une fois payés en totalité."
+      "failed": "Le chiffrement a échoué. Les documents déjà chiffrés restent chiffrés."
     },
     "amounts": {
-      "paidSealed": "Les montants du document sont chiffrés, seul un paiement intégral peut donc être enregistré. Le serveur ne conserve ni frais ni montant crédité.",
+      "paidSealed": "Les montants du document sont chiffrés, ceci enregistre un paiement du montant total. Ajoutez un paiement partiel ou des frais dans la partie Paiements de la page du document.",
       "leftOut": "Sans {count, plural, one {# document} other {# documents}} aux montants chiffrés – déverrouillez le coffre",
       "exportLocked": "Les documents aux montants chiffrés n'entrent dans le fichier qu'après le déverrouillage du coffre.",
       "exportUnreadable": "Aucun fichier créé : {count, plural, one {# document ne peut pas être ouvert} other {# documents ne peuvent pas être ouverts}} avec cette clé. Un document manquant fausserait le fichier.",
       "creditNoteLocked": "L'avoir d'une facture aux montants chiffrés est préparé après le déverrouillage du coffre.",
       "creditNoteUnreadable": "Les montants de la facture ne peuvent pas être ouverts avec cette clé, aucun avoir n'a donc été créé.",
-      "bulkSealed": "Ce modèle a des montants chiffrés. Il ne sert pas à la facturation groupée, seulement à une facture individuelle.",
+      "bulkSealed": "Les montants du modèle sont chiffrés. Déverrouillez le coffre, chaque brouillon sera chiffré avec sa propre clé.",
       "reportIncluded": "Inclut {count, plural, one {# document} other {# documents}} aux montants chiffrés, ouverts par ce navigateur.",
       "reportOpening": "Ouverture des montants chiffrés…",
       "reportUnreadable": "Pas de rapport : {count, plural, one {# document ne peut} other {# documents ne peuvent}} pas être ouverts avec cette clé. Sans eux, les chiffres seraient trop bas.",
       "reportLocked": "Certains documents de l’année ont des montants chiffrés. Votre navigateur calcule les chiffres une fois le coffre déverrouillé.",
-      "unlock": "Déverrouiller le coffre"
+      "unlock": "Déverrouiller le coffre",
+      "bulkSealedDrafts": "Un modèle aux montants chiffrés ne crée que des brouillons. Émettez-les ensuite un par un."
+    },
+    "payments": {
+      "title": "Paiements",
+      "locked": "Les montants des paiements sont chiffrés. Déverrouillez le coffre pour les voir.",
+      "otherKey": "Un paiement ne s'ouvre pas avec cette clé, le reste à payer n'est donc pas affiché.",
+      "unlock": "Déverrouiller",
+      "paid": "Payé {amount}",
+      "remaining": "reste {amount} sur {total}",
+      "feeShort": "frais {amount}",
+      "carried": "d'un paiement antérieur",
+      "fromBank": "de la banque",
+      "delete": "Supprimer le paiement",
+      "confirmDelete": "Supprimer ce paiement ? Selon les paiements restants, le document redevient impayé ou partiellement payé.",
+      "amount": "Montant",
+      "fee": "Frais",
+      "date": "Date du paiement",
+      "add": "Ajouter un paiement",
+      "invalid": "Saisissez un montant positif et des frais d'au moins zéro.",
+      "failed": "Le paiement n'a pas pu être enregistré. Réessayez.",
+      "added": "Paiement enregistré, le reste est encore dû.",
+      "paidInFull": "Le document est entièrement payé.",
+      "card": {
+        "label": "Autoriser le paiement par carte",
+        "hint": "Le client pourra alors payer {amount} par carte depuis le lien. Ce seul montant est enregistré en clair, Billanta et Stripe le verront.",
+        "on": "Le paiement par carte est activé pour {amount}. Ce montant est enregistré en clair, Billanta et Stripe le voient. Le prochain paiement le désactive."
+      }
+    },
+    "bankMatch": {
+      "title": "Rapprochements proposés pour les documents chiffrés",
+      "hint": "Votre navigateur a comparé les paiements non rapprochés aux montants ouverts. Le serveur ne connaît pas les montants, rien n'est donc rapproché sans votre confirmation.",
+      "locked": "Certains documents ont des montants chiffrés. Après le déverrouillage du coffre, nous proposerons les paiements qui leur correspondent.",
+      "unlock": "Déverrouiller",
+      "confirm": "Rapprocher",
+      "failed": "Le paiement n'a pas pu être rapproché. Réessayez.",
+      "matched": "Le paiement est rapproché du document {number}.",
+      "ambiguous": "un autre document correspond aussi, vérifiez",
+      "reason": {
+        "vs_amount": "référence et montant correspondent",
+        "vs_partial": "la référence correspond, paiement partiel",
+        "amount_date": "montant et date correspondent, sans référence"
+      }
     }
   },
   "vaultPublic": {

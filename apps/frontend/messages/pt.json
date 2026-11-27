@@ -14502,9 +14502,9 @@
         "title": "Valores",
         "description": "Quantidades, preços unitários, taxas de IVA, descontos e totais dos documentos. O número do documento, o símbolo variável (VS), o vencimento, a moeda e o estado continuam legíveis.",
         "loses": [
-          "Correspondência automática de pagamentos por valor: um pagamento com o VS de um documento cifrado aguarda a sua confirmação manual",
-          "Pagamentos parciais: um documento cifrado só pode ser marcado como pago na totalidade, sem comissões nem valor creditado",
-          "Envio via Peppol, sugestões de IA com valores e pagamento com cartão",
+          "A correspondência automática no servidor: depois de desbloquear, o seu navegador sugere correspondências e você confirma-as",
+          "Os pagamentos só são calculados no seu navegador: num documento cifrado o servidor conhece apenas a data do pagamento e o estado, não o valor nem a taxa",
+          "O envio por Peppol e as sugestões de IA com valores. O pagamento com cartão só no documento onde o permitir expressamente – o valor a pagar segue então legível para a Billanta e a Stripe",
           "O rendimento líquido conta só os documentos não cifrados e indica quantos deixou de fora. A calculadora do imposto forfetário não preenche nada",
           "Os lembretes, o resumo semanal e os totais em atraso nos e-mails não indicam o valor"
         ],
@@ -14786,28 +14786,69 @@
       "what": "O navegador carrega os documentos cujos valores são legíveis no servidor, cifra quantidades, preços, taxas de IVA, descontos e totais e volta a guardá-los. No servidor ficam zeros no seu lugar.",
       "keeps": "O número do documento, o VS, o vencimento, a moeda e o estado continuam legíveis, por isso continua a encontrar os pagamentos pelo VS.",
       "loses": "O servidor deixa de criar PDF, ISDOC e exportações para estes documentos; o seu navegador cria-os depois de desbloquear o cofre. O rendimento líquido não os conta. Um documento pago continua pago.",
-      "resumable": "Os documentos bloqueados e os parcialmente pagos são ignorados. Se fechar a janela, da próxima vez continua onde parou.",
+      "resumable": "Os documentos bloqueados são ignorados. O que já foi pago é cifrado como um único pagamento do documento. Se fechar a janela, da próxima vez continua onde parou.",
       "cancel": "Voltar",
       "confirm": "Cifrar",
       "progress": "A cifrar… {n}",
       "done": "{n, plural, one {Valores de # documento cifrados} other {Valores de # documentos cifrados}}.",
       "nothing": "Não havia nada para cifrar.",
-      "failed": "A cifragem falhou. Os documentos já cifrados continuam cifrados.",
-      "partlyPaid": "{n, plural, one {# documento parcialmente pago continuou legível} other {# documentos parcialmente pagos continuaram legíveis}}. Podem ser cifrados depois de pagos na totalidade."
+      "failed": "A cifragem falhou. Os documentos já cifrados continuam cifrados."
     },
     "amounts": {
-      "paidSealed": "Os valores do documento estão cifrados, por isso só é possível registar o pagamento total. O servidor não guarda comissões nem o valor creditado.",
+      "paidSealed": "Os valores do documento estão cifrados, aqui regista-se o pagamento do valor total. Adicione um pagamento parcial ou uma taxa em Pagamentos, na página do documento.",
       "leftOut": "Sem {count, plural, one {# documento} other {# documentos}} com valores cifrados – desbloqueie o cofre",
       "exportLocked": "Os documentos com valores cifrados só entram no ficheiro depois de desbloquear o cofre.",
       "exportUnreadable": "Nenhum ficheiro criado: {count, plural, one {# documento não pode ser aberto} other {# documentos não podem ser abertos}} com esta chave. Um documento em falta tornaria o ficheiro incorreto.",
       "creditNoteLocked": "A nota de crédito de uma fatura com valores cifrados é preparada depois de desbloquear o cofre.",
       "creditNoteUnreadable": "Os valores da fatura não podem ser abertos com esta chave, por isso a nota de crédito não foi criada.",
-      "bulkSealed": "Este modelo tem valores cifrados. Não serve para faturação em massa, apenas para uma fatura individual.",
+      "bulkSealed": "Os valores do modelo estão cifrados. Desbloqueie o cofre e cada rascunho será cifrado com a sua própria chave.",
       "reportIncluded": "Inclui {count, plural, one {# documento} other {# documentos}} com valores cifrados, abertos por este navegador.",
       "reportOpening": "A abrir os valores cifrados…",
       "reportUnreadable": "Sem relatório: {count, plural, one {# documento não pode} other {# documentos não podem}} ser aberto(s) com esta chave. Sem eles os valores ficariam mais baixos.",
       "reportLocked": "Alguns documentos do ano têm valores cifrados. O seu navegador calcula os valores quando desbloquear o cofre.",
-      "unlock": "Desbloquear o cofre"
+      "unlock": "Desbloquear o cofre",
+      "bulkSealedDrafts": "Um modelo com valores cifrados só cria rascunhos. Emita-os depois um a um."
+    },
+    "payments": {
+      "title": "Pagamentos",
+      "locked": "Os valores dos pagamentos estão cifrados. Desbloqueie o cofre para os ver.",
+      "otherKey": "Um pagamento não abre com esta chave, por isso não mostramos o valor em falta.",
+      "unlock": "Desbloquear",
+      "paid": "Pago {amount}",
+      "remaining": "faltam {amount} de {total}",
+      "feeShort": "taxa {amount}",
+      "carried": "de um pagamento anterior",
+      "fromBank": "do banco",
+      "delete": "Eliminar pagamento",
+      "confirmDelete": "Eliminar este pagamento? Conforme os pagamentos restantes, o documento volta a não pago ou parcialmente pago.",
+      "amount": "Valor",
+      "fee": "Taxa",
+      "date": "Data do pagamento",
+      "add": "Adicionar pagamento",
+      "invalid": "Indique um valor positivo e uma taxa igual ou superior a zero.",
+      "failed": "Não foi possível guardar o pagamento. Tente novamente.",
+      "added": "Pagamento guardado, o resto continua em dívida.",
+      "paidInFull": "O documento está totalmente pago.",
+      "card": {
+        "label": "Permitir pagamento com cartão",
+        "hint": "O cliente poderá então pagar {amount} com cartão a partir do link. Este único valor fica guardado sem cifra e a Billanta e a Stripe vão vê-lo.",
+        "on": "O pagamento com cartão está ativo para {amount}. Este valor está guardado sem cifra e a Billanta e a Stripe veem-no. O próximo pagamento desativa-o."
+      }
+    },
+    "bankMatch": {
+      "title": "Correspondências sugeridas para documentos cifrados",
+      "hint": "O seu navegador comparou os pagamentos sem correspondência com os valores abertos. O servidor não conhece os valores, por isso nada é associado sem a sua confirmação.",
+      "locked": "Alguns documentos têm valores cifrados. Depois de desbloquear o cofre, sugerimos a que pagamentos pertencem.",
+      "unlock": "Desbloquear",
+      "confirm": "Associar",
+      "failed": "Não foi possível associar o pagamento. Tente novamente.",
+      "matched": "O pagamento está associado ao documento {number}.",
+      "ambiguous": "outro documento também serve, verifique",
+      "reason": {
+        "vs_amount": "referência e valor coincidem",
+        "vs_partial": "a referência coincide, pagamento parcial",
+        "amount_date": "valor e data coincidem, sem referência"
+      }
     }
   },
   "vaultPublic": {

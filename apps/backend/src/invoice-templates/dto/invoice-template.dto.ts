@@ -1,6 +1,6 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
-import { sealableText } from "../../vault/sealed";
+import { sealableText, sealedEnvelope } from "../../vault/sealed";
 
 const templateLineItemSchema = z.object({
   description: sealableText(500).pipe(z.string().min(1)),
@@ -37,6 +37,20 @@ export const bulkInvoiceSchema = z.object({
   // Issue every draft right away (numbers allocated in order) instead of
   // leaving them for review.
   issue: z.boolean().default(false),
+  // A template with sealed amounts: the browser opened it and sealed one
+  // copy per customer under that draft's own new document key (texts too).
+  sealed: z
+    .array(
+      z.object({
+        contact_id: z.string().uuid(),
+        enc_amounts: sealedEnvelope(4000),
+        note_above: sealableText(2000).nullish(),
+        note_below: sealableText(2000).nullish(),
+        line_items: z.array(z.object({ description: sealableText(500).pipe(z.string().min(1)), enc_amounts: sealedEnvelope(400) })).max(200),
+      }),
+    )
+    .max(200)
+    .optional(),
 });
 
 export class BulkInvoiceDto extends createZodDto(bulkInvoiceSchema) {}

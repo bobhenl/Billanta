@@ -17,7 +17,7 @@ import { SEALED_BUYER_SNAPSHOT_FIELDS, SEALED_CONTACT_FIELDS } from "@faktur/cz-
 import { SEALED_PLACEHOLDER } from "./sealed";
 import { assertContactShape, assertContactsCategory } from "./sealed-contacts";
 import { b64url, CHALLENGE_TTL_MS, parsePasskeyPublicKey, passkeyOrigin, verifyPasskeyAssertion } from "./passkey-step-up";
-import { amountPaidOnSeal, assertAmountsCategory, assertAmountsShape } from "./sealed-amounts";
+import { assertAmountsCategory, assertAmountsShape, paymentsOnSeal } from "./sealed-amounts";
 import { SEALED_ITEM_PLACEHOLDER } from "@faktur/cz-compliance";
 import { assertInvoiceOpen } from "../invoices/invoice-lock";
 import type {
@@ -670,25 +670,29 @@ export class VaultService {
   /**
    * What "Zašifrovat stávající částky" still has to do, a page at a time:
    * documents whose amounts are plain, with the numbers the browser seals.
-   * Locked documents are left out (they need a fresh re-auth to open), and
-   * so are partly paid ones: the server would no longer know what is left
-   * (`amountPaidOnSeal`). `skippedPartlyPaid` says how many, so the button
-   * can explain why they stay.
+   * Locked documents are left out (they need a fresh re-auth to open). The
+   * payment columns come along: the browser seals them as one payment of the
+   * document (`paymentsOnSeal`), so a partly paid document keeps what was paid.
    */
   async plainAmounts(db: TenantDb, tenantId: string, query: PlainAmountsQueryDto) {
     const vault = await this.requireVault(db, tenantId);
     if (!vault.categories.includes("amounts")) throw new ForbiddenException("vault_category_off");
     const i = schema.invoices;
     const li = schema.invoiceLineItems;
-    const base = and(isNull(i.encAmounts), isNull(i.lockedAt), query.invoice_id ? eq(i.id, query.invoice_id) : undefined);
-    const partlyPaid = sql`(COALESCE(${i.amountPaid}, 0) <> 0 AND ${i.status} <> 'paid')`;
-    const where = and(base, sql`NOT ${partlyPaid}`);
-    const [[{ remaining } = { remaining: 0 }], [{ skipped } = { skipped: 0 }]] = await Promise.all([
-      db.select({ remaining: sql<number>`count(*)::int` }).from(i).where(where),
-      db.select({ skipped: sql<number>`count(*)::int` }).from(i).where(and(base, partlyPaid)),
-    ]);
+    const where = and(isNull(i.encAmounts), isNull(i.lockedAt), query.invoice_id ? eq(i.id, query.invoice_id) : undefined);
+    const [{ remaining } = { remaining: 0 }] = await db.select({ remaining: sql<number>`count(*)::int` }).from(i).where(where);
     const rows = await db
-      .select({ id: i.id, invoiceNumber: i.invoiceNumber, reverseCharge: i.reverseCharge, noteAbove: i.noteAbove, noteBelow: i.noteBelow })
+      .select({
+        id: i.id,
+        invoiceNumber: i.invoiceNumber,
+        reverseCharge: i.reverseCharge,
+        noteAbove: i.noteAbove,
+        noteBelow: i.noteBelow,
+        status: i.status,
+        amountPaid: i.amountPaid,
+        paymentFees: i.paymentFees,
+        receivedCzk: i.receivedCzk,
+      })
       .from(i)
       .where(where)
       .orderBy(asc(i.createdAt), asc(i.id))
@@ -696,13 +700,18 @@ export class VaultService {
     const items = rows.length ? await db.select().from(li).where(inArray(li.invoiceId, rows.map((r) => r.id))) : [];
     return {
       remaining,
-      skippedPartlyPaid: skipped,
       invoices: rows.map((r) => {
         const own = items.filter((it) => it.invoiceId === r.id).sort((a, b) => a.sortOrder - b.sortOrder);
+        const paid = Number(r.amountPaid ?? 0);
+        const fee = Number(r.paymentFees ?? 0);
         return {
           id: r.id,
           invoiceNumber: r.invoiceNumber,
           reverseCharge: r.reverseCharge,
+          // What the browser seals as the carried payment; null when nothing was paid.
+          paid: paid !== 0 || fee !== 0 || r.receivedCzk != null
+            ? { amount: paid, fee, receivedHome: r.receivedCzk == null ? null : Number(r.receivedCzk), full: r.status === "paid" }
+            : null,
           items: own.map((it) => ({
             id: it.id,
             quantity: Number(it.quantity),
@@ -733,14 +742,23 @@ export class VaultService {
     let skipped = 0;
     for (const given of dto.invoices) {
       const [row] = await db
-        .select({ id: i.id, invoiceNumber: i.invoiceNumber, status: i.status, amountPaid: i.amountPaid, noteAbove: i.noteAbove, noteBelow: i.noteBelow })
+        .select({
+          id: i.id,
+          invoiceNumber: i.invoiceNumber,
+          status: i.status,
+          amountPaid: i.amountPaid,
+          paymentFees: i.paymentFees,
+          receivedCzk: i.receivedCzk,
+          noteAbove: i.noteAbove,
+          noteBelow: i.noteBelow,
+        })
         .from(i)
         .where(and(eq(i.id, given.id), isNull(i.encAmounts), isNull(i.lockedAt)))
         .limit(1);
       if (!row) continue;
-      let amountPaid: "0" | null;
+      let paid: ReturnType<typeof paymentsOnSeal>;
       try {
-        amountPaid = amountPaidOnSeal(row);
+        paid = paymentsOnSeal(row, given.encPaid);
       } catch {
         skipped++;
         continue;
@@ -752,7 +770,14 @@ export class VaultService {
         continue;
       }
       // One document key for everything a client link opens.
-      assertOneDocumentKey([given.encAmounts, ...given.items.map((it) => it.encAmounts), row.noteAbove, row.noteBelow, ...items.map((it) => it.description)]);
+      assertOneDocumentKey([
+        given.encAmounts,
+        ...given.items.map((it) => it.encAmounts),
+        paid.carry,
+        row.noteAbove,
+        row.noteBelow,
+        ...items.map((it) => it.description),
+      ]);
       const placeholder = {
         quantity: String(SEALED_ITEM_PLACEHOLDER.quantity),
         unitPrice: String(SEALED_ITEM_PLACEHOLDER.unitPrice),
@@ -760,15 +785,19 @@ export class VaultService {
         discountPercent: String(SEALED_ITEM_PLACEHOLDER.discountPercent),
       };
       assertAmountsShape(
-        { encAmounts: given.encAmounts, amountPaid: amountPaid ?? row.amountPaid },
+        { encAmounts: given.encAmounts, amountPaid: paid.set.amountPaid ?? row.amountPaid },
         items.map((it) => ({ ...placeholder, encAmounts: byId.get(it.id)! })),
       );
       const updated = await db
         .update(i)
-        .set({ encAmounts: given.encAmounts, ...(amountPaid != null ? { amountPaid } : {}) })
+        .set({ encAmounts: given.encAmounts, ...paid.set })
         .where(and(eq(i.id, row.id), isNull(i.encAmounts), isNull(i.lockedAt)))
         .returning({ id: i.id });
       if (!updated.length) continue;
+      if (paid.carry) {
+        // No date: the plain columns never said when the money came.
+        await db.insert(schema.invoiceSealedPayments).values({ tenantId, invoiceId: row.id, paidAt: null, encAmount: paid.carry });
+      }
       for (const it of items) {
         await db
           .update(li)

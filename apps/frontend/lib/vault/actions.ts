@@ -136,9 +136,9 @@ export async function storeSealedContacts(sealed: Awaited<ReturnType<typeof seal
   return result;
 }
 
-/** Documents whose amounts are still plain (not locked, not partly paid). */
+/** Documents whose amounts are still plain (not locked), with what was paid. */
 export async function fetchPlainAmounts() {
-  return call<{ remaining: number; skippedPartlyPaid: number; invoices: PlainAmountsDocument[] }>('/api/v1/vault/invoices/plain-amounts?limit=20');
+  return call<{ remaining: number; invoices: PlainAmountsDocument[] }>('/api/v1/vault/invoices/plain-amounts?limit=20');
 }
 
 /** Stores the amounts envelopes; the server writes the placeholder into the plain columns itself. */
@@ -146,12 +146,77 @@ export async function storeSealedAmounts(invoices: Awaited<ReturnType<typeof sea
   const body = {
     invoices: invoices
       .filter((i) => isSealed(i.encAmounts) && i.items.every((it) => isSealed(it.encAmounts)))
-      .map((i) => ({ id: i.id, encAmounts: i.encAmounts, items: i.items.map((it) => ({ id: it.id, encAmounts: it.encAmounts })) }))
+      .map((i) => ({
+        id: i.id,
+        encAmounts: i.encAmounts,
+        items: i.items.map((it) => ({ id: it.id, encAmounts: it.encAmounts })),
+        ...('encPaid' in i && isSealed(i.encPaid) ? { encPaid: i.encPaid } : {})
+      }))
   };
   if (!body.invoices.length) return { ok: true as const, value: { sealed: 0, skipped: 0 } };
   const result = await call<{ sealed: number; skipped: number }>('/api/v1/vault/invoices/seal-amounts', json('POST', body));
   if (result.ok) revalidatePath('/', 'layout');
   return result;
+}
+
+/** One payment of a document with sealed amounts, as stored: the sums are an envelope. */
+export interface SealedPaymentRow {
+  id: string;
+  paidAt: string | null;
+  variableSymbol: string | null;
+  bankTransactionId: string | null;
+  encAmount: string;
+  createdAt: string;
+}
+
+export type SealedVerdict = 'unpaid' | 'partly_paid' | 'paid';
+
+export async function fetchSealedPayments(invoiceId: string) {
+  return call<SealedPaymentRow[]>(`/api/v1/invoices/${invoiceId}/sealed-payments`);
+}
+
+/** Only the envelope leaves the tab; `state` is what this browser computed from the opened total. */
+export async function addSealedPayment(
+  invoiceId: string,
+  input: { encAmount: string; paidAt: string; bankTransactionId?: string | null; state: Exclude<SealedVerdict, 'unpaid'> }
+) {
+  if (!isSealed(input.encAmount)) return { ok: false as const, error: 'amounts_plaintext' };
+  const result = await call<unknown>(
+    `/api/v1/invoices/${invoiceId}/sealed-payments`,
+    json('POST', { enc_amount: input.encAmount, paid_at: input.paidAt, bank_transaction_id: input.bankTransactionId ?? null, state: input.state })
+  );
+  if (result.ok) revalidatePath('/', 'layout');
+  return result;
+}
+
+export async function deleteSealedPayment(invoiceId: string, paymentId: string, state: SealedVerdict) {
+  const result = await call<unknown>(`/api/v1/invoices/${invoiceId}/sealed-payments/${paymentId}?state=${state}`, { method: 'DELETE' });
+  if (result.ok) revalidatePath('/', 'layout');
+  return result;
+}
+
+/** "Povolit platbu kartou": the one plain amount the user opts to store; null switches it off. */
+export async function setSealedCardAmount(invoiceId: string, amount: number | null) {
+  const result = await call<{ id: string; cardAmount: string | null }>(`/api/v1/invoices/${invoiceId}/card-amount`, json('PUT', { amount }));
+  if (result.ok) revalidatePath('/', 'layout');
+  return result;
+}
+
+/** An issued sealed document still waiting for money, for bank matching in the browser. */
+export interface OpenSealedDocument {
+  id: string;
+  invoiceNumber: string | null;
+  documentType: string;
+  variableSymbol: string | null;
+  currency: string;
+  issueDate: string | null;
+  dueDate: string | null;
+  encAmounts: string;
+  payments: string[];
+}
+
+export async function fetchOpenSealedDocuments() {
+  return call<OpenSealedDocument[]>('/api/v1/invoices/sealed/open');
 }
 
 /**

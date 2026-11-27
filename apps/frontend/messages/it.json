@@ -14502,9 +14502,9 @@
         "title": "Importi",
         "description": "Quantità, prezzi unitari, aliquote IVA, sconti e totali dei documenti. Il numero del documento, il simbolo variabile (VS), la scadenza, la valuta e lo stato restano leggibili.",
         "loses": [
-          "Abbinamento automatico dei pagamenti per importo: un pagamento con il VS di un documento cifrato attende la tua conferma manuale",
-          "Pagamenti parziali: un documento cifrato può essere segnato solo come pagato per intero, senza commissioni né importo accreditato",
-          "Invio tramite Peppol, suggerimenti dell’IA con importi e pagamento con carta",
+          "L'abbinamento automatico sul server: dopo lo sblocco il tuo browser propone gli abbinamenti e tu li confermi",
+          "I pagamenti li calcola solo il tuo browser: per un documento cifrato il server conosce solo la data del pagamento e lo stato, non l'importo né la commissione",
+          "L'invio tramite Peppol e i suggerimenti IA con importi. Il pagamento con carta solo sul documento dove lo consenti esplicitamente – l'importo da pagare arriva allora leggibile a Billanta e Stripe",
           "Il reddito netto conta solo i documenti non cifrati e indica quanti ne ha esclusi. Il calcolatore dell’imposta forfettaria non precompila nulla",
           "Solleciti, riepilogo settimanale e totali scaduti nelle e-mail non riportano l’importo"
         ],
@@ -14786,28 +14786,69 @@
       "what": "Il browser carica i documenti i cui importi sono leggibili sul server, cifra quantità, prezzi, aliquote IVA, sconti e totali e li salva di nuovo. Sul server al loro posto restano degli zeri.",
       "keeps": "Numero del documento, VS, scadenza, valuta e stato restano leggibili, quindi trovi ancora i pagamenti tramite VS.",
       "loses": "Il server non creerà più PDF, ISDOC né esportazioni per questi documenti; li crea il tuo browser dopo lo sblocco della cassaforte. Il reddito netto non li conta. Un documento pagato resta pagato.",
-      "resumable": "I documenti bloccati e quelli pagati in parte vengono saltati. Se chiudi la finestra, la prossima volta si riprende da dove ti eri fermato.",
+      "resumable": "I documenti bloccati vengono saltati. Quanto già pagato viene cifrato come un unico pagamento del documento. Se chiudi la finestra, la prossima volta riprendi da dove ti eri fermato.",
       "cancel": "Indietro",
       "confirm": "Cifra",
       "progress": "Cifratura… {n}",
       "done": "{n, plural, one {Importi di # documento cifrati} other {Importi di # documenti cifrati}}.",
       "nothing": "Non c’era nulla da cifrare.",
-      "failed": "La cifratura non è riuscita. I documenti già cifrati restano cifrati.",
-      "partlyPaid": "{n, plural, one {# documento pagato in parte è rimasto leggibile} other {# documenti pagati in parte sono rimasti leggibili}}. Si potranno cifrare dopo il pagamento completo."
+      "failed": "La cifratura non è riuscita. I documenti già cifrati restano cifrati."
     },
     "amounts": {
-      "paidSealed": "Gli importi del documento sono cifrati, quindi si può registrare solo il pagamento dell’intero importo. Il server non salva commissioni né importo accreditato.",
+      "paidSealed": "Gli importi del documento sono cifrati, qui si registra il pagamento dell'intero importo. Aggiungi un pagamento parziale o una commissione in Pagamenti nella pagina del documento.",
       "leftOut": "Esclusi {count, plural, one {# documento} other {# documenti}} con importi cifrati – sblocca la cassaforte",
       "exportLocked": "I documenti con importi cifrati entrano nel file solo dopo lo sblocco della cassaforte.",
       "exportUnreadable": "Nessun file creato: {count, plural, one {# documento non si può aprire} other {# documenti non si possono aprire}} con questa chiave. Un documento mancante renderebbe il file errato.",
       "creditNoteLocked": "La nota di credito di una fattura con importi cifrati si prepara dopo lo sblocco della cassaforte.",
       "creditNoteUnreadable": "Gli importi della fattura non si possono aprire con questa chiave, quindi la nota di credito non è stata creata.",
-      "bulkSealed": "Questo modello ha importi cifrati. Non serve per la fatturazione massiva, solo per una singola fattura.",
+      "bulkSealed": "Gli importi del modello sono cifrati. Sblocca la cassaforte e ogni bozza sarà cifrata con la propria chiave.",
       "reportIncluded": "Include {count, plural, one {# documento} other {# documenti}} con importi cifrati, aperti da questo browser.",
       "reportOpening": "Apertura degli importi cifrati…",
       "reportUnreadable": "Nessun report: {count, plural, one {# documento non si può} other {# documenti non si possono}} aprire con questa chiave. Senza di loro le cifre risulterebbero più basse.",
       "reportLocked": "Alcuni documenti dell’anno hanno importi cifrati. Il tuo browser calcola le cifre quando sblocchi la cassaforte.",
-      "unlock": "Sblocca la cassaforte"
+      "unlock": "Sblocca la cassaforte",
+      "bulkSealedDrafts": "Un modello con importi cifrati crea solo bozze. Emettile poi una alla volta."
+    },
+    "payments": {
+      "title": "Pagamenti",
+      "locked": "Gli importi dei pagamenti sono cifrati. Sblocca la cassaforte per vederli.",
+      "otherKey": "Un pagamento non si apre con questa chiave, quindi non mostriamo il residuo da pagare.",
+      "unlock": "Sblocca",
+      "paid": "Pagato {amount}",
+      "remaining": "restano {amount} su {total}",
+      "feeShort": "commissione {amount}",
+      "carried": "da un pagamento precedente",
+      "fromBank": "dalla banca",
+      "delete": "Elimina pagamento",
+      "confirmDelete": "Eliminare questo pagamento? In base ai pagamenti rimasti, il documento torna non pagato o pagato in parte.",
+      "amount": "Importo",
+      "fee": "Commissione",
+      "date": "Data del pagamento",
+      "add": "Aggiungi pagamento",
+      "invalid": "Inserisci un importo positivo e una commissione pari o superiore a zero.",
+      "failed": "Non è stato possibile salvare il pagamento. Riprova.",
+      "added": "Pagamento salvato, il resto è ancora da pagare.",
+      "paidInFull": "Il documento è pagato per intero.",
+      "card": {
+        "label": "Consenti pagamento con carta",
+        "hint": "Il cliente potrà pagare {amount} con carta dal link. Questo solo importo viene salvato in chiaro e lo vedranno Billanta e Stripe.",
+        "on": "Il pagamento con carta è attivo per {amount}. Questo importo è salvato in chiaro e lo vedono Billanta e Stripe. Il prossimo pagamento lo disattiva."
+      }
+    },
+    "bankMatch": {
+      "title": "Abbinamenti proposti per documenti cifrati",
+      "hint": "Il tuo browser ha confrontato i pagamenti non abbinati con gli importi aperti. Il server non conosce gli importi, quindi nulla viene abbinato senza la tua conferma.",
+      "locked": "Alcuni documenti hanno importi cifrati. Dopo lo sblocco della cassaforte ti proporremo a quali pagamenti appartengono.",
+      "unlock": "Sblocca",
+      "confirm": "Abbina",
+      "failed": "Non è stato possibile abbinare il pagamento. Riprova.",
+      "matched": "Il pagamento è abbinato al documento {number}.",
+      "ambiguous": "si adatta anche un altro documento, controlla",
+      "reason": {
+        "vs_amount": "riferimento e importo coincidono",
+        "vs_partial": "il riferimento coincide, pagamento parziale",
+        "amount_date": "importo e data coincidono, senza riferimento"
+      }
     }
   },
   "vaultPublic": {

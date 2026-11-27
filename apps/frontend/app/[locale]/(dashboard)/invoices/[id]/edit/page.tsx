@@ -43,6 +43,8 @@ interface DetailResponse {
     exchangeRate: string | null;
     bankAccountId: string | null;
     amountPaid: string | null;
+    paymentFees?: string | null;
+    receivedCzk?: string | null;
     encAmounts?: string | null;
   };
   contact: Contact | null;
@@ -134,7 +136,7 @@ export default async function EditInvoicePage(props: {
       {issuedEdit && <p className="mt-1 text-sm text-muted-foreground">{t('editIssuedLead')}</p>}
       <div className="mt-4">
         <ConfidentialInvoiceForm
-          mode={{ kind: 'edit', id: invoice.id, issued: issuedEdit, reason: issuedEdit ? searchParams.reason?.slice(0, 1000) : undefined, amountPaid: Number(invoice.amountPaid ?? 0) }}
+          mode={{ kind: 'edit', id: invoice.id, issued: issuedEdit, reason: issuedEdit ? searchParams.reason?.slice(0, 1000) : undefined, amountPaid: Number(invoice.amountPaid ?? 0), paymentFee: Number(invoice.paymentFees ?? 0), receivedHome: invoice.receivedCzk != null ? Number(invoice.receivedCzk) : null }}
           defaults={defaults} ai={ai} starred={starred} template={template} />
       </div>
     </div>

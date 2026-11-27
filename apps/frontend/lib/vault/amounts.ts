@@ -2,16 +2,21 @@ import {
   amountTotals,
   decodeDocumentAmounts,
   decodeItemAmounts,
+  decodePaymentAmounts,
   encodeDocumentAmounts,
   encodeItemAmounts,
-  generateSpaydString,
+  encodePaymentAmounts,
+  generateDocumentKey,
   isSealed,
   open,
   SEALED_ITEM_PLACEHOLDER,
+  sealedQrInvoiceString,
+  sealedSpaydString,
   sealWithDocumentKey,
   type DocumentAmounts,
   type DocumentKey,
   type ItemAmounts,
+  type PaymentAmounts,
   type SealedPdfQrPlan,
   type VaultKey
 } from '@faktur/cz-compliance';
@@ -84,16 +89,35 @@ export async function openDocumentAmounts(key: VaultKey, cipher: string): Promis
   return decodeDocumentAmounts(await open(key, cipher));
 }
 
-/** A payment QR of a sealed document, drawn here once the amount is known (the server drew none). */
-export async function sealedQrPng(plan: SealedPdfQrPlan, amount: number): Promise<string | null> {
+/**
+ * A payment QR (or a standalone QR Faktura) of a sealed document, drawn here
+ * once the amount and totals are known (the server drew none). The SPAYD
+ * gets QR Faktura inside when the totals are open, as on a plain document.
+ */
+export async function sealedQrPng(plan: SealedPdfQrPlan, amount: number, totals: DocumentAmounts | null = null): Promise<string | null> {
   const QRCode = (await import('qrcode')).default;
-  // The plan is JSON, so its due date travels as YYYY-MM-DD.
-  const dueDate = plan.params.dueDate ? new Date(`${plan.params.dueDate}T00:00:00Z`) : undefined;
-  const text =
-    plan.kind === 'pay_by_square'
-      ? generatePayBySquareString({ ...plan.params, amount, dueDate })
-      : generateSpaydString({ ...plan.params, amount, dueDate });
+  let text: string;
+  if (plan.kind === 'invoice') {
+    if (!totals) return null;
+    text = sealedQrInvoiceString(plan.params, totals);
+  } else if (plan.kind === 'pay_by_square') {
+    // The plan is JSON, so its due date travels as YYYY-MM-DD.
+    const dueDate = plan.params.dueDate ? new Date(`${plan.params.dueDate}T00:00:00Z`) : undefined;
+    text = generatePayBySquareString({ ...plan.params, amount, dueDate });
+  } else {
+    text = sealedSpaydString(plan.params, amount, totals);
+  }
   return QRCode.toDataURL(text, { margin: 1, width: 280, errorCorrectionLevel: 'M' }).catch(() => null);
+}
+
+/** One payment of a sealed document, opened with the vault key or the client's link key. */
+export async function openPaymentWith(openCipher: (cipher: string) => Promise<string>, cipher: string): Promise<PaymentAmounts> {
+  return decodePaymentAmounts(await openCipher(cipher));
+}
+
+/** A new payment's sums, sealed under the document's key before they leave the tab. */
+export async function sealPayment(docKey: DocumentKey, payment: PaymentAmounts): Promise<string> {
+  return sealWithDocumentKey(docKey, encodePaymentAmounts(payment));
 }
 
 /** `GET /api/v1/vault/invoices/plain-amounts`: one document whose amounts are still plain. */
@@ -103,13 +127,86 @@ export interface PlainAmountsDocument {
   reverseCharge: boolean;
   items: ({ id: string } & ItemAmounts)[];
   documentKeyWrap: string | null;
+  /** What was paid in plain; it becomes one sealed payment. `full` is a document paid in full. */
+  paid: { amount: number; fee: number; receivedHome: number | null; full: boolean } | null;
 }
 
-/** For "Zašifrovat částky": one envelope per item and the totals, under the document's key. */
+/**
+ * The plain paid columns as one payment envelope, when sealing them: a
+ * document paid in full carries its total (the plain sum may be older than
+ * an edit), a partly paid one what was received. Undefined when nothing
+ * was paid, or for fees alone on an unpaid document.
+ */
+export async function sealCarriedPayment(
+  docKey: DocumentKey,
+  paid: PlainAmountsDocument['paid'],
+  total: number
+): Promise<string | undefined> {
+  if (!paid) return undefined;
+  const amount = paid.full ? total : paid.amount;
+  if (!(amount > 0)) return undefined;
+  return sealPayment(docKey, { amount, fee: paid.fee, receivedHome: paid.receivedHome });
+}
+
+/** For "Zašifrovat částky": one envelope per item and the totals, under the document's key, and what was paid. */
 export async function sealPlainAmounts(docKey: DocumentKey, doc: PlainAmountsDocument) {
+  const totals = amountTotals(doc.items, { reverseCharge: doc.reverseCharge });
+  const encPaid = await sealCarriedPayment(docKey, doc.paid, totals.totalWithVat);
   return {
     id: doc.id,
-    encAmounts: await sealWithDocumentKey(docKey, encodeDocumentAmounts(amountTotals(doc.items, { reverseCharge: doc.reverseCharge }))),
-    items: await Promise.all(doc.items.map(async (item) => ({ id: item.id, encAmounts: await sealWithDocumentKey(docKey, encodeItemAmounts(item)) })))
+    encAmounts: await sealWithDocumentKey(docKey, encodeDocumentAmounts(totals)),
+    items: await Promise.all(doc.items.map(async (item) => ({ id: item.id, encAmounts: await sealWithDocumentKey(docKey, encodeItemAmounts(item)) }))),
+    ...(encPaid ? { encPaid } : {})
   };
+}
+
+/** One draft of a bulk run from a sealed template, sealed under its own document key. */
+export interface SealedBulkCopy {
+  contact_id: string;
+  enc_amounts: string;
+  note_above?: string | null;
+  note_below?: string | null;
+  line_items: { description: string; enc_amounts: string }[];
+}
+
+/**
+ * Bulk invoicing from a template with sealed amounts: the template is opened
+ * once here, then every customer's draft gets a fresh document key, so one
+ * client link never opens another customer's draft. Texts that were sealed
+ * in the template stay sealed; plain ones stay plain.
+ */
+export async function sealTemplateCopies(
+  key: VaultKey,
+  template: { noteAbove?: string | null; noteBelow?: string | null; lineItems: (AmountsItem & { description: string })[] },
+  contactIds: string[]
+): Promise<SealedBulkCopy[]> {
+  const openText = async (value: string | null | undefined) => (isSealed(value) ? open(key, value!) : (value ?? null));
+  const items = await Promise.all(
+    template.lineItems.map(async (item) => ({
+      amounts: isSealed(item.encAmounts) ? decodeItemAmounts(await open(key, item.encAmounts!)) : itemOf(item),
+      description: (await openText(item.description)) ?? '',
+      sealedText: isSealed(item.description)
+    }))
+  );
+  const noteAbove = await openText(template.noteAbove);
+  const noteBelow = await openText(template.noteBelow);
+  const totals = encodeDocumentAmounts(amountTotals(items.map((i) => i.amounts), { reverseCharge: false }));
+  const copies: SealedBulkCopy[] = [];
+  for (const contactId of contactIds) {
+    const docKey = await generateDocumentKey(key);
+    const text = async (value: string | null, sealed: boolean) => (value && sealed ? sealWithDocumentKey(docKey, value) : value);
+    copies.push({
+      contact_id: contactId,
+      enc_amounts: await sealWithDocumentKey(docKey, totals),
+      note_above: await text(noteAbove, isSealed(template.noteAbove)),
+      note_below: await text(noteBelow, isSealed(template.noteBelow)),
+      line_items: await Promise.all(
+        items.map(async (item) => ({
+          description: (await text(item.description, item.sealedText)) ?? '',
+          enc_amounts: await sealWithDocumentKey(docKey, encodeItemAmounts(item.amounts))
+        }))
+      )
+    });
+  }
+  return copies;
 }

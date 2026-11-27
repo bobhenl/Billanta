@@ -11,6 +11,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Put,
   Query,
   Req,
   Res,
@@ -103,6 +104,19 @@ class PublicSlugDto extends createZodDto(z.object({ slug: customSlugSchema })) {
 
 class SetInvoiceLockDto extends createZodDto(z.object({ locked: z.boolean() })) {}
 class SetInvoicePrivateDto extends createZodDto(z.object({ isPrivate: z.boolean() })) {}
+
+const verdictSchema = z.enum(["unpaid", "partly_paid", "paid"]);
+/** One payment of a sealed document; the sum is an envelope, `state` the browser's verdict with it. */
+class AddSealedPaymentDto extends createZodDto(
+  z.object({
+    enc_amount: z.string().startsWith("enc:v1:").max(4000),
+    paid_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    bank_transaction_id: z.string().uuid().nullish(),
+    state: z.enum(["partly_paid", "paid"]),
+  }),
+) {}
+class DeleteSealedPaymentDto extends createZodDto(z.object({ state: verdictSchema })) {}
+class CardAmountDto extends createZodDto(z.object({ amount: z.number().positive().max(1e9).nullable() })) {}
 
 class FakturoidImportDto extends createZodDto(
   z.object({
@@ -232,6 +246,13 @@ export class InvoicesController {
   }
 
   // Declared before ":id/duplicate" so "latest" never reaches the UUID pipe.
+  @Get("sealed/open")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Issued documents with sealed amounts still waiting for payment, for bank matching in the browser" })
+  openSealed(@Req() req: TenantScopedRequest) {
+    return this.invoicesService.openSealedDocuments(req.tenantDb!);
+  }
+
   @Get("latest/duplicate")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "The most recent invoice (no credit notes) as a template for a new draft" })
@@ -405,6 +426,57 @@ export class InvoicesController {
     const receivedCzk = body?.received_czk == null ? undefined : Number(body.received_czk);
     if (receivedCzk !== undefined && !(receivedCzk > 0 && receivedCzk < 1e11)) throw new BadRequestException("Invalid received_czk");
     return this.invoicesService.markPaid(req.tenantDb!, id, paidAt && !isNaN(paidAt.getTime()) ? paidAt : undefined, amount, { fee, receivedCzk });
+  }
+
+  @Get(":id/sealed-payments")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Payments of a document with sealed amounts (the sums are envelopes the browser opens)" })
+  listSealedPayments(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    return this.invoicesService.listSealedPayments(req.tenantDb!, id);
+  }
+
+  @Post(":id/sealed-payments")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "Record a payment of a document with sealed amounts",
+    description:
+      "The sum, fee and home-currency proceeds come sealed under the document key; `state` is what the browser " +
+      "computed from the opened total. An optional bank transaction is linked like a manual match. 409 amounts_plain " +
+      "for a readable document (use mark-paid), 400 document_key_mismatch for an envelope of another document.",
+  })
+  addSealedPayment(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: AddSealedPaymentDto) {
+    const paidAt = new Date(`${dto.paid_at}T00:00:00Z`);
+    if (isNaN(paidAt.getTime())) throw new BadRequestException("Invalid paid_at");
+    return this.invoicesService.addSealedPayment(req.tenantDb!, req.user!.tenantId, req.user!.id ?? null, id, {
+      encAmount: dto.enc_amount,
+      paidAt,
+      bankTransactionId: dto.bank_transaction_id ?? null,
+      verdict: dto.state,
+    });
+  }
+
+  @Delete(":id/sealed-payments/:paymentId")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Remove a payment of a document with sealed amounts; `state` is the browser's verdict without it" })
+  deleteSealedPayment(
+    @Req() req: TenantScopedRequest,
+    @Param("id", ParseUUIDPipe) id: string,
+    @Param("paymentId", ParseUUIDPipe) paymentId: string,
+    @Query() dto: DeleteSealedPaymentDto,
+  ) {
+    return this.invoicesService.deleteSealedPayment(req.tenantDb!, id, paymentId, dto.state);
+  }
+
+  @Put(":id/card-amount")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "Allow card payment of a document with sealed amounts",
+    description:
+      "Stores the amount to charge in plain for this one document, so the client portal can start a Stripe " +
+      "Checkout. The user opts into it explicitly; null switches it off. Any later payment clears it.",
+  })
+  setCardAmount(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: CardAmountDto) {
+    return this.invoicesService.setCardAmount(req.tenantDb!, id, dto.amount);
   }
 
   @Post(":id/mark-unpaid")

@@ -19,6 +19,7 @@ import {
   type PdfFonts,
   type SealedPdfAmounts,
   type SealedPdfQrPlan,
+  type SealedQrInvoicePlan,
 } from "@faktur/cz-compliance";
 import { generatePayBySquareString } from "@faktur/cz-compliance/pay-by-square";
 import PDFDocument from "pdfkit";
@@ -494,6 +495,13 @@ export class InvoicePdfService {
               labels: { base: t.base, vat: t.vat, total: t.total, totalToPay: t.totalToPay, totalQuote: t.totalQuote },
               fx: this.sealedFx(t, invoice, tenantHomeCurrencyOf(tenant)),
               qr: wantsQr && qrMode !== "link" && invoice.status !== "paid" ? this.sealedQrPlan(t, invoice, contact, tenant) : null,
+              // Drawn only when no payment code is (a paid document, or no bank transfer), as for plain amounts.
+              invoiceQr:
+                wantsQr && qrMode !== "link" && qrMode !== "payment_only" && invoice.invoiceNumber
+                  ? { kind: "invoice", label: t.qrInvoice.toUpperCase(), params: this.sealedQrInvoicePlan(invoice, contact, tenant, invoice.dueDate) }
+                  : null,
+              // Filled in by the caller that reads invoice_sealed_payments (InvoicesService.pdfModel).
+              payments: [],
             },
           }
         : {}),
@@ -501,9 +509,38 @@ export class InvoicePdfService {
   }
 
   /**
+   * QR Faktura of a sealed document without its sums: everything
+   * `buildQrCode` puts into the SID except the total and VAT lines, which
+   * the browser adds after unlock (sealedQrInvoiceString).
+   */
+  private sealedQrInvoicePlan(invoice: InvoiceRow, contact: ContactRow, tenant: TenantRow, dueDate: Date | null | undefined): SealedQrInvoicePlan {
+    const day = (d: Date | null | undefined) => (d ? d.toISOString().slice(0, 10) : undefined);
+    return {
+      invoiceNumber: invoice.invoiceNumber ?? "",
+      issueDate: day(invoice.issueDate ?? new Date())!,
+      currency: invoice.currency,
+      dueDate: day(dueDate),
+      taxableSupplyDate: day(invoice.taxableSupplyDate),
+      variableSymbol: invoice.variableSymbol ?? undefined,
+      orderNumber: invoice.orderNumber ?? undefined,
+      supplierIco: tenant.ico ?? undefined,
+      supplierDic: tenant.dic ?? undefined,
+      customerIco: contact.ico ?? undefined,
+      customerDic: contact.dic ?? undefined,
+      vatPayer: tenant.dicVatPayer,
+      documentType: invoice.documentType === "proforma" ? 0 : invoice.documentType === "credit_note" ? 1 : undefined,
+      advance: invoice.documentType === "proforma",
+      reverseCharge: invoice.reverseCharge,
+      iban: this.iban(tenant) ?? undefined,
+      exchangeRate: invoice.exchangeRate ? Number(invoice.exchangeRate) : undefined,
+      software: brandCreditFor(tenant, "cs", "pdf") ? BRAND_NAME : undefined,
+    };
+  }
+
+  /**
    * The payment code of a document with sealed amounts, without the amount:
-   * the browser adds it after unlock and draws the code. No QR Faktura goes
-   * inside (it would need the totals and VAT lines here).
+   * the browser adds it after unlock and draws the code. The SPAYD carries
+   * the QR Faktura plan, filled with the totals in the browser too.
    */
   private sealedQrPlan(t: (typeof L)[Lang], invoice: InvoiceRow, contact: ContactRow, tenant: TenantRow): SealedPdfQrPlan | null {
     const iban = this.iban(tenant);
@@ -530,7 +567,9 @@ export class InvoicePdfService {
         },
       };
     }
-    return { kind: "spayd", label: t.qr.toUpperCase(), params: common };
+    // Same dates as buildQrCode: the embedded SID follows the due-date setting.
+    const invoiceParams = invoice.invoiceNumber ? this.sealedQrInvoicePlan(invoice, contact, tenant, dueDate ? invoice.dueDate : null) : undefined;
+    return { kind: "spayd", label: t.qr.toUpperCase(), params: { ...common, invoice: invoiceParams } };
   }
 
   /** The home-currency lines of a sealed foreign-currency document, without their amounts. */

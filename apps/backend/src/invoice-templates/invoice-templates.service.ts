@@ -3,7 +3,8 @@ import { asc, desc, eq, inArray } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { InvoicesService } from "../invoices/invoices.service";
-import { assertSealingAllowed, isSealed } from "../vault/sealed";
+import { SEALED_ITEM_PLACEHOLDER, documentKeyWrap } from "@faktur/cz-compliance";
+import { assertOneDocumentKey, assertSealingAllowed, isSealed } from "../vault/sealed";
 import { AMOUNTS_SEALED, amountsSealed } from "../vault/sealed-amounts";
 import type {
   BulkInvoiceDto,
@@ -37,6 +38,34 @@ export interface TemplateLineItem {
 /** The template's amounts are sealed (any item carries an envelope). */
 export function templateAmountsSealed(items: TemplateLineItem[]): boolean {
   return items.some((i) => isSealed(i.encAmounts));
+}
+
+type SealedCopy = NonNullable<BulkInvoiceDto["sealed"]>[number];
+
+/**
+ * The browser's sealed copies of a template with sealed amounts, by
+ * customer. Without them the server cannot fill any draft (409
+ * amounts_sealed). Each copy carries every item, lives under one document
+ * key, and no two copies share a key: one client link must never open
+ * another customer's draft.
+ */
+export function sealedCopies(dto: Pick<BulkInvoiceDto, "sealed" | "issue">, contactIds: string[], itemCount: number): Map<string, SealedCopy> {
+  if (!dto.sealed) throw new ConflictException(AMOUNTS_SEALED);
+  if (dto.issue) throw new BadRequestException("sealed_bulk_drafts_only");
+  const copies = new Map(dto.sealed.map((c) => [c.contact_id, c]));
+  if (copies.size !== dto.sealed.length || copies.size !== contactIds.length || contactIds.some((id) => !copies.has(id))) {
+    throw new BadRequestException("sealed_bulk_mismatch");
+  }
+  const keys = new Set<string>();
+  for (const copy of copies.values()) {
+    if (copy.line_items.length !== itemCount) throw new BadRequestException("sealed_bulk_mismatch");
+    const texts = [copy.enc_amounts, ...copy.line_items.map((i) => i.enc_amounts), copy.note_above, copy.note_below, ...copy.line_items.map((i) => i.description)];
+    assertOneDocumentKey(texts);
+    const key = documentKeyWrap(copy.enc_amounts);
+    if (!key || keys.has(key)) throw new BadRequestException("rekey_one_document_key");
+    keys.add(key);
+  }
+  return copies;
 }
 
 type LineItemInput = NonNullable<UpdateInvoiceTemplateDto["line_items"]>[number];
@@ -172,15 +201,17 @@ export class InvoiceTemplatesService {
    * order; with `issue: true` each is issued right away so numbers follow
    * that order too. Everything runs in the request transaction — one bad
    * customer rolls the whole batch back.
+   *
+   * A template with sealed amounts needs `sealed`: one copy per customer,
+   * sealed in the browser under that draft's own document key. Those stay
+   * drafts; issuing is a separate click per document.
    */
   async bulk(db: Db, tenantId: string, userId: string, id: string, dto: BulkInvoiceDto) {
     const template = await this.findOne(db, id);
     const items = (template.lineItems as TemplateLineItem[]) ?? [];
     if (items.length === 0) throw new BadRequestException("The template has no line items");
-    // Each draft needs its totals sealed, which only the browser can do.
-    if (templateAmountsSealed(items)) throw new ConflictException(AMOUNTS_SEALED);
-
     const contactIds = [...new Set(dto.contact_ids)];
+    const sealed = templateAmountsSealed(items) ? sealedCopies(dto, contactIds, items.length) : null;
     const found = await db
       .select({ id: schema.contacts.id })
       .from(schema.contacts)
@@ -196,6 +227,7 @@ export class InvoiceTemplatesService {
 
     const created = [];
     for (const contactId of contactIds) {
+      const copy = sealed?.get(contactId);
       const invoice = await this.invoicesService.create(db, tenantId, {
         document_type: template.documentType === "credit_note" ? "invoice" : template.documentType,
         contact_id: contactId,
@@ -203,20 +235,33 @@ export class InvoiceTemplatesService {
         due_date: template.documentType === "quote" ? null : addDays(issueDate, dueDays),
         currency: template.currency,
         payment_method: template.paymentMethod,
-        note_above: template.noteAbove,
-        note_below: template.noteBelow,
+        note_above: copy ? (copy.note_above ?? null) : template.noteAbove,
+        note_below: copy ? (copy.note_below ?? null) : template.noteBelow,
         language: "cs",
         reverse_charge: false,
         source_ai: false,
         template_id: template.id,
-        line_items: items.map((i) => ({
-          description: i.description,
-          quantity: i.quantity,
-          unit: i.unit,
-          unit_price: i.unitPrice,
-          vat_rate: i.vatRate,
-          discount_percent: i.discountPercent ?? 0,
-        })),
+        ...(copy ? { enc_amounts: copy.enc_amounts } : {}),
+        line_items: items.map((i, n) =>
+          copy
+            ? {
+                description: copy.line_items[n]!.description,
+                quantity: SEALED_ITEM_PLACEHOLDER.quantity,
+                unit: i.unit,
+                unit_price: SEALED_ITEM_PLACEHOLDER.unitPrice,
+                vat_rate: null,
+                discount_percent: SEALED_ITEM_PLACEHOLDER.discountPercent,
+                enc_amounts: copy.line_items[n]!.enc_amounts,
+              }
+            : {
+                description: i.description,
+                quantity: i.quantity,
+                unit: i.unit,
+                unit_price: i.unitPrice,
+                vat_rate: i.vatRate,
+                discount_percent: i.discountPercent ?? 0,
+              },
+        ),
       });
       if (dto.issue) {
         created.push(await this.invoicesService.issue(db, tenantId, invoice.id, userId));

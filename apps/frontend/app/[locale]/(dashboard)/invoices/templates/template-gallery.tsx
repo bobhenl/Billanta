@@ -24,6 +24,9 @@ export interface SavedTemplateRow {
   currency: string;
   dueInDays: number | null;
   contactName: string | null;
+  /** Possibly sealed like the items' descriptions. */
+  noteAbove?: string | null;
+  noteBelow?: string | null;
   usageCount: number;
   lastUsedAt: string | null;
   lineItems: {

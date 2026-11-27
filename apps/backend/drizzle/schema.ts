@@ -710,6 +710,12 @@ export const invoices = pgTable(
     // holds its amounts in `invoice_line_items.enc_amounts` and placeholders
     // in the plain columns, so server sums of this document are 0, not real.
     encAmounts: text("enc_amounts"),
+    // Sealed amounts (0117): "partly_paid" when the browser found the sealed
+    // payments short of the total; null otherwise. The sums stay envelopes.
+    sealedPaymentState: text("sealed_payment_state").$type<"partly_paid">(),
+    // Sealed amounts: the plain sum the user allowed to be charged by card for
+    // this one document (Stripe needs a number). Null = no card payment.
+    cardAmount: numeric("card_amount", { precision: 14, scale: 2 }),
     paidAt: timestamp("paid_at", { withTimezone: true }),
     // Locked by an owner/admin: opening it needs a fresh re-auth (src/invoices/invoice-lock.ts).
     // Lists, totals and exports still count it.
@@ -808,6 +814,28 @@ export const invoiceAttachments = pgTable("invoice_attachments", {
   encMeta: text("enc_meta"),
   sendWithEmail: boolean("send_with_email").notNull().default(true),
   showInPortal: boolean("show_in_portal").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * Payments of a document whose amounts are sealed (migration 0117). The sum,
+ * fee and home-currency proceeds are one envelope under the document key
+ * (`@faktur/cz-compliance` vault-payments.ts); the rest is plain.
+ */
+export const invoiceSealedPayments = pgTable("invoice_sealed_payments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  invoiceId: uuid("invoice_id")
+    .notNull()
+    .references(() => invoices.id, { onDelete: "cascade" }),
+  /** Null: the sum carried over when the document's amounts were sealed. */
+  paidAt: date("paid_at", { mode: "string" }),
+  variableSymbol: text("variable_symbol"),
+  bankTransactionId: uuid("bank_transaction_id").references((): AnyPgColumn => bankTransactions.id, { onDelete: "set null" }),
+  encAmount: text("enc_amount").notNull(),
+  createdBy: uuid("created_by"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

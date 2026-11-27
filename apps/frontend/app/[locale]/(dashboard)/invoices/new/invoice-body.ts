@@ -60,6 +60,7 @@ export function invoiceBody(input: InvoiceDraftInput) {
     ...(input.amountPaid !== undefined ? { amount_paid: input.amountPaid } : {}),
     // Category "amounts": envelopes only; the plain item numbers are then the placeholder.
     ...(input.encAmounts ? { enc_amounts: input.encAmounts } : {}),
+    ...(input.encPaid ? { enc_paid: input.encPaid } : {}),
     custom_fields: input.customFields
       .map((f) => ({ label: f.label.trim(), value: f.value.trim(), kind: f.kind ?? 'text', internal: Boolean(f.internal) }))
       .filter((f) => f.label && f.value),

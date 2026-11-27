@@ -141,7 +141,7 @@ describe('sealed amounts in the PDF model', () => {
     expect(model.totals.label).toBe('Celkem k úhradě');
     expect(nbsp(model.totals.amount)).toBe(nbsp(formatPdfAmount(1210, 'CZK')));
     expect(model.totals.byRate).toHaveLength(1);
-    expect(qr).toHaveBeenCalledWith(expect.objectContaining({ kind: 'spayd' }), 1210);
+    expect(qr).toHaveBeenCalledWith(expect.objectContaining({ kind: 'spayd' }), 1210, expect.objectContaining({ totalWithVat: 1210 }));
     expect(model.payment.qr).toEqual({ label: 'QR PLATBA', png: 'data:image/png;base64,AA' });
   });
 

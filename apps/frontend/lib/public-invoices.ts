@@ -12,6 +12,8 @@
  * bundle. Defaults to the backend's own default port (see
  * `apps/backend/src/main.ts`) for local dev.
  */
+import type { SealedQrInvoicePlan } from "@faktur/cz-compliance";
+
 const BACKEND_URL = (process.env.BACKEND_URL ?? "http://localhost:3000").replace(/\/$/, "");
 
 export type PublicInvoiceStatus = "draft" | "pending_review" | "issued" | "paid" | "cancelled";
@@ -70,12 +72,18 @@ export interface PublicInvoice {
   attachments?: { id: string; filename: string; mime: string; sizeBytes: number }[];
   /** Server-built QR Faktura (SID) with both parties' IČO/DIČ and the VAT recap. */
   qrInvoice?: string | null;
+  /** Sealed amounts: the QR Faktura without its sums; the browser fills them in after opening the totals. */
+  qrInvoicePlan?: SealedQrInvoicePlan | null;
+  /** Sealed amounts: each payment's sums as ciphertext for the link key, oldest first. */
+  sealedPayments?: { cipher: string; keyId: string | null }[];
   /** Buyer country (ISO alpha-2); with the IBAN it picks SPAYD or PAY by square. */
   buyerCountry?: string | null;
   /** Present for quotes: the client's accept/reject state. */
   quote?: { canRespond: boolean; response: 'accepted' | 'rejected' | null; respondedAt: string | null; name: string | null } | null;
   /** The supplier accepts cards (own Stripe account) and something is left to pay. */
   cardPayment?: boolean;
+  /** Sealed amounts: what card payment charges (the supplier stored it in plain for this one document). */
+  cardAmount?: number | null;
   /** Encrypted buyer name and address (contacts in "Důvěrný režim") for the browser-drawn PDF; never shown on the page. */
   sealedBuyer?: { cipher: string; keyId: string | null }[];
 }

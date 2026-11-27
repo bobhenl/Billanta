@@ -48,6 +48,7 @@ export * from './vault/confidential.js';
 export * from './client-link-key.js';
 export * from './vault-categories.js';
 export * from './vault-amounts.js';
+export * from './vault-payments.js';
 export * from './invoice-pdf-amounts.js';
 export * from './fill-template.js';
 export * from './invoice-pdf.js';

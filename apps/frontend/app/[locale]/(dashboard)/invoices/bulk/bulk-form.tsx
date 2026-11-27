@@ -11,6 +11,8 @@ import { cn } from '@/lib/utils';
 import type { Contact } from '../new/types';
 import { templateSealed, type SavedTemplateRow } from '../templates/template-gallery';
 import { bulkInvoice } from '../templates/actions';
+import { useVault } from '@/components/vault/vault-provider';
+import { sealTemplateCopies } from '@/lib/vault/amounts';
 
 const MAX_CONTACTS = 200;
 
@@ -35,6 +37,7 @@ export function BulkForm({
   const [issue, setIssue] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, start] = useTransition();
+  const { key, requestUnlock } = useVault();
 
   const template = templates.find((tpl) => tpl.id === templateId) ?? null;
   const net = useMemo(
@@ -76,11 +79,38 @@ export function BulkForm({
   const submit = () => {
     setError(null);
     if (!template) return setError(t('errors.template'));
-    if (templateSealed(template.lineItems)) return setError(tSealed('bulkSealed'));
+    const sealed = templateSealed(template.lineItems);
+    // Each draft is sealed here under its own key; issuing stays a click per document.
+    if (sealed && issue) return setError(tSealed('bulkSealedDrafts'));
     if (selected.size === 0) return setError(t('errors.contacts'));
     if (selected.size > MAX_CONTACTS) return setError(t('errors.tooMany', { max: MAX_CONTACTS }));
     start(async () => {
-      const result = await bulkInvoice(template.id, [...selected], issueDate, issue);
+      const vaultKey = sealed ? (key ?? (await requestUnlock())) : null;
+      if (sealed && !vaultKey) return setError(tSealed('bulkSealed'));
+      let copies;
+      try {
+        copies = vaultKey
+          ? await sealTemplateCopies(
+              vaultKey,
+              {
+                noteAbove: template.noteAbove,
+                noteBelow: template.noteBelow,
+                lineItems: template.lineItems.map((i) => ({
+                  description: i.description,
+                  quantity: Number(i.quantity),
+                  unitPrice: Number(i.unitPrice),
+                  vatRate: i.vatRate == null ? null : Number(i.vatRate),
+                  discountPercent: Number(i.discountPercent ?? 0),
+                  encAmounts: i.encAmounts
+                }))
+              },
+              [...selected]
+            )
+          : undefined;
+      } catch {
+        return setError(tSealed('bulkSealed'));
+      }
+      const result = await bulkInvoice(template.id, [...selected], issueDate, issue, copies);
       if (!result.ok) {
         setError(t('errors.failed', { reason: result.error }));
         return;

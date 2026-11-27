@@ -1,8 +1,8 @@
 import { ConflictException, Injectable, Logger, NotFoundException, Optional } from "@nestjs/common";
-import { eq, sql } from "drizzle-orm";
+import { asc, eq, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
-import { clientCipher, czechAccountToIban, generateQrInvoiceString, replaceEnvelopes, type InvoicePdfModel } from "@faktur/cz-compliance";
+import { clientCipher, czechAccountToIban, replaceEnvelopes, sealedQrInvoiceString, type InvoicePdfModel, type SealedQrInvoicePlan } from "@faktur/cz-compliance";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
 import { InvoicesService } from "../invoices/invoices.service";
@@ -143,12 +143,21 @@ export interface PublicInvoiceView {
    * Null when the invoice has no number yet.
    */
   qrInvoice: string | null;
+  /**
+   * Sealed amounts: the same QR Faktura without its sums, for the client's
+   * browser to fill with the totals it opens (`sealedQrInvoiceString`).
+   */
+  qrInvoicePlan: SealedQrInvoicePlan | null;
+  /** Sealed amounts: each payment's sums as client ciphertext, oldest first; the browser subtracts them. */
+  sealedPayments: { cipher: string; keyId: string | null }[];
   /** Buyer's country as on the document; with the IBAN it picks SPAYD or PAY by square. */
   buyerCountry: string | null;
   /** Quotes only: whether the client may still answer, and the answer if given. */
   quote: { canRespond: boolean; response: "accepted" | "rejected" | null; respondedAt: string | null; name: string | null } | null;
   /** The company accepts cards (own Stripe) and something is left to pay: show "Pay by card". */
   cardPayment: boolean;
+  /** Sealed amounts: what card payment charges, the one sum the user chose to store in plain; null otherwise. */
+  cardAmount: number | null;
   /** Issued in the demo playground: fictional, no payment details (src/demo/). */
   demo: boolean;
   /**
@@ -336,27 +345,26 @@ export class PublicInvoicesService {
     const breakdown = publicInvoiceBreakdown(lineItemRows, qr?.reverse_charge === true);
     const total = breakdown.totalWithVat;
     let qrInvoice: string | null = null;
-    // QR Faktura carries the totals, which the server doesn't know for sealed amounts.
-    if (header.invoice_number && header.issue_date && qr && !amountsSealed) {
-      qrInvoice = generateQrInvoiceString({
+    let qrInvoicePlan: SealedQrInvoicePlan | null = null;
+    if (header.invoice_number && header.issue_date && qr) {
+      const day = (d: string | Date | null | undefined) => (d ? new Date(d).toISOString().slice(0, 10) : undefined);
+      // Everything but the sums; for sealed amounts the client's browser adds those.
+      const plan: SealedQrInvoicePlan = {
         invoiceNumber: header.invoice_number,
-        issueDate: new Date(header.issue_date),
-        totalAmount: total,
+        issueDate: day(header.issue_date)!,
         currency: header.currency,
-        dueDate: header.due_date ? new Date(header.due_date) : undefined,
-        taxableSupplyDate: qr.taxable_supply_date ? new Date(qr.taxable_supply_date) : undefined,
+        dueDate: day(header.due_date),
+        taxableSupplyDate: day(qr.taxable_supply_date),
         variableSymbol: header.variable_symbol ?? undefined,
         orderNumber: qr.order_number ?? undefined,
         supplierIco: qr.supplier_ico ?? undefined,
         supplierDic: qr.supplier_dic ?? undefined,
         customerIco: qr.customer_ico ?? undefined,
         customerDic: qr.customer_dic ?? undefined,
-        vatLines: qr.supplier_vat_payer
-          ? breakdown.byRate.map((r) => ({ rate: r.vatRatePercent, base: r.totalWithoutVat, vat: r.vatAmount }))
-          : [],
+        vatPayer: qr.supplier_vat_payer === true,
         documentType: qr.document_type === "proforma" ? 0 : qr.document_type === "credit_note" ? 1 : undefined,
         advance: qr.document_type === "proforma",
-        reverseCharge: qr.reverse_charge,
+        reverseCharge: qr.reverse_charge === true,
         exchangeRate: qr.exchange_rate ? Number(qr.exchange_rate) : undefined,
         iban:
           supplierRow?.bank_account_iban ??
@@ -364,8 +372,11 @@ export class PublicInvoicesService {
             ? (czechAccountToIban(supplierRow.bank_account_number, supplierRow.bank_account_bank_code) ?? undefined)
             : undefined),
         software: "Billanta",
-      });
+      };
+      if (amountsSealed) qrInvoicePlan = plan;
+      else qrInvoice = sealedQrInvoiceString(plan, breakdown);
     }
+    const sealedPaid = amountsSealed && header.id && header.tenant_id ? await this.sealedPayments(header.tenant_id, header.id) : null;
 
     return {
       invoiceNumber: header.invoice_number,
@@ -395,6 +406,8 @@ export class PublicInvoicesService {
         : null,
       attachments: attachmentRows.map((r) => ({ id: r.id, filename: r.filename, mime: r.mime, sizeBytes: r.size_bytes })),
       qrInvoice,
+      qrInvoicePlan,
+      sealedPayments: sealedPaid?.payments ?? [],
       buyerCountry: qr?.customer_country ?? null,
       quote: quoteRow
         ? {
@@ -404,15 +417,37 @@ export class PublicInvoicesService {
             name: quoteRow.client_response_name,
           }
         : null,
+      // Sealed amounts: only after the user allowed card payment for this document (a plain amount to charge).
       cardPayment:
-        !amountsSealed &&
         header.status === "issued" &&
         ["invoice", "proforma"].includes(cardRows[0]?.document_type ?? "") &&
-        total - Number(header.amount_paid ?? 0) > 0.005,
+        (amountsSealed ? (sealedPaid?.cardAmount ?? 0) > 0 : total - Number(header.amount_paid ?? 0) > 0.005),
+      cardAmount: amountsSealed && (sealedPaid?.cardAmount ?? 0) > 0 ? sealedPaid!.cardAmount : null,
       demo,
       brandCredit: brandCreditOfRow(creditRows[0]),
       sealedBuyer: header.id && header.tenant_id ? await this.sealedBuyer(header.tenant_id, header.id) : [],
     };
+  }
+
+  /**
+   * The sealed payments and the allowed card amount of a document with
+   * sealed amounts, read in an RLS-scoped transaction like `sealedBuyer`.
+   */
+  private async sealedPayments(tenantId: string, invoiceId: string): Promise<{ payments: { cipher: string; keyId: string | null }[]; cardAmount: number }> {
+    try {
+      return await this.dbService.sql.begin(async (tx) => {
+        await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
+        const db = drizzleTx(tx, schema) as PostgresJsDatabase<typeof schema>;
+        const p = schema.invoiceSealedPayments;
+        const rows = await db.select({ encAmount: p.encAmount }).from(p).where(eq(p.invoiceId, invoiceId)).orderBy(asc(p.createdAt));
+        const [invoice] = await db.select({ cardAmount: schema.invoices.cardAmount }).from(schema.invoices).where(eq(schema.invoices.id, invoiceId)).limit(1);
+        return { payments: rows.map((r) => clientCipher(r.encAmount)), cardAmount: Number(invoice?.cardAmount ?? 0) };
+      });
+    } catch (err) {
+      // Without them the page asks for the whole total, as before payments could be sealed.
+      this.logger.warn(`Sealed payments lookup failed for ${invoiceId}: ${err}`);
+      return { payments: [], cardAmount: 0 };
+    }
   }
 
   /**
@@ -530,7 +565,13 @@ export function clientPdfModel(model: InvoicePdfModel): InvoicePdfModel {
     },
     // Sealed amounts go out like the item texts, without the company-key wrap.
     ...(model.sealedAmounts
-      ? { sealedAmounts: { ...model.sealedAmounts, items: model.sealedAmounts.items.map((c) => (isSealed(c) ? clientCipher(c).cipher : c)) } }
+      ? {
+          sealedAmounts: {
+            ...model.sealedAmounts,
+            items: model.sealedAmounts.items.map((c) => (isSealed(c) ? clientCipher(c).cipher : c)),
+            payments: (model.sealedAmounts.payments ?? []).map((c) => (isSealed(c) ? clientCipher(c).cipher : c)),
+          },
+        }
       : {}),
   };
 }

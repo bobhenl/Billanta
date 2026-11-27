@@ -14507,9 +14507,9 @@
         "title": "Částky",
         "description": "Množství, jednotkové ceny, sazby DPH, slevy a součty dokladů. Číslo dokladu, variabilní symbol, splatnost, měna a stav zůstávají čitelné.",
         "loses": [
-          "Automatické párování plateb podle částky: platba s VS zašifrovaného dokladu počká na vaše ruční potvrzení",
-          "Částečné úhrady: zašifrovaný doklad jde označit jen jako celý zaplacený, bez poplatků a připsané částky",
-          "Odeslání přes Peppol, AI návrhy s částkami a platba kartou",
+          "Automatické párování plateb na serveru: po odemčení trezoru navrhne páry váš prohlížeč a vy je potvrdíte",
+          "Úhrady počítá jen váš prohlížeč: server u zašifrovaného dokladu zná jen datum úhrady a stav, ne částku ani poplatek",
+          "Odeslání přes Peppol a AI návrhy s částkami. Platba kartou jen u dokladu, kde ji výslovně povolíte – částka k zaplacení pak půjde čitelně do Billanty a Stripe",
           "Čistý příjem počítá jen nezašifrované doklady a napíše, kolik jich vynechal. Kalkulačka paušální daně pak čísla nepředvyplní",
           "Upomínky, týdenní souhrn a součty po splatnosti v e-mailech částku neuvedou"
         ],
@@ -14798,28 +14798,69 @@
       "what": "Prohlížeč načte doklady, jejichž částky jsou na serveru čitelné, zašifruje množství, ceny, sazby DPH, slevy a součty a uloží je zpět. Na serveru místo nich zůstanou nuly.",
       "keeps": "Číslo dokladu, variabilní symbol, splatnost, měna a stav zůstanou čitelné, takže platby podle VS dál najdete.",
       "loses": "Server pak u těchto dokladů nevytvoří PDF, ISDOC ani exporty, ty sestaví váš prohlížeč po odemčení trezoru. Do čistého příjmu je nezapočítá. Zaplacený doklad zůstane zaplacený.",
-      "resumable": "Zamčené a částečně uhrazené doklady se přeskočí. Když okno zavřete, příště se pokračuje tam, kde jste skončili.",
+      "resumable": "Zamčené doklady se přeskočí. Co už bylo uhrazeno, se zašifruje jako jedna úhrada dokladu. Když okno zavřete, příště se pokračuje tam, kde jste skončili.",
       "cancel": "Zpět",
       "confirm": "Zašifrovat",
       "progress": "Šifruji… {n}",
       "done": "{n, plural, one {Zašifrovány částky # dokladu} few {Zašifrovány částky # dokladů} other {Zašifrovány částky # dokladů}}.",
       "nothing": "Nebylo co šifrovat.",
-      "failed": "Šifrování se nepovedlo. Už zašifrované doklady zůstávají zašifrované.",
-      "partlyPaid": "{n, plural, one {# částečně uhrazený doklad zůstal čitelný} few {# částečně uhrazené doklady zůstaly čitelné} other {# částečně uhrazených dokladů zůstalo čitelných}}. Zašifrovat půjdou po úplné úhradě."
+      "failed": "Šifrování se nepovedlo. Už zašifrované doklady zůstávají zašifrované."
     },
     "amounts": {
-      "paidSealed": "Částky dokladu jsou zašifrované, proto jde zaznamenat jen úhradu celé částky. Poplatky ani připsanou částku server neukládá.",
+      "paidSealed": "Částky dokladu jsou zašifrované, tady se zaznamená úhrada celé částky. Částečnou úhradu nebo poplatek přidejte v části Úhrady v detailu dokladu.",
       "leftOut": "Bez {count, plural, one {# dokladu} few {# dokladů} other {# dokladů}} se zašifrovanými částkami – odemkněte trezor",
       "exportLocked": "Doklady se zašifrovanými částkami jde do souboru přidat až po odemčení trezoru.",
       "exportUnreadable": "Soubor nevznikl: {count, plural, one {# doklad} few {# doklady} other {# dokladů}} nejde tímto klíčem otevřít. Chybějící doklad by soubor zkreslil.",
       "creditNoteLocked": "Dobropis k faktuře se zašifrovanými částkami se připraví až po odemčení trezoru.",
       "creditNoteUnreadable": "Částky faktury nejde tímto klíčem otevřít, dobropis proto nevznikl.",
-      "bulkSealed": "Šablona má zašifrované částky. Hromadně z ní faktury nevystavíte, použijte ji pro jednotlivou fakturu.",
+      "bulkSealed": "Částky šablony jsou zašifrované. Odemkněte trezor, každý koncept se pak zašifruje vlastním klíčem.",
       "reportIncluded": "Včetně {count, plural, one {# dokladu} few {# dokladů} other {# dokladů}} se zašifrovanými částkami, které otevřel tento prohlížeč.",
       "reportOpening": "Otevírám zašifrované částky…",
       "reportUnreadable": "Přehled nevznikl: {count, plural, one {# doklad} few {# doklady} other {# dokladů}} nejde tímto klíčem otevřít. Bez nich by čísla vyšla nižší.",
       "reportLocked": "Některé doklady roku mají zašifrované částky. Čísla spočítá váš prohlížeč, až odemknete trezor.",
-      "unlock": "Odemknout trezor"
+      "unlock": "Odemknout trezor",
+      "bulkSealedDrafts": "Ze šablony se zašifrovanými částkami vzniknou jen koncepty. Vystavte je pak jednotlivě."
+    },
+    "payments": {
+      "title": "Úhrady",
+      "locked": "Částky úhrad jsou zašifrované. Uvidíte je po odemčení trezoru.",
+      "otherKey": "Některou úhradu nejde tímto klíčem otevřít, zbývající částku proto neukážeme.",
+      "unlock": "Odemknout",
+      "paid": "Uhrazeno {amount}",
+      "remaining": "zbývá {amount} z {total}",
+      "feeShort": "poplatek {amount}",
+      "carried": "z dřívější úhrady",
+      "fromBank": "z banky",
+      "delete": "Smazat úhradu",
+      "confirmDelete": "Smazat tuto úhradu? Doklad se podle zbylých úhrad vrátí mezi neuhrazené nebo částečně uhrazené.",
+      "amount": "Částka",
+      "fee": "Poplatek",
+      "date": "Datum úhrady",
+      "add": "Přidat úhradu",
+      "invalid": "Zadejte kladnou částku a nezáporný poplatek.",
+      "failed": "Úhradu se nepovedlo uložit. Zkuste to znovu.",
+      "added": "Úhrada je uložená, zbytek zůstává k zaplacení.",
+      "paidInFull": "Doklad je celý zaplacený.",
+      "card": {
+        "label": "Povolit platbu kartou",
+        "hint": "Klient pak v odkazu zaplatí kartou {amount}. Tahle jedna částka se uloží nezašifrovaně a uvidí ji Billanta a Stripe.",
+        "on": "Platba kartou je zapnutá na {amount}. Tahle částka je uložená nezašifrovaně a vidí ji Billanta a Stripe. Další úhrada ji vypne."
+      }
+    },
+    "bankMatch": {
+      "title": "Návrhy párování zašifrovaných dokladů",
+      "hint": "Prohlížeč porovnal nespárované platby s otevřenými částkami. Server částky nezná, proto se nic nespáruje bez vašeho potvrzení.",
+      "locked": "Některé doklady mají zašifrované částky. Po odemčení trezoru navrhneme, ke kterým platbám patří.",
+      "unlock": "Odemknout",
+      "confirm": "Spárovat",
+      "failed": "Platbu se nepovedlo spárovat. Zkuste to znovu.",
+      "matched": "Platba je spárovaná s dokladem {number}.",
+      "ambiguous": "sedí i jiný doklad, zkontrolujte ho",
+      "reason": {
+        "vs_amount": "VS i částka sedí",
+        "vs_partial": "VS sedí, částečná úhrada",
+        "amount_date": "částka a datum sedí, bez VS"
+      }
     }
   },
   "vaultPublic": {

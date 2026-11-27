@@ -33,7 +33,7 @@ import { lookupPrefillByIco } from '@/lib/company-lookup-actions';
 import { fetchAllContacts } from '@/lib/vault/actions';
 import { contactIsSealed, contactsConfidential, matchContacts, openContact, openContacts, sealBuyer, sealsContacts } from '@/lib/vault/contacts';
 import { documentKeyFor, sealDraft } from '@/lib/vault/content';
-import { sealAmounts, sealsAmounts } from '@/lib/vault/amounts';
+import { sealAmounts, sealCarriedPayment, sealsAmounts } from '@/lib/vault/amounts';
 import { matchItemSuggestions } from '@/lib/vault/item-suggestions';
 import { invalidateSealedIndex, loadSealedIndex } from '@/lib/vault/sealed-index';
 import type {
@@ -178,7 +178,7 @@ const lineBase = (row: Row) => num(row.quantity) * num(row.unitPrice) * (1 - Mat
 /** `issued`: "Přesto upravit" on an issued or paid document – needs a reason, never re-issues. */
 export type InvoiceFormMode =
   | { kind: 'create'; templateId?: string | null }
-  | { kind: 'edit'; id: string; issued?: boolean; reason?: string; amountPaid?: number };
+  | { kind: 'edit'; id: string; issued?: boolean; reason?: string; amountPaid?: number; paymentFee?: number; receivedHome?: number | null };
 
 /**
  * The invoice form – new drafts and editing an existing one. Three ways in,
@@ -810,6 +810,11 @@ export function InvoiceForm({
         if (sealing) out = await sealDraft(key, out, docKey);
         // The server keeps no plain paid sum of a sealed document (checked above, so this is 0 or untouched).
         if (sealsAmountsNow) out = await sealAmounts(docKey, { ...out, amountPaid: out.amountPaid === undefined ? undefined : 0 }, { reverseCharge: out.reverseCharge });
+        // Sealing an issued document that was partly paid in plain: the received sum goes along as one sealed payment.
+        if (sealsAmountsNow && !confidential!.amountsSealed && issuedEdit && mode.kind === 'edit' && (mode.amountPaid ?? 0) > 0) {
+          const encPaid = await sealCarriedPayment(docKey, { amount: mode.amountPaid!, fee: mode.paymentFee ?? 0, receivedHome: mode.receivedHome ?? null, full: false }, 0);
+          if (encPaid) out = { ...out, encPaid };
+        }
       }
       // Encrypted contacts: the document's contact person, and a register pick saved as a new contact.
       if (sealsBuyer) {

@@ -204,6 +204,8 @@ export const sealAmountsSchema = z.object({
         id: z.string().uuid(),
         encAmounts: sealedEnvelope(4000),
         items: z.array(z.object({ id: z.string().uuid(), encAmounts: sealedEnvelope(400) })).max(200),
+        // The plain paid sum, fees and home-currency proceeds, sealed as one payment (vault-payments.ts).
+        encPaid: sealedEnvelope(4000).optional(),
       }),
     )
     .min(1)
