@@ -1,4 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
+import { assertStepUp, stepUpChange } from "../auth/step-up";
 import {
   BadRequestException,
   ConflictException,
@@ -50,7 +51,18 @@ export function scopeChangeRefused(
   member: { role: string; contactScope: string },
   next: { role?: string; contactScope?: string; removed?: boolean },
 ): boolean {
-  if (actorRole === "owner") return false;
+  return actorRole !== "owner" && touchesContactScope(member, next);
+}
+
+/**
+ * Whether a change moves the line of which clients a member sees: the scope
+ * itself, or one of the side doors around it. The owner may do it, but only
+ * after a step-up (src/auth/step-up.ts).
+ */
+export function touchesContactScope(
+  member: { role: string; contactScope: string },
+  next: { role?: string; contactScope?: string; removed?: boolean },
+): boolean {
   if (next.contactScope !== undefined && next.contactScope !== member.contactScope) return true;
   if (member.contactScope !== "own") return false;
   return next.removed === true || (next.role === "admin" && member.role !== "admin");
@@ -213,6 +225,7 @@ export class TeamService {
     const member = await this.requireMember(db, membershipId);
     if (member.role === "owner") throw new BadRequestException("The owner's role cannot be changed");
     if (scopeChangeRefused(user.role, member, { role, contactScope })) throw new ForbiddenException("owner_only");
+    const stepUp = touchesContactScope(member, { role, contactScope }) ? assertStepUp(user) : null;
     // Turning an accountant into a member (or back) moves them between allowances.
     if ((member.role === "accountant") !== (role === "accountant")) await this.assertSeatFree(db, user.tenantId, { membershipId }, role);
     await db
@@ -225,6 +238,7 @@ export class TeamService {
         ? [{ field: "permissions", from: null, to: null }]
         : []),
       ...(contactScope && contactScope !== member.contactScope ? [{ field: "contactScope", from: member.contactScope, to: contactScope }] : []),
+      ...(stepUp ? [stepUpChange(stepUp)] : []),
     ];
     if (changes.length > 0) {
       await this.audit?.record(db, user.tenantId, {
@@ -245,6 +259,7 @@ export class TeamService {
     if (member.role === "owner") throw new BadRequestException("The owner cannot be removed");
     // Leaving is always possible; showing a limited member out (to invite them back unlimited) is not.
     if (member.userId !== user.id && scopeChangeRefused(user.role, member, { removed: true })) throw new ForbiddenException("owner_only");
+    const stepUp = member.userId !== user.id && touchesContactScope(member, { removed: true }) ? assertStepUp(user) : null;
     const label = await this.memberEmail(db, member.userId);
     await db.delete(schema.tenantMemberships).where(eq(schema.tenantMemberships.id, membershipId));
     await this.audit?.record(db, user.tenantId, {
@@ -252,6 +267,7 @@ export class TeamService {
       entityId: member.userId,
       entityLabel: label,
       action: member.userId === user.id ? "left" : "removed",
+      ...(stepUp && { changes: [stepUpChange(stepUp)] }),
     });
     return { ok: true };
   }

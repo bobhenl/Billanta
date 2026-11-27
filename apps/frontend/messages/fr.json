@@ -7417,13 +7417,23 @@
         "buyer_details_cancelled": "a clôturé la demande d’informations client pour",
         "profile_order": "créé par une commande depuis le profil public :",
         "link_renamed": "a renommé le lien public",
-        "send_waiting_pdf": "a mis en attente d'envoi avec le PDF"
+        "send_waiting_pdf": "a mis en attente d'envoi avec le PDF",
+        "locked": "a verrouillé",
+        "unlocked": "a déverrouillé",
+        "made_private": "a rendu privé",
+        "made_shared": "a partagé avec l’équipe"
       },
       "tenant": {
         "updated": "a modifié les informations de l’entreprise",
         "logo_uploaded": "a importé le logo",
         "logo_removed": "a supprimé le logo",
-        "number_formats_updated": "a modifié la numérotation des documents"
+        "number_formats_updated": "a modifié la numérotation des documents",
+        "vault_wrap_removed": "a supprimé une méthode de déverrouillage du coffre",
+        "vault_password_replaced": "a changé le mot de passe du coffre",
+        "vault_seal_new_off": "a désactivé le chiffrement des nouveaux documents",
+        "vault_recovery_replaced": "a remplacé le code de récupération du coffre",
+        "vault_enabled": "a activé le mode confidentiel",
+        "vault_categories_changed": "a modifié les catégories du mode confidentiel"
       },
       "bank_account": {
         "created": "a ajouté le compte bancaire",
@@ -7433,7 +7443,8 @@
       "contact": {
         "created": "a ajouté le contact",
         "updated": "a modifié le contact",
-        "deleted": "a supprimé le contact"
+        "deleted": "a supprimé le contact",
+        "visibility_changed": "a modifié le responsable et la visibilité de"
       },
       "member": {
         "invited": "a invité",
@@ -7531,7 +7542,14 @@
       "skippedRows": "Lignes ignorées",
       "numberFormat": "Format de numérotation",
       "nextNumber": "Numéro suivant",
-      "publicSlug": "Nom du lien"
+      "publicSlug": "Nom du lien",
+      "stepUp": "Confirmé par",
+      "vaultWrap": "Méthode de déverrouillage du coffre",
+      "sealNew": "Chiffrer les nouveaux documents",
+      "isPrivate": "Privé",
+      "ownerUserId": "Appartient à",
+      "contactScope": "Voit les clients",
+      "vaultCategories": "Catégories désactivées"
     },
     "values": {
       "invoice": "Facture",
@@ -7546,7 +7564,12 @@
       "owner": "Propriétaire",
       "admin": "Administrateur",
       "accountant": "Comptable",
-      "viewer": "Lecture seule"
+      "viewer": "Lecture seule",
+      "totp": "Code de l’application",
+      "recovery": "Code de récupération",
+      "password": "Mot de passe",
+      "recent_sign_in": "Connexion récente",
+      "passkey": "Passkey"
     },
     "cleared": "effacé",
     "filters": {
@@ -14747,5 +14770,28 @@
       "Nous publierons le code de chiffrement (un seul fichier sans dépendances) dans un dépôt GitHub dédié, pour comparer les empreintes avec votre propre build.",
       "Une revue indépendante du code est prévue."
     ]
+  },
+  "stepUp": {
+    "title": "Confirmez qu’il s’agit bien de vous",
+    "loading": "Chargement…",
+    "intro": {
+      "totp": "Avant une modification de sécurité, nous redemandons. Saisissez le code de votre application d’authentification ou un code de récupération.",
+      "password": "Avant une modification de sécurité, nous redemandons. Saisissez le mot de passe de votre compte.",
+      "sign_in": "Avant une modification de sécurité, nous redemandons. Votre compte n’a pas de mot de passe, une connexion récente suffit donc. Si la vôtre est plus ancienne, reconnectez-vous."
+    },
+    "code": "Code de l’application ou code de récupération",
+    "password": "Mot de passe",
+    "twoFactorHint": "Avec la double authentification, il faudrait ici un code du téléphone et le mot de passe seul ne suffirait pas.",
+    "twoFactorLink": "Activer la double authentification",
+    "note": "La confirmation reste valable 5 minutes dans ce navigateur.",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "errors": {
+      "invalid_code": "Le code ne correspond pas. Réessayez.",
+      "wrong_current": "Le mot de passe ne correspond pas.",
+      "reauth_required": "Reconnectez-vous puis refaites la modification.",
+      "too_many_attempts": "Trop de tentatives. Réessayez dans quelques minutes.",
+      "generic": "La confirmation a échoué."
+    }
   }
 }

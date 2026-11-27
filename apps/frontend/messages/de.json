@@ -7418,13 +7418,23 @@
         "buyer_details_cancelled": "hat die Anfrage nach Kundenangaben geschlossen für",
         "profile_order": "erstellt durch eine Bestellung über das öffentliche Profil:",
         "link_renamed": "hat den öffentlichen Link umbenannt",
-        "send_waiting_pdf": "zum Versand mit PDF vorgemerkt:"
+        "send_waiting_pdf": "zum Versand mit PDF vorgemerkt:",
+        "locked": "hat gesperrt",
+        "unlocked": "hat entsperrt",
+        "made_private": "hat als privat markiert",
+        "made_shared": "hat für das Team freigegeben"
       },
       "tenant": {
         "updated": "hat die Unternehmensdaten bearbeitet",
         "logo_uploaded": "hat das Logo hochgeladen",
         "logo_removed": "hat das Logo entfernt",
-        "number_formats_updated": "hat die Belegnummerierung geändert"
+        "number_formats_updated": "hat die Belegnummerierung geändert",
+        "vault_wrap_removed": "hat eine Entsperrmethode des Tresors entfernt",
+        "vault_password_replaced": "hat das Tresorpasswort geändert",
+        "vault_seal_new_off": "hat die Verschlüsselung neuer Belege ausgeschaltet",
+        "vault_recovery_replaced": "hat den Wiederherstellungscode des Tresors ersetzt",
+        "vault_enabled": "hat den vertraulichen Modus eingeschaltet",
+        "vault_categories_changed": "hat die Kategorien des vertraulichen Modus geändert"
       },
       "bank_account": {
         "created": "hat das Bankkonto hinzugefügt",
@@ -7434,7 +7444,8 @@
       "contact": {
         "created": "hat den Kontakt hinzugefügt",
         "updated": "hat den Kontakt bearbeitet",
-        "deleted": "hat den Kontakt gelöscht"
+        "deleted": "hat den Kontakt gelöscht",
+        "visibility_changed": "hat Zuständigkeit und Sichtbarkeit geändert von"
       },
       "member": {
         "invited": "hat eingeladen",
@@ -7532,7 +7543,14 @@
       "skippedRows": "Übersprungene Zeilen",
       "numberFormat": "Nummernformat",
       "nextNumber": "Nächste Nummer",
-      "publicSlug": "Linkname"
+      "publicSlug": "Linkname",
+      "stepUp": "Bestätigt mit",
+      "vaultWrap": "Entsperrmethode des Tresors",
+      "sealNew": "Neue Belege verschlüsseln",
+      "isPrivate": "Privat",
+      "ownerUserId": "Gehört zu",
+      "contactScope": "Sieht Kunden",
+      "vaultCategories": "Ausgeschaltete Kategorien"
     },
     "values": {
       "invoice": "Rechnung",
@@ -7547,7 +7565,12 @@
       "owner": "Inhaber",
       "admin": "Administrator",
       "accountant": "Buchhaltung",
-      "viewer": "Nur lesen"
+      "viewer": "Nur lesen",
+      "totp": "App-Code",
+      "recovery": "Wiederherstellungscode",
+      "password": "Passwort",
+      "recent_sign_in": "Kürzliche Anmeldung",
+      "passkey": "Passkey"
     },
     "cleared": "geleert",
     "filters": {
@@ -14748,5 +14771,28 @@
       "Den Verschlüsselungscode (eine Datei ohne Abhängigkeiten) veröffentlichen wir in einem eigenen GitHub-Repository, damit sich die Hashes mit einem eigenen Build vergleichen lassen.",
       "Eine unabhängige Prüfung des Codes ist geplant."
     ]
+  },
+  "stepUp": {
+    "title": "Bestätigen Sie, dass Sie es sind",
+    "loading": "Wird geladen…",
+    "intro": {
+      "totp": "Vor Sicherheitsänderungen fragen wir erneut nach. Geben Sie den Code aus Ihrer Authenticator-App oder einen Wiederherstellungscode ein.",
+      "password": "Vor Sicherheitsänderungen fragen wir erneut nach. Geben Sie Ihr Kontopasswort ein.",
+      "sign_in": "Vor Sicherheitsänderungen fragen wir erneut nach. Ihr Konto hat kein Passwort, daher genügt eine kürzliche Anmeldung. Ist sie älter, melden Sie sich erneut an."
+    },
+    "code": "App-Code oder Wiederherstellungscode",
+    "password": "Passwort",
+    "twoFactorHint": "Mit Zwei-Faktor-Authentifizierung wäre hier ein Code vom Handy nötig, das Passwort allein würde nicht reichen.",
+    "twoFactorLink": "Zwei-Faktor-Authentifizierung einschalten",
+    "note": "Die Bestätigung gilt 5 Minuten in diesem Browser.",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "errors": {
+      "invalid_code": "Der Code stimmt nicht. Versuchen Sie es erneut.",
+      "wrong_current": "Das Passwort stimmt nicht.",
+      "reauth_required": "Bitte melden Sie sich erneut an und wiederholen Sie die Änderung.",
+      "too_many_attempts": "Zu viele Versuche. Versuchen Sie es in ein paar Minuten erneut.",
+      "generic": "Die Bestätigung ist fehlgeschlagen."
+    }
   }
 }

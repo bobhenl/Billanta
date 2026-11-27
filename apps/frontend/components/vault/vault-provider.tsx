@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { wrapWithPassword, type VaultKey } from '@faktur/cz-compliance';
 import { Modal } from '@/components/modal';
 import { PasswordInput } from '@/components/password-input';
+import { useStepUp } from '@/components/step-up';
 import { Link } from '@/i18n/navigation';
 import { addVaultWrap } from '@/lib/vault/actions';
 import { passkeyPrfSupported, unlockWithPasskey } from '@/lib/vault/passkey';
@@ -103,6 +104,8 @@ export function UnlockDialog({ open, vault, onClose, onUnlocked }: { open: boole
   const [newPassword, setNewPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Replacing an existing vault password needs a step-up (backend VaultService.addWrap).
+  const { withStepUp, stepUpDialog } = useStepUp();
 
   useEffect(() => {
     void passkeyPrfSupported().then(setPrf);
@@ -133,8 +136,9 @@ export function UnlockDialog({ open, vault, onClose, onUnlocked }: { open: boole
       const reWrap = method === 'recovery' && Boolean(newPassword);
       const key = await unlockVault(vault, method, secret, reWrap);
       if (reWrap) {
-        const saved = await addVaultWrap(await wrapWithPassword(key, newPassword));
-        if (!saved.ok) return setError(t('errors.saveFailed'));
+        const wrap = await wrapWithPassword(key, newPassword);
+        const saved = await withStepUp(() => addVaultWrap(wrap));
+        if (!saved?.ok) return setError(t('errors.saveFailed'));
       }
       await onUnlocked(key);
     } catch (e) {
@@ -168,6 +172,7 @@ export function UnlockDialog({ open, vault, onClose, onUnlocked }: { open: boole
         </>
       }
     >
+      {stepUpDialog}
       <form
         onSubmit={(e) => {
           e.preventDefault();

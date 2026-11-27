@@ -7417,13 +7417,23 @@
         "buyer_details_cancelled": "cerró la solicitud de datos del cliente para",
         "profile_order": "creado mediante un pedido desde el perfil público:",
         "link_renamed": "renombró el enlace público",
-        "send_waiting_pdf": "puso en cola para enviar con PDF"
+        "send_waiting_pdf": "puso en cola para enviar con PDF",
+        "locked": "bloqueó",
+        "unlocked": "desbloqueó",
+        "made_private": "marcó como privado",
+        "made_shared": "compartió con el equipo"
       },
       "tenant": {
         "updated": "editó los datos de la empresa",
         "logo_uploaded": "subió el logotipo",
         "logo_removed": "eliminó el logotipo",
-        "number_formats_updated": "cambió la numeración de documentos"
+        "number_formats_updated": "cambió la numeración de documentos",
+        "vault_wrap_removed": "eliminó un método de desbloqueo de la caja fuerte",
+        "vault_password_replaced": "cambió la contraseña de la caja fuerte",
+        "vault_seal_new_off": "desactivó el cifrado de documentos nuevos",
+        "vault_recovery_replaced": "sustituyó el código de recuperación de la caja fuerte",
+        "vault_enabled": "activó el modo confidencial",
+        "vault_categories_changed": "cambió las categorías del modo confidencial"
       },
       "bank_account": {
         "created": "añadió la cuenta bancaria",
@@ -7433,7 +7443,8 @@
       "contact": {
         "created": "añadió el contacto",
         "updated": "editó el contacto",
-        "deleted": "eliminó el contacto"
+        "deleted": "eliminó el contacto",
+        "visibility_changed": "cambió el responsable y la visibilidad de"
       },
       "member": {
         "invited": "invitó a",
@@ -7531,7 +7542,14 @@
       "skippedRows": "Filas omitidas",
       "numberFormat": "Formato de número",
       "nextNumber": "Número siguiente",
-      "publicSlug": "Nombre del enlace"
+      "publicSlug": "Nombre del enlace",
+      "stepUp": "Confirmado con",
+      "vaultWrap": "Método de desbloqueo de la caja fuerte",
+      "sealNew": "Cifrar documentos nuevos",
+      "isPrivate": "Privado",
+      "ownerUserId": "Pertenece a",
+      "contactScope": "Ve clientes",
+      "vaultCategories": "Categorías desactivadas"
     },
     "values": {
       "invoice": "Factura",
@@ -7546,7 +7564,12 @@
       "owner": "Propietario",
       "admin": "Administrador",
       "accountant": "Contable",
-      "viewer": "Solo lectura"
+      "viewer": "Solo lectura",
+      "totp": "Código de la aplicación",
+      "recovery": "Código de recuperación",
+      "password": "Contraseña",
+      "recent_sign_in": "Inicio de sesión reciente",
+      "passkey": "Passkey"
     },
     "cleared": "borrado",
     "filters": {
@@ -14747,5 +14770,28 @@
       "Publicaremos el código de cifrado (un solo archivo sin dependencias) en un repositorio propio de GitHub, para comparar los hashes con tu propio build.",
       "Está prevista una revisión independiente del código."
     ]
+  },
+  "stepUp": {
+    "title": "Confirme que es usted",
+    "loading": "Cargando…",
+    "intro": {
+      "totp": "Antes de cambios de seguridad volvemos a preguntar. Introduzca el código de su aplicación de autenticación o un código de recuperación.",
+      "password": "Antes de cambios de seguridad volvemos a preguntar. Introduzca la contraseña de su cuenta.",
+      "sign_in": "Antes de cambios de seguridad volvemos a preguntar. Su cuenta no tiene contraseña, así que basta con un inicio de sesión reciente. Si el suyo es más antiguo, vuelva a iniciar sesión."
+    },
+    "code": "Código de la aplicación o código de recuperación",
+    "password": "Contraseña",
+    "twoFactorHint": "Con la verificación en dos pasos haría falta un código del teléfono y la contraseña sola no bastaría.",
+    "twoFactorLink": "Activar la verificación en dos pasos",
+    "note": "La confirmación dura 5 minutos en este navegador.",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "errors": {
+      "invalid_code": "El código no coincide. Inténtelo de nuevo.",
+      "wrong_current": "La contraseña no coincide.",
+      "reauth_required": "Vuelva a iniciar sesión y repita el cambio.",
+      "too_many_attempts": "Demasiados intentos. Inténtelo dentro de unos minutos.",
+      "generic": "La confirmación ha fallado."
+    }
   }
 }

@@ -7417,13 +7417,23 @@
         "buyer_details_cancelled": "a închis cererea de date ale clientului pentru",
         "profile_order": "a creat prin comandă din profilul public:",
         "link_renamed": "a redenumit linkul public",
-        "send_waiting_pdf": "a pus la coadă pentru trimitere cu PDF"
+        "send_waiting_pdf": "a pus la coadă pentru trimitere cu PDF",
+        "locked": "a blocat",
+        "unlocked": "a deblocat",
+        "made_private": "a făcut privat",
+        "made_shared": "a partajat cu echipa"
       },
       "tenant": {
         "updated": "a editat datele firmei",
         "logo_uploaded": "a încărcat sigla",
         "logo_removed": "a eliminat sigla",
-        "number_formats_updated": "a modificat numerotarea documentelor"
+        "number_formats_updated": "a modificat numerotarea documentelor",
+        "vault_wrap_removed": "a eliminat o metodă de deblocare a seifului",
+        "vault_password_replaced": "a schimbat parola seifului",
+        "vault_seal_new_off": "a dezactivat criptarea documentelor noi",
+        "vault_recovery_replaced": "a înlocuit codul de recuperare al seifului",
+        "vault_enabled": "a activat modul confidențial",
+        "vault_categories_changed": "a schimbat categoriile modului confidențial"
       },
       "bank_account": {
         "created": "a adăugat contul bancar",
@@ -7433,7 +7443,8 @@
       "contact": {
         "created": "a adăugat clientul",
         "updated": "a editat clientul",
-        "deleted": "a șters clientul"
+        "deleted": "a șters clientul",
+        "visibility_changed": "a schimbat responsabilul și vizibilitatea pentru"
       },
       "member": {
         "invited": "a invitat",
@@ -7531,7 +7542,14 @@
       "skippedRows": "Rânduri omise",
       "numberFormat": "Format de numerotare",
       "nextNumber": "Numărul următor",
-      "publicSlug": "Numele linkului"
+      "publicSlug": "Numele linkului",
+      "stepUp": "Confirmat cu",
+      "vaultWrap": "Metodă de deblocare a seifului",
+      "sealNew": "Criptează documentele noi",
+      "isPrivate": "Privat",
+      "ownerUserId": "Aparține de",
+      "contactScope": "Vede clienți",
+      "vaultCategories": "Categorii dezactivate"
     },
     "values": {
       "invoice": "Factură",
@@ -7546,7 +7564,12 @@
       "owner": "Proprietar",
       "admin": "Administrator",
       "accountant": "Contabil",
-      "viewer": "Doar citire"
+      "viewer": "Doar citire",
+      "totp": "Cod din aplicație",
+      "recovery": "Cod de recuperare",
+      "password": "Parolă",
+      "recent_sign_in": "Autentificare recentă",
+      "passkey": "Passkey"
     },
     "cleared": "șters",
     "filters": {
@@ -14747,5 +14770,28 @@
       "Vom publica codul de criptare (un singur fișier fără dependențe) într-un depozit GitHub separat, ca amprentele să poată fi comparate cu propriul build.",
       "O verificare independentă a codului este planificată."
     ]
+  },
+  "stepUp": {
+    "title": "Confirmați că sunteți dumneavoastră",
+    "loading": "Se încarcă…",
+    "intro": {
+      "totp": "Înainte de modificări de securitate întrebăm din nou. Introduceți codul din aplicația de autentificare sau un cod de recuperare.",
+      "password": "Înainte de modificări de securitate întrebăm din nou. Introduceți parola contului.",
+      "sign_in": "Înainte de modificări de securitate întrebăm din nou. Contul dumneavoastră nu are parolă, așa că ajunge o autentificare recentă. Dacă este mai veche, autentificați-vă din nou."
+    },
+    "code": "Cod din aplicație sau cod de recuperare",
+    "password": "Parolă",
+    "twoFactorHint": "Cu autentificarea în doi pași ar fi nevoie aici de un cod de pe telefon, iar parola singură nu ar ajunge.",
+    "twoFactorLink": "Activați autentificarea în doi pași",
+    "note": "Confirmarea este valabilă 5 minute în acest browser.",
+    "cancel": "Anulare",
+    "confirm": "Confirmare",
+    "errors": {
+      "invalid_code": "Codul nu se potrivește. Încercați din nou.",
+      "wrong_current": "Parola nu se potrivește.",
+      "reauth_required": "Autentificați-vă din nou și repetați modificarea.",
+      "too_many_attempts": "Prea multe încercări. Încercați peste câteva minute.",
+      "generic": "Confirmarea nu a reușit."
+    }
   }
 }

@@ -7425,13 +7425,23 @@
         "buyer_details_cancelled": "closed the customer details request for",
         "profile_order": "created by ordering from the public profile:",
         "link_renamed": "renamed the public link",
-        "send_waiting_pdf": "queued for sending with the PDF"
+        "send_waiting_pdf": "queued for sending with the PDF",
+        "locked": "locked",
+        "unlocked": "unlocked",
+        "made_private": "made private",
+        "made_shared": "shared with the team"
       },
       "tenant": {
         "updated": "edited the company details",
         "logo_uploaded": "uploaded the logo",
         "logo_removed": "removed the logo",
-        "number_formats_updated": "changed document numbering"
+        "number_formats_updated": "changed document numbering",
+        "vault_wrap_removed": "removed a vault unlock method",
+        "vault_password_replaced": "changed the vault password",
+        "vault_seal_new_off": "turned off encryption of new documents",
+        "vault_recovery_replaced": "replaced the vault recovery code",
+        "vault_enabled": "turned on Confidential mode",
+        "vault_categories_changed": "changed the Confidential mode categories"
       },
       "bank_account": {
         "created": "added the bank account",
@@ -7441,7 +7451,8 @@
       "contact": {
         "created": "added the contact",
         "updated": "edited the contact",
-        "deleted": "deleted the contact"
+        "deleted": "deleted the contact",
+        "visibility_changed": "changed the owner and visibility of"
       },
       "member": {
         "invited": "invited",
@@ -7539,7 +7550,14 @@
       "skippedRows": "Skipped rows",
       "numberFormat": "Number format",
       "nextNumber": "Next number",
-      "publicSlug": "Link name"
+      "publicSlug": "Link name",
+      "stepUp": "Confirmed with",
+      "vaultWrap": "Vault unlock method",
+      "sealNew": "Encrypt new documents",
+      "isPrivate": "Private",
+      "ownerUserId": "Belongs to",
+      "contactScope": "Sees clients",
+      "vaultCategories": "Categories turned off"
     },
     "values": {
       "invoice": "Invoice",
@@ -7554,7 +7572,12 @@
       "owner": "Owner",
       "admin": "Admin",
       "accountant": "Accountant",
-      "viewer": "Read-only"
+      "viewer": "Read-only",
+      "totp": "App code",
+      "recovery": "Recovery code",
+      "password": "Password",
+      "recent_sign_in": "Recent sign-in",
+      "passkey": "Passkey"
     },
     "cleared": "cleared",
     "filters": {
@@ -14759,5 +14782,28 @@
       "We will publish the encryption code (one file with no dependencies) in its own GitHub repository, so the hashes can be compared with your own build.",
       "An independent review of the code is planned."
     ]
+  },
+  "stepUp": {
+    "title": "Confirm it is you",
+    "loading": "Loading…",
+    "intro": {
+      "totp": "We ask again before security changes. Enter the code from your authenticator app, or a recovery code.",
+      "password": "We ask again before security changes. Enter your account password.",
+      "sign_in": "We ask again before security changes. Your account has no password, so a recent sign-in is enough. If yours is older, sign in again."
+    },
+    "code": "App code or recovery code",
+    "password": "Password",
+    "twoFactorHint": "With two-factor authentication, this would need a code from your phone, and the password alone would not be enough.",
+    "twoFactorLink": "Turn on two-factor authentication",
+    "note": "The confirmation lasts 5 minutes in this browser.",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "errors": {
+      "invalid_code": "The code does not match. Try again.",
+      "wrong_current": "The password does not match.",
+      "reauth_required": "Please sign in again and repeat the change.",
+      "too_many_attempts": "Too many attempts. Try again in a few minutes.",
+      "generic": "The confirmation failed."
+    }
   }
 }

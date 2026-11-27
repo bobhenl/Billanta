@@ -7425,13 +7425,23 @@
         "buyer_details_cancelled": "zrušil(a) žádost o údaje odběratele k",
         "profile_order": "vytvořil(a) objednávkou z veřejného profilu koncept",
         "link_renamed": "přejmenoval(a) veřejný odkaz",
-        "send_waiting_pdf": "zařadil(a) k odeslání s PDF"
+        "send_waiting_pdf": "zařadil(a) k odeslání s PDF",
+        "locked": "zamkl(a)",
+        "unlocked": "odemkl(a)",
+        "made_private": "nastavil(a) jako soukromý doklad",
+        "made_shared": "zpřístupnil(a) týmu doklad"
       },
       "tenant": {
         "updated": "upravil(a) údaje firmy",
         "logo_uploaded": "nahrál(a) logo",
         "logo_removed": "odebral(a) logo",
-        "number_formats_updated": "upravil(a) číslování dokladů"
+        "number_formats_updated": "upravil(a) číslování dokladů",
+        "vault_wrap_removed": "odebral(a) způsob odemčení trezoru",
+        "vault_password_replaced": "změnil(a) heslo k trezoru",
+        "vault_seal_new_off": "vypnul(a) šifrování nových dokladů",
+        "vault_recovery_replaced": "vyměnil(a) záchranný kód trezoru",
+        "vault_enabled": "zapnul(a) důvěrný režim",
+        "vault_categories_changed": "změnil(a) kategorie důvěrného režimu"
       },
       "bank_account": {
         "created": "přidal(a) bankovní účet",
@@ -7441,7 +7451,8 @@
       "contact": {
         "created": "přidal(a) kontakt",
         "updated": "upravil(a) kontakt",
-        "deleted": "smazal(a) kontakt"
+        "deleted": "smazal(a) kontakt",
+        "visibility_changed": "změnil(a), komu patří a kdo vidí kontakt"
       },
       "member": {
         "invited": "pozval(a)",
@@ -7539,7 +7550,14 @@
       "skippedRows": "Přeskočené řádky",
       "numberFormat": "Formát čísla",
       "nextNumber": "Další číslo",
-      "publicSlug": "Název odkazu"
+      "publicSlug": "Název odkazu",
+      "stepUp": "Potvrzeno",
+      "vaultWrap": "Způsob odemčení trezoru",
+      "sealNew": "Šifrovat nové doklady",
+      "isPrivate": "Soukromý",
+      "ownerUserId": "Patří",
+      "contactScope": "Vidí klienty",
+      "vaultCategories": "Vypnuté kategorie"
     },
     "values": {
       "invoice": "Faktura",
@@ -7554,7 +7572,12 @@
       "owner": "Vlastník",
       "admin": "Správce",
       "accountant": "Účetní",
-      "viewer": "Jen čtení"
+      "viewer": "Jen čtení",
+      "totp": "Kód z aplikace",
+      "recovery": "Záložní kód",
+      "password": "Heslo",
+      "recent_sign_in": "Nedávné přihlášení",
+      "passkey": "Passkey"
     },
     "cleared": "smazáno",
     "filters": {
@@ -14759,5 +14782,28 @@
       "Šifrovací kód (jeden soubor bez závislostí) zveřejníme v samostatném repozitáři na GitHubu, aby šlo otisky porovnat s vlastním sestavením.",
       "Nezávislá kontrola kódu je v plánu."
     ]
+  },
+  "stepUp": {
+    "title": "Potvrďte, že jste to vy",
+    "loading": "Načítám…",
+    "intro": {
+      "totp": "U změn zabezpečení se ptáme znovu. Zadejte kód z ověřovací aplikace, případně záložní kód.",
+      "password": "U změn zabezpečení se ptáme znovu. Zadejte heslo ke svému účtu.",
+      "sign_in": "U změn zabezpečení se ptáme znovu. Váš účet nemá heslo, proto stačí nedávné přihlášení. Pokud je starší, přihlaste se znovu."
+    },
+    "code": "Kód z aplikace nebo záložní kód",
+    "password": "Heslo",
+    "twoFactorHint": "S dvoufázovým ověřením by tu bylo potřeba zadat kód z telefonu a samotné heslo by ke změně nestačilo.",
+    "twoFactorLink": "Zapnout dvoufázové ověření",
+    "note": "Potvrzení platí 5 minut v tomto prohlížeči.",
+    "cancel": "Zrušit",
+    "confirm": "Potvrdit",
+    "errors": {
+      "invalid_code": "Kód nesedí. Zkuste to znovu.",
+      "wrong_current": "Heslo nesedí.",
+      "reauth_required": "Přihlaste se prosím znovu a změnu zopakujte.",
+      "too_many_attempts": "Příliš mnoho pokusů. Zkuste to za pár minut.",
+      "generic": "Ověření se nepodařilo."
+    }
   }
 }

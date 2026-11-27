@@ -7417,13 +7417,23 @@
         "buyer_details_cancelled": "lezárta a vevői adatkérést ehhez:",
         "profile_order": "a nyilvános profilon leadott rendeléssel létrehozva:",
         "link_renamed": "átnevezte a nyilvános linket",
-        "send_waiting_pdf": "PDF-fel küldésre sorba állította:"
+        "send_waiting_pdf": "PDF-fel küldésre sorba állította:",
+        "locked": "zárolta",
+        "unlocked": "feloldotta",
+        "made_private": "priváttá tette",
+        "made_shared": "megosztotta a csapattal"
       },
       "tenant": {
         "updated": "szerkesztette a cégadatokat",
         "logo_uploaded": "feltöltötte a logót",
         "logo_removed": "eltávolította a logót",
-        "number_formats_updated": "módosította a bizonylatok számozását"
+        "number_formats_updated": "módosította a bizonylatok számozását",
+        "vault_wrap_removed": "eltávolított egy széffeloldási módot",
+        "vault_password_replaced": "módosította a széf jelszavát",
+        "vault_seal_new_off": "kikapcsolta az új bizonylatok titkosítását",
+        "vault_recovery_replaced": "lecserélte a széf helyreállítási kódját",
+        "vault_enabled": "bekapcsolta a bizalmas módot",
+        "vault_categories_changed": "módosította a bizalmas mód kategóriáit"
       },
       "bank_account": {
         "created": "hozzáadta a bankszámlát",
@@ -7433,7 +7443,8 @@
       "contact": {
         "created": "hozzáadta a partnert",
         "updated": "szerkesztette a partnert",
-        "deleted": "törölte a partnert"
+        "deleted": "törölte a partnert",
+        "visibility_changed": "módosította a felelőst és a láthatóságot ennél:"
       },
       "member": {
         "invited": "meghívta:",
@@ -7531,7 +7542,14 @@
       "skippedRows": "Kihagyott sorok",
       "numberFormat": "Számformátum",
       "nextNumber": "Következő szám",
-      "publicSlug": "Link neve"
+      "publicSlug": "Link neve",
+      "stepUp": "Megerősítve ezzel",
+      "vaultWrap": "Széf feloldási módja",
+      "sealNew": "Új bizonylatok titkosítása",
+      "isPrivate": "Privát",
+      "ownerUserId": "Felelős",
+      "contactScope": "Ügyfeleket lát",
+      "vaultCategories": "Kikapcsolt kategóriák"
     },
     "values": {
       "invoice": "Számla",
@@ -7546,7 +7564,12 @@
       "owner": "Tulajdonos",
       "admin": "Adminisztrátor",
       "accountant": "Könyvelő",
-      "viewer": "Csak olvasás"
+      "viewer": "Csak olvasás",
+      "totp": "Alkalmazáskód",
+      "recovery": "Helyreállítási kód",
+      "password": "Jelszó",
+      "recent_sign_in": "Friss bejelentkezés",
+      "passkey": "Passkey"
     },
     "cleared": "törölve",
     "filters": {
@@ -14747,5 +14770,28 @@
       "A titkosító kódot (egyetlen, függőségek nélküli fájl) külön GitHub-tárolóban tesszük közzé, hogy a lenyomatok saját builddel összevethetők legyenek.",
       "A kód független átvizsgálása tervben van."
     ]
+  },
+  "stepUp": {
+    "title": "Erősítse meg, hogy Ön az",
+    "loading": "Betöltés…",
+    "intro": {
+      "totp": "Biztonsági módosítás előtt újra rákérdezünk. Adja meg a hitelesítő alkalmazás kódját vagy egy helyreállítási kódot.",
+      "password": "Biztonsági módosítás előtt újra rákérdezünk. Adja meg a fiókja jelszavát.",
+      "sign_in": "Biztonsági módosítás előtt újra rákérdezünk. A fiókjának nincs jelszava, ezért elég egy friss bejelentkezés. Ha az régebbi, jelentkezzen be újra."
+    },
+    "code": "Alkalmazáskód vagy helyreállítási kód",
+    "password": "Jelszó",
+    "twoFactorHint": "Kétlépcsős azonosítással itt a telefonról kapott kód kellene, a jelszó önmagában nem lenne elég.",
+    "twoFactorLink": "Kétlépcsős azonosítás bekapcsolása",
+    "note": "A megerősítés 5 percig érvényes ebben a böngészőben.",
+    "cancel": "Mégse",
+    "confirm": "Megerősítés",
+    "errors": {
+      "invalid_code": "A kód nem egyezik. Próbálja újra.",
+      "wrong_current": "A jelszó nem egyezik.",
+      "reauth_required": "Jelentkezzen be újra, és ismételje meg a módosítást.",
+      "too_many_attempts": "Túl sok próbálkozás. Próbálja újra néhány perc múlva.",
+      "generic": "A megerősítés nem sikerült."
+    }
   }
 }

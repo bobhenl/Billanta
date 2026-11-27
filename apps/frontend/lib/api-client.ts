@@ -38,7 +38,7 @@ import { auth } from "@/auth";
 import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { mintBackendToken } from "./backend-token";
-import { unlockedFor } from "./invoice-unlock";
+import { reauthFor } from "./invoice-unlock";
 
 // Same var `lib/public-invoices.ts` already uses for its own server-side
 // backend fetch — reused as-is, not duplicated (see .env.example's
@@ -117,11 +117,13 @@ const resolveIdentity = cache(async (): Promise<ResolvedIdentity> => {
     throw new NotSignedInError();
   }
 
+  const reauth = await reauthFor(session.user.id);
   const token = await mintBackendToken({
     id: session.user.id,
     email: session.user.email,
     twoFactor: session.twoFactor === "verified",
-    unlocked: await unlockedFor(session.user.id),
+    unlocked: reauth.unlocked,
+    stepUp: reauth.stepUp,
   });
 
   const res = await fetch(`${BACKEND_URL}/api/v1/me`, {

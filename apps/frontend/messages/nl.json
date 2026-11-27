@@ -7417,13 +7417,23 @@
         "buyer_details_cancelled": "sloot het verzoek om klantgegevens voor",
         "profile_order": "aangemaakt via een bestelling op het openbare profiel:",
         "link_renamed": "hernoemde de openbare link",
-        "send_waiting_pdf": "zette klaar voor verzending met pdf"
+        "send_waiting_pdf": "zette klaar voor verzending met pdf",
+        "locked": "vergrendelde",
+        "unlocked": "ontgrendelde",
+        "made_private": "maakte privé",
+        "made_shared": "deelde met het team"
       },
       "tenant": {
         "updated": "bewerkte de bedrijfsgegevens",
         "logo_uploaded": "uploadde het logo",
         "logo_removed": "verwijderde het logo",
-        "number_formats_updated": "wijzigde de documentnummering"
+        "number_formats_updated": "wijzigde de documentnummering",
+        "vault_wrap_removed": "verwijderde een ontgrendelmethode van de kluis",
+        "vault_password_replaced": "wijzigde het kluiswachtwoord",
+        "vault_seal_new_off": "zette de versleuteling van nieuwe documenten uit",
+        "vault_recovery_replaced": "verving de herstelcode van de kluis",
+        "vault_enabled": "zette de vertrouwelijke modus aan",
+        "vault_categories_changed": "wijzigde de categorieën van de vertrouwelijke modus"
       },
       "bank_account": {
         "created": "voegde de bankrekening toe",
@@ -7433,7 +7443,8 @@
       "contact": {
         "created": "voegde het contact toe",
         "updated": "bewerkte het contact",
-        "deleted": "verwijderde het contact"
+        "deleted": "verwijderde het contact",
+        "visibility_changed": "wijzigde eigenaar en zichtbaarheid van"
       },
       "member": {
         "invited": "nodigde uit",
@@ -7531,7 +7542,14 @@
       "skippedRows": "Overgeslagen rijen",
       "numberFormat": "Nummerformaat",
       "nextNumber": "Volgend nummer",
-      "publicSlug": "Linknaam"
+      "publicSlug": "Linknaam",
+      "stepUp": "Bevestigd met",
+      "vaultWrap": "Ontgrendelmethode van de kluis",
+      "sealNew": "Nieuwe documenten versleutelen",
+      "isPrivate": "Privé",
+      "ownerUserId": "Hoort bij",
+      "contactScope": "Ziet klanten",
+      "vaultCategories": "Uitgezette categorieën"
     },
     "values": {
       "invoice": "Factuur",
@@ -7546,7 +7564,12 @@
       "owner": "Eigenaar",
       "admin": "Beheerder",
       "accountant": "Boekhouder",
-      "viewer": "Alleen lezen"
+      "viewer": "Alleen lezen",
+      "totp": "App-code",
+      "recovery": "Herstelcode",
+      "password": "Wachtwoord",
+      "recent_sign_in": "Recente aanmelding",
+      "passkey": "Passkey"
     },
     "cleared": "gewist",
     "filters": {
@@ -14747,5 +14770,28 @@
       "We publiceren de versleutelingscode (één bestand zonder afhankelijkheden) in een eigen GitHub-repository, zodat de hashes met een eigen build te vergelijken zijn.",
       "Een onafhankelijke beoordeling van de code is gepland."
     ]
+  },
+  "stepUp": {
+    "title": "Bevestig dat jij het bent",
+    "loading": "Laden…",
+    "intro": {
+      "totp": "Voor beveiligingswijzigingen vragen we het opnieuw. Vul de code uit je authenticator-app of een herstelcode in.",
+      "password": "Voor beveiligingswijzigingen vragen we het opnieuw. Vul het wachtwoord van je account in.",
+      "sign_in": "Voor beveiligingswijzigingen vragen we het opnieuw. Je account heeft geen wachtwoord, dus een recente aanmelding is genoeg. Is die ouder, meld je dan opnieuw aan."
+    },
+    "code": "App-code of herstelcode",
+    "password": "Wachtwoord",
+    "twoFactorHint": "Met tweestapsverificatie zou hier een code van je telefoon nodig zijn en zou het wachtwoord alleen niet genoeg zijn.",
+    "twoFactorLink": "Tweestapsverificatie inschakelen",
+    "note": "De bevestiging geldt 5 minuten in deze browser.",
+    "cancel": "Annuleren",
+    "confirm": "Bevestigen",
+    "errors": {
+      "invalid_code": "De code klopt niet. Probeer het opnieuw.",
+      "wrong_current": "Het wachtwoord klopt niet.",
+      "reauth_required": "Meld je opnieuw aan en herhaal de wijziging.",
+      "too_many_attempts": "Te veel pogingen. Probeer het over een paar minuten opnieuw.",
+      "generic": "De bevestiging is mislukt."
+    }
   }
 }

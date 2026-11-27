@@ -7417,13 +7417,23 @@
         "buyer_details_cancelled": "ha chiuso la richiesta dei dati del cliente per",
         "profile_order": "creato tramite ordine dal profilo pubblico:",
         "link_renamed": "ha rinominato il link pubblico",
-        "send_waiting_pdf": "ha messo in coda per l'invio con PDF"
+        "send_waiting_pdf": "ha messo in coda per l'invio con PDF",
+        "locked": "ha bloccato",
+        "unlocked": "ha sbloccato",
+        "made_private": "ha reso privato",
+        "made_shared": "ha condiviso con il team"
       },
       "tenant": {
         "updated": "ha modificato i dati dell’azienda",
         "logo_uploaded": "ha caricato il logo",
         "logo_removed": "ha rimosso il logo",
-        "number_formats_updated": "ha modificato la numerazione dei documenti"
+        "number_formats_updated": "ha modificato la numerazione dei documenti",
+        "vault_wrap_removed": "ha rimosso un metodo di sblocco della cassaforte",
+        "vault_password_replaced": "ha cambiato la password della cassaforte",
+        "vault_seal_new_off": "ha disattivato la cifratura dei nuovi documenti",
+        "vault_recovery_replaced": "ha sostituito il codice di recupero della cassaforte",
+        "vault_enabled": "ha attivato la modalità riservata",
+        "vault_categories_changed": "ha cambiato le categorie della modalità riservata"
       },
       "bank_account": {
         "created": "ha aggiunto il conto bancario",
@@ -7433,7 +7443,8 @@
       "contact": {
         "created": "ha aggiunto il contatto",
         "updated": "ha modificato il contatto",
-        "deleted": "ha eliminato il contatto"
+        "deleted": "ha eliminato il contatto",
+        "visibility_changed": "ha cambiato responsabile e visibilità di"
       },
       "member": {
         "invited": "ha invitato",
@@ -7531,7 +7542,14 @@
       "skippedRows": "Righe saltate",
       "numberFormat": "Formato del numero",
       "nextNumber": "Numero successivo",
-      "publicSlug": "Nome del link"
+      "publicSlug": "Nome del link",
+      "stepUp": "Confermato con",
+      "vaultWrap": "Metodo di sblocco della cassaforte",
+      "sealNew": "Cifra i nuovi documenti",
+      "isPrivate": "Privato",
+      "ownerUserId": "Appartiene a",
+      "contactScope": "Vede i clienti",
+      "vaultCategories": "Categorie disattivate"
     },
     "values": {
       "invoice": "Fattura",
@@ -7546,7 +7564,12 @@
       "owner": "Proprietario",
       "admin": "Amministratore",
       "accountant": "Commercialista",
-      "viewer": "Sola lettura"
+      "viewer": "Sola lettura",
+      "totp": "Codice dell’app",
+      "recovery": "Codice di recupero",
+      "password": "Password",
+      "recent_sign_in": "Accesso recente",
+      "passkey": "Passkey"
     },
     "cleared": "cancellato",
     "filters": {
@@ -14747,5 +14770,28 @@
       "Pubblicheremo il codice di cifratura (un solo file senza dipendenze) in un repository GitHub dedicato, per confrontare gli hash con un tuo build.",
       "È prevista una revisione indipendente del codice."
     ]
+  },
+  "stepUp": {
+    "title": "Confermi che è Lei",
+    "loading": "Caricamento…",
+    "intro": {
+      "totp": "Prima di una modifica di sicurezza chiediamo di nuovo. Inserisca il codice dell’app di autenticazione o un codice di recupero.",
+      "password": "Prima di una modifica di sicurezza chiediamo di nuovo. Inserisca la password del Suo account.",
+      "sign_in": "Prima di una modifica di sicurezza chiediamo di nuovo. Il Suo account non ha una password, quindi basta un accesso recente. Se il Suo è più vecchio, acceda di nuovo."
+    },
+    "code": "Codice dell’app o codice di recupero",
+    "password": "Password",
+    "twoFactorHint": "Con l’autenticazione a due fattori servirebbe un codice dal telefono e la sola password non basterebbe.",
+    "twoFactorLink": "Attiva l’autenticazione a due fattori",
+    "note": "La conferma vale 5 minuti in questo browser.",
+    "cancel": "Annulla",
+    "confirm": "Conferma",
+    "errors": {
+      "invalid_code": "Il codice non corrisponde. Riprovi.",
+      "wrong_current": "La password non corrisponde.",
+      "reauth_required": "Acceda di nuovo e ripeta la modifica.",
+      "too_many_attempts": "Troppi tentativi. Riprovi tra qualche minuto.",
+      "generic": "La conferma non è riuscita."
+    }
   }
 }

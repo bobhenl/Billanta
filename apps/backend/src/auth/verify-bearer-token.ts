@@ -1,5 +1,6 @@
 import { UnauthorizedException } from "@nestjs/common";
 import type { JwtService } from "@nestjs/jwt";
+import { STEP_UP_METHODS, type StepUpMethod } from "./step-up";
 
 /**
  * Decoded shape of the backend JWT this API accepts. Minted by the frontend
@@ -27,6 +28,9 @@ export interface BackendJwtPayload {
   twoFactor?: boolean;
   /** `ul: true` when the person re-entered their password a moment ago: locked invoices open (src/invoices/invoice-lock.ts). */
   unlocked?: boolean;
+  /** `sa` (seconds) and `sm`: when and how the person last confirmed a second factor (src/auth/step-up.ts). */
+  stepUpAt?: number;
+  stepUpMethod?: StepUpMethod;
 }
 
 /**
@@ -74,5 +78,13 @@ export function verifyBearerToken(
     scope: typeof record.scope === "string" ? record.scope : undefined,
     twoFactor: record.mfa === true,
     unlocked: record.ul === true,
+    ...stepUpClaims(record),
   };
+}
+
+/** Both claims or neither: a time without a known method (or the other way round) proves nothing. */
+function stepUpClaims(record: Record<string, unknown>): { stepUpAt?: number; stepUpMethod?: StepUpMethod } {
+  const method = STEP_UP_METHODS.find((m) => m === record.sm);
+  if (!method || typeof record.sa !== "number" || !Number.isFinite(record.sa)) return {};
+  return { stepUpAt: record.sa * 1000, stepUpMethod: method };
 }
