@@ -233,4 +233,17 @@ describe("Confidential mode", () => {
     expect(ok.writes[0]).toMatchObject({ op: "update", value: { sealNew: false } });
     expect(log.record).toHaveBeenCalledWith(ok, "t1", expect.objectContaining({ action: "vault_seal_new_off", changes: expect.arrayContaining([stepUpLine]) }));
   });
+
+  it("refuses dropping a category without one; adding a category needs none", async () => {
+    const two = { ...vault, categories: ["texts", "attachments"] };
+    const db = fakeDb([[two]]);
+    await expect(new VaultService(audit() as never).updateSettings(db as never, "t1", owner as never, { categories: ["texts"] })).rejects.toMatchObject(refused);
+    expect(db.writes).toHaveLength(0);
+    await expect(new VaultService().updateSettings(fakeDb([[vault]]) as never, "t1", owner as never, { categories: ["texts", "attachments"] })).resolves.toBeDefined();
+    const log = audit();
+    const ok = fakeDb([[two]]);
+    await new VaultService(log as never).updateSettings(ok as never, "t1", stepped as never, { categories: ["texts"] });
+    expect(ok.writes[0]).toMatchObject({ op: "update", value: { categories: ["texts"] } });
+    expect(log.record).toHaveBeenCalledWith(ok, "t1", expect.objectContaining({ action: "vault_categories_changed", changes: [{ field: "vaultCategories", from: "attachments", to: null }, stepUpLine] }));
+  });
 });

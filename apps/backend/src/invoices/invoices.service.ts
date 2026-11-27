@@ -332,7 +332,7 @@ export class InvoicesService {
     invoice: typeof schema.invoices.$inferSelect,
     contact: typeof schema.contacts.$inferSelect,
     kind: "invoice" | "reminder",
-    opts: { sealed?: boolean } = {},
+    opts: { sealed?: boolean; extra?: EmailAttachment[] } = {},
   ): Promise<EmailCustomization> {
     const [liveTenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
     const prefs = emailPrefsOf(liveTenant?.emailPrefs);
@@ -351,6 +351,8 @@ export class InvoicesService {
     if (kind === "invoice" && this.attachmentsService) {
       attachments.push(...(await this.attachmentsService.forEmail(db, invoice.id)));
     }
+    // Decrypted in the browser for this e-mail only (send-with-files).
+    if (kind === "invoice" && opts.extra) attachments.push(...opts.extra);
     const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, invoice.id));
     const breakdown = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
     // {company}, {ico}, {iban}, {customer}… as on the document (its snapshot, if issued).
@@ -1477,7 +1479,7 @@ export class InvoicesService {
    * for the no-auth client-portal view), emails it via
    * `EmailService.sendInvoiceEmail`, then stamps `sent_at`.
    */
-  async sendInvoice(db: TenantDb, id: string, tenantId?: string, userId?: string) {
+  async sendInvoice(db: TenantDb, id: string, tenantId?: string, userId?: string, extra: EmailAttachment[] = []) {
     const [invoice] = await db.select().from(schema.invoices).where(eq(schema.invoices.id, id)).limit(1);
     if (!invoice) {
       throw new NotFoundException(`Invoice ${id} not found`);
@@ -1513,16 +1515,19 @@ export class InvoicesService {
     const plan = sealed ? sealedSendPlan(await this.vaultEmailMode(db), await this.attachesPdf(db, invoice.tenantId)) : null;
 
     await assertCanSendEmail(db, invoice.tenantId);
+    // Files decrypted in the browser can't wait in a queue: the server must not keep them.
+    if (extra.length && plan && !plan.sendNow) throw new ConflictException("pass_files_waiting");
     if (plan?.queue) await this.queueForBrowser(db, invoice, contact.email, plan.queue, corrected, userId);
     if (plan && !plan.sendNow) {
       await this.log(db, invoice, "send_waiting_pdf", [{ field: "email", from: null, to: contact.email }]);
       return { ...invoice, vaultEmail: "waiting" as const };
     }
-    await this.emailService.sendInvoiceEmail(
-      await this.invoiceEmailParams(db, invoice, contact, lineItems, tenantId, corrected, { sealed }),
-      // Collapses a double-click into one e-mail; a deliberate resend a minute later still goes out.
-      { tenantId: invoice.tenantId, db, idempotencyKey: `invoice:${invoice.id}:${Math.floor(Date.now() / 60_000)}` },
-    );
+    const params = await this.invoiceEmailParams(db, invoice, contact, lineItems, tenantId, corrected, { sealed, extra });
+    // Collapses a double-click into one e-mail; a deliberate resend a minute later still goes out.
+    const queue = { tenantId: invoice.tenantId, db, idempotencyKey: `invoice:${invoice.id}:${Math.floor(Date.now() / 60_000)}` };
+    // Like the browser-made PDF, they go straight to Resend; the outbox records the send without them.
+    if (extra.length) await this.emailService.sendNow(buildInvoiceEmail(params), { ...queue, userId });
+    else await this.emailService.sendInvoiceEmail(params, queue);
     await recordEmailSent(db, invoice.tenantId, "invoice", contact.email);
 
     const [updated] = await db
@@ -1544,7 +1549,7 @@ export class InvoicesService {
     lineItems: (typeof schema.invoiceLineItems.$inferSelect)[],
     tenantId: string | undefined,
     corrected: boolean,
-    opts: { sealed: boolean },
+    opts: { sealed: boolean; extra?: EmailAttachment[] },
   ): Promise<SendInvoiceEmailParams> {
     const total = computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge });
     return {

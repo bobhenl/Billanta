@@ -849,7 +849,12 @@
       "qrFound": "Datos cargados desde el código QR",
       "qrCheck": "Rellenado desde la factura QR – el proveedor, el importe, el IVA y las fechas coinciden exactamente con el documento. Añada una descripción y una categoría.",
       "qrCheckPayment": "El pago QR ha aportado el importe, el símbolo variable y la fecha de vencimiento. Complete el resto o suba el documento completo.",
-      "qrDescription": "Factura {number}"
+      "qrDescription": "Factura {number}",
+      "aiOptIn": "Enviar el tique a la IA – pasa una vez por el servidor y no se guarda",
+      "aiOptInHint": "Sin marcarlo solo se lee el código QR, en el propio navegador, y el resto lo rellenas tú.",
+      "receiptKeptLocal": "El tique se quedó en tu navegador. Se adjuntará cifrado al guardar.",
+      "receiptWillEncrypt": "Se adjuntará cifrado al guardar: {name}",
+      "receiptNotStored": "El gasto está guardado, pero no se pudo adjuntar el tique. Añádelo en la página del gasto."
     },
     "noTenant": "Primero configure su empresa.",
     "loadError": "No se han podido cargar los gastos",
@@ -5262,8 +5267,19 @@
         "bad_type": "Este tipo de archivo no se puede adjuntar.",
         "too_big": "El archivo supera los 5 MB.",
         "too_many": "Una factura puede tener como máximo 10 adjuntos.",
-        "generic": "No se ha podido guardar el adjunto."
-      }
+        "generic": "No se ha podido guardar el adjunto.",
+        "plan_required": "Cifrar adjuntos forma parte del plan Plus.",
+        "vault_category_off": "El cifrado de adjuntos no está activado en el modo confidencial."
+      },
+      "hintExpense": "El tique o la factura del proveedor de este gasto. PDF, imágenes, Office, CSV/XML/TXT, máx. 5 MB, como mucho 10 archivos.",
+      "encryptsNew": "Los archivos nuevos se cifran en tu navegador antes de subirlos.",
+      "encryptedName": "Archivo cifrado",
+      "encrypted": "Cifrado",
+      "openEncrypted": "Abrir (se descifra en tu navegador)",
+      "decryptFailed": "No se pudo descifrar el archivo.",
+      "emailOnEncrypted": "Cifrado: va con el correo solo si lo confirmas al enviar (haz clic para desactivarlo)",
+      "portalEncrypted": "El cliente no puede abrir un adjunto cifrado en el enlace compartido",
+      "previewLocal": "La vista previa se creó solo en tu navegador. El servidor no leyó el archivo."
     },
     "quoteResponse": {
       "title": "Respuesta del cliente",
@@ -7416,7 +7432,8 @@
         "vault_password_replaced": "cambió la contraseña de la caja fuerte",
         "vault_seal_new_off": "desactivó el cifrado de documentos nuevos",
         "vault_recovery_replaced": "sustituyó el código de recuperación de la caja fuerte",
-        "vault_enabled": "activó el modo confidencial"
+        "vault_enabled": "activó el modo confidencial",
+        "vault_categories_changed": "cambió las categorías del modo confidencial"
       },
       "bank_account": {
         "created": "añadió la cuenta bancaria",
@@ -7531,7 +7548,8 @@
       "sealNew": "Cifrar documentos nuevos",
       "isPrivate": "Privado",
       "ownerUserId": "Pertenece a",
-      "contactScope": "Ve clientes"
+      "contactScope": "Ve clientes",
+      "vaultCategories": "Categorías desactivadas"
     },
     "values": {
       "invoice": "Factura",
@@ -14370,7 +14388,12 @@
       "keyLink": "Enlace del cliente con clave",
       "copyLink": "Copiar",
       "emailWaiting": "El correo espera el PDF. Saldrá desde un navegador con el modo desbloqueado, mira el aviso de arriba.",
-      "pdfFollows": "Enlace enviado. Envía el PDF como correo adicional desde el aviso de arriba."
+      "pdfFollows": "Enlace enviado. Envía el PDF como correo adicional desde el aviso de arriba.",
+      "unlockFirst": "Sin desbloquear no se pueden adjuntar archivos cifrados.",
+      "decryptFailed": "No se pudo descifrar un adjunto.",
+      "passFiles": "{n, plural, one {Adjuntar # archivo cifrado} other {Adjuntar # archivos cifrados}}",
+      "passFilesHint": "Tu navegador los descifra y pasan una sola vez por el servidor, a este correo. El servidor no los guarda y los borra tras la entrega.",
+      "passFilesWaiting": "Este documento espera a que un navegador cree el PDF, y los adjuntos no pueden esperar en el servidor. Envía el correo sin ellos o configura el modo confidencial para enviar el enlace de inmediato."
     },
     "categories": {
       "recommended": "Recomendado",
@@ -14390,11 +14413,18 @@
       },
       "attachments": {
         "title": "Adjuntos y recibos",
-        "description": "Archivos de documentos y gastos.",
+        "description": "Archivos de documentos y tiques de gastos.",
         "loses": [
-          "Lectura de recibos con IA",
-          "Vistas previas de adjuntos",
-          "Envío de adjuntos por correo y entrega al contable"
+          "La IA lee un tique solo con tu permiso puntual: el archivo pasa por el servidor y no se guarda",
+          "Los adjuntos cifrados no aparecen en el enlace compartido con el cliente",
+          "El correo de la factura los incluye solo si los desbloqueas y confirmas al enviar",
+          "Tu gestor los abre solo como miembro del equipo con su propia clave; las exportaciones no incluyen archivos"
+        ],
+        "how": [
+          "Cada archivo se cifra en tu navegador con su propia clave antes de ir al servidor.",
+          "El nombre y el tipo del archivo también van cifrados. El servidor solo conoce el tamaño y la fecha de subida.",
+          "La vista previa y la descarga descifran el archivo en tu navegador.",
+          "Los adjuntos anteriores siguen legibles hasta que los cifres con Cifrar adjuntos existentes."
         ]
       },
       "contacts": {
@@ -14416,7 +14446,8 @@
           "Paneles, ingreso neto y gráficos",
           "Recordatorios con importe y pagos QR creados por el servidor"
         ]
-      }
+      },
+      "howTitle": "Cómo funciona:"
     },
     "enable": {
       "offTitle": "El Modo confidencial está desactivado",
@@ -14501,7 +14532,9 @@
       "recoveryNew": "Crear un nuevo código de recuperación",
       "recoveryReplaced": "El nuevo código de recuperación está activo",
       "categoriesTitle": "Qué se cifra",
-      "categoriesLead": "Llegarán más opciones. En cada una ves qué dejaría de funcionar."
+      "categoriesLead": "Puedes añadir una categoría más tarde. Desactivarla solo deja de cifrar datos nuevos; lo cifrado sigue cifrado.",
+      "categoriesMin": "Deja activada al menos una categoría.",
+      "categoryOffConfirm": "¿Desactivar esta categoría? Los archivos y textos nuevos ya no se cifrarán. Lo que ya está cifrado sigue cifrado."
     },
     "clientLink": {
       "ready": "El enlace lleva la clave de los textos cifrados (tras el #). Con ella tu cliente ve el texto completo; el servidor nunca recibe la clave.",
@@ -14621,6 +14654,20 @@
       "item": "Línea {n}",
       "notSealed": "El servidor ve importes, fechas, el número del documento, referencias y clientes, para calcular el IVA, vigilar vencimientos y conciliar pagos.",
       "more": "Cómo funciona y cómo comprobarlo"
+    },
+    "sealFiles": {
+      "button": "Cifrar adjuntos existentes",
+      "title": "Cifrar adjuntos existentes",
+      "what": "Tu navegador descarga los adjuntos de documentos y los tiques de gastos que el servidor aún puede leer, los cifra y los vuelve a subir en su lugar.",
+      "loses": "Los adjuntos cifrados desaparecen del enlace compartido con el cliente, y el correo de la factura los incluye solo tras confirmarlo al enviar.",
+      "resumable": "Se omiten los adjuntos de documentos bloqueados. Si cierras la ventana, la próxima vez continúa donde lo dejaste.",
+      "cancel": "Atrás",
+      "confirm": "Cifrar",
+      "progress": "Cifrando… {n}",
+      "done": "{n, plural, one {# adjunto cifrado} other {# adjuntos cifrados}}.",
+      "partial": "{n} cifrados, {failed} fallaron. Inténtalo más tarde.",
+      "nothing": "No había nada que cifrar.",
+      "failed": "El cifrado falló. Los adjuntos ya cifrados siguen cifrados."
     }
   },
   "vaultPublic": {

@@ -18,13 +18,14 @@ import { Banner } from '@/components/banner';
 import { PasswordInput } from '@/components/password-input';
 import { toast } from '@/components/toaster';
 import { useStepUp } from '@/components/step-up';
+import { SealAttachmentsButton } from '@/components/vault/seal-attachments-button';
 import { SealButton } from '@/components/vault/seal-button';
 import { VaultIntegrity } from '@/components/vault/vault-integrity';
 import { VaultDeviceKeep, VaultEmailSettings } from '@/components/vault/vault-preferences';
 import { useVault } from '@/components/vault/vault-provider';
 import { Link, useRouter } from '@/i18n/navigation';
 import { SITE_NAME } from '@/lib/site';
-import { addVaultWrap, enableVault, removeVaultWrap, replaceRecoveryWrap, updateVaultSettings } from '@/lib/vault/actions';
+import { addVaultWrap, enableVault, removeVaultWrap, replaceRecoveryWrap, updateVaultCategories, updateVaultSettings } from '@/lib/vault/actions';
 import { createPasskeyWrap, passkeyPrfSupported } from '@/lib/vault/passkey';
 import { rememberVaultKey } from '@/lib/vault/session';
 import type { EnabledVault, VaultStatus } from '@/lib/vault/types';
@@ -75,6 +76,7 @@ function CategoryList({ selected, onToggle }: { selected: VaultCategory[]; onTog
       {VAULT_CATEGORIES.map((category) => {
         const on = selected.includes(category.id);
         const loses = t.raw(`${category.id}.loses`) as string[];
+        const how = t.has(`${category.id}.how`) ? (t.raw(`${category.id}.how`) as string[]) : [];
         return (
           <li key={category.id} className={cn('rounded-xl border p-3', on ? 'border-primary/40 bg-accent/30' : 'border-border bg-card', !category.available && 'opacity-80')}>
             <label className={cn('flex items-start gap-2.5', category.available && onToggle ? 'cursor-pointer' : 'cursor-default')}>
@@ -92,6 +94,16 @@ function CategoryList({ selected, onToggle }: { selected: VaultCategory[]; onTog
                   {!category.available && <span className="rounded-full bg-secondary px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">{t('planned')}</span>}
                 </span>
                 <span className="mt-0.5 block text-xs text-muted-foreground">{t(`${category.id}.description`)}</span>
+                {how.length > 0 && (
+                  <>
+                    <span className="mt-2 block text-xs font-semibold">{t('howTitle')}</span>
+                    <ul className="mt-1 list-disc space-y-0.5 pl-5 text-xs text-muted-foreground">
+                      {how.map((line) => (
+                        <li key={line}>{line}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
                 <span className="mt-2 block text-xs font-semibold">{t('losesTitle')}</span>
                 <ul className="mt-1 list-disc space-y-0.5 pl-5 text-xs text-muted-foreground">
                   {loses.map((line) => (
@@ -405,7 +417,10 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
             </Link>
           </Banner>
         ) : (
-          <SealButton scope={{ kind: 'company' }} />
+          <div className="flex flex-wrap gap-2">
+            <SealButton scope={{ kind: 'company' }} />
+            <SealAttachmentsButton />
+          </div>
         )}
         {/* Below Plus the default can still be switched off, never on. */}
         {manager && (vault.planAllowed !== false || vault.sealNew) && (
@@ -556,7 +571,22 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
       <section className="rounded-xl border border-border bg-card p-4">
         <h2 className="text-sm font-bold">{t('categoriesTitle')}</h2>
         <p className="mb-2 text-xs text-muted-foreground">{t('categoriesLead')}</p>
-        <CategoryList selected={vault.categories} />
+        <CategoryList
+          selected={vault.categories}
+          // Managers on Plus can add a category later; dropping one only stops encrypting new data.
+          onToggle={
+            manager && vault.planAllowed !== false
+              ? async (id) => {
+                  const next = vault.categories.includes(id) ? vault.categories.filter((c) => c !== id) : [...vault.categories, id];
+                  if (!next.length) return void toast({ text: t('categoriesMin'), tone: 'err' });
+                  if (!next.includes(id) && !window.confirm(t('categoryOffConfirm'))) return;
+                  // Dropping a category needs a step-up; adding one does not.
+                  const r = await withStepUp(() => updateVaultCategories(next));
+                  if (r) report(r.ok, t('saved'));
+                }
+              : undefined
+          }
+        />
       </section>
 
       <VaultIntegrity />

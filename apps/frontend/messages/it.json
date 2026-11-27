@@ -849,7 +849,12 @@
       "qrFound": "Dati caricati dal codice QR",
       "qrCheck": "Compilato dalla fattura QR – fornitore, importo, IVA e date corrispondono esattamente al documento. Aggiunga descrizione e categoria.",
       "qrCheckPayment": "Il QR di pagamento ha fornito importo, simbolo variabile e scadenza. Compili il resto o carichi l'intero documento.",
-      "qrDescription": "Fattura {number}"
+      "qrDescription": "Fattura {number}",
+      "aiOptIn": "Invia lo scontrino all’IA – passa una volta dal server e non viene salvato",
+      "aiOptInHint": "Senza spunta viene letto solo il codice QR, direttamente nel browser, e il resto lo compili tu.",
+      "receiptKeptLocal": "Lo scontrino è rimasto nel browser. Al salvataggio verrà allegato cifrato.",
+      "receiptWillEncrypt": "Verrà allegato cifrato al salvataggio: {name}",
+      "receiptNotStored": "La spesa è salvata, ma non è stato possibile allegare lo scontrino. Aggiungilo nella pagina della spesa."
     },
     "noTenant": "Configuri prima la Sua azienda.",
     "loadError": "Impossibile caricare le spese",
@@ -5262,8 +5267,19 @@
         "bad_type": "Questo tipo di file non può essere allegato.",
         "too_big": "Il file supera i 5 MB.",
         "too_many": "Una fattura può avere al massimo 10 allegati.",
-        "generic": "Non è stato possibile salvare l’allegato."
-      }
+        "generic": "Non è stato possibile salvare l’allegato.",
+        "plan_required": "La cifratura degli allegati fa parte del piano Plus.",
+        "vault_category_off": "La cifratura degli allegati non è attiva nella modalità riservata."
+      },
+      "hintExpense": "Lo scontrino o la fattura del fornitore per questa spesa. PDF, immagini, Office, CSV/XML/TXT, max 5 MB, al massimo 10 file.",
+      "encryptsNew": "I nuovi file vengono cifrati nel tuo browser prima del caricamento.",
+      "encryptedName": "File cifrato",
+      "encrypted": "Cifrato",
+      "openEncrypted": "Apri (decifrato nel tuo browser)",
+      "decryptFailed": "Non è stato possibile decifrare il file.",
+      "emailOnEncrypted": "Cifrato: parte con l’e-mail solo se lo confermi all’invio (clic per disattivare)",
+      "portalEncrypted": "Il cliente non può aprire un allegato cifrato nel link condiviso",
+      "previewLocal": "L’anteprima è stata creata solo nel tuo browser. Il server non ha letto il file."
     },
     "quoteResponse": {
       "title": "Risposta del cliente",
@@ -7416,7 +7432,8 @@
         "vault_password_replaced": "ha cambiato la password della cassaforte",
         "vault_seal_new_off": "ha disattivato la cifratura dei nuovi documenti",
         "vault_recovery_replaced": "ha sostituito il codice di recupero della cassaforte",
-        "vault_enabled": "ha attivato la modalità riservata"
+        "vault_enabled": "ha attivato la modalità riservata",
+        "vault_categories_changed": "ha cambiato le categorie della modalità riservata"
       },
       "bank_account": {
         "created": "ha aggiunto il conto bancario",
@@ -7531,7 +7548,8 @@
       "sealNew": "Cifra i nuovi documenti",
       "isPrivate": "Privato",
       "ownerUserId": "Appartiene a",
-      "contactScope": "Vede i clienti"
+      "contactScope": "Vede i clienti",
+      "vaultCategories": "Categorie disattivate"
     },
     "values": {
       "invoice": "Fattura",
@@ -14370,7 +14388,12 @@
       "keyLink": "Link per il cliente con chiave",
       "copyLink": "Copia",
       "emailWaiting": "L'e-mail attende il PDF. Partirà da un browser con la modalità sbloccata, vedi l'avviso in alto.",
-      "pdfFollows": "Link inviato. Invia il PDF con un'e-mail aggiuntiva dall'avviso in alto."
+      "pdfFollows": "Link inviato. Invia il PDF con un'e-mail aggiuntiva dall'avviso in alto.",
+      "unlockFirst": "Senza sblocco non si possono allegare file cifrati.",
+      "decryptFailed": "Non è stato possibile decifrare un allegato.",
+      "passFiles": "{n, plural, one {Allega # file cifrato} other {Allega # file cifrati}}",
+      "passFilesHint": "Il browser li decifra e passano una sola volta dal server, in questa e-mail. Il server non li conserva e li cancella dopo la consegna.",
+      "passFilesWaiting": "Questo documento aspetta che un browser crei il PDF, e gli allegati non possono restare in attesa sul server. Invia l’e-mail senza di essi, oppure imposta la modalità riservata per inviare subito il link."
     },
     "categories": {
       "recommended": "Consigliato",
@@ -14390,11 +14413,18 @@
       },
       "attachments": {
         "title": "Allegati e ricevute",
-        "description": "File di documenti e spese.",
+        "description": "File dei documenti e scontrini delle spese.",
         "loses": [
-          "Lettura delle ricevute con IA",
-          "Anteprime degli allegati",
-          "Invio degli allegati via e-mail e consegna al commercialista"
+          "L’IA legge uno scontrino solo con il tuo consenso una tantum: il file passa dal server e non viene salvato",
+          "Gli allegati cifrati non compaiono nel link condiviso con il cliente",
+          "L’e-mail della fattura li include solo se all’invio li sblocchi e confermi",
+          "Il commercialista li apre solo come membro del team con la propria chiave; le esportazioni non contengono file"
+        ],
+        "how": [
+          "Ogni file viene cifrato nel tuo browser con una propria chiave prima di arrivare al server.",
+          "Anche nome e tipo del file sono cifrati. Il server conosce solo la dimensione e la data di caricamento.",
+          "Anteprima e download decifrano il file nel tuo browser.",
+          "Gli allegati più vecchi restano leggibili finché non li cifri con Cifra gli allegati esistenti."
         ]
       },
       "contacts": {
@@ -14416,7 +14446,8 @@
           "Dashboard, reddito netto e grafici",
           "Solleciti con importo e pagamenti QR creati dal server"
         ]
-      }
+      },
+      "howTitle": "Come funziona:"
     },
     "enable": {
       "offTitle": "La Modalità riservata è disattivata",
@@ -14501,7 +14532,9 @@
       "recoveryNew": "Crea un nuovo codice di recupero",
       "recoveryReplaced": "Il nuovo codice di recupero è attivo",
       "categoriesTitle": "Cosa viene cifrato",
-      "categoriesLead": "Altre opzioni in arrivo. Per ciascuna vedi cosa smetterebbe di funzionare."
+      "categoriesLead": "Puoi aggiungere una categoria anche più tardi. Disattivarla smette solo di cifrare i dati nuovi; ciò che è cifrato resta cifrato.",
+      "categoriesMin": "Lascia attiva almeno una categoria.",
+      "categoryOffConfirm": "Disattivare questa categoria? I nuovi file e testi non verranno più cifrati. Ciò che è già cifrato resta cifrato."
     },
     "clientLink": {
       "ready": "Il link contiene la chiave dei testi cifrati (dopo il #). Con essa il cliente vede il testo completo, il server non riceve mai la chiave.",
@@ -14621,6 +14654,20 @@
       "item": "Riga {n}",
       "notSealed": "Il server vede importi, date, numero del documento, causali e clienti, per calcolare l'IVA, seguire le scadenze e abbinare i pagamenti.",
       "more": "Come funziona e come verificarlo"
+    },
+    "sealFiles": {
+      "button": "Cifra gli allegati esistenti",
+      "title": "Cifra gli allegati esistenti",
+      "what": "Il browser scarica gli allegati dei documenti e gli scontrini delle spese che il server può ancora leggere, li cifra e li ricarica al loro posto.",
+      "loses": "Gli allegati cifrati spariscono dal link condiviso con il cliente e l’e-mail della fattura li include solo dopo la conferma all’invio.",
+      "resumable": "Gli allegati dei documenti bloccati vengono saltati. Se chiudi la finestra, la prossima volta si riprende da dove eri rimasto.",
+      "cancel": "Indietro",
+      "confirm": "Cifra",
+      "progress": "Cifratura… {n}",
+      "done": "{n, plural, one {# allegato cifrato} other {# allegati cifrati}}.",
+      "partial": "{n} cifrati, {failed} non riusciti. Riprova più tardi.",
+      "nothing": "Non c’era niente da cifrare.",
+      "failed": "La cifratura non è riuscita. Gli allegati già cifrati restano cifrati."
     }
   },
   "vaultPublic": {

@@ -1,11 +1,12 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
-import { AVAILABLE_VAULT_CATEGORIES } from "@faktur/cz-compliance";
+import { AVAILABLE_VAULT_CATEGORIES, type VaultCategory } from "@faktur/cz-compliance";
 import { isSealed } from "../sealed";
 import { VAULT_EMAIL_MODES } from "../vault-email";
 
 const b64 = (max: number) => z.string().max(max).regex(/^[A-Za-z0-9+/]+={0,2}$/, "base64");
 const sealed = z.string().max(20_000).refine(isSealed, "sealed");
+const availableCategory = z.enum(AVAILABLE_VAULT_CATEGORIES as [VaultCategory, ...VaultCategory[]]);
 
 /** A wrapped data key as the browser built it (`VaultWrap` in @faktur/cz-compliance). */
 const passwordWrap = z.object({
@@ -38,7 +39,7 @@ export const enableVaultSchema = z.object({
   password: passwordWrap,
   recovery: recoveryWrap,
   /** Only the categories that are built; planned ones are shown, not selectable. */
-  categories: z.array(z.enum(AVAILABLE_VAULT_CATEGORIES as ["texts"])).min(1).default(["texts"]),
+  categories: z.array(availableCategory).min(1).default(["texts"]),
   /** The owner ticked every warning (lost password + code = unreadable data, 10-year archive duty). */
   acknowledged: z.literal(true),
 });
@@ -52,9 +53,17 @@ export const recoveryWrapSchema = z.object({ recovery: recoveryWrap });
 export class RecoveryWrapDto extends createZodDto(recoveryWrapSchema) {}
 
 // Each field is optional so one switch on the settings page saves alone.
+// `categories` lets a company add a category built after it switched the mode on.
 export const vaultSettingsSchema = z
-  .object({ sealNew: z.boolean().optional(), emailMode: z.enum(VAULT_EMAIL_MODES).optional(), autoSendPdf: z.boolean().optional() })
-  .refine((v) => v.sealNew !== undefined || v.emailMode !== undefined || v.autoSendPdf !== undefined, { message: "nothing_to_update" });
+  .object({
+    sealNew: z.boolean().optional(),
+    emailMode: z.enum(VAULT_EMAIL_MODES).optional(),
+    autoSendPdf: z.boolean().optional(),
+    categories: z.array(availableCategory).min(1).optional(),
+  })
+  .refine((v) => v.sealNew !== undefined || v.emailMode !== undefined || v.autoSendPdf !== undefined || v.categories !== undefined, {
+    message: "nothing_to_update",
+  });
 export class VaultSettingsDto extends createZodDto(vaultSettingsSchema) {}
 
 // Decrypted texts for printing one waiting e-mail's PDF on the server; never stored (vault-email.ts).
@@ -76,6 +85,9 @@ export const plainInvoicesQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(50).default(20),
 });
 export class PlainInvoicesQueryDto extends createZodDto(plainInvoicesQuerySchema) {}
+
+export const plainAttachmentsQuerySchema = z.object({ limit: z.coerce.number().int().min(1).max(20).default(10) });
+export class PlainAttachmentsQueryDto extends createZodDto(plainAttachmentsQuerySchema) {}
 
 const isoDay = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 

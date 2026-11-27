@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, Injectable, NotFoundException, Optional } from "@nestjs/common";
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException, Optional } from "@nestjs/common";
 import { and, asc, desc, eq, gt, gte, inArray, isNull, lt, or, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
@@ -8,10 +8,25 @@ import { planAllows } from "../billing/plan-access";
 import { loadPlanSummary } from "../billing/plan.guard";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
 import { documentKeyWrap } from "@faktur/cz-compliance";
-import { isSealed, rekeyWrites } from "./sealed";
+import { MAX_ATTACHMENT_BYTES } from "../invoices/invoice-attachments.service";
+import { confidentialPlanRequired, isSealed, rekeyWrites } from "./sealed";
+import { assertFileSealingAllowed, classifyUpload, ENCRYPTED_FILENAME, ENCRYPTED_MIME, type UploadedFileLike } from "./sealed-files";
 import { openablePage, vaultDocumentView } from "./documents";
 import { assertInvoiceOpen } from "../invoices/invoice-lock";
-import type { EnableVaultDto, MemberWrapDto, PlainInvoicesQueryDto, RecoveryWrapDto, RekeyInvoiceDto, SealInvoicesDto, VaultDocumentsQueryDto, VaultSettingsDto } from "./dto/vault.dto";
+import type {
+  EnableVaultDto,
+  MemberWrapDto,
+  PlainAttachmentsQueryDto,
+  PlainInvoicesQueryDto,
+  RecoveryWrapDto,
+  RekeyInvoiceDto,
+  SealInvoicesDto,
+  VaultDocumentsQueryDto,
+  VaultSettingsDto,
+} from "./dto/vault.dto";
+
+/** Every stored plain file is at most this big, so its ciphertext is too (plus the overhead). */
+const MAX_SEALED_SOURCE_BYTES = MAX_ATTACHMENT_BYTES;
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 type WrapRow = typeof schema.vaultKeyWraps.$inferSelect;
@@ -169,30 +184,121 @@ export class VaultService {
     return this.status(db, tenantId, user.id);
   }
 
+  /**
+   * Turning something on (encrypt by default, a new category) needs Plus;
+   * turning it off never does. Dropping a category only stops encrypting new
+   * files and texts, whatever is encrypted stays so.
+   */
   async updateSettings(db: TenantDb, tenantId: string, user: AuthenticatedUser, dto: VaultSettingsDto) {
     if (user.role !== "owner" && user.role !== "admin") throw new ForbiddenException("forbidden");
     const vault = await this.requireVault(db, tenantId);
-    // Switching encryption of new documents off is the one setting that weakens the mode.
-    const turnsOff = dto.sealNew === false && vault.sealNew;
-    const stepUp = turnsOff ? assertStepUp(user) : null;
+    const categories = dto.categories ? [...new Set(dto.categories)] : undefined;
+    const adds = dto.sealNew === true || (categories ?? []).some((c) => !vault.categories.includes(c));
+    if (adds) {
+      const plan = await loadPlanSummary(db, tenantId);
+      if (plan && !planAllows(plan, "confidential_mode")) throw confidentialPlanRequired();
+    }
+    // Switching encryption of new documents off, or dropping a category, weakens the mode.
+    const sealOff = dto.sealNew === false && vault.sealNew;
+    const dropped = categories ? vault.categories.filter((c) => !(categories as string[]).includes(c)) : [];
+    const stepUp = sealOff || dropped.length ? assertStepUp(user) : null;
     await db
       .update(schema.tenantVaults)
       .set({
         ...(dto.sealNew !== undefined ? { sealNew: dto.sealNew } : {}),
         ...(dto.emailMode !== undefined ? { emailMode: dto.emailMode } : {}),
         ...(dto.autoSendPdf !== undefined ? { autoSendPdf: dto.autoSendPdf } : {}),
+        ...(categories ? { categories } : {}),
         updatedAt: new Date(),
       })
       .where(eq(schema.tenantVaults.tenantId, tenantId));
-    if (stepUp) {
+    if (sealOff) {
       await this.audit?.record(db, tenantId, {
         entityType: "tenant",
         entityId: tenantId,
         action: "vault_seal_new_off",
-        changes: [{ field: "sealNew", from: true, to: false }, stepUpChange(stepUp)],
+        changes: [{ field: "sealNew", from: true, to: false }, stepUpChange(stepUp!)],
+      });
+    }
+    if (categories) {
+      await this.audit?.record(db, tenantId, {
+        entityType: "tenant",
+        entityId: tenantId,
+        action: "vault_categories_changed",
+        ...(dropped.length ? { changes: [{ field: "vaultCategories", from: dropped.join(","), to: null }, stepUpChange(stepUp!)] } : {}),
       });
     }
     return this.status(db, tenantId, user.id);
+  }
+
+  /**
+   * Files stored before "Přílohy a účtenky" was on, for the browser to
+   * download, encrypt and upload back. Attachments of locked documents are
+   * left out like their texts.
+   */
+  async plainAttachments(db: TenantDb, tenantId: string, query: PlainAttachmentsQueryDto) {
+    const vault = await this.requireVault(db, tenantId);
+    if (!vault.categories.includes("attachments")) throw new ForbiddenException("vault_category_off");
+    const ia = schema.invoiceAttachments;
+    const ea = schema.expenseAttachments;
+    const invoiceWhere = and(isNull(ia.encMeta), isNull(schema.invoices.lockedAt));
+    const [[{ invoices } = { invoices: 0 }], [{ expenses } = { expenses: 0 }]] = await Promise.all([
+      db.select({ invoices: sql<number>`count(*)::int` }).from(ia).innerJoin(schema.invoices, eq(schema.invoices.id, ia.invoiceId)).where(invoiceWhere),
+      db.select({ expenses: sql<number>`count(*)::int` }).from(ea).where(isNull(ea.encMeta)),
+    ]);
+    const invoiceRows = await db
+      .select({ id: ia.id, parentId: ia.invoiceId, filename: ia.filename, mime: ia.mime, sizeBytes: ia.sizeBytes })
+      .from(ia)
+      .innerJoin(schema.invoices, eq(schema.invoices.id, ia.invoiceId))
+      .where(invoiceWhere)
+      .orderBy(asc(ia.createdAt))
+      .limit(query.limit);
+    const expenseRows =
+      invoiceRows.length < query.limit
+        ? await db
+            .select({ id: ea.id, parentId: ea.expenseId, filename: ea.filename, mime: ea.mime, sizeBytes: ea.sizeBytes })
+            .from(ea)
+            .where(isNull(ea.encMeta))
+            .orderBy(asc(ea.createdAt))
+            .limit(query.limit - invoiceRows.length)
+        : [];
+    return {
+      remaining: invoices + expenses,
+      files: [...invoiceRows.map((r) => ({ kind: "invoice" as const, ...r })), ...expenseRows.map((r) => ({ kind: "expense" as const, ...r }))],
+    };
+  }
+
+  /**
+   * Replaces a plain file with the ciphertext the browser made from it. Only
+   * a file that is still plain (and, for an invoice, not locked) changes, so
+   * a second tab or a retry can't overwrite an encrypted one. The portal
+   * switch goes off: the client has no key.
+   */
+  async sealAttachment(db: TenantDb, tenantId: string, kind: "invoice" | "expense", id: string, file: UploadedFileLike, encMeta: unknown) {
+    await this.requireVault(db, tenantId);
+    const sealedMeta = classifyUpload(file, encMeta, MAX_SEALED_SOURCE_BYTES);
+    if (!sealedMeta) throw new BadRequestException({ error: "not_encrypted" });
+    await assertFileSealingAllowed(db, tenantId, sealedMeta);
+    const stored = { filename: ENCRYPTED_FILENAME, mime: ENCRYPTED_MIME, sizeBytes: file.size, data: file.buffer.toString("base64"), encMeta: sealedMeta };
+    let updated: { id: string }[];
+    if (kind === "invoice") {
+      const ia = schema.invoiceAttachments;
+      updated = await db
+        .update(ia)
+        .set({ ...stored, showInPortal: false })
+        .where(
+          and(
+            eq(ia.id, id),
+            isNull(ia.encMeta),
+            sql`EXISTS (SELECT 1 FROM ${schema.invoices} inv WHERE inv.id = ${ia.invoiceId} AND inv.locked_at IS NULL)`,
+          ),
+        )
+        .returning({ id: ia.id });
+    } else {
+      const ea = schema.expenseAttachments;
+      updated = await db.update(ea).set(stored).where(and(eq(ea.id, id), isNull(ea.encMeta))).returning({ id: ea.id });
+    }
+    return { sealed: updated.length };
   }
 
   /**

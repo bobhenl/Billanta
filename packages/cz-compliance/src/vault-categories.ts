@@ -7,7 +7,7 @@
  */
 export const VAULT_CATEGORIES = [
   { id: 'texts', available: true, default: true },
-  { id: 'attachments', available: false, default: false },
+  { id: 'attachments', available: true, default: false },
   { id: 'contacts', available: false, default: false },
   { id: 'amounts', available: false, default: false },
 ] as const;
