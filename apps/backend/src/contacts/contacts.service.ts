@@ -35,7 +35,7 @@ import { AuditService } from "../audit/audit.service";
 import { withIdempotencyKey } from "../common/idempotency";
 import { DbService } from "../db/db.service";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
-import { mayChangeContactVisibility, visibilityError } from "../tenancy/visibility";
+import { contactVisibilityWidens, mayChangeContactVisibility, visibilityError } from "../tenancy/visibility";
 import { CONTACT_SEALABLE, assertContactWrite, contactIsSealed, contactLabel, redactSealedContact } from "../vault/sealed-contacts";
 import { summarizeContactInvoices, type ContactSummaryBucket } from "./contact-summary.util";
 import { contactsToCsv, mapContactRows, type CsvContact, type CsvSkip } from "./contacts-csv.util";
@@ -681,7 +681,8 @@ export class ContactsService {
       .filter((field) => set[field] !== before[field])
       .map((field) => ({ field, from: before[field], to: set[field] }));
     if (changes.length === 0) return before;
-    const stepUp = assertStepUp(user);
+    // Hiding a client from people needs nothing more; showing it to more people needs a step-up.
+    const stepUp = contactVisibilityWidens(before, set, user.id) ? assertStepUp(user) : null;
     let row: typeof before | undefined;
     try {
       [row] = await db
@@ -692,7 +693,7 @@ export class ContactsService {
     } catch (error) {
       throw visibilityError(error);
     }
-    await this.audit?.record(db, before.tenantId, { entityType: "contact", entityId: id, entityLabel: contactLabel(before.legalName), action: "visibility_changed", changes: [...changes, stepUpChange(stepUp)] });
+    await this.audit?.record(db, before.tenantId, { entityType: "contact", entityId: id, entityLabel: contactLabel(before.legalName), action: "visibility_changed", changes: [...changes, ...(stepUp ? [stepUpChange(stepUp)] : [])] });
     return row ?? before;
   }
 

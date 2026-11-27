@@ -56,16 +56,28 @@ export function scopeChangeRefused(
 
 /**
  * Whether a change moves the line of which clients a member sees: the scope
- * itself, or one of the side doors around it. The owner may do it, but only
- * after a step-up (src/auth/step-up.ts).
+ * itself, or one of the side doors around it. Only the owner may do it.
  */
 export function touchesContactScope(
   member: { role: string; contactScope: string },
   next: { role?: string; contactScope?: string; removed?: boolean },
 ): boolean {
   if (next.contactScope !== undefined && next.contactScope !== member.contactScope) return true;
+  return widensContactScope(member, next);
+}
+
+/**
+ * Whether the change lets a limited member see more clients: the scope
+ * opened to all, or a side door (made admin, removed to be invited back
+ * unlimited). That needs a step-up (src/auth/step-up.ts); limiting a member
+ * to their own clients does not.
+ */
+export function widensContactScope(
+  member: { role: string; contactScope: string },
+  next: { role?: string; contactScope?: string; removed?: boolean },
+): boolean {
   if (member.contactScope !== "own") return false;
-  return next.removed === true || (next.role === "admin" && member.role !== "admin");
+  return next.contactScope === "all" || next.removed === true || (next.role === "admin" && member.role !== "admin");
 }
 
 type PreviewRow = { company_name: string; role: string; email: string; expired: boolean; accepted: boolean; permissions: unknown };
@@ -225,7 +237,7 @@ export class TeamService {
     const member = await this.requireMember(db, membershipId);
     if (member.role === "owner") throw new BadRequestException("The owner's role cannot be changed");
     if (scopeChangeRefused(user.role, member, { role, contactScope })) throw new ForbiddenException("owner_only");
-    const stepUp = touchesContactScope(member, { role, contactScope }) ? assertStepUp(user) : null;
+    const stepUp = widensContactScope(member, { role, contactScope }) ? assertStepUp(user) : null;
     // Turning an accountant into a member (or back) moves them between allowances.
     if ((member.role === "accountant") !== (role === "accountant")) await this.assertSeatFree(db, user.tenantId, { membershipId }, role);
     await db
@@ -259,7 +271,7 @@ export class TeamService {
     if (member.role === "owner") throw new BadRequestException("The owner cannot be removed");
     // Leaving is always possible; showing a limited member out (to invite them back unlimited) is not.
     if (member.userId !== user.id && scopeChangeRefused(user.role, member, { removed: true })) throw new ForbiddenException("owner_only");
-    const stepUp = member.userId !== user.id && touchesContactScope(member, { removed: true }) ? assertStepUp(user) : null;
+    const stepUp = member.userId !== user.id && widensContactScope(member, { removed: true }) ? assertStepUp(user) : null;
     const label = await this.memberEmail(db, member.userId);
     await db.delete(schema.tenantMemberships).where(eq(schema.tenantMemberships.id, membershipId));
     await this.audit?.record(db, user.tenantId, {

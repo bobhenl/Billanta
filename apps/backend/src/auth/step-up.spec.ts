@@ -131,6 +131,13 @@ describe("switching an invoice's privacy", () => {
     await expect(service(log).setPrivate(db as never, "i1", false, stepped as never)).resolves.toEqual({ id: "i1", isPrivate: false });
     expect(log.record).toHaveBeenCalledWith(db, "t1", expect.objectContaining({ action: "made_shared", changes: expect.arrayContaining([stepUpLine]) }));
   });
+
+  it("needs none to make a shared invoice private, which only hides it", async () => {
+    const log = audit();
+    const db = fakeDb([[{ ...invoice, isPrivate: false }]]);
+    await expect(service(log).setPrivate(db as never, "i1", true, owner as never)).resolves.toEqual({ id: "i1", isPrivate: true });
+    expect(log.record).toHaveBeenCalledWith(db, "t1", expect.objectContaining({ action: "made_private", changes: [{ field: "isPrivate", from: false, to: true }] }));
+  });
 });
 
 describe("a client's owner and privacy", () => {
@@ -147,9 +154,27 @@ describe("a client's owner and privacy", () => {
   it("change with one, audited", async () => {
     const log = audit();
     const db = fakeDb([[contact], [{ id: "m1" }]]);
-    await new ContactsService({} as never, log as never).setVisibility(db as never, stepped as never, "c1", { ownerUserId: OWNER });
-    expect(db.writes[0]).toMatchObject({ op: "update", value: { ownerUserId: OWNER } });
+    await new ContactsService({} as never, log as never).setVisibility(db as never, stepped as never, "c1", { isPrivate: false });
+    expect(db.writes[0]).toMatchObject({ op: "update", value: { isPrivate: false } });
     expect(log.record).toHaveBeenCalledWith(db, "t1", expect.objectContaining({ action: "visibility_changed", changes: expect.arrayContaining([stepUpLine]) }));
+  });
+
+  it("refuses handing a client to another member without a step-up", async () => {
+    const shared = { ...contact, ownerUserId: null, isPrivate: false };
+    const db = fakeDb([[shared], [{ id: "m1" }]]);
+    await expect(new ContactsService({} as never, audit() as never).setVisibility(db as never, owner as never, "c1", { ownerUserId: SELLER })).rejects.toMatchObject(refused);
+    expect(db.writes).toHaveLength(0);
+  });
+
+  it("needs none to make a client private or take its owner away, which only hides it", async () => {
+    const shared = { ...contact, isPrivate: false };
+    for (const dto of [{ isPrivate: true }, { ownerUserId: null }, { ownerUserId: OWNER }]) {
+      const log = audit();
+      const db = fakeDb([[shared], [{ id: "m1" }]]);
+      await new ContactsService({} as never, log as never).setVisibility(db as never, owner as never, "c1", dto);
+      expect(db.writes[0]).toMatchObject({ op: "update", value: dto });
+      expect(log.record).toHaveBeenCalledWith(db, "t1", expect.objectContaining({ changes: expect.not.arrayContaining([expect.objectContaining({ field: "stepUp" })]) }));
+    }
   });
 });
 
@@ -171,6 +196,14 @@ describe("a member's contact scope", () => {
     await new TeamService({} as never, {} as never, undefined, log as never).updateMember(db as never, stepped as never, "m1", "accountant", null, "all");
     expect(db.writes[0]).toMatchObject({ op: "update", value: { contactScope: "all" } });
     expect(log.record).toHaveBeenCalledWith(db, "t1", expect.objectContaining({ changes: expect.arrayContaining([stepUpLine]) }));
+  });
+
+  it("needs none to limit a member to their own clients", async () => {
+    const log = audit();
+    const db = fakeDb([[{ ...member, contactScope: "all" }], [{ email: "s@example.cz" }]]);
+    await expect(new TeamService({} as never, {} as never, undefined, log as never).updateMember(db as never, owner as never, "m1", "accountant", null, "own")).resolves.toEqual({ ok: true });
+    expect(db.writes[0]).toMatchObject({ op: "update", value: { contactScope: "own" } });
+    expect(log.record).toHaveBeenCalledWith(db, "t1", expect.objectContaining({ changes: [{ field: "contactScope", from: "all", to: "own" }] }));
   });
 
   it("is not touched by other team changes, which need no step-up", async () => {

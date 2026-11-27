@@ -35,3 +35,24 @@ export function mayChangeInvoicePrivacy(user: Actor, invoice: { createdByUserId:
   if (user.role === "owner") return true;
   return invoice.createdByUserId !== null && invoice.createdByUserId === user.id;
 }
+
+/**
+ * Whether a client's new owner or privacy lets more people see it, which is
+ * what needs a step-up (src/auth/step-up.ts). Making it private, or taking
+ * the owner away, only hides it from people and goes through without one.
+ * A new owner other than the person making the change gains the client; the
+ * actor already sees it (company owner, or its current owner).
+ */
+export function contactVisibilityWidens(
+  before: { ownerUserId: string | null; isPrivate: boolean },
+  next: { ownerUserId?: string | null; isPrivate?: boolean },
+  actorId: string,
+): boolean {
+  if (before.isPrivate && next.isPrivate === false) return true;
+  return Boolean(next.ownerUserId) && next.ownerUserId !== before.ownerUserId && next.ownerUserId !== actorId;
+}
+
+/** Sharing a private invoice widens who sees it; making one private never does. */
+export function invoicePrivacyWidens(before: { isPrivate: boolean }, isPrivate: boolean): boolean {
+  return before.isPrivate && !isPrivate;
+}

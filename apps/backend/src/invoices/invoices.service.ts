@@ -65,7 +65,7 @@ import { appendNoteLine } from "../bank-reconciliation/payment-note";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
 import { lockBlocks } from "./invoice-lock";
-import { mayChangeInvoicePrivacy, visibilityError } from "../tenancy/visibility";
+import { invoicePrivacyWidens, mayChangeInvoicePrivacy, visibilityError } from "../tenancy/visibility";
 import { countIssuedDocument } from "../billing/plan-limits";
 import { countsAsDocument } from "../billing/usage";
 import { assertSealingAllowed, plainOrNull, printedTexts, textFilterVerdict } from "../vault/sealed";
@@ -908,7 +908,8 @@ export class InvoicesService {
     const invoice = await this.requireInvoice(db, id);
     if (!mayChangeInvoicePrivacy(user, invoice)) throw new ForbiddenException("visibility_owner_only");
     if (invoice.isPrivate === isPrivate) return { id, isPrivate };
-    const stepUp = assertStepUp(user);
+    // Sharing it needs a step-up; making it private only hides it.
+    const stepUp = invoicePrivacyWidens(invoice, isPrivate) ? assertStepUp(user) : null;
     try {
       await db.update(schema.invoices).set({ isPrivate }).where(eq(schema.invoices.id, id));
     } catch (error) {
@@ -916,7 +917,7 @@ export class InvoicesService {
     }
     await this.log(db, invoice, isPrivate ? "made_private" : "made_shared", [
       { field: "isPrivate", from: invoice.isPrivate, to: isPrivate },
-      stepUpChange(stepUp),
+      ...(stepUp ? [stepUpChange(stepUp)] : []),
     ]);
     return { id, isPrivate };
   }
