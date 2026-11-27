@@ -4,6 +4,7 @@ import { ConfidentialText } from '@/components/vault/confidential-text';
 import { ConfidentialJoin } from '@/components/vault/confidential-join';
 import { SealedItemAmount, SealedTotal, SealedTotalsBlock, SealedCustomField } from '@/components/vault/sealed-amounts';
 import { SealButton } from '@/components/vault/seal-button';
+import { SealedPaymentsPanel } from '@/components/vault/sealed-payments-panel';
 import { ServerViewPanel } from '@/components/vault/server-view-panel';
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
@@ -159,6 +160,13 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   // Category "amounts": the server sent placeholders; every number below is opened in the browser.
   const amountsSealed = Boolean(detail.amountsSealed);
   const encAmounts = invoice.encAmounts ?? null;
+  // Only the card opt-in of a sealed document needs to know whether cards are on.
+  const cardsEnabled =
+    amountsSealed && invoice.status === 'issued'
+      ? await apiFetch<{ enabled: boolean; connected: boolean }>('/api/v1/tenants/me/card-payments')
+          .then((s) => s.enabled && s.connected)
+          .catch(() => false)
+      : false;
   const confidential =
     amountsSealed || [invoice.noteAbove, invoice.noteBelow, invoice.buyerContactPerson, ...buyerTexts, ...items.map((item) => item.description)].some(isSealed);
   // The browser opens these to put the document key into the client link (components/vault/client-link.tsx).
@@ -333,6 +341,17 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           sealedDoc={sealedDoc}
           amountsSealed={amountsSealed}
         />
+        {amountsSealed && encAmounts && invoice.documentType !== 'credit_note' && (
+          <SealedPaymentsPanel
+            invoiceId={invoice.id}
+            encAmounts={encAmounts}
+            currency={invoice.currency}
+            status={invoice.status}
+            cardAmount={invoice.cardAmount != null ? Number(invoice.cardAmount) : null}
+            cardsEnabled={cardsEnabled}
+            canEdit={canEdit}
+          />
+        )}
         {/* "Zašifrovat": only while some text of this document is still plain. */}
         {hasPlainText && <SealButton scope={{ kind: 'invoice', invoiceId: invoice.id }} compact className="mt-2" />}
         {invoice.invoiceNumber && detail.links?.public && (

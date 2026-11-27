@@ -14474,10 +14474,10 @@
         "title": "Összegek",
         "description": "Mennyiségek, egységárak, ÁFA-kulcsok, kedvezmények és a bizonylatok végösszegei. A bizonylatszám, a változó szimbólum (VS), a határidő, a pénznem és az állapot olvasható marad.",
         "loses": [
-          "Automatikus fizetéspárosítás összeg alapján: egy titkosított bizonylat VS-ével érkező fizetés az Ön kézi megerősítésére vár",
-          "Részfizetések: titkosított bizonylatot csak teljesen kifizetettként lehet jelölni, díjak és jóváírt összeg nélkül",
+          "Automatikus párosítás a szerveren: a széf feloldása után a böngészője javasol párokat, Ön pedig megerősíti őket",
+          "A befizetéseket csak a böngészője számolja: titkosított bizonylatnál a szerver csak a befizetés dátumát és az állapotot ismeri, az összeget és a díjat nem",
           "Könyvelői exportok, bevallások és ÁFA-kimutatások a szerverről: a titkosított összegű bizonylatokat elutasítják és felsorolják",
-          "Küldés Peppolon, MI-javaslatok összegekkel és kártyás fizetés",
+          "Küldés Peppolon és összegeket tartalmazó MI-javaslatok. Kártyás fizetés csak annál a bizonylatnál, ahol kifejezetten engedélyezi – a fizetendő összeg ekkor olvashatóan kerül a Billantához és a Stripe-hoz",
           "Az irányítópult, a nettó jövedelem és a kimutatások csak a nem titkosított bizonylatokat számolják, és jelzik, hányat hagytak ki",
           "A felszólítások, a heti összefoglaló és a lejárt összegek az e-mailekben nem tartalmaznak összeget"
         ],
@@ -14754,23 +14754,64 @@
       "what": "A böngésző betölti azokat a bizonylatokat, amelyek összegei olvashatók a szerveren, titkosítja a mennyiségeket, árakat, ÁFA-kulcsokat, kedvezményeket és végösszegeket, majd visszamenti őket. A szerveren a helyükön nullák maradnak.",
       "keeps": "A bizonylatszám, a VS, a határidő, a pénznem és az állapot olvasható marad, így a fizetéseket VS alapján továbbra is megtalálja.",
       "loses": "A szerver ezután ezekhez a bizonylatokhoz nem készít PDF-et, ISDOC-ot vagy könyvelői exportot, és nem számolja őket a kimutatásokban. A kifizetett bizonylat kifizetett marad.",
-      "resumable": "A zárolt és részben kifizetett bizonylatok kimaradnak. Ha bezárja az ablakot, legközelebb ott folytatódik, ahol abbahagyta.",
+      "resumable": "A zárolt bizonylatok kimaradnak. Ami már ki volt fizetve, a bizonylat egy befizetéseként titkosítódik. Ha bezárja az ablakot, legközelebb onnan folytatódik, ahol abbahagyta.",
       "cancel": "Vissza",
       "confirm": "Titkosítás",
       "progress": "Titkosítás… {n}",
       "done": "{n, plural, one {# bizonylat összegei titkosítva} other {# bizonylat összegei titkosítva}}.",
       "nothing": "Nem volt mit titkosítani.",
-      "failed": "A titkosítás nem sikerült. A már titkosított bizonylatok titkosítva maradnak.",
-      "partlyPaid": "{n, plural, one {# részben kifizetett bizonylat olvasható maradt} other {# részben kifizetett bizonylat olvasható maradt}}. Teljes kifizetés után titkosíthatók."
+      "failed": "A titkosítás nem sikerült. A már titkosított bizonylatok titkosítva maradnak."
     },
     "amounts": {
-      "paidSealed": "A bizonylat összegei titkosítva vannak, ezért csak a teljes összeg kifizetése rögzíthető. Díjakat és jóváírt összeget a szerver nem tárol.",
+      "paidSealed": "A bizonylat összegei titkosítva vannak, itt a teljes összeg befizetése rögzíthető. Részfizetést vagy díjat a bizonylat oldalán a Befizetések résznél adhat hozzá.",
       "leftOut": "{count, plural, one {# titkosított összegű bizonylat} other {# titkosított összegű bizonylat}} nélkül – oldja fel a széfet",
       "exportLocked": "A titkosított összegű bizonylatok csak a széf feloldása után kerülhetnek a fájlba.",
       "exportUnreadable": "A fájl nem készült el: {count, plural, one {# bizonylat} other {# bizonylat}} nem nyitható meg ezzel a kulccsal. Egy hiányzó bizonylat meghamisítaná a fájlt.",
       "creditNoteLocked": "A titkosított összegű számla jóváírása a széf feloldása után készül el.",
       "creditNoteUnreadable": "A számla összegei nem nyithatók meg ezzel a kulccsal, ezért jóváírás nem készült.",
-      "bulkSealed": "Ennek a sablonnak titkosított összegei vannak. Tömeges számlázásra nem, csak egyedi számlához használható."
+      "bulkSealed": "A sablon összegei titkosítva vannak. Oldja fel a széfet, és minden piszkozat saját kulccsal lesz titkosítva.",
+      "bulkSealedDrafts": "Titkosított összegű sablonból csak piszkozatok készülnek. Utána egyenként állítsa ki őket."
+    },
+    "payments": {
+      "title": "Befizetések",
+      "locked": "A befizetések összegei titkosítva vannak. A széf feloldása után láthatók.",
+      "otherKey": "Egy befizetést nem lehet ezzel a kulccsal megnyitni, ezért a hátralékot nem mutatjuk.",
+      "unlock": "Feloldás",
+      "paid": "Befizetve {amount}",
+      "remaining": "hátra van {amount} / {total}",
+      "feeShort": "díj {amount}",
+      "carried": "korábbi befizetésből",
+      "fromBank": "a bankból",
+      "delete": "Befizetés törlése",
+      "confirmDelete": "Törli ezt a befizetést? A többi befizetés alapján a bizonylat újra kifizetetlen vagy részben kifizetett lesz.",
+      "amount": "Összeg",
+      "fee": "Díj",
+      "date": "Befizetés dátuma",
+      "add": "Befizetés hozzáadása",
+      "invalid": "Adjon meg pozitív összeget és legalább nulla díjat.",
+      "failed": "A befizetést nem sikerült menteni. Próbálja újra.",
+      "added": "A befizetés mentve, a maradék még fizetendő.",
+      "paidInFull": "A bizonylat teljesen ki van fizetve.",
+      "card": {
+        "label": "Kártyás fizetés engedélyezése",
+        "hint": "Az ügyfél ekkor a linken kártyával fizethet {amount} összeget. Ez az egy összeg titkosítás nélkül tárolódik, a Billanta és a Stripe látni fogja.",
+        "on": "A kártyás fizetés be van kapcsolva {amount} összegre. Ez az összeg titkosítás nélkül van tárolva, a Billanta és a Stripe látja. A következő befizetés kikapcsolja."
+      }
+    },
+    "bankMatch": {
+      "title": "Párosítási javaslatok titkosított bizonylatokhoz",
+      "hint": "A böngészője összevetette a párosítatlan befizetéseket a megnyitott összegekkel. A szerver nem ismeri az összegeket, ezért semmi sem párosul az Ön megerősítése nélkül.",
+      "locked": "Néhány bizonylat összegei titkosítva vannak. A széf feloldása után javasoljuk, melyik befizetés tartozik hozzájuk.",
+      "unlock": "Feloldás",
+      "confirm": "Párosítás",
+      "failed": "A befizetést nem sikerült párosítani. Próbálja újra.",
+      "matched": "A befizetés párosítva a(z) {number} bizonylattal.",
+      "ambiguous": "egy másik bizonylat is illik, ellenőrizze",
+      "reason": {
+        "vs_amount": "a közlemény és az összeg egyezik",
+        "vs_partial": "a közlemény egyezik, részfizetés",
+        "amount_date": "az összeg és a dátum egyezik, közlemény nélkül"
+      }
     }
   },
   "vaultPublic": {

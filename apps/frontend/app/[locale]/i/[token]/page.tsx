@@ -229,7 +229,8 @@ export default async function PublicInvoicePage({
   // Overdue only while something is still owed; a credit note never is.
   const overdue =
     invoice.status === "issued" && showPayment && Boolean(invoice.dueDate) && (invoice.dueDate ?? "") < new Date().toISOString().slice(0, 10);
-  const partlyPaid = invoice.status === "issued" && (invoice.amountPaid ?? 0) > 0;
+  // Sealed payments say only that something was paid; the sum opens in the browser.
+  const partlyPaid = invoice.status === "issued" && ((invoice.amountPaid ?? 0) > 0 || (invoice.sealedPayments ?? []).length > 0);
   // A paid document says what was paid and that nothing is left, like the PDF.
   const showPaidLines = !invoice.quote && (partlyPaid || paid) && total > 0;
   const paidShown = paid ? total : (invoice.amountPaid ?? 0);
@@ -286,6 +287,7 @@ export default async function PublicInvoicePage({
               variableSymbol: invoice.variableSymbol ?? undefined,
               dueDate: invoice.dueDate?.slice(0, 10),
               message: invoice.invoiceNumber ?? undefined,
+              invoice: invoice.qrInvoicePlan ?? undefined,
             },
           }
       : null;
@@ -298,9 +300,15 @@ export default async function PublicInvoicePage({
     ...invoice.lineItems.map((item) => (item.confidential && item.sealed ? item.sealed : null)),
     ...sealedBuyer,
     ...(amountsSealed ? invoice.lineItems.map((item) => item.sealedAmounts ?? null) : []),
+    ...(amountsSealed ? (invoice.sealedPayments ?? []) : []),
   ];
   const amountSlots = amountsSealed
-    ? { offset: invoice.lineItems.length + sealedBuyer.length, count: invoice.lineItems.length, reverseCharge: Boolean(invoice.reverseCharge) }
+    ? {
+        offset: invoice.lineItems.length + sealedBuyer.length,
+        count: invoice.lineItems.length,
+        reverseCharge: Boolean(invoice.reverseCharge),
+        payments: (invoice.sealedPayments ?? []).length,
+      }
     : null;
   const sealed = invoice.lineItems.some((item) => item.confidential) || sealedBuyer.length > 0 || amountsSealed;
   const sealedKeyIds = [...new Set(sealedItems.flatMap((item) => (item?.keyId ? [item.keyId] : [])))];
@@ -415,7 +423,11 @@ export default async function PublicInvoicePage({
           <section className="mt-6">
             <h2 className="text-base font-bold">{t("paymentTitle")}</h2>
             {invoice.cardPayment && !invoice.demo && (
-              <CardPayButton token={token} disabled={Boolean(preview)} amountLabel={currencyFormatter.format(amountToPay)} />
+              <CardPayButton
+                token={token}
+                disabled={Boolean(preview)}
+                amountLabel={currencyFormatter.format(amountsSealed ? (invoice.cardAmount ?? 0) : amountToPay)}
+              />
             )}
             {invoice.paymentMethodLabel && !isTransfer && (
               <p className="mt-2 text-sm">

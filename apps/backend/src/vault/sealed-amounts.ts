@@ -73,16 +73,28 @@ export async function assertAmountsWrite(
   await assertAmountsCategory(db, tenantId);
 }
 
+type PaidColumns = { status: string; amountPaid: string | number | null; paymentFees?: string | number | null; receivedCzk?: string | number | null };
+
 /**
- * What sealing does to the plain paid sum. A paid document keeps its status
- * and drops the number (it equals the total). A partly paid one is refused:
- * the server could no longer tell how much is left, and the browser keeps no
- * encrypted record of payments yet.
+ * What sealing does to the plain payment columns. The paid sum, the fees and
+ * what arrived in the home currency all go: any of them gives the total
+ * away. `carried` is the browser's envelope of those numbers (one payment
+ * under the document key, vault-payments.ts), stored as a payment without a
+ * date. A paid document keeps its status and may drop the numbers without
+ * one; a partly paid one needs it, or the server could no longer tell that
+ * something was paid (409 amounts_partly_paid).
  */
-export function amountPaidOnSeal(stored: { status: string; amountPaid: string | number | null }): "0" | null {
-  if (Number(stored.amountPaid ?? 0) === 0) return null;
-  if (stored.status === "paid") return "0";
-  throw new ConflictException("amounts_partly_paid");
+export function paymentsOnSeal(
+  stored: PaidColumns,
+  carried: string | null | undefined,
+): { set: { amountPaid?: "0"; paymentFees?: "0"; receivedCzk?: null; sealedPaymentState?: "partly_paid" }; carry: string | null } {
+  const paid = Number(stored.amountPaid ?? 0) !== 0;
+  if (!paid && Number(stored.paymentFees ?? 0) === 0 && stored.receivedCzk == null) return { set: {}, carry: null };
+  const zeroed = { amountPaid: "0" as const, paymentFees: "0" as const, receivedCzk: null };
+  if (carried != null && !isSealed(carried)) throw new BadRequestException(AMOUNTS_PLAINTEXT);
+  if (stored.status === "paid" || !paid) return { set: zeroed, carry: carried ?? null };
+  if (!carried) throw new ConflictException("amounts_partly_paid");
+  return { set: { ...zeroed, sealedPaymentState: "partly_paid" }, carry: carried };
 }
 
 /** 403 vault_category_off unless the company encrypts amounts. */

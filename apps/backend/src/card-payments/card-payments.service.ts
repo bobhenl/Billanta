@@ -257,7 +257,10 @@ export class CardPaymentsService {
       .returning();
     if (!claimed) return "paid";
     try {
-      await this.invoices.markPaid(db, row.invoiceId, new Date(), amount, fee ? { fee } : {});
+      const [invoice] = await db.select({ encAmounts: schema.invoices.encAmounts }).from(schema.invoices).where(eq(schema.invoices.id, row.invoiceId));
+      // Sealed amounts: the card amount was the whole rest due, so the document is paid; no sum or fee goes into it in plain.
+      if (amountsSealed(invoice)) await this.invoices.markPaid(db, row.invoiceId, new Date());
+      else await this.invoices.markPaid(db, row.invoiceId, new Date(), amount, fee ? { fee } : {});
     } catch (err) {
       // Marked paid by hand meanwhile: the card payment stays on record.
       this.logger.warn(`card payment ${row.id}: invoice not updated (${(err as Error).message})`);
@@ -268,13 +271,16 @@ export class CardPaymentsService {
   private async amountDue(db: TenantDb, invoiceId: string): Promise<{ amount: number; currency: string; label: string } | null> {
     const [invoice] = await db.select().from(schema.invoices).where(eq(schema.invoices.id, invoiceId));
     if (!invoice || invoice.status !== "issued" || invoice.documentType === "quote" || invoice.documentType === "credit_note") return null;
-    // Sealed amounts: the server can't know what to charge (the sum here would be 0 anyway).
-    if (amountsSealed(invoice)) return null;
+    // Sealed amounts: the server can't know what to charge, unless the user revealed the rest
+    // due for this one document ("Povolit platbu kartou", InvoicesService.setCardAmount).
+    if (amountsSealed(invoice)) {
+      const amount = invoice.cardAmount == null ? 0 : Number(invoice.cardAmount);
+      return amount > 0 ? { amount, currency: invoice.currency, label: cardLabel(invoice) } : null;
+    }
     const items = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, invoiceId));
     const rest = round2(round2(computeInvoiceTotal(items, { reverseCharge: invoice.reverseCharge })) - Number(invoice.amountPaid));
     if (rest <= 0) return null;
-    const label = invoice.invoiceNumber ? `${invoice.documentType === "proforma" ? "Záloha" : "Faktura"} ${invoice.invoiceNumber}` : "Faktura";
-    return { amount: rest, currency: invoice.currency, label };
+    return { amount: rest, currency: invoice.currency, label: cardLabel(invoice) };
   }
 
   private async target(link: string): Promise<Target | null> {
@@ -290,6 +296,10 @@ export class CardPaymentsService {
       return fn(drizzleTx(tx, schema));
     }) as Promise<T>;
   }
+}
+
+function cardLabel(invoice: { invoiceNumber: string | null; documentType: string }): string {
+  return invoice.invoiceNumber ? `${invoice.documentType === "proforma" ? "Záloha" : "Faktura"} ${invoice.invoiceNumber}` : "Faktura";
 }
 
 /**

@@ -118,6 +118,9 @@ export class CreateInvoiceDto extends createZodDto(createInvoiceSchema) {}
  */
 export const updateInvoiceSchema = invoiceFieldsSchema.partial().extend({
   edit_reason: z.string().trim().max(1000).nullish(),
+  // Sealing the amounts of a document that was paid: its plain paid sum,
+  // fees and home-currency proceeds as one payment envelope (vault-payments.ts).
+  enc_paid: sealedEnvelope(4000).optional(),
 });
 
 export class UpdateInvoiceDto extends createZodDto(updateInvoiceSchema) {}

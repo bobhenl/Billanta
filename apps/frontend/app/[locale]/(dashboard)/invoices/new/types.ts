@@ -133,6 +133,8 @@ export interface InvoiceDraftInput {
   items: FormItem[];
   /** Category "amounts": the sealed totals, set on save together with the items' envelopes. */
   encAmounts?: string | null;
+  /** Sealing a partly paid document: what was received, as one sealed payment. */
+  encPaid?: string;
   prefilledByAi: boolean;
   templateId?: string | null;
 }

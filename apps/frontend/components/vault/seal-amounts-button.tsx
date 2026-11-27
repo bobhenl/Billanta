@@ -28,8 +28,8 @@ async function keyFor(key: VaultKey, doc: PlainAmountsDocument) {
  * "Zašifrovat částky": encrypts the amounts of documents stored before
  * "Částky" was on. Batch by batch, so closing the tab halfway loses
  * nothing and a second run continues. The server writes a document only
- * while its amounts are still plain and it is not locked, and leaves out
- * partly paid ones (it would have to keep the paid sum in plain text).
+ * while its amounts are still plain and it is not locked. What was paid
+ * goes along as one sealed payment of the document.
  */
 export function SealAmountsButton() {
   const t = useTranslations('vault.sealAmounts');
@@ -46,13 +46,11 @@ export function SealAmountsButton() {
     setBusy(true);
     setDone(0);
     let total = 0;
-    let partlyPaid = 0;
     try {
       // Each round asks for what is still plain; a round that seals nothing ends the loop.
       for (;;) {
         const batch = await fetchPlainAmounts();
         if (!batch.ok) throw new Error(batch.error);
-        partlyPaid = batch.value.skippedPartlyPaid;
         if (!batch.value.invoices.length) break;
         const sealed = await Promise.all(batch.value.invoices.map(async (doc) => sealPlainAmounts(await keyFor(key, doc), doc)));
         const stored = await storeSealedAmounts(sealed);
@@ -62,7 +60,6 @@ export function SealAmountsButton() {
         if (stored.value.sealed === 0) break;
       }
       toast({ text: total ? t('done', { n: total }) : t('nothing'), tone: 'ok' });
-      if (partlyPaid) toast({ text: t('partlyPaid', { n: partlyPaid }), tone: 'info' });
       setConfirm(false);
       router.refresh();
     } catch {

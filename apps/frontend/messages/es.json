@@ -14474,10 +14474,10 @@
         "title": "Importes",
         "description": "Cantidades, precios unitarios, tipos de IVA, descuentos y totales de los documentos. El número del documento, el símbolo variable (VS), el vencimiento, la moneda y el estado siguen siendo legibles.",
         "loses": [
-          "Conciliación automática de pagos por importe: un pago con el VS de un documento cifrado espera tu confirmación manual",
-          "Pagos parciales: un documento cifrado solo puede marcarse como pagado en su totalidad, sin comisiones ni importe abonado",
+          "La conciliación automática en el servidor: tras desbloquear, su navegador sugiere conciliaciones y usted las confirma",
+          "Los pagos solo los calcula su navegador: en un documento cifrado el servidor solo conoce la fecha del pago y el estado, no el importe ni la comisión",
           "Exportaciones para el contable, declaraciones e informes de IVA del servidor: rechazan los documentos con importes cifrados y los enumeran",
-          "Envío por Peppol, sugerencias de IA con importes y pago con tarjeta",
+          "El envío por Peppol y las sugerencias de IA con importes. El pago con tarjeta solo en el documento donde lo permita expresamente – el importe a pagar llega entonces legible a Billanta y Stripe",
           "El panel, los ingresos netos y los informes solo cuentan documentos sin cifrar e indican cuántos han dejado fuera",
           "Los recordatorios, el resumen semanal y los totales vencidos en los correos no incluyen el importe"
         ],
@@ -14754,23 +14754,64 @@
       "what": "El navegador carga los documentos cuyos importes son legibles en el servidor, cifra cantidades, precios, tipos de IVA, descuentos y totales y los vuelve a guardar. En el servidor quedan ceros en su lugar.",
       "keeps": "El número del documento, el VS, el vencimiento, la moneda y el estado siguen legibles, así que seguirás encontrando los pagos por VS.",
       "loses": "El servidor ya no creará PDF, ISDOC ni exportaciones contables de estos documentos y no los contará en los informes. Un documento pagado sigue pagado.",
-      "resumable": "Los documentos bloqueados y los pagados parcialmente se omiten. Si cierras la ventana, la próxima vez se continúa donde lo dejaste.",
+      "resumable": "Los documentos bloqueados se omiten. Lo que ya se pagó se cifra como un solo pago del documento. Si cierra la ventana, la próxima vez se continúa donde lo dejó.",
       "cancel": "Volver",
       "confirm": "Cifrar",
       "progress": "Cifrando… {n}",
       "done": "{n, plural, one {Importes de # documento cifrados} other {Importes de # documentos cifrados}}.",
       "nothing": "No había nada que cifrar.",
-      "failed": "El cifrado ha fallado. Los documentos ya cifrados siguen cifrados.",
-      "partlyPaid": "{n, plural, one {# documento pagado parcialmente sigue legible} other {# documentos pagados parcialmente siguen legibles}}. Se podrán cifrar cuando estén pagados del todo."
+      "failed": "El cifrado ha fallado. Los documentos ya cifrados siguen cifrados."
     },
     "amounts": {
-      "paidSealed": "Los importes del documento están cifrados, por eso solo se puede registrar el pago completo. El servidor no guarda comisiones ni el importe abonado.",
+      "paidSealed": "Los importes del documento están cifrados, aquí se registra el pago del importe total. Añada un pago parcial o una comisión en Pagos, en la página del documento.",
       "leftOut": "Sin {count, plural, one {# documento} other {# documentos}} con importes cifrados – desbloquee la caja fuerte",
       "exportLocked": "Los documentos con importes cifrados solo entran en el archivo tras desbloquear la caja fuerte.",
       "exportUnreadable": "No se creó el archivo: {count, plural, one {# documento no se puede abrir} other {# documentos no se pueden abrir}} con esta clave. Un documento que falte haría el archivo incorrecto.",
       "creditNoteLocked": "La factura rectificativa de una factura con importes cifrados se prepara tras desbloquear la caja fuerte.",
       "creditNoteUnreadable": "Los importes de la factura no se pueden abrir con esta clave, así que no se creó la rectificativa.",
-      "bulkSealed": "Esta plantilla tiene importes cifrados. No sirve para facturación masiva, solo para una factura individual."
+      "bulkSealed": "Los importes de la plantilla están cifrados. Desbloquee la caja fuerte y cada borrador se cifrará con su propia clave.",
+      "bulkSealedDrafts": "Una plantilla con importes cifrados solo crea borradores. Emítalos luego uno a uno."
+    },
+    "payments": {
+      "title": "Pagos",
+      "locked": "Los importes de los pagos están cifrados. Desbloquee la caja fuerte para verlos.",
+      "otherKey": "Un pago no se puede abrir con esta clave, así que no mostramos lo que queda por pagar.",
+      "unlock": "Desbloquear",
+      "paid": "Pagado {amount}",
+      "remaining": "quedan {amount} de {total}",
+      "feeShort": "comisión {amount}",
+      "carried": "de un pago anterior",
+      "fromBank": "del banco",
+      "delete": "Eliminar pago",
+      "confirmDelete": "¿Eliminar este pago? Según los pagos restantes, el documento vuelve a impagado o pagado en parte.",
+      "amount": "Importe",
+      "fee": "Comisión",
+      "date": "Fecha del pago",
+      "add": "Añadir pago",
+      "invalid": "Indique un importe positivo y una comisión de cero o más.",
+      "failed": "No se pudo guardar el pago. Inténtelo de nuevo.",
+      "added": "Pago guardado, el resto sigue pendiente.",
+      "paidInFull": "El documento está pagado por completo.",
+      "card": {
+        "label": "Permitir pago con tarjeta",
+        "hint": "El cliente podrá pagar {amount} con tarjeta desde el enlace. Este único importe se guarda sin cifrar y lo verán Billanta y Stripe.",
+        "on": "El pago con tarjeta está activado por {amount}. Este importe está guardado sin cifrar y lo ven Billanta y Stripe. El siguiente pago lo desactiva."
+      }
+    },
+    "bankMatch": {
+      "title": "Conciliaciones sugeridas para documentos cifrados",
+      "hint": "Su navegador comparó los pagos sin conciliar con los importes abiertos. El servidor no conoce los importes, así que no se concilia nada sin su confirmación.",
+      "locked": "Algunos documentos tienen importes cifrados. Tras desbloquear la caja fuerte, le sugeriremos a qué pagos corresponden.",
+      "unlock": "Desbloquear",
+      "confirm": "Conciliar",
+      "failed": "No se pudo conciliar el pago. Inténtelo de nuevo.",
+      "matched": "El pago está conciliado con el documento {number}.",
+      "ambiguous": "otro documento también encaja, revíselo",
+      "reason": {
+        "vs_amount": "referencia e importe coinciden",
+        "vs_partial": "la referencia coincide, pago parcial",
+        "amount_date": "importe y fecha coinciden, sin referencia"
+      }
     }
   },
   "vaultPublic": {

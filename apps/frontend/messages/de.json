@@ -14475,10 +14475,10 @@
         "title": "Beträge",
         "description": "Mengen, Einzelpreise, MwSt.-Sätze, Rabatte und Belegsummen. Belegnummer, Verwendungszweck (VS), Fälligkeit, Währung und Status bleiben lesbar.",
         "loses": [
-          "Automatische Zahlungszuordnung nach Betrag: Eine Zahlung mit dem VS eines verschlüsselten Belegs wartet auf Ihre manuelle Bestätigung",
-          "Teilzahlungen: Ein verschlüsselter Beleg kann nur als vollständig bezahlt markiert werden, ohne Gebühren und gutgeschriebenen Betrag",
+          "Automatische Zahlungszuordnung auf dem Server: nach dem Entsperren schlägt Ihr Browser Zuordnungen vor und Sie bestätigen sie",
+          "Zahlungen rechnet nur Ihr Browser: bei einem verschlüsselten Beleg kennt der Server nur Zahlungsdatum und Status, nicht Betrag oder Gebühr",
           "Exporte für die Buchhaltung, Steuererklärungen und MwSt.-Übersichten vom Server: Belege mit verschlüsselten Beträgen werden abgelehnt und aufgelistet",
-          "Versand über Peppol, KI-Vorschläge mit Beträgen und Kartenzahlung",
+          "Versand über Peppol und KI-Vorschläge mit Beträgen. Kartenzahlung nur bei einem Beleg, bei dem Sie sie ausdrücklich erlauben – der zu zahlende Betrag geht dann lesbar an Billanta und Stripe",
           "Dashboard, Nettoeinkommen und Berichte zählen nur unverschlüsselte Belege und zeigen, wie viele ausgelassen wurden",
           "Mahnungen, die Wochenübersicht und überfällige Summen in E-Mails nennen keinen Betrag"
         ],
@@ -14755,23 +14755,64 @@
       "what": "Der Browser lädt die Belege, deren Beträge auf dem Server lesbar sind, verschlüsselt Mengen, Preise, MwSt.-Sätze, Rabatte und Summen und speichert sie zurück. Auf dem Server bleiben an ihrer Stelle Nullen.",
       "keeps": "Belegnummer, VS, Fälligkeit, Währung und Status bleiben lesbar, Zahlungen finden Sie also weiterhin über den VS.",
       "loses": "Der Server erstellt für diese Belege dann weder PDF noch ISDOC noch Buchhaltungsexporte und zählt sie nicht in Berichten. Ein bezahlter Beleg bleibt bezahlt.",
-      "resumable": "Gesperrte und teilweise bezahlte Belege werden übersprungen. Wenn Sie das Fenster schließen, geht es beim nächsten Mal dort weiter, wo Sie aufgehört haben.",
+      "resumable": "Gesperrte Belege werden übersprungen. Was schon bezahlt wurde, wird als eine Zahlung des Belegs verschlüsselt. Wenn Sie das Fenster schließen, geht es beim nächsten Mal dort weiter.",
       "cancel": "Zurück",
       "confirm": "Verschlüsseln",
       "progress": "Verschlüssele… {n}",
       "done": "{n, plural, one {Beträge von # Beleg verschlüsselt} other {Beträge von # Belegen verschlüsselt}}.",
       "nothing": "Es gab nichts zu verschlüsseln.",
-      "failed": "Die Verschlüsselung ist fehlgeschlagen. Bereits verschlüsselte Belege bleiben verschlüsselt.",
-      "partlyPaid": "{n, plural, one {# teilweise bezahlter Beleg blieb lesbar} other {# teilweise bezahlte Belege blieben lesbar}}. Sie lassen sich nach vollständiger Zahlung verschlüsseln."
+      "failed": "Die Verschlüsselung ist fehlgeschlagen. Bereits verschlüsselte Belege bleiben verschlüsselt."
     },
     "amounts": {
-      "paidSealed": "Die Beträge des Belegs sind verschlüsselt, daher kann nur eine vollständige Zahlung erfasst werden. Gebühren und gutgeschriebenen Betrag speichert der Server nicht.",
+      "paidSealed": "Die Beträge des Belegs sind verschlüsselt, hier wird eine Zahlung des vollen Betrags erfasst. Eine Teilzahlung oder Gebühr fügen Sie unter Zahlungen auf der Belegseite hinzu.",
       "leftOut": "Ohne {count, plural, one {# Beleg} other {# Belege}} mit verschlüsselten Beträgen – Tresor entsperren",
       "exportLocked": "Belege mit verschlüsselten Beträgen kommen erst nach dem Entsperren des Tresors in die Datei.",
       "exportUnreadable": "Keine Datei erstellt: {count, plural, one {# Beleg lässt} other {# Belege lassen}} sich mit diesem Schlüssel nicht öffnen. Ein fehlender Beleg würde die Datei verfälschen.",
       "creditNoteLocked": "Eine Gutschrift zu einer Rechnung mit verschlüsselten Beträgen wird erst nach dem Entsperren des Tresors erstellt.",
       "creditNoteUnreadable": "Die Beträge der Rechnung lassen sich mit diesem Schlüssel nicht öffnen, daher wurde keine Gutschrift erstellt.",
-      "bulkSealed": "Diese Vorlage hat verschlüsselte Beträge. Sie eignet sich nicht für Sammelrechnungen, nur für eine einzelne Rechnung."
+      "bulkSealed": "Die Beträge der Vorlage sind verschlüsselt. Entsperren Sie den Tresor, dann wird jeder Entwurf mit einem eigenen Schlüssel verschlüsselt.",
+      "bulkSealedDrafts": "Aus einer Vorlage mit verschlüsselten Beträgen entstehen nur Entwürfe. Stellen Sie sie danach einzeln aus."
+    },
+    "payments": {
+      "title": "Zahlungen",
+      "locked": "Die Zahlungsbeträge sind verschlüsselt. Entsperren Sie den Tresor, um sie zu sehen.",
+      "otherKey": "Eine Zahlung lässt sich mit diesem Schlüssel nicht öffnen, daher zeigen wir den Restbetrag nicht.",
+      "unlock": "Entsperren",
+      "paid": "Bezahlt {amount}",
+      "remaining": "noch {amount} von {total}",
+      "feeShort": "Gebühr {amount}",
+      "carried": "aus einer früheren Zahlung",
+      "fromBank": "von der Bank",
+      "delete": "Zahlung löschen",
+      "confirmDelete": "Diese Zahlung löschen? Je nach den übrigen Zahlungen gilt der Beleg dann wieder als unbezahlt oder teilweise bezahlt.",
+      "amount": "Betrag",
+      "fee": "Gebühr",
+      "date": "Zahlungsdatum",
+      "add": "Zahlung hinzufügen",
+      "invalid": "Geben Sie einen positiven Betrag und eine Gebühr von mindestens 0 ein.",
+      "failed": "Die Zahlung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+      "added": "Zahlung gespeichert, der Rest bleibt offen.",
+      "paidInFull": "Der Beleg ist vollständig bezahlt.",
+      "card": {
+        "label": "Kartenzahlung erlauben",
+        "hint": "Der Kunde kann dann über den Link {amount} per Karte zahlen. Dieser eine Betrag wird unverschlüsselt gespeichert, Billanta und Stripe sehen ihn.",
+        "on": "Kartenzahlung ist für {amount} aktiv. Dieser Betrag ist unverschlüsselt gespeichert, Billanta und Stripe sehen ihn. Die nächste Zahlung schaltet sie ab."
+      }
+    },
+    "bankMatch": {
+      "title": "Zuordnungsvorschläge für verschlüsselte Belege",
+      "hint": "Ihr Browser hat die nicht zugeordneten Zahlungen mit den geöffneten Beträgen verglichen. Der Server kennt die Beträge nicht, daher wird nichts ohne Ihre Bestätigung zugeordnet.",
+      "locked": "Einige Belege haben verschlüsselte Beträge. Nach dem Entsperren des Tresors schlagen wir vor, welche Zahlungen dazugehören.",
+      "unlock": "Entsperren",
+      "confirm": "Zuordnen",
+      "failed": "Die Zahlung konnte nicht zugeordnet werden. Bitte versuchen Sie es erneut.",
+      "matched": "Die Zahlung ist dem Beleg {number} zugeordnet.",
+      "ambiguous": "ein anderer Beleg passt auch, bitte prüfen",
+      "reason": {
+        "vs_amount": "Verwendungszweck und Betrag passen",
+        "vs_partial": "Verwendungszweck passt, Teilzahlung",
+        "amount_date": "Betrag und Datum passen, ohne Verwendungszweck"
+      }
     }
   },
   "vaultPublic": {

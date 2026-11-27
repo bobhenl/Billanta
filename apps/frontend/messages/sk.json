@@ -14383,10 +14383,10 @@
         "title": "Sumy",
         "description": "Množstvá, jednotkové ceny, sadzby DPH, zľavy a súčty dokladov. Číslo dokladu, variabilný symbol, splatnosť, mena a stav zostávajú čitateľné.",
         "loses": [
-          "Automatické párovanie platieb podľa sumy: platba s VS zašifrovaného dokladu počká na vaše ručné potvrdenie",
-          "Čiastočné úhrady: zašifrovaný doklad sa dá označiť len ako celý zaplatený, bez poplatkov a pripísanej sumy",
+          "Automatické párovanie platieb na serveri: po odomknutí trezoru navrhne páry váš prehliadač a vy ich potvrdíte",
+          "Úhrady počíta len váš prehliadač: server pri zašifrovanom doklade pozná len dátum úhrady a stav, nie sumu ani poplatok",
           "Exporty pre účtovníka, priznania a prehľady DPH zo servera: doklady so zašifrovanými sumami odmietnu a vypíšu ich",
-          "Odoslanie cez Peppol, AI návrhy so sumami a platba kartou",
+          "Odoslanie cez Peppol a AI návrhy so sumami. Platba kartou len pri doklade, kde ju výslovne povolíte – suma na zaplatenie potom pôjde čitateľne do Billanty a Stripe",
           "Dashboard, čistý príjem a prehľady počítajú len nezašifrované doklady a napíšu, koľko ich vynechali",
           "Upomienky, týždenný súhrn a súčty po splatnosti v e-mailoch sumu neuvedú"
         ],
@@ -14670,23 +14670,64 @@
       "what": "Prehliadač načíta doklady, ktorých sumy sú na serveri čitateľné, zašifruje množstvá, ceny, sadzby DPH, zľavy a súčty a uloží ich späť. Na serveri namiesto nich zostanú nuly.",
       "keeps": "Číslo dokladu, variabilný symbol, splatnosť, mena a stav zostanú čitateľné, takže platby podľa VS ďalej nájdete.",
       "loses": "Server potom pri týchto dokladoch nevytvorí PDF, ISDOC ani exporty pre účtovníka a nezapočíta ich do prehľadov. Zaplatený doklad zostane zaplatený.",
-      "resumable": "Zamknuté a čiastočne uhradené doklady sa preskočia. Keď okno zatvoríte, nabudúce sa pokračuje tam, kde ste skončili.",
+      "resumable": "Zamknuté doklady sa preskočia. Čo už bolo uhradené, sa zašifruje ako jedna úhrada dokladu. Keď okno zatvoríte, nabudúce sa pokračuje tam, kde ste skončili.",
       "cancel": "Späť",
       "confirm": "Zašifrovať",
       "progress": "Šifrujem… {n}",
       "done": "{n, plural, one {Zašifrované sumy # dokladu} few {Zašifrované sumy # dokladov} other {Zašifrované sumy # dokladov}}.",
       "nothing": "Nebolo čo šifrovať.",
-      "failed": "Šifrovanie sa nepodarilo. Už zašifrované doklady zostávajú zašifrované.",
-      "partlyPaid": "{n, plural, one {# čiastočne uhradený doklad zostal čitateľný} few {# čiastočne uhradené doklady zostali čitateľné} other {# čiastočne uhradených dokladov zostalo čitateľných}}. Zašifrovať sa dajú po úplnej úhrade."
+      "failed": "Šifrovanie sa nepodarilo. Už zašifrované doklady zostávajú zašifrované."
     },
     "amounts": {
-      "paidSealed": "Sumy dokladu sú zašifrované, preto sa dá zaznamenať len úhrada celej sumy. Poplatky ani pripísanú sumu server neukladá.",
+      "paidSealed": "Sumy dokladu sú zašifrované, tu sa zaznamená úhrada celej sumy. Čiastočnú úhradu alebo poplatok pridajte v časti Úhrady v detaile dokladu.",
       "leftOut": "Bez {count, plural, one {# dokladu} few {# dokladov} other {# dokladov}} so zašifrovanými sumami – odomknite trezor",
       "exportLocked": "Doklady so zašifrovanými sumami sa dajú pridať do súboru až po odomknutí trezora.",
       "exportUnreadable": "Súbor nevznikol: {count, plural, one {# doklad} few {# doklady} other {# dokladov}} sa nedá týmto kľúčom otvoriť. Chýbajúci doklad by súbor skreslil.",
       "creditNoteLocked": "Dobropis k faktúre so zašifrovanými sumami sa pripraví až po odomknutí trezora.",
       "creditNoteUnreadable": "Sumy faktúry sa nedajú týmto kľúčom otvoriť, dobropis preto nevznikol.",
-      "bulkSealed": "Šablóna má zašifrované sumy. Hromadne z nej faktúry nevystavíte, použite ju pre jednotlivú faktúru."
+      "bulkSealed": "Sumy šablóny sú zašifrované. Odomknite trezor, každý koncept sa potom zašifruje vlastným kľúčom.",
+      "bulkSealedDrafts": "Zo šablóny so zašifrovanými sumami vzniknú len koncepty. Vystavte ich potom jednotlivo."
+    },
+    "payments": {
+      "title": "Úhrady",
+      "locked": "Sumy úhrad sú zašifrované. Uvidíte ich po odomknutí trezoru.",
+      "otherKey": "Niektorú úhradu sa nedá týmto kľúčom otvoriť, preto zostávajúcu sumu neukážeme.",
+      "unlock": "Odomknúť",
+      "paid": "Uhradené {amount}",
+      "remaining": "zostáva {amount} z {total}",
+      "feeShort": "poplatok {amount}",
+      "carried": "zo staršej úhrady",
+      "fromBank": "z banky",
+      "delete": "Zmazať úhradu",
+      "confirmDelete": "Zmazať túto úhradu? Doklad sa podľa zvyšných úhrad vráti medzi neuhradené alebo čiastočne uhradené.",
+      "amount": "Suma",
+      "fee": "Poplatok",
+      "date": "Dátum úhrady",
+      "add": "Pridať úhradu",
+      "invalid": "Zadajte kladnú sumu a nezáporný poplatok.",
+      "failed": "Úhradu sa nepodarilo uložiť. Skúste to znova.",
+      "added": "Úhrada je uložená, zvyšok ostáva na zaplatenie.",
+      "paidInFull": "Doklad je celý zaplatený.",
+      "card": {
+        "label": "Povoliť platbu kartou",
+        "hint": "Klient potom v odkaze zaplatí kartou {amount}. Táto jedna suma sa uloží nezašifrovane a uvidí ju Billanta a Stripe.",
+        "on": "Platba kartou je zapnutá na {amount}. Táto suma je uložená nezašifrovane a vidí ju Billanta a Stripe. Ďalšia úhrada ju vypne."
+      }
+    },
+    "bankMatch": {
+      "title": "Návrhy párovania zašifrovaných dokladov",
+      "hint": "Prehliadač porovnal nespárované platby s otvorenými sumami. Server sumy nepozná, preto sa nič nespáruje bez vášho potvrdenia.",
+      "locked": "Niektoré doklady majú zašifrované sumy. Po odomknutí trezoru navrhneme, ku ktorým platbám patria.",
+      "unlock": "Odomknúť",
+      "confirm": "Spárovať",
+      "failed": "Platbu sa nepodarilo spárovať. Skúste to znova.",
+      "matched": "Platba je spárovaná s dokladom {number}.",
+      "ambiguous": "sedí aj iný doklad, skontrolujte ho",
+      "reason": {
+        "vs_amount": "VS aj suma sedia",
+        "vs_partial": "VS sedí, čiastočná úhrada",
+        "amount_date": "suma a dátum sedia, bez VS"
+      }
     }
   },
   "vaultPublic": {

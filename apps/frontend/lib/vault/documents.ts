@@ -13,7 +13,7 @@ import {
   type UblOptions,
   type VaultKey
 } from '@faktur/cz-compliance';
-import { sealedQrPng } from './amounts';
+import { openPaymentWith, sealedQrPng } from './amounts';
 
 /**
  * Důvěrný režim: the PDF and ISDOC of a sealed invoice are made here, in the
@@ -70,11 +70,14 @@ function pdfFonts(base = '/api/files/invoices/pdf-fonts') {
 /**
  * Category "amounts": the real numbers into the model, from the item
  * envelopes `openItem` opens (the vault key, or the client's link key).
+ * The payments open the same way; one that stays closed fails the whole
+ * PDF rather than print a rest due that is too high.
  */
 async function withAmounts(model: InvoicePdfModel, openItem: (cipher: string) => Promise<string>): Promise<InvoicePdfModel> {
   if (!model.sealedAmounts) return model;
   const items = await Promise.all(model.sealedAmounts.items.map(async (cipher) => decodeItemAmounts(await openItem(cipher))));
-  return (await fillSealedPdfAmounts(model, items, sealedQrPng)).model;
+  const payments = await Promise.all((model.sealedAmounts.payments ?? []).map((cipher) => openPaymentWith(openItem, cipher)));
+  return (await fillSealedPdfAmounts(model, items, sealedQrPng, payments)).model;
 }
 
 async function drawPdf(model: InvoicePdfModel, fontBase?: string): Promise<Uint8Array> {

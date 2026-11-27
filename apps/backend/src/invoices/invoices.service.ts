@@ -70,7 +70,15 @@ import { invoicePrivacyWidens, mayChangeInvoicePrivacy, visibilityError } from "
 import { countIssuedDocument } from "../billing/plan-limits";
 import { countsAsDocument } from "../billing/usage";
 import { assertSealingAllowed, plainOrNull, printedTexts, textFilterVerdict } from "../vault/sealed";
-import { AMOUNTS_PLAINTEXT, amountPaidOnSeal, amountsSealed, assertAmountsReadable, assertAmountsWrite, refuseSealedAmounts } from "../vault/sealed-amounts";
+import { AMOUNTS_PLAINTEXT, amountsSealed, assertAmountsReadable, assertAmountsWrite, paymentsOnSeal, refuseSealedAmounts } from "../vault/sealed-amounts";
+import {
+  assertCardAmount,
+  assertPaymentEnvelope,
+  assertSealedPayable,
+  assertVerdict,
+  sealedPaymentSet,
+  type SealedPaymentVerdict,
+} from "../vault/sealed-payments";
 
 // TODO: once packages/cz-compliance is ready, ARES-resolve
 // counterparty_ico / counterparty_name_raw into a real `contacts` row here
@@ -729,16 +737,21 @@ export class InvoicesService {
     ]);
 
     const values = invoiceFieldValues(dto);
+    let carriedPayment: string | null = null;
     // Category "amounts": the envelopes travel with the items, and the server
     // never sums a sealed document (vault/sealed-amounts.ts).
     if (dto.line_items) {
       await assertAmountsWrite(db, tenantId, { encAmounts: dto.enc_amounts ?? null, amountPaid: dto.amount_paid, items: lineItemValues(tenantId, id, dto.line_items) }, invoice);
       values.encAmounts = dto.enc_amounts ?? null;
       if (!amountsSealed(invoice) && amountsSealed(values)) {
-        const paid = amountPaidOnSeal(invoice);
-        if (paid !== null) values.amountPaid = paid;
+        const paid = paymentsOnSeal(invoice, dto.enc_paid);
+        Object.assign(values, paid.set);
+        carriedPayment = paid.carry;
+        if (carriedPayment) assertPaymentEnvelope({ ...invoice, encAmounts: values.encAmounts ?? null }, carriedPayment);
+      } else if (dto.enc_paid !== undefined) {
+        throw new BadRequestException(AMOUNTS_PLAINTEXT);
       }
-    } else if (dto.enc_amounts !== undefined || (amountsSealed(invoice) && Number(dto.amount_paid ?? 0) !== 0)) {
+    } else if (dto.enc_amounts !== undefined || dto.enc_paid !== undefined || (amountsSealed(invoice) && Number(dto.amount_paid ?? 0) !== 0)) {
       throw new BadRequestException(AMOUNTS_PLAINTEXT);
     }
     // Another customer picked without a contact person in the request: the
@@ -783,6 +796,10 @@ export class InvoicesService {
       .set({ ...values, updatedAt: new Date() })
       .where(eq(schema.invoices.id, id))
       .returning();
+    if (carriedPayment) {
+      // What was paid before sealing, as one undated payment (the plain columns never had a date per payment).
+      await db.insert(schema.invoiceSealedPayments).values({ tenantId, invoiceId: id, paidAt: null, encAmount: carriedPayment });
+    }
 
     if (changes.length > 0 || reason) await this.log(db, updated, issued ? "edited_issued" : "updated", changes, reason);
     return updated;
@@ -958,7 +975,7 @@ export class InvoicesService {
     if (amount != null || net.fee || net.receivedCzk) throw new ConflictException("amounts_sealed");
     const [updated] = await db
       .update(schema.invoices)
-      .set({ status: "paid", paidAt: paidAt ?? new Date(), updatedAt: new Date() })
+      .set({ status: "paid", paidAt: paidAt ?? new Date(), sealedPaymentState: null, cardAmount: null, updatedAt: new Date() })
       .where(and(eq(schema.invoices.id, invoice.id), eq(schema.invoices.status, "issued")))
       .returning();
     if (updated) {
@@ -966,6 +983,157 @@ export class InvoicesService {
       await this.log(db, updated, "marked_paid");
     }
     return updated;
+  }
+
+  /** The sealed payments of one document, oldest first; the browser opens the sums. */
+  async listSealedPayments(db: TenantDb, id: string) {
+    await this.requireInvoice(db, id);
+    const p = schema.invoiceSealedPayments;
+    return db
+      .select({
+        id: p.id,
+        paidAt: p.paidAt,
+        variableSymbol: p.variableSymbol,
+        bankTransactionId: p.bankTransactionId,
+        encAmount: p.encAmount,
+        createdAt: p.createdAt,
+      })
+      .from(p)
+      .where(eq(p.invoiceId, id))
+      .orderBy(asc(p.createdAt));
+  }
+
+  /**
+   * Issued documents with sealed amounts that still wait for money, with
+   * their payments, for the browser's bank matching: it opens the totals and
+   * compares them with the open bank transactions (the server cannot).
+   */
+  async openSealedDocuments(db: TenantDb) {
+    const i = schema.invoices;
+    const docs = await db
+      .select({
+        id: i.id,
+        invoiceNumber: i.invoiceNumber,
+        documentType: i.documentType,
+        variableSymbol: i.variableSymbol,
+        currency: i.currency,
+        issueDate: i.issueDate,
+        dueDate: i.dueDate,
+        encAmounts: i.encAmounts,
+      })
+      .from(i)
+      .where(and(eq(i.status, "issued"), isNotNull(i.encAmounts), inArray(i.documentType, ["invoice", "proforma"])))
+      .orderBy(asc(i.dueDate))
+      .limit(500);
+    const ids = docs.map((d) => d.id);
+    const payments = ids.length
+      ? await db
+          .select({ invoiceId: schema.invoiceSealedPayments.invoiceId, encAmount: schema.invoiceSealedPayments.encAmount })
+          .from(schema.invoiceSealedPayments)
+          .where(inArray(schema.invoiceSealedPayments.invoiceId, ids))
+          .orderBy(asc(schema.invoiceSealedPayments.createdAt))
+      : [];
+    return docs.map((d) => ({ ...d, payments: payments.filter((p) => p.invoiceId === d.id).map((p) => p.encAmount) }));
+  }
+
+  /**
+   * Records one payment of a sealed document: its sum as an envelope under
+   * the document key, the date, and optionally the bank transaction it came
+   * from (linked like a manual match). `verdict` is what the browser computed
+   * from the opened total and payments; the server only checks it fits.
+   */
+  async addSealedPayment(
+    db: TenantDb,
+    tenantId: string,
+    userId: string | null,
+    id: string,
+    input: { encAmount: string; paidAt: Date; bankTransactionId?: string | null; verdict: SealedPaymentVerdict },
+  ) {
+    const invoice = await this.requireInvoice(db, id);
+    assertSealedPayable(invoice, "add");
+    assertPaymentEnvelope(invoice, input.encAmount);
+    assertVerdict(input.verdict, 1);
+    let variableSymbol = invoice.variableSymbol ?? null;
+    if (input.bankTransactionId) {
+      const [tx] = await db
+        .select()
+        .from(schema.bankTransactions)
+        .where(eq(schema.bankTransactions.id, input.bankTransactionId))
+        .limit(1);
+      if (!tx) throw new NotFoundException("Bank transaction not found");
+      if ((tx.matchedInvoiceId && tx.matchedInvoiceId !== id) || tx.matchedExpenseId) throw new ConflictException("transaction_already_matched");
+      if (tx.currency !== invoice.currency) throw new BadRequestException("currency_mismatch");
+      variableSymbol = tx.variableSymbol ?? variableSymbol;
+      await db
+        .update(schema.bankTransactions)
+        .set({ matchedInvoiceId: id, status: "matched", appliedRuleId: null, matchedExpenseId: null })
+        .where(eq(schema.bankTransactions.id, tx.id));
+    }
+    const [payment] = await db
+      .insert(schema.invoiceSealedPayments)
+      .values({
+        tenantId,
+        invoiceId: id,
+        paidAt: input.paidAt.toISOString().slice(0, 10),
+        variableSymbol,
+        bankTransactionId: input.bankTransactionId ?? null,
+        encAmount: input.encAmount,
+        createdBy: userId,
+      })
+      .returning();
+    const [updated] = await db
+      .update(schema.invoices)
+      .set({ ...sealedPaymentSet(input.verdict, invoice, input.paidAt), updatedAt: new Date() })
+      .where(eq(schema.invoices.id, id))
+      .returning();
+    if (input.verdict === "paid") this.ping(updated, "invoice_paid", `Faktura ${updated.invoiceNumber ?? ""} je zaplacená`.replace("  ", " "));
+    await this.log(db, updated, input.verdict === "paid" ? "marked_paid" : "partial_payment");
+    return { invoice: updated, payment };
+  }
+
+  /** Removes one sealed payment; `verdict` is the browser's state without it. */
+  async deleteSealedPayment(db: TenantDb, id: string, paymentId: string, verdict: SealedPaymentVerdict) {
+    const invoice = await this.requireInvoice(db, id);
+    assertSealedPayable(invoice, "remove");
+    const p = schema.invoiceSealedPayments;
+    const [removed] = await db
+      .delete(p)
+      .where(and(eq(p.id, paymentId), eq(p.invoiceId, id)))
+      .returning();
+    if (!removed) throw new NotFoundException("Payment not found");
+    const [counted] = await db.select({ left: sql<number>`count(*)::int` }).from(p).where(eq(p.invoiceId, id));
+    assertVerdict(verdict, Number(counted?.left ?? 0));
+    if (removed.bankTransactionId) {
+      // The transaction goes back to the unmatched list, as when a manual match is undone.
+      await db
+        .update(schema.bankTransactions)
+        .set({ matchedInvoiceId: null, status: "unmatched" })
+        .where(and(eq(schema.bankTransactions.id, removed.bankTransactionId), eq(schema.bankTransactions.matchedInvoiceId, id)));
+    }
+    const [updated] = await db
+      .update(schema.invoices)
+      .set({ ...sealedPaymentSet(verdict, invoice, invoice.paidAt ?? new Date()), updatedAt: new Date() })
+      .where(eq(schema.invoices.id, id))
+      .returning();
+    await this.log(db, updated, verdict === "unpaid" ? "marked_unpaid" : "payment_removed");
+    return { invoice: updated };
+  }
+
+  /**
+   * "Povolit platbu kartou" on a sealed document: the user opts to store the
+   * amount to charge in plain for this one document, because Stripe charges
+   * a number. The history records that it was revealed, not the amount.
+   */
+  async setCardAmount(db: TenantDb, id: string, amount: number | null) {
+    const invoice = await this.requireInvoice(db, id);
+    assertCardAmount(invoice, amount);
+    const [updated] = await db
+      .update(schema.invoices)
+      .set({ cardAmount: amount == null ? null : amount.toFixed(2), updatedAt: new Date() })
+      .where(eq(schema.invoices.id, id))
+      .returning();
+    await this.log(db, updated, amount == null ? "card_amount_removed" : "card_amount_revealed");
+    return { id, cardAmount: updated.cardAmount };
   }
 
   /**
@@ -1012,9 +1180,20 @@ export class InvoicesService {
   async markUnpaid(db: TenantDb, id: string) {
     const invoice = await this.requireInvoice(db, id);
     if (invoice.status !== "paid") throw new BadRequestException("The document is not marked as paid");
+    // Sealed payments go with it, as a plain amount_paid goes back to 0.
+    if (amountsSealed(invoice)) await db.delete(schema.invoiceSealedPayments).where(eq(schema.invoiceSealedPayments.invoiceId, id));
     const [updated] = await db
       .update(schema.invoices)
-      .set({ status: "issued", paidAt: null, amountPaid: "0", paymentFees: "0", receivedCzk: null, updatedAt: new Date() })
+      .set({
+        status: "issued",
+        paidAt: null,
+        amountPaid: "0",
+        paymentFees: "0",
+        receivedCzk: null,
+        sealedPaymentState: null,
+        cardAmount: null,
+        updatedAt: new Date(),
+      })
       .where(eq(schema.invoices.id, id))
       .returning();
     await this.log(db, updated, "marked_unpaid");
@@ -1929,7 +2108,7 @@ export class InvoicesService {
     if (amountsSealed(current)) {
       const [paid] = await db
         .update(schema.invoices)
-        .set({ status: "paid", paidAt: received?.paidAt ?? new Date(), updatedAt: new Date() })
+        .set({ status: "paid", paidAt: received?.paidAt ?? new Date(), sealedPaymentState: null, cardAmount: null, updatedAt: new Date() })
         .where(and(eq(schema.invoices.id, invoiceId), eq(schema.invoices.tenantId, tenantId), eq(schema.invoices.status, "issued")))
         .returning();
       if (paid) await this.log(db, paid, "paid_from_bank");
@@ -2328,7 +2507,16 @@ export class InvoicesService {
     const { invoice, contact, tenant, lineItems, related } = await this.loadIssuedInvoiceForDocument(db, tenantId, invoiceId, true);
     const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
     const model = await this.invoicePdfService.buildModel(invoice, contact, tenant, lineItems, totals, related);
+    // The payments' envelopes, so the browser prints what was paid and asks only for the rest.
+    if (model.sealedAmounts) model.sealedAmounts.payments = await this.sealedPaymentEnvelopes(db, invoice.id);
     return { filename: `${invoiceFileBase(invoice)}.pdf`, model };
+  }
+
+  /** The envelopes of a sealed document's payments, oldest first. */
+  async sealedPaymentEnvelopes(db: TenantDb, invoiceId: string): Promise<string[]> {
+    const p = schema.invoiceSealedPayments;
+    const rows = await db.select({ encAmount: p.encAmount }).from(p).where(eq(p.invoiceId, invoiceId)).orderBy(asc(p.createdAt));
+    return rows.map((r) => r.encAmount);
   }
 
   /** The ISDOC input with envelopes as they are, for the browser to finish (see `invoicePdfModel`). */

@@ -11,6 +11,7 @@
 import { BRAND_MARK_PNG_BASE64 } from './brand-mark.js';
 import { isSealed } from './vault/confidential.js';
 import { fillTemplate } from './fill-template.js';
+import type { SealedQrInvoicePlan, SealedSpaydParams } from './vault-payments.js';
 
 /** Joins two label sets for a bilingual PDF; the renderer splits on it where space is tight. */
 export const BILINGUAL_SEPARATOR = ' / ';
@@ -109,7 +110,13 @@ export type SealedPdfQrPlan =
   | {
       kind: 'spayd';
       label: string;
-      params: { iban: string; currency: string; variableSymbol?: string; dueDate?: string; message?: string };
+      params: SealedSpaydParams;
+    }
+  | {
+      /** A standalone QR Faktura, for a document the code does not ask to pay. */
+      kind: 'invoice';
+      label: string;
+      params: SealedQrInvoicePlan;
     }
   | {
       kind: 'pay_by_square';
@@ -145,6 +152,10 @@ export interface SealedPdfAmounts {
   fx: { rateLine: string; rate: number; home: string; vatInHome: string; totalInHome: string } | null;
   /** The payment code to draw once the amount is known; null when the document gets none. */
   qr: SealedPdfQrPlan | null;
+  /** QR Faktura alone, drawn when no payment code is (paid, nothing due, not a transfer). */
+  invoiceQr?: Extract<SealedPdfQrPlan, { kind: 'invoice' }> | null;
+  /** The payments so far, sealed under the document key (vault-payments.ts), oldest first. */
+  payments?: string[];
 }
 
 /** A TrueType font as a path (Node) or its bytes (browser). */

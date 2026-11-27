@@ -47,6 +47,10 @@ export interface InvoiceRow {
   total: number | null;
   /** Category "amounts": the totals envelope; the totals above are then null. */
   encAmounts?: string | null;
+  /** Sealed amounts: the browser's verdict after a payment that did not cover the total. */
+  sealedPaymentState?: 'partly_paid' | null;
+  /** Sealed amounts: what card payment charges, stored in plain only after the user allowed card payment. */
+  cardAmount?: string | null;
   isOverdue: boolean;
   /** Locked by an owner/admin; until the viewer re-authenticates the customer and notes come back empty. */
   locked?: boolean;

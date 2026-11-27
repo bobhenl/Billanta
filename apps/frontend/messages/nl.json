@@ -14474,10 +14474,10 @@
         "title": "Bedragen",
         "description": "Aantallen, stukprijzen, btw-tarieven, kortingen en documenttotalen. Documentnummer, variabel symbool (VS), vervaldatum, valuta en status blijven leesbaar.",
         "loses": [
-          "Automatisch koppelen van betalingen op bedrag: een betaling met het VS van een versleuteld document wacht op je handmatige bevestiging",
-          "Deelbetalingen: een versleuteld document kan alleen als volledig betaald worden gemarkeerd, zonder kosten en bijgeschreven bedrag",
+          "Automatisch koppelen van betalingen op de server: na het ontgrendelen stelt je browser koppelingen voor en bevestig jij ze",
+          "Betalingen worden alleen in je browser berekend: bij een versleuteld document kent de server alleen de betaaldatum en de status, niet het bedrag of de kosten",
           "Exports voor de boekhouder, aangiften en btw-overzichten van de server: ze weigeren documenten met versleutelde bedragen en noemen ze",
-          "Verzenden via Peppol, AI-suggesties met bedragen en kaartbetaling",
+          "Verzenden via Peppol en AI-voorstellen met bedragen. Kaartbetaling alleen bij een document waar je die uitdrukkelijk toestaat – het te betalen bedrag gaat dan leesbaar naar Billanta en Stripe",
           "Het dashboard, het netto-inkomen en de rapporten tellen alleen onversleutelde documenten en melden hoeveel ze hebben overgeslagen",
           "Herinneringen, het weekoverzicht en achterstallige totalen in e-mails noemen geen bedrag"
         ],
@@ -14754,23 +14754,64 @@
       "what": "De browser laadt de documenten waarvan de bedragen op de server leesbaar zijn, versleutelt aantallen, prijzen, btw-tarieven, kortingen en totalen en slaat ze weer op. Op de server blijven er nullen voor in de plaats.",
       "keeps": "Documentnummer, VS, vervaldatum, valuta en status blijven leesbaar, dus betalingen vind je nog steeds op VS.",
       "loses": "De server maakt voor deze documenten dan geen PDF, ISDOC of boekhoudexports meer en telt ze niet mee in rapporten. Een betaald document blijft betaald.",
-      "resumable": "Vergrendelde en deels betaalde documenten worden overgeslagen. Sluit je het venster, dan gaat het de volgende keer verder waar je was gebleven.",
+      "resumable": "Vergrendelde documenten worden overgeslagen. Wat al betaald is, wordt versleuteld als één betaling van het document. Sluit je het venster, dan ga je de volgende keer verder waar je was gebleven.",
       "cancel": "Terug",
       "confirm": "Versleutelen",
       "progress": "Versleutelen… {n}",
       "done": "{n, plural, one {Bedragen van # document versleuteld} other {Bedragen van # documenten versleuteld}}.",
       "nothing": "Er was niets te versleutelen.",
-      "failed": "Versleutelen is mislukt. Al versleutelde documenten blijven versleuteld.",
-      "partlyPaid": "{n, plural, one {# deels betaald document is leesbaar gebleven} other {# deels betaalde documenten zijn leesbaar gebleven}}. Ze kunnen worden versleuteld zodra ze volledig betaald zijn."
+      "failed": "Versleutelen is mislukt. Al versleutelde documenten blijven versleuteld."
     },
     "amounts": {
-      "paidSealed": "De bedragen van het document zijn versleuteld, daarom kan alleen een volledige betaling worden vastgelegd. Kosten en het bijgeschreven bedrag slaat de server niet op.",
+      "paidSealed": "De bedragen van het document zijn versleuteld, hier wordt een betaling van het volledige bedrag vastgelegd. Een deelbetaling of kosten voeg je toe onder Betalingen op de documentpagina.",
       "leftOut": "Zonder {count, plural, one {# document} other {# documenten}} met versleutelde bedragen – ontgrendel de kluis",
       "exportLocked": "Documenten met versleutelde bedragen komen pas in het bestand nadat de kluis is ontgrendeld.",
       "exportUnreadable": "Geen bestand gemaakt: {count, plural, one {# document kan} other {# documenten kunnen}} niet met deze sleutel worden geopend. Een ontbrekend document zou het bestand onjuist maken.",
       "creditNoteLocked": "Een creditnota voor een factuur met versleutelde bedragen wordt gemaakt nadat de kluis is ontgrendeld.",
       "creditNoteUnreadable": "De bedragen van de factuur kunnen niet met deze sleutel worden geopend, dus er is geen creditnota gemaakt.",
-      "bulkSealed": "Deze sjabloon heeft versleutelde bedragen. Hij is niet bruikbaar voor bulkfacturatie, alleen voor één factuur."
+      "bulkSealed": "De bedragen van de sjabloon zijn versleuteld. Ontgrendel de kluis, dan wordt elk concept met een eigen sleutel versleuteld.",
+      "bulkSealedDrafts": "Een sjabloon met versleutelde bedragen maakt alleen concepten. Verstuur ze daarna één voor één."
+    },
+    "payments": {
+      "title": "Betalingen",
+      "locked": "De bedragen van de betalingen zijn versleuteld. Ontgrendel de kluis om ze te zien.",
+      "otherKey": "Een betaling opent niet met deze sleutel, daarom tonen we het openstaande bedrag niet.",
+      "unlock": "Ontgrendelen",
+      "paid": "Betaald {amount}",
+      "remaining": "nog {amount} van {total}",
+      "feeShort": "kosten {amount}",
+      "carried": "uit een eerdere betaling",
+      "fromBank": "van de bank",
+      "delete": "Betaling verwijderen",
+      "confirmDelete": "Deze betaling verwijderen? Afhankelijk van de overige betalingen wordt het document weer onbetaald of deels betaald.",
+      "amount": "Bedrag",
+      "fee": "Kosten",
+      "date": "Betaaldatum",
+      "add": "Betaling toevoegen",
+      "invalid": "Vul een positief bedrag en kosten van nul of meer in.",
+      "failed": "De betaling kon niet worden opgeslagen. Probeer het opnieuw.",
+      "added": "Betaling opgeslagen, de rest staat nog open.",
+      "paidInFull": "Het document is volledig betaald.",
+      "card": {
+        "label": "Kaartbetaling toestaan",
+        "hint": "De klant kan dan via de link {amount} met een kaart betalen. Dit ene bedrag wordt onversleuteld opgeslagen en Billanta en Stripe zien het.",
+        "on": "Kaartbetaling staat aan voor {amount}. Dit bedrag is onversleuteld opgeslagen en Billanta en Stripe zien het. De volgende betaling zet het uit."
+      }
+    },
+    "bankMatch": {
+      "title": "Voorgestelde koppelingen voor versleutelde documenten",
+      "hint": "Je browser heeft de niet-gekoppelde betalingen vergeleken met de geopende bedragen. De server kent de bedragen niet, dus niets wordt gekoppeld zonder jouw bevestiging.",
+      "locked": "Sommige documenten hebben versleutelde bedragen. Na het ontgrendelen van de kluis stellen we voor welke betalingen erbij horen.",
+      "unlock": "Ontgrendelen",
+      "confirm": "Koppelen",
+      "failed": "De betaling kon niet worden gekoppeld. Probeer het opnieuw.",
+      "matched": "De betaling is gekoppeld aan document {number}.",
+      "ambiguous": "een ander document past ook, controleer het",
+      "reason": {
+        "vs_amount": "kenmerk en bedrag kloppen",
+        "vs_partial": "kenmerk klopt, deelbetaling",
+        "amount_date": "bedrag en datum kloppen, zonder kenmerk"
+      }
     }
   },
   "vaultPublic": {

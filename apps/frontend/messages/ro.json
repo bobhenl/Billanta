@@ -14474,10 +14474,10 @@
         "title": "Sume",
         "description": "Cantități, prețuri unitare, cote TVA, reduceri și totalurile documentelor. Numărul documentului, simbolul variabil (VS), scadența, moneda și starea rămân lizibile.",
         "loses": [
-          "Potrivirea automată a plăților după sumă: o plată cu VS-ul unui document criptat așteaptă confirmarea dvs. manuală",
-          "Plăți parțiale: un document criptat poate fi marcat doar ca plătit integral, fără comisioane și suma creditată",
+          "Potrivirea automată a plăților pe server: după deblocarea seifului, browserul propune perechi și dvs. le confirmați",
+          "Plățile le calculează doar browserul: la un document criptat serverul cunoaște doar data plății și starea, nu suma sau comisionul",
           "Exporturile pentru contabil, declarațiile și rapoartele TVA de pe server: refuză documentele cu sume criptate și le listează",
-          "Trimiterea prin Peppol, sugestiile AI cu sume și plata cu cardul",
+          "Trimiterea prin Peppol și propunerile AI cu sume. Plata cu cardul doar la documentul unde o permiteți explicit – suma de plată ajunge atunci lizibil la Billanta și Stripe",
           "Panoul, venitul net și rapoartele numără doar documentele necriptate și spun câte au omis",
           "Mementourile, rezumatul săptămânal și totalurile restante din e-mailuri nu includ suma"
         ],
@@ -14754,23 +14754,64 @@
       "what": "Browserul încarcă documentele ale căror sume sunt lizibile pe server, criptează cantitățile, prețurile, cotele TVA, reducerile și totalurile și le salvează înapoi. Pe server rămân zerouri în locul lor.",
       "keeps": "Numărul documentului, VS, scadența, moneda și starea rămân lizibile, deci găsiți în continuare plățile după VS.",
       "loses": "Serverul nu va mai crea pentru aceste documente PDF, ISDOC sau exporturi pentru contabil și nu le va număra în rapoarte. Un document plătit rămâne plătit.",
-      "resumable": "Documentele blocate și cele plătite parțial sunt omise. Dacă închideți fereastra, data viitoare se continuă de unde ați rămas.",
+      "resumable": "Documentele blocate sunt sărite. Ce s-a plătit deja se criptează ca o singură plată a documentului. Dacă închideți fereastra, data viitoare se continuă de unde ați rămas.",
       "cancel": "Înapoi",
       "confirm": "Criptează",
       "progress": "Se criptează… {n}",
       "done": "{n, plural, one {Au fost criptate sumele a # document} few {Au fost criptate sumele a # documente} other {Au fost criptate sumele a # de documente}}.",
       "nothing": "Nu era nimic de criptat.",
-      "failed": "Criptarea a eșuat. Documentele deja criptate rămân criptate.",
-      "partlyPaid": "{n, plural, one {# document plătit parțial a rămas lizibil} few {# documente plătite parțial au rămas lizibile} other {# de documente plătite parțial au rămas lizibile}}. Pot fi criptate după plata integrală."
+      "failed": "Criptarea a eșuat. Documentele deja criptate rămân criptate."
     },
     "amounts": {
-      "paidSealed": "Sumele documentului sunt criptate, de aceea se poate înregistra doar plata integrală. Serverul nu păstrează comisioane sau suma creditată.",
+      "paidSealed": "Sumele documentului sunt criptate, aici se înregistrează plata întregii sume. Adăugați o plată parțială sau un comision la secțiunea Plăți de pe pagina documentului.",
       "leftOut": "Fără {count, plural, one {# document} few {# documente} other {# de documente}} cu sume criptate – deblocați seiful",
       "exportLocked": "Documentele cu sume criptate intră în fișier doar după deblocarea seifului.",
       "exportUnreadable": "Fișierul nu a fost creat: {count, plural, one {# document nu poate fi deschis} few {# documente nu pot fi deschise} other {# de documente nu pot fi deschise}} cu această cheie. Un document lipsă ar face fișierul greșit.",
       "creditNoteLocked": "Factura de stornare pentru o factură cu sume criptate se pregătește după deblocarea seifului.",
       "creditNoteUnreadable": "Sumele facturii nu pot fi deschise cu această cheie, așa că stornarea nu a fost creată.",
-      "bulkSealed": "Acest șablon are sume criptate. Nu poate fi folosit pentru facturare în masă, doar pentru o singură factură."
+      "bulkSealed": "Sumele șablonului sunt criptate. Deblocați seiful și fiecare ciornă va fi criptată cu propria cheie.",
+      "bulkSealedDrafts": "Dintr-un șablon cu sume criptate se creează doar ciorne. Emiteți-le apoi pe rând."
+    },
+    "payments": {
+      "title": "Plăți",
+      "locked": "Sumele plăților sunt criptate. Deblocați seiful pentru a le vedea.",
+      "otherKey": "O plată nu poate fi deschisă cu această cheie, așa că nu afișăm suma rămasă.",
+      "unlock": "Deblocare",
+      "paid": "Plătit {amount}",
+      "remaining": "rămas {amount} din {total}",
+      "feeShort": "comision {amount}",
+      "carried": "dintr-o plată anterioară",
+      "fromBank": "din bancă",
+      "delete": "Șterge plata",
+      "confirmDelete": "Ștergeți această plată? În funcție de plățile rămase, documentul redevine neplătit sau parțial plătit.",
+      "amount": "Sumă",
+      "fee": "Comision",
+      "date": "Data plății",
+      "add": "Adaugă plată",
+      "invalid": "Introduceți o sumă pozitivă și un comision de cel puțin zero.",
+      "failed": "Plata nu a putut fi salvată. Încercați din nou.",
+      "added": "Plata a fost salvată, restul rămâne de plată.",
+      "paidInFull": "Documentul este plătit integral.",
+      "card": {
+        "label": "Permite plata cu cardul",
+        "hint": "Clientul poate plăti atunci din link {amount} cu cardul. Această singură sumă se salvează necriptat și o vor vedea Billanta și Stripe.",
+        "on": "Plata cu cardul este activă pentru {amount}. Suma este salvată necriptat și o văd Billanta și Stripe. Următoarea plată o dezactivează."
+      }
+    },
+    "bankMatch": {
+      "title": "Propuneri de potrivire pentru documente criptate",
+      "hint": "Browserul a comparat plățile nepotrivite cu sumele deschise. Serverul nu cunoaște sumele, așa că nimic nu se potrivește fără confirmarea dvs.",
+      "locked": "Unele documente au sumele criptate. După deblocarea seifului vă propunem cărora le aparțin plățile.",
+      "unlock": "Deblocare",
+      "confirm": "Potrivește",
+      "failed": "Plata nu a putut fi potrivită. Încercați din nou.",
+      "matched": "Plata este potrivită cu documentul {number}.",
+      "ambiguous": "se potrivește și alt document, verificați",
+      "reason": {
+        "vs_amount": "simbolul și suma se potrivesc",
+        "vs_partial": "simbolul se potrivește, plată parțială",
+        "amount_date": "suma și data se potrivesc, fără simbol"
+      }
     }
   },
   "vaultPublic": {

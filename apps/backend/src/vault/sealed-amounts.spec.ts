@@ -4,10 +4,10 @@ import type { SQL } from "drizzle-orm";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { loadPlanSummary } from "../billing/plan.guard";
 import {
-  amountPaidOnSeal,
   assertAmountsReadable,
   assertAmountsShape,
   assertAmountsWrite,
+  paymentsOnSeal,
   refuseSealedRows,
   splitSealed,
 } from "./sealed-amounts";
@@ -107,16 +107,40 @@ describe("assertAmountsWrite", () => {
   });
 });
 
-describe("amountPaidOnSeal", () => {
-  it("leaves an unpaid document alone and zeroes the paid sum of a paid one", () => {
-    expect(amountPaidOnSeal({ status: "issued", amountPaid: "0.00" })).toBeNull();
-    expect(amountPaidOnSeal({ status: "paid", amountPaid: "3630.00" })).toBe("0");
+describe("paymentsOnSeal", () => {
+  const zeroed = { amountPaid: "0", paymentFees: "0", receivedCzk: null };
+
+  it("leaves an unpaid document alone", () => {
+    expect(paymentsOnSeal({ status: "issued", amountPaid: "0.00", paymentFees: "0.00", receivedCzk: null }, undefined)).toEqual({ set: {}, carry: null });
   });
 
-  it("refuses a partly paid document (409 amounts_partly_paid)", async () => {
-    const e = await error(() => amountPaidOnSeal({ status: "issued", amountPaid: "1000.00" }));
+  it("zeroes the paid sum, fees and home-currency proceeds of a paid document, with or without a carried envelope", () => {
+    const paid = { status: "paid", amountPaid: "3630.00", paymentFees: "12.50", receivedCzk: "3630.00" };
+    expect(paymentsOnSeal(paid, undefined)).toEqual({ set: zeroed, carry: null });
+    expect(paymentsOnSeal(paid, env(5))).toEqual({ set: zeroed, carry: env(5) });
+  });
+
+  it("drops fees left on an unpaid document too", () => {
+    expect(paymentsOnSeal({ status: "issued", amountPaid: "0", paymentFees: "30.00", receivedCzk: null }, undefined).set).toEqual(zeroed);
+  });
+
+  it("carries a partly paid document's payment as an envelope and marks it partly paid", () => {
+    expect(paymentsOnSeal({ status: "issued", amountPaid: "1000.00" }, env(5))).toEqual({
+      set: { ...zeroed, sealedPaymentState: "partly_paid" },
+      carry: env(5),
+    });
+  });
+
+  it("refuses a partly paid document without the envelope (409 amounts_partly_paid)", async () => {
+    const e = await error(() => paymentsOnSeal({ status: "issued", amountPaid: "1000.00" }, undefined));
     expect(e).toBeInstanceOf(ConflictException);
     expect(e?.message).toBe("amounts_partly_paid");
+  });
+
+  it("refuses a carried payment in plain (400 amounts_plaintext)", async () => {
+    const e = await error(() => paymentsOnSeal({ status: "issued", amountPaid: "1000.00" }, "1000" as never));
+    expect(e).toBeInstanceOf(BadRequestException);
+    expect(e?.message).toBe("amounts_plaintext");
   });
 });
 
@@ -150,9 +174,14 @@ describe("aggregates over sealed documents", () => {
 function fakeDb(...answers: unknown[][]) {
   const wheres: SQL[] = [];
   const sets: unknown[] = [];
+  const inserts: unknown[] = [];
   const chain: Record<string, unknown> = {};
   const next = () => Promise.resolve(answers.shift() ?? []);
-  for (const m of ["select", "from", "innerJoin", "orderBy", "update"]) chain[m] = () => chain;
+  for (const m of ["select", "from", "innerJoin", "orderBy", "update", "insert"]) chain[m] = () => chain;
+  chain.values = (v: unknown) => {
+    inserts.push(v);
+    return chain;
+  };
   chain.set = (v: unknown) => {
     sets.push(v);
     return chain;
@@ -164,11 +193,20 @@ function fakeDb(...answers: unknown[][]) {
   chain.limit = next;
   chain.returning = next;
   chain.then = (resolve: (v: unknown) => unknown, reject: (e: unknown) => unknown) => next().then(resolve, reject);
-  return { db: chain as never, wheres, sets };
+  return { db: chain as never, wheres, sets, inserts };
 }
 
 const vaultRow = (categories: string[]) => [{ tenantId: "t1", categories }];
-const doc = { id: "11111111-1111-4111-8111-111111111111", invoiceNumber: "2026001", status: "issued", amountPaid: "0.00", noteAbove: null, noteBelow: null };
+const doc = {
+  id: "11111111-1111-4111-8111-111111111111",
+  invoiceNumber: "2026001",
+  status: "issued",
+  amountPaid: "0.00",
+  paymentFees: "0.00",
+  receivedCzk: null,
+  noteAbove: null,
+  noteBelow: null,
+};
 const items = [
   { id: "22222222-2222-4222-8222-222222222222", description: "Konzultace" },
   { id: "33333333-3333-4333-8333-333333333333", description: "Doprava" },
@@ -211,16 +249,28 @@ describe("VaultService.sealAmounts", () => {
     expect(sets).toHaveLength(1);
   });
 
-  it("skips a partly paid document untouched", async () => {
-    const { db, sets } = fakeDb(vaultRow(["amounts"]), [{ categories: ["amounts"] }], [{ ...doc, amountPaid: "500.00" }]);
+  it("skips a partly paid document untouched when its payment did not come sealed", async () => {
+    const { db, sets, inserts } = fakeDb(vaultRow(["amounts"]), [{ categories: ["amounts"] }], [{ ...doc, amountPaid: "500.00" }]);
     expect(await new VaultService().sealAmounts(db, "t1", { invoices: [given] })).toEqual({ sealed: 0, skipped: 1 });
     expect(sets).toEqual([]);
+    expect(inserts).toEqual([]);
   });
 
-  it("zeroes the plain paid sum of a paid document", async () => {
-    const { db, sets } = fakeDb(vaultRow(["amounts"]), [{ categories: ["amounts"] }], [{ ...doc, status: "paid", amountPaid: "3630.00" }], items, [{ id: doc.id }], [], []);
+  it("seals a partly paid document with its payment carried as an undated sealed payment", async () => {
+    const partly = { ...doc, amountPaid: "500.00", paymentFees: "4.00" };
+    const { db, sets, inserts } = fakeDb(vaultRow(["amounts"]), [{ categories: ["amounts"] }], [partly], items, [{ id: doc.id }], [], [], []);
+    const result = await new VaultService().sealAmounts(db, "t1", { invoices: [{ ...given, encPaid: env(4) }] });
+    expect(result).toEqual({ sealed: 1, skipped: 0 });
+    expect(sets[0]).toEqual({ encAmounts: env(1), amountPaid: "0", paymentFees: "0", receivedCzk: null, sealedPaymentState: "partly_paid" });
+    expect(inserts).toEqual([{ tenantId: "t1", invoiceId: doc.id, paidAt: null, encAmount: env(4) }]);
+  });
+
+  it("zeroes the plain paid sum, fees and proceeds of a paid document", async () => {
+    const paid = { ...doc, status: "paid", amountPaid: "3630.00", paymentFees: "20.00", receivedCzk: "3630.00" };
+    const { db, sets, inserts } = fakeDb(vaultRow(["amounts"]), [{ categories: ["amounts"] }], [paid], items, [{ id: doc.id }], [], []);
     await new VaultService().sealAmounts(db, "t1", { invoices: [given] });
-    expect(sets[0]).toEqual({ encAmounts: env(1), amountPaid: "0" });
+    expect(sets[0]).toEqual({ encAmounts: env(1), amountPaid: "0", paymentFees: "0", receivedCzk: null });
+    expect(inserts).toEqual([]);
   });
 
   it("skips a document when not every item came back sealed", async () => {

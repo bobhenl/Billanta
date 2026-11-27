@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { apiFetch } from '@/lib/api-client';
 import { backendMessage } from '@/lib/action-error';
+import type { SealedBulkCopy } from '@/lib/vault/amounts';
 
 type Result<T = undefined> = { ok: true; data: T } | { ok: false; error: string };
 
@@ -30,9 +31,9 @@ export async function deleteTemplate(id: string) {
   return call<unknown>(`/api/v1/invoice-templates/${id}`, { method: 'DELETE' });
 }
 
-export async function bulkInvoice(templateId: string, contactIds: string[], issueDate: string, issue: boolean) {
+export async function bulkInvoice(templateId: string, contactIds: string[], issueDate: string, issue: boolean, sealed?: SealedBulkCopy[]) {
   return call<{ count: number }>(
     `/api/v1/invoice-templates/${templateId}/bulk`,
-    json('POST', { contact_ids: contactIds, issue_date: issueDate || undefined, issue })
+    json('POST', { contact_ids: contactIds, issue_date: issueDate || undefined, issue, ...(sealed ? { sealed } : {}) })
   );
 }

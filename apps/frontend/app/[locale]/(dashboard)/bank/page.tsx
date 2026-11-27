@@ -32,6 +32,7 @@ import { BankFilters } from './bank-filters';
 import { BankImport } from './bank-import';
 import { RematchButton } from './rematch-button';
 import { BankTable, type BankRow } from './bank-reconciliation-panel';
+import { SealedBankMatches } from '@/components/vault/sealed-bank-matches';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('bank');
@@ -206,6 +207,20 @@ export default async function BankReconciliationPage(props: {
       )}
       <TwoFactorNotice className="mt-6" />
       <BankConnections connections={connections} psd2={psd2} canManage={canManage(role)} importRules={ruleNames} />
+      {canEdit && (
+        <SealedBankMatches
+          transactions={transactions
+            .filter((tx) => tx.status === 'unmatched' && Number(tx.amount) > 0)
+            .map((tx) => ({
+              id: tx.id,
+              amount: Number(tx.amount),
+              currency: tx.currency,
+              variableSymbol: tx.variableSymbol,
+              transactionDate: tx.transactionDate,
+              counterpartyName: tx.counterpartyName
+            }))}
+        />
+      )}
 
       <div className="mt-5 flex flex-wrap items-center gap-2">
         <form action="" className="relative w-full sm:max-w-xs">

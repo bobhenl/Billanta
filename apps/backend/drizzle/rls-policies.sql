@@ -1325,6 +1325,15 @@ CREATE POLICY tenant_isolation ON invoice_attachments
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
 
+-- Payments of a document with sealed amounts (0117): the sums are envelopes.
+ALTER TABLE invoice_sealed_payments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE invoice_sealed_payments FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS tenant_isolation ON invoice_sealed_payments;
+CREATE POLICY tenant_isolation ON invoice_sealed_payments
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications FORCE ROW LEVEL SECURITY;
 
@@ -2119,6 +2128,14 @@ CREATE POLICY member_visibility ON invoice_attachments AS RESTRICTIVE
   USING (CASE (SELECT app_view_mode())
     WHEN 'full' THEN true
     ELSE EXISTS (SELECT 1 FROM invoices i WHERE i.id = invoice_attachments.invoice_id)
+  END);
+
+-- Sealed payments follow their invoice too (0117).
+DROP POLICY IF EXISTS member_visibility ON invoice_sealed_payments;
+CREATE POLICY member_visibility ON invoice_sealed_payments AS RESTRICTIVE
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE EXISTS (SELECT 1 FROM invoices i WHERE i.id = invoice_sealed_payments.invoice_id)
   END);
 
 -- Receipts follow their expense the same way (0112).

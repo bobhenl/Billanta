@@ -14479,10 +14479,10 @@
         "title": "Amounts",
         "description": "Quantities, unit prices, VAT rates, discounts and document totals. The document number, variable symbol, due date, currency and status stay readable.",
         "loses": [
-          "Automatic payment matching by amount: a payment with the variable symbol of a sealed document waits for your manual confirmation",
-          "Partial payments: a sealed document can only be marked as paid in full, without fees or the credited amount",
+          "Automatic payment matching on the server: after you unlock the vault, your browser suggests matches and you confirm them",
+          "Payments are counted only in your browser: for an encrypted document the server knows just the payment date and the status, not the amount or the fee",
           "Accountant exports, tax returns and VAT reports from the server: they refuse documents with sealed amounts and list them",
-          "Sending via Peppol, AI suggestions with amounts and card payments",
+          "Sending via Peppol and AI suggestions with amounts. Card payment only on a document where you allow it – the amount to pay then goes readable to Billanta and Stripe",
           "The dashboard, net income and reports count only unsealed documents and say how many they left out",
           "Reminders, the weekly digest and overdue totals in e-mails leave out the amount"
         ],
@@ -14766,23 +14766,64 @@
       "what": "Your browser loads the documents whose amounts are readable on the server, encrypts the quantities, prices, VAT rates, discounts and totals and saves them back. Zeros stay on the server in their place.",
       "keeps": "The document number, variable symbol, due date, currency and status stay readable, so you can still find payments by variable symbol.",
       "loses": "The server then won't create PDFs, ISDOC or accountant exports for these documents and won't count them in reports. A paid document stays paid.",
-      "resumable": "Locked and partly paid documents are skipped. If you close the window, the next run continues where you left off.",
+      "resumable": "Locked documents are skipped. What was already paid is encrypted as one payment of the document. If you close the window, the next run continues where you stopped.",
       "cancel": "Back",
       "confirm": "Encrypt",
       "progress": "Encrypting… {n}",
       "done": "{n, plural, one {Encrypted the amounts of # document} other {Encrypted the amounts of # documents}}.",
       "nothing": "Nothing to encrypt.",
-      "failed": "Encryption failed. Documents already encrypted stay encrypted.",
-      "partlyPaid": "{n, plural, one {# partly paid document stayed readable} other {# partly paid documents stayed readable}}. They can be encrypted once paid in full."
+      "failed": "Encryption failed. Documents already encrypted stay encrypted."
     },
     "amounts": {
-      "paidSealed": "The document's amounts are encrypted, so only a payment in full can be recorded. The server keeps no fees or credited amount.",
+      "paidSealed": "The document's amounts are encrypted, so this records a payment in full. Add a partial payment or a fee under Payments on the document page.",
       "leftOut": "Excludes {count, plural, one {# document} other {# documents}} with encrypted amounts – unlock the vault",
       "exportLocked": "Documents with encrypted amounts can only go into the file once the vault is unlocked.",
       "exportUnreadable": "No file was made: {count, plural, one {# document} other {# documents}} cannot be opened with this key. A missing document would make the file wrong.",
       "creditNoteLocked": "A credit note for an invoice with encrypted amounts is prepared once the vault is unlocked.",
       "creditNoteUnreadable": "The invoice's amounts cannot be opened with this key, so no credit note was made.",
-      "bulkSealed": "This template has encrypted amounts. It cannot be used for bulk invoicing, only for a single invoice."
+      "bulkSealed": "The template's amounts are encrypted. Unlock the vault and each draft will be encrypted with its own key.",
+      "bulkSealedDrafts": "A template with encrypted amounts creates drafts only. Issue them one by one afterwards."
+    },
+    "payments": {
+      "title": "Payments",
+      "locked": "The payment amounts are encrypted. Unlock the vault to see them.",
+      "otherKey": "A payment cannot be opened with this key, so the amount left to pay is not shown.",
+      "unlock": "Unlock",
+      "paid": "Paid {amount}",
+      "remaining": "{amount} of {total} left",
+      "feeShort": "fee {amount}",
+      "carried": "from an earlier payment",
+      "fromBank": "from the bank",
+      "delete": "Delete payment",
+      "confirmDelete": "Delete this payment? Based on the remaining payments, the document goes back to unpaid or partly paid.",
+      "amount": "Amount",
+      "fee": "Fee",
+      "date": "Payment date",
+      "add": "Add payment",
+      "invalid": "Enter a positive amount and a fee of zero or more.",
+      "failed": "The payment could not be saved. Please try again.",
+      "added": "Payment saved, the rest is still due.",
+      "paidInFull": "The document is paid in full.",
+      "card": {
+        "label": "Allow card payment",
+        "hint": "The client can then pay {amount} by card from the link. This one amount is stored unencrypted, and Billanta and Stripe will see it.",
+        "on": "Card payment is on for {amount}. This amount is stored unencrypted, and Billanta and Stripe see it. The next payment switches it off."
+      }
+    },
+    "bankMatch": {
+      "title": "Suggested matches for encrypted documents",
+      "hint": "Your browser compared the unmatched payments with the opened amounts. The server does not know the amounts, so nothing is matched until you confirm it.",
+      "locked": "Some documents have encrypted amounts. Unlock the vault and we will suggest which payments belong to them.",
+      "unlock": "Unlock",
+      "confirm": "Match",
+      "failed": "The payment could not be matched. Please try again.",
+      "matched": "The payment is matched with document {number}.",
+      "ambiguous": "another document fits too, please check",
+      "reason": {
+        "vs_amount": "variable symbol and amount match",
+        "vs_partial": "variable symbol matches, partial payment",
+        "amount_date": "amount and date match, no variable symbol"
+      }
     }
   },
   "vaultPublic": {

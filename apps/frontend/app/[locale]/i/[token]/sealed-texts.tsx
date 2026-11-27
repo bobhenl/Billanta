@@ -6,9 +6,11 @@ import { useLocale, useTranslations } from 'next-intl';
 import {
   amountTotals,
   decodeItemAmounts,
+  decodePaymentAmounts,
   forgetClientKeys,
   itemBase,
   openClientTexts,
+  sealedBalance,
   type ClientCipherText,
   type ClientTextsResult,
   type DocumentAmounts,
@@ -24,8 +26,11 @@ import { PrintButton } from './print-button';
 
 type State = { status: 'opening' } | ({ status: 'done'; forgotten?: true } & ClientTextsResult);
 
-/** Category "amounts": where the items' amount envelopes sit in `items`. */
-export type SealedAmountsSlots = { offset: number; count: number; reverseCharge: boolean };
+/**
+ * Category "amounts": where the items' amount envelopes sit in `items`, and
+ * after them `payments` envelopes of the document's sealed payments.
+ */
+export type SealedAmountsSlots = { offset: number; count: number; reverseCharge: boolean; payments?: number };
 
 const SealedContext = createContext<{
   state: State;
@@ -95,17 +100,25 @@ export function SealedTextsProvider({
   return <SealedContext.Provider value={{ state, items, preview, forget, amounts }}>{children}</SealedContext.Provider>;
 }
 
-/** The opened amounts of every item and their totals; null while any is closed or broken. */
-function useSealedAmounts(): { items: ItemAmounts[]; totals: DocumentAmounts } | null {
+/**
+ * The opened amounts of every item, their totals and what the payments add
+ * up to; null while any of them is closed or broken (a payment left closed
+ * would make the rest due look higher than it is).
+ */
+function useSealedAmounts(): { items: ItemAmounts[]; totals: DocumentAmounts; paid: number } | null {
   const { state, amounts } = useContext(SealedContext);
   if (!amounts || state.status !== 'done') return null;
   try {
-    const items = state.texts.slice(amounts.offset, amounts.offset + amounts.count).map((text) => {
-      if (text == null) throw new Error('closed');
-      return decodeItemAmounts(text);
-    });
-    if (items.length !== amounts.count) return null;
-    return { items, totals: amountTotals(items, { reverseCharge: amounts.reverseCharge }) };
+    const opened = (from: number, count: number) =>
+      state.texts.slice(from, from + count).map((text) => {
+        if (text == null) throw new Error('closed');
+        return text;
+      });
+    const items = opened(amounts.offset, amounts.count).map(decodeItemAmounts);
+    const payments = opened(amounts.offset + amounts.count, amounts.payments ?? 0).map(decodePaymentAmounts);
+    if (items.length !== amounts.count || payments.length !== (amounts.payments ?? 0)) return null;
+    const totals = amountTotals(items, { reverseCharge: amounts.reverseCharge });
+    return { items, totals, paid: sealedBalance(totals.totalWithVat, payments).paid };
   } catch {
     return null;
   }
@@ -129,7 +142,13 @@ export function SealedTotalText({ part, currency, amountPaid = 0 }: { part: 'tot
   if (!opened) return <Closed />;
   const { totals } = opened;
   const value =
-    part === 'subtotal' ? totals.totalWithoutVat : part === 'vat' ? totals.totalVat : part === 'due' ? Math.max(0, totals.totalWithVat - amountPaid) : totals.totalWithVat;
+    part === 'subtotal'
+      ? totals.totalWithoutVat
+      : part === 'vat'
+        ? totals.totalVat
+        : part === 'due'
+          ? Math.max(0, totals.totalWithVat - amountPaid - opened.paid)
+          : totals.totalWithVat;
   return <>{money(value)}</>;
 }
 
@@ -204,12 +223,13 @@ export function SealedPayment({
   const opened = useSealedAmounts();
   const money = useMoney(currency);
   const locale = useLocale();
-  const due = opened ? Math.max(0, Math.round((opened.totals.totalWithVat - amountPaid) * 100) / 100) : null;
+  const due = opened ? Math.max(0, Math.round((opened.totals.totalWithVat - amountPaid - opened.paid) * 100) / 100) : null;
   const [qr, setQr] = useState<string | null>(null);
   useEffect(() => {
-    if (!plan || due == null || due <= 0) return setQr(null);
+    if (!plan || due == null || due <= 0 || !opened) return setQr(null);
     let live = true;
-    sealedQrPng(plan, due)
+    // The totals go along, so a SPAYD code carries QR Faktura as on a plain document.
+    sealedQrPng(plan, due, opened.totals)
       .then((png) => live && setQr(png))
       .catch(() => live && setQr(null));
     return () => {
