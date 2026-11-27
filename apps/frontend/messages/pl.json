@@ -2768,6 +2768,10 @@
         "profile_message": {
           "label": "Wiadomość z profilu",
           "hint": "Odwiedzający napisał do Ciebie przez formularz kontaktowy na Twoim profilu publicznym."
+        },
+        "bank_consent": {
+          "label": "Dostęp do konta bankowego",
+          "hint": "Tydzień i dzień przed wygaśnięciem zgody na połączenie z bankiem oraz gdy wygaśnie. Odnowisz ją jednym kliknięciem."
         }
       },
       "browserTitle": "Powiadomienia w przeglądarce",
@@ -9933,7 +9937,8 @@
       "buyer_details": "e-maile o danych uzupełnionych przez klientów",
       "weekly_digest": "cotygodniowe podsumowanie",
       "all": "wszystkie opcjonalne powiadomienia e-mail",
-      "newsletter": "informacje od Billanta o zmianach w podatkach i fakturowaniu"
+      "newsletter": "informacje od Billanta o zmianach w podatkach i fakturowaniu",
+      "bank_consent": "e-maile o wygasaniu dostępu do konta bankowego"
     },
     "errors": {
       "invalid": "Ten link jest nieprawidłowy lub niepełny. Spróbuj skopiować cały link z e-maila.",

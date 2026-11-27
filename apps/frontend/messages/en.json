@@ -2775,6 +2775,10 @@
         "profile_message": {
           "label": "Profile message",
           "hint": "A visitor wrote to you through the Contact form on your public profile."
+        },
+        "bank_consent": {
+          "label": "Bank account access",
+          "hint": "A week and a day before your bank connection consent expires, and when it does. Renewing takes one click."
         }
       },
       "browserTitle": "Browser notifications",
@@ -9940,7 +9944,8 @@
       "buyer_details": "emails about details filled in by customers",
       "weekly_digest": "the weekly digest",
       "all": "all optional email notifications",
-      "newsletter": "Billanta updates on tax and invoicing changes"
+      "newsletter": "Billanta updates on tax and invoicing changes",
+      "bank_consent": "emails about bank account access expiring"
     },
     "errors": {
       "invalid": "This link is invalid or incomplete. Try copying the whole link from the email.",

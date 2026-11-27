@@ -8,6 +8,7 @@ import { BankReconciliationService } from "./bank-reconciliation.service";
 import { BankRulesController } from "./bank-rules.controller";
 import { BankRulesService } from "./bank-rules.service";
 import { BankSyncCron } from "./bank-sync.cron";
+import { ConsentExpiryCron } from "./consent-expiry.cron";
 
 // Imports InvoicesModule (rather than re-providing InvoicesService directly,
 // the way InvoicesModule itself re-provides SubscriptionActiveGuard) since
@@ -17,6 +18,6 @@ import { BankSyncCron } from "./bank-sync.cron";
 @Module({
   imports: [InvoicesModule, ExpensesModule],
   controllers: [BankReconciliationController, BankConnectionsController, BankRulesController],
-  providers: [BankReconciliationService, BankConnectionsService, BankRulesService, BankSyncCron],
+  providers: [BankReconciliationService, BankConnectionsService, BankRulesService, BankSyncCron, ConsentExpiryCron],
 })
 export class BankReconciliationModule {}

@@ -2768,6 +2768,10 @@
         "profile_message": {
           "label": "Üzenet a profilon keresztül",
           "hint": "Egy látogató írt Önnek a nyilvános profilja Kapcsolat űrlapján."
+        },
+        "bank_consent": {
+          "label": "Bankszámla-hozzáférés",
+          "hint": "Egy héttel és egy nappal azelőtt, hogy a bankkapcsolat engedélye lejár, valamint amikor lejárt. Egy kattintással megújíthatja."
         }
       },
       "browserTitle": "Böngészőértesítések",
@@ -9932,7 +9936,8 @@
       "buyer_details": "e-maileket a vevők által kitöltött adatokról",
       "weekly_digest": "heti összefoglalót",
       "all": "semmilyen opcionális e-mail-értesítést",
-      "newsletter": "Billanta-híreket az adózási és számlázási változásokról"
+      "newsletter": "Billanta-híreket az adózási és számlázási változásokról",
+      "bank_consent": "e-maileket a bankszámla-hozzáférés lejártáról"
     },
     "errors": {
       "invalid": "Ez a link érvénytelen vagy hiányos. Próbálja meg a teljes linket kimásolni az e-mailből.",

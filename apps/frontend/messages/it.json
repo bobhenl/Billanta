@@ -2768,6 +2768,10 @@
         "profile_message": {
           "label": "Messaggio dal profilo",
           "hint": "Un visitatore Le ha scritto tramite il modulo di contatto del Suo profilo pubblico."
+        },
+        "bank_consent": {
+          "label": "Accesso al conto bancario",
+          "hint": "Una settimana e un giorno prima che scada il consenso al collegamento bancario, e quando scade. Si rinnova con un clic."
         }
       },
       "browserTitle": "Notifiche del browser",
@@ -9932,7 +9936,8 @@
       "buyer_details": "le e-mail sui dati compilati dai clienti",
       "weekly_digest": "il riepilogo settimanale",
       "all": "tutte le notifiche e-mail facoltative",
-      "newsletter": "gli aggiornamenti di Billanta sulle novità fiscali e di fatturazione"
+      "newsletter": "gli aggiornamenti di Billanta sulle novità fiscali e di fatturazione",
+      "bank_consent": "le e-mail sulla scadenza dell’accesso al conto bancario"
     },
     "errors": {
       "invalid": "Questo link non è valido o è incompleto. Provi a copiare l'intero link dall'e-mail.",

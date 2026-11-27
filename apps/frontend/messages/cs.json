@@ -2775,6 +2775,10 @@
         "profile_message": {
           "label": "Zpráva z profilu",
           "hint": "Návštěvník vám napsal přes formulář Kontaktovat na veřejném profilu."
+        },
+        "bank_consent": {
+          "label": "Přístup k bankovnímu účtu",
+          "hint": "Týden a den předem, než vyprší souhlas s napojením banky, a když vyprší. Obnovíte ho jedním kliknutím."
         }
       },
       "browserTitle": "Oznámení v prohlížeči",
@@ -9940,7 +9944,8 @@
       "buyer_details": "e-maily o údajích, které doplnili odběratelé",
       "weekly_digest": "týdenní přehled",
       "all": "všechna nepovinná upozornění e-mailem",
-      "newsletter": "novinky Billanty o změnách v daních a fakturaci"
+      "newsletter": "novinky Billanty o změnách v daních a fakturaci",
+      "bank_consent": "e-maily o vypršení přístupu k bankovnímu účtu"
     },
     "errors": {
       "invalid": "Odkaz je neplatný nebo neúplný. Zkuste ho z e-mailu zkopírovat celý.",

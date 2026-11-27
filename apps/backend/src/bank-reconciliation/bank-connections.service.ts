@@ -35,6 +35,7 @@ import {
   type FioStatement,
   type FioSyncedRow,
 } from "./fio-client";
+import { consentExpiredNotice, consentExpiringNotice, consentWarningDue, noticeLocaleOf, type NoticeLocale } from "./consent-expiry";
 import { missingNets } from "./dedupe";
 import { importWordsFor, keepOnImport } from "./bank-rules";
 import { PaypalApiError, PaypalClient, paypalBackfillRange, paypalSyncFrom, type PaypalCredentials, type PaypalSyncedRow } from "./paypal-client";
@@ -278,6 +279,8 @@ export class BankConnectionsService {
       status: "active" as const,
       externalSessionId: session.sessionId,
       consentExpiresAt: session.validUntil ?? new Date(Date.now() + 90 * DAY_MS),
+      // A new consent starts a new countdown, so its warnings go out again.
+      consentWarnedDays: null,
       authState: null,
       lastError: null,
       bankName: row.bankName,
@@ -829,11 +832,46 @@ export class BankConnectionsService {
       .update(schema.bankConnections)
       .set({ status: "expired", lastError: "consent_expired" })
       .where(eq(schema.bankConnections.id, row.id));
-    this.notifications?.notify(tenantId, "bank_import", {
-      title: "Souhlas s přístupem k účtu vypršel",
-      body: `${row.bankName ?? "Banka"} ${row.accountNumber ?? ""}: obnovte napojení, ať se platby dál párují samy.`.replace(/\s+/g, " "),
-      link: "/bank",
-    });
+    this.notifications?.notify(tenantId, "bank_consent", consentExpiredNotice(await this.noticeLocale(db, tenantId), row));
+  }
+
+  /**
+   * Daily, per tenant: the "consent expires soon" warnings due now. The
+   * conditional update claims each warning before it is sent, so a second
+   * run (or a second instance) finds nothing left to send.
+   */
+  async warnExpiringConsents(db: TenantDb, tenantId: string, now = new Date()): Promise<number> {
+    const rows = await db
+      .select()
+      .from(schema.bankConnections)
+      .where(and(eq(schema.bankConnections.provider, "enable_banking"), eq(schema.bankConnections.status, "active")));
+    let sent = 0;
+    let locale: NoticeLocale | undefined;
+    for (const row of rows) {
+      const days = consentWarningDue(row, now);
+      if (days === null || !row.consentExpiresAt) continue;
+      const claimed = await db
+        .update(schema.bankConnections)
+        .set({ consentWarnedDays: days })
+        .where(
+          and(
+            eq(schema.bankConnections.id, row.id),
+            sql`(${schema.bankConnections.consentWarnedDays} IS NULL OR ${schema.bankConnections.consentWarnedDays} > ${days})`,
+          ),
+        )
+        .returning({ id: schema.bankConnections.id });
+      if (!claimed.length) continue;
+      locale ??= await this.noticeLocale(db, tenantId);
+      this.notifications?.notify(tenantId, "bank_consent", consentExpiringNotice(locale, days, { ...row, consentExpiresAt: row.consentExpiresAt }));
+      sent++;
+    }
+    return sent;
+  }
+
+  /** Notices are stored as text for every member, so they follow the company's language. */
+  private async noticeLocale(db: TenantDb, tenantId: string): Promise<NoticeLocale> {
+    const [t] = await db.select({ locale: schema.tenants.defaultLocale }).from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
+    return noticeLocaleOf(t?.locale);
   }
 
   /**

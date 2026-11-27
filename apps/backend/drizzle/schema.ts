@@ -1463,6 +1463,11 @@ export const bankConnections = pgTable("bank_connections", {
   externalSessionId: text("external_session_id"),
   externalAccountId: text("external_account_id"),
   consentExpiresAt: timestamp("consent_expires_at", { withTimezone: true }),
+  /**
+   * PSD2: the smallest "expires in N days" warning already sent (7 or 1),
+   * null until the first one. Renewing the consent clears it. Migration 0119.
+   */
+  consentWarnedDays: smallint("consent_warned_days"),
   accountNumber: text("account_number"),
   enabled: boolean("enabled").notNull().default(true),
   lastSyncedAt: timestamp("last_synced_at", { withTimezone: true }),
