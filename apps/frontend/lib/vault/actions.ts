@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import type { VaultCategory, VaultWrap } from '@faktur/cz-compliance';
 import { apiFetch } from '@/lib/api-client';
 import { backendMessage } from '@/lib/action-error';
-import type { PlainInvoice, VaultStatus } from './types';
+import type { PlainAttachment, PlainInvoice, VaultStatus } from './types';
 
 type Result<T> = { ok: true; value: T } | { ok: false; error: string };
 
@@ -51,6 +51,18 @@ export async function updateVaultSettings(sealNew: boolean) {
   const result = await call<VaultStatus>('/api/v1/vault/settings', json('PATCH', { sealNew }));
   if (result.ok) revalidatePath('/', 'layout');
   return result;
+}
+
+/** Adds or drops categories; whatever is already encrypted stays encrypted. */
+export async function updateVaultCategories(categories: VaultCategory[]) {
+  const result = await call<VaultStatus>('/api/v1/vault/settings', json('PATCH', { categories }));
+  if (result.ok) revalidatePath('/', 'layout');
+  return result;
+}
+
+/** One batch of files stored before "Přílohy a účtenky" was on (locked documents left out). */
+export async function fetchPlainAttachments() {
+  return call<{ remaining: number; files: PlainAttachment[] }>('/api/v1/vault/attachments/plain?limit=10');
 }
 
 /** One batch of documents with plain texts left: the whole company, one customer, or one document. */

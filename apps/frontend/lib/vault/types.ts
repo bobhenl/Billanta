@@ -23,6 +23,17 @@ export type VaultStatus =
 
 export type EnabledVault = Extract<VaultStatus, { enabled: true }>;
 
+/** A file still stored readable, for "Zašifrovat stávající přílohy". */
+export interface PlainAttachment {
+  kind: 'invoice' | 'expense';
+  id: string;
+  /** The invoice or expense it belongs to. */
+  parentId: string;
+  filename: string;
+  mime: string;
+  sizeBytes: number;
+}
+
 /** What the browser encrypted for "Zašifrovat": only the texts that were still plain. */
 export interface PlainInvoice {
   id: string;

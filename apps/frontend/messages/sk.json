@@ -841,7 +841,12 @@
       "qrFound": "Údaje načítané z QR kódu",
       "qrCheck": "Vyplnené z QR faktúry presne podľa dokladu. Doplňte popis a kategóriu.",
       "qrCheckPayment": "Z QR platby je načítaná suma, VS a splatnosť. Zvyšok doplňte ručne alebo nahrajte celý doklad.",
-      "qrDescription": "Faktúra {number}"
+      "qrDescription": "Faktúra {number}",
+      "aiOptIn": "Poslať bloček AI – jednorazovo prejde serverom, neuloží sa",
+      "aiOptInHint": "Bez zaškrtnutia sa číta len QR kód priamo v prehliadači a ostatné polia vyplníte sami.",
+      "receiptKeptLocal": "Bloček zostal v prehliadači. Po uložení sa k nákladu priloží zašifrovaný.",
+      "receiptWillEncrypt": "Po uložení sa priloží zašifrovaný: {name}",
+      "receiptNotStored": "Náklad je uložený, ale bloček sa nepodarilo priložiť. Pridajte ho v detaile nákladu."
     },
     "noTenant": "Najprv je potrebné založiť firmu.",
     "loadError": "Výdavky sa nepodarilo načítať",
@@ -5233,8 +5238,19 @@
         "bad_type": "Tento typ súboru nemožno priložiť.",
         "too_big": "Súbor je väčší ako 5 MB.",
         "too_many": "K faktúre možno priložiť najviac 10 súborov.",
-        "generic": "Prílohu sa nepodarilo uložiť."
-      }
+        "generic": "Prílohu sa nepodarilo uložiť.",
+        "plan_required": "Šifrovanie príloh patrí do balíka Plus.",
+        "vault_category_off": "Šifrovanie príloh nie je v Dôvernom režime zapnuté."
+      },
+      "hintExpense": "Bloček alebo prijatá faktúra k nákladu. PDF, obrázky, Office, CSV/XML/TXT, max. 5 MB, najviac 10 súborov.",
+      "encryptsNew": "Nové súbory sa pred nahraním zašifrujú vo vašom prehliadači.",
+      "encryptedName": "Zašifrovaný súbor",
+      "encrypted": "Zašifrované",
+      "openEncrypted": "Otvoriť (dešifruje sa vo vašom prehliadači)",
+      "decryptFailed": "Súbor sa nepodarilo dešifrovať.",
+      "emailOnEncrypted": "Zašifrovaná: s e-mailom odíde, len keď to pri odoslaní potvrdíte (kliknutím vypnete)",
+      "portalEncrypted": "Zašifrovanú prílohu klient v zdieľanom odkaze neotvorí",
+      "previewLocal": "Náhľad vznikol len vo vašom prehliadači, server súbor nečítal."
     },
     "quoteResponse": {
       "title": "Odpoveď klienta",
@@ -14203,7 +14219,11 @@
     "actions": {
       "blocked": "Nedostupné v Dôvernom režime: server zašifrovaný doklad neprečíta. Vypnite prílohu PDF/ISDOC v nastaveniach e-mailov alebo pošlite odkaz.",
       "pdfUnavailable": "PDF je nedostupné v Dôvernom režime. Detail môžete vytlačiť z prehliadača (Ctrl+P).",
-      "sendHint": "Doklad je zašifrovaný: e-mail odíde len s odkazom, PDF ani ISDOC server priložiť nemôže."
+      "sendHint": "Doklad je zašifrovaný: e-mail odíde len s odkazom, PDF ani ISDOC server priložiť nemôže.",
+      "unlockFirst": "Bez odomknutia nemožno zašifrované prílohy priložiť.",
+      "decryptFailed": "Prílohu sa nepodarilo dešifrovať.",
+      "passFiles": "{n, plural, one {Priložiť # zašifrovanú prílohu} few {Priložiť # zašifrované prílohy} other {Priložiť # zašifrovaných príloh}}",
+      "passFilesHint": "Prehliadač ich dešifruje a jednorazovo prejdú serverom do e-mailu. Server ich neuloží, po doručení ich zmaže."
     },
     "categories": {
       "recommended": "Odporúčané",
@@ -14222,11 +14242,18 @@
       },
       "attachments": {
         "title": "Prílohy a bločky",
-        "description": "Súbory pri dokladoch a nákladoch.",
+        "description": "Súbory pri dokladoch a bločky pri nákladoch.",
         "loses": [
-          "Vyťaženie bločkov pomocou AI",
-          "Náhľady príloh",
-          "Posielanie príloh e-mailom a odovzdávanie účtovníkovi"
+          "AI prečíta bloček len po jednorazovom súhlase: súbor prejde serverom a neuloží sa",
+          "Zašifrované prílohy nie sú v zdieľanom odkaze pre klienta",
+          "E-mail faktúry ich priloží, len keď ich pri odoslaní odomknete a potvrdíte",
+          "Účtovník ich otvorí len ako člen tímu s vlastným kľúčom, exporty súbory neobsahujú"
+        ],
+        "how": [
+          "Každý súbor sa zašifruje vo vašom prehliadači vlastným kľúčom, ešte kým odíde na server.",
+          "Zašifrovaný je aj názov a typ súboru. Server pozná len veľkosť a dátum nahrania.",
+          "Náhľad aj stiahnutie dešifruje súbor až vo vašom prehliadači.",
+          "Staršie prílohy zostanú čitateľné, kým ich nezašifrujete tlačidlom Zašifrovať existujúce prílohy."
         ]
       },
       "contacts": {
@@ -14248,7 +14275,8 @@
           "Dashboardy, čistý príjem a grafy",
           "Upomienky so sumou a QR platba vytvorená serverom"
         ]
-      }
+      },
+      "howTitle": "Ako to funguje:"
     },
     "enable": {
       "offTitle": "Dôverný režim je vypnutý",
@@ -14333,7 +14361,9 @@
       "recoveryNew": "Vytvoriť nový záchranný kód",
       "recoveryReplaced": "Nový záchranný kód platí",
       "categoriesTitle": "Čo sa šifruje",
-      "categoriesLead": "Ďalšie voľby pripravujeme. Pri každej vidíte, čo by prestalo fungovať."
+      "categoriesLead": "Kategóriu môžete pridať aj neskôr. Vypnutie len prestane šifrovať nové údaje, zašifrované zostanú zašifrované.",
+      "categoriesMin": "Nechajte zapnutú aspoň jednu kategóriu.",
+      "categoryOffConfirm": "Vypnúť túto kategóriu? Nové súbory a texty sa už nebudú šifrovať. Čo je zašifrované, zostane zašifrované."
     },
     "plan": {
       "title": "Dôverný režim je v tarifoch Plus a Firma",
@@ -14341,6 +14371,20 @@
       "upgrade": "Zobraziť tarify",
       "downgradedTitle": "Šifrovanie ďalších dokladov je v tarifoch Plus a Firma",
       "downgradedBody": "Zašifrované doklady naďalej odomknete, prečítate aj upravíte. Nové doklady sa však ukladajú bez šifrovania."
+    },
+    "sealFiles": {
+      "button": "Zašifrovať existujúce prílohy",
+      "title": "Zašifrovať existujúce prílohy",
+      "what": "Prehliadač stiahne prílohy dokladov a bločky nákladov, ktoré sú na serveri čitateľné, zašifruje ich a nahrá späť namiesto pôvodných.",
+      "loses": "Zašifrované prílohy zmiznú zo zdieľaného odkazu pre klienta a e-mail faktúry ich priloží len po potvrdení pri odoslaní.",
+      "resumable": "Prílohy uzamknutých dokladov sa preskočia. Keď okno zatvoríte, nabudúce sa pokračuje tam, kde ste skončili.",
+      "cancel": "Späť",
+      "confirm": "Zašifrovať",
+      "progress": "Šifrujem… {n}",
+      "done": "{n, plural, one {Zašifrovaná # príloha} few {Zašifrované # prílohy} other {Zašifrovaných # príloh}}.",
+      "partial": "Zašifrovaných {n}, {failed} sa nepodarilo. Skúste to znova neskôr.",
+      "nothing": "Nebolo čo šifrovať.",
+      "failed": "Šifrovanie sa nepodarilo. Už zašifrované prílohy zostávajú zašifrované."
     }
   }
 }

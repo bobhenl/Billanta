@@ -9,6 +9,7 @@ import { formatDate, formatMoney } from '@/lib/invoice-ui';
 import { EXPENSE_STATE_CLASSES, expenseState, isKnownCategory, vatOfGross, type Expense } from '@/lib/expense-ui';
 import { cn } from '@/lib/utils';
 import { isReverseChargeCode } from '@faktur/cz-compliance';
+import { AttachmentsPanel, type Attachment } from '../../invoices/[id]/attachments-panel';
 import { ExpenseActions } from './expense-actions';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -52,6 +53,9 @@ export default async function ExpenseDetailPage(props: { params: Promise<{ id: s
       </Banner>
     );
   }
+
+  // Null on an older backend without expense files: the panel is then left out.
+  const attachments = await apiFetch<Attachment[]>(`/api/v1/expenses/${params.id}/attachments`).catch(() => null);
 
   const contact = expense.supplierContactId
     ? ((await apiFetch<ContactRow[]>(`/api/v1/contacts/${expense.supplierContactId}`).catch(() => []))[0] ?? null)
@@ -164,6 +168,8 @@ export default async function ExpenseDetailPage(props: { params: Promise<{ id: s
               {t('openReceipt')}
             </a>
           )}
+
+          {attachments && <AttachmentsPanel expenseId={expense.id} initial={attachments} />}
         </section>
 
         <aside className="space-y-4">

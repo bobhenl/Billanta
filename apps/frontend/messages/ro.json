@@ -840,7 +840,12 @@
       "qrFound": "Datele au fost încărcate din codul QR",
       "qrCheck": "Completat din factura QR – furnizorul, suma, TVA-ul și datele corespund exact documentului. Adăugați o descriere și o categorie.",
       "qrCheckPayment": "Codul QR de plată a furnizat suma, simbolul variabil și scadența. Completați restul sau încărcați întregul document.",
-      "qrDescription": "Factura {number}"
+      "qrDescription": "Factura {number}",
+      "aiOptIn": "Trimiteți bonul la AI – trece o dată prin server, nu se salvează",
+      "aiOptInHint": "Fără bifă se citește doar codul QR, direct în browser, iar restul completați dvs.",
+      "receiptKeptLocal": "Bonul a rămas în browser. La salvare va fi atașat criptat.",
+      "receiptWillEncrypt": "Va fi atașat criptat la salvare: {name}",
+      "receiptNotStored": "Cheltuiala este salvată, dar bonul nu a putut fi atașat. Adăugați-l pe pagina cheltuielii."
     },
     "noTenant": "Configurați mai întâi firma.",
     "loadError": "Cheltuielile nu au putut fi încărcate",
@@ -5225,8 +5230,19 @@
         "bad_type": "Acest tip de fișier nu poate fi atașat.",
         "too_big": "Fișierul depășește 5 MB.",
         "too_many": "O factură poate avea cel mult 10 atașamente.",
-        "generic": "Atașamentul nu a putut fi salvat."
-      }
+        "generic": "Atașamentul nu a putut fi salvat.",
+        "plan_required": "Criptarea atașamentelor face parte din planul Plus.",
+        "vault_category_off": "Criptarea atașamentelor nu este activată în modul confidențial."
+      },
+      "hintExpense": "Bonul sau factura primită pentru această cheltuială. PDF, imagini, Office, CSV/XML/TXT, max. 5 MB, cel mult 10 fișiere.",
+      "encryptsNew": "Fișierele noi sunt criptate în browser înainte de încărcare.",
+      "encryptedName": "Fișier criptat",
+      "encrypted": "Criptat",
+      "openEncrypted": "Deschideți (se decriptează în browserul dvs.)",
+      "decryptFailed": "Fișierul nu a putut fi decriptat.",
+      "emailOnEncrypted": "Criptat: pleacă cu e-mailul doar dacă confirmați la trimitere (clic pentru a dezactiva)",
+      "portalEncrypted": "Clientul nu poate deschide un atașament criptat în linkul partajat",
+      "previewLocal": "Previzualizarea a fost creată doar în browserul dvs. Serverul nu a citit fișierul."
     },
     "quoteResponse": {
       "title": "Răspunsul clientului",
@@ -14294,7 +14310,11 @@
     "actions": {
       "blocked": "Indisponibil în Modul confidențial: serverul nu poate citi un document criptat. Dezactivați atașamentul PDF/ISDOC în setările e-mail sau trimiteți un link.",
       "pdfUnavailable": "PDF-ul nu este disponibil în Modul confidențial. Puteți tipări detaliul din browser (Ctrl+P).",
-      "sendHint": "Acest document este criptat: e-mailul pleacă doar cu un link, serverul nu poate atașa PDF sau ISDOC."
+      "sendHint": "Acest document este criptat: e-mailul pleacă doar cu un link, serverul nu poate atașa PDF sau ISDOC.",
+      "unlockFirst": "Fără deblocare, atașamentele criptate nu pot fi adăugate.",
+      "decryptFailed": "Un atașament nu a putut fi decriptat.",
+      "passFiles": "{n, plural, one {Atașați # fișier criptat} few {Atașați # fișiere criptate} other {Atașați # de fișiere criptate}}",
+      "passFilesHint": "Browserul le decriptează și trec o singură dată prin server, în acest e-mail. Serverul nu le păstrează și le șterge după livrare."
     },
     "categories": {
       "recommended": "Recomandat",
@@ -14313,11 +14333,18 @@
       },
       "attachments": {
         "title": "Atașamente și bonuri",
-        "description": "Fișiere atașate documentelor și cheltuielilor.",
+        "description": "Fișierele documentelor și bonurile cheltuielilor.",
         "loses": [
-          "Citirea bonurilor cu AI",
-          "Previzualizarea atașamentelor",
-          "Trimiterea atașamentelor pe e-mail și predarea către contabil"
+          "AI citește bonul doar cu acordul dvs. pentru o singură dată: fișierul trece prin server și nu se salvează",
+          "Atașamentele criptate nu apar în linkul partajat pentru client",
+          "E-mailul facturii le include doar dacă le deblocați și confirmați la trimitere",
+          "Contabilul le deschide doar ca membru al echipei cu propria cheie, exporturile nu conțin fișiere"
+        ],
+        "how": [
+          "Fiecare fișier este criptat în browser cu propria cheie, înainte să ajungă pe server.",
+          "Numele și tipul fișierului sunt și ele criptate. Serverul știe doar dimensiunea și data încărcării.",
+          "Previzualizarea și descărcarea decriptează fișierul doar în browserul dvs.",
+          "Atașamentele mai vechi rămân lizibile până le criptați cu Criptați atașamentele existente."
         ]
       },
       "contacts": {
@@ -14339,7 +14366,8 @@
           "Tablouri de bord, venitul net și grafice",
           "Mementouri cu sumă și plăți QR create de server"
         ]
-      }
+      },
+      "howTitle": "Cum funcționează:"
     },
     "enable": {
       "offTitle": "Modul confidențial este dezactivat",
@@ -14424,7 +14452,23 @@
       "recoveryNew": "Creați un cod de recuperare nou",
       "recoveryReplaced": "Noul cod de recuperare este valabil",
       "categoriesTitle": "Ce se criptează",
-      "categoriesLead": "Urmează și alte opțiuni. La fiecare vedeți ce nu ar mai funcționa."
+      "categoriesLead": "Puteți adăuga o categorie și mai târziu. Dezactivarea doar oprește criptarea datelor noi, ce este criptat rămâne criptat.",
+      "categoriesMin": "Lăsați activată cel puțin o categorie.",
+      "categoryOffConfirm": "Dezactivați această categorie? Fișierele și textele noi nu vor mai fi criptate. Ce este deja criptat rămâne criptat."
+    },
+    "sealFiles": {
+      "button": "Criptați atașamentele existente",
+      "title": "Criptați atașamentele existente",
+      "what": "Browserul descarcă atașamentele documentelor și bonurile cheltuielilor pe care serverul încă le poate citi, le criptează și le încarcă înapoi în locul lor.",
+      "loses": "Atașamentele criptate dispar din linkul partajat al clientului, iar e-mailul facturii le include doar după confirmare la trimitere.",
+      "resumable": "Atașamentele documentelor blocate sunt sărite. Dacă închideți fereastra, data viitoare se continuă de unde ați rămas.",
+      "cancel": "Înapoi",
+      "confirm": "Criptați",
+      "progress": "Se criptează… {n}",
+      "done": "{n, plural, one {# atașament criptat} few {# atașamente criptate} other {# de atașamente criptate}}.",
+      "partial": "{n} criptate, {failed} au eșuat. Încercați din nou mai târziu.",
+      "nothing": "Nu a fost nimic de criptat.",
+      "failed": "Criptarea a eșuat. Atașamentele deja criptate rămân criptate."
     }
   }
 }

@@ -25,6 +25,8 @@ import { Link, useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { useCanDo, useCanWrite } from '@/components/access-provider';
+import { useVault } from '@/components/vault/vault-provider';
+import { fetchDecrypted } from '@/lib/vault/files';
 import { CONVERSIONS, type DocumentType, type InvoiceStatus } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
 import {
@@ -66,7 +68,8 @@ export function InvoiceActions({
   sentAt = null,
   editedAfterSend = false,
   hasCustomer = true,
-  confidential = false
+  confidential = false,
+  encryptedAttachments = []
 }: {
   id: string;
   documentType: DocumentType;
@@ -90,12 +93,37 @@ export function InvoiceActions({
   hasCustomer?: boolean;
   /** Printed texts are encrypted ("Důvěrný režim"): the server can't make the PDF, ISDOC or UBL. */
   confidential?: boolean;
+  /** Encrypted attachments marked "send with email": the server can only attach them if the browser decrypts them for this one e-mail. */
+  encryptedAttachments?: { id: string; encMeta: string }[];
 }) {
   const t = useTranslations('doc');
   const tVault = useTranslations('vault.actions');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [dialog, setDialog] = useState<Dialog>(null);
+  const { requestUnlock } = useVault();
+  // Off by default: passing the files through the server is the member's explicit choice for this e-mail.
+  const [passFiles, setPassFiles] = useState(false);
+
+  /** Decrypts the encrypted attachments here and sends them once with the e-mail; nothing is stored. */
+  const sendWithFiles = () =>
+    act(async (): Promise<ActionResult<unknown>> => {
+      const key = await requestUnlock();
+      if (!key) return { ok: false, error: tVault('unlockFirst') };
+      const body = new FormData();
+      try {
+        for (const a of encryptedAttachments) {
+          const file = await fetchDecrypted(`/api/files/invoices/${id}/attachments/${a.id}`, key, a.encMeta);
+          body.append('files', file, file.name);
+        }
+      } catch {
+        return { ok: false, error: tVault('decryptFailed') };
+      }
+      const res = await fetch(`/api/invoices/${id}/send-with-files`, { method: 'POST', body });
+      if (res.ok) return { ok: true, data: null };
+      const json = await res.json().catch(() => ({}));
+      return { ok: false, error: String(json?.message?.error ?? json?.error ?? json?.message ?? res.status) };
+    }, t('done.sent'));
   const [paidAt, setPaidAt] = useState(() => new Date().toISOString().slice(0, 10));
   const [templateName, setTemplateName] = useState(defaultTemplateName);
   const locale = useLocale();
@@ -422,7 +450,7 @@ export function InvoiceActions({
             <button type="button" className={buttonClass.secondary} onClick={() => setDialog(null)}>
               {t('confirm.back')}
             </button>
-            <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => act(() => sendInvoice(id), t('done.sent'))}>
+            <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => (passFiles && encryptedAttachments.length ? sendWithFiles() : act(() => sendInvoice(id), t('done.sent')))}>
               <Send className="h-4 w-4" />
               {editedAfterSend ? t('correction.send') : t('actions.send')}
             </button>
@@ -431,6 +459,15 @@ export function InvoiceActions({
       >
         <p className="text-muted-foreground">{editedAfterSend ? t('correction.sendBody') : t('confirm.sendBody')}</p>
         {confidential && <p className="mt-2 text-xs text-muted-foreground">{tVault('sendHint')}</p>}
+        {encryptedAttachments.length > 0 && (
+          <label className="mt-3 flex items-start gap-2 rounded-lg border border-border p-3 text-sm">
+            <input type="checkbox" checked={passFiles} onChange={(e) => setPassFiles(e.target.checked)} className="mt-0.5" />
+            <span>
+              <span className="font-semibold">{tVault('passFiles', { n: encryptedAttachments.length })}</span>
+              <span className="block text-xs text-muted-foreground">{tVault('passFilesHint')}</span>
+            </span>
+          </label>
+        )}
       </Modal>
 
       <Modal

@@ -840,7 +840,12 @@
       "qrFound": "Données chargées depuis le QR code",
       "qrCheck": "Rempli depuis la facture QR – le fournisseur, le montant, la TVA et les dates correspondent exactement au document. Ajoutez une description et une catégorie.",
       "qrCheckPayment": "Le QR de paiement a fourni le montant, le symbole variable et la date d’échéance. Complétez le reste ou importez le document complet.",
-      "qrDescription": "Facture {number}"
+      "qrDescription": "Facture {number}",
+      "aiOptIn": "Envoyer le ticket à l’IA – il passe une fois par le serveur et n’est pas conservé",
+      "aiOptInHint": "Sans cette case, seul un code QR est lu, directement dans le navigateur, et vous remplissez le reste.",
+      "receiptKeptLocal": "Le ticket est resté dans votre navigateur. Il sera joint, chiffré, à l’enregistrement.",
+      "receiptWillEncrypt": "Sera joint chiffré à l’enregistrement : {name}",
+      "receiptNotStored": "La dépense est enregistrée, mais le ticket n’a pas pu être joint. Ajoutez-le sur la page de la dépense."
     },
     "noTenant": "Configurez d’abord votre entreprise.",
     "loadError": "Impossible de charger les dépenses",
@@ -5225,8 +5230,19 @@
         "bad_type": "Ce type de fichier ne peut pas être joint.",
         "too_big": "Le fichier dépasse 5 Mo.",
         "too_many": "Une facture peut avoir au maximum 10 pièces jointes.",
-        "generic": "Impossible d’enregistrer la pièce jointe."
-      }
+        "generic": "Impossible d’enregistrer la pièce jointe.",
+        "plan_required": "Le chiffrement des pièces jointes fait partie de la formule Plus.",
+        "vault_category_off": "Le chiffrement des pièces jointes n’est pas activé dans le mode confidentiel."
+      },
+      "hintExpense": "Le ticket ou la facture fournisseur de cette dépense. PDF, images, Office, CSV/XML/TXT, 5 Mo max., 10 fichiers au plus.",
+      "encryptsNew": "Les nouveaux fichiers sont chiffrés dans votre navigateur avant l’envoi.",
+      "encryptedName": "Fichier chiffré",
+      "encrypted": "Chiffré",
+      "openEncrypted": "Ouvrir (déchiffré dans votre navigateur)",
+      "decryptFailed": "Le fichier n’a pas pu être déchiffré.",
+      "emailOnEncrypted": "Chiffré : part avec l’e-mail seulement si vous le confirmez à l’envoi (cliquez pour désactiver)",
+      "portalEncrypted": "Le client ne peut pas ouvrir une pièce jointe chiffrée dans le lien partagé",
+      "previewLocal": "Cet aperçu a été créé uniquement dans votre navigateur. Le serveur n’a pas lu le fichier."
     },
     "quoteResponse": {
       "title": "Réponse du client",
@@ -14294,7 +14310,11 @@
     "actions": {
       "blocked": "Indisponible en Mode confidentiel : le serveur ne peut pas lire un document chiffré. Désactivez la pièce jointe PDF/ISDOC dans les réglages des e-mails ou envoyez un lien.",
       "pdfUnavailable": "Le PDF n'est pas disponible en Mode confidentiel. Vous pouvez imprimer le détail depuis votre navigateur (Ctrl+P).",
-      "sendHint": "Ce document est chiffré : l'e-mail part avec un lien seulement, le serveur ne peut pas joindre de PDF ou d'ISDOC."
+      "sendHint": "Ce document est chiffré : l'e-mail part avec un lien seulement, le serveur ne peut pas joindre de PDF ou d'ISDOC.",
+      "unlockFirst": "Sans déverrouillage, les pièces jointes chiffrées ne peuvent pas être ajoutées.",
+      "decryptFailed": "Une pièce jointe n’a pas pu être déchiffrée.",
+      "passFiles": "{n, plural, one {Joindre # fichier chiffré} other {Joindre # fichiers chiffrés}}",
+      "passFilesHint": "Votre navigateur les déchiffre et ils passent une seule fois par le serveur, dans cet e-mail. Le serveur ne les garde pas et les supprime après la remise."
     },
     "categories": {
       "recommended": "Recommandé",
@@ -14313,11 +14333,18 @@
       },
       "attachments": {
         "title": "Pièces jointes et reçus",
-        "description": "Fichiers joints aux documents et aux dépenses.",
+        "description": "Fichiers des documents et tickets des dépenses.",
         "loses": [
-          "Lecture des reçus par IA",
-          "Aperçus des pièces jointes",
-          "Envoi des pièces jointes par e-mail et transmission au comptable"
+          "L’IA ne lit un ticket qu’avec votre accord ponctuel : le fichier passe par le serveur et n’est pas conservé",
+          "Les pièces jointes chiffrées ne figurent pas dans le lien partagé avec le client",
+          "L’e-mail de facture ne les inclut que si vous les déverrouillez et confirmez à l’envoi",
+          "Votre comptable ne les ouvre qu’en tant que membre de l’équipe avec sa propre clé ; les exports ne contiennent pas de fichiers"
+        ],
+        "how": [
+          "Chaque fichier est chiffré dans votre navigateur avec sa propre clé avant d’aller au serveur.",
+          "Le nom et le type du fichier sont chiffrés aussi. Le serveur ne connaît que la taille et la date d’envoi.",
+          "L’aperçu et le téléchargement déchiffrent le fichier dans votre navigateur.",
+          "Les pièces jointes plus anciennes restent lisibles jusqu’à ce que vous les chiffriez avec Chiffrer les pièces jointes existantes."
         ]
       },
       "contacts": {
@@ -14339,7 +14366,8 @@
           "Tableaux de bord, revenu net et graphiques",
           "Relances avec montant et paiements QR créés par le serveur"
         ]
-      }
+      },
+      "howTitle": "Comment ça marche :"
     },
     "enable": {
       "offTitle": "Le Mode confidentiel est désactivé",
@@ -14424,7 +14452,23 @@
       "recoveryNew": "Créer un nouveau code de secours",
       "recoveryReplaced": "Le nouveau code de secours est actif",
       "categoriesTitle": "Ce qui est chiffré",
-      "categoriesLead": "D'autres options arrivent. Pour chacune, vous voyez ce qui cesserait de fonctionner."
+      "categoriesLead": "Vous pouvez ajouter une catégorie plus tard. La désactiver arrête seulement le chiffrement des nouvelles données ; ce qui est chiffré le reste.",
+      "categoriesMin": "Gardez au moins une catégorie activée.",
+      "categoryOffConfirm": "Désactiver cette catégorie ? Les nouveaux fichiers et textes ne seront plus chiffrés. Ce qui est déjà chiffré le reste."
+    },
+    "sealFiles": {
+      "button": "Chiffrer les pièces jointes existantes",
+      "title": "Chiffrer les pièces jointes existantes",
+      "what": "Votre navigateur télécharge les pièces jointes des documents et les tickets des dépenses que le serveur peut encore lire, les chiffre et les renvoie à leur place.",
+      "loses": "Les pièces jointes chiffrées disparaissent du lien partagé avec le client, et l’e-mail de facture ne les inclut qu’après confirmation à l’envoi.",
+      "resumable": "Les pièces jointes des documents verrouillés sont ignorées. Si vous fermez la fenêtre, la prochaine fois reprend là où vous vous êtes arrêté.",
+      "cancel": "Retour",
+      "confirm": "Chiffrer",
+      "progress": "Chiffrement… {n}",
+      "done": "{n, plural, one {# pièce jointe chiffrée} other {# pièces jointes chiffrées}}.",
+      "partial": "{n} chiffrées, {failed} en échec. Réessayez plus tard.",
+      "nothing": "Il n’y avait rien à chiffrer.",
+      "failed": "Le chiffrement a échoué. Les pièces jointes déjà chiffrées le restent."
     }
   }
 }
