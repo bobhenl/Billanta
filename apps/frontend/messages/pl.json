@@ -14761,7 +14761,9 @@
     },
     "amounts": {
       "paidSealed": "Kwoty dokumentu są zaszyfrowane, dlatego można zapisać tylko zapłatę całej kwoty. Serwer nie przechowuje opłat ani zaksięgowanej kwoty.",
-      "leftOut": "Bez {count, plural, one {# dokumentu} few {# dokumentów} many {# dokumentów} other {# dokumentu}} z zaszyfrowanymi kwotami – odblokuj sejf"
+      "leftOut": "Bez {count, plural, one {# dokumentu} few {# dokumentów} many {# dokumentów} other {# dokumentu}} z zaszyfrowanymi kwotami – odblokuj sejf",
+      "exportLocked": "Dokumenty z zaszyfrowanymi kwotami trafią do pliku dopiero po odblokowaniu sejfu.",
+      "exportUnreadable": "Plik nie powstał: {count, plural, one {# dokumentu} few {# dokumentów} many {# dokumentów} other {# dokumentu}} nie da się otworzyć tym kluczem. Brakujący dokument zafałszowałby plik."
     }
   },
   "vaultPublic": {

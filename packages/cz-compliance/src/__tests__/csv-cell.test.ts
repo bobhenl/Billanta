@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { csvCell, csvText } from "./csv-cell";
+import { csvCell, csvText } from "../csv-cell.js";
 
 describe("csvCell", () => {
   it("prefixes text that starts like a formula", () => {

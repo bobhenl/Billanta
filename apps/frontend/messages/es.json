@@ -14760,7 +14760,9 @@
     },
     "amounts": {
       "paidSealed": "Los importes del documento están cifrados, por eso solo se puede registrar el pago completo. El servidor no guarda comisiones ni el importe abonado.",
-      "leftOut": "Sin {count, plural, one {# documento} other {# documentos}} con importes cifrados – desbloquee la caja fuerte"
+      "leftOut": "Sin {count, plural, one {# documento} other {# documentos}} con importes cifrados – desbloquee la caja fuerte",
+      "exportLocked": "Los documentos con importes cifrados solo entran en el archivo tras desbloquear la caja fuerte.",
+      "exportUnreadable": "No se creó el archivo: {count, plural, one {# documento no se puede abrir} other {# documentos no se pueden abrir}} con esta clave. Un documento que falte haría el archivo incorrecto."
     }
   },
   "vaultPublic": {

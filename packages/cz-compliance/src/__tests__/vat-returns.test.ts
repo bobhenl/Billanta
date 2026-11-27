@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseCnbRates } from "./cnb-rates";
+import { parseCnbRates } from "../cnb-rates.js";
 import {
   classifyIssued,
   generateDphDp3,
@@ -10,7 +10,7 @@ import {
   supplierOrigin,
   type VatIssuedDoc,
   type VatReceivedDoc,
-} from "./vat-returns";
+} from "../vat-returns.js";
 
 // Prolog, then the caveat comment (no "--" inside, or the XML is malformed), then the root element.
 const DISCLAIMED = /^<\?xml version="1\.0" encoding="UTF-8"\?>\n<!-- (?:(?!--)[^])+ -->\n<Pisemnost[ >]/;

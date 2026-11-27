@@ -14676,7 +14676,9 @@
     },
     "amounts": {
       "paidSealed": "Sumy dokladu sú zašifrované, preto sa dá zaznamenať len úhrada celej sumy. Poplatky ani pripísanú sumu server neukladá.",
-      "leftOut": "Bez {count, plural, one {# dokladu} few {# dokladov} other {# dokladov}} so zašifrovanými sumami – odomknite trezor"
+      "leftOut": "Bez {count, plural, one {# dokladu} few {# dokladov} other {# dokladov}} so zašifrovanými sumami – odomknite trezor",
+      "exportLocked": "Doklady so zašifrovanými sumami sa dajú pridať do súboru až po odomknutí trezora.",
+      "exportUnreadable": "Súbor nevznikol: {count, plural, one {# doklad} few {# doklady} other {# dokladov}} sa nedá týmto kľúčom otvoriť. Chýbajúci doklad by súbor skreslil."
     }
   },
   "vaultPublic": {

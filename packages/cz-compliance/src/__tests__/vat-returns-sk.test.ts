@@ -7,7 +7,7 @@ import {
   skSubmitterFromTenant,
   type SkIssuedDoc,
   type SkReceivedDoc,
-} from "./vat-returns-sk";
+} from "../vat-returns-sk.js";
 
 const submitter = skSubmitterFromTenant({
   legalName: "Ján Kováč & syn s.r.o.",

@@ -14760,7 +14760,9 @@
     },
     "amounts": {
       "paidSealed": "De bedragen van het document zijn versleuteld, daarom kan alleen een volledige betaling worden vastgelegd. Kosten en het bijgeschreven bedrag slaat de server niet op.",
-      "leftOut": "Zonder {count, plural, one {# document} other {# documenten}} met versleutelde bedragen – ontgrendel de kluis"
+      "leftOut": "Zonder {count, plural, one {# document} other {# documenten}} met versleutelde bedragen – ontgrendel de kluis",
+      "exportLocked": "Documenten met versleutelde bedragen komen pas in het bestand nadat de kluis is ontgrendeld.",
+      "exportUnreadable": "Geen bestand gemaakt: {count, plural, one {# document kan} other {# documenten kunnen}} niet met deze sleutel worden geopend. Een ontbrekend document zou het bestand onjuist maken."
     }
   },
   "vaultPublic": {

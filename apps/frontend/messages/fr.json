@@ -14760,7 +14760,9 @@
     },
     "amounts": {
       "paidSealed": "Les montants du document sont chiffrés, seul un paiement intégral peut donc être enregistré. Le serveur ne conserve ni frais ni montant crédité.",
-      "leftOut": "Sans {count, plural, one {# document} other {# documents}} aux montants chiffrés – déverrouillez le coffre"
+      "leftOut": "Sans {count, plural, one {# document} other {# documents}} aux montants chiffrés – déverrouillez le coffre",
+      "exportLocked": "Les documents aux montants chiffrés n'entrent dans le fichier qu'après le déverrouillage du coffre.",
+      "exportUnreadable": "Aucun fichier créé : {count, plural, one {# document ne peut pas être ouvert} other {# documents ne peuvent pas être ouverts}} avec cette clé. Un document manquant fausserait le fichier."
     }
   },
   "vaultPublic": {

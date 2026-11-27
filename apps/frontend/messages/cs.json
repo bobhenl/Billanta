@@ -14772,7 +14772,9 @@
     },
     "amounts": {
       "paidSealed": "Částky dokladu jsou zašifrované, proto jde zaznamenat jen úhradu celé částky. Poplatky ani připsanou částku server neukládá.",
-      "leftOut": "Bez {count, plural, one {# dokladu} few {# dokladů} other {# dokladů}} se zašifrovanými částkami – odemkněte trezor"
+      "leftOut": "Bez {count, plural, one {# dokladu} few {# dokladů} other {# dokladů}} se zašifrovanými částkami – odemkněte trezor",
+      "exportLocked": "Doklady se zašifrovanými částkami jde do souboru přidat až po odemčení trezoru.",
+      "exportUnreadable": "Soubor nevznikl: {count, plural, one {# doklad} few {# doklady} other {# dokladů}} nejde tímto klíčem otevřít. Chybějící doklad by soubor zkreslil."
     }
   },
   "vaultPublic": {

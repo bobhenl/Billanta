@@ -1,5 +1,3 @@
-import { netAfterTaxes } from "../invoices/amount-vars";
-import { displayCustomField, resolveVars } from "../invoices/custom-fields";
 import { type TemplateVar, templateVarsOf } from "../tenants/template-vars";
 import { applyBuyerSnapshot } from "../invoices/party-snapshot";
 import { expenseVatParts } from "../expenses/expense-vat";
@@ -11,25 +9,27 @@ import * as schema from "../../drizzle/schema";
 import { computeVatBreakdown, type InvoiceVatBreakdown, round2 } from "../invoices/invoice-total.util";
 import { type AccountingBasis, computeAnnualSummary, type FlatRate } from "./annual-summary";
 import { getHomeRate } from "./home-rates";
-import { homeCurrencyOf, type HomeCurrency } from "@faktur/cz-compliance";
-import { ReportRates } from "./uniform-rate";
-import { csvCell } from "./csv-cell";
 import {
-  generateDphDp3,
-  generateDphDp3Identified,
-  generateDphKh1,
-  generateDphShv,
-  submitterFromTenant,
-  type VatExportWarning,
-  type VatIssuedDoc,
-  type VatPeriod,
-  type VatReceivedDoc,
-} from "./vat-returns";
-import { generateSkDphV25, generateSkKvDphV25, generateSkSvDphV20, skSubmitterFromTenant } from "./vat-returns-sk";
+  buildCzVatFiling,
+  buildSkVatFiling,
+  csvSheet,
+  homeCurrencyOf,
+  invoicesCsvBody,
+  vatPartsOf,
+  type CzVatFilingKind,
+  type FilingIssuedDoc,
+  type HomeCurrency,
+  type SealedCsvInputs,
+  type SealedVatInputs,
+  type SkVatFilingKind,
+} from "@faktur/cz-compliance";
+import { ReportRates } from "./uniform-rate";
+import { submitterFromTenant, type VatExportWarning, type VatPeriod, type VatReceivedDoc } from "./vat-returns";
+import { skSubmitterFromTenant } from "./vat-returns-sk";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 import { redactSealedInvoice, redactSealedItem } from "../vault/sealed";
 import { redactSealedContact } from "../vault/sealed-contacts";
-import { refuseSealedRows, splitSealed } from "../vault/sealed-amounts";
+import { amountsSealed, refuseSealedRows, splitSealed } from "../vault/sealed-amounts";
 
 type Db = PostgresJsDatabase<typeof schema>;
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
@@ -47,14 +47,6 @@ const TYPE_LABEL: Record<InvoiceRow["documentType"], string> = {
   proforma: "Zálohová faktura",
   credit_note: "Dobropis",
   quote: "Nabídka",
-};
-
-const STATUS_LABEL: Record<InvoiceRow["status"], string> = {
-  draft: "Koncept",
-  pending_review: "Ke kontrole",
-  issued: "Vystaveno",
-  paid: "Uhrazeno",
-  cancelled: "Stornováno",
 };
 
 const POHODA_INVOICE_TYPE: Partial<Record<InvoiceRow["documentType"], string>> = {
@@ -83,10 +75,7 @@ function csDate(d: Date | null | undefined): string {
   return `${x.getDate()}.${x.getMonth() + 1}.${x.getFullYear()}`;
 }
 
-/** Czech Excel opens `;`-separated, comma-decimal, BOM-prefixed UTF-8 cleanly. */
-function csv(rows: (string | number | null | undefined)[][]): string {
-  return "﻿" + rows.map((r) => r.map(csvCell).join(";")).join("\r\n") + "\r\n";
-}
+const csv = csvSheet;
 
 function xml(v: string | number | null | undefined): string {
   if (v == null) return "";
@@ -151,91 +140,8 @@ function pohodaRate(percent: number): string {
 /** Which date puts a document into the export period. */
 export type ExportDateBy = "issue" | "supply";
 
-export interface CsvInvoiceRow {
-  invoice: InvoiceRow;
-  contact: ContactRow | null;
-  totals: InvoiceVatBreakdown;
-}
-
-const percentLabel = (p: number) => `${String(p).replace(".", ",")} %`;
-
-/**
- * The accountant's invoice list: one row per document, the columns Czech
- * accountants ask for first (dates, customer IDs, base and VAT per rate,
- * home-currency rate and total), then the extras. Rate columns are made for
- * every VAT rate present, highest first. The rate is the one stored on the
- * document at issue (ČNB, or ECB for a Slovak company in EUR); a foreign
- * document without one gets an empty home-currency total.
- */
-export function invoicesCsvBody(rows: CsvInvoiceRow[], companyVars: TemplateVar[] = [], home: HomeCurrency = "CZK"): string {
-  const rates = [...new Set(rows.flatMap((r) => r.totals.byRate.map((b) => b.vatRatePercent)))].sort((a, b) => b - a);
-  const rateHeaders = rates.flatMap((p) => (p > 0 ? [`Základ ${percentLabel(p)}`, `DPH ${percentLabel(p)}`] : [`Základ ${percentLabel(p)}`]));
-  return csv([
-    [
-      "Číslo",
-      "Typ",
-      "Vystaveno",
-      "DUZP",
-      "Splatnost",
-      "Uhrazeno",
-      "Odběratel",
-      "IČO",
-      "DIČ",
-      "Měna",
-      ...rateHeaders,
-      "Základ celkem",
-      "DPH celkem",
-      "Celkem",
-      home === "EUR" ? "Kurz ECB" : "Kurz ČNB",
-      `Celkem v ${home}`,
-      "VS",
-      "Stav",
-      "Jazyk",
-      "Přenesená daňová povinnost",
-      "Uhrazená částka",
-      "Čistý odhad (po dani a pojištění, paušál 60 %)",
-      "Vlastní pole",
-      "Interní poznámka",
-    ],
-    ...rows.map(({ invoice, contact, totals }) => {
-      const perRate = rates.flatMap((p) => {
-        const b = totals.byRate.find((x) => x.vatRatePercent === p);
-        return p > 0 ? [b?.totalWithoutVat ?? null, b?.vatAmount ?? null] : [b?.totalWithoutVat ?? null];
-      });
-      const rate = invoice.currency === home ? 1 : invoice.exchangeRate == null ? null : Number(invoice.exchangeRate);
-      return [
-        invoice.invoiceNumber,
-        TYPE_LABEL[invoice.documentType],
-        csDate(invoice.issueDate),
-        csDate(invoice.taxableSupplyDate ?? invoice.issueDate),
-        csDate(invoice.dueDate),
-        csDate(invoice.paidAt),
-        contact?.legalName,
-        contact?.ico,
-        contact?.dic,
-        invoice.currency,
-        ...perRate,
-        totals.totalWithoutVat,
-        totals.totalVat,
-        totals.totalWithVat,
-        // Up to 6 decimals as stored; a plain number cell would round it to 2.
-        rate == null ? null : String(rate).replace(".", ","),
-        rate == null ? null : round2(totals.totalWithVat * rate),
-        invoice.variableSymbol,
-        STATUS_LABEL[invoice.status],
-        invoice.language,
-        invoice.reverseCharge ? "ano" : "",
-        Number(invoice.amountPaid ?? 0),
-        netAfterTaxes(totals.totalWithoutVat),
-        // Internal ones included: the export goes to the company / its accountant.
-        (invoice.customFields ?? [])
-          .map((f) => `${f.label}: ${displayCustomField(f, resolveVars(invoice.customFields, totals, invoice.amountPaid, companyVars), (n) => n.toFixed(2).replace(".", ","), (v) => v)}${f.internal ? " (interní)" : ""}`)
-          .join(" | "),
-        invoice.internalNote,
-      ];
-    }),
-  ]);
-}
+// The CSV builder is shared with the browser (sealed amounts): cz-compliance.
+export { invoicesCsvBody, type CsvInvoiceRow } from "@faktur/cz-compliance";
 
 /**
  * Accountant exports for a period (by issue date): CSV for spreadsheets and
@@ -245,7 +151,18 @@ export function invoicesCsvBody(rows: CsvInvoiceRow[], companyVars: TemplateVar[
  */
 @Injectable()
 export class ExportsService {
-  private async loadInvoices(db: Db, period: ExportPeriod, filters: ReportFilters = {}, dateBy: ExportDateBy = "issue") {
+  /**
+   * `sealed: "envelope"` keeps documents with sealed amounts (null totals,
+   * the envelope instead) for the browser to build the file; by default they
+   * are refused, since they would export as 0.
+   */
+  private async loadInvoices(
+    db: Db,
+    period: ExportPeriod,
+    filters: ReportFilters = {},
+    dateBy: ExportDateBy = "issue",
+    sealed: "refuse" | "envelope" = "refuse",
+  ) {
     // By DUZP (falling back to the issue date) the list matches the Reports page; by issue date it is the classic book.
     const supply = sql`coalesce(${schema.invoices.taxableSupplyDate}, ${schema.invoices.issueDate})`;
     const inPeriod =
@@ -270,7 +187,7 @@ export class ExportsService {
     const today = new Date();
     const kept = rows.filter((r) => r.invoice.documentType !== "quote" && matchesFilters(r.invoice, filters, today));
     // Sealed amounts would export as 0: the accountant's file is refused rather than quietly wrong.
-    refuseSealedRows(kept.map((r) => r.invoice));
+    if (sealed === "refuse") refuseSealedRows(kept.map((r) => r.invoice));
     const ids = kept.map((r) => r.invoice.id);
     const items = ids.length
       ? await db
@@ -296,6 +213,7 @@ export class ExportsService {
         contact: r.contact ? redactSealedContact(applyBuyerSnapshot(r.contact, r.invoice.buyerSnapshot)) : null,
         lineItems,
         totals: computeVatBreakdown(lineItems, { reverseCharge: r.invoice.reverseCharge }),
+        encAmounts: amountsSealed(r.invoice) ? r.invoice.encAmounts : null,
       };
     });
   }
@@ -313,6 +231,43 @@ export class ExportsService {
     // RLS scopes this to the caller's own company — its number variables feed the formulas.
     const [tenant] = await db.select({ templateVars: schema.tenants.templateVars, country: schema.tenants.country }).from(schema.tenants).limit(1);
     return invoicesCsvBody(rows, templateVarsOf(tenant?.templateVars), homeCurrencyOf(tenant?.country));
+  }
+
+  /**
+   * What the browser needs to build the invoice CSV when some amounts are
+   * sealed: the same rows in the same order, plain ones with their totals,
+   * sealed ones with the envelope. Opened totals never come back here.
+   */
+  async invoicesCsvInputs(db: Db, period: ExportPeriod, filters: ReportFilters = {}, dateBy: ExportDateBy = "issue"): Promise<SealedCsvInputs> {
+    const rows = await this.loadInvoices(db, period, filters, dateBy, "envelope");
+    const [tenant] = await db.select({ templateVars: schema.tenants.templateVars, country: schema.tenants.country }).from(schema.tenants).limit(1);
+    return {
+      home: homeCurrencyOf(tenant?.country),
+      companyVars: templateVarsOf(tenant?.templateVars).map((v) => ({ key: v.key, value: v.value })),
+      rows: rows.map(({ invoice: i, contact, totals, encAmounts }) => ({
+        invoice: {
+          invoiceNumber: i.invoiceNumber,
+          documentType: i.documentType,
+          status: i.status,
+          issueDate: i.issueDate,
+          taxableSupplyDate: i.taxableSupplyDate,
+          dueDate: i.dueDate,
+          paidAt: i.paidAt,
+          currency: i.currency,
+          exchangeRate: i.exchangeRate,
+          variableSymbol: i.variableSymbol,
+          language: i.language,
+          reverseCharge: i.reverseCharge,
+          amountPaid: i.amountPaid,
+          customFields: i.customFields,
+          internalNote: i.internalNote,
+        },
+        contact: contact ? { legalName: contact.legalName, ico: contact.ico, dic: contact.dic } : null,
+        // A sealed document's plain totals are the placeholder's zeros.
+        totals: encAmounts ? null : totals,
+        encAmounts,
+      })),
+    };
   }
 
   async expensesCsv(db: Db, period: ExportPeriod): Promise<string> {
@@ -582,6 +537,8 @@ export class ExportsService {
     toHome: (currency: string, stored: string | null, date: Date) => Promise<number> = (c, s, d) => this.rateFor("CZK", c, s, d),
     /** Also return expenses without a VAT rate (with no parts): the identified-person return warns about foreign ones. */
     withUntaxed = false,
+    /** "envelope": a sealed document comes with no parts, its envelope and its rate, for the browser to fill. */
+    sealed: "refuse" | "envelope" = "refuse",
   ) {
     const duzp = sql<Date>`coalesce(${schema.invoices.taxableSupplyDate}, ${schema.invoices.issueDate})`;
     const rows = await db
@@ -598,8 +555,8 @@ export class ExportsService {
         ),
       )
       .orderBy(asc(schema.invoices.invoiceNumber));
-    // A VAT return without the sealed documents would be a wrong filing; the browser can't add to the XML yet.
-    refuseSealedRows(rows.map((r) => r.invoice));
+    // A VAT return without the sealed documents would be a wrong filing: refused, or built in the browser.
+    if (sealed === "refuse") refuseSealedRows(rows.map((r) => r.invoice));
     const ids = rows.map((r) => r.invoice.id);
     const items = ids.length
       ? await db.select().from(schema.invoiceLineItems).where(inArray(schema.invoiceLineItems.invoiceId, ids))
@@ -617,7 +574,7 @@ export class ExportsService {
         : [],
     );
 
-    const issued: (VatIssuedDoc & { correctsNumber: string | null })[] = [];
+    const issued: (FilingIssuedDoc & { encAmounts?: string; rate?: number })[] = [];
     for (const { invoice, contact: liveContact } of rows) {
       // Kontrolní hlášení needs the buyer's DIČ as on the document.
       const contact = liveContact ? applyBuyerSnapshot(liveContact, invoice.buyerSnapshot) : null;
@@ -629,19 +586,15 @@ export class ExportsService {
         items.filter((i) => i.invoiceId === invoice.id),
         { reverseCharge: invoice.reverseCharge },
       );
+      const sealedDoc = amountsSealed(invoice);
       issued.push({
+        ...(sealedDoc ? { encAmounts: invoice.encAmounts!, rate, parts: [], totalCzk: 0 } : vatPartsOf(totals, rate)),
         number: invoice.invoiceNumber!,
         customerDic: contact?.dic ?? null,
         customerCountry: contact?.addressCountry ?? "CZ",
         taxableDate,
         reverseCharge: invoice.reverseCharge,
         reverseChargeCode: invoice.reverseChargeCode,
-        parts: totals.byRate.map((r) => ({
-          ratePercent: r.vatRatePercent,
-          base: r.totalWithoutVat * rate,
-          vat: r.vatAmount * rate,
-        })),
-        totalCzk: totals.totalWithVat * rate,
         correctsNumber:
           invoice.documentType === "credit_note" && invoice.relatedInvoiceId
             ? (relatedNumbers.get(invoice.relatedInvoiceId) ?? null)
@@ -804,25 +757,14 @@ export class ExportsService {
 
   async vatReturn(
     db: Db,
-    kind: "dp3" | "kh1" | "shv",
+    kind: CzVatFilingKind,
     period: ExportPeriod,
     vatPeriod: VatPeriod,
     tenant: typeof schema.tenants.$inferSelect,
   ): Promise<{ body: string | null; warnings: VatExportWarning[] }> {
     const identified = tenant.vatStatus === "identified";
     const { issued, received } = await this.loadVatDocs(db, period, undefined, identified && kind === "dp3");
-    const submitter = submitterFromTenant(tenant);
-    // The controller only lets an identified person ask for a monthly DP3 or SHV.
-    if (kind === "dp3" && identified && "month" in vatPeriod) {
-      const { xml, warnings } = generateDphDp3Identified({ issued, received, submitter, period: vatPeriod });
-      return { body: xml, warnings };
-    }
-    if (kind === "dp3") return { body: generateDphDp3({ issued, received, submitter, period: vatPeriod }), warnings: [] };
-    if (kind === "kh1") {
-      const { xml, warnings } = generateDphKh1({ issued, received, submitter, period: vatPeriod });
-      return { body: xml, warnings };
-    }
-    return { body: generateDphShv({ issued, submitter, period: vatPeriod }), warnings: [] };
+    return buildCzVatFiling(kind, { issued, received, submitter: submitterFromTenant(tenant), period: vatPeriod, identified });
   }
 
   /**
@@ -832,32 +774,44 @@ export class ExportsService {
    */
   async vatReturnSk(
     db: Db,
-    kind: "dph" | "kv" | "sv",
+    kind: SkVatFilingKind,
     period: ExportPeriod,
     vatPeriod: VatPeriod,
     tenant: typeof schema.tenants.$inferSelect,
   ): Promise<string | null> {
     const { issued, received } = await this.loadVatDocs(db, period, (c, s, d) => this.rateFor("EUR", c, s, d));
-    const skIssued = issued.map((d) => ({
-      number: d.number,
-      customerVatId: d.customerDic,
-      customerCountry: d.customerCountry,
-      taxableDate: d.taxableDate,
-      reverseCharge: d.reverseCharge,
-      parts: d.parts,
-      correctsNumber: d.correctsNumber,
-    }));
-    const skReceived = received.map((d) => ({
-      number: d.number,
-      supplierVatId: d.supplierDic,
-      taxableDate: d.taxableDate,
-      parts: d.parts,
-    }));
-    const submitter = skSubmitterFromTenant(tenant);
-    if (kind === "dph") return generateSkDphV25({ issued: skIssued, received: skReceived, submitter, period: vatPeriod });
-    if (kind === "kv") return generateSkKvDphV25({ issued: skIssued, received: skReceived, submitter, period: vatPeriod });
-    return generateSkSvDphV20({ issued: skIssued, submitter, period: vatPeriod });
+    return buildSkVatFiling(kind, { issued, received, submitter: skSubmitterFromTenant(tenant), period: vatPeriod });
   }
+
+  /**
+   * What the browser needs to build a VAT filing when some documents have
+   * sealed amounts: the same documents the server would file, the sealed
+   * ones without parts but with their envelope and the rate the server picked
+   * for them, so the browser converts exactly as the server does.
+   */
+  async vatInputs(
+    db: Db,
+    filing: { country: "CZ"; kind: CzVatFilingKind } | { country: "SK"; kind: SkVatFilingKind },
+    period: ExportPeriod,
+    vatPeriod: VatPeriod,
+    tenant: typeof schema.tenants.$inferSelect,
+  ): Promise<SealedVatInputs> {
+    if (filing.country === "SK") {
+      const { issued, received } = await this.loadVatDocs(db, period, (c, s, d) => this.rateFor("EUR", c, s, d), false, "envelope");
+      return { ...filing, submitter: skSubmitterFromTenant(tenant), period: vatPeriod, ...wire(issued, received) };
+    }
+    const identified = tenant.vatStatus === "identified";
+    const { issued, received } = await this.loadVatDocs(db, period, undefined, identified && filing.kind === "dp3", "envelope");
+    return { ...filing, identified, submitter: submitterFromTenant(tenant), period: vatPeriod, ...wire(issued, received) };
+  }
+}
+
+/** The filing documents as the JSON the browser gets (dates as ISO strings). */
+function wire(issued: (FilingIssuedDoc & { encAmounts?: string; rate?: number })[], received: VatReceivedDoc[]) {
+  return {
+    issued: issued.map((d) => ({ ...d, taxableDate: d.taxableDate.toISOString() })),
+    received: received.map((d) => ({ ...d, taxableDate: d.taxableDate.toISOString() })),
+  };
 }
 
 /** A foreign-currency document whose ČNB / ECB rate could not be fetched. */

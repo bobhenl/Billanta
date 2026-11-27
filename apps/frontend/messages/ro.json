@@ -14760,7 +14760,9 @@
     },
     "amounts": {
       "paidSealed": "Sumele documentului sunt criptate, de aceea se poate înregistra doar plata integrală. Serverul nu păstrează comisioane sau suma creditată.",
-      "leftOut": "Fără {count, plural, one {# document} few {# documente} other {# de documente}} cu sume criptate – deblocați seiful"
+      "leftOut": "Fără {count, plural, one {# document} few {# documente} other {# de documente}} cu sume criptate – deblocați seiful",
+      "exportLocked": "Documentele cu sume criptate intră în fișier doar după deblocarea seifului.",
+      "exportUnreadable": "Fișierul nu a fost creat: {count, plural, one {# document nu poate fi deschis} few {# documente nu pot fi deschise} other {# de documente nu pot fi deschise}} cu această cheie. Un document lipsă ar face fișierul greșit."
     }
   },
   "vaultPublic": {

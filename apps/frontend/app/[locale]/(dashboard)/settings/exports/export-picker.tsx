@@ -6,6 +6,9 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { FeatureBadge } from '@/components/plan-lock';
 import { DecryptedExport } from '@/components/vault/decrypted-export';
+import { useVault } from '@/components/vault/vault-provider';
+import { toast } from '@/components/toaster';
+import { isAmountsSealedRefusal, saveText, sealedInvoicesCsv } from '@/lib/vault/sealed-exports';
 import type { FeatureUsage } from '@/lib/usage';
 import { inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
@@ -39,6 +42,12 @@ function periodRange(query: string | null): { from: string; to: string } | null 
   return from && to ? { from, to } : null;
 }
 
+/** The server's file-name label for the period: `2026-03`, or `2026-01-01_2026-03-31`. */
+function periodLabel(query: string): string {
+  const params = new URLSearchParams(query);
+  return params.get('month') ?? `${params.get('from')}_${params.get('to')}`;
+}
+
 const FILES = [
   { key: 'invoices', path: 'invoices.csv', icon: FileSpreadsheet },
   { key: 'expenses', path: 'expenses.csv', icon: Receipt },
@@ -60,6 +69,42 @@ export function ExportPicker({ home = 'CZK', accounting }: { home?: string; acco
   const [to, setTo] = useState(now.toISOString().slice(0, 10));
   const query = periodQuery(mode, month, quarter, year, from, to);
   const years = Array.from({ length: 6 }, (_, i) => String(now.getFullYear() - i));
+  const tSealed = useTranslations('vault.amounts');
+  const { key: vaultKey, requestUnlock } = useVault();
+
+  /**
+   * The invoice CSV is fetched rather than linked: with sealed amounts the
+   * server refuses it and this browser builds it from the server's rows
+   * plus the totals it opens.
+   */
+  async function downloadInvoices(event: React.MouseEvent<HTMLAnchorElement>) {
+    if (!query) return;
+    event.preventDefault();
+    try {
+      const res = await fetch(`/api/files/exports/invoices.csv?${query}`);
+      if (!(await isAmountsSealedRefusal(res))) {
+        if (!res.ok) throw new Error(String(res.status));
+        const name = /filename="([^"]+)"/.exec(res.headers.get('content-disposition') ?? '')?.[1] ?? 'faktury.csv';
+        saveText(name, await res.blob(), 'text/csv;charset=utf-8');
+        return;
+      }
+      const k = vaultKey ?? (await requestUnlock());
+      if (!k) {
+        toast({ text: tSealed('exportLocked'), tone: 'info' });
+        return;
+      }
+      const inputs = await fetch(`/api/files/exports/invoices-csv-inputs?${query}`);
+      if (!inputs.ok) throw new Error(String(inputs.status));
+      const out = await sealedInvoicesCsv(k, await inputs.json());
+      if (out.body == null) {
+        toast({ text: tSealed('exportUnreadable', { count: out.missing }), tone: 'err' });
+        return;
+      }
+      saveText(`faktury-${periodLabel(query)}.csv`, out.body, 'text/csv;charset=utf-8');
+    } catch {
+      toast({ text: t('vat.failed'), tone: 'err' });
+    }
+  }
 
   return (
     <div className="mt-6 space-y-5">
@@ -113,6 +158,7 @@ export function ExportPicker({ home = 'CZK', accounting }: { home?: string; acco
           <a
             key={key}
             href={open ? `/api/files/exports/${path}?${query}` : undefined}
+            onClick={key === 'invoices' ? downloadInvoices : undefined}
             download
             aria-disabled={!open}
             className={cn(

@@ -14761,7 +14761,9 @@
     },
     "amounts": {
       "paidSealed": "Die Beträge des Belegs sind verschlüsselt, daher kann nur eine vollständige Zahlung erfasst werden. Gebühren und gutgeschriebenen Betrag speichert der Server nicht.",
-      "leftOut": "Ohne {count, plural, one {# Beleg} other {# Belege}} mit verschlüsselten Beträgen – Tresor entsperren"
+      "leftOut": "Ohne {count, plural, one {# Beleg} other {# Belege}} mit verschlüsselten Beträgen – Tresor entsperren",
+      "exportLocked": "Belege mit verschlüsselten Beträgen kommen erst nach dem Entsperren des Tresors in die Datei.",
+      "exportUnreadable": "Keine Datei erstellt: {count, plural, one {# Beleg lässt} other {# Belege lassen}} sich mit diesem Schlüssel nicht öffnen. Ein fehlender Beleg würde die Datei verfälschen."
     }
   },
   "vaultPublic": {

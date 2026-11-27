@@ -14760,7 +14760,9 @@
     },
     "amounts": {
       "paidSealed": "Gli importi del documento sono cifrati, quindi si può registrare solo il pagamento dell’intero importo. Il server non salva commissioni né importo accreditato.",
-      "leftOut": "Esclusi {count, plural, one {# documento} other {# documenti}} con importi cifrati – sblocca la cassaforte"
+      "leftOut": "Esclusi {count, plural, one {# documento} other {# documenti}} con importi cifrati – sblocca la cassaforte",
+      "exportLocked": "I documenti con importi cifrati entrano nel file solo dopo lo sblocco della cassaforte.",
+      "exportUnreadable": "Nessun file creato: {count, plural, one {# documento non si può aprire} other {# documenti non si possono aprire}} con questa chiave. Un documento mancante renderebbe il file errato."
     }
   },
   "vaultPublic": {
