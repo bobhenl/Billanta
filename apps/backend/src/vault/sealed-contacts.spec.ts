@@ -2,13 +2,12 @@ import { BadRequestException, ConflictException, ForbiddenException } from "@nes
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { loadPlanSummary } from "../billing/plan.guard";
 import { createContactSchema } from "../contacts/dto/create-contact.dto";
-import { applyBuyerSnapshot } from "../invoices/party-snapshot";
 import { clientPortalLinkOf } from "../public-links/public-link";
 import { templateValues } from "../tenants/template-vars";
 import { emailCustomizationOf, emailPrefsOf } from "../tenants/email-prefs";
 import { assertContactShape, assertContactWrite, contactLabel, redactSealedContact } from "./sealed-contacts";
 import { SEALED_PLACEHOLDER } from "./sealed";
-import { documentIsSealed, withOpenedBuyer } from "./vault-email";
+import { documentIsSealed } from "./vault-email";
 
 vi.mock("../billing/plan.guard", () => ({ loadPlanSummary: vi.fn() }));
 
@@ -125,22 +124,6 @@ describe("server output of a sealed buyer", () => {
     expect(documentIsSealed(doc, [{ description: "Konzultace" }], { legalName: "Novák s.r.o." })).toBe(false);
     expect(documentIsSealed({ ...doc, buyerSnapshot: { legalName: env(5) } }, [], { legalName: "Novák s.r.o." })).toBe(true);
     expect(documentIsSealed({ ...doc, buyerContactPerson: env(6) }, [], { legalName: "Novák s.r.o." })).toBe(true);
-  });
-
-  it("prints the opened buyer once and never a sealed e-mail", () => {
-    const opened = withOpenedBuyer(
-      { buyerSnapshot: { legalName: env(1), addressCity: env(3), ico: "27604977" }, buyerContactPerson: env(7) },
-      { ...sealedContact, email: env(8) },
-      { buyer: { legalName: "Novák s.r.o.", addressStreet: "Dlouhá 5", addressCity: "Brno", addressPostalCode: "60200" }, buyerContactPerson: "Jan" },
-    );
-    const buyer = applyBuyerSnapshot(opened.contact as never, opened.invoice.buyerSnapshot) as Record<string, unknown>;
-    expect(buyer).toMatchObject({ legalName: "Novák s.r.o.", addressCity: "Brno", addressStreet: "Dlouhá 5", ico: "27604977" });
-    expect(opened.contact.email).toBeNull();
-    expect(opened.invoice.buyerContactPerson).toBe("Jan");
-  });
-
-  it("refuses to print when the browser left a sealed buyer field out", () => {
-    expect(() => withOpenedBuyer({ buyerSnapshot: null }, sealedContact, { buyer: { legalName: "Novák" } })).toThrow("texts_missing");
   });
 
   it("keeps ciphertext out of the portal URL, e-mail variables and greeting", () => {

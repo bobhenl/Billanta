@@ -14627,7 +14627,6 @@
       "unlockAndSend": "Feloldás és küldés ({n})",
       "lead": "A titkosított bizonylatot a szerver nem tudja magától PDF-fé alakítani. A PDF itt készül, egy feloldott Bizalmas módú böngészőben.",
       "passThroughPdf": "A PDF az Ön böngészőjében készül. A szerver egyszer továbbítja a címzettnek, és nem tárolja.",
-      "passThroughTexts": "A Küldés gombra kattintva ezeknek a bizonylatoknak a visszafejtett szövegei, titkosított vevőnél pedig a neve és a címe is, egyszer áthaladnak a szerveren: az elkészíti belőlük a PDF-et és e-mailben elküldi. Nem tárolja és nem naplózza őket.",
       "unnumbered": "Szám nélkül",
       "kind": {
         "invoice": "Az egész e-mail vár",

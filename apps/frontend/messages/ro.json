@@ -14627,7 +14627,6 @@
       "unlockAndSend": "Deblochează și trimite ({n})",
       "lead": "Serverul nu poate transforma singur un document criptat în PDF. PDF-ul se creează aici, într-un browser cu Modul confidențial deblocat.",
       "passThroughPdf": "PDF-ul se creează în browserul dvs. Serverul îl transmite o dată destinatarului și nu îl păstrează.",
-      "passThroughTexts": "După ce apăsați Trimite, textele decriptate ale acestor documente și, la un client criptat, și numele și adresa lui trec o dată prin server: acesta creează din ele PDF-ul și îl trimite pe e-mail. Nu le păstrează și nu le scrie în jurnale.",
       "unnumbered": "Fără număr",
       "kind": {
         "invoice": "Așteaptă tot e-mailul",

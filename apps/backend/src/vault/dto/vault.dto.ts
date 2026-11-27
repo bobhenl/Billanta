@@ -66,24 +66,6 @@ export const vaultSettingsSchema = z
   });
 export class VaultSettingsDto extends createZodDto(vaultSettingsSchema) {}
 
-// Decrypted texts for printing one waiting e-mail's PDF on the server; never stored (vault-email.ts).
-const openedText = z.string().max(20_000).nullable().optional();
-export const sendVaultEmailTextsSchema = z.object({
-  texts: z.object({
-    noteAbove: openedText,
-    noteBelow: openedText,
-    items: z.array(z.object({ id: z.string().uuid(), description: z.string().max(20_000) })).max(500).optional(),
-    // An encrypted buyer (category "contacts"): name and address as printed.
-    buyer: z
-      .object({ legalName: openedText, addressStreet: openedText, addressCity: openedText, addressPostalCode: openedText })
-      .optional(),
-    buyerContactPerson: openedText,
-  }),
-  /** The member confirmed that the texts pass through the server once to print the PDF. */
-  passThrough: z.literal(true),
-});
-export class SendVaultEmailTextsDto extends createZodDto(sendVaultEmailTextsSchema) {}
-
 export const plainInvoicesQuerySchema = z.object({
   invoice_id: z.string().uuid().optional(),
   contact_id: z.string().uuid().optional(),

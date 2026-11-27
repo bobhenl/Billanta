@@ -14627,7 +14627,6 @@
       "unlockAndSend": "Ontgrendelen en versturen ({n})",
       "lead": "De server kan een versleuteld document niet zelf omzetten in een pdf. De pdf wordt hier gemaakt, in een browser met de Vertrouwelijke modus ontgrendeld.",
       "passThroughPdf": "De pdf wordt in je browser gemaakt. De server stuurt hem één keer door naar de ontvanger en bewaart hem niet.",
-      "passThroughTexts": "Als je op Versturen klikt, gaan de ontsleutelde teksten van deze documenten, en bij een versleutelde klant ook diens naam en adres, één keer via de server: die maakt er de pdf van en mailt hem. Hij bewaart en logt ze niet.",
       "unnumbered": "Zonder nummer",
       "kind": {
         "invoice": "Hele e-mail wacht",

@@ -6,7 +6,6 @@ import { toast } from '@/components/toaster';
 import { useVault } from '@/components/vault/vault-provider';
 import { useRouter } from '@/i18n/navigation';
 import { updateVaultSettings } from '@/lib/vault/actions';
-import { browserRendersPdf } from '@/lib/vault/render-pdf';
 import { keepOnDevice, keptOnDevice, subscribeVaultKeys } from '@/lib/vault/session';
 import { VAULT_EMAIL_MODES, type EnabledVault, type VaultEmailMode } from '@/lib/vault/types';
 
@@ -50,8 +49,7 @@ export function VaultEmailSettings({ vault }: { vault: EnabledVault }) {
           </label>
         ))}
       </fieldset>
-      {/* Only meaningful once the browser draws the PDF itself; until then every PDF needs the pass-through click. */}
-      {browserRendersPdf && mode !== 'link_only' && (
+      {mode !== 'link_only' && (
         <label className="flex items-start gap-2.5 text-sm">
           <input
             type="checkbox"

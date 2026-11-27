@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { documentIsSealed, looksLikePdf, sealedSendPlan, withOpenedTexts } from "./vault-email";
+import { documentIsSealed, looksLikePdf, sealedSendPlan } from "./vault-email";
 
 const SEALED = "enc:v1:AAAAAAAAAAAAAAAA:BBBBBBBBBBBBBBBBBBBBBBBB";
 
@@ -30,40 +30,6 @@ describe("sealedSendPlan", () => {
     expect(sealedSendPlan("link_only", true)).toEqual({ sendNow: true, queue: null });
     expect(sealedSendPlan("wait", false)).toEqual({ sendNow: true, queue: null });
     expect(sealedSendPlan("link_now", false)).toEqual({ sendNow: true, queue: null });
-  });
-});
-
-describe("withOpenedTexts", () => {
-  const invoice = { id: "inv", noteAbove: SEALED, noteBelow: "Plain footer" };
-  const items = [
-    { id: "a", description: SEALED },
-    { id: "b", description: "Plain item" },
-  ];
-
-  it("replaces only the envelopes with the opened texts", () => {
-    const out = withOpenedTexts(invoice, items, {
-      noteAbove: "Secret note",
-      noteBelow: "Rewritten footer",
-      items: [
-        { id: "a", description: "Secret item" },
-        { id: "b", description: "Rewritten item" },
-      ],
-    });
-    expect(out.invoice.noteAbove).toBe("Secret note");
-    // A plain text is what the server stored, whatever the browser sends.
-    expect(out.invoice.noteBelow).toBe("Plain footer");
-    expect(out.items.map((i) => i.description)).toEqual(["Secret item", "Plain item"]);
-  });
-
-  it("refuses to print when an envelope has no text", () => {
-    expect(() => withOpenedTexts(invoice, items, { noteAbove: "Secret note" })).toThrow("texts_missing");
-    expect(() => withOpenedTexts(invoice, items, { items: [{ id: "a", description: "x" }] })).toThrow("texts_missing");
-  });
-
-  it("does not touch the stored rows", () => {
-    withOpenedTexts(invoice, items, { noteAbove: "Secret note", items: [{ id: "a", description: "Secret item" }] });
-    expect(invoice.noteAbove).toBe(SEALED);
-    expect(items[0].description).toBe(SEALED);
   });
 });
 

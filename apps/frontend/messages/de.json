@@ -14628,7 +14628,6 @@
       "unlockAndSend": "Entsperren und senden ({n})",
       "lead": "Ein verschlüsseltes Dokument kann der Server nicht selbst in ein PDF umwandeln. Das PDF entsteht erst hier, in einem Browser mit entsperrtem Vertraulichen Modus.",
       "passThroughPdf": "Das PDF wird in Ihrem Browser erstellt. Der Server leitet es einmal an den Empfänger weiter und speichert es nicht.",
-      "passThroughTexts": "Nach dem Klick auf Senden gehen die entschlüsselten Texte dieser Dokumente und bei einem verschlüsselten Kunden auch dessen Name und Adresse einmal über den Server: Er erstellt daraus das PDF und verschickt es per E-Mail. Er speichert und protokolliert sie nicht.",
       "unnumbered": "Ohne Nummer",
       "kind": {
         "invoice": "Ganze E-Mail wartet",

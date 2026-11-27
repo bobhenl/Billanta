@@ -14627,7 +14627,6 @@
       "unlockAndSend": "Desbloquear y enviar ({n})",
       "lead": "El servidor no puede convertir por sí solo un documento cifrado en PDF. El PDF se crea aquí, en un navegador con el Modo confidencial desbloqueado.",
       "passThroughPdf": "El PDF se crea en tu navegador. El servidor lo reenvía una vez al destinatario y no lo guarda.",
-      "passThroughTexts": "Al pulsar Enviar, los textos descifrados de estos documentos y, si el cliente está cifrado, también su nombre y dirección pasan una vez por el servidor: crea con ellos el PDF y lo envía por correo. No los guarda ni los registra.",
       "unnumbered": "Sin número",
       "kind": {
         "invoice": "Espera el correo entero",

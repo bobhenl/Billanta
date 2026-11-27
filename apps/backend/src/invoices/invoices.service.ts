@@ -22,7 +22,7 @@ import { exchangeRateSettingsOf, isCnbRate, resolveRateMode, type StoredRateMode
 import * as schema from "../../drizzle/schema";
 import { withIdempotencyKey } from "../common/idempotency";
 import { buildInvoiceEmail, EmailService, type EmailAttachment, type EmailCustomization, type SendInvoiceEmailParams } from "../email/email.service";
-import { documentIsSealed, sealedSendPlan, withOpenedBuyer, withOpenedTexts, type OpenedTexts } from "../vault/vault-email";
+import { documentIsSealed, sealedSendPlan } from "../vault/vault-email";
 import { emailIsSealed } from "../vault/sealed-contacts";
 import { emailCustomizationOf, emailPrefsOf } from "../tenants/email-prefs";
 import { templateValues, templateVarsOf } from "../tenants/template-vars";
@@ -1630,12 +1630,10 @@ export class InvoicesService {
 
   /**
    * Sends a waiting e-mail of an encrypted document with the PDF a member's
-   * browser rendered (`POST v1/vault/invoices/emails/:id/send`), or with the
-   * texts it decrypted, which the server prints once in memory while no
-   * browser renderer exists. Either goes straight to Resend: it is not
-   * stored, queued or logged.
+   * browser rendered (`POST v1/vault/invoices/emails/:id/send`). It goes
+   * straight to Resend: it is not stored, queued or logged.
    */
-  async sendQueuedWithPdf(db: TenantDb, tenantId: string, userId: string, queueId: string, source: { pdf: Buffer } | { texts: OpenedTexts }) {
+  async sendQueuedWithPdf(db: TenantDb, tenantId: string, userId: string, queueId: string, pdf: Buffer) {
     const [row] = await db
       .select()
       .from(schema.vaultEmailQueue)
@@ -1649,7 +1647,6 @@ export class InvoicesService {
     const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, invoice.id));
 
     await assertCanSendEmail(db, tenantId);
-    const pdf = "pdf" in source ? source.pdf : await this.printOpened(db, tenantId, invoice.id, source.texts);
     const followUp = row.kind === "invoice_pdf";
     const params = await this.invoiceEmailParams(db, invoice, { ...contact, email: row.recipient }, lineItems, tenantId, row.corrected, { sealed: true });
     const file: EmailAttachment = { filename: `${invoiceFileBase(invoice)}.pdf`, content: pdf, contentType: "application/pdf" };
@@ -1671,21 +1668,6 @@ export class InvoicesService {
     this.ping(updated, "invoice_sent", `Faktura ${updated.invoiceNumber ?? ""} odeslána`, `Komu: ${row.recipient}`);
     await this.log(db, updated, row.corrected ? "sent_corrected" : "sent", [{ field: "email", from: null, to: row.recipient }]);
     return { sent: true };
-  }
-
-  /** The PDF of an encrypted document from the texts a browser decrypted, never kept past this call. */
-  private async printOpened(db: TenantDb, tenantId: string, invoiceId: string, texts: OpenedTexts): Promise<Buffer> {
-    const doc = await this.loadIssuedInvoiceForDocument(db, tenantId, invoiceId);
-    const opened = (() => {
-      try {
-        const withTexts = withOpenedTexts(doc.invoice, doc.lineItems, texts);
-        return { ...withOpenedBuyer(withTexts.invoice, doc.contact, texts), items: withTexts.items };
-      } catch {
-        throw new BadRequestException("texts_missing");
-      }
-    })();
-    const totals = computeVatBreakdown(opened.items, { reverseCharge: opened.invoice.reverseCharge });
-    return this.invoicePdfService.generate(opened.invoice, opened.contact, doc.tenant, opened.items, totals, doc.related);
   }
 
   private async emailLinks(db: TenantDb, invoice: typeof schema.invoices.$inferSelect, contact: typeof schema.contacts.$inferSelect) {

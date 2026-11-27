@@ -110,7 +110,6 @@ describe("requirementFor", () => {
     ["PATCH", "v1/invoices/1/public-link", ["invoices.send"]],
     ["POST", "v1/invoices/1/buyer-details-request", ["invoices.send"]],
     ["POST", "v1/vault/invoices/emails/1/send", ["invoices.send"]],
-    ["POST", "v1/vault/invoices/emails/1/send-texts", ["invoices.send"]],
     ["POST", "v1/vault/invoices/emails/1/dismiss", ["invoices.send"]],
     ["GET", "v1/vault/invoices/emails", []],
     ["POST", "v1/invoices/1/cancel", ["invoices.cancel"]],

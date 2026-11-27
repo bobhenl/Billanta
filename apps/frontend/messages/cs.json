@@ -14639,7 +14639,6 @@
       "unlockAndSend": "Odemknout a odeslat ({n})",
       "lead": "Zašifrovaný doklad server sám do PDF nepřevede. PDF vznikne až tady, v prohlížeči s odemčeným Důvěrným režimem.",
       "passThroughPdf": "PDF se vytvoří ve vašem prohlížeči. Server ho jednou přepošle příjemci a neuloží ho.",
-      "passThroughTexts": "Po kliknutí na Odeslat projdou jednou serverem rozšifrované texty těchto dokladů a u zašifrovaného odběratele i jeho název a adresa: server z nich vytvoří PDF a pošle ho e-mailem. Neuloží je ani nezapíše do logu.",
       "unnumbered": "Bez čísla",
       "kind": {
         "invoice": "Celý e-mail čeká",

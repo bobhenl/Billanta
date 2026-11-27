@@ -14639,7 +14639,6 @@
       "unlockAndSend": "Unlock and send ({n})",
       "lead": "The server cannot turn an encrypted document into a PDF by itself. The PDF is made here, in a browser with Confidential mode unlocked.",
       "passThroughPdf": "The PDF is made in your browser. The server forwards it to the recipient once and does not store it.",
-      "passThroughTexts": "When you click Send, the decrypted texts of these documents, and for an encrypted customer also their name and address, pass through the server once: it makes the PDF from them and e-mails it. It does not store or log them.",
       "unnumbered": "No number",
       "kind": {
         "invoice": "Whole e-mail waiting",

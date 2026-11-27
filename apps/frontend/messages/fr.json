@@ -14627,7 +14627,6 @@
       "unlockAndSend": "Déverrouiller et envoyer ({n})",
       "lead": "Le serveur ne peut pas transformer seul un document chiffré en PDF. Le PDF est créé ici, dans un navigateur où le Mode confidentiel est déverrouillé.",
       "passThroughPdf": "Le PDF est créé dans votre navigateur. Le serveur le transmet une fois au destinataire et ne le conserve pas.",
-      "passThroughTexts": "Quand vous cliquez sur Envoyer, les textes déchiffrés de ces documents, et pour un client chiffré aussi son nom et son adresse, passent une fois par le serveur : il en fait le PDF et l’envoie par e-mail. Il ne les conserve pas et ne les journalise pas.",
       "unnumbered": "Sans numéro",
       "kind": {
         "invoice": "Tout l'e-mail attend",

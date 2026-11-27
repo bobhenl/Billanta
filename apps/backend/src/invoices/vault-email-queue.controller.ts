@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, NotFoundException, Param, ParseUUIDPipe, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { BadRequestException, Controller, Get, NotFoundException, Param, ParseUUIDPipe, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { and, asc, eq } from "drizzle-orm";
@@ -6,7 +6,6 @@ import * as schema from "../../drizzle/schema";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { assertMayDo } from "../tenancy/permissions";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
-import { SendVaultEmailTextsDto } from "../vault/dto/vault.dto";
 import { looksLikePdf, VAULT_PDF_MAX_BYTES } from "../vault/vault-email";
 import { InvoicesService } from "./invoices.service";
 
@@ -60,19 +59,7 @@ export class VaultEmailQueueController {
   ) {
     assertMayDo(req.user, "invoices.send");
     if (!file?.buffer || !looksLikePdf(file.buffer)) throw new BadRequestException("pdf_required");
-    return this.invoices.sendQueuedWithPdf(req.tenantDb!, req.user!.tenantId, req.user!.id, id, { pdf: file.buffer });
-  }
-
-  /**
-   * The fallback while browsers cannot render the PDF themselves: the member
-   * confirms that the decrypted texts pass through the server once, the
-   * server prints them in memory and sends. Nothing of them is stored.
-   */
-  @Post(":id/send-texts")
-  @ApiOperation({ summary: "Send a waiting e-mail, printing its PDF from texts the browser decrypted (passes through, not stored)" })
-  sendTexts(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: SendVaultEmailTextsDto) {
-    assertMayDo(req.user, "invoices.send");
-    return this.invoices.sendQueuedWithPdf(req.tenantDb!, req.user!.tenantId, req.user!.id, id, { texts: dto.texts });
+    return this.invoices.sendQueuedWithPdf(req.tenantDb!, req.user!.tenantId, req.user!.id, id, file.buffer);
   }
 
   @Post(":id/dismiss")

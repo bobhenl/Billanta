@@ -14628,7 +14628,6 @@
       "unlockAndSend": "Odblokuj i wyślij ({n})",
       "lead": "Serwer nie zamieni zaszyfrowanego dokumentu w PDF sam. PDF powstaje dopiero tutaj, w przeglądarce z odblokowanym Trybem poufnym.",
       "passThroughPdf": "PDF powstaje w Twojej przeglądarce. Serwer raz przekaże go odbiorcy i go nie zapisze.",
-      "passThroughTexts": "Po kliknięciu Wyślij odszyfrowane teksty tych dokumentów, a przy zaszyfrowanym nabywcy także jego nazwa i adres, raz przejdą przez serwer: utworzy z nich PDF i wyśle go e-mailem. Nie zapisze ich ani nie zapisze w logach.",
       "unnumbered": "Bez numeru",
       "kind": {
         "invoice": "Czeka cały e-mail",
