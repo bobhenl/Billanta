@@ -175,6 +175,9 @@ describe("InvoicesService.sendInvoice", () => {
       clientPortalLink: "acme-s-r-o-Qw12Er34Ty56",
       language: "cs",
       documentType: "invoice",
+      variableSymbol: null,
+      // best effort: this fixture has no tenant data to build a QR from
+      paymentQr: null,
       credit: {
         label: "Vystaveno v aplikaci Billanta",
         url: expect.stringMatching(/\/cs\?utm_source=invoice&utm_medium=footer&utm_content=email&ref=AbCd1234$/),

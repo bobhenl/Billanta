@@ -35,7 +35,7 @@ function loadedHere(): Set<string> {
  * that needs the hashes compared with a build of the published source.
  */
 export function VaultIntegrity() {
-  const t = useTranslations('vault.integrity');
+  const t = useTranslations('vaultPublic.integrity');
   const [manifest, setManifest] = useState<Manifest | null | 'missing'>(null);
   const [checks, setChecks] = useState<Record<string, Outcome>>({});
   const [loaded, setLoaded] = useState<Set<string>>(new Set());
@@ -43,8 +43,8 @@ export function VaultIntegrity() {
 
   useEffect(() => {
     fetch(VAULT_MANIFEST_PATH, { cache: 'no-store' })
-      .then((r) => (r.ok ? (r.json() as Promise<Manifest>) : 'missing' as const))
-      .then(setManifest)
+      .then(async (r): Promise<Manifest | 'missing'> => (r.ok ? ((await r.json()) as Manifest) : 'missing'))
+      .then((m) => setManifest(m))
       .catch(() => setManifest('missing'));
   }, []);
 
@@ -96,19 +96,22 @@ export function VaultIntegrity() {
               <dt className="font-semibold">{t('chunks')}</dt>
               <dd>
                 <ul className="space-y-1.5">
-                  {manifest.chunks.map((c) => (
-                    <li key={c.path} className="rounded-lg bg-muted/50 p-2">
-                      <span className="block break-all font-mono">{c.path}</span>
-                      <span className="block break-all font-mono text-muted-foreground">{c.sha256}</span>
-                      {checks[c.path] && (
-                        <span className={checks[c.path] === 'match' ? 'mt-1 flex items-center gap-1 font-semibold text-success' : 'mt-1 flex items-center gap-1 font-semibold text-destructive'}>
-                          {checks[c.path] === 'match' ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : <X className="h-3.5 w-3.5" aria-hidden="true" />}
-                          {t(checks[c.path])}
-                          {loaded.has(c.path) && <span className="font-normal text-muted-foreground"> · {t('loadedHere')}</span>}
-                        </span>
-                      )}
-                    </li>
-                  ))}
+                  {manifest.chunks.map((c) => {
+                    const outcome = checks[c.path];
+                    return (
+                      <li key={c.path} className="rounded-lg bg-muted/50 p-2">
+                        <span className="block break-all font-mono">{c.path}</span>
+                        <span className="block break-all font-mono text-muted-foreground">{c.sha256}</span>
+                        {outcome && (
+                          <span className={outcome === 'match' ? 'mt-1 flex items-center gap-1 font-semibold text-success' : 'mt-1 flex items-center gap-1 font-semibold text-destructive'}>
+                            {outcome === 'match' ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : <X className="h-3.5 w-3.5" aria-hidden="true" />}
+                            {t(outcome)}
+                            {loaded.has(c.path) && <span className="font-normal text-muted-foreground"> · {t('loadedHere')}</span>}
+                          </span>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </dd>
             </div>
