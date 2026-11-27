@@ -5609,7 +5609,8 @@
       "templates": "Modelli di fattura",
       "netIncome": "Al netto delle imposte (reddito netto)",
       "taxReturn": "Dati per la dichiarazione dei redditi",
-      "flatTax": "Conviene l’imposta forfettaria?"
+      "flatTax": "Conviene l’imposta forfettaria?",
+      "paymentAudit": "Audit annuale dei pagamenti"
     },
     "keywords": {
       "newInvoice": "emetti crea aggiungi documento fattura",
@@ -7369,7 +7370,8 @@
     "flatTaxLink": "Conviene la tassazione forfettaria? →",
     "taxReturnLink": "Riepilogo per la dichiarazione dei redditi",
     "netIncomeLink": "Al netto delle imposte",
-    "sealedNote": "{count, plural, one {# documento con importi cifrati non è incluso} other {# documenti con importi cifrati non sono inclusi}} nei totali."
+    "sealedNote": "{count, plural, one {# documento con importi cifrati non è incluso} other {# documenti con importi cifrati non sono inclusi}} nei totali.",
+    "paymentAuditLink": "Audit pagamenti"
   },
   "siteSearch": {
     "title": "Cerca nel sito",
@@ -15088,5 +15090,106 @@
       "passkey_failed": "Non è stato possibile verificare la passkey. Riprova oppure inserisci il codice o la password."
     },
     "usePasskey": "Conferma con passkey"
+  },
+  "paymentAudit": {
+    "title": "Audit annuale dei pagamenti",
+    "intro": "Ogni fattura dell'anno confrontata con il denaro davvero arrivato tramite banca, PayPal, Stripe o carta, e i pagamenti senza fattura. Utile prima della dichiarazione dei redditi.",
+    "back": "Torna ai report",
+    "prev": "Anno precedente",
+    "next": "Anno successivo",
+    "yearLabel": "Anno dell'audit",
+    "filterLabel": "Filtra per stato",
+    "export": "Esporta CSV",
+    "noTenant": "Crea prima un'azienda.",
+    "loadError": "Impossibile caricare l'audit dei pagamenti. Ricarica la pagina.",
+    "noAccess": {
+      "title": "Solo per titolari e amministratori",
+      "body": "L'audit mostra tutti i pagamenti dell'azienda con i clienti, quindi lo vedono solo il titolare e gli amministratori."
+    },
+    "cards": {
+      "invoices": "Fatture dell'anno",
+      "problems": "Da controllare",
+      "underpaid": "Ancora da incassare ({home})",
+      "withoutInvoice": "Pagamenti senza fattura"
+    },
+    "filter": {
+      "problems": "Da controllare",
+      "all": "Tutte"
+    },
+    "status": {
+      "paid": "Pagata",
+      "paidFee": "Pagata, commissione {fee}",
+      "paidFeeShort": "Pagata con commissione",
+      "underpaid": "Pagata in parte",
+      "overpaid": "Pagata in eccesso",
+      "unpaid": "Non pagata",
+      "manual": "Segnata a mano, nessun pagamento trovato",
+      "sealed": "Importi cifrati",
+      "unverified": "Non verificabile (manca il cambio)"
+    },
+    "txStatus": {
+      "no_invoice": "Senza fattura",
+      "not_issued": "Solo su una bozza o fattura annullata",
+      "ignored": "Ignorato"
+    },
+    "cols": {
+      "number": "Fattura",
+      "date": "Data",
+      "party": "Cliente",
+      "payer": "Pagante",
+      "currency": "Valuta",
+      "total": "Totale",
+      "received": "Incassato",
+      "fee": "Commissioni",
+      "difference": "Differenza",
+      "differenceHome": "Differenza ({home})",
+      "status": "Stato",
+      "sources": "Fonti",
+      "amount": "Importo",
+      "source": "Fonte"
+    },
+    "csv": {
+      "kind": "Tipo",
+      "invoice": "Fattura",
+      "payment": "Pagamento senza fattura"
+    },
+    "invoices": {
+      "heading": "Fatture",
+      "empty": "Nessuna fattura in questo stato.",
+      "noProblems": "Tutte le fatture dell'anno corrispondono al denaro incassato.",
+      "note": "Le fatture pagate contano nell'anno del pagamento, quelle non pagate nell'anno di emissione. Una differenza spiegata da una commissione registrata appare come «pagata con commissione». Un pagamento in altra valuta è confrontato al cambio ufficiale del giorno, con una tolleranza del {percent} %."
+    },
+    "transactions": {
+      "heading": "Pagamenti senza fattura",
+      "intro": "Incassi dell'anno non abbinati a una fattura emessa. I propri trasferimenti da PayPal e i cambi valuta sono esclusi.",
+      "empty": "Ogni incasso dell'anno ha la sua fattura.",
+      "draft": "Bozza",
+      "likelyTransfer": "Probabilmente un proprio trasferimento da PayPal"
+    },
+    "sources": {
+      "heading": "Per fonte",
+      "empty": "Nessun pagamento arrivato quest'anno.",
+      "incoming": "Incassato",
+      "paired": "Abbinato",
+      "withoutInvoice": "Senza fattura",
+      "ignored": "Ignorato",
+      "ownMoves": "Trasferimenti e cambi",
+      "feesNote": "Commissioni sulle fatture dell'anno in totale: {fees}."
+    },
+    "sourceNames": {
+      "paypal": "PayPal",
+      "stripe": "Stripe",
+      "wise": "Wise",
+      "revolut": "Revolut",
+      "fio": "Fio",
+      "psd2": "PSD2",
+      "upload": "Estratto caricato",
+      "card": "Pagamento con carta"
+    },
+    "sealed": {
+      "locked": "L'audit non ha ancora controllato {count, plural, one {# fattura} other {# fatture}} con importi cifrati. Sblocca la cassaforte e questo browser le completerà.",
+      "unreadable": "{count, plural, one {# fattura non si è potuta aprire} other {# fatture non si sono potute aprire}} e restano nello stato «Importi cifrati».",
+      "failed": "Impossibile caricare le fatture cifrate ({count}). Ricarica la pagina."
+    }
   }
 }

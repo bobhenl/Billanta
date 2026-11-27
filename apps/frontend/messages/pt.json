@@ -5609,7 +5609,8 @@
       "templates": "Modelos de fatura",
       "netIncome": "Após impostos (rendimento líquido)",
       "taxReturn": "Dados para a declaração de impostos",
-      "flatTax": "O imposto fixo compensa?"
+      "flatTax": "O imposto fixo compensa?",
+      "paymentAudit": "Auditoria anual de pagamentos"
     },
     "keywords": {
       "newInvoice": "emitir criar adicionar documento fatura",
@@ -7369,7 +7370,8 @@
     "flatTaxLink": "Compensa o imposto fixo? →",
     "taxReturnLink": "Resumo para a declaração de impostos",
     "netIncomeLink": "Após impostos",
-    "sealedNote": "{count, plural, one {# documento com valores cifrados não está incluído} other {# documentos com valores cifrados não estão incluídos}} nos totais."
+    "sealedNote": "{count, plural, one {# documento com valores cifrados não está incluído} other {# documentos com valores cifrados não estão incluídos}} nos totais.",
+    "paymentAuditLink": "Auditoria de pagamentos"
   },
   "siteSearch": {
     "title": "Pesquisar no site",
@@ -15088,5 +15090,106 @@
       "passkey_failed": "Não foi possível verificar a chave de acesso. Tente de novo ou introduza o código ou a palavra-passe."
     },
     "usePasskey": "Confirmar com chave de acesso"
+  },
+  "paymentAudit": {
+    "title": "Auditoria anual de pagamentos",
+    "intro": "Cada fatura do ano comparada com o dinheiro que entrou de facto por banco, PayPal, Stripe ou cartão, e os pagamentos sem fatura. Útil antes da declaração de impostos.",
+    "back": "Voltar aos relatórios",
+    "prev": "Ano anterior",
+    "next": "Ano seguinte",
+    "yearLabel": "Ano da auditoria",
+    "filterLabel": "Filtrar por estado",
+    "export": "Exportar CSV",
+    "noTenant": "Crie primeiro uma empresa.",
+    "loadError": "Não foi possível carregar a auditoria de pagamentos. Atualize a página.",
+    "noAccess": {
+      "title": "Só para proprietários e administradores",
+      "body": "A auditoria mostra todos os pagamentos da empresa com os clientes, por isso só o proprietário e os administradores a veem."
+    },
+    "cards": {
+      "invoices": "Faturas do ano",
+      "problems": "A verificar",
+      "underpaid": "Em falta ({home})",
+      "withoutInvoice": "Pagamentos sem fatura"
+    },
+    "filter": {
+      "problems": "A verificar",
+      "all": "Todas"
+    },
+    "status": {
+      "paid": "Paga",
+      "paidFee": "Paga, taxa {fee}",
+      "paidFeeShort": "Paga com taxa",
+      "underpaid": "Paga a menos",
+      "overpaid": "Paga a mais",
+      "unpaid": "Por pagar",
+      "manual": "Marcada à mão, nenhum pagamento encontrado",
+      "sealed": "Valores cifrados",
+      "unverified": "Impossível verificar (falta a taxa de câmbio)"
+    },
+    "txStatus": {
+      "no_invoice": "Sem fatura",
+      "not_issued": "Só num rascunho ou fatura anulada",
+      "ignored": "Ignorado"
+    },
+    "cols": {
+      "number": "Fatura",
+      "date": "Data",
+      "party": "Cliente",
+      "payer": "Pagador",
+      "currency": "Moeda",
+      "total": "Total",
+      "received": "Recebido",
+      "fee": "Taxas",
+      "difference": "Diferença",
+      "differenceHome": "Diferença ({home})",
+      "status": "Estado",
+      "sources": "Fontes",
+      "amount": "Valor",
+      "source": "Fonte"
+    },
+    "csv": {
+      "kind": "Tipo",
+      "invoice": "Fatura",
+      "payment": "Pagamento sem fatura"
+    },
+    "invoices": {
+      "heading": "Faturas",
+      "empty": "Nenhuma fatura neste estado.",
+      "noProblems": "Todas as faturas do ano batem com o dinheiro recebido.",
+      "note": "As faturas pagas contam no ano do pagamento, as por pagar no ano de emissão. Uma diferença explicada por uma taxa registada aparece como «paga com taxa». Um pagamento noutra moeda é comparado à taxa oficial do dia, com uma tolerância de {percent} %."
+    },
+    "transactions": {
+      "heading": "Pagamentos sem fatura",
+      "intro": "Recebimentos do ano que não estão associados a uma fatura emitida. As suas próprias transferências do PayPal e conversões de moeda ficam de fora.",
+      "empty": "Cada recebimento do ano tem a sua fatura.",
+      "draft": "Rascunho",
+      "likelyTransfer": "Provavelmente uma transferência própria do PayPal"
+    },
+    "sources": {
+      "heading": "Por fonte",
+      "empty": "Não entrou nenhum pagamento este ano.",
+      "incoming": "Recebido",
+      "paired": "Associado",
+      "withoutInvoice": "Sem fatura",
+      "ignored": "Ignorado",
+      "ownMoves": "Transferências e conversões",
+      "feesNote": "Taxas nas faturas do ano no total: {fees}."
+    },
+    "sourceNames": {
+      "paypal": "PayPal",
+      "stripe": "Stripe",
+      "wise": "Wise",
+      "revolut": "Revolut",
+      "fio": "Fio",
+      "psd2": "PSD2",
+      "upload": "Extrato carregado",
+      "card": "Pagamento com cartão"
+    },
+    "sealed": {
+      "locked": "A auditoria ainda não verificou {count, plural, one {# fatura} other {# faturas}} com valores cifrados. Desbloqueie o cofre e este navegador completa-as.",
+      "unreadable": "{count, plural, one {# fatura não pôde ser aberta} other {# faturas não puderam ser abertas}} e mantêm o estado «Valores cifrados».",
+      "failed": "Não foi possível carregar as faturas cifradas ({count}). Atualize a página."
+    }
   }
 }

@@ -5609,7 +5609,8 @@
       "templates": "Számlasablonok",
       "netIncome": "Adózás után (nettó jövedelem)",
       "taxReturn": "Adóbevallás alapadatai",
-      "flatTax": "Megéri az átalányadó?"
+      "flatTax": "Megéri az átalányadó?",
+      "paymentAudit": "Éves fizetési audit"
     },
     "keywords": {
       "newInvoice": "kiállítás létrehozás hozzáadás bizonylat számla",
@@ -7369,7 +7370,8 @@
     "flatTaxLink": "Megéri az átalányadó? →",
     "taxReturnLink": "Adóbevallás összesítője",
     "netIncomeLink": "Adózás után",
-    "sealedNote": "{count, plural, one {# titkosított összegű bizonylat} other {# titkosított összegű bizonylat}} nem szerepel az összesítésben."
+    "sealedNote": "{count, plural, one {# titkosított összegű bizonylat} other {# titkosított összegű bizonylat}} nem szerepel az összesítésben.",
+    "paymentAuditLink": "Fizetési audit"
   },
   "siteSearch": {
     "title": "Keresés a weboldalon",
@@ -15088,5 +15090,106 @@
       "passkey_failed": "A hozzáférési kulcsot nem sikerült ellenőrizni. Próbálja újra, vagy adja meg a kódot vagy a jelszót."
     },
     "usePasskey": "Megerősítés hozzáférési kulccsal"
+  },
+  "paymentAudit": {
+    "title": "Éves fizetési audit",
+    "intro": "Az év minden számlája összevetve a ténylegesen beérkezett pénzzel (bank, PayPal, Stripe, kártya), és a számla nélküli befizetések. Hasznos az adóbevallás előtt.",
+    "back": "Vissza a kimutatásokhoz",
+    "prev": "Előző év",
+    "next": "Következő év",
+    "yearLabel": "Az audit éve",
+    "filterLabel": "Szűrés állapot szerint",
+    "export": "CSV export",
+    "noTenant": "Először hozzon létre egy céget.",
+    "loadError": "A fizetési auditot nem sikerült betölteni. Frissítse az oldalt.",
+    "noAccess": {
+      "title": "Csak tulajdonosoknak és adminisztrátoroknak",
+      "body": "Az audit a cég összes befizetését mutatja az ügyfelekkel együtt, ezért csak a tulajdonos és az adminisztrátorok látják."
+    },
+    "cards": {
+      "invoices": "Az év számlái",
+      "problems": "Ellenőrizendő",
+      "underpaid": "Hiányzik ({home})",
+      "withoutInvoice": "Számla nélküli befizetések"
+    },
+    "filter": {
+      "problems": "Ellenőrizendő",
+      "all": "Mind"
+    },
+    "status": {
+      "paid": "Kifizetve",
+      "paidFee": "Kifizetve, díj {fee}",
+      "paidFeeShort": "Kifizetve díjjal",
+      "underpaid": "Alulfizetve",
+      "overpaid": "Túlfizetve",
+      "unpaid": "Kifizetetlen",
+      "manual": "Kézzel jelölve, befizetés nem található",
+      "sealed": "Titkosított összegek",
+      "unverified": "Nem ellenőrizhető (hiányzó árfolyam)"
+    },
+    "txStatus": {
+      "no_invoice": "Számla nélkül",
+      "not_issued": "Csak piszkozatnál vagy sztornózott számlánál",
+      "ignored": "Figyelmen kívül hagyva"
+    },
+    "cols": {
+      "number": "Számla",
+      "date": "Dátum",
+      "party": "Vevő",
+      "payer": "Befizető",
+      "currency": "Pénznem",
+      "total": "Összesen",
+      "received": "Beérkezett",
+      "fee": "Díjak",
+      "difference": "Eltérés",
+      "differenceHome": "Eltérés ({home})",
+      "status": "Állapot",
+      "sources": "Források",
+      "amount": "Összeg",
+      "source": "Forrás"
+    },
+    "csv": {
+      "kind": "Típus",
+      "invoice": "Számla",
+      "payment": "Számla nélküli befizetés"
+    },
+    "invoices": {
+      "heading": "Számlák",
+      "empty": "Nincs számla ebben az állapotban.",
+      "noProblems": "Az év minden számlája egyezik a beérkezett pénzzel.",
+      "note": "A kifizetett számlák a kifizetés évébe számítanak, a kifizetetlenek a kiállítás évébe. A rögzített díjjal magyarázható eltérés „kifizetve díjjal”. Más pénznemű befizetést a befizetés napi hivatalos árfolyamán, {percent} % tűréssel vetünk össze."
+    },
+    "transactions": {
+      "heading": "Számla nélküli befizetések",
+      "intro": "Az év bejövő tételei, amelyek nincsenek kiállított számlához párosítva. A saját PayPal-átvezetések és pénzváltások kimaradnak.",
+      "empty": "Az év minden bejövő tételének megvan a számlája.",
+      "draft": "Piszkozat",
+      "likelyTransfer": "Valószínűleg saját átvezetés PayPalról"
+    },
+    "sources": {
+      "heading": "Forrás szerint",
+      "empty": "Ebben az évben nem érkezett befizetés.",
+      "incoming": "Beérkezett",
+      "paired": "Párosítva",
+      "withoutInvoice": "Számla nélkül",
+      "ignored": "Figyelmen kívül",
+      "ownMoves": "Átvezetések és váltások",
+      "feesNote": "Az év számláinak díjai összesen: {fees}."
+    },
+    "sourceNames": {
+      "paypal": "PayPal",
+      "stripe": "Stripe",
+      "wise": "Wise",
+      "revolut": "Revolut",
+      "fio": "Fio",
+      "psd2": "PSD2",
+      "upload": "Feltöltött kivonat",
+      "card": "Kártyás fizetés"
+    },
+    "sealed": {
+      "locked": "Az audit még nem ellenőrzött {count, plural, one {# titkosított összegű számlát} other {# titkosított összegű számlát}}. A széf feloldása után ez a böngésző kiszámolja őket.",
+      "unreadable": "{count, plural, one {# számlát nem sikerült megnyitni} other {# számlát nem sikerült megnyitni}}, ezek „Titkosított összegek” állapotban maradnak.",
+      "failed": "A titkosított számlákat ({count}) nem sikerült betölteni. Frissítse az oldalt."
+    }
   }
 }

@@ -68,3 +68,4 @@ export * from './annual-filings.js';
 export * from './tax-return-files.js';
 export * from './sealed-annual.js';
 export * from './net-income.js';
+export * from './payment-audit.js';

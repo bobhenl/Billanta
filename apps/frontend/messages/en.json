@@ -5617,7 +5617,8 @@
       "templates": "Invoice templates",
       "netIncome": "After taxes (net income)",
       "taxReturn": "Tax return basis",
-      "flatTax": "Is the flat tax worth it?"
+      "flatTax": "Is the flat tax worth it?",
+      "paymentAudit": "Yearly payment audit"
     },
     "keywords": {
       "newInvoice": "issue create add document",
@@ -7377,7 +7378,8 @@
     "flatTaxLink": "Does the flat-rate tax pay off? →",
     "taxReturnLink": "Tax return summary →",
     "netIncomeLink": "After taxes",
-    "sealedNote": "{count, plural, one {# document with encrypted amounts is} other {# documents with encrypted amounts are}} not included in the totals."
+    "sealedNote": "{count, plural, one {# document with encrypted amounts is} other {# documents with encrypted amounts are}} not included in the totals.",
+    "paymentAuditLink": "Payment audit"
   },
   "siteSearch": {
     "title": "Search the site",
@@ -15100,5 +15102,106 @@
       "passkey_failed": "The passkey could not be verified. Try again, or enter your code or password."
     },
     "usePasskey": "Confirm with a passkey"
+  },
+  "paymentAudit": {
+    "title": "Yearly payment audit",
+    "intro": "Every invoice of the year against the money that really arrived by bank, PayPal, Stripe or card, and the payments no invoice explains. Worth a look before the tax return.",
+    "back": "Back to reports",
+    "prev": "Previous year",
+    "next": "Next year",
+    "yearLabel": "Audit year",
+    "filterLabel": "Filter by status",
+    "export": "Export CSV",
+    "noTenant": "Set up a company first.",
+    "loadError": "The payment audit could not be loaded. Try refreshing the page.",
+    "noAccess": {
+      "title": "Owners and admins only",
+      "body": "The payment audit shows every payment of the company with its customer, so only the owner and admins can see it."
+    },
+    "cards": {
+      "invoices": "Invoices of the year",
+      "problems": "To check",
+      "underpaid": "Still missing ({home})",
+      "withoutInvoice": "Payments without invoice"
+    },
+    "filter": {
+      "problems": "To check",
+      "all": "All"
+    },
+    "status": {
+      "paid": "Paid",
+      "paidFee": "Paid, fee {fee}",
+      "paidFeeShort": "Paid with fee",
+      "underpaid": "Underpaid",
+      "overpaid": "Overpaid",
+      "unpaid": "Unpaid",
+      "manual": "Marked by hand, no payment found",
+      "sealed": "Encrypted amounts",
+      "unverified": "Cannot verify (rate missing)"
+    },
+    "txStatus": {
+      "no_invoice": "No invoice",
+      "not_issued": "Only on a draft or cancelled invoice",
+      "ignored": "Ignored"
+    },
+    "cols": {
+      "number": "Invoice",
+      "date": "Date",
+      "party": "Customer",
+      "payer": "Payer",
+      "currency": "Currency",
+      "total": "Total",
+      "received": "Received",
+      "fee": "Fees",
+      "difference": "Difference",
+      "differenceHome": "Difference ({home})",
+      "status": "Status",
+      "sources": "Sources",
+      "amount": "Amount",
+      "source": "Source"
+    },
+    "csv": {
+      "kind": "Type",
+      "invoice": "Invoice",
+      "payment": "Payment without invoice"
+    },
+    "invoices": {
+      "heading": "Invoices",
+      "empty": "No invoices with this status.",
+      "noProblems": "Every invoice of the year matches the money that came in.",
+      "note": "Paid invoices count in the year they were paid, unpaid ones in the year they were issued. A difference explained by a recorded fee shows as \"paid with fee\". A payment in another currency is compared at the official rate of its day, with a {percent} % tolerance."
+    },
+    "transactions": {
+      "heading": "Payments without invoice",
+      "intro": "Incoming payments of the year not paired with an issued invoice. Your own PayPal transfers and currency conversions are left out.",
+      "empty": "Every incoming payment of the year has its invoice.",
+      "draft": "Draft",
+      "likelyTransfer": "Most likely your own transfer from PayPal"
+    },
+    "sources": {
+      "heading": "By source",
+      "empty": "No payment came in this year.",
+      "incoming": "Received",
+      "paired": "Paired",
+      "withoutInvoice": "No invoice",
+      "ignored": "Ignored",
+      "ownMoves": "Transfers and conversions",
+      "feesNote": "Fees on the year's invoices in total: {fees}."
+    },
+    "sourceNames": {
+      "paypal": "PayPal",
+      "stripe": "Stripe",
+      "wise": "Wise",
+      "revolut": "Revolut",
+      "fio": "Fio",
+      "psd2": "PSD2",
+      "upload": "Uploaded statement",
+      "card": "Card payment"
+    },
+    "sealed": {
+      "locked": "The audit has not checked {count, plural, one {# invoice} other {# invoices}} with encrypted amounts yet. Unlock the vault and this browser fills them in.",
+      "unreadable": "{count, plural, one {# invoice could not be opened} other {# invoices could not be opened}} and keep the \"Encrypted amounts\" status.",
+      "failed": "The encrypted invoices ({count}) could not be loaded. Try refreshing the page."
+    }
   }
 }

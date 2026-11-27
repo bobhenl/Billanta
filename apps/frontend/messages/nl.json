@@ -5609,7 +5609,8 @@
       "templates": "Factuursjablonen",
       "netIncome": "Na belastingen (netto-inkomen)",
       "taxReturn": "Gegevens voor de belastingaangifte",
-      "flatTax": "Loont de forfaitaire belasting?"
+      "flatTax": "Loont de forfaitaire belasting?",
+      "paymentAudit": "Jaarlijkse betalingsaudit"
     },
     "keywords": {
       "newInvoice": "factuur uitgeven maken toevoegen document invoice",
@@ -7369,7 +7370,8 @@
     "flatTaxLink": "Loont de forfaitaire belasting? →",
     "taxReturnLink": "Samenvatting voor de belastingaangifte",
     "netIncomeLink": "Na belastingen",
-    "sealedNote": "{count, plural, one {# document met versleutelde bedragen is} other {# documenten met versleutelde bedragen zijn}} niet meegeteld in de totalen."
+    "sealedNote": "{count, plural, one {# document met versleutelde bedragen is} other {# documenten met versleutelde bedragen zijn}} niet meegeteld in de totalen.",
+    "paymentAuditLink": "Betalingsaudit"
   },
   "siteSearch": {
     "title": "Zoeken op de site",
@@ -15088,5 +15090,106 @@
       "passkey_failed": "De passkey kon niet worden gecontroleerd. Probeer het opnieuw of voer je code of wachtwoord in."
     },
     "usePasskey": "Bevestigen met passkey"
+  },
+  "paymentAudit": {
+    "title": "Jaarlijkse betalingsaudit",
+    "intro": "Elke factuur van het jaar naast het geld dat echt binnenkwam via bank, PayPal, Stripe of kaart, en de betalingen zonder factuur. Handig vóór de belastingaangifte.",
+    "back": "Terug naar rapporten",
+    "prev": "Vorig jaar",
+    "next": "Volgend jaar",
+    "yearLabel": "Jaar van de audit",
+    "filterLabel": "Filteren op status",
+    "export": "CSV exporteren",
+    "noTenant": "Maak eerst een bedrijf aan.",
+    "loadError": "De betalingsaudit kon niet worden geladen. Vernieuw de pagina.",
+    "noAccess": {
+      "title": "Alleen voor eigenaren en beheerders",
+      "body": "De audit toont alle betalingen van het bedrijf met de klanten, daarom zien alleen de eigenaar en beheerders hem."
+    },
+    "cards": {
+      "invoices": "Facturen van het jaar",
+      "problems": "Te controleren",
+      "underpaid": "Nog te ontvangen ({home})",
+      "withoutInvoice": "Betalingen zonder factuur"
+    },
+    "filter": {
+      "problems": "Te controleren",
+      "all": "Alles"
+    },
+    "status": {
+      "paid": "Betaald",
+      "paidFee": "Betaald, kosten {fee}",
+      "paidFeeShort": "Betaald met kosten",
+      "underpaid": "Te weinig betaald",
+      "overpaid": "Te veel betaald",
+      "unpaid": "Onbetaald",
+      "manual": "Met de hand gemarkeerd, geen betaling gevonden",
+      "sealed": "Versleutelde bedragen",
+      "unverified": "Niet te controleren (koers ontbreekt)"
+    },
+    "txStatus": {
+      "no_invoice": "Zonder factuur",
+      "not_issued": "Alleen bij een concept of geannuleerde factuur",
+      "ignored": "Genegeerd"
+    },
+    "cols": {
+      "number": "Factuur",
+      "date": "Datum",
+      "party": "Klant",
+      "payer": "Betaler",
+      "currency": "Valuta",
+      "total": "Totaal",
+      "received": "Ontvangen",
+      "fee": "Kosten",
+      "difference": "Verschil",
+      "differenceHome": "Verschil ({home})",
+      "status": "Status",
+      "sources": "Bronnen",
+      "amount": "Bedrag",
+      "source": "Bron"
+    },
+    "csv": {
+      "kind": "Soort",
+      "invoice": "Factuur",
+      "payment": "Betaling zonder factuur"
+    },
+    "invoices": {
+      "heading": "Facturen",
+      "empty": "Geen facturen met deze status.",
+      "noProblems": "Alle facturen van het jaar kloppen met het ontvangen geld.",
+      "note": "Betaalde facturen tellen in het jaar van betaling, onbetaalde in het jaar van uitgifte. Een verschil dat geregistreerde kosten verklaren, staat als „betaald met kosten”. Een betaling in een andere valuta vergelijken we tegen de officiële koers van de betaaldag, met {percent} % marge."
+    },
+    "transactions": {
+      "heading": "Betalingen zonder factuur",
+      "intro": "Ontvangsten van het jaar die niet aan een uitgegeven factuur gekoppeld zijn. Eigen overboekingen vanaf PayPal en valutawissels vallen erbuiten.",
+      "empty": "Elke ontvangst van het jaar heeft een factuur.",
+      "draft": "Concept",
+      "likelyTransfer": "Waarschijnlijk een eigen overboeking vanaf PayPal"
+    },
+    "sources": {
+      "heading": "Per bron",
+      "empty": "Dit jaar kwam er geen betaling binnen.",
+      "incoming": "Ontvangen",
+      "paired": "Gekoppeld",
+      "withoutInvoice": "Zonder factuur",
+      "ignored": "Genegeerd",
+      "ownMoves": "Overboekingen en wissels",
+      "feesNote": "Kosten op de facturen van het jaar in totaal: {fees}."
+    },
+    "sourceNames": {
+      "paypal": "PayPal",
+      "stripe": "Stripe",
+      "wise": "Wise",
+      "revolut": "Revolut",
+      "fio": "Fio",
+      "psd2": "PSD2",
+      "upload": "Geüpload afschrift",
+      "card": "Kaartbetaling"
+    },
+    "sealed": {
+      "locked": "De audit heeft {count, plural, one {# factuur} other {# facturen}} met versleutelde bedragen nog niet gecontroleerd. Ontgrendel de kluis en deze browser vult ze aan.",
+      "unreadable": "{count, plural, one {# factuur kon niet worden geopend} other {# facturen konden niet worden geopend}} en houden de status „Versleutelde bedragen”.",
+      "failed": "De versleutelde facturen ({count}) konden niet worden geladen. Vernieuw de pagina."
+    }
   }
 }

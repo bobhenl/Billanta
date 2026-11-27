@@ -100,6 +100,8 @@ describe("net income report", () => {
     for (const role of ["owner", "admin"]) {
       expect(roleMayAccess(role, "GET", "v1/net-income")).toBe(true);
       expect(roleMayAccess(role, "GET", "v1/net-income/inputs")).toBe(true);
+      expect(roleMayAccess(role, "GET", "v1/payment-audit")).toBe(true);
+      expect(roleMayAccess(role, "GET", "v1/payment-audit/inputs")).toBe(true);
       expect(roleMayAccess(role, "PUT", "v1/tenants/me/tax-model")).toBe(true);
       expect(roleMayAccess(role, "PUT", "v1/invoices/abc/partner-shares")).toBe(true);
     }
@@ -107,6 +109,8 @@ describe("net income report", () => {
       expect(roleMayAccess(role, "GET", "v1/net-income", all)).toBe(false);
       // The browser path of sealed amounts hands out the same figures.
       expect(roleMayAccess(role, "GET", "v1/net-income/inputs", all)).toBe(false);
+      expect(roleMayAccess(role, "GET", "v1/payment-audit", all)).toBe(false);
+      expect(roleMayAccess(role, "GET", "v1/payment-audit/inputs", all)).toBe(false);
       expect(roleMayAccess(role, "GET", "v1/tenants/me/tax-model", all)).toBe(false);
       expect(roleMayAccess(role, "PUT", "v1/tenants/me/tax-model", all)).toBe(false);
       expect(roleMayAccess(role, "PUT", "v1/invoices/abc/partner-shares", all)).toBe(false);

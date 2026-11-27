@@ -6,6 +6,10 @@ import {
   buildSealedTaxReturn,
   buildSealedVatFiling,
   buildSealedYearIncome,
+  open,
+  openPaymentAuditInputs,
+  paymentAuditEnvelopes,
+  paymentAuditOf,
   sealedAccountingEnvelopes,
   sealedEnvelopesOf,
   sealedIncomeEnvelopes,
@@ -14,6 +18,8 @@ import {
   type DocumentAmounts,
   type ItemAmounts,
   type NetIncomeInputs,
+  type PaymentAmounts,
+  type PaymentAuditInputs,
   type SealedAccountingInputs,
   type SealedCsvInputs,
   type SealedVatInputs,
@@ -21,7 +27,7 @@ import {
   type VaultKey,
   type YearIncomeInputs
 } from '@faktur/cz-compliance';
-import { openDocumentAmounts, openItemAmounts } from './amounts';
+import { openDocumentAmounts, openItemAmounts, openPaymentWith } from './amounts';
 
 /*
  * The accountant's files, the VAT filings and the year's reports when some documents have sealed
@@ -94,6 +100,17 @@ export async function sealedFilingLines(key: VaultKey, inputs: AnnualFilingsInpu
 /** The net income report with the sealed documents, or how many could not be opened. */
 export async function sealedNetIncome(key: VaultKey, inputs: NetIncomeInputs) {
   return buildSealedNetIncome(inputs, await openAll(key, sealedNetIncomeEnvelopes(inputs)));
+}
+
+/** The payment audit with the sealed totals and card payments opened, and how many invoices stayed shut. */
+export async function sealedPaymentAudit(key: VaultKey, inputs: PaymentAuditInputs) {
+  const { documents, payments } = paymentAuditEnvelopes(inputs);
+  const [docs, pays] = await Promise.all([
+    openAll(key, documents),
+    openEach<PaymentAmounts>(key, payments, (k, c) => openPaymentWith((x) => open(k, x), c))
+  ]);
+  const opened = openPaymentAuditInputs(inputs, docs, pays);
+  return { report: paymentAuditOf(opened.inputs), missing: opened.missing };
 }
 
 /** Saves a file; a Blob keeps its bytes (a CSV's BOM would not survive `res.text()`). */

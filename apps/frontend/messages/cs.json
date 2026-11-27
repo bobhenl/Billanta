@@ -5617,7 +5617,8 @@
       "templates": "Šablony faktur",
       "netIncome": "Po zdanění (čistý příjem)",
       "taxReturn": "Podklady pro daňové přiznání",
-      "flatTax": "Vyplatí se paušální daň?"
+      "flatTax": "Vyplatí se paušální daň?",
+      "paymentAudit": "Roční audit plateb"
     },
     "keywords": {
       "newInvoice": "vystavit vytvořit přidat doklad",
@@ -7377,7 +7378,8 @@
     "flatTaxLink": "Vyplatí se paušální daň? →",
     "taxReturnLink": "Podklady pro daňové přiznání →",
     "netIncomeLink": "Po zdanění",
-    "sealedNote": "{count, plural, one {# doklad se zašifrovanými částkami není započten} few {# doklady se zašifrovanými částkami nejsou započteny} other {# dokladů se zašifrovanými částkami není započteno}} v součtech."
+    "sealedNote": "{count, plural, one {# doklad se zašifrovanými částkami není započten} few {# doklady se zašifrovanými částkami nejsou započteny} other {# dokladů se zašifrovanými částkami není započteno}} v součtech.",
+    "paymentAuditLink": "Audit plateb"
   },
   "siteSearch": {
     "title": "Hledat na webu",
@@ -15100,5 +15102,106 @@
       "passkey_failed": "Passkey se nepodařilo ověřit. Zkuste to znovu, nebo zadejte kód či heslo."
     },
     "usePasskey": "Potvrdit passkeyem"
+  },
+  "paymentAudit": {
+    "title": "Roční audit plateb",
+    "intro": "Každá faktura roku proti penězům, které opravdu přišly na účet, PayPal, Stripe nebo kartou, a platby, ke kterým žádná faktura není. Hodí se před daňovým přiznáním.",
+    "back": "Zpět na přehledy",
+    "prev": "Předchozí rok",
+    "next": "Další rok",
+    "yearLabel": "Rok auditu",
+    "filterLabel": "Filtr podle stavu",
+    "export": "Export CSV",
+    "noTenant": "Nejdřív si založte firmu.",
+    "loadError": "Audit plateb se nepodařilo načíst. Zkuste stránku obnovit.",
+    "noAccess": {
+      "title": "Jen pro majitele a administrátory",
+      "body": "Audit plateb ukazuje všechny platby firmy i se zákazníky, proto ho vidí jen majitel a administrátoři."
+    },
+    "cards": {
+      "invoices": "Faktury roku",
+      "problems": "K prověření",
+      "underpaid": "Chybí doplatit ({home})",
+      "withoutInvoice": "Platby bez faktury"
+    },
+    "filter": {
+      "problems": "K prověření",
+      "all": "Vše"
+    },
+    "status": {
+      "paid": "Uhrazeno",
+      "paidFee": "Uhrazeno, poplatek {fee}",
+      "paidFeeShort": "Uhrazeno s poplatkem",
+      "underpaid": "Nedoplaceno",
+      "overpaid": "Přeplaceno",
+      "unpaid": "Neuhrazeno",
+      "manual": "Označeno ručně, platba nenalezena",
+      "sealed": "Zašifrované částky",
+      "unverified": "Nelze ověřit (chybí kurz)"
+    },
+    "txStatus": {
+      "no_invoice": "Bez faktury",
+      "not_issued": "Jen u konceptu nebo stornované faktury",
+      "ignored": "Ignorováno"
+    },
+    "cols": {
+      "number": "Faktura",
+      "date": "Datum",
+      "party": "Odběratel",
+      "payer": "Plátce",
+      "currency": "Měna",
+      "total": "Celkem",
+      "received": "Přišlo",
+      "fee": "Poplatky",
+      "difference": "Rozdíl",
+      "differenceHome": "Rozdíl ({home})",
+      "status": "Stav",
+      "sources": "Zdroje",
+      "amount": "Částka",
+      "source": "Zdroj"
+    },
+    "csv": {
+      "kind": "Druh",
+      "invoice": "Faktura",
+      "payment": "Platba bez faktury"
+    },
+    "invoices": {
+      "heading": "Faktury",
+      "empty": "Žádné faktury v tomto stavu.",
+      "noProblems": "Všechny faktury roku sedí s penězi, které přišly.",
+      "note": "Uhrazené faktury se počítají do roku úhrady, neuhrazené do roku vystavení. Rozdíl, který vysvětluje zaznamenaný poplatek, je „uhrazeno s poplatkem“. Platbu v jiné měně porovnáváme kurzem ČNB ze dne platby s tolerancí {percent} %."
+    },
+    "transactions": {
+      "heading": "Platby bez faktury",
+      "intro": "Příchozí platby roku, které nejsou spárované s vystavenou fakturou. Vlastní převody z PayPalu a směny měn sem nepatří.",
+      "empty": "Každá příchozí platba roku má svou fakturu.",
+      "draft": "Koncept",
+      "likelyTransfer": "Nejspíš vlastní převod z PayPalu"
+    },
+    "sources": {
+      "heading": "Podle zdroje",
+      "empty": "V tomto roce nepřišla žádná platba.",
+      "incoming": "Přišlo",
+      "paired": "Spárováno",
+      "withoutInvoice": "Bez faktury",
+      "ignored": "Ignorováno",
+      "ownMoves": "Převody a směny",
+      "feesNote": "Poplatky u faktur roku celkem: {fees}."
+    },
+    "sourceNames": {
+      "paypal": "PayPal",
+      "stripe": "Stripe",
+      "wise": "Wise",
+      "revolut": "Revolut",
+      "fio": "Fio",
+      "psd2": "PSD2",
+      "upload": "Nahraný výpis",
+      "card": "Platba kartou"
+    },
+    "sealed": {
+      "locked": "Audit zatím neověřil {count, plural, one {# fakturu} few {# faktury} other {# faktur}} se zašifrovanými částkami. Po odemčení trezoru je dopočítá tento prohlížeč.",
+      "unreadable": "{count, plural, one {# fakturu se nepodařilo otevřít} few {# faktury se nepodařilo otevřít} other {# faktur se nepodařilo otevřít}}, u nich zůstává stav „Zašifrované částky“.",
+      "failed": "Zašifrované faktury ({count}) se nepodařilo načíst. Zkuste stránku obnovit."
+    }
   }
 }

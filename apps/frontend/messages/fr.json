@@ -5609,7 +5609,8 @@
       "templates": "Modèles de facture",
       "netIncome": "Après impôts (revenu net)",
       "taxReturn": "Éléments pour la déclaration d’impôts",
-      "flatTax": "L’impôt forfaitaire est-il avantageux ?"
+      "flatTax": "L’impôt forfaitaire est-il avantageux ?",
+      "paymentAudit": "Audit annuel des paiements"
     },
     "keywords": {
       "newInvoice": "émettre créer ajouter document facture",
@@ -7369,7 +7370,8 @@
     "flatTaxLink": "L’impôt forfaitaire est-il avantageux ? →",
     "taxReturnLink": "Récapitulatif pour la déclaration d’impôt",
     "netIncomeLink": "Après impôts",
-    "sealedNote": "{count, plural, one {# document aux montants chiffrés n’est pas inclus} other {# documents aux montants chiffrés ne sont pas inclus}} dans les totaux."
+    "sealedNote": "{count, plural, one {# document aux montants chiffrés n’est pas inclus} other {# documents aux montants chiffrés ne sont pas inclus}} dans les totaux.",
+    "paymentAuditLink": "Audit des paiements"
   },
   "siteSearch": {
     "title": "Rechercher sur le site",
@@ -15088,5 +15090,106 @@
       "passkey_failed": "La clé d’accès n’a pas pu être vérifiée. Réessayez ou saisissez votre code ou mot de passe."
     },
     "usePasskey": "Confirmer avec une clé d’accès"
+  },
+  "paymentAudit": {
+    "title": "Audit annuel des paiements",
+    "intro": "Chaque facture de l'année comparée à l'argent vraiment reçu par banque, PayPal, Stripe ou carte, et les paiements sans facture. Utile avant la déclaration d'impôts.",
+    "back": "Retour aux rapports",
+    "prev": "Année précédente",
+    "next": "Année suivante",
+    "yearLabel": "Année de l'audit",
+    "filterLabel": "Filtrer par statut",
+    "export": "Export CSV",
+    "noTenant": "Créez d'abord une entreprise.",
+    "loadError": "L'audit des paiements n'a pas pu être chargé. Actualisez la page.",
+    "noAccess": {
+      "title": "Réservé aux propriétaires et administrateurs",
+      "body": "L'audit montre tous les paiements de l'entreprise avec les clients, seuls le propriétaire et les administrateurs le voient donc."
+    },
+    "cards": {
+      "invoices": "Factures de l'année",
+      "problems": "À vérifier",
+      "underpaid": "Reste à payer ({home})",
+      "withoutInvoice": "Paiements sans facture"
+    },
+    "filter": {
+      "problems": "À vérifier",
+      "all": "Tout"
+    },
+    "status": {
+      "paid": "Payée",
+      "paidFee": "Payée, frais {fee}",
+      "paidFeeShort": "Payée avec frais",
+      "underpaid": "Paiement insuffisant",
+      "overpaid": "Trop-perçu",
+      "unpaid": "Impayée",
+      "manual": "Marquée à la main, aucun paiement trouvé",
+      "sealed": "Montants chiffrés",
+      "unverified": "Vérification impossible (taux manquant)"
+    },
+    "txStatus": {
+      "no_invoice": "Sans facture",
+      "not_issued": "Seulement sur un brouillon ou une facture annulée",
+      "ignored": "Ignoré"
+    },
+    "cols": {
+      "number": "Facture",
+      "date": "Date",
+      "party": "Client",
+      "payer": "Payeur",
+      "currency": "Devise",
+      "total": "Total",
+      "received": "Reçu",
+      "fee": "Frais",
+      "difference": "Écart",
+      "differenceHome": "Écart ({home})",
+      "status": "Statut",
+      "sources": "Sources",
+      "amount": "Montant",
+      "source": "Source"
+    },
+    "csv": {
+      "kind": "Type",
+      "invoice": "Facture",
+      "payment": "Paiement sans facture"
+    },
+    "invoices": {
+      "heading": "Factures",
+      "empty": "Aucune facture avec ce statut.",
+      "noProblems": "Toutes les factures de l'année correspondent à l'argent reçu.",
+      "note": "Les factures payées comptent dans l'année du paiement, les impayées dans l'année d'émission. Un écart expliqué par des frais enregistrés apparaît comme « payée avec frais ». Un paiement dans une autre devise est comparé au taux officiel du jour, avec une tolérance de {percent} %."
+    },
+    "transactions": {
+      "heading": "Paiements sans facture",
+      "intro": "Encaissements de l'année non rapprochés d'une facture émise. Vos propres virements depuis PayPal et les conversions de devises sont exclus.",
+      "empty": "Chaque encaissement de l'année a sa facture.",
+      "draft": "Brouillon",
+      "likelyTransfer": "Sans doute un virement interne depuis PayPal"
+    },
+    "sources": {
+      "heading": "Par source",
+      "empty": "Aucun paiement reçu cette année.",
+      "incoming": "Reçu",
+      "paired": "Rapproché",
+      "withoutInvoice": "Sans facture",
+      "ignored": "Ignoré",
+      "ownMoves": "Virements et conversions",
+      "feesNote": "Frais sur les factures de l'année au total : {fees}."
+    },
+    "sourceNames": {
+      "paypal": "PayPal",
+      "stripe": "Stripe",
+      "wise": "Wise",
+      "revolut": "Revolut",
+      "fio": "Fio",
+      "psd2": "PSD2",
+      "upload": "Relevé importé",
+      "card": "Paiement par carte"
+    },
+    "sealed": {
+      "locked": "L'audit n'a pas encore vérifié {count, plural, one {# facture} other {# factures}} aux montants chiffrés. Déverrouillez le coffre et ce navigateur les complétera.",
+      "unreadable": "{count, plural, one {# facture n'a pas pu être ouverte} other {# factures n'ont pas pu être ouvertes}} et gardent le statut « Montants chiffrés ».",
+      "failed": "Les factures chiffrées ({count}) n'ont pas pu être chargées. Actualisez la page."
+    }
   }
 }

@@ -20,9 +20,10 @@ export const under = (path: string, prefix: string) => path === prefix || path.s
 
 /**
  * Owners and admins only, reads included: the "Po zdanění" report shows each
- * partner's income and taxes, which other members must not see.
+ * partner's income and taxes, which other members must not see. The payment
+ * audit lists every payment of the year with its customer, so it goes with it.
  */
-const OWNER_ADMIN_PREFIXES = ["v1/net-income", "v1/tenants/me/tax-model"];
+const OWNER_ADMIN_PREFIXES = ["v1/net-income", "v1/tenants/me/tax-model", "v1/payment-audit"];
 const ownerAdminOnly = (path: string) => OWNER_ADMIN_PREFIXES.some((p) => under(path, p)) || /^v1\/invoices\/[^/]+\/(partner-shares|lock)$/.test(path);
 
 /**
