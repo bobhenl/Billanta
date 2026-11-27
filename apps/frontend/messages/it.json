@@ -618,7 +618,8 @@
       "mode": {
         "created": "Abbiamo creato un nuovo contatto e lo abbiamo inserito nella bozza.",
         "existing": "Abbiamo trovato un contatto salvato tramite numero di identificazione o partita IVA e lo abbiamo inserito nella bozza.",
-        "filled": "I dati appartengono al contatto già presente nella bozza."
+        "filled": "I dati appartengono al contatto già presente nella bozza.",
+        "pending_seal": "I tuoi contatti sono cifrati, quindi il server non crea il contatto dalla risposta. I dati aspettano che il tuo browser li cifri."
       },
       "filled": "Compilato: {fields}.",
       "conflicts": "Diverso dal contatto salvato, nulla è stato sovrascritto:",
@@ -646,7 +647,12 @@
       "requiredHint": "Cosa deve compilare il cliente. Nome e indirizzo sono sempre obbligatori, numero di identificazione e partita IVA solo per le aziende.",
       "requiredSaveDefault": "Usa come predefinito per i nuovi link",
       "requiredSummary": "Obbligatori: {fields}",
-      "pickCustomer": "Scegli un cliente"
+      "pickCustomer": "Scegli un cliente",
+      "pendingSeal": {
+        "hint": "Fino ad allora il server li conserva leggibili solo in questa bozza. Dopo la cifratura li elimina e la bozza riceve il contatto cifrato.",
+        "button": "Cifra e salva il contatto",
+        "done": "Il contatto è cifrato e associato alla bozza."
+      }
     },
     "profileOrder": {
       "badge": "Ordine dal profilo",
@@ -7186,7 +7192,8 @@
     },
     "footer": "{company} Le ha inviato questo link – La preghiamo di non condividerlo",
     "notFoundTitle": "Portale non trovato",
-    "notFoundBody": "Il link non è valido o è stato revocato. Ne chieda uno nuovo al fornitore."
+    "notFoundBody": "Il link non è valido o è stato revocato. Ne chieda uno nuovo al fornitore.",
+    "titleNoName": "I tuoi documenti"
   },
   "reports": {
     "pageTitle": "Report",
@@ -14620,7 +14627,7 @@
       "unlockAndSend": "Sblocca e invia ({n})",
       "lead": "Il server non può trasformare da solo un documento cifrato in PDF. Il PDF si crea qui, in un browser con la Modalità riservata sbloccata.",
       "passThroughPdf": "Il PDF si crea nel tuo browser. Il server lo inoltra una volta al destinatario e non lo conserva.",
-      "passThroughTexts": "Facendo clic su Invia, i testi decifrati di questi documenti passano una volta dal server: ne crea il PDF e lo invia per e-mail. Non li conserva e non li registra nei log.",
+      "passThroughTexts": "Facendo clic su Invia, i testi decifrati di questi documenti e, per un cliente cifrato, anche nome e indirizzo passano una volta dal server: ne crea il PDF e lo invia per e-mail. Non li conserva e non li registra nei log.",
       "unnumbered": "Senza numero",
       "kind": {
         "invoice": "Attende tutta l'e-mail",
@@ -14698,7 +14705,9 @@
         "contact_sealed": "Questo contatto è cifrato. Sbloccalo e salva di nuovo perché resti cifrato.",
         "vault_category_off": "La cifratura dei contatti è disattivata. Attivala nelle impostazioni della modalità riservata.",
         "plan_required": "La cifratura dei contatti fa parte di un piano superiore."
-      }
+      },
+      "documentsNote": "Le bozze riprendono da sole i dati modificati. I documenti emessi mantengono il cliente alla data di emissione e la modifica del contatto non li cambia. Se il cliente è ancora leggibile, cifralo con Cifra i contatti esistenti nelle",
+      "documentsLink": "impostazioni della Modalità riservata"
     },
     "sealContacts": {
       "button": "Cifra i contatti esistenti",

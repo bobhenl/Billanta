@@ -127,6 +127,11 @@ export async function cancelBuyerDetails(id: string) {
   return run<unknown>(`/api/v1/invoices/${id}/buyer-details-request`, { method: 'DELETE' });
 }
 
+/** Důvěrný režim: attaches the contact this browser encrypted from the customer's own details. */
+export async function resolveBuyerDetailsPending(id: string, contactId: string) {
+  return run<{ ok: true }>(`/api/v1/invoices/${id}/buyer-details-pending`, json('POST', { contactId }));
+}
+
 export async function convertInvoice(id: string, to: 'invoice' | 'proforma' | 'credit_note') {
   return run<{ id: string }>(`/api/v1/invoices/${id}/convert`, json('POST', { to }));
 }

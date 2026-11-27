@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
-import { isSealed } from '@faktur/cz-compliance';
+import { isSealed, SEALED_BUYER_SNAPSHOT_FIELDS } from '@faktur/cz-compliance';
 import { ConfidentialText } from '@/components/vault/confidential-text';
+import { ConfidentialJoin } from '@/components/vault/confidential-join';
 import { SealButton } from '@/components/vault/seal-button';
 import { ServerViewPanel } from '@/components/vault/server-view-panel';
 import type { ReactNode } from 'react';
@@ -148,10 +149,25 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   // "Důvěrný režim": the server can't print, attach or send what it can't read.
   const texts = [invoice.noteAbove, invoice.noteBelow, invoice.internalNote, ...items.map((item) => item.description)];
   // The internal note is never printed, so only the printed texts count here (apps/backend/src/vault/sealed.ts).
-  const confidential = [invoice.noteAbove, invoice.noteBelow, ...items.map((item) => item.description)].some(isSealed);
+  // An encrypted buyer (contacts in "Důvěrný režim") is printed too: on a draft it comes from the live contact.
+  const snapshot = invoice.buyerSnapshot ?? null;
+  const buyerTexts = snapshot
+    ? [snapshot.legalName, snapshot.addressStreet, snapshot.addressCity, snapshot.addressPostalCode]
+    : [contact?.legalName, contact?.addressStreet, contact?.addressCity, contact?.addressPostalCode];
+  const confidential = [invoice.noteAbove, invoice.noteBelow, invoice.buyerContactPerson, ...buyerTexts, ...items.map((item) => item.description)].some(isSealed);
   // The browser opens these to put the document key into the client link (components/vault/client-link.tsx).
+  // Only a snapshot can be re-keyed: a draft without one follows the live contact.
+  const sealedBuyer = snapshot
+    ? Object.fromEntries(SEALED_BUYER_SNAPSHOT_FIELDS.filter((f) => isSealed(snapshot[f])).map((f) => [f, snapshot[f] as string]))
+    : {};
   const sealedDoc = confidential
-    ? { noteAbove: invoice.noteAbove ?? null, noteBelow: invoice.noteBelow ?? null, items: items.map((item) => ({ id: item.id, description: item.description })) }
+    ? {
+        noteAbove: invoice.noteAbove ?? null,
+        noteBelow: invoice.noteBelow ?? null,
+        items: items.map((item) => ({ id: item.id, description: item.description })),
+        buyer: sealedBuyer,
+        buyerContactPerson: isSealed(invoice.buyerContactPerson) ? invoice.buyerContactPerson : null
+      }
     : null;
   const hasPlainText = texts.some((text) => Boolean(text?.trim()) && !isSealed(text));
   const editedAfterSend = Boolean(invoice.sentAt && editedAt && invoice.status !== 'cancelled' && Date.parse(editedAt) > Date.parse(invoice.sentAt));
@@ -265,7 +281,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
             )}
           </div>
           <h1 className="mt-2 break-words text-2xl font-extrabold tracking-tight">{title}</h1>
-          {contact && <p className="mt-1 break-words text-muted-foreground">{contact.legalName}</p>}
+          {contact && <p className="mt-1 break-words text-muted-foreground"><ConfidentialText value={buyer?.legalName ?? contact.legalName} /></p>}
         </div>
         <div className="sm:text-right">
           <div className="text-xs uppercase tracking-wide text-muted-foreground">{t('totalDue')}</div>
@@ -292,7 +308,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           numbered={Boolean(invoice.invoiceNumber)}
           hasEmail={Boolean(contact?.email)}
           publicLink={detail.links?.public ?? invoice.publicToken}
-          defaultTemplateName={contact ? `${contact.legalName}` : title}
+          defaultTemplateName={contact && !isSealed(contact.legalName) ? contact.legalName : title}
           overdue={invoice.isOverdue}
           reminderCount={invoice.reminderCount}
           total={totals.totalWithVat}
@@ -505,17 +521,17 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
             {contact && buyer ? (
               <div className="mt-2 text-sm">
                 <Link href={`/contacts/${contact.id}`} className="font-semibold text-primary hover:underline">
-                  {buyer.legalName}
+                  <ConfidentialText value={buyer.legalName} compact />
                 </Link>
                 <div className="mt-1 text-muted-foreground">
-                  {[buyer.addressStreet, [buyer.addressPostalCode, buyer.addressCity].filter(Boolean).join(' ')]
-                    .filter(Boolean)
-                    .join(', ')}
+                  {buyer.addressStreet && <ConfidentialText value={buyer.addressStreet} compact />}
+                  {buyer.addressStreet && (buyer.addressPostalCode || buyer.addressCity) && ', '}
+                  <ConfidentialJoin parts={[buyer.addressPostalCode, buyer.addressCity]} separator=" " />
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">
                   {buyer.ico && <>IČO {buyer.ico}</>} {buyer.dic && <>· DIČ {buyer.dic}</>}
                 </div>
-                {buyer.email && <div className="mt-1 text-xs text-muted-foreground">{buyer.email}</div>}
+                {buyer.email && <div className="mt-1 text-xs text-muted-foreground"><ConfidentialText value={buyer.email} compact /></div>}
                 {detail.snapshot?.buyerDiffers && <p className="mt-2 text-xs text-muted-foreground">{t('buyerSnapshotNote')}</p>}
               </div>
             ) : (

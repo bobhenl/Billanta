@@ -54,6 +54,8 @@ import { invoiceQueryHref, parseInvoiceQuery } from '@/lib/nl-search';
 import { loadPaletteData, type PaletteContact, type PaletteInvoice } from '@/lib/search-actions';
 import { CHECK_BUILD_EVENT } from '@/components/update-notice';
 import { cn } from '@/lib/utils';
+import { useOpenedFields } from '@/components/vault/opened-contacts';
+import { isSealed } from '@faktur/cz-compliance';
 
 /** sessionStorage key the invoice form reads to run an AI request typed into the palette. */
 export const AI_PROMPT_KEY = 'billanta.aiPrompt';
@@ -162,6 +164,11 @@ const SECTIONS: (Entry & { parent: string })[] = [
 const GROUP_ORDER: Group[] = ['ai', 'actions', 'contacts', 'pages', 'invoices'];
 const LIMIT = 6;
 
+const NO_INVOICES: PaletteInvoice[] = [];
+const NO_CONTACTS: PaletteContact[] = [];
+const INVOICE_CONTACT = ['contact'] as const;
+const CONTACT_FIELDS = ['name', 'email'] as const;
+
 /**
  * Ctrl/⌘+K search across the dashboard (VoxelRank-style): actions, pages,
  * invoices and customers in one typo-tolerant list, plus "create an invoice
@@ -177,7 +184,20 @@ export function CommandPalette({ hidden = [] }: { hidden?: string[] }) {
   const [aiMode, setAiMode] = useState(false);
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
-  const [data, setData] = useState<{ invoices: PaletteInvoice[]; contacts: PaletteContact[]; aiReady: boolean } | null>(null);
+  const [loaded, setData] = useState<{ invoices: PaletteInvoice[]; contacts: PaletteContact[]; aiReady: boolean } | null>(null);
+  // Encrypted customer names (Důvěrný režim) open here, so the palette finds them; nothing goes back to the server.
+  const tText = useTranslations('vault.text');
+  const openedInvoices = useOpenedFields(loaded?.invoices ?? NO_INVOICES, INVOICE_CONTACT);
+  const openedContacts = useOpenedFields(loaded?.contacts ?? NO_CONTACTS, CONTACT_FIELDS);
+  const data = useMemo(() => {
+    if (!loaded) return null;
+    const locked = (v: string | null) => (isSealed(v) ? tText('locked') : v);
+    return {
+      ...loaded,
+      invoices: openedInvoices.map((i) => ({ ...i, contact: locked(i.contact) })),
+      contacts: openedContacts.map((c) => ({ ...c, name: locked(c.name) ?? '', email: isSealed(c.email) ? null : c.email }))
+    };
+  }, [loaded, openedInvoices, openedContacts, tText]);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);

@@ -74,6 +74,7 @@ import {
 import { PeriodReport } from './period-report';
 import { ReferralNudge } from '@/components/referral-nudge';
 import { TaxReturnNudge } from '@/components/tax-return-nudge';
+import { ConfidentialText } from '@/components/vault/confidential-text';
 
 const DEFAULT_CONFIG: DashboardConfig = {
   cards: ['revenue_month', 'unpaid', 'overdue', 'expenses_month'],
@@ -472,7 +473,7 @@ function DocList({ docs, showDue = false }: { docs: DashboardDoc[]; showDue?: bo
               <span className="min-w-0 flex-1">
                 <span className="flex items-center gap-1.5 truncate font-semibold">
                   <ColorDot color={doc.contactColor} label={isContactColor(doc.contactColor) ? tGloss('contactColor', { color: tColors(doc.contactColor) }) : undefined} />
-                  <span className="truncate">{doc.contactName ?? tDoc('noCustomer')}</span>
+                  <span className="truncate">{doc.contactName ? <ConfidentialText value={doc.contactName} compact /> : tDoc('noCustomer')}</span>
                 </span>
                 <span className="block truncate text-xs text-muted-foreground">
                   {tDoc(`type.${doc.documentType}`)} {doc.invoiceNumber ?? tDoc('unnumbered')}

@@ -1,14 +1,18 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { CheckCircle2, Clock, Copy, Link2, Send, UserPen, UserSearch, X } from 'lucide-react';
+import { CheckCircle2, Clock, Copy, Link2, LockKeyhole, Send, UserPen, UserSearch, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import type { BuyerDetailsOutcome } from '@/lib/invoice-ui';
-import { cancelBuyerDetails, requestBuyerDetails } from '../actions';
+import { cancelBuyerDetails, requestBuyerDetails, resolveBuyerDetailsPending } from '../actions';
+import { createContact } from '../../contacts/actions';
+import { ConfidentialText } from '@/components/vault/confidential-text';
+import { useVault } from '@/components/vault/vault-provider';
+import { sealContact } from '@/lib/vault/contacts';
 import { copyText } from '@/lib/clipboard';
 
 type Field = 'email' | 'phone' | 'ico' | 'dic';
@@ -64,6 +68,45 @@ export function BuyerDetailsRequest({
   // When copying fails even with the HTTP fallback (copyText), the link is shown to copy by hand.
   const [manualUrl, setManualUrl] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+
+  const { requestUnlock } = useVault();
+
+  // Důvěrný režim, contacts: the server can't encrypt for the company, so this browser makes the contact.
+  const sealPending = () =>
+    startTransition(async () => {
+      const p = outcome?.pending;
+      if (!p) return;
+      const key = await requestUnlock();
+      if (!key) return;
+      const sealed = await sealContact(
+        key,
+        {
+          legalName: p.legalName,
+          ico: p.ico,
+          dic: p.dic,
+          email: p.email,
+          phone: p.phone,
+          addressStreet: p.addressStreet,
+          addressCity: p.addressCity,
+          addressPostalCode: p.addressPostalCode,
+          addressCountry: p.addressCountry,
+          isPerson: p.isPerson
+        },
+        { email: false }
+      );
+      const made = await createContact(Object.fromEntries(Object.entries(sealed).filter(([, v]) => v !== null)));
+      if (!made.ok || !made.data) {
+        toast({ text: `${t('failed')}: ${made.ok ? 'contact_missing' : made.error}`, tone: 'err' });
+        return;
+      }
+      const attached = await resolveBuyerDetailsPending(id, made.data.id);
+      if (!attached.ok) {
+        toast({ text: `${t('failed')}: ${attached.error}`, tone: 'err' });
+        return;
+      }
+      toast({ text: t('pendingSeal.done'), tone: 'ok' });
+      router.refresh();
+    });
 
   const linkOf = (tok: string) => `${window.location.origin}/d/${tok}`;
   const copy = async (url: string) => {
@@ -199,6 +242,19 @@ export function BuyerDetailsRequest({
           <div className="min-w-0 flex-1">
             <p className="font-semibold">{t('submittedTitle', { date: submittedLabel ?? '' })}</p>
             <p className="mt-1 text-muted-foreground">{t(`mode.${outcome.mode}`)}</p>
+            {outcome.mode === 'pending_seal' && outcome.pending && (
+              <div className="mt-2 rounded-lg bg-muted/50 p-3">
+                <p className="font-medium">
+                  {outcome.pending.legalName}
+                  {outcome.pending.ico && <span className="text-muted-foreground"> · IČO {outcome.pending.ico}</span>}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">{t('pendingSeal.hint')}</p>
+                <button type="button" className={`${buttonClass.primary} mt-2`} disabled={pending} onClick={sealPending}>
+                  <LockKeyhole className="h-4 w-4" />
+                  {t('pendingSeal.button')}
+                </button>
+              </div>
+            )}
             {outcome.filled.length > 0 && <p className="mt-1 text-muted-foreground">{t('filled', { fields: outcome.filled.map(fieldLabel).join(', ') })}</p>}
             {outcome.conflicts.length > 0 && (
               <div className="mt-2">
@@ -206,7 +262,7 @@ export function BuyerDetailsRequest({
                 <ul className="mt-1 space-y-0.5 text-muted-foreground">
                   {outcome.conflicts.map((c) => (
                     <li key={c.field}>
-                      {fieldLabel(c.field)}: <span className="line-through opacity-70">{c.saved ?? t('empty')}</span> → {c.submitted ?? t('empty')}
+                      {fieldLabel(c.field)}: <span className="line-through opacity-70">{c.saved ? <ConfidentialText value={c.saved} compact /> : t('empty')}</span> → {c.submitted ?? t('empty')}
                     </li>
                   ))}
                 </ul>

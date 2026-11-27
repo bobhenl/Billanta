@@ -618,7 +618,8 @@
       "mode": {
         "created": "We hebben een nieuw contact aangemaakt en op het concept gezet.",
         "existing": "We hebben een opgeslagen contact gevonden op ondernemings- of btw-nummer en op het concept gezet.",
-        "filled": "De gegevens horen bij het contact dat al op het concept stond."
+        "filled": "De gegevens horen bij het contact dat al op het concept stond.",
+        "pending_seal": "Je contacten zijn versleuteld, dus de server maakt zelf geen contact uit het antwoord. De gegevens wachten tot je browser ze versleutelt."
       },
       "filled": "Ingevuld: {fields}.",
       "conflicts": "Wijkt af van het opgeslagen contact, er is niets overschreven:",
@@ -646,7 +647,12 @@
       "requiredHint": "Wat de klant moet invullen. Naam en adres zijn altijd verplicht, ondernemings- en btw-nummer alleen voor bedrijven.",
       "requiredSaveDefault": "Gebruiken als standaard voor nieuwe links",
       "requiredSummary": "Verplicht: {fields}",
-      "pickCustomer": "Kies een klant"
+      "pickCustomer": "Kies een klant",
+      "pendingSeal": {
+        "hint": "Tot die tijd bewaart de server ze alleen bij dit concept leesbaar. Na het versleutelen verwijdert hij ze en krijgt het concept het versleutelde contact.",
+        "button": "Versleutelen en contact opslaan",
+        "done": "Het contact is versleuteld en aan het concept gekoppeld."
+      }
     },
     "profileOrder": {
       "badge": "Bestelling via profiel",
@@ -7186,7 +7192,8 @@
     },
     "footer": "{company} heeft je deze link gestuurd – deel hem niet met anderen",
     "notFoundTitle": "Portaal niet gevonden",
-    "notFoundBody": "De link is ongeldig of ingetrokken. Vraag de leverancier om een nieuwe."
+    "notFoundBody": "De link is ongeldig of ingetrokken. Vraag de leverancier om een nieuwe.",
+    "titleNoName": "Jouw documenten"
   },
   "reports": {
     "pageTitle": "Rapporten",
@@ -14620,7 +14627,7 @@
       "unlockAndSend": "Ontgrendelen en versturen ({n})",
       "lead": "De server kan een versleuteld document niet zelf omzetten in een pdf. De pdf wordt hier gemaakt, in een browser met de Vertrouwelijke modus ontgrendeld.",
       "passThroughPdf": "De pdf wordt in je browser gemaakt. De server stuurt hem één keer door naar de ontvanger en bewaart hem niet.",
-      "passThroughTexts": "Als je op Versturen klikt, gaan de ontsleutelde teksten van deze documenten één keer via de server: die maakt er de pdf van en mailt hem. Hij bewaart en logt ze niet.",
+      "passThroughTexts": "Als je op Versturen klikt, gaan de ontsleutelde teksten van deze documenten, en bij een versleutelde klant ook diens naam en adres, één keer via de server: die maakt er de pdf van en mailt hem. Hij bewaart en logt ze niet.",
       "unnumbered": "Zonder nummer",
       "kind": {
         "invoice": "Hele e-mail wacht",
@@ -14698,7 +14705,9 @@
         "contact_sealed": "Dit contact is versleuteld. Ontgrendel het en sla opnieuw op zodat het versleuteld blijft.",
         "vault_category_off": "Versleuteling van contacten staat uit. Zet die aan in de instellingen van de vertrouwelijke modus.",
         "plan_required": "Versleuteling van contacten hoort bij een hoger abonnement."
-      }
+      },
+      "documentsNote": "Concepten nemen de gewijzigde gegevens vanzelf over. Uitgegeven documenten houden de klant van de uitgiftedatum, en het contact wijzigen verandert ze niet. Is de klant daarop nog leesbaar, versleutel hem dan met Bestaande contacten versleutelen in de",
+      "documentsLink": "instellingen van de Vertrouwelijke modus"
     },
     "sealContacts": {
       "button": "Bestaande contacten versleutelen",

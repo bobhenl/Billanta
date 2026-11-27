@@ -70,6 +70,8 @@ export interface PublicInvoice {
   quote?: { canRespond: boolean; response: 'accepted' | 'rejected' | null; respondedAt: string | null; name: string | null } | null;
   /** The supplier accepts cards (own Stripe account) and something is left to pay. */
   cardPayment?: boolean;
+  /** Encrypted buyer name and address (contacts in "Důvěrný režim") for the browser-drawn PDF; never shown on the page. */
+  sealedBuyer?: { cipher: string; keyId: string | null }[];
 }
 
 /**

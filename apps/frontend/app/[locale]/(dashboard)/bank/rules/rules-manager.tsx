@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { ArrowDown, ArrowUp, ListFilter, Pencil, Play, Plus, Trash2, X } from 'lucide-react';
+import { isSealed } from '@faktur/cz-compliance';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { useCanDo, useCanWrite } from '@/components/access-provider';
@@ -29,6 +30,7 @@ import {
 import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 import { applyBankRule, createBankRule, deleteBankRule, previewBankRule, previewSavedBankRule, reorderBankRules, updateBankRule } from './actions';
+import { useOpenedFields } from '@/components/vault/opened-contacts';
 
 /** A rule started from one payment in the bank list's row menu. */
 export interface RulePrefill {
@@ -153,9 +155,11 @@ const hasCondition = (b: BankRuleBody) =>
 const forcedDirection = (action: RuleAction): RuleDirection | null =>
   action === 'draft_expense' ? 'out' : action === 'draft_invoice' ? 'in' : null;
 
+const CONTACT_NAME = ['name'] as const;
+
 export function RulesManager({
   rules,
-  contacts,
+  contacts: storedContacts,
   connections,
   canManageImport,
   prefill
@@ -169,6 +173,10 @@ export function RulesManager({
   prefill: RulePrefill | null;
 }) {
   const t = useTranslations('bankRules');
+  // Encrypted names (contacts in Důvěrný režim) open in this browser; a <select> option can only show text.
+  const tText = useTranslations('vault.text');
+  const openedContacts = useOpenedFields(storedContacts, CONTACT_NAME);
+  const contacts = useMemo(() => openedContacts.map((c) => (isSealed(c.name) ? { ...c, name: tText('locked') } : c)), [openedContacts, tText]);
   const router = useRouter();
   // Rules are bank setup (Settings → Team: bank connections and rules), the backend checks the same.
   const canWriteBank = useCanWrite('bank');

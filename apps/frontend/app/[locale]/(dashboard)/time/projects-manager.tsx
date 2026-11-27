@@ -14,6 +14,7 @@ import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { formatMinutes, type Project } from '@/lib/time-ui';
 import { cn } from '@/lib/utils';
 import { createProject, deleteProject, updateProject, type ProjectInput } from './actions';
+import { ConfidentialText } from '@/components/vault/confidential-text';
 
 const COLORS = ['#6366f1', '#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#8b5cf6', '#64748b'];
 const CURRENCIES = ['CZK', 'EUR', 'USD', 'GBP', 'PLN'];
@@ -100,7 +101,7 @@ export function ProjectsManager({ projects, contacts, home = 'CZK' }: { projects
                   <Link href={`/time?period=all&project=${p.id}`} className="block truncate font-semibold hover:text-primary">
                     {p.name}
                   </Link>
-                  <div className="truncate text-xs text-muted-foreground">{p.contactName ?? t('projects.noContact')}</div>
+                  <div className="truncate text-xs text-muted-foreground">{p.contactName ? <ConfidentialText value={p.contactName} compact /> : t('projects.noContact')}</div>
                 </div>
                 {canEdit && (
                 <div className="flex shrink-0">

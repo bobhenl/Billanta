@@ -618,7 +618,8 @@
       "mode": {
         "created": "Utworzyliśmy nowy kontakt i dodaliśmy go do szkicu.",
         "existing": "Znaleźliśmy zapisany kontakt po numerze firmy lub NIP i dodaliśmy go do szkicu.",
-        "filled": "Dane należą do kontaktu, który już był na szkicu."
+        "filled": "Dane należą do kontaktu, który już był na szkicu.",
+        "pending_seal": "Twoje kontakty są zaszyfrowane, więc serwer sam nie utworzy kontaktu z odpowiedzi. Dane czekają, aż zaszyfruje je Twoja przeglądarka."
       },
       "filled": "Uzupełniono: {fields}.",
       "conflicts": "Różni się od zapisanego kontaktu, nic nie zostało nadpisane:",
@@ -646,7 +647,12 @@
       "requiredHint": "Co klient musi uzupełnić. Nazwa i adres są zawsze wymagane, numer firmy i NIP tylko w przypadku firm.",
       "requiredSaveDefault": "Używaj jako domyślne dla nowych linków",
       "requiredSummary": "Wymagane: {fields}",
-      "pickCustomer": "Wybierz klienta"
+      "pickCustomer": "Wybierz klienta",
+      "pendingSeal": {
+        "hint": "Do tego czasu serwer przechowuje je w czytelnej postaci tylko przy tym szkicu. Po zaszyfrowaniu usuwa je, a szkic otrzymuje zaszyfrowany kontakt.",
+        "button": "Zaszyfruj i zapisz kontakt",
+        "done": "Kontakt jest zaszyfrowany i przypisany do szkicu."
+      }
     },
     "profileOrder": {
       "badge": "Zamówienie z profilu",
@@ -7187,7 +7193,8 @@
     },
     "footer": "{company} wysłał(a) Ci ten link – prosimy, nie udostępniaj go dalej",
     "notFoundTitle": "Nie znaleziono portalu",
-    "notFoundBody": "Link jest nieprawidłowy lub został unieważniony. Poproś dostawcę o nowy."
+    "notFoundBody": "Link jest nieprawidłowy lub został unieważniony. Poproś dostawcę o nowy.",
+    "titleNoName": "Twoje dokumenty"
   },
   "reports": {
     "pageTitle": "Raporty",
@@ -14621,7 +14628,7 @@
       "unlockAndSend": "Odblokuj i wyślij ({n})",
       "lead": "Serwer nie zamieni zaszyfrowanego dokumentu w PDF sam. PDF powstaje dopiero tutaj, w przeglądarce z odblokowanym Trybem poufnym.",
       "passThroughPdf": "PDF powstaje w Twojej przeglądarce. Serwer raz przekaże go odbiorcy i go nie zapisze.",
-      "passThroughTexts": "Po kliknięciu Wyślij odszyfrowane teksty tych dokumentów raz przejdą przez serwer: utworzy z nich PDF i wyśle go e-mailem. Nie zapisze ich ani nie zapisze w logach.",
+      "passThroughTexts": "Po kliknięciu Wyślij odszyfrowane teksty tych dokumentów, a przy zaszyfrowanym nabywcy także jego nazwa i adres, raz przejdą przez serwer: utworzy z nich PDF i wyśle go e-mailem. Nie zapisze ich ani nie zapisze w logach.",
       "unnumbered": "Bez numeru",
       "kind": {
         "invoice": "Czeka cały e-mail",
@@ -14699,7 +14706,9 @@
         "contact_sealed": "Ten kontakt jest zaszyfrowany. Odblokuj go i zapisz ponownie, aby pozostał zaszyfrowany.",
         "vault_category_off": "Szyfrowanie kontaktów jest wyłączone. Włącz je w ustawieniach trybu poufnego.",
         "plan_required": "Szyfrowanie kontaktów jest częścią wyższego planu."
-      }
+      },
+      "documentsNote": "Szkice same przejmą zmienione dane. Wystawione dokumenty zachowują nabywcę z dnia wystawienia, a zmiana kontaktu ich nie zmienia. Jeśli nabywca jest na nich nadal czytelny, zaszyfrujesz go przyciskiem Zaszyfruj istniejące kontakty w",
+      "documentsLink": "ustawieniach Trybu poufnego"
     },
     "sealContacts": {
       "button": "Zaszyfruj istniejące kontakty",

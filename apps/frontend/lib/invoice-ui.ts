@@ -61,8 +61,21 @@ export interface InvoiceRow {
 }
 
 export interface BuyerDetailsOutcome {
-  mode: 'existing' | 'filled' | 'created';
-  contactId: string;
+  /** pending_seal: contacts are encrypted, so the answer waits for a browser with the key to make the contact. */
+  mode: 'existing' | 'filled' | 'created' | 'pending_seal';
+  contactId: string | null;
+  pending?: {
+    legalName: string;
+    isPerson: boolean;
+    email: string | null;
+    phone: string | null;
+    ico: string | null;
+    dic: string | null;
+    addressStreet: string | null;
+    addressCity: string | null;
+    addressPostalCode: string | null;
+    addressCountry: string;
+  };
   filled: string[];
   conflicts: { field: string; saved: string | null; submitted: string | null }[];
   autoIssue: 'issued' | 'sent' | 'skipped' | 'failed' | null;
@@ -127,6 +140,9 @@ export interface InvoiceDetail {
     noteAbove: string | null;
     noteBelow: string | null;
     internalNote: string | null;
+    /** The buyer as of issue; its name and address may be envelopes (Důvěrný režim). */
+    buyerSnapshot?: Partial<Record<'legalName' | 'addressStreet' | 'addressCity' | 'addressPostalCode', string | null>> | null;
+    buyerContactPerson?: string | null;
     language: string;
     reverseCharge: boolean;
     exchangeRate: string | null;

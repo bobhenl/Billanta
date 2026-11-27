@@ -250,8 +250,10 @@ export default async function PublicInvoicePage({
       : [];
 
   // "Důvěrný režim": the texts arrive as ciphertext and open in the browser with the key from the link (sealed-texts.tsx).
-  const sealedItems = invoice.lineItems.map((item) => (item.confidential && item.sealed ? item.sealed : null));
-  const sealed = invoice.lineItems.some((item) => item.confidential);
+  // An encrypted buyer goes after the items: the page never shows it, but the browser-drawn PDF prints it.
+  const sealedBuyer = invoice.sealedBuyer ?? [];
+  const sealedItems = [...invoice.lineItems.map((item) => (item.confidential && item.sealed ? item.sealed : null)), ...sealedBuyer];
+  const sealed = invoice.lineItems.some((item) => item.confidential) || sealedBuyer.length > 0;
   const sealedKeyIds = [...new Set(sealedItems.flatMap((item) => (item?.keyId ? [item.keyId] : [])))];
 
   return (

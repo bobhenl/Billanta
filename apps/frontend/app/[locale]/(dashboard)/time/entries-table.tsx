@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from 'react';
 import { FileText, Pencil, Timer, Trash2 } from 'lucide-react';
+import { isSealed } from '@faktur/cz-compliance';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { ColorDot } from '@/components/color-dot';
@@ -16,6 +17,8 @@ import { ENTRY_STATE_CLASSES, entryState, formatMinutes, type Project, type Time
 import { cn } from '@/lib/utils';
 import { deleteEntry, invoiceEntries } from './actions';
 import { EntryModal } from './entry-modal';
+import { ConfidentialText } from '@/components/vault/confidential-text';
+import { useOpenedFields } from '@/components/vault/opened-contacts';
 
 const SORTABLE = ['date', 'description', 'project', 'contact', 'duration', 'amount', 'state'] as const;
 type SortKey = (typeof SORTABLE)[number];
@@ -42,10 +45,13 @@ function sortValue(e: TimeEntry, key: SortKey) {
 }
 
 /** Finished entries: sort, pick the unbilled ones and turn them into a draft invoice. */
+const CONTACT_NAME = ['name'] as const;
+const ENTRY_CONTACT = ['contactName'] as const;
+
 export function EntriesTable({
-  rows,
+  rows: storedRows,
   projects,
-  contacts,
+  contacts: storedContacts,
   filtered
 }: {
   rows: TimeEntry[];
@@ -55,6 +61,13 @@ export function EntriesTable({
 }) {
   const t = useTranslations('time');
   const tList = useTranslations('invoices');
+  // Sorting by customer needs the opened names; they stay in this tab.
+  const rows = useOpenedFields(storedRows, ENTRY_CONTACT);
+  // Encrypted names (contacts in Důvěrný režim) open in this browser; a <select> option can only show text.
+  const tText = useTranslations('vault.text');
+  const openedContacts = useOpenedFields(storedContacts, CONTACT_NAME);
+  const contacts = useMemo(() => openedContacts.map((c) => (isSealed(c.name) ? { ...c, name: tText('locked') } : c)), [openedContacts, tText]);
+
   const locale = useLocale();
   const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -227,7 +240,15 @@ export function EntriesTable({
                   <div className="truncate font-semibold">{e.description || t('noDescription')}</div>
                   <div className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-muted-foreground">
                     {e.projectName && <ColorDot color={e.projectColor} />}
-                    {[e.projectName, e.contactName].filter(Boolean).join(' · ') || t('noProject')}
+                    {e.projectName || e.contactName ? (
+                      <>
+                        {e.projectName}
+                        {e.projectName && e.contactName && ' · '}
+                        <ConfidentialText value={e.contactName} compact />
+                      </>
+                    ) : (
+                      t('noProject')
+                    )}
                   </div>
                   <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
                     <span className="text-muted-foreground">{formatDate(e.startedAt, locale)}</span>
@@ -309,7 +330,7 @@ export function EntriesTable({
                       <span className="text-muted-foreground">–</span>
                     )}
                   </td>
-                  <td className="max-w-[180px] truncate px-2 py-2.5 text-muted-foreground">{e.contactName ?? '–'}</td>
+                  <td className="max-w-[180px] truncate px-2 py-2.5 text-muted-foreground">{e.contactName ? <ConfidentialText value={e.contactName} compact /> : '–'}</td>
                   <td className="whitespace-nowrap px-2 py-2.5 text-right font-mono font-semibold tabular-nums">{formatMinutes(e.minutes)}</td>
                   <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums">
                     <span className="amount">{money(e)}</span>

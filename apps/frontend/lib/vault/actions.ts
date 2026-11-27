@@ -88,7 +88,16 @@ export async function storeRekeyedInvoice(invoiceId: string, payload: RekeyPaylo
   const body = {
     noteAbove: envelope(payload.noteAbove),
     noteBelow: envelope(payload.noteBelow),
-    items: payload.items.flatMap((i) => (isSealed(i.description) ? [{ id: String(i.id), description: i.description }] : []))
+    items: payload.items.flatMap((i) => (isSealed(i.description) ? [{ id: String(i.id), description: i.description }] : [])),
+    buyer: payload.buyer
+      ? {
+          legalName: envelope(payload.buyer.legalName),
+          addressStreet: envelope(payload.buyer.addressStreet),
+          addressCity: envelope(payload.buyer.addressCity),
+          addressPostalCode: envelope(payload.buyer.addressPostalCode)
+        }
+      : undefined,
+    buyerContactPerson: envelope(payload.buyerContactPerson)
   };
   const result = await call<{ rekeyed: number }>(`/api/v1/vault/invoices/${encodeURIComponent(invoiceId)}/rekey`, json('POST', body));
   if (result.ok) revalidatePath('/invoices', 'layout');

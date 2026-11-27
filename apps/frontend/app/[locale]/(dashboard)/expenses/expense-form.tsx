@@ -1,9 +1,9 @@
 'use client';
 
-import { type FormEvent, useRef, useState, useTransition } from 'react';
+import { type FormEvent, useEffect, useRef, useState, useTransition } from 'react';
 import { ChevronDown, Link2, Loader2, LockKeyhole, QrCode, ScanLine, Upload } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { REVERSE_CHARGE_CODE_VALUES, isReverseChargeCode } from '@faktur/cz-compliance';
+import { REVERSE_CHARGE_CODE_VALUES, isReverseChargeCode, isSealed } from '@faktur/cz-compliance';
 import { useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
@@ -18,6 +18,7 @@ import { scanInvoiceFile, type ScannedInvoice } from '@/lib/qr-scan';
 import { useVault } from '@/components/vault/vault-provider';
 import { encryptedUpload, encryptsFiles } from '@/lib/vault/files';
 import { createExpense, updateExpense, type ExpenseInput } from './actions';
+import { useOpenedContacts } from '@/components/vault/opened-contacts';
 
 export interface SupplierOption {
   id: string;
@@ -60,7 +61,7 @@ export function ExpenseForm({
   autoScan = false,
   expense,
   initial,
-  suppliers,
+  suppliers: storedSuppliers,
   home = 'CZK'
 }: {
   /** Open the QR camera right away (dashboard "scan an invoice" tile). */
@@ -93,10 +94,20 @@ export function ExpenseForm({
   const [aiOptIn, setAiOptIn] = useState(false);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
 
+  // Encrypted suppliers (contacts in Důvěrný režim) are opened here; their name never goes back as supplierNameRaw.
+  const suppliers = useOpenedContacts(storedSuppliers);
+  const sealedSupplier = (id: string | null) => Boolean(id && isSealed(storedSuppliers.find((s) => s.id === id)?.legalName));
+  const plainName = (name: string | null | undefined) => (name && !isSealed(name) ? name : '');
   const [supplierContactId, setSupplierContactId] = useState(src?.supplierContactId ?? null);
   const [supplierName, setSupplierName] = useState(
-    src?.supplierNameRaw ?? suppliers.find((s) => s.id === src?.supplierContactId)?.legalName ?? ''
+    plainName(src?.supplierNameRaw ?? suppliers.find((s) => s.id === src?.supplierContactId)?.legalName)
   );
+  // The name shows up once the browser has opened the linked supplier.
+  useEffect(() => {
+    if (supplierName || !supplierContactId) return;
+    const name = plainName(suppliers.find((s) => s.id === supplierContactId)?.legalName);
+    if (name) setSupplierName(name);
+  }, [suppliers, supplierContactId, supplierName]);
   const [supplierIco, setSupplierIco] = useState(src?.supplierIco ?? '');
   const [supplierDic, setSupplierDic] = useState(src?.supplierDic ?? '');
   const [documentNumber, setDocumentNumber] = useState(src?.documentNumber ?? '');
@@ -140,7 +151,7 @@ export function ExpenseForm({
     const known = ico ? suppliers.find((s) => s.ico === ico) : undefined;
     if (known) {
       setSupplierContactId(known.id);
-      setSupplierName(known.legalName);
+      setSupplierName(plainName(known.legalName));
     }
     if (ico) setSupplierIco(ico);
     if (scan.supplierDic) setSupplierDic(scan.supplierDic);
@@ -192,7 +203,7 @@ export function ExpenseForm({
       const s = data.suggestion;
       if (data.contact) {
         setSupplierContactId(data.contact.id);
-        setSupplierName(data.contact.legalName);
+        setSupplierName(plainName(suppliers.find((c) => c.id === data.contact!.id)?.legalName ?? data.contact.legalName));
         if (data.contact.ico) setSupplierIco(data.contact.ico);
       } else if (s.supplier.name) {
         pickSupplier(s.supplier.name);
@@ -243,7 +254,7 @@ export function ExpenseForm({
     event.preventDefault();
     const input: ExpenseInput = {
       supplierContactId,
-      supplierNameRaw: supplierName.trim() || null,
+      supplierNameRaw: sealedSupplier(supplierContactId) ? null : supplierName.trim() || null,
       supplierIco: supplierIco.trim() || null,
       supplierDic: supplierDic.trim() || null,
       documentNumber: documentNumber.trim() || null,
@@ -401,7 +412,7 @@ export function ExpenseForm({
                 onChange={(e) => pickSupplier(e.target.value)}
               />
               <datalist id="expense-suppliers">
-                {suppliers.map((s) => (
+                {suppliers.filter((s) => !isSealed(s.legalName)).map((s) => (
                   <option key={s.id} value={s.legalName}>
                     {s.ico ?? ''}
                   </option>

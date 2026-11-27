@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Typeahead, type TypeaheadGroup } from '@/components/typeahead';
 import { useRouter } from '@/i18n/navigation';
 import { searchInvoicesToCopy, type InvoiceToCopy } from './actions';
+import { ConfidentialText } from '@/components/vault/confidential-text';
 
 /**
  * "Předvyplnit podle faktury": start the new invoice from the latest one or
@@ -69,7 +70,7 @@ export function CopyFromInvoicePanel() {
                 <span className="flex w-full items-baseline justify-between gap-3">
                   <span className="min-w-0 truncate">
                     <span className="font-semibold">{row.invoiceNumber ?? t('draft')}</span>
-                    {row.contactName && <span className="text-muted-foreground"> · {row.contactName}</span>}
+                    {row.contactName && <span className="text-muted-foreground"> · <ConfidentialText value={row.contactName} compact /></span>}
                   </span>
                   <span className="shrink-0 text-xs text-muted-foreground">
                     {row.issueDate ? new Date(row.issueDate).toLocaleDateString(locale) : ''} <span className="amount">{money(row)}</span>

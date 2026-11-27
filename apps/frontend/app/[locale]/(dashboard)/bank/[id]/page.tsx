@@ -12,6 +12,7 @@ import { providerPayment, rankCandidates, TX_STATUS_CLASSES, type BankTransactio
 import type { Expense } from '@/lib/expense-ui';
 import { cn } from '@/lib/utils';
 import { TransactionActions } from './transaction-actions';
+import { ConfidentialText } from '@/components/vault/confidential-text';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -142,7 +143,7 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
                   <FileText className="h-5 w-5 text-primary" />
                   <div className="min-w-0 flex-1">
                     <div className="font-semibold">{matched.invoiceNumber ?? t('detail.draft')}</div>
-                    <div className="text-xs text-muted-foreground">{matched.contactName}</div>
+                    <div className="text-xs text-muted-foreground"><ConfidentialText value={matched.contactName} compact /></div>
                   </div>
                   <span className="font-semibold tabular-nums"><span className="amount">{formatMoney(matched.total, matched.currency, locale)}</span></span>
                 </Link>
@@ -174,7 +175,7 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
                           {invoice.invoiceNumber}
                         </Link>
                         <div className="truncate text-xs text-muted-foreground">
-                          {invoice.contactName} ·{' '}
+                          <ConfidentialText value={invoice.contactName} compact /> ·{' '}
                           {paid
                             ? `${t('detail.paidOn')} ${formatDate(invoice.paidAt ?? invoice.issueDate, locale) ?? '–'}`
                             : `${t('detail.due')} ${formatDate(invoice.dueDate, locale) ?? '–'}`}

@@ -618,7 +618,8 @@
       "mode": {
         "created": "Vytvořili jsme nový kontakt a přiřadili ho ke konceptu.",
         "existing": "Podle IČO/DIČ jsme našli uložený kontakt a přiřadili ho ke konceptu.",
-        "filled": "Údaje patří ke kontaktu, který už na konceptu byl."
+        "filled": "Údaje patří ke kontaktu, který už na konceptu byl.",
+        "pending_seal": "Kontakty máte zašifrované, takže server z odpovědi kontakt sám nevytvoří. Údaje čekají, až je zašifruje váš prohlížeč."
       },
       "filled": "Doplněno: {fields}.",
       "conflicts": "Liší se od uloženého kontaktu, nic jsme nepřepsali:",
@@ -646,7 +647,12 @@
       "requiredHint": "Co musí odběratel vyplnit. Jméno a adresa jsou povinné vždy, IČO a DIČ jen u firem.",
       "requiredSaveDefault": "Použít jako výchozí pro další odkazy",
       "requiredSummary": "Povinné: {fields}",
-      "pickCustomer": "Vybrat odběratele"
+      "pickCustomer": "Vybrat odběratele",
+      "pendingSeal": {
+        "hint": "Do té doby je server drží čitelné jen u tohoto konceptu. Po zašifrování je smaže a koncept dostane zašifrovaný kontakt.",
+        "button": "Zašifrovat a uložit kontakt",
+        "done": "Kontakt je zašifrovaný a přiřazený ke konceptu."
+      }
     },
     "profileOrder": {
       "badge": "Objednávka z profilu",
@@ -7194,7 +7200,8 @@
     },
     "footer": "Odkaz vám poslala firma {company}, nesdílejte ho prosím dál",
     "notFoundTitle": "Portál nenalezen",
-    "notFoundBody": "Odkaz je neplatný nebo byl zrušen. Požádejte dodavatele o nový."
+    "notFoundBody": "Odkaz je neplatný nebo byl zrušen. Požádejte dodavatele o nový.",
+    "titleNoName": "Vaše doklady"
   },
   "reports": {
     "pageTitle": "Reporty",
@@ -14632,7 +14639,7 @@
       "unlockAndSend": "Odemknout a odeslat ({n})",
       "lead": "Zašifrovaný doklad server sám do PDF nepřevede. PDF vznikne až tady, v prohlížeči s odemčeným Důvěrným režimem.",
       "passThroughPdf": "PDF se vytvoří ve vašem prohlížeči. Server ho jednou přepošle příjemci a neuloží ho.",
-      "passThroughTexts": "Po kliknutí na Odeslat projdou rozšifrované texty těchto dokladů jednou serverem: ten z nich vytvoří PDF a pošle ho e-mailem. Neuloží je ani nezapíše do logu.",
+      "passThroughTexts": "Po kliknutí na Odeslat projdou jednou serverem rozšifrované texty těchto dokladů a u zašifrovaného odběratele i jeho název a adresa: server z nich vytvoří PDF a pošle ho e-mailem. Neuloží je ani nezapíše do logu.",
       "unnumbered": "Bez čísla",
       "kind": {
         "invoice": "Celý e-mail čeká",
@@ -14710,7 +14717,9 @@
         "contact_sealed": "Kontakt je zašifrovaný. Odemkněte ho a uložte znovu, aby zůstal zašifrovaný.",
         "vault_category_off": "Šifrování kontaktů je vypnuté. Zapněte ho v nastavení Důvěrného režimu.",
         "plan_required": "Šifrování kontaktů je součástí vyššího tarifu."
-      }
+      },
+      "documentsNote": "Koncepty převezmou upravené údaje samy. Vystavené doklady si nechávají odběratele z data vystavení a úprava kontaktu je nemění. Pokud na nich zůstal čitelný, zašifrujete ho tlačítkem Zašifrovat stávající kontakty v",
+      "documentsLink": "nastavení Důvěrného režimu"
     },
     "sealContacts": {
       "button": "Zašifrovat stávající kontakty",

@@ -618,7 +618,8 @@
       "mode": {
         "created": "Am creat un contact nou și l-am adăugat pe ciornă.",
         "existing": "Am găsit un contact salvat după codul de identificare sau codul de TVA și l-am adăugat pe ciornă.",
-        "filled": "Datele aparțin contactului care era deja pe ciornă."
+        "filled": "Datele aparțin contactului care era deja pe ciornă.",
+        "pending_seal": "Contactele dvs. sunt criptate, așa că serverul nu creează singur contactul din răspuns. Datele așteaptă să le cripteze browserul dvs."
       },
       "filled": "Completat: {fields}.",
       "conflicts": "Diferit de contactul salvat, nimic nu a fost suprascris:",
@@ -646,7 +647,12 @@
       "requiredHint": "Ce trebuie să completeze clientul. Numele și adresa sunt întotdeauna obligatorii, codul de identificare și codul de TVA doar pentru firme.",
       "requiredSaveDefault": "Folosiți ca implicit pentru linkurile noi",
       "requiredSummary": "Obligatoriu: {fields}",
-      "pickCustomer": "Alegeți un client"
+      "pickCustomer": "Alegeți un client",
+      "pendingSeal": {
+        "hint": "Până atunci, serverul le păstrează lizibile doar la această ciornă. După criptare le șterge, iar ciorna primește contactul criptat.",
+        "button": "Criptează și salvează contactul",
+        "done": "Contactul este criptat și atașat la ciornă."
+      }
     },
     "profileOrder": {
       "badge": "Comandă din profil",
@@ -7186,7 +7192,8 @@
     },
     "footer": "{company} v-a trimis acest link – vă rugăm să nu îl distribuiți",
     "notFoundTitle": "Portalul nu a fost găsit",
-    "notFoundBody": "Linkul este invalid sau a fost revocat. Cereți furnizorului unul nou."
+    "notFoundBody": "Linkul este invalid sau a fost revocat. Cereți furnizorului unul nou.",
+    "titleNoName": "Documentele dvs."
   },
   "reports": {
     "pageTitle": "Rapoarte",
@@ -14620,7 +14627,7 @@
       "unlockAndSend": "Deblochează și trimite ({n})",
       "lead": "Serverul nu poate transforma singur un document criptat în PDF. PDF-ul se creează aici, într-un browser cu Modul confidențial deblocat.",
       "passThroughPdf": "PDF-ul se creează în browserul dvs. Serverul îl transmite o dată destinatarului și nu îl păstrează.",
-      "passThroughTexts": "După ce apăsați Trimite, textele decriptate ale acestor documente trec o dată prin server: acesta creează din ele PDF-ul și îl trimite pe e-mail. Nu le păstrează și nu le scrie în jurnale.",
+      "passThroughTexts": "După ce apăsați Trimite, textele decriptate ale acestor documente și, la un client criptat, și numele și adresa lui trec o dată prin server: acesta creează din ele PDF-ul și îl trimite pe e-mail. Nu le păstrează și nu le scrie în jurnale.",
       "unnumbered": "Fără număr",
       "kind": {
         "invoice": "Așteaptă tot e-mailul",
@@ -14698,7 +14705,9 @@
         "contact_sealed": "Acest contact este criptat. Deblocați-l și salvați din nou ca să rămână criptat.",
         "vault_category_off": "Criptarea contactelor este oprită. Porniți-o în setările modului confidențial.",
         "plan_required": "Criptarea contactelor face parte dintr-un abonament superior."
-      }
+      },
+      "documentsNote": "Ciornele preiau singure datele modificate. Documentele emise păstrează clientul de la data emiterii, iar modificarea contactului nu le schimbă. Dacă clientul este încă lizibil pe ele, criptați-l cu butonul Criptează contactele existente din",
+      "documentsLink": "setările Modului confidențial"
     },
     "sealContacts": {
       "button": "Criptează contactele existente",

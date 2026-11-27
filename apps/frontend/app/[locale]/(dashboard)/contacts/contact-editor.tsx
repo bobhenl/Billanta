@@ -22,6 +22,7 @@ import { queueOffline } from '@/lib/offline-outbox';
 import type { AresPrefill, Contact } from '../invoices/new/types';
 import { CONTACT_COLORS, CONTACT_COLOR_DOT } from '@/lib/contact-colors';
 import { createContact, updateContact, type ContactInput } from './actions';
+import { Link } from '@/i18n/navigation';
 
 /** Refusals of the encrypted-contact checks (backend vault/sealed-contacts.ts), with their own text. */
 const VAULT_CODES = ['contact_plaintext', 'contact_partly_sealed', 'contact_sealed', 'vault_category_off', 'plan_required'];
@@ -270,6 +271,15 @@ export function ContactEditor({
           <p className="flex items-start gap-2 rounded-lg bg-secondary px-3 py-2 text-xs text-muted-foreground sm:col-span-2">
             <LockKeyhole className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
             {tVault('sealedNote')}
+          </p>
+        )}
+        {/* Drafts follow the contact; issued documents keep their issue-date copy and are never rewritten here. */}
+        {sealing && contact && (
+          <p className="text-xs text-muted-foreground sm:col-span-2">
+            {tVault('documentsNote')}{' '}
+            <Link href="/settings/confidential" className="font-semibold text-primary hover:underline">
+              {tVault('documentsLink')}
+            </Link>
           </p>
         )}
         <InfoHint hint={t('kindHint')} className="sm:col-span-2">

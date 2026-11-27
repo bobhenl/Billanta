@@ -99,10 +99,15 @@ export async function sealPlainInvoice(key: VaultKey, doc: PlainInvoice): Promis
   };
 }
 
+type BuyerField = 'legalName' | 'addressStreet' | 'addressCity' | 'addressPostalCode';
+
 export interface SealedDocument {
   noteAbove: string | null;
   noteBelow: string | null;
   items: { id: string; description: string }[];
+  /** The encrypted fields of the buyer snapshot (contacts category). The client sees them printed. */
+  buyer?: Partial<Record<BuyerField, string>>;
+  buyerContactPerson?: string | null;
 }
 
 /** Ciphertext only: what "Připravit odkaz pro klienta" sends to the server. Never a key. */
@@ -110,6 +115,8 @@ export interface RekeyPayload {
   noteAbove?: string;
   noteBelow?: string;
   items: { id: string; description: string }[];
+  buyer?: Partial<Record<BuyerField, string>>;
+  buyerContactPerson?: string;
 }
 
 /**
@@ -119,10 +126,12 @@ export interface RekeyPayload {
  * Null when nothing printed is sealed, so the link needs no key.
  */
 export async function clientLinkKey(key: VaultKey, doc: SealedDocument): Promise<{ docKey: DocumentKey; rekey: RekeyPayload | null } | null> {
-  const sealed = [doc.noteAbove, doc.noteBelow, ...doc.items.map((i) => i.description)].filter(isSealed);
+  const buyer = Object.entries(doc.buyer ?? {}) as [BuyerField, string][];
+  const sealed = [doc.noteAbove, doc.noteBelow, doc.buyerContactPerson, ...doc.items.map((i) => i.description), ...buyer.map(([, v]) => v)].filter(isSealed);
   if (!sealed.length) return null;
   const wraps = new Set(sealed.map(documentKeyWrap));
-  const docKey = await documentKeyFor(key, doc);
+  // A buyer sealed with the contact (company key) has no document key, so the notes' or items' key wins.
+  const docKey = await documentKeyFor(key, { items: sealed.map((description) => ({ description })) });
   if (wraps.size === 1 && wraps.has(docKey.wrap)) return { docKey, rekey: null };
   const reseal = async (value: string | null) => (value && isSealed(value) && documentKeyWrap(value) !== docKey.wrap ? sealWithDocumentKey(docKey, await open(key, value)) : undefined);
   const rekey: RekeyPayload = {
@@ -132,5 +141,11 @@ export async function clientLinkKey(key: VaultKey, doc: SealedDocument): Promise
       await Promise.all(doc.items.map(async (item) => ({ id: item.id, description: await reseal(item.description) })))
     ).filter((i): i is { id: string; description: string } => Boolean(i.description))
   };
+  const buyerRekey = Object.fromEntries(
+    (await Promise.all(buyer.map(async ([field, value]) => [field, await reseal(value)] as const))).filter(([, v]) => Boolean(v))
+  ) as Partial<Record<BuyerField, string>>;
+  if (Object.keys(buyerRekey).length) rekey.buyer = buyerRekey;
+  const person = await reseal(doc.buyerContactPerson ?? null);
+  if (person) rekey.buyerContactPerson = person;
   return { docKey, rekey };
 }

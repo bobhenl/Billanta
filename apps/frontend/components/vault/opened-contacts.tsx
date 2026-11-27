@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { isSealed, open } from '@faktur/cz-compliance';
 import { openContacts } from '@/lib/vault/contacts';
 import { useVault } from './vault-provider';
 
@@ -24,6 +25,39 @@ export function useOpenedContacts<T extends Row>(rows: T[]): T[] {
       live = false;
     };
   }, [key, rows]);
+
+  return opened;
+}
+
+/**
+ * The same for rows that carry a contact's name under another field (an
+ * invoice's `contactName`, a transaction's `counterpartyName` …). The opened
+ * text stays in this tab; nothing goes back to the server.
+ */
+export function useOpenedFields<T extends object, K extends keyof T>(rows: T[], fields: readonly K[]): T[] {
+  const { key } = useVault();
+  const [opened, setOpened] = useState<T[]>(rows);
+  const fieldList = fields.join('|');
+
+  useEffect(() => {
+    setOpened(rows);
+    const names = fieldList.split('|') as K[];
+    if (!key || !rows.some((row) => names.some((f) => isSealed(row[f])))) return;
+    let live = true;
+    void Promise.all(
+      rows.map(async (row) => {
+        const out = { ...row };
+        for (const f of names) {
+          const value = row[f];
+          if (isSealed(value)) out[f] = (await open(key, value).catch(() => value)) as T[K];
+        }
+        return out;
+      })
+    ).then((list) => live && setOpened(list));
+    return () => {
+      live = false;
+    };
+  }, [key, rows, fieldList]);
 
   return opened;
 }

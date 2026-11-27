@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { isReverseChargeCode } from '@faktur/cz-compliance';
 import { AttachmentsPanel, type Attachment } from '../../invoices/[id]/attachments-panel';
 import { ExpenseActions } from './expense-actions';
+import { ConfidentialText } from '@/components/vault/confidential-text';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -111,7 +112,7 @@ export default async function ExpenseDetailPage(props: { params: Promise<{ id: s
           </div>
           <h1 className="mt-2 break-words text-2xl font-extrabold tracking-tight">{expense.description}</h1>
           <p className="mt-1 text-muted-foreground">
-            {supplierName}
+            <ConfidentialText value={supplierName} />
             {expense.documentNumber && <> · {expense.documentNumber}</>}
           </p>
           {expense.needsReview && <p className="mt-2 max-w-xl text-sm text-muted-foreground">{t('needsReviewHint')}</p>}
@@ -181,7 +182,7 @@ export default async function ExpenseDetailPage(props: { params: Promise<{ id: s
             <div className="mt-2 text-sm">
               {contact ? (
                 <Link href={`/contacts/${contact.id}`} className="font-semibold text-primary hover:underline">
-                  {contact.legalName}
+                  <ConfidentialText value={contact.legalName} compact />
                 </Link>
               ) : (
                 <span className="font-semibold">{supplierName}</span>

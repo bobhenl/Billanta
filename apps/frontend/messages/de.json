@@ -618,7 +618,8 @@
       "mode": {
         "created": "Wir haben einen neuen Kontakt angelegt und in den Entwurf übernommen.",
         "existing": "Wir haben anhand der Firmennummer oder USt-IdNr. einen gespeicherten Kontakt gefunden und in den Entwurf übernommen.",
-        "filled": "Die Angaben gehören zum Kontakt, der bereits im Entwurf stand."
+        "filled": "Die Angaben gehören zum Kontakt, der bereits im Entwurf stand.",
+        "pending_seal": "Ihre Kontakte sind verschlüsselt, daher legt der Server aus der Antwort keinen Kontakt an. Die Angaben warten, bis Ihr Browser sie verschlüsselt."
       },
       "filled": "Ausgefüllt: {fields}.",
       "conflicts": "Abweichend vom gespeicherten Kontakt, nichts wurde überschrieben:",
@@ -646,7 +647,12 @@
       "requiredHint": "Was der Kunde ausfüllen muss. Name und Adresse sind immer Pflicht, Firmennummer und USt-IdNr. nur bei Unternehmen.",
       "requiredSaveDefault": "Als Standard für neue Links verwenden",
       "requiredSummary": "Pflicht: {fields}",
-      "pickCustomer": "Kunden auswählen"
+      "pickCustomer": "Kunden auswählen",
+      "pendingSeal": {
+        "hint": "Bis dahin bewahrt der Server sie nur bei diesem Entwurf lesbar auf. Nach dem Verschlüsseln löscht er sie, und der Entwurf erhält den verschlüsselten Kontakt.",
+        "button": "Verschlüsseln und Kontakt speichern",
+        "done": "Der Kontakt ist verschlüsselt und dem Entwurf zugeordnet."
+      }
     },
     "profileOrder": {
       "badge": "Profilbestellung",
@@ -7187,7 +7193,8 @@
     },
     "footer": "{company} hat Ihnen diesen Link gesendet – bitte geben Sie ihn nicht weiter",
     "notFoundTitle": "Portal nicht gefunden",
-    "notFoundBody": "Der Link ist ungültig oder wurde widerrufen. Bitten Sie den Lieferanten um einen neuen."
+    "notFoundBody": "Der Link ist ungültig oder wurde widerrufen. Bitten Sie den Lieferanten um einen neuen.",
+    "titleNoName": "Ihre Belege"
   },
   "reports": {
     "pageTitle": "Berichte",
@@ -14621,7 +14628,7 @@
       "unlockAndSend": "Entsperren und senden ({n})",
       "lead": "Ein verschlüsseltes Dokument kann der Server nicht selbst in ein PDF umwandeln. Das PDF entsteht erst hier, in einem Browser mit entsperrtem Vertraulichen Modus.",
       "passThroughPdf": "Das PDF wird in Ihrem Browser erstellt. Der Server leitet es einmal an den Empfänger weiter und speichert es nicht.",
-      "passThroughTexts": "Nach dem Klick auf Senden gehen die entschlüsselten Texte dieser Dokumente einmal über den Server: Er erstellt daraus das PDF und verschickt es per E-Mail. Er speichert und protokolliert sie nicht.",
+      "passThroughTexts": "Nach dem Klick auf Senden gehen die entschlüsselten Texte dieser Dokumente und bei einem verschlüsselten Kunden auch dessen Name und Adresse einmal über den Server: Er erstellt daraus das PDF und verschickt es per E-Mail. Er speichert und protokolliert sie nicht.",
       "unnumbered": "Ohne Nummer",
       "kind": {
         "invoice": "Ganze E-Mail wartet",
@@ -14699,7 +14706,9 @@
         "contact_sealed": "Dieser Kontakt ist verschlüsselt. Entsperren Sie ihn und speichern Sie erneut, damit er verschlüsselt bleibt.",
         "vault_category_off": "Die Kontaktverschlüsselung ist aus. Schalten Sie sie in den Einstellungen des vertraulichen Modus ein.",
         "plan_required": "Die Kontaktverschlüsselung gehört zu einem höheren Tarif."
-      }
+      },
+      "documentsNote": "Entwürfe übernehmen die geänderten Angaben von selbst. Ausgestellte Belege behalten den Kunden zum Ausstellungsdatum, eine Änderung des Kontakts ändert sie nicht. Ist der Kunde dort noch lesbar, verschlüsseln Sie ihn mit „Bestehende Kontakte verschlüsseln“ in den",
+      "documentsLink": "Einstellungen des Vertraulichen Modus"
     },
     "sealContacts": {
       "button": "Bestehende Kontakte verschlüsseln",

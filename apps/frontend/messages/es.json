@@ -618,7 +618,8 @@
       "mode": {
         "created": "Hemos creado un contacto nuevo y lo hemos añadido al borrador.",
         "existing": "Hemos encontrado un contacto guardado por su número de empresa o de IVA y lo hemos añadido al borrador.",
-        "filled": "Los datos corresponden al contacto que ya figuraba en el borrador."
+        "filled": "Los datos corresponden al contacto que ya figuraba en el borrador.",
+        "pending_seal": "Sus contactos están cifrados, así que el servidor no crea el contacto a partir de la respuesta. Los datos esperan a que su navegador los cifre."
       },
       "filled": "Datos rellenados: {fields}.",
       "conflicts": "Distinto del contacto guardado, no se ha sobrescrito nada:",
@@ -646,7 +647,12 @@
       "requiredHint": "Lo que el cliente debe rellenar. El nombre y la dirección son siempre obligatorios; el número de identificación de empresa y el número de IVA, solo para empresas.",
       "requiredSaveDefault": "Usar como predeterminado para los enlaces nuevos",
       "requiredSummary": "Obligatorio: {fields}",
-      "pickCustomer": "Elija un cliente"
+      "pickCustomer": "Elija un cliente",
+      "pendingSeal": {
+        "hint": "Hasta entonces, el servidor los guarda legibles solo en este borrador. Al cifrarlos, los borra y el borrador recibe el contacto cifrado.",
+        "button": "Cifrar y guardar el contacto",
+        "done": "El contacto está cifrado y asignado al borrador."
+      }
     },
     "profileOrder": {
       "badge": "Pedido desde el perfil",
@@ -7186,7 +7192,8 @@
     },
     "footer": "{company} le ha enviado este enlace – no lo comparta, por favor",
     "notFoundTitle": "Portal no encontrado",
-    "notFoundBody": "El enlace no es válido o ha sido revocado. Pida uno nuevo al proveedor."
+    "notFoundBody": "El enlace no es válido o ha sido revocado. Pida uno nuevo al proveedor.",
+    "titleNoName": "Sus documentos"
   },
   "reports": {
     "pageTitle": "Informes",
@@ -14620,7 +14627,7 @@
       "unlockAndSend": "Desbloquear y enviar ({n})",
       "lead": "El servidor no puede convertir por sí solo un documento cifrado en PDF. El PDF se crea aquí, en un navegador con el Modo confidencial desbloqueado.",
       "passThroughPdf": "El PDF se crea en tu navegador. El servidor lo reenvía una vez al destinatario y no lo guarda.",
-      "passThroughTexts": "Al pulsar Enviar, los textos descifrados de estos documentos pasan una vez por el servidor: crea con ellos el PDF y lo envía por correo. No los guarda ni los registra.",
+      "passThroughTexts": "Al pulsar Enviar, los textos descifrados de estos documentos y, si el cliente está cifrado, también su nombre y dirección pasan una vez por el servidor: crea con ellos el PDF y lo envía por correo. No los guarda ni los registra.",
       "unnumbered": "Sin número",
       "kind": {
         "invoice": "Espera el correo entero",
@@ -14698,7 +14705,9 @@
         "contact_sealed": "Este contacto está cifrado. Desbloquéalo y guarda de nuevo para que siga cifrado.",
         "vault_category_off": "El cifrado de contactos está desactivado. Actívalo en los ajustes del modo confidencial.",
         "plan_required": "El cifrado de contactos forma parte de un plan superior."
-      }
+      },
+      "documentsNote": "Los borradores toman solos los datos modificados. Los documentos emitidos conservan el cliente de la fecha de emisión y editar el contacto no los cambia. Si el cliente sigue legible en ellos, cífrelo con Cifrar contactos existentes en los",
+      "documentsLink": "ajustes del Modo confidencial"
     },
     "sealContacts": {
       "button": "Cifrar contactos existentes",

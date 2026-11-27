@@ -618,7 +618,8 @@
       "mode": {
         "created": "Nous avons créé un nouveau contact et l’avons ajouté au brouillon.",
         "existing": "Nous avons trouvé un contact enregistré grâce au numéro d’entreprise ou de TVA et l’avons ajouté au brouillon.",
-        "filled": "Les informations appartiennent au contact déjà présent sur le brouillon."
+        "filled": "Les informations appartiennent au contact déjà présent sur le brouillon.",
+        "pending_seal": "Vos contacts sont chiffrés, le serveur ne crée donc pas le contact à partir de la réponse. Les données attendent que votre navigateur les chiffre."
       },
       "filled": "Rempli : {fields}.",
       "conflicts": "Différent du contact enregistré, rien n’a été écrasé :",
@@ -646,7 +647,12 @@
       "requiredHint": "Ce que le client doit remplir. Le nom et l’adresse sont toujours obligatoires, le numéro d’entreprise et le numéro de TVA uniquement pour les entreprises.",
       "requiredSaveDefault": "Utiliser par défaut pour les nouveaux liens",
       "requiredSummary": "Obligatoire : {fields}",
-      "pickCustomer": "Choisir un client"
+      "pickCustomer": "Choisir un client",
+      "pendingSeal": {
+        "hint": "D’ici là, le serveur les garde lisibles uniquement sur ce brouillon. Une fois chiffrées, il les supprime et le brouillon reçoit le contact chiffré.",
+        "button": "Chiffrer et enregistrer le contact",
+        "done": "Le contact est chiffré et associé au brouillon."
+      }
     },
     "profileOrder": {
       "badge": "Commande via le profil",
@@ -7186,7 +7192,8 @@
     },
     "footer": "{company} vous a envoyé ce lien – merci de ne pas le partager",
     "notFoundTitle": "Portail introuvable",
-    "notFoundBody": "Le lien est invalide ou a été révoqué. Demandez-en un nouveau au fournisseur."
+    "notFoundBody": "Le lien est invalide ou a été révoqué. Demandez-en un nouveau au fournisseur.",
+    "titleNoName": "Vos documents"
   },
   "reports": {
     "pageTitle": "Rapports",
@@ -14620,7 +14627,7 @@
       "unlockAndSend": "Déverrouiller et envoyer ({n})",
       "lead": "Le serveur ne peut pas transformer seul un document chiffré en PDF. Le PDF est créé ici, dans un navigateur où le Mode confidentiel est déverrouillé.",
       "passThroughPdf": "Le PDF est créé dans votre navigateur. Le serveur le transmet une fois au destinataire et ne le conserve pas.",
-      "passThroughTexts": "Quand vous cliquez sur Envoyer, les textes déchiffrés de ces documents passent une fois par le serveur : il en fait le PDF et l'envoie par e-mail. Il ne les conserve pas et ne les journalise pas.",
+      "passThroughTexts": "Quand vous cliquez sur Envoyer, les textes déchiffrés de ces documents, et pour un client chiffré aussi son nom et son adresse, passent une fois par le serveur : il en fait le PDF et l’envoie par e-mail. Il ne les conserve pas et ne les journalise pas.",
       "unnumbered": "Sans numéro",
       "kind": {
         "invoice": "Tout l'e-mail attend",
@@ -14698,7 +14705,9 @@
         "contact_sealed": "Ce contact est chiffré. Déverrouillez-le et enregistrez à nouveau pour qu’il reste chiffré.",
         "vault_category_off": "Le chiffrement des contacts est désactivé. Activez-le dans les réglages du mode confidentiel.",
         "plan_required": "Le chiffrement des contacts fait partie d’une offre supérieure."
-      }
+      },
+      "documentsNote": "Les brouillons reprennent d’eux-mêmes les données modifiées. Les documents émis gardent le client à la date d’émission, et modifier le contact ne les change pas. Si le client y est encore lisible, chiffrez-le avec Chiffrer les contacts existants dans les",
+      "documentsLink": "réglages du Mode confidentiel"
     },
     "sealContacts": {
       "button": "Chiffrer les contacts existants",

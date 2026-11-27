@@ -9,6 +9,7 @@ import { Typeahead, type TypeaheadGroup } from '@/components/typeahead';
 import { cn } from '@/lib/utils';
 import { searchCustomers } from '../../invoices/new/actions';
 import type { Contact, DocLanguage } from '../../invoices/new/types';
+import { ConfidentialText } from '@/components/vault/confidential-text';
 
 /** Same lists as the invoice form offers. */
 const CURRENCIES = ['CZK', 'EUR', 'USD', 'GBP', 'PLN'];
@@ -140,7 +141,7 @@ export function InvoiceDefaultsFields({
         {value.contact ? (
           <div className="mt-1 flex items-center justify-between gap-3 rounded-lg bg-secondary px-3 py-2">
             <span className="min-w-0 break-words">
-              <span className="font-semibold">{value.contact.legalName}</span>
+              <ConfidentialText value={value.contact.legalName} className="font-semibold" compact />
               {value.contact.ico && <span className="text-muted-foreground"> · IČO {value.contact.ico}</span>}
             </span>
             {!readOnly && (
@@ -173,7 +174,7 @@ export function InvoiceDefaultsFields({
             emptyHint={t('customerEmpty')}
             renderItem={(c) => (
               <span>
-                <span className="font-semibold">{c.legalName}</span>
+                <ConfidentialText value={c.legalName} className="font-semibold" compact />
                 {c.ico && <span className="text-muted-foreground"> · IČO {c.ico}</span>}
               </span>
             )}

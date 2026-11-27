@@ -11,8 +11,9 @@ import { useVault } from './vault-provider';
  * A text that may be a "Důvěrný režim" envelope: plain text renders as is,
  * an envelope is opened in the browser once the key is unlocked. Until then
  * it shows a lock with an "Odemknout" button, never the ciphertext.
+ * `compact` drops the button, for a cell or a link that is clickable itself.
  */
-export function ConfidentialText({ value, className }: { value: string | null | undefined; className?: string }) {
+export function ConfidentialText({ value, className, compact = false }: { value: string | null | undefined; className?: string; compact?: boolean }) {
   const t = useTranslations('vault.text');
   const { key, requestUnlock } = useVault();
   const sealed = isSealed(value);
@@ -37,7 +38,7 @@ export function ConfidentialText({ value, className }: { value: string | null | 
     <span className={cn('inline-flex flex-wrap items-center gap-1.5 text-muted-foreground', className)}>
       <LockKeyhole className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
       <span className="italic">{failed ? t('otherKey') : t('locked')}</span>
-      {!failed && (
+      {!failed && !compact && (
         <button type="button" onClick={() => void requestUnlock()} className="text-xs font-semibold text-primary hover:underline">
           {t('unlock')}
         </button>

@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import type { HomeCurrency } from '@faktur/cz-compliance';
 import { Link } from '@/i18n/navigation';
 import { formatDate, formatMoney, fxLabelOf, rateQuote, type InvoiceRow } from '@/lib/invoice-ui';
+import { ConfidentialText } from '@/components/vault/confidential-text';
 
 const OPEN_DELAY_MS = 300;
 const CLOSE_DELAY_MS = 150;
@@ -199,8 +200,8 @@ export function ContactHover({ contactId, children }: { contactId: string | null
       ) : (
         <span className="block space-y-1.5">
           <span className="block">
-            <span className="block text-sm font-semibold">{data.legalName}</span>
-            {data.email && <span className="block truncate text-muted-foreground">{data.email}</span>}
+            <span className="block text-sm font-semibold"><ConfidentialText value={data.legalName} compact /></span>
+            {data.email && <span className="block truncate text-muted-foreground"><ConfidentialText value={data.email} compact /></span>}
             <span className="block text-muted-foreground">
               {data.ico ? `${t('ico')} ${data.ico} · ` : ''}
               {data.country}

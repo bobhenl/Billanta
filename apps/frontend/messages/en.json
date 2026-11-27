@@ -618,7 +618,8 @@
       "mode": {
         "created": "We created a new contact and put it on the draft.",
         "existing": "We found a saved contact by company or VAT ID and put it on the draft.",
-        "filled": "The details belong to the contact that was already on the draft."
+        "filled": "The details belong to the contact that was already on the draft.",
+        "pending_seal": "Your contacts are encrypted, so the server cannot create the contact from the answer by itself. The details wait for your browser to encrypt them."
       },
       "filled": "Filled in: {fields}.",
       "conflicts": "Different from the saved contact, nothing was overwritten:",
@@ -646,7 +647,12 @@
       "requiredHint": "What the customer must fill in. Name and address are always required, company ID and VAT number only for companies.",
       "requiredSaveDefault": "Use as the default for new links",
       "requiredSummary": "Required: {fields}",
-      "pickCustomer": "Pick a customer"
+      "pickCustomer": "Pick a customer",
+      "pendingSeal": {
+        "hint": "Until then the server keeps them readable on this draft only. Once they are encrypted, it deletes them and the draft gets the encrypted contact.",
+        "button": "Encrypt and save contact",
+        "done": "The contact is encrypted and attached to the draft."
+      }
     },
     "profileOrder": {
       "badge": "Profile order",
@@ -7194,7 +7200,8 @@
     },
     "footer": "{company} sent you this link – please don't share it",
     "notFoundTitle": "Portal not found",
-    "notFoundBody": "The link is invalid or was revoked. Ask the supplier for a new one."
+    "notFoundBody": "The link is invalid or was revoked. Ask the supplier for a new one.",
+    "titleNoName": "Your documents"
   },
   "reports": {
     "pageTitle": "Reports",
@@ -14632,7 +14639,7 @@
       "unlockAndSend": "Unlock and send ({n})",
       "lead": "The server cannot turn an encrypted document into a PDF by itself. The PDF is made here, in a browser with Confidential mode unlocked.",
       "passThroughPdf": "The PDF is made in your browser. The server forwards it to the recipient once and does not store it.",
-      "passThroughTexts": "When you click Send, the decrypted texts of these documents pass through the server once: it makes the PDF from them and e-mails it. It does not store or log them.",
+      "passThroughTexts": "When you click Send, the decrypted texts of these documents, and for an encrypted customer also their name and address, pass through the server once: it makes the PDF from them and e-mails it. It does not store or log them.",
       "unnumbered": "No number",
       "kind": {
         "invoice": "Whole e-mail waiting",
@@ -14710,7 +14717,9 @@
         "contact_sealed": "This contact is encrypted. Unlock it and save again so it stays encrypted.",
         "vault_category_off": "Contact encryption is off. Turn it on in the Confidential mode settings.",
         "plan_required": "Contact encryption is part of a higher plan."
-      }
+      },
+      "documentsNote": "Drafts pick up the edited details by themselves. Issued documents keep the customer as of their issue date, and editing the contact does not change them. If the customer is still readable on them, encrypt it with Encrypt existing contacts in",
+      "documentsLink": "Confidential mode settings"
     },
     "sealContacts": {
       "button": "Encrypt existing contacts",

@@ -618,7 +618,8 @@
       "mode": {
         "created": "Új partnert hoztunk létre, és hozzárendeltük a piszkozathoz.",
         "existing": "Cégazonosító vagy közösségi adószám alapján megtaláltunk egy mentett partnert, és hozzárendeltük a piszkozathoz.",
-        "filled": "Az adatok a piszkozaton már szereplő partnerhez tartoznak."
+        "filled": "Az adatok a piszkozaton már szereplő partnerhez tartoznak.",
+        "pending_seal": "A partnerei titkosítva vannak, ezért a szerver a válaszból nem hoz létre partnert. Az adatok arra várnak, hogy a böngészője titkosítsa őket."
       },
       "filled": "Kitöltve: {fields}.",
       "conflicts": "Eltér a mentett partnertől, semmit nem írtunk felül:",
@@ -646,7 +647,12 @@
       "requiredHint": "Amit a vevőnek ki kell töltenie. A név és a cím mindig kötelező, a cégazonosító és a közösségi adószám csak cégeknél.",
       "requiredSaveDefault": "Alapértelmezett az új linkekhez",
       "requiredSummary": "Kötelező: {fields}",
-      "pickCustomer": "Válasszon vevőt"
+      "pickCustomer": "Válasszon vevőt",
+      "pendingSeal": {
+        "hint": "Addig a szerver csak ennél a piszkozatnál tárolja őket olvasható formában. Titkosítás után törli őket, és a piszkozat a titkosított partnert kapja.",
+        "button": "Titkosítás és partner mentése",
+        "done": "A partner titkosítva, és a piszkozathoz rendelve."
+      }
     },
     "profileOrder": {
       "badge": "Rendelés a profilból",
@@ -7186,7 +7192,8 @@
     },
     "footer": "Ezt a linket {company} küldte Önnek – kérjük, ne ossza meg másokkal",
     "notFoundTitle": "A portál nem található",
-    "notFoundBody": "A link érvénytelen, vagy visszavonták. Kérjen újat a szállítótól."
+    "notFoundBody": "A link érvénytelen, vagy visszavonták. Kérjen újat a szállítótól.",
+    "titleNoName": "Az Ön bizonylatai"
   },
   "reports": {
     "pageTitle": "Kimutatások",
@@ -14620,7 +14627,7 @@
       "unlockAndSend": "Feloldás és küldés ({n})",
       "lead": "A titkosított bizonylatot a szerver nem tudja magától PDF-fé alakítani. A PDF itt készül, egy feloldott Bizalmas módú böngészőben.",
       "passThroughPdf": "A PDF az Ön böngészőjében készül. A szerver egyszer továbbítja a címzettnek, és nem tárolja.",
-      "passThroughTexts": "A Küldés gombra kattintva ezeknek a bizonylatoknak a visszafejtett szövegei egyszer áthaladnak a szerveren: az elkészíti belőlük a PDF-et és e-mailben elküldi. Nem tárolja és nem naplózza őket.",
+      "passThroughTexts": "A Küldés gombra kattintva ezeknek a bizonylatoknak a visszafejtett szövegei, titkosított vevőnél pedig a neve és a címe is, egyszer áthaladnak a szerveren: az elkészíti belőlük a PDF-et és e-mailben elküldi. Nem tárolja és nem naplózza őket.",
       "unnumbered": "Szám nélkül",
       "kind": {
         "invoice": "Az egész e-mail vár",
@@ -14698,7 +14705,9 @@
         "contact_sealed": "Ez a partner titkosítva van. Oldja fel és mentse újra, hogy titkosítva maradjon.",
         "vault_category_off": "A partnerek titkosítása ki van kapcsolva. Kapcsolja be a bizalmas mód beállításaiban.",
         "plan_required": "A partnerek titkosítása egy magasabb csomag része."
-      }
+      },
+      "documentsNote": "A piszkozatok maguktól átveszik a módosított adatokat. A kiállított bizonylatok a kiállítás napi vevőt őrzik meg, a partner módosítása nem változtat rajtuk. Ha a vevő még olvasható rajtuk, titkosítsa a Meglévő partnerek titkosítása gombbal itt:",
+      "documentsLink": "Bizalmas mód beállításai"
     },
     "sealContacts": {
       "button": "Meglévő partnerek titkosítása",

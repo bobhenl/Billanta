@@ -76,7 +76,7 @@ export default async function ClientPortalPage({
       {/* The supplier leads; the app name only signs off in the footer. */}
       <header>
         <p className="break-words text-sm font-semibold text-primary">{portal.companyName}</p>
-        <h1 className="mt-1 break-words text-2xl font-extrabold tracking-tight">{t('title', { name: portal.customerName })}</h1>
+        <h1 className="mt-1 break-words text-2xl font-extrabold tracking-tight">{portal.customerName ? t('title', { name: portal.customerName }) : t('titleNoName')}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{t('lead', { company: portal.companyName })}</p>
       </header>
 

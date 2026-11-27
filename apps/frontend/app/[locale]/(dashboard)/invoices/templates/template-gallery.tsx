@@ -116,7 +116,7 @@ export function TemplateGallery({ saved, presets }: { saved: SavedTemplateRow[];
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-bold">{row.name}</p>
-                      <p className="truncate text-xs text-muted-foreground">{row.contactName ?? t('anyCustomer')}</p>
+                      <p className="truncate text-xs text-muted-foreground">{row.contactName ? <ConfidentialText value={row.contactName} compact /> : t('anyCustomer')}</p>
                     </div>
                     <div className="relative z-10">
                       <button

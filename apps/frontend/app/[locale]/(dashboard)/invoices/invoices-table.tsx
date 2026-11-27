@@ -50,6 +50,8 @@ import { menuPosition, type MenuPosition } from '@/lib/menu-position';
 import type { TaxPartner } from '@/lib/net-income';
 import { type PartnerColor, partnerColors, partnerTags } from '../reports/net-income/shares-picker';
 import { AmountHover, ContactHover } from './invoice-hover-cards';
+import { ConfidentialText } from '@/components/vault/confidential-text';
+import { useOpenedFields } from '@/components/vault/opened-contacts';
 import {
   cancelInvoice,
   convertInvoice,
@@ -174,13 +176,15 @@ function sortValue(row: InvoiceRow, key: SortKey, partners: TaxPartner[]): strin
   }
 }
 
+const CUSTOMER_FIELDS = ['contactName'] as const;
+
 /**
  * The invoice list: whole rows open the detail, a "⋯" menu per row carries
  * the state-dependent actions, checkboxes enable bulk actions, and the
  * visible columns are the viewer's choice (remembered in this browser).
  */
 export function InvoicesTable({
-  rows,
+  rows: storedRows,
   filtered,
   home = 'CZK',
   omit,
@@ -197,6 +201,8 @@ export function InvoicesTable({
   /** Columns that say the same thing on every row here (the customer on a contact's page). */
   omit?: Column[];
 }) {
+  // Důvěrný režim: encrypted customer names open here, so the list can sort by them.
+  const rows = useOpenedFields(storedRows, CUSTOMER_FIELDS);
   const t = useTranslations('doc');
   const tList = useTranslations('invoices');
   const tStatus = useTranslations('invoices.status');
@@ -340,7 +346,7 @@ export function InvoicesTable({
         return (
           <span className="inline-flex items-center gap-1.5 font-medium">
             <ColorDot color={row.contactColor} />
-            <ContactHover contactId={row.contactId}>{row.contactName ?? <span className="font-normal italic text-muted-foreground">{t('noCustomer')}</span>}</ContactHover>
+            <ContactHover contactId={row.contactId}>{row.contactName ? <ConfidentialText value={row.contactName} compact /> : <span className="font-normal italic text-muted-foreground">{t('noCustomer')}</span>}</ContactHover>
           </span>
         );
       case 'issueDate':
