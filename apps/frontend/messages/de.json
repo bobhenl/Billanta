@@ -5589,7 +5589,9 @@
     },
     "pages": {
       "templates": "Rechnungsvorlagen",
-      "netIncome": "Nach Steuern (Nettoeinkommen)"
+      "netIncome": "Nach Steuern (Nettoeinkommen)",
+      "taxReturn": "Unterlagen für die Steuererklärung",
+      "flatTax": "Lohnt sich die Pauschalsteuer?"
     },
     "keywords": {
       "newInvoice": "ausstellen erstellen hinzufügen beleg",
@@ -5631,7 +5633,28 @@
       "webhooks": "discord slack webhook",
       "calendar": "ics google kalender fälligkeiten",
       "epo": "steuerportal ust kontrollmeldung xml",
-      "bankConnections": "fio psd2 paypal verbinden synchronisieren"
+      "bankConnections": "fio psd2 paypal verbinden synchronisieren",
+      "taxReturn": "steuererklärung unterlagen einnahmen ausgaben jahr",
+      "flatTax": "pauschalsteuer pauschale rechner lohnt",
+      "bankRules": "regeln zuordnung bank zahlungen automatisch kategorien",
+      "confidential": "vertraulicher modus verschlüsselung e2ee tresor datenschutz",
+      "referrals": "einladen empfehlen guthaben prämie referral",
+      "website": "website startseite preise ratgeber",
+      "exchangeRate": "wechselkurs cnb fremdwährung eur usd",
+      "twoFactor": "2fa zwei faktor authentifizierung totp code",
+      "contactVisibility": "sichtbarkeit wer sieht kunde team zugriff privat",
+      "sealDocuments": "verschlüsseln belege rechnungen tresor",
+      "sealAttachments": "verschlüsseln anhänge dateien quittungen",
+      "sealContacts": "verschlüsseln kontakte kunden",
+      "sealAmounts": "verschlüsseln beträge preise summen",
+      "vaultMethods": "passkey fingerabdruck gesicht tresorpasswort entsperren",
+      "vaultRecovery": "wiederherstellungscode passwort verloren",
+      "vaultCategories": "kategorien was verschlüsselt wird anhänge kontakte beträge",
+      "vaultEmails": "e-mails verschlüsselte belege pdf versand",
+      "vaultOutbox": "postausgang wartende e-mails pdf senden",
+      "vaultDevice": "gerät entsperrung merken browser",
+      "vaultIntegrity": "codeprüfung integrität hash signatur",
+      "serverView": "was der server sieht umschlag chiffretext"
     },
     "aiSearch": "KI-Suche in Rechnungen",
     "aiOpen": "KI fragen / in eigenen Worten suchen",
@@ -5664,7 +5687,11 @@
       "webhooks": "Discord- und Slack-Webhooks",
       "calendar": "Kalender der Fälligkeiten",
       "epo": "Einreichung über das Steuerportal (EPO)",
-      "bankConnections": "Bankverbindungen"
+      "bankConnections": "Bankverbindungen",
+      "exchangeRate": "Wechselkurs für Fremdwährungen",
+      "contactVisibilityWhere": "Kontakte – Kundendetail",
+      "vaultMethods": "Passkeys und Entsperrmethoden",
+      "serverViewWhere": "Detail eines verschlüsselten Belegs"
     }
   },
   "shortcuts": {
@@ -14583,7 +14610,10 @@
       "categoriesMin": "Lassen Sie mindestens eine Kategorie eingeschaltet.",
       "categoryOffConfirm": "Diese Kategorie ausschalten? Neue Dateien und Texte werden nicht mehr verschlüsselt. Bereits Verschlüsseltes bleibt verschlüsselt.",
       "passkeyStepUp": "Entsperrt den Tresor und bestätigt sensible Änderungen",
-      "passkeyUnlockOnly": "Entsperrt nur den Tresor. Damit er auch sensible Änderungen bestätigt, fügen Sie ihn neu hinzu und entfernen Sie diesen."
+      "passkeyUnlockOnly": "Entsperrt nur den Tresor. Damit er auch sensible Änderungen bestätigt, fügen Sie ihn neu hinzu und entfernen Sie diesen.",
+      "categoryOffTitle": "Verschlüsselung dieser Kategorie ausschalten?",
+      "categoryOff": "Ausschalten",
+      "categoryOffBack": "Zurück"
     },
     "clientLink": {
       "ready": "Der Link enthält den Schlüssel zu den verschlüsselten Texten (nach dem #). Ihr Kunde sieht damit den vollen Wortlaut, der Server bekommt den Schlüssel nie.",

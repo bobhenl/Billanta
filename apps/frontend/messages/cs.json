@@ -5596,7 +5596,9 @@
     },
     "pages": {
       "templates": "Šablony faktur",
-      "netIncome": "Po zdanění (čistý příjem)"
+      "netIncome": "Po zdanění (čistý příjem)",
+      "taxReturn": "Podklady pro daňové přiznání",
+      "flatTax": "Vyplatí se paušální daň?"
     },
     "keywords": {
       "newInvoice": "vystavit vytvořit přidat doklad",
@@ -5638,7 +5640,28 @@
       "webhooks": "discord slack webhook",
       "calendar": "ics google kalendář termíny splatnosti",
       "epo": "daňový portál dph kontrolní hlášení xml",
-      "bankConnections": "fio psd2 paypal napojení synchronizace"
+      "bankConnections": "fio psd2 paypal napojení synchronizace",
+      "taxReturn": "daňové přiznání podklady příjmy výdaje rok dpfo",
+      "flatTax": "paušální daň paušál kalkulačka vyplatí",
+      "bankRules": "pravidla párování banka platby automaticky kategorie",
+      "confidential": "důvěrný režim šifrování e2ee trezor soukromí",
+      "referrals": "pozvat doporučit kredity odměna referral",
+      "website": "web stránky domů ceník návody",
+      "exchangeRate": "kurz čnb cizí měna eur usd",
+      "twoFactor": "2fa dvoufázové ověření totp autentikátor kód",
+      "contactVisibility": "viditelnost kdo vidí klienta tým přístup soukromý",
+      "sealDocuments": "zašifrovat doklady faktury trezor",
+      "sealAttachments": "zašifrovat přílohy soubory účtenky",
+      "sealContacts": "zašifrovat kontakty klienty odběratele",
+      "sealAmounts": "zašifrovat částky ceny sumy",
+      "vaultMethods": "passkey otisk obličej heslo trezoru odemknout",
+      "vaultRecovery": "záchranný kód obnovení ztráta hesla",
+      "vaultCategories": "kategorie co se šifruje přílohy kontakty částky",
+      "vaultEmails": "e-maily zašifrované doklady pdf odesílání",
+      "vaultOutbox": "fronta čekající e-maily pdf odeslat",
+      "vaultDevice": "zařízení pamatovat odemčení prohlížeč",
+      "vaultIntegrity": "ověření kódu integrita hash podpis",
+      "serverView": "co vidí server obálka šifrovaný text"
     },
     "aiSearch": "AI hledání ve fakturách",
     "aiOpen": "Zeptat se AI / hledat přirozeně",
@@ -5671,7 +5694,11 @@
       "webhooks": "Webhooky pro Discord a Slack",
       "calendar": "Kalendář splatností",
       "epo": "Podání na daňový portál (EPO)",
-      "bankConnections": "Napojení na banku"
+      "bankConnections": "Napojení na banku",
+      "exchangeRate": "Kurz pro cizí měny",
+      "contactVisibilityWhere": "Kontakty – detail klienta",
+      "vaultMethods": "Passkey a způsoby odemčení",
+      "serverViewWhere": "Detail zašifrovaného dokladu"
     }
   },
   "shortcuts": {
@@ -14587,7 +14614,10 @@
       "categoriesMin": "Nechte zapnutou aspoň jednu kategorii.",
       "categoryOffConfirm": "Vypnout tuto kategorii? Nové soubory a texty se už nebudou šifrovat. Co je zašifrované, zůstane zašifrované.",
       "passkeyStepUp": "Odemyká trezor a potvrzuje citlivé změny",
-      "passkeyUnlockOnly": "Jen odemyká trezor. Aby potvrzoval i citlivé změny, přidejte ho znovu a tento odeberte."
+      "passkeyUnlockOnly": "Jen odemyká trezor. Aby potvrzoval i citlivé změny, přidejte ho znovu a tento odeberte.",
+      "categoryOffTitle": "Vypnout šifrování kategorie?",
+      "categoryOff": "Vypnout",
+      "categoryOffBack": "Zpět"
     },
     "plan": {
       "title": "Důvěrný režim je v tarifech Plus a Firma",

@@ -96,7 +96,7 @@ export function SecurityManager({ enabled, recoveryCodesLeft }: { enabled: boole
   );
 
   return (
-    <section className="mt-6 rounded-xl border border-border bg-card p-4 sm:p-5">
+    <section id="two-factor" className="mt-6 scroll-mt-20 rounded-xl border border-border bg-card p-4 sm:p-5">
       <div className="flex items-start gap-3">
         <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${enabled ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary'}`}>
           {enabled ? <ShieldCheck className="h-5 w-5" /> : <ShieldOff className="h-5 w-5" />}

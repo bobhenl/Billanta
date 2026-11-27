@@ -5588,7 +5588,9 @@
     },
     "pages": {
       "templates": "Modèles de facture",
-      "netIncome": "Après impôts (revenu net)"
+      "netIncome": "Après impôts (revenu net)",
+      "taxReturn": "Éléments pour la déclaration d’impôts",
+      "flatTax": "L’impôt forfaitaire est-il avantageux ?"
     },
     "keywords": {
       "newInvoice": "émettre créer ajouter document facture",
@@ -5630,7 +5632,28 @@
       "webhooks": "discord slack webhook",
       "calendar": "ics google agenda échéances",
       "epo": "portail fiscal tva état de contrôle xml",
-      "bankConnections": "fio psd2 paypal connecter synchroniser"
+      "bankConnections": "fio psd2 paypal connecter synchroniser",
+      "taxReturn": "déclaration impôts revenus dépenses année",
+      "flatTax": "impôt forfaitaire calculateur avantageux",
+      "bankRules": "règles rapprochement banque paiements automatique catégories",
+      "confidential": "mode confidentiel chiffrement e2ee coffre confidentialité",
+      "referrals": "inviter parrainer crédits récompense parrainage",
+      "website": "site accueil tarifs guides",
+      "exchangeRate": "taux de change cnb devise eur usd",
+      "twoFactor": "2fa double authentification totp code",
+      "contactVisibility": "visibilité qui voit le client équipe accès privé",
+      "sealDocuments": "chiffrer documents factures coffre",
+      "sealAttachments": "chiffrer pièces jointes fichiers reçus",
+      "sealContacts": "chiffrer contacts clients",
+      "sealAmounts": "chiffrer montants prix totaux",
+      "vaultMethods": "passkey empreinte visage mot de passe coffre déverrouiller",
+      "vaultRecovery": "code de récupération mot de passe perdu",
+      "vaultCategories": "catégories ce qui est chiffré pièces jointes contacts montants",
+      "vaultEmails": "e-mails documents chiffrés pdf envoi",
+      "vaultOutbox": "boîte d’envoi e-mails en attente pdf envoyer",
+      "vaultDevice": "appareil mémoriser déverrouillage navigateur",
+      "vaultIntegrity": "vérification du code intégrité hash signature",
+      "serverView": "ce que voit le serveur enveloppe texte chiffré"
     },
     "aiSearch": "Recherche IA dans les factures",
     "aiOpen": "Demander à l’IA / rechercher en langage naturel",
@@ -5663,7 +5686,11 @@
       "webhooks": "Webhooks Discord et Slack",
       "calendar": "Calendrier des échéances",
       "epo": "Dépôt sur le portail fiscal (EPO)",
-      "bankConnections": "Connexions bancaires"
+      "bankConnections": "Connexions bancaires",
+      "exchangeRate": "Taux de change pour les devises",
+      "contactVisibilityWhere": "Contacts – fiche client",
+      "vaultMethods": "Passkeys et méthodes de déverrouillage",
+      "serverViewWhere": "Détail d’un document chiffré"
     }
   },
   "shortcuts": {
@@ -14582,7 +14609,10 @@
       "categoriesMin": "Gardez au moins une catégorie activée.",
       "categoryOffConfirm": "Désactiver cette catégorie ? Les nouveaux fichiers et textes ne seront plus chiffrés. Ce qui est déjà chiffré le reste.",
       "passkeyStepUp": "Déverrouille le coffre et confirme les modifications sensibles",
-      "passkeyUnlockOnly": "Déverrouille seulement le coffre. Pour qu’elle confirme aussi les modifications sensibles, ajoutez-la à nouveau et supprimez celle-ci."
+      "passkeyUnlockOnly": "Déverrouille seulement le coffre. Pour qu’elle confirme aussi les modifications sensibles, ajoutez-la à nouveau et supprimez celle-ci.",
+      "categoryOffTitle": "Arrêter de chiffrer cette catégorie ?",
+      "categoryOff": "Désactiver",
+      "categoryOffBack": "Retour"
     },
     "clientLink": {
       "ready": "Le lien contient la clé des textes chiffrés (après le #). Votre client voit avec elle le texte complet, le serveur ne reçoit jamais la clé.",

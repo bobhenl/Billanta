@@ -6,6 +6,10 @@ import { glossaryTermsFor } from '@/lib/glossary';
 import { glossaryText } from '@/lib/glossary-content';
 import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES, isPublishedIn, REMINDERS, TEMPLATES } from '@/lib/public-tools';
 import { getAllMunicipalities, isDistrictSeat, municipalityLocale, type Municipality } from '@/lib/municipalities';
+import { comparedBrandsFor } from '@/lib/competitors';
+import { lessonContent, lessonPublishedIn, SCHOOL_LESSONS } from '@/lib/school-lessons';
+import { SITE_NAME } from '@/lib/site';
+import { switchBrandsFor } from '@/lib/switch';
 
 type Messages = typeof cs;
 
@@ -40,6 +44,18 @@ type FeatureText = { name: string; title: string; description: string; lead: str
 type FaqText = { q: string; a: string };
 type ToolText = { name: string; description: string; lead?: string; keywords?: string };
 
+/** Fills the `{name}` placeholders of a raw catalog string (the index reads messages without ICU).
+ *  The index lives as long as the process, so a value that moves on by itself (a year) is left out. */
+const fill = (text: string, vars: Record<string, string | number>) => text.replace(/\{(\w+)\}/g, (all, key: string) => String(vars[key] ?? all));
+
+/** Text of a list of strings or `{ title, body }` / `{ q, a }` items, for the matched body only. */
+function flat(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (Array.isArray(value)) return value.map(flat).join(' ');
+  if (value && typeof value === 'object') return Object.values(value).map(flat).join(' ');
+  return '';
+}
+
 const INDEX = new Map<string, Promise<Entry[]>>();
 
 /** Every public page with real copy, built once per locale from the message catalogs. */
@@ -67,8 +83,64 @@ async function buildIndex(locale: string): Promise<Entry[]> {
     entry('page', '/contact', m.contact.title, m.contact.lead),
     entry('page', '/legal/terms', m.legal.terms.title, m.legal.terms.intro),
     entry('page', '/legal/privacy', m.legal.privacy.title, m.legal.privacy.intro),
-    entry('page', '/legal/dpa', m.legal.dpa.title, m.legal.dpa.intro)
+    entry('page', '/legal/dpa', m.legal.dpa.title, m.legal.dpa.intro),
+    entry('page', '/legal/cookies', m.cookies.page.seoTitle, m.cookies.page.intro),
+    entry('page', '/legal/classroom-privacy', m.legal.classroomPrivacy.title, m.legal.classroomPrivacy.intro),
+    entry('page', '/legal/school-contract', m.legal.schoolContract.title, m.legal.schoolContract.intro),
+    entry('page', '/demo', m.demo.meta.title, m.demo.meta.description),
+    entry('page', '/dictate-invoice', m.guestInvoice.dictatePage.seoTitle, m.guestInvoice.dictatePage.seoDescription, m.guestInvoice.dictatePage.lead),
+    entry('page', '/your-first-invoice', m.learnPages.firstInvoice.seoTitle, m.learnPages.firstInvoice.lead),
+    entry('page', '/invoicing-for-beginners', m.learnPages.beginners.seoTitle, m.learnPages.beginners.lead),
+    entry('page', '/invoicing-for-advanced', m.learnPages.advanced.seoTitle, m.learnPages.advanced.lead),
+    entry('page', '/team-roles', m.learnPages.roles.seoTitle, m.learnPages.roles.lead),
+    entry('page', '/for-owners', m.learnPages.owners.seoTitle, m.learnPages.owners.lead),
+    entry('page', '/for-assistants', m.learnPages.assistants.seoTitle, m.learnPages.assistants.lead),
+    entry('page', '/tax-return-basis', fill(m.taxReturn.landing.seoTitle, { year: '' }).replace(/\s+/g, ' '), m.taxReturn.landing.lead),
+    entry('page', '/for-accountants', m.accountants.seoTitle, m.accountants.lead),
+    entry('page', '/accountants', m.accountantDirectory.seoTitle, m.accountantDirectory.lead),
+    entry('page', '/directory', m.businessDirectory.seoTitle, fill(m.businessDirectory.metaDescription, { site: SITE_NAME }), m.businessDirectory.lead),
+    entry('page', '/for-schools', m.schools.seoTitle, m.schools.lead),
+    entry('page', '/for-schools/lessons', m.schoolLessons.indexMetaTitle, m.schoolLessons.indexMeta),
+    entry('page', '/for-creators', m.creators.seoTitle, m.creators.lead),
+    entry('page', '/events', m.events.seoTitle, m.events.lead),
+    entry('page', '/partners', m.partners.seoTitle, m.partners.lead),
+    entry('page', '/for-partners', m.partnerSegments.hub.seoTitle, m.partnerSegments.hub.lead),
+    ...(['courses', 'coworkings', 'communities', 'expats', 'banks'] as const).map((s) =>
+      entry('page', `/for-${s}`, m.partnerSegments[s].seoTitle, m.partnerSegments[s].lead)
+    ),
+    entry('page', '/blog', m.blog.seoTitle, m.blog.lead)
   ];
+
+  // Confidential mode: the page, plus its live demo, what the server sees and the code check on their own.
+  const sec = m.securityPage;
+  entries.push(
+    entry('page', '/security/confidential', sec.seoTitle, sec.lead, `${sec.eyebrow} ${flat(sec.howSteps)} ${sec.limitsTitle} ${flat(sec.limits)}`),
+    entry('page', '/security/confidential#demo', `${sec.demoTitle}: ${sec.title}`, sec.demoLead),
+    entry('page', '/security/confidential#server', sec.visibleTitle, flat(sec.visible), `${sec.hiddenTitle} ${flat(sec.hidden)} ${sec.title}`),
+    entry('page', '/security/confidential#csp', sec.cspTitle, sec.cspBody, `${sec.cspHow} ${sec.title}`),
+    entry('page', '/security/confidential#verify', sec.verifyTitle, sec.verifyLead, `${flat(sec.planned)} ${sec.title}`)
+  );
+
+  // Comparisons and switching guides, for the brands of this locale's market (lib/competitors.ts).
+  const compare = m.comparePage as unknown as { seoTitle: string; lead: string; brands: Record<string, { seoTitle: string; lead: string; suitsUs: string[]; suitsThem: string[] }> };
+  entries.push(entry('page', '/compare', compare.seoTitle, compare.lead));
+  for (const b of comparedBrandsFor(locale)) {
+    const text = compare.brands[b.key];
+    if (text) entries.push(entry('page', `/compare/${b.key}`, text.seoTitle, text.lead, `${b.name} ${flat(text.suitsUs)} ${flat(text.suitsThem)}`));
+  }
+  const switching = m.switchPage as unknown as { seoTitle: string; lead: string; brands: Record<string, { seoTitle: string; lead: string }> };
+  entries.push(entry('page', '/switch', switching.seoTitle, switching.lead));
+  for (const b of switchBrandsFor(locale)) {
+    const text = switching.brands[b.key];
+    if (text) entries.push(entry('page', `/switch/${b.key}`, text.seoTitle, text.lead, b.name));
+  }
+
+  // School lessons: hand-written content in cs/sk/en (contentLocale), Czech-only ones not offered elsewhere.
+  for (const lesson of SCHOOL_LESSONS) {
+    if (!lessonPublishedIn(lesson, locale)) continue;
+    const content = await lessonContent(lesson.slug, locale);
+    if (content) entries.push(entry('guide', `/for-schools/lessons/${lesson.slug}`, content.title, content.metaDescription));
+  }
   for (const f of FEATURE_PAGES) {
     const text = features[f.key];
     if (!text) continue;

@@ -131,7 +131,7 @@ function StepUpDialog({ open, onDone }: { open: boolean; onDone: (ok: boolean) =
             {t('usePasskey')}
           </button>
         )}
-        {error && <p className="text-sm font-semibold text-destructive">{error}</p>}
+        {error && <p role="alert" className="text-sm font-semibold text-destructive">{error}</p>}
         {kind && kind !== 'totp' && (
           <p className="rounded-lg bg-secondary px-3 py-2 text-xs">
             {t('twoFactorHint')}{' '}

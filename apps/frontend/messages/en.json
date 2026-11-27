@@ -5596,7 +5596,9 @@
     },
     "pages": {
       "templates": "Invoice templates",
-      "netIncome": "After taxes (net income)"
+      "netIncome": "After taxes (net income)",
+      "taxReturn": "Tax return basis",
+      "flatTax": "Is the flat tax worth it?"
     },
     "keywords": {
       "newInvoice": "issue create add document",
@@ -5638,7 +5640,28 @@
       "webhooks": "discord slack webhook",
       "calendar": "ics google calendar due dates",
       "epo": "tax portal vat control statement xml",
-      "bankConnections": "fio psd2 paypal connect sync"
+      "bankConnections": "fio psd2 paypal connect sync",
+      "taxReturn": "tax return income expenses year basis",
+      "flatTax": "flat tax lump sum calculator worth",
+      "bankRules": "rules matching bank payments automatic categories",
+      "confidential": "confidential mode encryption e2ee vault privacy",
+      "referrals": "invite refer credits reward referral",
+      "website": "website home pricing guides",
+      "exchangeRate": "exchange rate cnb foreign currency eur usd",
+      "twoFactor": "2fa two factor authentication totp authenticator code",
+      "contactVisibility": "visibility who sees client team access private",
+      "sealDocuments": "encrypt seal documents invoices vault",
+      "sealAttachments": "encrypt seal attachments files receipts",
+      "sealContacts": "encrypt seal contacts clients buyers",
+      "sealAmounts": "encrypt seal amounts prices totals",
+      "vaultMethods": "passkey fingerprint face vault password unlock",
+      "vaultRecovery": "recovery code restore lost password",
+      "vaultCategories": "categories what is encrypted attachments contacts amounts",
+      "vaultEmails": "emails encrypted documents pdf sending",
+      "vaultOutbox": "outbox pending emails pdf send queue",
+      "vaultDevice": "device remember unlock browser",
+      "vaultIntegrity": "code verification integrity hash signature",
+      "serverView": "what the server sees envelope ciphertext"
     },
     "aiSearch": "AI search in invoices",
     "aiOpen": "Ask AI / search in plain words",
@@ -5671,7 +5694,11 @@
       "webhooks": "Discord and Slack webhooks",
       "calendar": "Due date calendar",
       "epo": "Tax portal filing (EPO)",
-      "bankConnections": "Bank connections"
+      "bankConnections": "Bank connections",
+      "exchangeRate": "Exchange rate for foreign currencies",
+      "contactVisibilityWhere": "Contacts – client detail",
+      "vaultMethods": "Passkeys and unlock methods",
+      "serverViewWhere": "Encrypted document detail"
     }
   },
   "shortcuts": {
@@ -14587,7 +14614,10 @@
       "categoriesMin": "Keep at least one category on.",
       "categoryOffConfirm": "Turn this category off? New files and texts will no longer be encrypted. Anything already encrypted stays encrypted.",
       "passkeyStepUp": "Unlocks the vault and confirms sensitive changes",
-      "passkeyUnlockOnly": "Only unlocks the vault. To let it confirm sensitive changes too, add it again and remove this one."
+      "passkeyUnlockOnly": "Only unlocks the vault. To let it confirm sensitive changes too, add it again and remove this one.",
+      "categoryOffTitle": "Stop encrypting this category?",
+      "categoryOff": "Turn off",
+      "categoryOffBack": "Back"
     },
     "plan": {
       "title": "Confidential mode is part of the Plus and Business plans",

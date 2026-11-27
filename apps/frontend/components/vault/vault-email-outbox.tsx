@@ -1,9 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Loader2, MailWarning, Send, Trash2 } from 'lucide-react';
+import { Loader2, Send, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { VaultKey } from '@faktur/cz-compliance';
+import { Banner } from '@/components/banner';
 import { Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { Link } from '@/i18n/navigation';
@@ -95,13 +96,16 @@ export function VaultEmailOutbox({ canSend }: { canSend: boolean }) {
 
   return (
     <>
-      <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-warning/40 bg-warning/5 px-3 py-2 text-sm">
-        <MailWarning className="h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
-        <span className="min-w-0 flex-1 font-semibold">{t('badge', { n: items.length })}</span>
-        <button type="button" onClick={() => setDialog(true)} className={buttonClass.secondary}>
-          {t('open')}
-        </button>
-      </div>
+      <Banner
+        tone="warn"
+        title={t('badge', { n: items.length })}
+        className="mb-4 items-center"
+        action={
+          <button type="button" onClick={() => setDialog(true)} className={buttonClass.secondary}>
+            {t('open')}
+          </button>
+        }
+      />
 
       <Modal
         open={dialog}
@@ -129,7 +133,7 @@ export function VaultEmailOutbox({ canSend }: { canSend: boolean }) {
               </Link>
               <span className="min-w-0 flex-1 break-all text-muted-foreground">{item.recipient}</span>
               <span className="text-xs text-muted-foreground">{t(`kind.${item.kind}`)}</span>
-              <button type="button" disabled={busy} onClick={() => void dismiss(item.id)} className="rounded p-1 text-muted-foreground hover:text-destructive" aria-label={t('dismiss')} title={t('dismiss')}>
+              <button type="button" disabled={busy} onClick={() => void dismiss(item.id)} className="rounded-full p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" aria-label={t('dismiss')} title={t('dismiss')}>
                 <Trash2 className="h-4 w-4" aria-hidden="true" />
               </button>
             </li>

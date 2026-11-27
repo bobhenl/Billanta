@@ -65,7 +65,7 @@ export function VaultIntegrity() {
   };
 
   return (
-    <section className="space-y-3 rounded-xl border border-border bg-card p-4">
+    <section id="integrity" className="scroll-mt-20 space-y-3 rounded-xl border border-border bg-card p-4">
       <h2 className="flex items-center gap-2 text-sm font-bold">
         <ShieldCheck className="h-4 w-4 text-primary" aria-hidden="true" />
         {t('title')}

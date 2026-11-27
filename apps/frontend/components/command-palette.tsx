@@ -15,6 +15,16 @@ import {
   Calculator,
   CreditCard,
   DatabaseBackup,
+  Eye,
+  Fingerprint,
+  FileLock2,
+  FileStack,
+  Gift,
+  ListFilter,
+  MailWarning,
+  Paperclip,
+  Scale,
+  ShieldAlert,
   Download,
   FilePlus2,
   FileSliders,
@@ -110,7 +120,10 @@ const PAGES: Entry[] = [
   { key: 'expenses', href: '/expenses', icon: Receipt, label: 'nav.expenses', section: 'expenses', shortcut: 'G E' },
   { key: 'reports', href: '/reports', icon: BarChart3, label: 'nav.reports' },
   { key: 'netIncome', href: '/reports/net-income', icon: Wallet, label: 'palette.pages.netIncome', section: 'manage' },
+  { key: 'taxReturn', href: '/reports/tax-return', icon: FileStack, label: 'palette.pages.taxReturn' },
+  { key: 'flatTax', href: '/dashboard/calculators/flat-tax', icon: Scale, label: 'palette.pages.flatTax' },
   { key: 'bank', href: '/bank', icon: Landmark, label: 'nav.bank', section: 'bank', shortcut: 'G B' },
+  { key: 'bankRules', href: '/bank/rules', icon: ListFilter, label: 'bankRules.title', section: 'bank' },
   { key: 'time', href: '/time', icon: Timer, label: 'nav.time', section: 'time', shortcut: 'G T' },
   { key: 'contacts', href: '/contacts', icon: Users, label: 'nav.contacts', section: 'contacts', shortcut: 'G C' },
   { key: 'settings', href: '/settings', icon: Settings, label: 'nav.settings', shortcut: 'G S' },
@@ -127,7 +140,8 @@ const PAGES: Entry[] = [
   { key: 'channels', href: '/settings/channels', icon: MessageCircle, label: 'settings.hub.items.channels.title', section: 'manage' },
   { key: 'ai', href: '/settings/ai', icon: Bot, label: 'settings.hub.items.ai.title', section: 'aiSettings' },
   { key: 'security', href: '/settings/security', icon: ShieldCheck, label: 'settings.hub.items.security.title' },
-  { key: 'confidential', href: '/settings/confidential', icon: LockKeyhole, label: 'settings.hub.items.confidential.title', section: 'manage' },
+  // Personal, like the settings hub has it: every member manages their own ways to unlock.
+  { key: 'confidential', href: '/settings/confidential', icon: LockKeyhole, label: 'settings.hub.items.confidential.title' },
   { key: 'apiKeys', href: '/settings/api-keys', icon: KeyRound, label: 'settings.hub.items.apiKeys.title', section: 'manage' },
   { key: 'notifications', href: '/settings/notifications', icon: Bell, label: 'settings.hub.items.notifications.title' },
   { key: 'emailNotifications', href: '/settings/email-notifications', icon: BellRing, label: 'settings.hub.items.emailNotifications.title' },
@@ -138,7 +152,10 @@ const PAGES: Entry[] = [
   { key: 'publicProfile', href: '/settings/public-profile', icon: Globe, label: 'settings.hub.items.publicProfile.title', section: 'manage' },
   { key: 'accountantProfile', href: '/settings/accountant-profile', icon: Calculator, label: 'settings.hub.items.accountantProfile.title', section: 'manage' },
   { key: 'import', href: '/settings/import', icon: FolderInput, label: 'settings.hub.items.import.title', section: 'manage' },
-  { key: 'integrations', href: '/settings/integrations', icon: Webhook, label: 'settings.hub.items.integrations.title', section: 'integrations' }
+  { key: 'integrations', href: '/settings/integrations', icon: Webhook, label: 'settings.hub.items.integrations.title', section: 'integrations' },
+  { key: 'referrals', href: '/settings/referrals', icon: Gift, label: 'settings.hub.items.referrals.title' },
+  // The public site, in this language (the logo leads to the dashboard).
+  { key: 'website', href: '/', icon: Globe, label: 'common.userMenu.website' }
 ];
 
 /**
@@ -157,7 +174,23 @@ const SECTIONS: (Entry & { parent: string })[] = [
   { key: 'webhooks', href: '/settings/integrations', icon: Webhook, label: 'palette.sections.webhooks', parent: 'settings.hub.items.integrations.title', section: 'integrations' },
   { key: 'calendar', href: '/settings/integrations', icon: Webhook, label: 'palette.sections.calendar', parent: 'settings.hub.items.integrations.title', section: 'integrations' },
   { key: 'epo', href: '/settings/exports#epo', icon: Download, label: 'palette.sections.epo', parent: 'settings.hub.items.exports.title', section: 'exports' },
-  { key: 'bankConnections', href: '/bank', icon: Landmark, label: 'palette.sections.bankConnections', parent: 'nav.bank', section: 'bank' }
+  { key: 'bankConnections', href: '/bank', icon: Landmark, label: 'palette.sections.bankConnections', parent: 'nav.bank', section: 'bank' },
+  { key: 'exchangeRate', href: '/settings/invoices#exchange-rate', icon: FileSliders, label: 'palette.sections.exchangeRate', parent: 'settings.hub.items.invoices.title', section: 'manage' },
+  { key: 'twoFactor', href: '/settings/security#two-factor', icon: ShieldCheck, label: 'settings.security.twoFactorTitle', parent: 'settings.hub.items.security.title' },
+  { key: 'contactVisibility', href: '/contacts', icon: Users, label: 'contacts.detail.visibility.title', parent: 'palette.sections.contactVisibilityWhere', section: 'contacts' },
+  // Důvěrný režim: each part of its settings page, the seal buttons and what the server sees.
+  { key: 'sealDocuments', href: '/settings/confidential#seal', icon: FileLock2, label: 'vault.seal.button.company', parent: 'settings.hub.items.confidential.title' },
+  { key: 'sealAttachments', href: '/settings/confidential#seal', icon: Paperclip, label: 'vault.sealFiles.button', parent: 'settings.hub.items.confidential.title' },
+  { key: 'sealContacts', href: '/settings/confidential#seal', icon: Users, label: 'vault.sealContacts.button', parent: 'settings.hub.items.confidential.title' },
+  { key: 'sealAmounts', href: '/settings/confidential#seal', icon: Wallet, label: 'vault.sealAmounts.button', parent: 'settings.hub.items.confidential.title' },
+  { key: 'vaultMethods', href: '/settings/confidential#methods', icon: Fingerprint, label: 'palette.sections.vaultMethods', parent: 'settings.hub.items.confidential.title' },
+  { key: 'vaultRecovery', href: '/settings/confidential#recovery', icon: KeyRound, label: 'vault.settings.recoveryTitle', parent: 'settings.hub.items.confidential.title', section: 'manage' },
+  { key: 'vaultCategories', href: '/settings/confidential#categories', icon: LockKeyhole, label: 'vault.settings.categoriesTitle', parent: 'settings.hub.items.confidential.title' },
+  { key: 'vaultEmails', href: '/settings/confidential#emails', icon: Mail, label: 'vault.emailSettings.title', parent: 'settings.hub.items.confidential.title', section: 'manage' },
+  { key: 'vaultOutbox', href: '/settings/confidential#emails', icon: MailWarning, label: 'vault.outbox.title', parent: 'settings.hub.items.confidential.title' },
+  { key: 'vaultDevice', href: '/settings/confidential#device', icon: ShieldAlert, label: 'vault.device.title', parent: 'settings.hub.items.confidential.title' },
+  { key: 'vaultIntegrity', href: '/settings/confidential#integrity', icon: ShieldCheck, label: 'vaultPublic.integrity.title', parent: 'settings.hub.items.confidential.title' },
+  { key: 'serverView', href: '/security/confidential#server', icon: Eye, label: 'vault.serverView.title', parent: 'palette.sections.serverViewWhere' }
 ];
 
 // Customers and pages before invoices: there are few of them, but invoices pile up.

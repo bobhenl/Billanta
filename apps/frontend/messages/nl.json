@@ -5588,7 +5588,9 @@
     },
     "pages": {
       "templates": "Factuursjablonen",
-      "netIncome": "Na belastingen (netto-inkomen)"
+      "netIncome": "Na belastingen (netto-inkomen)",
+      "taxReturn": "Gegevens voor de belastingaangifte",
+      "flatTax": "Loont de forfaitaire belasting?"
     },
     "keywords": {
       "newInvoice": "factuur uitgeven maken toevoegen document invoice",
@@ -5630,7 +5632,28 @@
       "webhooks": "discord slack webhook",
       "calendar": "ics google agenda vervaldata",
       "epo": "belastingportaal btw controleaangifte xml epo",
-      "bankConnections": "fio psd2 paypal koppelen synchroniseren"
+      "bankConnections": "fio psd2 paypal koppelen synchroniseren",
+      "taxReturn": "belastingaangifte inkomsten uitgaven jaar",
+      "flatTax": "forfaitaire belasting rekenhulp loont",
+      "bankRules": "regels koppelen bank betalingen automatisch categorieën",
+      "confidential": "vertrouwelijke modus versleuteling e2ee kluis privacy",
+      "referrals": "uitnodigen aanbevelen tegoed beloning referral",
+      "website": "website home prijzen gidsen",
+      "exchangeRate": "wisselkoers cnb vreemde valuta eur usd",
+      "twoFactor": "2fa tweestapsverificatie totp code",
+      "contactVisibility": "zichtbaarheid wie ziet de klant team toegang privé",
+      "sealDocuments": "versleutel documenten facturen kluis",
+      "sealAttachments": "versleutel bijlagen bestanden bonnetjes",
+      "sealContacts": "versleutel contacten klanten",
+      "sealAmounts": "versleutel bedragen prijzen totalen",
+      "vaultMethods": "passkey vingerafdruk gezicht kluiswachtwoord ontgrendelen",
+      "vaultRecovery": "herstelcode wachtwoord kwijt",
+      "vaultCategories": "categorieën wat wordt versleuteld bijlagen contacten bedragen",
+      "vaultEmails": "e-mails versleutelde documenten pdf verzenden",
+      "vaultOutbox": "outbox wachtende e-mails pdf verzenden",
+      "vaultDevice": "apparaat ontgrendeling onthouden browser",
+      "vaultIntegrity": "codeverificatie integriteit hash handtekening",
+      "serverView": "wat de server ziet envelop versleutelde tekst"
     },
     "aiSearch": "AI-zoeken in facturen",
     "aiOpen": "Vraag het AI / zoek in gewone taal",
@@ -5663,7 +5686,11 @@
       "webhooks": "Discord- en Slack-webhooks",
       "calendar": "Agenda met vervaldata",
       "epo": "Aangifte via belastingportaal (EPO)",
-      "bankConnections": "Bankkoppelingen"
+      "bankConnections": "Bankkoppelingen",
+      "exchangeRate": "Wisselkoers voor vreemde valuta",
+      "contactVisibilityWhere": "Contacten – klantdetail",
+      "vaultMethods": "Passkeys en ontgrendelmethoden",
+      "serverViewWhere": "Detail van een versleuteld document"
     }
   },
   "shortcuts": {
@@ -14582,7 +14609,10 @@
       "categoriesMin": "Laat minstens één categorie aan staan.",
       "categoryOffConfirm": "Deze categorie uitzetten? Nieuwe bestanden en teksten worden niet meer versleuteld. Wat al versleuteld is, blijft versleuteld.",
       "passkeyStepUp": "Ontgrendelt de kluis en bevestigt gevoelige wijzigingen",
-      "passkeyUnlockOnly": "Ontgrendelt alleen de kluis. Voeg hem opnieuw toe en verwijder deze, zodat hij ook gevoelige wijzigingen bevestigt."
+      "passkeyUnlockOnly": "Ontgrendelt alleen de kluis. Voeg hem opnieuw toe en verwijder deze, zodat hij ook gevoelige wijzigingen bevestigt.",
+      "categoryOffTitle": "Versleuteling van deze categorie uitzetten?",
+      "categoryOff": "Uitzetten",
+      "categoryOffBack": "Terug"
     },
     "clientLink": {
       "ready": "De link bevat de sleutel tot de versleutelde teksten (na het #). Uw klant ziet daarmee de volledige tekst, de server krijgt de sleutel nooit.",

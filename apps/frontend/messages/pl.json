@@ -5589,7 +5589,9 @@
     },
     "pages": {
       "templates": "Szablony faktur",
-      "netIncome": "Po opodatkowaniu (dochód netto)"
+      "netIncome": "Po opodatkowaniu (dochód netto)",
+      "taxReturn": "Dane do zeznania podatkowego",
+      "flatTax": "Czy opłaca się podatek ryczałtowy?"
     },
     "keywords": {
       "newInvoice": "wystaw utwórz dodaj dokument",
@@ -5631,7 +5633,28 @@
       "webhooks": "discord slack webhook",
       "calendar": "ics kalendarz google terminy płatności",
       "epo": "portal podatkowy vat jpk xml",
-      "bankConnections": "fio psd2 paypal połączenie synchronizacja"
+      "bankConnections": "fio psd2 paypal połączenie synchronizacja",
+      "taxReturn": "zeznanie podatkowe przychody koszty rok",
+      "flatTax": "ryczałt podatek kalkulator opłaca",
+      "bankRules": "reguły dopasowanie bank płatności automatycznie kategorie",
+      "confidential": "tryb poufny szyfrowanie e2ee sejf prywatność",
+      "referrals": "zaproś poleć kredyty nagroda referral",
+      "website": "strona www start cennik poradniki",
+      "exchangeRate": "kurs cnb waluta obca eur usd",
+      "twoFactor": "2fa uwierzytelnianie dwuskładnikowe totp kod",
+      "contactVisibility": "widoczność kto widzi klienta zespół dostęp prywatny",
+      "sealDocuments": "zaszyfruj dokumenty faktury sejf",
+      "sealAttachments": "zaszyfruj załączniki pliki paragony",
+      "sealContacts": "zaszyfruj kontakty klientów",
+      "sealAmounts": "zaszyfruj kwoty ceny sumy",
+      "vaultMethods": "passkey odcisk palca twarz hasło sejfu odblokuj",
+      "vaultRecovery": "kod odzyskiwania utracone hasło",
+      "vaultCategories": "kategorie co jest szyfrowane załączniki kontakty kwoty",
+      "vaultEmails": "e-maile zaszyfrowane dokumenty pdf wysyłka",
+      "vaultOutbox": "skrzynka nadawcza oczekujące e-maile pdf wyślij",
+      "vaultDevice": "urządzenie zapamiętaj odblokowanie przeglądarka",
+      "vaultIntegrity": "weryfikacja kodu integralność hash podpis",
+      "serverView": "co widzi serwer koperta szyfrogram"
     },
     "aiSearch": "Wyszukiwanie AI w fakturach",
     "aiOpen": "Zapytaj AI / szukaj zwykłymi słowami",
@@ -5664,7 +5687,11 @@
       "webhooks": "Webhooki Discord i Slack",
       "calendar": "Kalendarz terminów płatności",
       "epo": "Składanie przez portal podatkowy (EPO)",
-      "bankConnections": "Połączenia z bankiem"
+      "bankConnections": "Połączenia z bankiem",
+      "exchangeRate": "Kurs dla walut obcych",
+      "contactVisibilityWhere": "Kontakty – szczegóły klienta",
+      "vaultMethods": "Passkeye i sposoby odblokowania",
+      "serverViewWhere": "Szczegóły zaszyfrowanego dokumentu"
     }
   },
   "shortcuts": {
@@ -14583,7 +14610,10 @@
       "categoriesMin": "Zostaw włączoną co najmniej jedną kategorię.",
       "categoryOffConfirm": "Wyłączyć tę kategorię? Nowe pliki i teksty nie będą już szyfrowane. To, co zaszyfrowane, pozostanie zaszyfrowane.",
       "passkeyStepUp": "Odblokowuje sejf i potwierdza wrażliwe zmiany",
-      "passkeyUnlockOnly": "Tylko odblokowuje sejf. Aby potwierdzał też wrażliwe zmiany, dodaj go ponownie i usuń ten."
+      "passkeyUnlockOnly": "Tylko odblokowuje sejf. Aby potwierdzał też wrażliwe zmiany, dodaj go ponownie i usuń ten.",
+      "categoryOffTitle": "Wyłączyć szyfrowanie tej kategorii?",
+      "categoryOff": "Wyłącz",
+      "categoryOffBack": "Wstecz"
     },
     "clientLink": {
       "ready": "Link zawiera klucz do zaszyfrowanych tekstów (po znaku #). Klient zobaczy z nim pełną treść, serwer nigdy nie dostaje klucza.",

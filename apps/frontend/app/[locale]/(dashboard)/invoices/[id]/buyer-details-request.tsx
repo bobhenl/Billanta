@@ -173,7 +173,7 @@ export function BuyerDetailsRequest({
             {t('close')}
           </button>
           <button type="button" className={buttonClass.primary} disabled={pending} onClick={send}>
-            {to.trim() ? <Send className="h-4 w-4" /> : <Link2 className="h-4 w-4" />}
+            {to.trim() ? <Send className="h-4 w-4" aria-hidden="true" /> : <Link2 className="h-4 w-4" aria-hidden="true" />}
             {to.trim() ? t('sendEmail') : t('createLink')}
           </button>
         </>
@@ -221,11 +221,11 @@ export function BuyerDetailsRequest({
     return (
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <button type="button" className={buttonClass.secondary} onClick={() => setOpen(true)}>
-          <UserPen className="h-4 w-4" />
+          <UserPen className="h-4 w-4" aria-hidden="true" />
           {t('button')}
         </button>
         <Link href={`/invoices/${id}/edit`} className={buttonClass.ghost}>
-          <UserSearch className="h-4 w-4" />
+          <UserSearch className="h-4 w-4" aria-hidden="true" />
           {t('pickCustomer')}
         </Link>
         {manual && <div className="w-full">{manual}</div>}
@@ -238,7 +238,7 @@ export function BuyerDetailsRequest({
     return (
       <div className="mt-4 rounded-xl border border-success/40 bg-success/5 p-4 text-sm">
         <div className="flex items-start gap-3">
-          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
+          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" aria-hidden="true" />
           <div className="min-w-0 flex-1">
             <p className="font-semibold">{t('submittedTitle', { date: submittedLabel ?? '' })}</p>
             <p className="mt-1 text-muted-foreground">{t(`mode.${outcome.mode}`)}</p>
@@ -250,7 +250,7 @@ export function BuyerDetailsRequest({
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">{t('pendingSeal.hint')}</p>
                 <button type="button" className={`${buttonClass.primary} mt-2`} disabled={pending} onClick={sealPending}>
-                  <LockKeyhole className="h-4 w-4" />
+                  <LockKeyhole className="h-4 w-4" aria-hidden="true" />
                   {t('pendingSeal.button')}
                 </button>
               </div>
@@ -271,7 +271,7 @@ export function BuyerDetailsRequest({
             {outcome.autoIssue && <p className="mt-2 font-medium">{t(`auto.${outcome.autoIssue}`)}</p>}
             {outcome.autoIssueError && <p className="mt-1 text-xs text-destructive">{outcome.autoIssueError}</p>}
             <button type="button" className={`${buttonClass.ghost} mt-2 -ml-3`} onClick={() => setOpen(true)}>
-              <UserPen className="h-4 w-4" />
+              <UserPen className="h-4 w-4" aria-hidden="true" />
               {t('askAgain')}
             </button>
             {manual}
@@ -286,7 +286,7 @@ export function BuyerDetailsRequest({
     return (
       <div className="mt-4 rounded-xl border border-warning/40 bg-warning/5 p-4 text-sm">
         <div className="flex flex-wrap items-start gap-3">
-          <Clock className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
+          <Clock className="mt-0.5 h-5 w-5 shrink-0 text-warning" aria-hidden="true" />
           <div className="min-w-0 flex-1">
             <p className="font-semibold">{t('waitingTitle')}</p>
             <p className="mt-1 text-muted-foreground">
@@ -296,15 +296,15 @@ export function BuyerDetailsRequest({
           </div>
           <div className="flex flex-wrap gap-2">
             <button type="button" className={buttonClass.secondary} onClick={() => copy(linkOf(token))}>
-              <Copy className="h-4 w-4" />
+              <Copy className="h-4 w-4" aria-hidden="true" />
               {t('copyLink')}
             </button>
             <button type="button" className={buttonClass.secondary} onClick={() => setOpen(true)}>
-              <Send className="h-4 w-4" />
+              <Send className="h-4 w-4" aria-hidden="true" />
               {t('resend')}
             </button>
             <button type="button" className={buttonClass.ghost} disabled={pending} onClick={cancel}>
-              <X className="h-4 w-4" />
+              <X className="h-4 w-4" aria-hidden="true" />
               {t('cancel')}
             </button>
           </div>
@@ -319,7 +319,7 @@ export function BuyerDetailsRequest({
   return (
     <>
       <button type="button" className={`${buttonClass.secondary} mt-3`} onClick={() => setOpen(true)}>
-        <UserPen className="h-4 w-4" />
+        <UserPen className="h-4 w-4" aria-hidden="true" />
         {t('button')}
       </button>
       {manual}

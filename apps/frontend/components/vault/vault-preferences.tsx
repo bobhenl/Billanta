@@ -23,7 +23,7 @@ export function VaultEmailSettings({ vault }: { vault: EnabledVault }) {
   };
 
   return (
-    <section className="space-y-3 rounded-xl border border-border bg-card p-4">
+    <section id="emails" className="scroll-mt-20 space-y-3 rounded-xl border border-border bg-card p-4">
       <h2 className="text-sm font-bold">{t('title')}</h2>
       <p className="text-xs text-muted-foreground">{t('lead')}</p>
       <fieldset className="space-y-2">
@@ -89,7 +89,7 @@ export function VaultDeviceKeep() {
   };
 
   return (
-    <section className="space-y-3 rounded-xl border border-border bg-card p-4">
+    <section id="device" className="scroll-mt-20 space-y-3 rounded-xl border border-border bg-card p-4">
       <label className="flex items-start gap-2.5 text-sm">
         <input type="checkbox" checked={kept} onChange={(e) => void toggle(e.target.checked)} className="mt-0.5 h-4 w-4 accent-primary" />
         <span>

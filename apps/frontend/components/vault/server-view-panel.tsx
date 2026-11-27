@@ -1,6 +1,6 @@
 'use client';
 
-import { Eye } from 'lucide-react';
+import { ChevronDown, Eye } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { isSealed } from '@faktur/cz-compliance';
 import { ConfidentialText } from './confidential-text';
@@ -24,6 +24,7 @@ export function ServerViewPanel({ fields }: { fields: { label: string; value: st
       <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-bold [&::-webkit-details-marker]:hidden">
         <Eye className="h-4 w-4 text-primary" aria-hidden="true" />
         {t('title')}
+        <ChevronDown className="ml-auto h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
       </summary>
       <p className="mt-2 text-xs text-muted-foreground">{t('lead')}</p>
       <ul className="mt-3 space-y-3">

@@ -3,9 +3,9 @@
 import { useTranslations } from 'next-intl';
 import { clearVaultKeys } from '@/lib/vault/session';
 import { signOut } from 'next-auth/react';
-import { LogOut } from 'lucide-react';
+import { Globe, LogOut } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/language-switcher';
-import { MobileTabBar } from '@/components/mobile-tab-bar';
+import { MobileTabBar, type PanelLink } from '@/components/mobile-tab-bar';
 import { ThemeSegment } from '@/components/theme-toggle';
 import { ACTIONS } from '@/components/command-palette';
 import { useLeaveOffline } from '@/components/offline-sync';
@@ -33,7 +33,7 @@ export function MobileBottomNav({ hidden = [], actionsHidden = hidden }: { hidde
     label: t(key)
   }));
   // Work sections first, then the account ones (history, billing, settings), each under its heading.
-  const links = DASHBOARD_NAV_ITEMS.filter((item) => !item.mobileTab && !hidden.includes(item.key)).map(({ key, href, icon, accountMenu }) => ({
+  const links: PanelLink[] = DASHBOARD_NAV_ITEMS.filter((item) => !item.mobileTab && !hidden.includes(item.key)).map(({ key, href, icon, accountMenu }) => ({
     key,
     href,
     icon,
@@ -41,6 +41,8 @@ export function MobileBottomNav({ hidden = [], actionsHidden = hidden }: { hidde
     group: accountMenu ? 'account' : 'work',
     groupLabel: tMobile(accountMenu ? 'groupAccount' : 'groupWork')
   }));
+  // The logo leads to the dashboard; the public site (pricing, calculators, guides) stays one tap away, as in the account menu.
+  links.push({ key: 'website', href: '/', icon: Globe, label: tRoot('common.userMenu.website'), group: 'account', groupLabel: tMobile('groupAccount') });
 
   const actions = ACTIONS.filter((a) => QUICK_ACTIONS.includes(a.key) && !(a.section && actionsHidden.includes(a.section)))
     .sort((a, b) => QUICK_ACTIONS.indexOf(a.key) - QUICK_ACTIONS.indexOf(b.key))

@@ -5588,7 +5588,9 @@
     },
     "pages": {
       "templates": "Șabloane de facturi",
-      "netIncome": "După impozite (venit net)"
+      "netIncome": "După impozite (venit net)",
+      "taxReturn": "Date pentru declarația fiscală",
+      "flatTax": "Merită impozitul forfetar?"
     },
     "keywords": {
       "newInvoice": "emitere creare adăugare document",
@@ -5630,7 +5632,28 @@
       "webhooks": "discord slack webhook",
       "calendar": "ics google calendar scadențe",
       "epo": "portal fiscal tva declarație de control xml",
-      "bankConnections": "fio psd2 paypal conectare sincronizare"
+      "bankConnections": "fio psd2 paypal conectare sincronizare",
+      "taxReturn": "declarație fiscală venituri cheltuieli an",
+      "flatTax": "impozit forfetar calculator merită",
+      "bankRules": "reguli potrivire bancă plăți automat categorii",
+      "confidential": "mod confidențial criptare e2ee seif confidențialitate",
+      "referrals": "invită recomandă credite recompensă referral",
+      "website": "site acasă prețuri ghiduri",
+      "exchangeRate": "curs cnb valută eur usd",
+      "twoFactor": "2fa autentificare în doi pași totp cod",
+      "contactVisibility": "vizibilitate cine vede clientul echipă acces privat",
+      "sealDocuments": "criptează documente facturi seif",
+      "sealAttachments": "criptează atașamente fișiere bonuri",
+      "sealContacts": "criptează contacte clienți",
+      "sealAmounts": "criptează sume prețuri totaluri",
+      "vaultMethods": "passkey amprentă față parolă seif deblocare",
+      "vaultRecovery": "cod de recuperare parolă pierdută",
+      "vaultCategories": "categorii ce se criptează atașamente contacte sume",
+      "vaultEmails": "e-mailuri documente criptate pdf trimitere",
+      "vaultOutbox": "mesaje în așteptare e-mailuri pdf trimite",
+      "vaultDevice": "dispozitiv ține minte deblocarea browser",
+      "vaultIntegrity": "verificare cod integritate hash semnătură",
+      "serverView": "ce vede serverul plic text criptat"
     },
     "aiSearch": "Căutare AI în facturi",
     "aiOpen": "Întrebați AI / căutați în cuvinte simple",
@@ -5663,7 +5686,11 @@
       "webhooks": "Webhookuri Discord și Slack",
       "calendar": "Calendarul scadențelor",
       "epo": "Depunere pe portalul fiscal (EPO)",
-      "bankConnections": "Conexiuni bancare"
+      "bankConnections": "Conexiuni bancare",
+      "exchangeRate": "Curs pentru valute",
+      "contactVisibilityWhere": "Contacte – detalii client",
+      "vaultMethods": "Passkey-uri și metode de deblocare",
+      "serverViewWhere": "Detaliile unui document criptat"
     }
   },
   "shortcuts": {
@@ -14582,7 +14609,10 @@
       "categoriesMin": "Lăsați activată cel puțin o categorie.",
       "categoryOffConfirm": "Dezactivați această categorie? Fișierele și textele noi nu vor mai fi criptate. Ce este deja criptat rămâne criptat.",
       "passkeyStepUp": "Deblochează seiful și confirmă modificările sensibile",
-      "passkeyUnlockOnly": "Doar deblochează seiful. Ca să confirme și modificările sensibile, adăugați-o din nou și eliminați-o pe aceasta."
+      "passkeyUnlockOnly": "Doar deblochează seiful. Ca să confirme și modificările sensibile, adăugați-o din nou și eliminați-o pe aceasta.",
+      "categoryOffTitle": "Opriți criptarea acestei categorii?",
+      "categoryOff": "Opriți",
+      "categoryOffBack": "Înapoi"
     },
     "clientLink": {
       "ready": "Linkul conține cheia textelor criptate (după #). Clientul vede cu ea textul complet, serverul nu primește niciodată cheia.",

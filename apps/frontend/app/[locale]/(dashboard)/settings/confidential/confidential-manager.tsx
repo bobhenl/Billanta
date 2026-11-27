@@ -15,6 +15,7 @@ import {
   type VaultKey
 } from '@faktur/cz-compliance';
 import { Banner } from '@/components/banner';
+import { ConfirmModal } from '@/components/modal';
 import { PasswordInput } from '@/components/password-input';
 import { toast } from '@/components/toaster';
 import { useStepUp } from '@/components/step-up';
@@ -48,7 +49,7 @@ function PlanRequired() {
   const tPlan = useTranslations('vault.plan');
   return (
     <div className="mt-4 space-y-4">
-      <div className="rounded-2xl border border-border bg-card p-4">
+      <div className="rounded-xl border border-border bg-card p-4">
         <h2 className="flex items-center gap-2 text-base font-bold">
           <LockKeyhole className="h-4 w-4 text-primary" aria-hidden />
           {t('introTitle')}
@@ -336,20 +337,20 @@ function Reauth({ vault, onKey, label }: { vault: EnabledVault; onKey: (key: Vau
     <div className="space-y-2">
       <div className="flex flex-wrap gap-1.5">
         {hasPassword && (
-          <button type="button" onClick={() => setMethod('password')} className={cn('rounded-full border px-3 py-1 text-xs font-semibold', method === 'password' ? 'border-primary bg-accent text-primary' : 'border-border text-muted-foreground')}>
+          <button type="button" aria-pressed={method === 'password'} onClick={() => setMethod('password')} className={cn('rounded-full border px-3 py-1 text-xs font-semibold', method === 'password' ? 'border-primary bg-accent text-primary' : 'border-border text-muted-foreground')}>
             {t('methods.password')}
           </button>
         )}
-        <button type="button" onClick={() => setMethod('recovery')} className={cn('rounded-full border px-3 py-1 text-xs font-semibold', method === 'recovery' ? 'border-primary bg-accent text-primary' : 'border-border text-muted-foreground')}>
+        <button type="button" aria-pressed={method === 'recovery'} onClick={() => setMethod('recovery')} className={cn('rounded-full border px-3 py-1 text-xs font-semibold', method === 'recovery' ? 'border-primary bg-accent text-primary' : 'border-border text-muted-foreground')}>
           {t('methods.recovery')}
         </button>
       </div>
       {method === 'password' ? (
-        <PasswordInput value={secret} onChange={(e) => setSecret(e.target.value)} placeholder={t('currentPassword')} autoComplete="off" className={inputClass} />
+        <PasswordInput value={secret} onChange={(e) => setSecret(e.target.value)} placeholder={t('currentPassword')} aria-label={t('currentPassword')} autoComplete="off" className={inputClass} />
       ) : (
-        <input value={secret} onChange={(e) => setSecret(e.target.value)} placeholder={t('recovery')} autoComplete="off" spellCheck={false} className={cn(inputClass, 'font-mono uppercase')} />
+        <input value={secret} onChange={(e) => setSecret(e.target.value)} placeholder={t('recovery')} aria-label={t('recovery')} autoComplete="off" spellCheck={false} className={cn(inputClass, 'font-mono uppercase')} />
       )}
-      {error && <p className="text-sm font-semibold text-destructive">{error}</p>}
+      {error && <p role="alert" className="text-sm font-semibold text-destructive">{error}</p>}
       <button type="button" onClick={() => void go()} disabled={busy || !secret.trim()} className={buttonClass.primary}>
         {busy && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
         {label}
@@ -369,6 +370,7 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
   const [newPassword, setNewPassword] = useState('');
   const [passkeyLabel, setPasskeyLabel] = useState('');
   const [newCode, setNewCode] = useState<string | null>(null);
+  const [categoriesOff, setCategoriesOff] = useState<VaultCategory[] | null>(null);
   const [busy, setBusy] = useState(false);
   // Removing or replacing a way in, and switching encryption of new documents off, need a step-up.
   const { withStepUp, stepUpDialog } = useStepUp();
@@ -420,7 +422,7 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
         </Link>
       </Banner>
 
-      <section className="space-y-3 rounded-xl border border-border bg-card p-4">
+      <section id="seal" className="scroll-mt-20 space-y-3 rounded-xl border border-border bg-card p-4">
         <h2 className="text-sm font-bold">{t('sealTitle')}</h2>
         <p className="text-xs text-muted-foreground">{t('sealLead')}</p>
         {vault.planAllowed === false ? (
@@ -464,7 +466,7 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
       {manager && <VaultEmailSettings vault={vault} />}
       <VaultDeviceKeep />
 
-      <section className="space-y-3 rounded-xl border border-border bg-card p-4">
+      <section id="methods" className="scroll-mt-20 space-y-3 rounded-xl border border-border bg-card p-4">
         <h2 className="text-sm font-bold">{t('methodsTitle')}</h2>
         <ul className="divide-y divide-border text-sm">
           <li className="flex flex-wrap items-center gap-2 py-2">
@@ -532,7 +534,7 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
         {panel === 'passkey' && (
           <div className="space-y-2 rounded-lg border border-border p-3">
             <p className="text-xs text-muted-foreground">{t('passkeyHint')}</p>
-            <input value={passkeyLabel} onChange={(e) => setPasskeyLabel(e.target.value)} maxLength={60} placeholder={t('passkeyLabel')} className={inputClass} />
+            <input value={passkeyLabel} onChange={(e) => setPasskeyLabel(e.target.value)} maxLength={60} placeholder={t('passkeyLabel')} aria-label={t('passkeyLabel')} className={inputClass} />
             <Reauth
               vault={vault}
               label={t('addPasskey')}
@@ -557,7 +559,7 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
       </section>
 
       {manager && (
-        <section className="space-y-3 rounded-xl border border-border bg-card p-4">
+        <section id="recovery" className="scroll-mt-20 space-y-3 rounded-xl border border-border bg-card p-4">
           <h2 className="text-sm font-bold">{t('recoveryTitle')}</h2>
           <p className="text-xs text-muted-foreground">{t('recoveryLead')}</p>
           {newCode ? (
@@ -592,7 +594,7 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
         </section>
       )}
 
-      <section className="rounded-xl border border-border bg-card p-4">
+      <section id="categories" className="scroll-mt-20 rounded-xl border border-border bg-card p-4">
         <h2 className="text-sm font-bold">{t('categoriesTitle')}</h2>
         <p className="mb-2 text-xs text-muted-foreground">{t('categoriesLead')}</p>
         <CategoryList
@@ -603,13 +605,29 @@ function EnabledView({ vault, role, user }: { vault: EnabledVault; role: string 
               ? async (id) => {
                   const next = vault.categories.includes(id) ? vault.categories.filter((c) => c !== id) : [...vault.categories, id];
                   if (!next.length) return void toast({ text: t('categoriesMin'), tone: 'err' });
-                  if (!next.includes(id) && !window.confirm(t('categoryOffConfirm'))) return;
-                  // Dropping a category needs a step-up; adding one does not.
+                  if (!next.includes(id)) return setCategoriesOff(next);
                   const r = await withStepUp(() => updateVaultCategories(next));
                   if (r) report(r.ok, t('saved'));
                 }
               : undefined
           }
+        />
+        <ConfirmModal
+          open={categoriesOff !== null}
+          onClose={() => setCategoriesOff(null)}
+          onConfirm={async () => {
+            const next = categoriesOff;
+            setCategoriesOff(null);
+            if (!next) return;
+            // Dropping a category needs a step-up; adding one does not.
+            const r = await withStepUp(() => updateVaultCategories(next));
+            if (r) report(r.ok, t('saved'));
+          }}
+          title={t('categoryOffTitle')}
+          body={t('categoryOffConfirm')}
+          confirmLabel={t('categoryOff')}
+          backLabel={t('categoryOffBack')}
+          danger
         />
       </section>
 

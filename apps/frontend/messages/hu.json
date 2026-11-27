@@ -5588,7 +5588,9 @@
     },
     "pages": {
       "templates": "Számlasablonok",
-      "netIncome": "Adózás után (nettó jövedelem)"
+      "netIncome": "Adózás után (nettó jövedelem)",
+      "taxReturn": "Adóbevallás alapadatai",
+      "flatTax": "Megéri az átalányadó?"
     },
     "keywords": {
       "newInvoice": "kiállítás létrehozás hozzáadás bizonylat számla",
@@ -5630,7 +5632,28 @@
       "webhooks": "discord slack webhook",
       "calendar": "ics google naptár határidők",
       "epo": "adóportál áfa ellenőrző nyilatkozat xml",
-      "bankConnections": "fio psd2 paypal összekapcsolás szinkronizálás"
+      "bankConnections": "fio psd2 paypal összekapcsolás szinkronizálás",
+      "taxReturn": "adóbevallás bevételek kiadások év",
+      "flatTax": "átalányadó kalkulátor megéri",
+      "bankRules": "szabályok párosítás bank fizetések automatikus kategóriák",
+      "confidential": "bizalmas mód titkosítás e2ee széf adatvédelem",
+      "referrals": "meghívás ajánlás kredit jutalom referral",
+      "website": "weboldal kezdőlap árak útmutatók",
+      "exchangeRate": "árfolyam cnb deviza eur usd",
+      "twoFactor": "2fa kétlépcsős azonosítás totp kód",
+      "contactVisibility": "láthatóság ki látja az ügyfelet csapat hozzáférés privát",
+      "sealDocuments": "titkosítás bizonylatok számlák széf",
+      "sealAttachments": "titkosítás mellékletek fájlok nyugták",
+      "sealContacts": "titkosítás kapcsolatok ügyfelek",
+      "sealAmounts": "titkosítás összegek árak",
+      "vaultMethods": "passkey ujjlenyomat arc széfjelszó feloldás",
+      "vaultRecovery": "helyreállító kód elveszett jelszó",
+      "vaultCategories": "kategóriák mi titkosított mellékletek kapcsolatok összegek",
+      "vaultEmails": "e-mailek titkosított bizonylatok pdf küldés",
+      "vaultOutbox": "kimenő váró e-mailek pdf küldés",
+      "vaultDevice": "eszköz feloldás megjegyzése böngésző",
+      "vaultIntegrity": "kód ellenőrzése integritás hash aláírás",
+      "serverView": "mit lát a szerver boríték titkosított szöveg"
     },
     "aiSearch": "MI-keresés a számlák között",
     "aiOpen": "Kérdezze az MI-t / keresés hétköznapi szavakkal",
@@ -5663,7 +5686,11 @@
       "webhooks": "Discord- és Slack-webhookok",
       "calendar": "Határidő-naptár",
       "epo": "Beadás az adóportálon (EPO)",
-      "bankConnections": "Bankkapcsolatok"
+      "bankConnections": "Bankkapcsolatok",
+      "exchangeRate": "Árfolyam devizákhoz",
+      "contactVisibilityWhere": "Kapcsolatok – ügyfél részletei",
+      "vaultMethods": "Passkeyek és feloldási módok",
+      "serverViewWhere": "Titkosított bizonylat részletei"
     }
   },
   "shortcuts": {
@@ -14582,7 +14609,10 @@
       "categoriesMin": "Legalább egy kategória maradjon bekapcsolva.",
       "categoryOffConfirm": "Kikapcsolja ezt a kategóriát? Az új fájlok és szövegek már nem lesznek titkosítva. Ami titkosított, az titkosított marad.",
       "passkeyStepUp": "Feloldja a széfet és megerősíti az érzékeny módosításokat",
-      "passkeyUnlockOnly": "Csak a széfet oldja fel. Hogy az érzékeny módosításokat is megerősítse, adja hozzá újra, és távolítsa el ezt."
+      "passkeyUnlockOnly": "Csak a széfet oldja fel. Hogy az érzékeny módosításokat is megerősítse, adja hozzá újra, és távolítsa el ezt.",
+      "categoryOffTitle": "Kikapcsolja ennek a kategóriának a titkosítását?",
+      "categoryOff": "Kikapcsolás",
+      "categoryOffBack": "Vissza"
     },
     "clientLink": {
       "ready": "A link tartalmazza a titkosított szövegek kulcsát (a # után). Ügyfele ezzel a teljes szöveget látja, a szerver soha nem kapja meg a kulcsot.",

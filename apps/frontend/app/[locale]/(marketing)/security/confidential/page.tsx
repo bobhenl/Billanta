@@ -42,14 +42,14 @@ export default async function ConfidentialSecurityPage({ params }: { params: Pro
         </Link>
       </PageIntro>
 
-      <h2 className="mt-12 text-xl font-bold tracking-tight">{t('demoTitle')}</h2>
+      <h2 id="demo" className="mt-12 scroll-mt-20 text-xl font-bold tracking-tight">{t('demoTitle')}</h2>
       <p className="mb-4 mt-2 max-w-3xl text-sm text-muted-foreground">{t('demoLead')}</p>
       <VaultDemo />
 
       <h2 className="mt-12 text-xl font-bold tracking-tight">{t('howTitle')}</h2>
       <NumberedSteps steps={t.raw('howSteps') as { title: string; body: string }[]} />
 
-      <div className="mt-12 grid gap-4 md:grid-cols-2">
+      <div id="server" className="mt-12 grid scroll-mt-20 gap-4 md:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-5">
           <h2 className="flex items-center gap-2 font-bold">
             <EyeOff className="h-4 w-4 text-primary" aria-hidden="true" />
@@ -70,7 +70,7 @@ export default async function ConfidentialSecurityPage({ params }: { params: Pro
         </div>
       </div>
 
-      <h2 className="mt-12 text-xl font-bold tracking-tight">{t('cspTitle')}</h2>
+      <h2 id="csp" className="mt-12 scroll-mt-20 text-xl font-bold tracking-tight">{t('cspTitle')}</h2>
       <p className="mt-2 max-w-3xl text-sm">{t('cspBody')}</p>
       <p className="mt-2 max-w-3xl text-sm text-muted-foreground">{t('cspHow')}</p>
       <LiveCsp />
@@ -85,7 +85,7 @@ export default async function ConfidentialSecurityPage({ params }: { params: Pro
         ))}
       </ul>
 
-      <h2 className="mt-12 flex items-center gap-2 text-xl font-bold tracking-tight">
+      <h2 id="verify" className="mt-12 flex scroll-mt-20 items-center gap-2 text-xl font-bold tracking-tight">
         <ShieldCheck className="h-5 w-5 text-primary" aria-hidden="true" />
         {t('verifyTitle')}
       </h2>

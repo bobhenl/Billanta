@@ -5588,7 +5588,9 @@
     },
     "pages": {
       "templates": "Modelli di fattura",
-      "netIncome": "Al netto delle imposte (reddito netto)"
+      "netIncome": "Al netto delle imposte (reddito netto)",
+      "taxReturn": "Dati per la dichiarazione dei redditi",
+      "flatTax": "Conviene l’imposta forfettaria?"
     },
     "keywords": {
       "newInvoice": "emetti crea aggiungi documento fattura",
@@ -5630,7 +5632,28 @@
       "webhooks": "discord slack webhook",
       "calendar": "ics google calendario scadenze",
       "epo": "portale fiscale iva comunicazione di controllo xml",
-      "bankConnections": "fio psd2 paypal collega sincronizza"
+      "bankConnections": "fio psd2 paypal collega sincronizza",
+      "taxReturn": "dichiarazione redditi entrate spese anno",
+      "flatTax": "imposta forfettaria calcolatore conviene",
+      "bankRules": "regole abbinamento banca pagamenti automatico categorie",
+      "confidential": "modalità riservata cifratura e2ee cassaforte privacy",
+      "referrals": "invita consiglia crediti premio referral",
+      "website": "sito home prezzi guide",
+      "exchangeRate": "tasso di cambio cnb valuta eur usd",
+      "twoFactor": "2fa autenticazione a due fattori totp codice",
+      "contactVisibility": "visibilità chi vede il cliente team accesso privato",
+      "sealDocuments": "cifra documenti fatture cassaforte",
+      "sealAttachments": "cifra allegati file ricevute",
+      "sealContacts": "cifra contatti clienti",
+      "sealAmounts": "cifra importi prezzi totali",
+      "vaultMethods": "passkey impronta volto password cassaforte sblocca",
+      "vaultRecovery": "codice di recupero password persa",
+      "vaultCategories": "categorie cosa viene cifrato allegati contatti importi",
+      "vaultEmails": "email documenti cifrati pdf invio",
+      "vaultOutbox": "posta in uscita email in attesa pdf invia",
+      "vaultDevice": "dispositivo ricorda sblocco browser",
+      "vaultIntegrity": "verifica del codice integrità hash firma",
+      "serverView": "cosa vede il server busta testo cifrato"
     },
     "aiSearch": "Ricerca AI nelle fatture",
     "aiOpen": "Chieda all'AI / cerchi a parole",
@@ -5663,7 +5686,11 @@
       "webhooks": "Webhook Discord e Slack",
       "calendar": "Calendario delle scadenze",
       "epo": "Invio al portale fiscale (EPO)",
-      "bankConnections": "Collegamenti bancari"
+      "bankConnections": "Collegamenti bancari",
+      "exchangeRate": "Tasso di cambio per le valute estere",
+      "contactVisibilityWhere": "Contatti – scheda cliente",
+      "vaultMethods": "Passkey e metodi di sblocco",
+      "serverViewWhere": "Dettaglio di un documento cifrato"
     }
   },
   "shortcuts": {
@@ -14582,7 +14609,10 @@
       "categoriesMin": "Lascia attiva almeno una categoria.",
       "categoryOffConfirm": "Disattivare questa categoria? I nuovi file e testi non verranno più cifrati. Ciò che è già cifrato resta cifrato.",
       "passkeyStepUp": "Sblocca la cassaforte e conferma le modifiche sensibili",
-      "passkeyUnlockOnly": "Sblocca solo la cassaforte. Perché confermi anche le modifiche sensibili, aggiungila di nuovo e rimuovi questa."
+      "passkeyUnlockOnly": "Sblocca solo la cassaforte. Perché confermi anche le modifiche sensibili, aggiungila di nuovo e rimuovi questa.",
+      "categoryOffTitle": "Smettere di cifrare questa categoria?",
+      "categoryOff": "Disattiva",
+      "categoryOffBack": "Indietro"
     },
     "clientLink": {
       "ready": "Il link contiene la chiave dei testi cifrati (dopo il #). Con essa il cliente vede il testo completo, il server non riceve mai la chiave.",

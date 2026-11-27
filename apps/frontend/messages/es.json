@@ -5588,7 +5588,9 @@
     },
     "pages": {
       "templates": "Plantillas de factura",
-      "netIncome": "Después de impuestos (ingreso neto)"
+      "netIncome": "Después de impuestos (ingreso neto)",
+      "taxReturn": "Datos para la declaración de la renta",
+      "flatTax": "¿Compensa el impuesto a tanto alzado?"
     },
     "keywords": {
       "newInvoice": "emitir crear añadir documento factura",
@@ -5630,7 +5632,28 @@
       "webhooks": "discord slack webhook",
       "calendar": "ics google calendario fechas de vencimiento",
       "epo": "portal tributario iva declaración informativa xml",
-      "bankConnections": "fio psd2 paypal conectar sincronizar"
+      "bankConnections": "fio psd2 paypal conectar sincronizar",
+      "taxReturn": "declaración renta ingresos gastos año",
+      "flatTax": "impuesto tanto alzado calculadora compensa",
+      "bankRules": "reglas conciliación banco pagos automático categorías",
+      "confidential": "modo confidencial cifrado e2ee bóveda privacidad",
+      "referrals": "invitar recomendar créditos recompensa referidos",
+      "website": "web inicio precios guías",
+      "exchangeRate": "tipo de cambio cnb divisa eur usd",
+      "twoFactor": "2fa verificación en dos pasos totp código",
+      "contactVisibility": "visibilidad quién ve el cliente equipo acceso privado",
+      "sealDocuments": "cifrar documentos facturas bóveda",
+      "sealAttachments": "cifrar adjuntos archivos recibos",
+      "sealContacts": "cifrar contactos clientes",
+      "sealAmounts": "cifrar importes precios totales",
+      "vaultMethods": "passkey huella cara contraseña bóveda desbloquear",
+      "vaultRecovery": "código de recuperación contraseña perdida",
+      "vaultCategories": "categorías qué se cifra adjuntos contactos importes",
+      "vaultEmails": "correos documentos cifrados pdf envío",
+      "vaultOutbox": "bandeja de salida correos pendientes pdf enviar",
+      "vaultDevice": "dispositivo recordar desbloqueo navegador",
+      "vaultIntegrity": "verificación del código integridad hash firma",
+      "serverView": "qué ve el servidor sobre texto cifrado"
     },
     "aiSearch": "Búsqueda con IA en facturas",
     "aiOpen": "Preguntar a la IA / buscar con sus propias palabras",
@@ -5663,7 +5686,11 @@
       "webhooks": "Webhooks de Discord y Slack",
       "calendar": "Calendario de vencimientos",
       "epo": "Presentación en el portal tributario (EPO)",
-      "bankConnections": "Conexiones bancarias"
+      "bankConnections": "Conexiones bancarias",
+      "exchangeRate": "Tipo de cambio para divisas",
+      "contactVisibilityWhere": "Contactos – ficha del cliente",
+      "vaultMethods": "Passkeys y métodos de desbloqueo",
+      "serverViewWhere": "Detalle de un documento cifrado"
     }
   },
   "shortcuts": {
@@ -14582,7 +14609,10 @@
       "categoriesMin": "Deja activada al menos una categoría.",
       "categoryOffConfirm": "¿Desactivar esta categoría? Los archivos y textos nuevos ya no se cifrarán. Lo que ya está cifrado sigue cifrado.",
       "passkeyStepUp": "Desbloquea la caja fuerte y confirma cambios sensibles",
-      "passkeyUnlockOnly": "Solo desbloquea la caja fuerte. Para que también confirme cambios sensibles, añádela de nuevo y elimina esta."
+      "passkeyUnlockOnly": "Solo desbloquea la caja fuerte. Para que también confirme cambios sensibles, añádela de nuevo y elimina esta.",
+      "categoryOffTitle": "¿Dejar de cifrar esta categoría?",
+      "categoryOff": "Desactivar",
+      "categoryOffBack": "Volver"
     },
     "clientLink": {
       "ready": "El enlace lleva la clave de los textos cifrados (tras el #). Con ella tu cliente ve el texto completo; el servidor nunca recibe la clave.",
