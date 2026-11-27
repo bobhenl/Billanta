@@ -26,6 +26,7 @@ import { parseIdempotencyKey } from "../common/idempotency";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { COMPANY_REGISTRIES, ContactsService, registryPartOf, type CompanyRegistry } from "./contacts.service";
 import { AresLookupDto } from "./dto/ares-lookup.dto";
+import { ContactVisibilityDto } from "./dto/contact-visibility.dto";
 import { CreateContactDto } from "./dto/create-contact.dto";
 import { PortalSlugDto } from "./dto/portal-slug.dto";
 import { StarContactDto } from "./dto/star-contact.dto";
@@ -154,6 +155,15 @@ export class ContactsController {
   @ApiOperation({ summary: "Update a contact (partial; null clears an optional field)" })
   update(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: UpdateContactDto) {
     return this.contactsService.update(req.tenantDb!, id, dto);
+  }
+
+  @Patch(":id/visibility")
+  @ApiOperation({
+    summary: "Who the client belongs to (ownerUserId) and whether it is private (isPrivate)",
+    description: "Company owner or the client's current owner only (403 visibility_owner_only). Audited.",
+  })
+  setVisibility(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: ContactVisibilityDto) {
+    return this.contactsService.setVisibility(req.tenantDb!, req.user!, id, dto);
   }
 
   @Delete(":id")

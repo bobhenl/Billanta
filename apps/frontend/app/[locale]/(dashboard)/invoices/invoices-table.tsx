@@ -22,7 +22,8 @@ import {
   Repeat2,
   Send,
   Stamp,
-  Trash2
+  Trash2,
+  UserRoundCheck
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
@@ -318,7 +319,13 @@ export function InvoicesTable({
   const cell = (row: InvoiceRow, column: Column) => {
     switch (column) {
       case 'number':
-        return <span className="whitespace-nowrap font-mono text-xs font-semibold">{row.invoiceNumber ?? <span className="font-sans font-normal italic text-muted-foreground">{t('unnumbered')}</span>}</span>;
+        return (
+          <span className="inline-flex items-center gap-1 whitespace-nowrap font-mono text-xs font-semibold">
+            {row.invoiceNumber ?? <span className="font-sans font-normal italic text-muted-foreground">{t('unnumbered')}</span>}
+            {/* Not the padlock: that one means "Skrýt detaily", this one who on the team sees it. */}
+            {row.isPrivate && <UserRoundCheck className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-label={t('privateRow')} />}
+          </span>
+        );
       case 'type':
         return <span title={tGloss(`type.${row.documentType}`)} className={cn('whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold', TYPE_BADGE_CLASSES[row.documentType])}>{t(`type.${row.documentType}`)}</span>;
       case 'customer':

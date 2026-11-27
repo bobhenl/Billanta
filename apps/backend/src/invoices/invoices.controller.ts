@@ -96,6 +96,7 @@ class BitfakturaImportDto extends createZodDto(
 class PublicSlugDto extends createZodDto(z.object({ slug: customSlugSchema })) {}
 
 class SetInvoiceLockDto extends createZodDto(z.object({ locked: z.boolean() })) {}
+class SetInvoicePrivateDto extends createZodDto(z.object({ isPrivate: z.boolean() })) {}
 
 class FakturoidImportDto extends createZodDto(
   z.object({
@@ -354,6 +355,18 @@ export class InvoicesController {
   })
   setLock(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: SetInvoiceLockDto) {
     return this.invoicesService.setLock(req.tenantDb!, id, dto.locked, req.user!);
+  }
+
+  @Patch(":id/private")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "Mark an invoice private (company owner or its creator)",
+    description:
+      "A private invoice, with its items, attachments and matched payments, is seen only by the company owner and " +
+      "the member who created it. Anyone else gets 403 visibility_owner_only. Audited.",
+  })
+  setPrivate(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: SetInvoicePrivateDto) {
+    return this.invoicesService.setPrivate(req.tenantDb!, id, dto.isPrivate, req.user!);
   }
 
   @Post(":id/mark-paid")

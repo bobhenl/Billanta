@@ -1350,7 +1350,25 @@
         "manage": "Editar ligação"
       },
       "contactPerson": "Pessoa de contacto",
-      "person": "Particular"
+      "person": "Particular",
+      "visibility": {
+        "title": "Quem vê este cliente",
+        "hint": "Um cliente privado e os seus documentos só são vistos pelo proprietário da empresa e pelo membro a quem pertence. Os outros não o encontram nas listas nem no histórico.",
+        "owner": "Pertence a",
+        "nobody": "Toda a empresa (ninguém em particular)",
+        "formerMember": "Antigo membro da equipa",
+        "private": "Privado – só o veem o proprietário da empresa e a pessoa a quem o cliente pertence",
+        "privateHint": "Os outros não o encontram nos contactos, faturas, notificações nem no histórico de alterações.",
+        "ownedBy": "Pertence a: {name}",
+        "ownerOnly": "Só o proprietário da empresa ou a pessoa a quem o cliente pertence pode alterar isto.",
+        "saved": "Guardado",
+        "failed": "Não foi possível guardar",
+        "errors": {
+          "visibility_owner_only": "Só o proprietário da empresa ou a pessoa a quem o cliente pertence pode alterar isto.",
+          "visibility_would_hide": "Deixaria de ver este cliente. Só o proprietário da empresa pode passar um cliente privado a outra pessoa.",
+          "owner_not_member": "Essa pessoa já não faz parte da equipa."
+        }
+      }
     },
     "csv": {
       "import": "Importar CSV",
@@ -1415,7 +1433,8 @@
       "violet": "Violeta",
       "pink": "Rosa",
       "slate": "Cinzento"
-    }
+    },
+    "privateBadge": "Cliente privado"
   },
   "settings": {
     "title": "Definições",
@@ -2140,7 +2159,16 @@
         "ownerOnly": "Só o proprietário",
         "adminsOnly": "Só o proprietário e os administradores"
       },
-      "fillFromPreset": "Preencher a partir de"
+      "fillFromPreset": "Preencher a partir de",
+      "contactScope": {
+        "label": "Vê clientes",
+        "all": "Toda a empresa",
+        "own": "Só os seus",
+        "hint": "Só os seus = só os clientes que lhe atribuir (Pertence a) e os documentos que ele próprio criou.",
+        "ownerOnly": "Só o proprietário da empresa pode alterar isto.",
+        "summary": "só os seus clientes",
+        "refused": "Só o proprietário da empresa pode alterar isto."
+      }
     },
     "exports": {
       "title": "Exportações para o contabilista",
@@ -5338,15 +5366,26 @@
       "relock": "Ocultar novamente",
       "lockedToast": "Detalhes ocultos",
       "unlockedToast": "Os detalhes aparecem sem palavra-passe",
-      "teamHint": "Protege contra olhares num computador desbloqueado ou partilhado, não contra colegas: cada membro da equipa mostra-os com a sua própria palavra-passe. Se só certas pessoas devem ver uma fatura, defina no cliente quem tem acesso.",
+      "teamHint": "Protege de olhares num computador desbloqueado ou partilhado, não dos colegas: cada membro da equipa revela-as com a sua própria palavra-passe. Se uma fatura só deve ser vista por certas pessoas, marque-a como privada ou defina a quem pertence o cliente.",
       "teamLink": "Definir quem na equipa vê o quê",
       "errors": {
         "wrong_current": "Palavra-passe errada.",
         "reauth_required": "A sua conta não tem palavra-passe. Termine a sessão, volte a entrar e tente novamente.",
         "too_many_attempts": "Demasiadas tentativas. Tente dentro de alguns minutos.",
         "generic": "Não funcionou. Tente novamente."
-      }
-    }
+      },
+      "privacyLink": "Marcar como privada"
+    },
+    "privacy": {
+      "label": "Fatura privada",
+      "hint": "Só a veem o proprietário da empresa e quem a criou, com as linhas, anexos e pagamentos.",
+      "badge": "Fatura privada",
+      "ownerOnly": "Só o proprietário da empresa ou quem criou a fatura pode alterar isto.",
+      "failed": "Não foi possível alterar",
+      "madePrivate": "A fatura é privada",
+      "madeShared": "A equipa volta a ver a fatura"
+    },
+    "privateRow": "Fatura privada"
   },
   "invite": {
     "title": "Convite para a equipa",

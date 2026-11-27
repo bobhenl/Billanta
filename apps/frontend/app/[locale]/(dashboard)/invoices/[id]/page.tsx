@@ -31,7 +31,8 @@ import { cn } from '@/lib/utils';
 import { homeCurrencyOf, lawUrl } from '@faktur/cz-compliance';
 import { AttachmentsPanel, type Attachment } from './attachments-panel';
 import { InvoiceActions } from './invoice-actions';
-import { InvoiceLockBar, UnlockInvoice } from './invoice-lock';
+import { InvoiceLockBar, InvoicePrivacy, UnlockInvoice } from './invoice-lock';
+import { auth } from '@/auth';
 import { BuyerDetailsRequest } from './buyer-details-request';
 import { PublicLinkPanel } from './public-link-panel';
 import { PartnerSplit } from './partner-split';
@@ -111,7 +112,11 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
       : [];
   // Asking the customer for their details changes the draft, so a read-only member doesn't get the box.
   const canEdit = await fetchCanWrite('invoices');
-  const canLock = canManage(await fetchMyRole().catch(() => null));
+  const myRole = await fetchMyRole().catch(() => null);
+  const canLock = canManage(myRole);
+  // Same rule as the API (mayChangeInvoicePrivacy): the company owner or whoever created it.
+  const myId = (await auth())?.user?.id;
+  const canPrivate = myRole === 'owner' || (!!myId && invoice.createdByUserId === myId);
   // The partner split is owner/admin data like the "Po zdanění" report itself (the backend refuses others).
   const partners = canLock
     ? await apiFetch<{ model: TaxModel | null }>('/api/v1/tenants/me/tax-model')
@@ -216,7 +221,8 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
       </Link>
 
       <div className="mt-3">
-        <InvoiceLockBar id={invoice.id} locked={Boolean(invoice.lockedAt)} canLock={canLock} />
+        <InvoiceLockBar id={invoice.id} locked={Boolean(invoice.lockedAt)} canLock={canLock} canPrivate={canPrivate} />
+        <InvoicePrivacy id={invoice.id} isPrivate={Boolean(invoice.isPrivate)} canChange={canPrivate} />
       </div>
 
       <div className="flex flex-wrap items-start justify-between gap-4">

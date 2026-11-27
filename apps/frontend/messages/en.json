@@ -1351,7 +1351,25 @@
         "manage": "Edit link"
       },
       "contactPerson": "Contact person",
-      "person": "Private person"
+      "person": "Private person",
+      "visibility": {
+        "title": "Who sees this client",
+        "hint": "A private client and their documents are seen only by the company owner and the member the client belongs to. Others won’t find it in lists or in the history.",
+        "owner": "Belongs to",
+        "nobody": "The whole company (no one in particular)",
+        "formerMember": "Former team member",
+        "private": "Private – seen only by the company owner and the person the client belongs to",
+        "privateHint": "Others won’t find it in contacts, invoices, notifications or the change history.",
+        "ownedBy": "Belongs to: {name}",
+        "ownerOnly": "Only the company owner or the person the client belongs to can change this.",
+        "saved": "Saved",
+        "failed": "Could not save",
+        "errors": {
+          "visibility_owner_only": "Only the company owner or the person the client belongs to can change this.",
+          "visibility_would_hide": "You would stop seeing this client yourself. Only the company owner can hand over a private client.",
+          "owner_not_member": "That person is no longer on the team."
+        }
+      }
     },
     "csv": {
       "import": "Import CSV",
@@ -1416,7 +1434,8 @@
       "violet": "Violet",
       "pink": "Pink",
       "slate": "Grey"
-    }
+    },
+    "privateBadge": "Private client"
   },
   "settings": {
     "title": "Settings",
@@ -2141,7 +2160,16 @@
         "ownerOnly": "Owner only",
         "adminsOnly": "Owner and admins only"
       },
-      "fillFromPreset": "Fill in from"
+      "fillFromPreset": "Fill in from",
+      "contactScope": {
+        "label": "Sees clients",
+        "all": "Whole company",
+        "own": "Only their own",
+        "hint": "Only their own = only the clients you assign to them (Belongs to) and documents they created themselves.",
+        "ownerOnly": "Only the company owner can change this.",
+        "summary": "own clients only",
+        "refused": "Only the company owner can change this."
+      }
     },
     "exports": {
       "title": "Accountant exports",
@@ -5345,16 +5373,27 @@
       "relock": "Hide again",
       "lockedToast": "Details hidden",
       "unlockedToast": "Details now show without a password",
-      "teamHint": "This protects against someone looking at an unlocked or shared computer, not against colleagues: every team member reveals them with their own password. If only certain people should see an invoice, set who has access on the client.",
+      "teamHint": "This protects against someone looking at an unlocked or shared computer, not against colleagues: every team member reveals them with their own password. If only certain people should see an invoice, mark it private, or set who the client belongs to.",
       "teamLink": "Set who in the team sees what",
       "errors": {
         "wrong_current": "Wrong password.",
         "reauth_required": "Your account has no password. Sign out and back in, then try again.",
         "too_many_attempts": "Too many attempts. Try again in a few minutes.",
         "generic": "That didn't work. Please try again."
-      }
+      },
+      "privacyLink": "Mark as private"
     },
-    "partnerDefaultShares": "default shares"
+    "partnerDefaultShares": "default shares",
+    "privacy": {
+      "label": "Private invoice",
+      "hint": "Seen only by the company owner and whoever created it, including its items, attachments and payments.",
+      "badge": "Private invoice",
+      "ownerOnly": "Only the company owner or whoever created the invoice can change this.",
+      "failed": "Could not change it",
+      "madePrivate": "The invoice is private",
+      "madeShared": "The team can see the invoice again"
+    },
+    "privateRow": "Private invoice"
   },
   "invite": {
     "title": "Team invitation",

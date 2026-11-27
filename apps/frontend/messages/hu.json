@@ -1350,7 +1350,25 @@
         "manage": "Link szerkesztése"
       },
       "contactPerson": "Kapcsolattartó",
-      "person": "Magánszemély"
+      "person": "Magánszemély",
+      "visibility": {
+        "title": "Ki látja az ügyfelet",
+        "hint": "A privát ügyfelet és bizonylatait csak a cég tulajdonosa és az a tag látja, akié az ügyfél. Mások sem a listákban, sem az előzményekben nem találják.",
+        "owner": "Gazdája",
+        "nobody": "Az egész cég (senki külön)",
+        "formerMember": "Korábbi csapattag",
+        "private": "Privát – csak a cég tulajdonosa és az látja, akié az ügyfél",
+        "privateHint": "Mások nem találják a kapcsolatok, számlák, értesítések és a változásnapló között.",
+        "ownedBy": "Gazdája: {name}",
+        "ownerOnly": "Ezt csak a cég tulajdonosa vagy az ügyfél gazdája módosíthatja.",
+        "saved": "Mentve",
+        "failed": "Nem sikerült menteni",
+        "errors": {
+          "visibility_owner_only": "Ezt csak a cég tulajdonosa vagy az ügyfél gazdája módosíthatja.",
+          "visibility_would_hide": "Így Ön sem látná többé az ügyfelet. Privát ügyfelet csak a cég tulajdonosa adhat át.",
+          "owner_not_member": "Ez a személy már nincs a csapatban."
+        }
+      }
     },
     "csv": {
       "import": "CSV importálása",
@@ -1415,7 +1433,8 @@
       "violet": "Ibolya",
       "pink": "Rózsaszín",
       "slate": "Szürke"
-    }
+    },
+    "privateBadge": "Privát ügyfél"
   },
   "settings": {
     "title": "Beállítások",
@@ -2140,7 +2159,16 @@
         "ownerOnly": "Csak a tulajdonos",
         "adminsOnly": "Csak a tulajdonos és az adminisztrátorok"
       },
-      "fillFromPreset": "Kitöltés ez alapján:"
+      "fillFromPreset": "Kitöltés ez alapján:",
+      "contactScope": {
+        "label": "Látja az ügyfeleket",
+        "all": "Az egész cég",
+        "own": "Csak a sajátjait",
+        "hint": "Csak a sajátjait = csak a neki kiosztott ügyfeleket (Gazdája) és az általa kiállított bizonylatokat.",
+        "ownerOnly": "Ezt csak a cég tulajdonosa módosíthatja.",
+        "summary": "csak saját ügyfelek",
+        "refused": "Ezt csak a cég tulajdonosa módosíthatja."
+      }
     },
     "exports": {
       "title": "Exportok a könyvelőnek",
@@ -5338,15 +5366,26 @@
       "relock": "Újra elrejtés",
       "lockedToast": "Részletek elrejtve",
       "unlockedToast": "A részletek jelszó nélkül látszanak",
-      "teamHint": "Ez a zárolatlan vagy közös számítógépre pillantók ellen véd, nem a kollégák ellen: minden csapattag a saját jelszavával fedi fel őket. Ha egy számlát csak bizonyos emberek láthatnak, az ügyfélnél állítsa be, kinek van hozzáférése.",
+      "teamHint": "Ez a zárolatlan vagy közös számítógépre pillantók ellen véd, nem a kollégák ellen: minden csapattag a saját jelszavával felfedi őket. Ha egy számlát csak bizonyos emberek láthatnak, jelölje privátnak, vagy állítsa be, kié az ügyfél.",
       "teamLink": "Beállítás: ki mit lát a csapatban",
       "errors": {
         "wrong_current": "Hibás jelszó.",
         "reauth_required": "A fiókjához nincs jelszó. Jelentkezzen ki, majd be, és próbálja újra.",
         "too_many_attempts": "Túl sok próbálkozás. Próbálja újra néhány perc múlva.",
         "generic": "Nem sikerült. Próbálja újra."
-      }
-    }
+      },
+      "privacyLink": "Megjelölés privátként"
+    },
+    "privacy": {
+      "label": "Privát számla",
+      "hint": "Csak a cég tulajdonosa és a kiállítója látja, a tételekkel, mellékletekkel és fizetésekkel együtt.",
+      "badge": "Privát számla",
+      "ownerOnly": "Ezt csak a cég tulajdonosa vagy a számla kiállítója módosíthatja.",
+      "failed": "Nem sikerült módosítani",
+      "madePrivate": "A számla privát",
+      "madeShared": "A csapat újra látja a számlát"
+    },
+    "privateRow": "Privát számla"
   },
   "invite": {
     "title": "Meghívás a csapatba",
