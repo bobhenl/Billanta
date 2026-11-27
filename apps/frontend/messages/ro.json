@@ -14729,7 +14729,7 @@
       "noteBelow": "Text sub poziții",
       "internalNote": "Notă internă",
       "item": "Poziția {n}",
-      "notSealed": "Sumele, datele, numărul documentului, referința de plată și clienții sunt vizibile serverului, ca să calculeze TVA, să urmărească scadențele și să potrivească plățile.",
+      "notSealed": "Numărul documentului, simbolul variabil, scadența, moneda și starea sunt mereu vizibile pentru server, ca să poată numerota, urmări scadențele și asocia plățile. Clientul și sumele le vede doar dacă nu ați activat criptarea contactelor și a sumelor.",
       "more": "Cum funcționează și cum verificați"
     },
     "sealFiles": {

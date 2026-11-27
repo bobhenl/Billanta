@@ -14729,7 +14729,7 @@
       "noteBelow": "Szöveg a tételek alatt",
       "internalNote": "Belső megjegyzés",
       "item": "{n}. tétel",
-      "notSealed": "Az összegeket, dátumokat, a bizonylatszámot, a közleményt és az ügyfeleket a szerver látja, hogy ÁFÁ-t számoljon, figyelje a határidőket és párosítsa a fizetéseket.",
+      "notSealed": "A bizonylatszámot, a változó szimbólumot, a fizetési határidőt, a pénznemet és az állapotot a szerver mindig látja, hogy sorszámozni, határidőt figyelni és fizetéseket párosítani tudjon. A vevőt és az összegeket csak akkor látja, ha nem kapcsolta be a kontaktok és az összegek titkosítását.",
       "more": "Hogyan működik és hogyan ellenőrizheti"
     },
     "sealFiles": {

@@ -14729,7 +14729,7 @@
       "noteBelow": "Texto bajo las líneas",
       "internalNote": "Nota interna",
       "item": "Línea {n}",
-      "notSealed": "El servidor ve importes, fechas, el número del documento, referencias y clientes, para calcular el IVA, vigilar vencimientos y conciliar pagos.",
+      "notSealed": "El servidor ve siempre el número del documento, el símbolo variable, el vencimiento, la moneda y el estado, para numerar, vigilar vencimientos y conciliar pagos. Solo ve el cliente y los importes si no ha activado el cifrado de contactos e importes.",
       "more": "Cómo funciona y cómo comprobarlo"
     },
     "sealFiles": {

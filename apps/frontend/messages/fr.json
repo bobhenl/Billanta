@@ -14729,7 +14729,7 @@
       "noteBelow": "Texte sous les lignes",
       "internalNote": "Note interne",
       "item": "Ligne {n}",
-      "notSealed": "Le serveur voit les montants, les dates, le numéro du document, les références et les clients, pour calculer la TVA, suivre les échéances et rapprocher les paiements.",
+      "notSealed": "Le serveur voit toujours le numéro du document, le symbole variable, l'échéance, la devise et le statut, pour numéroter, suivre les échéances et rapprocher les paiements. Il ne voit le client et les montants que si vous n'avez pas activé le chiffrement des contacts et des montants.",
       "more": "Comment ça marche et comment le vérifier"
     },
     "sealFiles": {

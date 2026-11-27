@@ -14730,7 +14730,7 @@
       "noteBelow": "Text unter den Positionen",
       "internalNote": "Interne Notiz",
       "item": "Position {n}",
-      "notSealed": "Beträge, Daten, Dokumentnummer, Verwendungszweck und Kunden sieht der Server, um die MwSt. zu berechnen, Fälligkeiten zu überwachen und Zahlungen zuzuordnen.",
+      "notSealed": "Belegnummer, variables Symbol, Fälligkeit, Währung und Status sieht der Server immer, damit er nummerieren, Fälligkeiten überwachen und Zahlungen zuordnen kann. Kunde und Beträge sieht er nur, wenn Sie die Verschlüsselung von Kontakten und Beträgen nicht eingeschaltet haben.",
       "more": "Wie es funktioniert und wie Sie es prüfen"
     },
     "sealFiles": {

@@ -14645,7 +14645,7 @@
       "noteBelow": "Text pod položkami",
       "internalNote": "Interná poznámka",
       "item": "Položka {n}",
-      "notSealed": "Sumy, dátumy, číslo dokladu, symboly a odberateľov server vidí, aby mohol počítať DPH, sledovať splatnosť a párovať platby.",
+      "notSealed": "Číslo dokladu, variabilný symbol, splatnosť, menu a stav server vidí vždy, aby mohol číslovať, sledovať splatnosť a párovať platby. Odberateľa a sumy vidí iba vtedy, keď nemáte zapnuté šifrovanie kontaktov a súm.",
       "more": "Ako to funguje a ako si to overiť"
     },
     "sealFiles": {

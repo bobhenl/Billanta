@@ -14730,7 +14730,7 @@
       "noteBelow": "Tekst pod pozycjami",
       "internalNote": "Notatka wewnętrzna",
       "item": "Pozycja {n}",
-      "notSealed": "Kwoty, daty, numer dokumentu, tytuł przelewu i klientów serwer widzi, żeby liczyć VAT, pilnować terminów i dopasowywać płatności.",
+      "notSealed": "Numer dokumentu, symbol zmienny, termin płatności, walutę i status serwer widzi zawsze, aby numerować dokumenty, pilnować terminów i dopasowywać płatności. Nabywcę i kwoty widzi tylko wtedy, gdy nie masz włączonego szyfrowania kontaktów i kwot.",
       "more": "Jak to działa i jak to sprawdzić"
     },
     "sealFiles": {

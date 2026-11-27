@@ -14729,7 +14729,7 @@
       "noteBelow": "Testo sotto le righe",
       "internalNote": "Nota interna",
       "item": "Riga {n}",
-      "notSealed": "Il server vede importi, date, numero del documento, causali e clienti, per calcolare l'IVA, seguire le scadenze e abbinare i pagamenti.",
+      "notSealed": "Il server vede sempre numero del documento, simbolo variabile, scadenza, valuta e stato, per numerare, controllare le scadenze e abbinare i pagamenti. Vede il cliente e gli importi solo se non hai attivato la cifratura di contatti e importi.",
       "more": "Come funziona e come verificarlo"
     },
     "sealFiles": {

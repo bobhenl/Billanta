@@ -14729,7 +14729,7 @@
       "noteBelow": "Tekst onder de regels",
       "internalNote": "Interne notitie",
       "item": "Regel {n}",
-      "notSealed": "De server ziet bedragen, datums, het documentnummer, kenmerken en klanten, om btw te berekenen, vervaldatums te bewaken en betalingen te koppelen.",
+      "notSealed": "De server ziet altijd het documentnummer, het variabel symbool, de vervaldatum, de valuta en de status, zodat hij kan nummeren, vervaldata bewaken en betalingen koppelen. De klant en de bedragen ziet hij alleen als u versleuteling van contacten en bedragen niet hebt ingeschakeld.",
       "more": "Hoe het werkt en hoe je het controleert"
     },
     "sealFiles": {

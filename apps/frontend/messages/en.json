@@ -14741,7 +14741,7 @@
       "noteBelow": "Text below the items",
       "internalNote": "Internal note",
       "item": "Item {n}",
-      "notSealed": "The server sees amounts, dates, the document number, references and customers, so it can calculate VAT, track due dates and match payments.",
+      "notSealed": "The server always sees the document number, variable symbol, due date, currency and status, so it can number documents, watch due dates and match payments. It sees the buyer and the amounts only if you have not turned on encryption for contacts and amounts.",
       "more": "How it works and how to check it"
     },
     "sealFiles": {
