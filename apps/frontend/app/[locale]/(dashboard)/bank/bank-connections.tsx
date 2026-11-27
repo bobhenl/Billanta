@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from 'react';
 import { Building2, ChevronDown, CreditCard, History, Landmark, Loader2, Pencil, Plus, RefreshCw, ShieldCheck, Trash2, Wallet } from 'lucide-react';
-import { useFormatter, useLocale, useTranslations } from 'next-intl';
+import { useFormatter, useLocale, useNow, useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { useCanDo, useCanWrite } from '@/components/access-provider';
@@ -84,6 +84,7 @@ export function BankConnections({
 }) {
   const t = useTranslations('bank.connections');
   const format = useFormatter();
+  const now = useNow({ updateInterval: 60_000 });
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -366,7 +367,7 @@ export function BankConnections({
                     {c.lastError
                       ? errorText(c.lastError)
                       : c.lastSyncedAt
-                        ? t('lastSynced', { when: format.relativeTime(new Date(c.lastSyncedAt)) })
+                        ? t('lastSynced', { when: format.relativeTime(new Date(c.lastSyncedAt), now) })
                         : t('neverSynced')}
                     {expiresAt && !expired && (
                       <span className={cn('ml-1', expiringSoon ? 'font-semibold text-warning' : 'text-muted-foreground')}>

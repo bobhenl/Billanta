@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import { ConfidentialText } from '@/components/vault/confidential-text';
 import { SealedItemsNet } from '@/components/vault/sealed-amounts';
 import { Clock, FileText, Home, LayoutTemplate, MoreHorizontal, Package, Pencil, Plus, Repeat, Trash2, Users, Wallet, type LucideIcon } from 'lucide-react';
-import { useFormatter, useLocale, useTranslations } from 'next-intl';
+import { useFormatter, useLocale, useNow, useTranslations } from 'next-intl';
 import { EmptyState } from '@/components/empty-state';
 import { InfoHint } from '@/components/info-hint';
 import { Modal, buttonClass, inputClass } from '@/components/modal';
@@ -68,6 +68,7 @@ export function TemplateGallery({ saved, presets }: { saved: SavedTemplateRow[];
   const t = useTranslations('templates');
   const tDoc = useTranslations('doc');
   const format = useFormatter();
+  const now = useNow({ updateInterval: 60_000 });
   const locale = useLocale();
   const router = useRouter();
   const [menu, setMenu] = useState<string | null>(null);
@@ -193,7 +194,7 @@ export function TemplateGallery({ saved, presets }: { saved: SavedTemplateRow[];
                       </span>
                       <span className="block text-[11px] text-muted-foreground">
                         {row.usageCount > 0 && row.lastUsedAt
-                          ? t('usage', { count: row.usageCount, when: format.relativeTime(new Date(row.lastUsedAt)) })
+                          ? t('usage', { count: row.usageCount, when: format.relativeTime(new Date(row.lastUsedAt), now) })
                           : t('neverUsed')}
                       </span>
                     </span>

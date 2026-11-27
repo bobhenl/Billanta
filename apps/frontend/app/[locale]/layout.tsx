@@ -98,6 +98,19 @@ export default async function LocaleLayout({
     // sets the dark/light class on <html> before hydration, which would
     // otherwise trip React's hydration mismatch warning for this attribute.
     <html lang={locale} suppressHydrationWarning>
+      <head>
+        {/* The cross-fade (@view-transition in globals.css) is skipped whenever
+            one side doesn't opt in, e.g. a download or reduced motion. Chrome
+            then rejects the transition's promises and logs them as uncaught;
+            nothing is wrong, so mark them handled. In <head> so it runs before
+            `pagereveal`. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){function h(e){var v=e.viewTransition;if(!v)return;[v.ready,v.finished,v.updateCallbackDone].forEach(function(p){p&&p.catch(function(){})})}addEventListener('pageswap',h);addEventListener('pagereveal',h)})();"
+          }}
+        />
+      </head>
       <body className={`${inter.variable} font-sans`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <NextIntlClientProvider messages={publicClientMessages(messages)}>

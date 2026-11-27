@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Bell, CheckCheck, Settings } from 'lucide-react';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useFormatter, useNow, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { fetchNotificationPrefs, fetchNotifications, fetchUnreadCount, markNotificationsRead } from '@/lib/notification-actions';
 import { EVENT_TONE, type AppNotification } from '@/lib/notifications';
@@ -19,6 +19,7 @@ const POLL_MS = 60_000;
 export function NotificationBell() {
   const t = useTranslations('notifications');
   const format = useFormatter();
+  const now = useNow({ updateInterval: 60_000 });
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [unread, setUnread] = useState(0);
@@ -162,7 +163,7 @@ export function NotificationBell() {
                   <span className={cn('block text-sm', !item.readAt && 'font-semibold')}>{item.title}</span>
                   {item.body && <span className="block truncate text-xs text-muted-foreground">{item.body}</span>}
                   <span className="mt-0.5 block text-[11px] text-muted-foreground">
-                    {format.relativeTime(new Date(item.createdAt))}
+                    {format.relativeTime(new Date(item.createdAt), now)}
                   </span>
                 </span>
               </button>
