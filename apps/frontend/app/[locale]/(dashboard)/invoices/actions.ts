@@ -6,7 +6,7 @@ import { apiFetch, ApiError } from '@/lib/api-client';
 import { auth } from '@/auth';
 import { grantUnlock, revokeUnlock } from '@/lib/invoice-unlock';
 import { allow } from '@/lib/rate-limit';
-import { verifyPassword } from '@/lib/reauth';
+import { stepUpKind, verifyPassword } from '@/lib/reauth';
 import { documentsOutText } from '@/lib/plan-refusal';
 
 /**
@@ -52,7 +52,9 @@ export async function unlockInvoices(password: string): Promise<ActionResult> {
   const me = await verifyPassword(userId, password);
   if (!me) return { ok: false, error: 'not_signed_in' };
   if (me === 'wrong_current' || me === 'reauth_required') return { ok: false, error: me };
-  await grantUnlock(userId);
+  // Without 2FA the password is all a step-up asks for, so it counts as one too.
+  const kind = await stepUpKind(userId);
+  await grantUnlock(userId, kind === 'password' ? 'password' : kind === 'sign_in' ? 'recent_sign_in' : undefined);
   revalidatePath('/[locale]/(dashboard)/invoices', 'layout');
   return { ok: true, data: undefined };
 }

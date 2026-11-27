@@ -18,7 +18,8 @@ const ADMIN = "00000000-0000-4000-8000-000000000002";
 const ACCOUNTANT = "00000000-0000-4000-8000-000000000003";
 const SELLER = "00000000-0000-4000-8000-000000000004";
 
-const actor = (id: string, role: string) => ({ id, tenantId: "t1", role }) as never;
+// Everyone here confirmed a second factor a moment ago: the step-up has its own spec (src/auth/step-up.spec.ts).
+const actor = (id: string, role: string) => ({ id, tenantId: "t1", role, stepUpAt: Date.now(), stepUpMethod: "totp" }) as never;
 const owner = actor(OWNER, "owner");
 const admin = actor(ADMIN, "admin");
 const accountant = actor(ACCOUNTANT, "accountant");
@@ -169,7 +170,7 @@ describe("ContactsService.setVisibility", () => {
     expect(log.record).toHaveBeenCalledWith(
       db,
       "t1",
-      expect.objectContaining({ entityId: "c1", action: "visibility_changed", changes: [{ field: "isPrivate", from: false, to: true }] }),
+      expect.objectContaining({ entityId: "c1", action: "visibility_changed", changes: expect.arrayContaining([{ field: "isPrivate", from: false, to: true }]) }),
     );
   });
 
@@ -209,7 +210,7 @@ describe("InvoicesService.setPrivate", () => {
     const db = fakeDb([[invoice]]);
     await expect(service(log).setPrivate(db as never, "i1", true, seller)).resolves.toEqual({ id: "i1", isPrivate: true });
     expect(db.updates[0]).toEqual({ isPrivate: true });
-    expect(log.record).toHaveBeenCalledWith(db, "t1", expect.objectContaining({ action: "made_private", changes: [{ field: "isPrivate", from: false, to: true }] }));
+    expect(log.record).toHaveBeenCalledWith(db, "t1", expect.objectContaining({ action: "made_private", changes: expect.arrayContaining([{ field: "isPrivate", from: false, to: true }]) }));
     const db2 = fakeDb([[{ ...invoice, isPrivate: true }]]);
     await service().setPrivate(db2 as never, "i1", false, owner);
     expect(db2.updates[0]).toEqual({ isPrivate: false });

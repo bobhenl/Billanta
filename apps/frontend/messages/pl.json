@@ -7402,13 +7402,22 @@
         "buyer_details_cancelled": "zamknął/zamknęła prośbę o dane klienta do",
         "profile_order": "utworzono przez zamówienie z profilu publicznego:",
         "link_renamed": "zmienił(a) nazwę publicznego linku",
-        "send_waiting_pdf": "dodał(a) do wysłania z PDF"
+        "send_waiting_pdf": "dodał(a) do wysłania z PDF",
+        "locked": "zablokował(a)",
+        "unlocked": "odblokował(a)",
+        "made_private": "ustawił(a) jako prywatny",
+        "made_shared": "udostępnił(a) zespołowi"
       },
       "tenant": {
         "updated": "edytował(a) dane firmy",
         "logo_uploaded": "wgrał(a) logo",
         "logo_removed": "usunął/usunęła logo",
-        "number_formats_updated": "zmienił(a) numerację dokumentów"
+        "number_formats_updated": "zmienił(a) numerację dokumentów",
+        "vault_wrap_removed": "usunął/usunęła sposób odblokowania sejfu",
+        "vault_password_replaced": "zmienił(a) hasło do sejfu",
+        "vault_seal_new_off": "wyłączył(a) szyfrowanie nowych dokumentów",
+        "vault_recovery_replaced": "wymienił(a) kod odzyskiwania sejfu",
+        "vault_enabled": "włączył(a) tryb poufny"
       },
       "bank_account": {
         "created": "dodał(a) konto bankowe",
@@ -7418,7 +7427,8 @@
       "contact": {
         "created": "dodał(a) kontakt",
         "updated": "edytował(a) kontakt",
-        "deleted": "usunął/usunęła kontakt"
+        "deleted": "usunął/usunęła kontakt",
+        "visibility_changed": "zmienił(a) opiekuna i widoczność kontaktu"
       },
       "member": {
         "invited": "zaprosił(a)",
@@ -7516,7 +7526,13 @@
       "skippedRows": "Pominięte wiersze",
       "numberFormat": "Format numeru",
       "nextNumber": "Następny numer",
-      "publicSlug": "Nazwa linku"
+      "publicSlug": "Nazwa linku",
+      "stepUp": "Potwierdzono przez",
+      "vaultWrap": "Sposób odblokowania sejfu",
+      "sealNew": "Szyfruj nowe dokumenty",
+      "isPrivate": "Prywatny",
+      "ownerUserId": "Należy do",
+      "contactScope": "Widzi klientów"
     },
     "values": {
       "invoice": "Faktura",
@@ -7531,7 +7547,12 @@
       "owner": "Właściciel",
       "admin": "Administrator",
       "accountant": "Księgowa",
-      "viewer": "Tylko do odczytu"
+      "viewer": "Tylko do odczytu",
+      "totp": "Kod z aplikacji",
+      "recovery": "Kod odzyskiwania",
+      "password": "Hasło",
+      "recent_sign_in": "Niedawne logowanie",
+      "passkey": "Passkey"
     },
     "cleared": "wyczyszczono",
     "filters": {
@@ -14703,5 +14724,28 @@
       "Kod szyfrujący (jeden plik bez zależności) opublikujemy w osobnym repozytorium na GitHubie, żeby dało się porównać skróty z własnym buildem.",
       "Niezależny przegląd kodu jest planowany."
     ]
+  },
+  "stepUp": {
+    "title": "Potwierdź, że to Ty",
+    "loading": "Ładowanie…",
+    "intro": {
+      "totp": "Przed zmianami zabezpieczeń pytamy ponownie. Wpisz kod z aplikacji uwierzytelniającej lub kod odzyskiwania.",
+      "password": "Przed zmianami zabezpieczeń pytamy ponownie. Wpisz hasło do swojego konta.",
+      "sign_in": "Przed zmianami zabezpieczeń pytamy ponownie. Twoje konto nie ma hasła, więc wystarczy niedawne logowanie. Jeśli jest starsze, zaloguj się ponownie."
+    },
+    "code": "Kod z aplikacji lub kod odzyskiwania",
+    "password": "Hasło",
+    "twoFactorHint": "Z weryfikacją dwuetapową potrzebny byłby tu kod z telefonu, a samo hasło by nie wystarczyło.",
+    "twoFactorLink": "Włącz weryfikację dwuetapową",
+    "note": "Potwierdzenie jest ważne 5 minut w tej przeglądarce.",
+    "cancel": "Anuluj",
+    "confirm": "Potwierdź",
+    "errors": {
+      "invalid_code": "Kod się nie zgadza. Spróbuj ponownie.",
+      "wrong_current": "Hasło się nie zgadza.",
+      "reauth_required": "Zaloguj się ponownie i powtórz zmianę.",
+      "too_many_attempts": "Zbyt wiele prób. Spróbuj za kilka minut.",
+      "generic": "Potwierdzenie się nie powiodło."
+    }
   }
 }

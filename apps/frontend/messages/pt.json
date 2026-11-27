@@ -7401,13 +7401,22 @@
         "buyer_details_cancelled": "fechou o pedido de dados do cliente para",
         "profile_order": "criado através de uma encomenda no perfil público:",
         "link_renamed": "mudou o nome da ligação pública",
-        "send_waiting_pdf": "colocou em fila para envio com PDF"
+        "send_waiting_pdf": "colocou em fila para envio com PDF",
+        "locked": "bloqueou",
+        "unlocked": "desbloqueou",
+        "made_private": "tornou privado",
+        "made_shared": "partilhou com a equipa"
       },
       "tenant": {
         "updated": "editou os dados da empresa",
         "logo_uploaded": "carregou o logótipo",
         "logo_removed": "removeu o logótipo",
-        "number_formats_updated": "alterou a numeração dos documentos"
+        "number_formats_updated": "alterou a numeração dos documentos",
+        "vault_wrap_removed": "removeu um método de desbloqueio do cofre",
+        "vault_password_replaced": "alterou a palavra-passe do cofre",
+        "vault_seal_new_off": "desativou a encriptação de documentos novos",
+        "vault_recovery_replaced": "substituiu o código de recuperação do cofre",
+        "vault_enabled": "ativou o modo confidencial"
       },
       "bank_account": {
         "created": "adicionou a conta bancária",
@@ -7417,7 +7426,8 @@
       "contact": {
         "created": "adicionou o contacto",
         "updated": "editou o contacto",
-        "deleted": "eliminou o contacto"
+        "deleted": "eliminou o contacto",
+        "visibility_changed": "alterou o responsável e a visibilidade de"
       },
       "member": {
         "invited": "convidou",
@@ -7515,7 +7525,13 @@
       "skippedRows": "Linhas ignoradas",
       "numberFormat": "Formato da numeração",
       "nextNumber": "Próximo número",
-      "publicSlug": "Nome da ligação"
+      "publicSlug": "Nome da ligação",
+      "stepUp": "Confirmado com",
+      "vaultWrap": "Método de desbloqueio do cofre",
+      "sealNew": "Encriptar documentos novos",
+      "isPrivate": "Privado",
+      "ownerUserId": "Pertence a",
+      "contactScope": "Vê clientes"
     },
     "values": {
       "invoice": "Fatura",
@@ -7530,7 +7546,12 @@
       "owner": "Proprietário",
       "admin": "Administrador",
       "accountant": "Contabilista",
-      "viewer": "Só leitura"
+      "viewer": "Só leitura",
+      "totp": "Código da aplicação",
+      "recovery": "Código de recuperação",
+      "password": "Palavra-passe",
+      "recent_sign_in": "Início de sessão recente",
+      "passkey": "Passkey"
     },
     "cleared": "limpo",
     "filters": {
@@ -14702,5 +14723,28 @@
       "Vamos publicar o código de cifragem (um único ficheiro sem dependências) num repositório próprio no GitHub, para comparar os hashes com um build seu.",
       "Está prevista uma revisão independente do código."
     ]
+  },
+  "stepUp": {
+    "title": "Confirme que é você",
+    "loading": "A carregar…",
+    "intro": {
+      "totp": "Antes de alterações de segurança voltamos a perguntar. Introduza o código da aplicação de autenticação ou um código de recuperação.",
+      "password": "Antes de alterações de segurança voltamos a perguntar. Introduza a palavra-passe da sua conta.",
+      "sign_in": "Antes de alterações de segurança voltamos a perguntar. A sua conta não tem palavra-passe, por isso basta um início de sessão recente. Se o seu for mais antigo, inicie sessão novamente."
+    },
+    "code": "Código da aplicação ou código de recuperação",
+    "password": "Palavra-passe",
+    "twoFactorHint": "Com a autenticação de dois fatores seria precisa aqui um código do telemóvel e a palavra-passe sozinha não chegaria.",
+    "twoFactorLink": "Ativar a autenticação de dois fatores",
+    "note": "A confirmação dura 5 minutos neste navegador.",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "errors": {
+      "invalid_code": "O código não coincide. Tente novamente.",
+      "wrong_current": "A palavra-passe não coincide.",
+      "reauth_required": "Inicie sessão novamente e repita a alteração.",
+      "too_many_attempts": "Demasiadas tentativas. Tente dentro de alguns minutos.",
+      "generic": "A confirmação falhou."
+    }
   }
 }

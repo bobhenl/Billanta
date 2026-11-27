@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { assertStepUp, stepUpChange } from "../auth/step-up";
 import { peppolRelevant } from "./peppol-relevance";
 import { BadRequestException, ConflictException, ForbiddenException, HttpException, Injectable, NotFoundException, Optional, UnprocessableEntityException } from "@nestjs/common";
 import {
@@ -876,17 +877,21 @@ export class InvoicesService {
     return updated;
   }
 
-  /** Unlocking needs the same fresh re-auth as opening; locking does not. */
+  /**
+   * Unlocking needs the same fresh re-auth as opening, plus a step-up (it
+   * takes a protection away); locking does not.
+   */
   async setLock(db: TenantDb, id: string, locked: boolean, user: AuthenticatedUser) {
     const invoice = await this.requireInvoice(db, id);
     if (Boolean(invoice.lockedAt) === locked) return { id, locked };
     if (!locked && lockBlocks(invoice.lockedAt, user)) throw new HttpException("invoice_locked", 423);
+    const stepUp = locked ? null : assertStepUp(user);
     const [updated] = await db
       .update(schema.invoices)
       .set(locked ? { lockedAt: new Date(), lockedBy: user.id } : { lockedAt: null, lockedBy: null })
       .where(eq(schema.invoices.id, id))
       .returning();
-    await this.log(db, updated, locked ? "locked" : "unlocked");
+    await this.log(db, updated, locked ? "locked" : "unlocked", stepUp ? [stepUpChange(stepUp)] : undefined);
     return { id, locked };
   }
 
@@ -899,12 +904,16 @@ export class InvoicesService {
     const invoice = await this.requireInvoice(db, id);
     if (!mayChangeInvoicePrivacy(user, invoice)) throw new ForbiddenException("visibility_owner_only");
     if (invoice.isPrivate === isPrivate) return { id, isPrivate };
+    const stepUp = assertStepUp(user);
     try {
       await db.update(schema.invoices).set({ isPrivate }).where(eq(schema.invoices.id, id));
     } catch (error) {
       throw visibilityError(error);
     }
-    await this.log(db, invoice, isPrivate ? "made_private" : "made_shared", [{ field: "isPrivate", from: invoice.isPrivate, to: isPrivate }]);
+    await this.log(db, invoice, isPrivate ? "made_private" : "made_shared", [
+      { field: "isPrivate", from: invoice.isPrivate, to: isPrivate },
+      stepUpChange(stepUp),
+    ]);
     return { id, isPrivate };
   }
 

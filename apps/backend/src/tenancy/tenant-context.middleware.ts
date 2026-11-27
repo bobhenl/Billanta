@@ -5,6 +5,7 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type { NextFunction, Request, Response } from "express";
 import * as schema from "../../drizzle/schema";
 import { AI_SERVICE_SCOPE } from "../auth/service-token.guard";
+import type { StepUpMethod } from "../auth/step-up";
 import { verifyBearerToken } from "../auth/verify-bearer-token";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
@@ -74,6 +75,9 @@ export interface AuthenticatedUser {
   twoFactor?: boolean;
   /** Re-authenticated a moment ago (JWT `ul` claim): locked invoices open. */
   unlocked?: boolean;
+  /** When the person last confirmed a second factor (JWT `sa`, in ms) and how (`sm`), see src/auth/step-up.ts. */
+  stepUpAt?: number;
+  stepUpMethod?: StepUpMethod;
   /** The company is a demo playground (see `src/demo/`); `DemoGuard` narrows what it may do. */
   demo?: boolean;
   /** A practice company of a class (see `src/classroom/`); always `demo` too. */
@@ -186,7 +190,11 @@ export class TenantContextMiddleware implements NestMiddleware {
       if (identity.scope === AI_SERVICE_SCOPE) {
         await this.handleServiceRequest(req, res, next, identity.sub, identity.email);
       } else {
-        await this.handleDashboardUserRequest(req, res, next, identity.sub, identity.email, identity.twoFactor === true, identity.unlocked === true);
+        await this.handleDashboardUserRequest(req, res, next, identity.sub, identity.email, identity.twoFactor === true, {
+          unlocked: identity.unlocked === true,
+          stepUpAt: identity.stepUpAt,
+          stepUpMethod: identity.stepUpMethod,
+        });
       }
     } catch (err) {
       next(err as Error);
@@ -246,7 +254,7 @@ export class TenantContextMiddleware implements NestMiddleware {
     userId: string,
     email: string,
     twoFactor: boolean,
-    unlocked = false,
+    reauth: Pick<AuthenticatedUser, "unlocked" | "stepUpAt" | "stepUpMethod"> = {},
   ): Promise<void> {
     const tenantIdHeader = req.headers["x-tenant-id"];
     const candidateTenantId = Array.isArray(tenantIdHeader) ? tenantIdHeader[0] : tenantIdHeader;
@@ -309,7 +317,9 @@ export class TenantContextMiddleware implements NestMiddleware {
         role: membership.role,
         permissions: membership.permissions,
         twoFactor,
-        unlocked,
+        unlocked: reauth.unlocked === true,
+        stepUpAt: reauth.stepUpAt,
+        stepUpMethod: reauth.stepUpMethod,
         demo: tenant?.isDemo === true,
         classroom,
         classroomReadOnly,
