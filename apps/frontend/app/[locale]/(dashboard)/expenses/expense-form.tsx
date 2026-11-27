@@ -79,6 +79,7 @@ export function ExpenseForm({
 }) {
   const src = expense ?? initial;
   const t = useTranslations('expenses.form');
+  const tLock = useTranslations('recordLock');
   const tCat = useTranslations('expenses.category');
   // Code names are shared with the invoice form.
   const tRc = useTranslations('invoiceForm.settings');
@@ -279,7 +280,7 @@ export function ExpenseForm({
       // Saving the form is the review a bank-rule draft waits for.
       const result = expense ? await updateExpense(expense.id, { ...input, needsReview: false }) : await createExpense(input);
       if (!result.ok) {
-        toast({ text: `${t('saveFailed')}: ${result.error}`, tone: 'err' });
+        toast({ text: result.error === 'record_read_only' ? tLock('errors.record_read_only') : `${t('saveFailed')}: ${result.error}`, tone: 'err' });
         return;
       }
       toast({ text: t('saved'), tone: 'ok' });

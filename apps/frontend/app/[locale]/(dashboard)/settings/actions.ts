@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { apiFetch } from '@/lib/api-client';
 import { backendMessage } from '@/lib/action-error';
+import type { MemberScopes } from '@/lib/record-lock';
 
 export type SettingsResult<T = undefined> = { ok: true; data: T } | { ok: false; error: string };
 
@@ -113,9 +114,10 @@ export async function revokeInvitation(id: string) {
   return run<unknown>(`/api/v1/team/invitations/${encodeURIComponent(id)}`, 'DELETE');
 }
 
-/** `contactScope` is owner-only on the API (403 owner_only), so leave it out unless it changes. */
-export async function changeMemberRole(id: string, role: Exclude<TeamRole, 'owner'>, permissions: MemberPermissions = null, contactScope?: 'all' | 'own') {
-  return run<unknown>(`/api/v1/team/members/${encodeURIComponent(id)}`, 'PATCH', { role, permissions, ...(contactScope && { contactScope }) });
+/** Scopes are owner-only on the API (403 owner_only), so send only the areas that change. */
+export async function changeMemberRole(id: string, role: Exclude<TeamRole, 'owner'>, permissions: MemberPermissions = null, scopes?: Partial<MemberScopes>) {
+  const changed = scopes && Object.keys(scopes).length > 0;
+  return run<unknown>(`/api/v1/team/members/${encodeURIComponent(id)}`, 'PATCH', { role, permissions, ...(changed && { scopes }) });
 }
 
 export async function removeMember(id: string) {

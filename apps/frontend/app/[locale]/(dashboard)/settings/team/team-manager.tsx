@@ -24,6 +24,7 @@ import {
 import { useStepUp } from '@/components/step-up';
 import { changeMemberRole, inviteMember, removeMember, revokeInvitation, type MemberPermissions, type TeamRole } from '../actions';
 import { copyText } from '@/lib/clipboard';
+import { RECORD_SCOPES, SCOPE_AREAS, type MemberScopes, type RecordScope, type ScopeArea } from '@/lib/record-lock';
 import type { PublicAccountant } from '@/lib/accountant-directory';
 import { AccountantPicker } from './accountant-picker';
 
@@ -36,8 +37,10 @@ export interface TeamData {
     image: string | null;
     role: TeamRole;
     permissions?: StoredPerms | null;
-    /** 'own' = sees only the clients assigned to them (tenant_memberships.contact_scope). */
-    contactScope?: ContactScope;
+    /** Per area: 'own' = sees only their own records, 'edit_own' = sees all, edits only their own (tenant_memberships.*_scope). */
+    contactScope?: RecordScope;
+    invoiceScope?: RecordScope;
+    expenseScope?: RecordScope;
     createdAt: string;
   }[];
   invitations: {
@@ -52,7 +55,6 @@ export interface TeamData {
 }
 
 type AssignableRole = Exclude<TeamRole, 'owner'>;
-type ContactScope = 'all' | 'own';
 const LEVELS: PermissionLevel[] = ['none', 'read', 'write'];
 const LEVEL_CLASSES: Record<PermissionLevel, string> = {
   none: 'text-muted-foreground line-through',
@@ -75,33 +77,59 @@ const reaches = (have: PermissionLevel, need: 'read' | 'write') => (need === 're
 /** Settings only splits into sections: its pages are open to read for everyone, so "none" means nothing there. */
 const levelsOf = (area: PermissionArea): PermissionLevel[] => (area === 'settings' ? ['read', 'write'] : LEVELS);
 
+const SCOPE_COLUMNS: Record<ScopeArea, 'contactScope' | 'invoiceScope' | 'expenseScope'> = {
+  contacts: 'contactScope',
+  invoices: 'invoiceScope',
+  expenses: 'expenseScope'
+};
+
+const scopesOf = (m: TeamData['members'][number]): MemberScopes =>
+  Object.fromEntries(SCOPE_AREAS.map((a) => [a, m[SCOPE_COLUMNS[a]] ?? 'all'])) as MemberScopes;
+
 /**
- * "Vidí klienty: celá firma / jen své", right under Kontakty. Only the
- * company owner may change it (the API refuses anyone else), so an admin
- * sees it read-only with the reason.
+ * "Vidí: celá firma / upravuje jen své / jen své", right under Kontakty,
+ * Faktury and Výdaje. Only the company owner may change it (the API refuses
+ * anyone else), so an admin sees it read-only with the reason.
  */
-function contactScopeRow(value: ContactScope, onChange: (next: ContactScope) => void, isOwner: boolean, disabled?: boolean): Partial<Record<PermissionArea, ReactNode>> {
-  return { contacts: <ContactScopeRow value={value} onChange={onChange} locked={!isOwner} disabled={disabled} /> };
+function scopeRows(value: MemberScopes, onChange: (next: MemberScopes) => void, isOwner: boolean, disabled?: boolean): Partial<Record<PermissionArea, ReactNode>> {
+  return Object.fromEntries(
+    SCOPE_AREAS.map((area) => [
+      area,
+      <ScopeRow key={area} area={area} value={value[area]} onChange={(s) => onChange({ ...value, [area]: s })} locked={!isOwner} disabled={disabled} />
+    ])
+  );
 }
 
-function ContactScopeRow({ value, onChange, locked, disabled }: { value: ContactScope; onChange: (next: ContactScope) => void; locked: boolean; disabled?: boolean }) {
-  const t = useTranslations('settings.team.contactScope');
+function ScopeRow({
+  area,
+  value,
+  onChange,
+  locked,
+  disabled
+}: {
+  area: ScopeArea;
+  value: RecordScope;
+  onChange: (next: RecordScope) => void;
+  locked: boolean;
+  disabled?: boolean;
+}) {
+  const t = useTranslations('settings.team.scope');
   return (
     <tr className="bg-muted/20">
       <td colSpan={LEVELS.length + 1} className="px-2 pb-2.5 pt-1.5 sm:px-3">
         <fieldset className="pl-5">
-          <legend className="text-[13px] font-medium">{t('label')}</legend>
+          <legend className="text-[13px] font-medium">{t(`label.${area}`)}</legend>
           <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
-            {(['all', 'own'] as const).map((s) => (
+            {RECORD_SCOPES.map((s) => (
               <label key={s} className={cn('flex items-center gap-2 text-[13px]', locked && 'text-muted-foreground')}>
-                <input type="radio" name="contact-scope" className="accent-primary" checked={value === s} disabled={disabled || locked} onChange={() => onChange(s)} />
+                <input type="radio" name={`scope-${area}`} className="accent-primary" checked={value === s} disabled={disabled || locked} onChange={() => onChange(s)} />
                 {t(s)}
               </label>
             ))}
           </div>
           <p className="mt-1 flex items-start gap-1 text-[11px] text-muted-foreground">
             {locked && <Lock className="mt-0.5 h-3 w-3 shrink-0" />}
-            {t(locked ? 'ownerOnly' : 'hint')}
+            {locked ? t('ownerOnly') : t(`hint.${area}`)}
           </p>
         </fieldset>
       </td>
@@ -259,10 +287,16 @@ function PermissionGrid({
  * edit, a count when only some of the area's actions are allowed. Settings
  * shows up only once a section is granted (reading them is open to all).
  */
-function AccessSummary({ role, permissions, contactScope }: { role: TeamRole; permissions?: StoredPerms | null; contactScope?: ContactScope }) {
+function AccessSummary({ role, permissions, scopes }: { role: TeamRole; permissions?: StoredPerms | null; scopes?: MemberScopes }) {
   const t = useTranslations('settings.team');
   if (role === 'owner' || role === 'admin') return null;
-  const ownOnly = contactScope === 'own' && <span className="text-warning">{t('contactScope.summary')}</span>;
+  const limited = (s: RecordScope) => SCOPE_AREAS.filter((a) => scopes?.[a] === s).map((a) => t(`areas.${a}`)).join(', ');
+  const ownOnly = (
+    <>
+      {limited('own') && <span className="text-warning">{t('scope.summaryOwn', { list: limited('own') })}</span>}
+      {limited('edit_own') && <span className="text-warning">{t('scope.summaryEditOwn', { list: limited('edit_own') })}</span>}
+    </>
+  );
   const access = effective(role, permissions);
   const allowed = allowedActions(access);
   return (
@@ -331,17 +365,17 @@ export function TeamManager({
   const [email, setEmail] = useState('');
   const [preset, setPreset] = useState('accountant');
   const [customAccess, setCustomAccess] = useState<Access>(effective('accountant', null));
-  const [editing, setEditing] = useState<{ id: string; name: string; access: Access; scope: ContactScope; scopeWas: ContactScope } | null>(null);
+  const [editing, setEditing] = useState<{ id: string; name: string; access: Access; scopes: MemberScopes; scopesWas: MemberScopes } | null>(null);
   const [createdLink, setCreatedLink] = useState<{ url: string; emailSent: boolean } | null>(null);
   const [removing, setRemoving] = useState<TeamData['members'][number] | null>(null);
   const { withStepUp, stepUpDialog } = useStepUp();
 
   // The plan's seat limit gets a sentence of its own; other codes stay as they are.
   const failText = (error?: string) =>
-    error?.includes('seat_limit') ? t('seatLimit') : error?.includes('owner_only') ? t('contactScope.refused') : `${t('failed')}: ${error}`;
+    error?.includes('seat_limit') ? t('seatLimit') : error?.includes('owner_only') ? t('scope.refused') : `${t('failed')}: ${error}`;
   const editMember = (m: TeamData['members'][number], access: Access) => {
-    const scope = m.contactScope ?? 'all';
-    setEditing({ id: m.id, name: m.name || m.email, access, scope, scopeWas: scope });
+    const scopes = scopesOf(m);
+    setEditing({ id: m.id, name: m.name || m.email, access, scopes, scopesWas: scopes });
   };
 
   // Changes around who sees which clients ask for a step-up when the backend wants one.
@@ -417,7 +451,7 @@ export function TeamManager({
                   <p className="break-all text-xs text-muted-foreground">
                     {m.email} · {t('since', { date: formatDate(m.createdAt, locale) ?? '' })}
                   </p>
-                  <AccessSummary role={m.role} permissions={m.permissions} contactScope={m.contactScope} />
+                  <AccessSummary role={m.role} permissions={m.permissions} scopes={scopesOf(m)} />
                 </div>
                 {editable ? (
                   <>
@@ -648,8 +682,8 @@ export function TeamManager({
                 if (!editing) return;
                 const { role, permissions } = toAssignment(editing.access);
                 // Sent only when changed, so an admin can still edit the rest.
-                const scope = editing.scope !== editing.scopeWas ? editing.scope : undefined;
-                run(() => changeMemberRole(editing.id, role, permissions, scope), t('roleChanged'), () => setEditing(null));
+                const scopes = Object.fromEntries(SCOPE_AREAS.filter((a) => editing.scopes[a] !== editing.scopesWas[a]).map((a) => [a, editing.scopes[a]]));
+                run(() => changeMemberRole(editing.id, role, permissions, scopes), t('roleChanged'), () => setEditing(null));
               }}
             >
               {t('save')}
@@ -685,7 +719,7 @@ export function TeamManager({
               value={editing.access}
               onChange={(access) => setEditing({ ...editing, access })}
               disabled={pending}
-              extraRows={contactScopeRow(editing.scope, (scope) => setEditing({ ...editing, scope }), isOwner, pending)}
+              extraRows={scopeRows(editing.scopes, (scopes) => setEditing({ ...editing, scopes }), isOwner, pending)}
             />
           </div>
         )}

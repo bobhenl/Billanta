@@ -1382,19 +1382,17 @@
       "person": "Privato",
       "visibility": {
         "title": "Chi vede questo cliente",
-        "hint": "Un cliente privato e i suoi documenti sono visibili solo al titolare dell’azienda e al membro a cui appartiene. Gli altri non lo trovano né negli elenchi né nella cronologia.",
+        "hint": "A chi appartiene il cliente e chi lo vede. Gli altri non trovano un cliente bloccato né i suoi documenti negli elenchi, nella ricerca, nelle notifiche né nella cronologia. Un cliente bloccato può passarlo ad altri solo il titolare dell’azienda.",
         "owner": "Appartiene a",
         "nobody": "Tutta l’azienda (nessuno in particolare)",
         "formerMember": "Ex membro del team",
-        "private": "Privato – lo vedono solo il titolare dell’azienda e la persona a cui appartiene il cliente",
-        "privateHint": "Gli altri non lo trovano in contatti, fatture, notifiche o nella cronologia delle modifiche.",
         "ownedBy": "Appartiene a: {name}",
         "ownerOnly": "Solo il titolare dell’azienda o la persona a cui appartiene il cliente può modificarlo.",
         "saved": "Salvato",
         "failed": "Salvataggio non riuscito",
         "errors": {
           "visibility_owner_only": "Solo il titolare dell’azienda o la persona a cui appartiene il cliente può modificarlo.",
-          "visibility_would_hide": "Non vedresti più questo cliente tu stesso. Solo il titolare dell’azienda può passare un cliente privato a un altro.",
+          "visibility_would_hide": "Così smetteresti di vedere tu stesso il cliente. Un cliente bloccato può passarlo ad altri solo il titolare dell’azienda.",
           "owner_not_member": "Questa persona non fa più parte del team."
         }
       }
@@ -1462,8 +1460,7 @@
       "violet": "Viola",
       "pink": "Rosa",
       "slate": "Grigio"
-    },
-    "privateBadge": "Cliente privato"
+    }
   },
   "settings": {
     "title": "Impostazioni",
@@ -2189,14 +2186,24 @@
         "adminsOnly": "Solo il titolare e gli amministratori"
       },
       "fillFromPreset": "Compila da",
-      "contactScope": {
-        "label": "Vede i clienti",
+      "scope": {
+        "label": {
+          "contacts": "Vede i clienti",
+          "invoices": "Vede le fatture",
+          "expenses": "Vede le spese"
+        },
         "all": "Tutta l’azienda",
+        "edit_own": "Tutto, modifica solo i propri",
         "own": "Solo i propri",
-        "hint": "Solo i propri = solo i clienti che gli assegni (Appartiene a) e i documenti che ha creato lui stesso.",
-        "ownerOnly": "Solo il titolare dell’azienda può modificarlo.",
-        "summary": "solo i propri clienti",
-        "refused": "Solo il titolare dell’azienda può modificarlo."
+        "hint": {
+          "contacts": "Solo i propri = i clienti che gli assegni (Appartiene a). Modifica solo i propri = vede tutto, ma cambia ed elimina solo i propri.",
+          "invoices": "Solo i propri = le fatture emesse da lui e quelle dei suoi clienti. Modifica solo i propri = vede tutto, ma cambia ed elimina solo i propri.",
+          "expenses": "Solo i propri = le spese inserite da lui e quelle dei suoi fornitori. Modifica solo i propri = vede tutto, ma cambia ed elimina solo i propri."
+        },
+        "ownerOnly": "Può cambiarlo solo il titolare dell’azienda.",
+        "refused": "Questo può cambiarlo solo il titolare dell’azienda.",
+        "summaryOwn": "solo i propri: {list}",
+        "summaryEditOwn": "modifica solo i propri: {list}"
       }
     },
     "exports": {
@@ -4793,7 +4800,8 @@
       "ai_credits_exhausted": "I crediti AI di questo mese sono finiti. I nuovi arrivano il 1°; un piano superiore ne ha di più, oppure usi la Sua chiave.",
       "amounts_plaintext": "Il documento non è stato salvato: gli importi non erano cifrati. Riprova.",
       "amounts_sealed": "Gli importi del documento sono cifrati, quindi il server non può farlo.",
-      "amounts_partly_paid": "Un documento pagato in parte non si può cifrare. Cifralo dopo il pagamento completo."
+      "amounts_partly_paid": "Un documento pagato in parte non si può cifrare. Cifralo dopo il pagamento completo.",
+      "record_read_only": "Puoi solo visualizzare questo elemento: puoi modificare solo i tuoi."
     },
     "copy": {
       "title": "Precompila da un’altra fattura",
@@ -5419,7 +5427,7 @@
       "relock": "Nascondi di nuovo",
       "lockedToast": "Dettagli nascosti",
       "unlockedToast": "I dettagli si vedono senza password",
-      "teamHint": "Protegge da sguardi su un computer sbloccato o condiviso, non dai colleghi: ogni membro del team le rivela con la propria password. Se una fattura deve vederla solo qualcuno, segnalala come privata o imposta a chi appartiene il cliente.",
+      "teamHint": "Protegge da sguardi su un computer sbloccato o condiviso, non dai colleghi: ogni membro del team le rivela con la propria password. Se una fattura deve vederla solo qualcuno, limita l’accesso a essa o imposta a chi appartiene il cliente.",
       "teamLink": "Imposta chi nel team vede cosa",
       "errors": {
         "wrong_current": "Password errata.",
@@ -5427,18 +5435,8 @@
         "too_many_attempts": "Troppi tentativi. Riprova tra qualche minuto.",
         "generic": "Non ha funzionato. Riprova."
       },
-      "privacyLink": "Segna come privata"
-    },
-    "privacy": {
-      "label": "Fattura privata",
-      "hint": "La vedono solo il titolare dell’azienda e chi l’ha creata, con righe, allegati e pagamenti.",
-      "badge": "Fattura privata",
-      "ownerOnly": "Solo il titolare dell’azienda o chi ha creato la fattura può modificarlo.",
-      "failed": "Modifica non riuscita",
-      "madePrivate": "La fattura è privata",
-      "madeShared": "Il team vede di nuovo la fattura"
-    },
-    "privateRow": "Fattura privata"
+      "privacyLink": "Limita accesso"
+    }
   },
   "invite": {
     "title": "Invito al team",
@@ -7443,7 +7441,8 @@
       "bank_account": "Conti bancari",
       "member": "Team",
       "api_key": "Chiavi API",
-      "import": "Importazioni"
+      "import": "Importazioni",
+      "expense": "Spese"
     },
     "docTypes": {
       "invoice": "una fattura",
@@ -7481,8 +7480,8 @@
         "send_waiting_pdf": "ha messo in coda per l'invio con PDF",
         "locked": "ha bloccato",
         "unlocked": "ha sbloccato",
-        "made_private": "ha reso privato",
-        "made_shared": "ha condiviso con il team"
+        "made_private": "ha limitato l’accesso a",
+        "made_shared": "ha tolto la limitazione di accesso a"
       },
       "tenant": {
         "updated": "ha modificato i dati dell’azienda",
@@ -7525,6 +7524,10 @@
         "contacts_csv": "ha importato contatti da CSV",
         "fakturoid": "ha importato i dati da Fakturoid",
         "guest": "ha trasferito le fatture create senza account"
+      },
+      "expense": {
+        "made_private": "ha limitato l’accesso alla spesa",
+        "made_shared": "ha tolto la limitazione di accesso alla spesa"
       }
     },
     "fields": {
@@ -7611,7 +7614,11 @@
       "isPrivate": "Privato",
       "ownerUserId": "Appartiene a",
       "contactScope": "Vede i clienti",
-      "vaultCategories": "Categorie disattivate"
+      "vaultCategories": "Categorie disattivate",
+      "accessLock": "Limitazione di accesso",
+      "accessLockUserId": "Bloccato da",
+      "invoiceScope": "Vede le fatture",
+      "expenseScope": "Vede le spese"
     },
     "values": {
       "invoice": "Fattura",
@@ -7631,7 +7638,11 @@
       "recovery": "Codice di recupero",
       "password": "Password",
       "recent_sign_in": "Accesso recente",
-      "passkey": "Passkey"
+      "passkey": "Passkey",
+      "private": "Privato",
+      "own": "Solo i propri",
+      "edit_own": "Modifica solo i propri",
+      "all": "Tutta l’azienda"
     },
     "cleared": "cancellato",
     "filters": {
@@ -15062,5 +15073,34 @@
       "passkey_failed": "Non è stato possibile verificare la passkey. Riprova oppure inserisci il codice o la password."
     },
     "usePasskey": "Conferma con passkey"
+  },
+  "recordLock": {
+    "label": "Limita accesso",
+    "hint": "Gli altri non trovano un elemento bloccato negli elenchi, nella ricerca, nelle notifiche né nella cronologia delle modifiche. Il blocco può poi cambiarlo solo chi l’ha impostato o il titolare dell’azienda. Continua a contare nelle dichiarazioni IVA e nei dati fiscali.",
+    "holderOnly": "Può cambiarlo solo chi l’ha bloccato o il titolare dell’azienda.",
+    "levels": {
+      "none": {
+        "invoice": "Non bloccato – tutti quelli che vedono le fatture",
+        "expense": "Non bloccato – tutti quelli che vedono le spese",
+        "contact": "Non bloccato – tutti quelli che vedono i contatti"
+      },
+      "private": "Solo io e il titolare dell’azienda",
+      "admin": "Io, il titolare dell’azienda e gli amministratori",
+      "accountant": "Tutti tranne i membri in sola lettura"
+    },
+    "badge": {
+      "private": "Bloccato – privato",
+      "admin": "Bloccato – solo amministratori",
+      "accountant": "Bloccato – nascosto ai membri in sola lettura"
+    },
+    "locked": "Accesso limitato",
+    "opened": "Blocco rimosso",
+    "failed": "Salvataggio non riuscito",
+    "errors": {
+      "visibility_owner_only": "Il blocco può cambiarlo solo chi l’ha impostato o il titolare dell’azienda.",
+      "visibility_would_hide": "Così smetteresti di vedere tu stesso questo elemento.",
+      "record_read_only": "Puoi solo visualizzare questo elemento: puoi modificare solo i tuoi."
+    },
+    "filingNeedsFullView": "Una dichiarazione si calcola dai documenti di tutta l’azienda e alcuni non li vedi (vedi solo i tuoi, oppure sono bloccati). Può prepararla il titolare dell’azienda o un membro con accesso completo."
   }
 }

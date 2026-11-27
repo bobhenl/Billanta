@@ -6,7 +6,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { fetchAuditLog, type AuditChange, type AuditEntityType, type AuditItem, type AuditPage } from '@/lib/audit';
 
-const FILTERS: (AuditEntityType | 'all')[] = ['all', 'invoice', 'contact', 'tenant', 'bank_account', 'member', 'api_key', 'import'];
+const FILTERS: (AuditEntityType | 'all')[] = ['all', 'invoice', 'contact', 'expense', 'tenant', 'bank_account', 'member', 'api_key', 'import'];
 const MONEY_FIELDS = new Set(['amountPaid', 'total', 'exchangeRate']);
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}(T[\d:.]+Z?)?$/;
 /** Date-only columns come back as midnight UTC; they have no time worth showing. */
@@ -21,6 +21,8 @@ function hrefOf(item: AuditItem): string | null {
   switch (item.entityType) {
     case 'invoice':
       return item.entityId ? `/invoices/${item.entityId}` : null;
+    case 'expense':
+      return item.entityId ? `/expenses/${item.entityId}` : null;
     case 'contact':
       return item.entityId ? `/contacts/${item.entityId}` : null;
     case 'tenant':

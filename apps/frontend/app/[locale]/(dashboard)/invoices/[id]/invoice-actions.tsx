@@ -110,6 +110,7 @@ export function InvoiceActions({
   const t = useTranslations('doc');
   const tVault = useTranslations('vault.actions');
   const tVaultRoot = useTranslations('vault');
+  const tLock = useTranslations('recordLock');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [dialog, setDialog] = useState<Dialog>(null);
@@ -239,7 +240,9 @@ export function InvoiceActions({
             ? tVault('blocked')
             : result.error === 'contact_email_sealed'
               ? tVaultRoot('emailSealed')
-              : `${t('actionFailed')}: ${result.error}`;
+              : result.error === 'record_read_only'
+                ? tLock('errors.record_read_only')
+                : `${t('actionFailed')}: ${result.error}`;
         toast({ text, tone: 'err' });
         return;
       }

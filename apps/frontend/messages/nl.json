@@ -1382,19 +1382,17 @@
       "person": "Particulier",
       "visibility": {
         "title": "Wie deze klant ziet",
-        "hint": "Een privéklant en zijn documenten zijn alleen zichtbaar voor de eigenaar van het bedrijf en het teamlid bij wie de klant hoort. Anderen vinden hem niet in lijsten of in de geschiedenis.",
+        "hint": "Bij wie de klant hoort en wie hem ziet. Anderen vinden een vergrendelde klant en zijn documenten niet in lijsten, zoeken, meldingen of de geschiedenis. Alleen de eigenaar van het bedrijf kan een vergrendelde klant overdragen.",
         "owner": "Hoort bij",
         "nobody": "Het hele bedrijf (niemand in het bijzonder)",
         "formerMember": "Voormalig teamlid",
-        "private": "Privé – alleen zichtbaar voor de eigenaar van het bedrijf en degene bij wie de klant hoort",
-        "privateHint": "Anderen vinden hem niet in contacten, facturen, meldingen of de wijzigingsgeschiedenis.",
         "ownedBy": "Hoort bij: {name}",
         "ownerOnly": "Alleen de eigenaar van het bedrijf of degene bij wie de klant hoort kan dit wijzigen.",
         "saved": "Opgeslagen",
         "failed": "Opslaan mislukt",
         "errors": {
           "visibility_owner_only": "Alleen de eigenaar van het bedrijf of degene bij wie de klant hoort kan dit wijzigen.",
-          "visibility_would_hide": "Dan ziet u deze klant zelf niet meer. Alleen de eigenaar van het bedrijf kan een privéklant overdragen.",
+          "visibility_would_hide": "Dan zou u de klant zelf niet meer zien. Alleen de eigenaar van het bedrijf kan een vergrendelde klant overdragen.",
           "owner_not_member": "Deze persoon zit niet meer in het team."
         }
       }
@@ -1462,8 +1460,7 @@
       "violet": "Violet",
       "pink": "Roze",
       "slate": "Grijs"
-    },
-    "privateBadge": "Privéklant"
+    }
   },
   "settings": {
     "title": "Instellingen",
@@ -2189,14 +2186,24 @@
         "adminsOnly": "Alleen eigenaar en beheerders"
       },
       "fillFromPreset": "Invullen vanuit",
-      "contactScope": {
-        "label": "Ziet klanten",
+      "scope": {
+        "label": {
+          "contacts": "Ziet klanten",
+          "invoices": "Ziet facturen",
+          "expenses": "Ziet uitgaven"
+        },
         "all": "Hele bedrijf",
+        "edit_own": "Alles, bewerkt alleen eigen",
         "own": "Alleen eigen",
-        "hint": "Alleen eigen = alleen de klanten die u aan deze persoon toewijst (Hoort bij) en documenten die hij zelf heeft gemaakt.",
+        "hint": {
+          "contacts": "Alleen eigen = de klanten die u aan hem toewijst (Hoort bij). Bewerkt alleen eigen = ziet alles, maar wijzigt en verwijdert alleen eigen items.",
+          "invoices": "Alleen eigen = facturen die hij zelf maakte en facturen van zijn klanten. Bewerkt alleen eigen = ziet alles, maar wijzigt en verwijdert alleen eigen items.",
+          "expenses": "Alleen eigen = uitgaven die hij zelf invoerde en uitgaven van zijn leveranciers. Bewerkt alleen eigen = ziet alles, maar wijzigt en verwijdert alleen eigen items."
+        },
         "ownerOnly": "Alleen de eigenaar van het bedrijf kan dit wijzigen.",
-        "summary": "alleen eigen klanten",
-        "refused": "Alleen de eigenaar van het bedrijf kan dit wijzigen."
+        "refused": "Alleen de eigenaar van het bedrijf kan dit wijzigen.",
+        "summaryOwn": "alleen eigen: {list}",
+        "summaryEditOwn": "bewerkt alleen eigen: {list}"
       }
     },
     "exports": {
@@ -4793,7 +4800,8 @@
       "ai_credits_exhausted": "De AI-credits van deze maand zijn op. Op de 1e komen er nieuwe; een hoger abonnement heeft er meer, of gebruik je eigen sleutel.",
       "amounts_plaintext": "Het document is niet opgeslagen: de bedragen waren niet versleuteld. Probeer het opnieuw.",
       "amounts_sealed": "De bedragen van het document zijn versleuteld, dus de server kan dit niet doen.",
-      "amounts_partly_paid": "Een deels betaald document kan niet worden versleuteld. Versleutel het zodra het volledig betaald is."
+      "amounts_partly_paid": "Een deels betaald document kan niet worden versleuteld. Versleutel het zodra het volledig betaald is.",
+      "record_read_only": "U kunt dit item alleen bekijken: u mag alleen uw eigen items bewerken."
     },
     "copy": {
       "title": "Invullen vanuit een andere factuur",
@@ -5419,7 +5427,7 @@
       "relock": "Opnieuw verbergen",
       "lockedToast": "Details verborgen",
       "unlockedToast": "Details worden zonder wachtwoord getoond",
-      "teamHint": "Dit beschermt tegen meekijken op een ontgrendelde of gedeelde computer, niet tegen collega’s: elk teamlid maakt ze zichtbaar met zijn eigen wachtwoord. Als alleen bepaalde mensen een factuur mogen zien, markeer hem als privé of stel in bij wie de klant hoort.",
+      "teamHint": "Dit beschermt tegen meekijken op een ontgrendelde of gedeelde computer, niet tegen collega’s: elk teamlid maakt ze zichtbaar met zijn eigen wachtwoord. Als alleen bepaalde mensen een factuur mogen zien, beperk dan de toegang ertoe of stel in bij wie de klant hoort.",
       "teamLink": "Instellen wie in het team wat ziet",
       "errors": {
         "wrong_current": "Onjuist wachtwoord.",
@@ -5427,18 +5435,8 @@
         "too_many_attempts": "Te veel pogingen. Probeer het over een paar minuten opnieuw.",
         "generic": "Dat lukte niet. Probeer het opnieuw."
       },
-      "privacyLink": "Markeren als privé"
-    },
-    "privacy": {
-      "label": "Privéfactuur",
-      "hint": "Alleen zichtbaar voor de eigenaar van het bedrijf en wie hem heeft gemaakt, met regels, bijlagen en betalingen.",
-      "badge": "Privéfactuur",
-      "ownerOnly": "Alleen de eigenaar van het bedrijf of wie de factuur heeft gemaakt kan dit wijzigen.",
-      "failed": "Wijzigen mislukt",
-      "madePrivate": "De factuur is privé",
-      "madeShared": "Het team ziet de factuur weer"
-    },
-    "privateRow": "Privéfactuur"
+      "privacyLink": "Toegang beperken"
+    }
   },
   "invite": {
     "title": "Uitnodiging voor het team",
@@ -7443,7 +7441,8 @@
       "bank_account": "Bankrekeningen",
       "member": "Team",
       "api_key": "API-sleutels",
-      "import": "Imports"
+      "import": "Imports",
+      "expense": "Uitgaven"
     },
     "docTypes": {
       "invoice": "een factuur",
@@ -7481,8 +7480,8 @@
         "send_waiting_pdf": "zette klaar voor verzending met pdf",
         "locked": "vergrendelde",
         "unlocked": "ontgrendelde",
-        "made_private": "maakte privé",
-        "made_shared": "deelde met het team"
+        "made_private": "beperkte de toegang tot",
+        "made_shared": "hief de toegangsbeperking op van"
       },
       "tenant": {
         "updated": "bewerkte de bedrijfsgegevens",
@@ -7525,6 +7524,10 @@
         "contacts_csv": "importeerde contacten uit CSV",
         "fakturoid": "importeerde gegevens uit Fakturoid",
         "guest": "nam facturen over die zonder account waren gemaakt"
+      },
+      "expense": {
+        "made_private": "beperkte de toegang tot uitgave",
+        "made_shared": "hief de toegangsbeperking op van uitgave"
       }
     },
     "fields": {
@@ -7611,7 +7614,11 @@
       "isPrivate": "Privé",
       "ownerUserId": "Hoort bij",
       "contactScope": "Ziet klanten",
-      "vaultCategories": "Uitgezette categorieën"
+      "vaultCategories": "Uitgezette categorieën",
+      "accessLock": "Toegangsbeperking",
+      "accessLockUserId": "Vergrendeld door",
+      "invoiceScope": "Ziet facturen",
+      "expenseScope": "Ziet uitgaven"
     },
     "values": {
       "invoice": "Factuur",
@@ -7631,7 +7638,11 @@
       "recovery": "Herstelcode",
       "password": "Wachtwoord",
       "recent_sign_in": "Recente aanmelding",
-      "passkey": "Passkey"
+      "passkey": "Passkey",
+      "private": "Privé",
+      "own": "Alleen eigen",
+      "edit_own": "Bewerkt alleen eigen",
+      "all": "Hele bedrijf"
     },
     "cleared": "gewist",
     "filters": {
@@ -15062,5 +15073,34 @@
       "passkey_failed": "De passkey kon niet worden gecontroleerd. Probeer het opnieuw of voer je code of wachtwoord in."
     },
     "usePasskey": "Bevestigen met passkey"
+  },
+  "recordLock": {
+    "label": "Toegang beperken",
+    "hint": "Anderen vinden een vergrendeld item niet in lijsten, zoeken, meldingen of de wijzigingsgeschiedenis. Alleen wie de vergrendeling instelde, of de eigenaar van het bedrijf, kan die daarna wijzigen. Het telt nog steeds mee in btw-aangiften en belastingcijfers.",
+    "holderOnly": "Alleen wie het vergrendelde, of de eigenaar van het bedrijf, kan dit wijzigen.",
+    "levels": {
+      "none": {
+        "invoice": "Niet vergrendeld – iedereen die facturen ziet",
+        "expense": "Niet vergrendeld – iedereen die uitgaven ziet",
+        "contact": "Niet vergrendeld – iedereen die contacten ziet"
+      },
+      "private": "Alleen ik en de eigenaar van het bedrijf",
+      "admin": "Ik, de eigenaar van het bedrijf en beheerders",
+      "accountant": "Iedereen behalve leden met alleen leesrechten"
+    },
+    "badge": {
+      "private": "Vergrendeld – privé",
+      "admin": "Vergrendeld – alleen beheerders",
+      "accountant": "Vergrendeld – verborgen voor leden met leesrechten"
+    },
+    "locked": "Toegang beperkt",
+    "opened": "Vergrendeling opgeheven",
+    "failed": "Opslaan mislukt",
+    "errors": {
+      "visibility_owner_only": "Alleen wie de vergrendeling instelde, of de eigenaar van het bedrijf, kan die wijzigen.",
+      "visibility_would_hide": "Dan zou u dit item zelf niet meer zien.",
+      "record_read_only": "U kunt dit item alleen bekijken: u mag alleen uw eigen items bewerken."
+    },
+    "filingNeedsFullView": "Een aangifte wordt berekend uit de documenten van het hele bedrijf, en sommige ziet u niet (u ziet alleen uw eigen, of ze zijn vergrendeld). De eigenaar van het bedrijf of een lid met volledige toegang kan hem opstellen."
   }
 }

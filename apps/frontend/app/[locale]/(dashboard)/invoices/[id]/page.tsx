@@ -35,7 +35,9 @@ import { cn } from '@/lib/utils';
 import { homeCurrencyOf, lawUrl } from '@faktur/cz-compliance';
 import { AttachmentsPanel, type Attachment } from './attachments-panel';
 import { InvoiceActions } from './invoice-actions';
-import { InvoiceLockBar, InvoicePrivacy, UnlockInvoice } from './invoice-lock';
+import { InvoiceLockBar, UnlockInvoice } from './invoice-lock';
+import { RecordLock } from '@/components/record-lock';
+import { mayChangeLock } from '@/lib/record-lock';
 import { auth } from '@/auth';
 import { BuyerDetailsRequest } from './buyer-details-request';
 import { PublicLinkPanel } from './public-link-panel';
@@ -119,9 +121,12 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   const canEdit = await fetchCanWrite('invoices');
   const myRole = await fetchMyRole().catch(() => null);
   const canLock = canManage(myRole);
-  // Same rule as the API (mayChangeInvoicePrivacy): the company owner or whoever created it.
   const myId = (await auth())?.user?.id;
-  const canPrivate = myRole === 'owner' || (!!myId && invoice.createdByUserId === myId);
+  const canPrivate = mayChangeLock(myRole, myId, {
+    person: invoice.createdByUserId ?? null,
+    accessLock: invoice.accessLock ?? null,
+    accessLockUserId: invoice.accessLockUserId ?? null
+  });
   // The partner split is owner/admin data like the "Po zdanění" report itself (the backend refuses others).
   const partners = canLock
     ? await apiFetch<{ model: TaxModel | null }>('/api/v1/tenants/me/tax-model')
@@ -260,7 +265,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
 
       <div className="mt-3">
         <InvoiceLockBar id={invoice.id} locked={Boolean(invoice.lockedAt)} canLock={canLock} canPrivate={canPrivate} />
-        <InvoicePrivacy id={invoice.id} isPrivate={Boolean(invoice.isPrivate)} canChange={canPrivate} />
+        <RecordLock kind="invoice" id={invoice.id} level={invoice.accessLock ?? null} canChange={canPrivate} anchorId="invoice-privacy" />
       </div>
 
       <div className="flex flex-wrap items-start justify-between gap-4">

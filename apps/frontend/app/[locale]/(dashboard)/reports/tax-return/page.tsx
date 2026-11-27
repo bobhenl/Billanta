@@ -52,6 +52,13 @@ export default async function TaxReturnPage({ searchParams }: { searchParams: Pr
       const lock = lockOf(await usageLoad, 'income_tax_export');
       return <SealedTaxReturn year={year} rate={rate} years={years} thisYear={thisYear} lock={lock} />;
     }
+    if (error instanceof ApiError && error.status === 409 && error.body.includes('filing_needs_full_view')) {
+      return (
+        <Banner tone="info" className="mt-6">
+          {(await getTranslations('recordLock'))('filingNeedsFullView')}
+        </Banner>
+      );
+    }
     return (
       <Banner tone={error instanceof NoTenantError ? 'info' : 'err'} className="mt-6">
         {t(error instanceof NoTenantError ? 'noTenant' : error instanceof ApiError && error.status === 503 ? 'ratesUnavailable' : 'loadError')}

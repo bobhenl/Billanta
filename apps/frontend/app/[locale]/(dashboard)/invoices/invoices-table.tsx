@@ -23,8 +23,7 @@ import {
   Repeat2,
   Send,
   Stamp,
-  Trash2,
-  UserRoundCheck
+  Trash2
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
@@ -33,6 +32,7 @@ import { toast } from '@/components/toaster';
 import { useCanDo, useCanWrite } from '@/components/access-provider';
 import { ColorDot } from '@/components/color-dot';
 import { EmptyState } from '@/components/empty-state';
+import { LockBadge } from '@/components/record-lock';
 import { ConfirmModal } from '@/components/modal';
 import {
   buyerDetailsState,
@@ -334,7 +334,7 @@ export function InvoicesTable({
           <span className="inline-flex items-center gap-1 whitespace-nowrap font-mono text-xs font-semibold">
             {row.invoiceNumber ?? <span className="font-sans font-normal italic text-muted-foreground">{t('unnumbered')}</span>}
             {/* Not the padlock: that one means "Skrýt detaily", this one who on the team sees it. */}
-            {row.isPrivate && <UserRoundCheck className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-label={t('privateRow')} />}
+            <LockBadge level={row.accessLock} icon="person" />
           </span>
         );
       case 'type':

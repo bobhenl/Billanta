@@ -1382,19 +1382,17 @@
       "person": "Particulier",
       "visibility": {
         "title": "Qui voit ce client",
-        "hint": "Un client privé et ses documents ne sont visibles que par le propriétaire de l’entreprise et le membre à qui il appartient. Les autres ne le trouvent ni dans les listes ni dans l’historique.",
+        "hint": "À qui appartient le client et qui le voit. Les autres ne trouvent pas un client verrouillé ni ses documents dans les listes, la recherche, les notifications ni l’historique. Seul le propriétaire de l’entreprise peut transférer un client verrouillé.",
         "owner": "Appartient à",
         "nobody": "Toute l’entreprise (personne en particulier)",
         "formerMember": "Ancien membre de l’équipe",
-        "private": "Privé – visible seulement par le propriétaire de l’entreprise et la personne à qui le client appartient",
-        "privateHint": "Les autres ne le trouvent pas dans les contacts, factures, notifications ni l’historique des modifications.",
         "ownedBy": "Appartient à : {name}",
         "ownerOnly": "Seul le propriétaire de l’entreprise ou la personne à qui le client appartient peut modifier cela.",
         "saved": "Enregistré",
         "failed": "Échec de l’enregistrement",
         "errors": {
           "visibility_owner_only": "Seul le propriétaire de l’entreprise ou la personne à qui le client appartient peut modifier cela.",
-          "visibility_would_hide": "Vous ne verriez plus ce client vous-même. Seul le propriétaire de l’entreprise peut confier un client privé à quelqu’un d’autre.",
+          "visibility_would_hide": "Vous ne verriez plus vous-même le client. Seul le propriétaire de l’entreprise peut transférer un client verrouillé.",
           "owner_not_member": "Cette personne ne fait plus partie de l’équipe."
         }
       }
@@ -1462,8 +1460,7 @@
       "violet": "Violet",
       "pink": "Rose",
       "slate": "Gris"
-    },
-    "privateBadge": "Client privé"
+    }
   },
   "settings": {
     "title": "Paramètres",
@@ -2189,14 +2186,24 @@
         "adminsOnly": "Propriétaire et administrateurs uniquement"
       },
       "fillFromPreset": "Remplir depuis",
-      "contactScope": {
-        "label": "Voit les clients",
+      "scope": {
+        "label": {
+          "contacts": "Voit les clients",
+          "invoices": "Voit les factures",
+          "expenses": "Voit les dépenses"
+        },
         "all": "Toute l’entreprise",
+        "edit_own": "Tout, ne modifie que les siens",
         "own": "Seulement les siens",
-        "hint": "Seulement les siens = seulement les clients que vous lui attribuez (Appartient à) et les documents qu’il a lui-même créés.",
+        "hint": {
+          "contacts": "Seulement les siens = les clients que vous lui attribuez (Appartient à). Ne modifie que les siens = voit tout, mais ne modifie et ne supprime que les siens.",
+          "invoices": "Seulement les siens = les factures qu’il a émises et celles de ses clients. Ne modifie que les siens = voit tout, mais ne modifie et ne supprime que les siens.",
+          "expenses": "Seulement les siens = les dépenses qu’il a saisies et celles de ses fournisseurs. Ne modifie que les siens = voit tout, mais ne modifie et ne supprime que les siens."
+        },
         "ownerOnly": "Seul le propriétaire de l’entreprise peut modifier cela.",
-        "summary": "ses clients seulement",
-        "refused": "Seul le propriétaire de l’entreprise peut modifier cela."
+        "refused": "Seul le propriétaire de l’entreprise peut modifier cela.",
+        "summaryOwn": "seulement les siens : {list}",
+        "summaryEditOwn": "ne modifie que les siens : {list}"
       }
     },
     "exports": {
@@ -4793,7 +4800,8 @@
       "ai_credits_exhausted": "Les crédits IA de ce mois sont épuisés. Les suivants arrivent le 1er ; une formule supérieure en a plus, ou utilisez votre propre clé.",
       "amounts_plaintext": "Le document n’a pas été enregistré : les montants n’étaient pas chiffrés. Veuillez réessayer.",
       "amounts_sealed": "Les montants du document sont chiffrés, le serveur ne peut donc pas effectuer cette action.",
-      "amounts_partly_paid": "Un document partiellement payé ne peut pas être chiffré. Chiffrez-le une fois payé en totalité."
+      "amounts_partly_paid": "Un document partiellement payé ne peut pas être chiffré. Chiffrez-le une fois payé en totalité.",
+      "record_read_only": "Vous pouvez seulement consulter cet élément : vous ne pouvez modifier que les vôtres."
     },
     "copy": {
       "title": "Pré-remplir à partir d’une autre facture",
@@ -5419,7 +5427,7 @@
       "relock": "Masquer à nouveau",
       "lockedToast": "Détails masqués",
       "unlockedToast": "Les détails s'affichent sans mot de passe",
-      "teamHint": "Cela protège des regards sur un ordinateur non verrouillé ou partagé, pas des collègues : chaque membre de l’équipe les affiche avec son propre mot de passe. Si seules certaines personnes doivent voir une facture, marquez-la comme privée ou indiquez à qui appartient le client.",
+      "teamHint": "Cela protège des regards sur un ordinateur non verrouillé ou partagé, pas des collègues : chaque membre de l’équipe les affiche avec son propre mot de passe. Si seules certaines personnes doivent voir une facture, restreignez l’accès à celle-ci ou indiquez à qui appartient le client.",
       "teamLink": "Définir qui voit quoi dans l'équipe",
       "errors": {
         "wrong_current": "Mot de passe incorrect.",
@@ -5427,18 +5435,8 @@
         "too_many_attempts": "Trop de tentatives. Réessayez dans quelques minutes.",
         "generic": "Cela n'a pas fonctionné. Veuillez réessayer."
       },
-      "privacyLink": "Marquer comme privée"
-    },
-    "privacy": {
-      "label": "Facture privée",
-      "hint": "Visible seulement par le propriétaire de l’entreprise et la personne qui l’a créée, avec ses lignes, pièces jointes et paiements.",
-      "badge": "Facture privée",
-      "ownerOnly": "Seul le propriétaire de l’entreprise ou la personne qui a créé la facture peut modifier cela.",
-      "failed": "Échec de la modification",
-      "madePrivate": "La facture est privée",
-      "madeShared": "L’équipe voit de nouveau la facture"
-    },
-    "privateRow": "Facture privée"
+      "privacyLink": "Restreindre l’accès"
+    }
   },
   "invite": {
     "title": "Invitation dans l’équipe",
@@ -7443,7 +7441,8 @@
       "bank_account": "Comptes bancaires",
       "member": "Équipe",
       "api_key": "Clés API",
-      "import": "Imports"
+      "import": "Imports",
+      "expense": "Dépenses"
     },
     "docTypes": {
       "invoice": "une facture",
@@ -7481,8 +7480,8 @@
         "send_waiting_pdf": "a mis en attente d'envoi avec le PDF",
         "locked": "a verrouillé",
         "unlocked": "a déverrouillé",
-        "made_private": "a rendu privé",
-        "made_shared": "a partagé avec l’équipe"
+        "made_private": "a restreint l’accès à",
+        "made_shared": "a levé la restriction d’accès à"
       },
       "tenant": {
         "updated": "a modifié les informations de l’entreprise",
@@ -7525,6 +7524,10 @@
         "contacts_csv": "a importé des contacts depuis un CSV",
         "fakturoid": "a importé des données depuis Fakturoid",
         "guest": "a repris des factures créées sans compte"
+      },
+      "expense": {
+        "made_private": "a restreint l’accès à la dépense",
+        "made_shared": "a levé la restriction d’accès à la dépense"
       }
     },
     "fields": {
@@ -7611,7 +7614,11 @@
       "isPrivate": "Privé",
       "ownerUserId": "Appartient à",
       "contactScope": "Voit les clients",
-      "vaultCategories": "Catégories désactivées"
+      "vaultCategories": "Catégories désactivées",
+      "accessLock": "Restriction d’accès",
+      "accessLockUserId": "Verrouillé par",
+      "invoiceScope": "Voit les factures",
+      "expenseScope": "Voit les dépenses"
     },
     "values": {
       "invoice": "Facture",
@@ -7631,7 +7638,11 @@
       "recovery": "Code de récupération",
       "password": "Mot de passe",
       "recent_sign_in": "Connexion récente",
-      "passkey": "Passkey"
+      "passkey": "Passkey",
+      "private": "Privé",
+      "own": "Seulement les siens",
+      "edit_own": "Ne modifie que les siens",
+      "all": "Toute l’entreprise"
     },
     "cleared": "effacé",
     "filters": {
@@ -15062,5 +15073,34 @@
       "passkey_failed": "La clé d’accès n’a pas pu être vérifiée. Réessayez ou saisissez votre code ou mot de passe."
     },
     "usePasskey": "Confirmer avec une clé d’accès"
+  },
+  "recordLock": {
+    "label": "Restreindre l’accès",
+    "hint": "Les autres ne trouvent pas un élément verrouillé dans les listes, la recherche, les notifications ni l’historique des modifications. Seule la personne qui a posé le verrou, ou le propriétaire de l’entreprise, peut ensuite le modifier. Il compte toujours dans les déclarations de TVA et les chiffres fiscaux.",
+    "holderOnly": "Seule la personne qui l’a verrouillé, ou le propriétaire de l’entreprise, peut modifier cela.",
+    "levels": {
+      "none": {
+        "invoice": "Non verrouillé – tous ceux qui voient les factures",
+        "expense": "Non verrouillé – tous ceux qui voient les dépenses",
+        "contact": "Non verrouillé – tous ceux qui voient les contacts"
+      },
+      "private": "Seulement moi et le propriétaire de l’entreprise",
+      "admin": "Moi, le propriétaire de l’entreprise et les administrateurs",
+      "accountant": "Tout le monde sauf les membres en lecture seule"
+    },
+    "badge": {
+      "private": "Verrouillé – privé",
+      "admin": "Verrouillé – administrateurs seulement",
+      "accountant": "Verrouillé – masqué aux membres en lecture seule"
+    },
+    "locked": "Accès restreint",
+    "opened": "Verrou retiré",
+    "failed": "Échec de l’enregistrement",
+    "errors": {
+      "visibility_owner_only": "Seule la personne qui a posé le verrou, ou le propriétaire de l’entreprise, peut le modifier.",
+      "visibility_would_hide": "Vous ne verriez plus vous-même cet élément.",
+      "record_read_only": "Vous pouvez seulement consulter cet élément : vous ne pouvez modifier que les vôtres."
+    },
+    "filingNeedsFullView": "Une déclaration se calcule à partir des documents de toute l’entreprise, et certains vous sont cachés (vous ne voyez que les vôtres, ou ils sont verrouillés). Le propriétaire de l’entreprise ou un membre disposant d’un accès complet peut la préparer."
   }
 }

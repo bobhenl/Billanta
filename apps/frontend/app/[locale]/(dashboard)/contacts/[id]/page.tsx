@@ -22,6 +22,8 @@ import { InvoicesTable } from '../../invoices/invoices-table';
 import { ClientPortalCard } from './client-portal-card';
 import { ContactActions } from './contact-actions';
 import { ContactVisibilityCard, type TeamMemberOption } from './contact-visibility-card';
+import { LockBadge } from '@/components/record-lock';
+import { mayChangeLock } from '@/lib/record-lock';
 import { SealButton } from '@/components/vault/seal-button';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -64,8 +66,11 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
     apiFetch<{ members: { userId: string; name: string | null; email: string }[] }>('/api/v1/team').catch(() => null)
   ]);
   const members: TeamMemberOption[] = (team?.members ?? []).map((m) => ({ userId: m.userId, name: m.name || m.email }));
-  // Same rule as the API (mayChangeContactVisibility): the company owner, or the member the client belongs to.
-  const canChangeVisibility = role === 'owner' || (!!contact.ownerUserId && contact.ownerUserId === session?.user?.id);
+  // Same rules as the API (mayChangeContactOwner, mayChangeLock): a locked client is handed over only by the company owner.
+  const myId = session?.user?.id;
+  const lock = { person: contact.ownerUserId ?? null, accessLock: contact.accessLock ?? null, accessLockUserId: contact.accessLockUserId ?? null };
+  const canChangeOwner = role === 'owner' || (!lock.accessLock && !!lock.person && lock.person === myId);
+  const canChangeLock = mayChangeLock(role, myId, lock);
   const expenses = (expensePage?.data ?? []).filter((e) => e.supplierContactId === contact.id);
 
   // Per-currency stats over real (non-cancelled, non-quote) documents.
@@ -134,7 +139,7 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
             {contact.isStarred && <Star className="h-5 w-5 shrink-0 fill-warning text-warning" />}
             <ColorDot color={contact.color} className="h-3 w-3" />
             <ConfidentialText value={contact.legalName} className="truncate" />
-            {contact.isPrivate && <Lock className="h-4 w-4 shrink-0 text-muted-foreground" aria-label={t('visibility.private')} />}
+            <LockBadge level={contact.accessLock} className="h-4 w-4" />
             {contact.aresVerifiedAt && <BadgeCheck className="h-5 w-5 shrink-0 text-primary" aria-label={t('aresVerified')} />}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -265,9 +270,10 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
           <ContactVisibilityCard
             contactId={contact.id}
             ownerUserId={contact.ownerUserId ?? null}
-            isPrivate={!!contact.isPrivate}
+            accessLock={contact.accessLock ?? null}
             members={members}
-            canChange={canChangeVisibility}
+            canChangeOwner={canChangeOwner}
+            canChangeLock={canChangeLock}
           />
           <ClientPortalCard contactId={contact.id} link={contact.portalLink ?? null} defaultLink={contact.portalLinkDefault ?? null} slug={contact.portalSlug ?? null} lock={lockOf(usage, 'client_portal')} />
           {/* ARES only knows Czech companies. */}

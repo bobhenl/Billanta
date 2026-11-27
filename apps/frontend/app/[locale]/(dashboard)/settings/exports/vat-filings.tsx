@@ -69,6 +69,7 @@ export function VatFilings({
   const common = useTranslations('settings.exports.vat');
   const locale = useLocale();
   const tPlan = useTranslations('planLimits');
+  const tLock = useTranslations('recordLock');
   const tSealed = useTranslations('vault.amounts');
   const { key: vaultKey, requestUnlock } = useVault();
   const now = new Date();
@@ -90,13 +91,15 @@ export function VatFilings({
   const nothingToReport = (key: string) => (identified && key === 'dp3' ? common('identified.nothingToReport') : t('nothingToReport'));
 
   async function explain(key: string, res: Response) {
-    const plan = res.status === 403 ? planRequiredIn(await res.text()) : null;
+    const text = res.status === 403 || res.status === 409 ? await res.text() : '';
+    const plan = res.status === 403 ? planRequiredIn(text) : null;
     if (plan) {
       toast({ text: tPlan('planRequired', { plan: tPlan(`plans.${plan}`) }), tone: 'info' });
       return;
     }
-    const reason =
-      res.status === 404
+    const reason = text.includes('filing_needs_full_view')
+      ? tLock('filingNeedsFullView')
+      : res.status === 404
         ? nothingToReport(key)
         : res.status === 400
           ? t('missingDic')
