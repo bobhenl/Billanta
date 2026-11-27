@@ -19,6 +19,9 @@ import { formatMoney } from '@/lib/invoice-ui';
 import { inAppCalculatorPath } from '@/lib/public-tools';
 import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
+import { fetchUsage } from '@/lib/tenant';
+import { PlanLock } from '@/components/plan-lock';
+import { lockOf } from '@/lib/usage';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('taxReturn');
@@ -68,6 +71,7 @@ export default async function TaxReturnPage({ searchParams }: { searchParams: Pr
   const query = `year=${year}&rate=${rate}`;
 
   let r: TaxReturnData;
+  const usageLoad = fetchUsage();
   try {
     r = await apiFetch<TaxReturnData>(`/api/v1/exports/tax-return-basis?${query}`);
   } catch (error) {
@@ -84,6 +88,8 @@ export default async function TaxReturnPage({ searchParams }: { searchParams: Pr
   const category = (c: string | null) => (c == null ? t('uncategorised') : CATEGORIES.includes(c) ? tCat(c) : c);
   const href = (over: { year?: number; rate?: string }) => `/reports/tax-return?year=${over.year ?? year}${sk ? '' : `&rate=${over.rate ?? rate}`}`;
   const running = year === thisYear;
+  // The figures stay on screen on every plan; only the files are Start and up.
+  const downloadLock = lockOf(await usageLoad, 'income_tax_export');
   const flatTax: FlatTaxComparison | null = r.flatTax;
   const flatTaxOption = flatTax?.options.find((o) => o.kind === 'flat_tax') ?? null;
   const czDeadlines = taxReturnDeadlines('CZ', year);
@@ -106,6 +112,9 @@ export default async function TaxReturnPage({ searchParams }: { searchParams: Pr
       {/* Year and the downloads on one bar. Links, not a form: the page is a server component. */}
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
         <SegmentLinks label={t('yearLabel')} items={years.map((y) => ({ key: String(y), label: String(y), href: href({ year: y }), current: y === year }))} />
+        {downloadLock ? (
+          <PlanLock plan={downloadLock} />
+        ) : (
         <div className="flex flex-wrap gap-2">
           <a href={`/api/files/exports/tax-return-basis.pdf?${query}`} className={cn(buttonClass.primary, 'h-10')}>
             <Download className="h-4 w-4" aria-hidden="true" />
@@ -118,6 +127,7 @@ export default async function TaxReturnPage({ searchParams }: { searchParams: Pr
             <span className="hidden sm:inline">{t('downloadCsv')}</span>
           </a>
         </div>
+        )}
       </div>
       {running && (
         <Banner tone="warn" className="mt-4">

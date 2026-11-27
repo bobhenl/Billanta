@@ -112,6 +112,8 @@ export class ApiKeyAuthGuard implements CanActivate {
       );
     }
 
+    // The middleware counts the requests it resolves; this path has no middleware.
+    await this.apiKeysService.countRequest(result.tenantId);
     req.user = { id: result.apiKeyId, email: "", tenantId: result.tenantId, role: "service", apiKey: true };
     this.apiKeysService.touchLastUsed(result.tenantId, result.apiKeyId);
     return true;

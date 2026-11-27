@@ -42,6 +42,8 @@ import {
   Wallet,
   Webhook,
   History,
+  LockKeyhole,
+  ShieldCheck,
   type LucideIcon
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -122,6 +124,8 @@ const PAGES: Entry[] = [
   { key: 'backup', href: '/settings/backup', icon: DatabaseBackup, label: 'settings.hub.items.backup.title', section: 'manage' },
   { key: 'channels', href: '/settings/channels', icon: MessageCircle, label: 'settings.hub.items.channels.title', section: 'manage' },
   { key: 'ai', href: '/settings/ai', icon: Bot, label: 'settings.hub.items.ai.title', section: 'aiSettings' },
+  { key: 'security', href: '/settings/security', icon: ShieldCheck, label: 'settings.hub.items.security.title' },
+  { key: 'confidential', href: '/settings/confidential', icon: LockKeyhole, label: 'settings.hub.items.confidential.title', section: 'manage' },
   { key: 'apiKeys', href: '/settings/api-keys', icon: KeyRound, label: 'settings.hub.items.apiKeys.title', section: 'manage' },
   { key: 'notifications', href: '/settings/notifications', icon: Bell, label: 'settings.hub.items.notifications.title' },
   { key: 'emailNotifications', href: '/settings/email-notifications', icon: BellRing, label: 'settings.hub.items.emailNotifications.title' },

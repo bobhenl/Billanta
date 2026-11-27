@@ -22,6 +22,7 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nes
 import type { Response } from "express";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { planSummary } from "../billing/plan-access";
+import { usageOverview } from "../billing/plan-limits";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { effectiveActions, effectivePermissions } from "../tenancy/permissions";
 import { BankAccountDto } from "./dto/bank-account.dto";
@@ -59,6 +60,14 @@ export class TenantsController {
       // Drives the trial banner and the read-only state of paid features.
       plan: tenant ? planSummary(tenant, new Date()) : null,
     };
+  }
+
+  @Get("me/usage")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "This month: issued documents, AI credits and API requests against the plan, plus which paid features are open, locked or have a free use left" })
+  getUsage(@Req() req: TenantScopedRequest) {
+    return usageOverview(req.tenantDb!, req.user!.tenantId);
   }
 
   @Patch("me")

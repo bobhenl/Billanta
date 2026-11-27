@@ -112,9 +112,28 @@ export const FEATURE_MIN_PLAN = {
   stripe_sync: "start",
   api_keys: "start",
   card_payments: "plus",
+  /** Pohoda and Money S3 XML. */
+  accounting_export: "start",
+  /** Downloads of the income-tax basis and the annual filings (the on-screen figures stay open). */
+  income_tax_export: "start",
+  /** CZ and SK VAT return, control statement and EC sales list files. */
+  vat_filings: "plus",
+  client_portal: "start",
+  auto_reminders: "start",
+  webhooks: "start",
   confidential_mode: "plus",
 } as const satisfies Record<string, PaidPlan>;
 export type PlanFeature = keyof typeof FEATURE_MIN_PLAN;
+
+/**
+ * What a plan below a feature's minimum may still use of it, so people see
+ * the value before they pay: `per: "month"` resets every calendar month,
+ * `per: "ever"` is once for the company's whole life.
+ */
+export const FEATURE_TASTE: Partial<Record<PlanFeature, { uses: number; per: "month" | "ever" }>> = {
+  accounting_export: { uses: 1, per: "month" },
+  vat_filings: { uses: 1, per: "ever" },
+};
 
 /**
  * People in the team per plan, the owner included (the pricing page's
@@ -136,3 +155,31 @@ export function planFor(limits: Record<PlanKey, number>, n: number): PaidPlan | 
 
 /** Free keeps two recurring templates; more need a paid plan. */
 export const FREE_RECURRING_TEMPLATES = 2;
+
+/**
+ * Monthly allowances per plan; null means no limit. Only companies with
+ * `plan_enforced` are held to them (plan-access.ts). The pricing page reads
+ * a copy in apps/frontend/lib/plans.ts (PLAN_LIMITS); plans.spec.ts keeps
+ * the two equal.
+ */
+export const PLAN_LIMITS = {
+  /** Documents issued (drafts don't count). */
+  documents: { free: 10, start: null, plus: null, business: null },
+  /** One credit = one AI suggestion or one read receipt on Billanta's key. */
+  ai_credits: { free: 5, start: 30, plus: 150, business: 500 },
+  /** Public-API requests made with an API key. */
+  api_requests: { free: 0, start: 1000, plus: 10000, business: 50000 },
+} as const satisfies Record<string, Record<PlanKey, number | null>>;
+export type LimitedResource = keyof typeof PLAN_LIMITS;
+
+/** The cheapest plan whose limit for `resource` is above `current`'s (null when none is). */
+export function upgradeFor(resource: LimitedResource, current: PlanKey): PaidPlan | null {
+  const now = PLAN_LIMITS[resource][current];
+  if (now === null) return null;
+  for (const plan of PAID_PLANS) {
+    if (planRank(plan) <= planRank(current)) continue;
+    const next = PLAN_LIMITS[resource][plan];
+    if (next === null || next > now) return plan;
+  }
+  return null;
+}

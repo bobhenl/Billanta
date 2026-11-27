@@ -61,6 +61,8 @@ import { appendNoteLine } from "../bank-reconciliation/payment-note";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
 import { lockBlocks } from "./invoice-lock";
+import { countIssuedDocument } from "../billing/plan-limits";
+import { countsAsDocument } from "../billing/usage";
 import { assertSealingAllowed, plainOrNull, printedTexts } from "../vault/sealed";
 
 // TODO: once packages/cz-compliance is ready, ARES-resolve
@@ -1831,6 +1833,9 @@ export class InvoicesService {
     // The date the person chose on the form wins; numbering follows its year
     // (and month, for a pattern with {MM}) in the company's own number format.
     const issueDate = invoice.issueDate ?? now;
+    // Counted before the number is taken: a refusal after it would leave a gap
+    // in the series, because the request's transaction commits on a 403 too.
+    if (countsAsDocument(invoice.documentType)) await countIssuedDocument(db, tenantId, now);
     const formats = await loadNumberFormats(db, tenantId);
     const { invoiceNumber } = await allocateInvoiceNumber(db, tenantId, invoice.documentType, new Date(issueDate), formats);
     const variableSymbol = invoice.variableSymbol ?? variableSymbolFor(invoice.documentType, invoiceNumber);

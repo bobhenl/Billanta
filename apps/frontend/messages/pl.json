@@ -813,7 +813,8 @@
         "ai_key_missing": "Brakuje Twojego własnego klucza API do AI",
         "unsupported_file_type": "Nieobsługiwany typ pliku (JPEG, PNG, WebP, GIF, PDF)",
         "ai_refused": "AI odmówiło przetworzenia dokumentu",
-        "ai_unparseable": "Z dokumentu nie udało się nic odczytać"
+        "ai_unparseable": "Z dokumentu nie udało się nic odczytać",
+        "ai_credits_exhausted": "Kredyty AI na ten miesiąc się skończyły. Nowe pojawią się 1. dnia, wyższy plan ma ich więcej, możesz też użyć własnego klucza."
       },
       "supplierSection": "Dostawca i dokument",
       "supplierLinked": "Powiązano z kontaktem",
@@ -4333,7 +4334,7 @@
     "title": "Cennik",
     "lead": "Zacznij za darmo, bez karty. Przejdź na wyższy plan, gdy będzie potrzebny.",
     "seoTitle": "Cennik programu do faktur – zacznij za darmo",
-    "metaDescription": "Cennik Billanta: Free z 10 dokumentami miesięcznie i płatnością za każdy kolejny, Start od 4,99 €, Plus z AI od 9,99 € i Business dla zespołów. Bez karty, ceny netto (bez VAT).",
+    "metaDescription": "Cennik Billanta: Free z 10 dokumentami miesięcznie, Start od 4,99 €, Plus z AI od 9,99 € i Business dla zespołów. Bez karty, ceny netto (bez VAT).",
     "yearly": "Rocznie",
     "monthly": "Miesięcznie",
     "yearlySave": "2 miesiące gratis",
@@ -4353,7 +4354,7 @@
         "cta": "Zacznij za darmo",
         "features": [
           "10 dokumentów miesięcznie w cenie",
-          "Kolejne dokumenty po {payg} za sztukę",
+          "1 użytkownik + księgowa",
           "ISDOC, płatność QR, wyszukiwanie w rejestrze i VIES",
           "5 kredytów AI miesięcznie",
           "Śledzenie limitu VAT i kalendarz podatkowy",
@@ -4371,8 +4372,10 @@
           "Faktury cykliczne i portal klienta",
           "Dane do podatku dochodowego",
           "Eksport do Pohoda i Money S3",
+          "API i webhooki (1000 zapytań)",
           "30 kredytów AI miesięcznie",
-          "Bezpłatny dostęp dla księgowej"
+          "Bezpłatny dostęp dla księgowej",
+          "Faktury bez stopki Billanta"
         ]
       },
       "plus": {
@@ -4382,7 +4385,7 @@
         "features": [
           "Wszystko z planu Start",
           "150 kredytów AI miesięcznie",
-          "Deklaracja VAT, informacja kontrolna i podsumowująca",
+          "Deklaracja VAT, informacja kontrolna i podsumowująca dla CZ i SK",
           "Płatności kartą na fakturach",
           "3 użytkowników + księgowa",
           "API i webhooki (10 000 zapytań)",
@@ -4395,7 +4398,7 @@
         "cta": "Wybierz Business",
         "features": [
           "Wszystko z planu Plus",
-          "Do 10 firm na jednym koncie",
+          "Podział dochodu netto nawet między 10 wspólników",
           "10 użytkowników z rolami",
           "500 kredytów AI miesięcznie",
           "API i webhooki (50 000 zapytań)",
@@ -4403,7 +4406,7 @@
         ]
       }
     },
-    "paygNote": "W planie Free płacisz tylko za dokumenty powyżej 10 miesięcznie, po {payg} za sztukę. Od około 34 dokumentów miesięcznie taniej wychodzi plan Start.",
+    "limitsNote": "W planie Free wystawisz 10 dokumentów miesięcznie, korekty się nie liczą. Eksport do Pohody lub Money S3 wypróbujesz raz w miesiącu, a pliki VAT raz.",
     "aiCreditNote": "Jeden kredyt AI = jedna faktura z wiadomości głosowej lub tekstowej albo jeden paragon odczytany ze zdjęcia.",
     "compare": {
       "title": "Porównaj plany",
@@ -4435,30 +4438,37 @@
         "ownKey": "Własny klucz AI, bez limitu",
         "vatLimit": "Śledzenie limitu VAT i kalendarz podatkowy",
         "annual": "Dane do podatku dochodowego",
-        "vatFilings": "Deklaracja VAT, informacja kontrolna i podsumowująca",
+        "vatFilings": "Deklaracja VAT, informacja kontrolna i podsumowująca (CZ)",
         "accountantExport": "Eksport dla księgowej",
         "users": "Użytkownicy",
         "companies": "Firmy na jednym koncie",
-        "api": "API i webhooki (zapytania miesięcznie)",
+        "api": "API (zapytania miesięcznie)",
         "time": "Ewidencja czasu pracy",
-        "backups": "Kopie zapasowe danych (Google Drive, pobieranie)",
-        "support": "Wsparcie"
+        "backups": "Kopie zapasowe (Google Drive, SFTP, szyfrowane, pobieranie)",
+        "support": "Wsparcie",
+        "invoiceLock": "Faktury chronione hasłem",
+        "brandFooter": "Bez stopki „Utworzono w Billanta”",
+        "stripe": "Synchronizacja płatności ze Stripe",
+        "vatFilingsSk": "Deklaracja VAT, informacja kontrolna i podsumowująca (SK)",
+        "netIncome": "Dochód netto: wspólnicy w podziale",
+        "webhooks": "Webhooki"
       },
       "cell": {
-        "docsFree": "10 w cenie, potem po {payg}",
+        "docsFree": "10",
         "unlimited": "Bez limitu",
         "twoTemplates": "2 szablony",
         "manual": "Ręcznie",
         "automatic": "Automatycznie",
-        "csv": "CSV",
         "csvPlus": "CSV, Pohoda, Money S3",
-        "oneUser": "1",
-        "userAccountant": "1 + księgowa",
         "threeAccountant": "3 + księgowa",
-        "tenUsers": "10 z rolami",
-        "upTo10": "Do 10",
         "email": "E-mail",
-        "priority": "Priorytetowe"
+        "priority": "Priorytetowe",
+        "onScreen": "Na ekranie",
+        "oneDownload": "1 pobranie na próbę",
+        "csvTaste": "CSV, Pohoda i Money S3 1× w miesiącu",
+        "oneAccountant": "1 + księgowa",
+        "tenAccountant": "10 + księgowa",
+        "ownPlan": "Do 10, każda z własnym planem"
       }
     },
     "compareCompetitors": "Jak Billanta wypada na tle Fakturoid, iDoklad i innych",
@@ -4482,7 +4492,7 @@
       "items": [
         {
           "q": "Czy Billanta jest darmowa?",
-          "a": "Tak. Plan Free nie ma limitu czasu i nie wymaga karty. Obejmuje 10 dokumentów miesięcznie; każdy kolejny kosztuje {payg}. ISDOC, płatności QR i wyszukiwanie firm w rejestrze ARES są w każdym planie."
+          "a": "Tak. Plan Free nie ma limitu czasu i nie wymaga karty. Obejmuje 10 dokumentów miesięcznie. Jeśli potrzebujesz więcej, Start nie ma limitu dokumentów. ISDOC, płatności QR i wyszukiwanie firm w rejestrze ARES są w każdym planie."
         },
         {
           "q": "Czy ceny zawierają VAT?",
@@ -4502,7 +4512,7 @@
         },
         {
           "q": "Czy moja księgowa potrzebuje własnego planu?",
-          "a": "Nie. Od planu Start jedna księgowa otrzymuje dostęp do Twojej firmy za darmo, w ramach Twojego planu."
+          "a": "Nie. W każdym planie, także w Free, do Twojej firmy mogą mieć bezpłatny dostęp maksymalnie 2 księgowe."
         },
         {
           "q": "Dlaczego na fakturach jest napis „Stworzono w Billanta”?",
@@ -4715,7 +4725,8 @@
       "ai_provider_unavailable": "AI nie odpowiada. Spróbuj ponownie za chwilę.",
       "empty_input": "Opisz, co chcesz zafakturować.",
       "symbol_invalid": "Symbole mogą zawierać tylko cyfry (VS i SS do 10, KS do 4).",
-      "reason_required": "Podaj powód zmiany."
+      "reason_required": "Podaj powód zmiany.",
+      "ai_credits_exhausted": "Kredyty AI na ten miesiąc się skończyły. Nowe pojawią się 1. dnia, wyższy plan ma ich więcej, możesz też użyć własnego klucza."
     },
     "copy": {
       "title": "Wypełnij na podstawie innej faktury",
@@ -14192,6 +14203,20 @@
   "updateNotice": {
     "text": "Jest nowa wersja Billanty. Odśwież stronę, żeby wszystko działało.",
     "reload": "Odśwież"
+  },
+  "planLimits": {
+    "from": "Od planu {plan}",
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "documents": "{used} z {limit} dokumentów w tym miesiącu",
+    "aiCredits": "Zostało {remaining} z {limit} kredytów AI w tym miesiącu",
+    "apiRequests": "{used} z {limit} zapytań API w tym miesiącu",
+    "tasteLeft": "Za darmo na próbę: {left}×",
+    "planRequired": "To jest dostępne od planu {plan}.",
+    "documentsOut": "W tym miesiącu wystawiono już wszystkie {limit} dokumentów z Twojego planu. Kolejne wystawisz od planu {plan} albo od 1. dnia następnego miesiąca."
   },
   "vault": {
     "settingsLink": "Ustawienia Trybu poufnego",
