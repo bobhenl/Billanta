@@ -12,8 +12,15 @@
  *
  * Pure functions: callers pass documents already converted to CZK.
  * The output is a starting point the person reviews in EPO before filing —
- * e.g. the tax office (`c_ufo`) is picked there, and EU supplies are all
- * reported as services (code 3), since documents don't say goods/services.
+ * e.g. the tax office (`c_ufo`) is picked there unless it is set in the
+ * company settings, and EU supplies are all reported as services (code 3),
+ * since documents don't say goods/services.
+ *
+ * Structures checked 2026-11-27 against the EPO list
+ * https://adisspr.mfcr.cz/dpr/adis/idpr_pub/epo2_info/popis_struktury_seznam.faces
+ * (DPHDP3 03.01.04, DPHKH1 03.01.15, DPHSHV 02.01.05, all of 11. 8. 2026) and
+ * the XSDs https://adisspr.mfcr.cz/adis/jepo/schema/dphdp3_epo2.xsd,
+ * dphkh1_epo2.xsd and dphshv_epo2.xsd.
  */
 // Shared with the in-app export box and the public guide ("form version" line).
 import { VAT_FORM_VERSIONS } from "./vat-filing.js";
@@ -35,6 +42,10 @@ export interface VatSubmitter {
   stat: string;
   email: string;
   telefon: string;
+  /** Finanční úřad (c_ufo, CZ_TAX_OFFICES); null = picked in EPO. */
+  cUfo?: number | null;
+  /** Územní pracoviště (c_pracufo, CZ_TAX_WORKPLACES); optional in every XSD. */
+  cPracufo?: number | null;
 }
 
 /** One VAT rate group of a document, in CZK. */
@@ -158,12 +169,18 @@ function periodAttr(period: VatPeriod) {
   return "quarter" in period ? `ctvrt="${period.quarter}"` : `mesic="${period.month}"`;
 }
 
+// The XSDs require c_ufo (dphdp3/dphkh1/dphshv_epo2.xsd). Without it EPO
+// still loads the file and asks for the office, so an unset one is left out
+// rather than guessed. A legal person's name goes to `zkrobchjm`: the XSDs
+// have no other name attribute for typ_ds P.
 function vetaP(s: VatSubmitter, extra = "") {
   const attrs: [string, string][] = [
+    ["c_ufo", s.cUfo != null ? String(s.cUfo) : ""],
+    ["c_pracufo", s.cPracufo != null ? String(s.cPracufo) : ""],
     ["dic", dicNumber(s.dic)],
     ["typ_ds", s.typDs],
     ...(s.typDs === "P"
-      ? ([["nazev_prav_osoby", s.nazevPravOsoby]] as [string, string][])
+      ? ([["zkrobchjm", s.nazevPravOsoby]] as [string, string][])
       : ([
           ["jmeno", s.jmeno],
           ["prijmeni", s.prijmeni],
@@ -219,21 +236,28 @@ export function generateDphDp3(input: {
   let odp23 = 0;
   let pln5 = 0;
   let odp5 = 0;
-  // Received in domestic reverse charge (§ 92a ZDPH): the company owes the
-  // VAT as output tax (ř. 10/11, Veta1 rez_pren / dan_rpren) and deducts it
-  // in full (ř. 43/44, Veta4 nar_zdp / od_zdp). Field names from the DPHDP3
-  // structure description on adisspr.mfcr.cz (read 2026-10-18).
-  let rezPren23 = 0;
-  let danRpren23 = 0;
-  let rezPren5 = 0;
-  let danRpren5 = 0;
+  // Received where the company owes the VAT itself (§ 108 odst. 1 písm. c
+  // and § 92a ZDPH): output tax by where the supplier sits, then deducted in
+  // full on ř. 43/44 (Veta4 nar_zdp / od_zdp), which covers ř. 3 to 13.
+  // - Czech supplier, domestic reverse charge (§ 92a): ř. 10/11 rez_pren / dan_rpren.
+  // - EU supplier (§ 9 odst. 1): ř. 5/6 p_sl23_e / dan_psl23_e. Documents
+  //   don't say goods or services, so it is a service, as everywhere here;
+  //   goods from the EU (ř. 3/4) are moved by hand in EPO.
+  // - Supplier outside the EU: ř. 12/13 p_sl23_z / dan_psl23_z.
+  // Field names from the DPHDP3 03.01.04 structure on adisspr.mfcr.cz (read 2026-11-27).
+  const rc = {
+    domestic: { base1: 0, vat1: 0, base2: 0, vat2: 0 },
+    eu: { base1: 0, vat1: 0, base2: 0, vat2: 0 },
+    third_country: { base1: 0, vat1: 0, base2: 0, vat2: 0 },
+  };
   for (const doc of input.received) {
     const b = bands(doc.parts);
     if (doc.reverseCharge) {
-      rezPren23 += b.base1;
-      danRpren23 += b.vat1;
-      rezPren5 += b.base2;
-      danRpren5 += b.vat2;
+      const into = rc[supplierOrigin(doc)];
+      into.base1 += b.base1;
+      into.vat1 += b.vat1;
+      into.base2 += b.base2;
+      into.vat2 += b.vat2;
       continue;
     }
     pln23 += b.base1;
@@ -249,12 +273,19 @@ export function generateDphDp3(input: {
   // by a crown for the same reverse-charge invoice.
   // Totals sum the rounded lines, as EPO re-checks them: ř. 62 sums ř. 1–13,
   // ř. 46 (and with it ř. 63) sums ř. 40–45, ř. 64/65 is their difference.
-  const danZocelk = taxKc(dan23) + taxKc(dan5) + taxKc(danRpren23) + taxKc(danRpren5);
-  const odpSumNar = roundKc(odp23) + roundKc(odp5) + roundKc(danRpren23) + roundKc(danRpren5);
+  // ř. 43/44 are one line per rate for all three origins, so they are
+  // summed before rounding, like the document totals they come from.
+  const rcAll = (k: "base1" | "vat1" | "base2" | "vat2") => rc.domestic[k] + rc.eu[k] + rc.third_country[k];
+  const rcTax = [rc.domestic, rc.eu, rc.third_country].reduce((s, o) => s + taxKc(o.vat1) + taxKc(o.vat2), 0);
+  const danZocelk = taxKc(dan23) + taxKc(dan5) + rcTax;
+  const odpSumNar = roundKc(odp23) + roundKc(odp5) + roundKc(rcAll("vat1")) + roundKc(rcAll("vat2"));
   const odpZocelk = odpSumNar;
   const diff = danZocelk - odpZocelk;
 
-  const TAX_LINES = new Set(["dan23", "dan5", "dan_rpren23", "dan_rpren5"]);
+  const TAX_LINES = new Set([
+    "dan23", "dan5", "dan_rpren23", "dan_rpren5",
+    "dan_psl23_e", "dan_psl5_e", "dan_psl23_z", "dan_psl5_z",
+  ]);
   const attrs = (pairs: [string, number][]) =>
     pairs
       .map(([k, v]) => [k, TAX_LINES.has(k) ? upKc(v) : int(v)] as const)
@@ -274,10 +305,18 @@ export function generateDphDp3(input: {
     ["dan23", dan23],
     ["obrat5", obrat5],
     ["dan5", dan5],
-    ["rez_pren23", rezPren23],
-    ["dan_rpren23", danRpren23],
-    ["rez_pren5", rezPren5],
-    ["dan_rpren5", danRpren5],
+    ["p_sl23_e", rc.eu.base1],
+    ["dan_psl23_e", rc.eu.vat1],
+    ["p_sl5_e", rc.eu.base2],
+    ["dan_psl5_e", rc.eu.vat2],
+    ["rez_pren23", rc.domestic.base1],
+    ["dan_rpren23", rc.domestic.vat1],
+    ["rez_pren5", rc.domestic.base2],
+    ["dan_rpren5", rc.domestic.vat2],
+    ["p_sl23_z", rc.third_country.base1],
+    ["dan_psl23_z", rc.third_country.vat1],
+    ["p_sl5_z", rc.third_country.base2],
+    ["dan_psl5_z", rc.third_country.vat2],
   ])}${veta("Veta2", [
     ["pln_sluzby", plnSluzby],
     ["pln_rez_pren", plnRezPren],
@@ -287,13 +326,13 @@ export function generateDphDp3(input: {
     ["odp_tuz23_nar", odp23],
     ["pln5", pln5],
     ["odp_tuz5_nar", odp5],
-    ["nar_zdp23", rezPren23],
-    ["od_zdp23", danRpren23],
-    ["nar_zdp5", rezPren5],
-    ["od_zdp5", danRpren5],
+    ["nar_zdp23", rcAll("base1")],
+    ["od_zdp23", rcAll("vat1")],
+    ["nar_zdp5", rcAll("base2")],
+    ["od_zdp5", rcAll("vat2")],
     ["odp_sum_nar", odpSumNar],
   ])}
-  <Veta6 dan_zocelk="${danZocelk}" odp_zocelk="${odpZocelk}" dano_da="${Math.max(0, diff)}" dano_no="${Math.max(0, -diff)}" />
+  <Veta6 dan_zocelk="${danZocelk}" odp_zocelk="${odpZocelk}" dano="0" dano_da="${Math.max(0, diff)}" dano_no="${Math.max(0, -diff)}" />
 </DPHDP3>
 </Pisemnost>
 `;
@@ -365,7 +404,10 @@ export function generateDphDp3Identified(input: {
   ]);
   const veta2 = nonZero([["pln_sluzby", plnSluzby]]);
   if (veta1.length === 0 && veta2.length === 0) return { xml: null, warnings };
-  // ř. 62 sums the rounded tax lines; ř. 63 (odpočet) is always 0 here.
+  // ř. 62 sums the rounded tax lines. ř. 63 (odp_zocelk) stays out because
+  // there is no odpočet; the file EPO itself saves for an identified person
+  // has no odp_zocelk either. dano (ř. 66) is 0 as in that file: it carries
+  // a value only in a dodatečné přiznání.
   const danZocelk = [eu.vat1, eu.vat2, third.vat1, third.vat2].reduce((s, v) => s + taxKc(v), 0);
   const line = (name: string, pairs: (readonly [string, string])[]) =>
     pairs.length ? `\n  <${name} ${pairs.map(([k, v]) => `${k}="${v}"`).join(" ")} />` : "";
@@ -374,7 +416,7 @@ export function generateDphDp3Identified(input: {
 <DPHDP3 verzePis="${VAT_FORM_VERSIONS.DPHDP3}">
   <VetaD k_uladis="DPH" dokument="DP3" rok="${input.period.year}" ${periodAttr(input.period)} d_poddp="${czDate(input.today ?? new Date())}" dapdph_forma="B" typ_platce="I" trans="A" />
   ${vetaP(input.submitter)}${line("Veta1", veta1)}${line("Veta2", veta2)}
-  <Veta6 dan_zocelk="${danZocelk}" odp_zocelk="0" dano_da="${danZocelk}" dano_no="0" />
+  <Veta6 dan_zocelk="${danZocelk}" dano="0" dano_da="${danZocelk}" dano_no="0" />
 </DPHDP3>
 </Pisemnost>
 `;
@@ -384,8 +426,9 @@ export function generateDphDp3Identified(input: {
 /**
  * Kontrolní hlášení (DPHKH1).
  *
- * Received documents in domestic reverse charge go to B.1, one row each with
- * no threshold; the rest to B.2/B.3. VetaC rez_pren23/rez_pren5 repeat the
+ * Received documents in domestic reverse charge go to B.1 and reverse-charge
+ * purchases from abroad to A.2, one row each with no threshold; the rest to
+ * B.2/B.3. VetaC rez_pren23/rez_pren5 repeat the
  * B.1 bases (DPHDP3 ř. 10/11). Source: the DPHKH1 structure description on
  * adisspr.mfcr.cz (read 2026-10-18).
  *
@@ -443,11 +486,32 @@ export function generateDphKh1(input: {
     }
   }
 
+  const a2: string[] = [];
+  let celkZdA2 = 0;
   const b1: string[] = [];
   const b2: string[] = [];
   const b3 = { base1: 0, vat1: 0, base2: 0, vat2: 0 };
   for (const doc of input.received) {
     const b = bands(doc.parts);
+    if (doc.reverseCharge && supplierOrigin(doc) !== "domestic") {
+      // A.2: bought from a supplier abroad, tax owed by the company (§ 108
+      // odst. 2 a 3 per the KH structure, i.e. § 24 and § 25), one row per
+      // document with no threshold. k_stat and vatid_dod name the supplier's
+      // EU VAT ID without the prefix; both stay empty when it has none, which
+      // is always the case outside the EU (DPHKH1 03.01.15, read 2026-11-27).
+      // VetaC celk_zd_a2 sums the bases and ties to DPHDP3 ř. 3–6, 9, 12, 13.
+      const country = dicCountry(doc.supplierDic);
+      const euId = supplierOrigin(doc) === "eu" && country && country !== "CZ" ? doc.supplierDic! : null;
+      const supplier = euId
+        ? ` k_stat="${country === "GR" ? "EL" : country}" vatid_dod="${xmlAttr(dicNumber(euId))}"`
+        : "";
+      const evid = doc.number ? ` c_evid_dd="${xmlAttr(doc.number)}"` : "";
+      celkZdA2 += b.base1 + b.base2;
+      a2.push(
+        `<VetaA2 c_radku="${a2.length + 1}"${supplier}${evid} dppd="${czDate(doc.taxableDate)}" zakl_dane1="${kc2(b.base1)}" dan1="${kc2(b.vat1)}" zakl_dane2="${kc2(b.base2)}" dan2="${kc2(b.vat2)}" />`,
+      );
+      continue;
+    }
     if (doc.reverseCharge) {
       const label = doc.number || czDate(doc.taxableDate);
       // B.1 is keyed on the supplier's DIČ and document number, and EPO
@@ -489,12 +553,13 @@ export function generateDphKh1(input: {
     `zakl_dane1="${kc2(s.base1)}" dan1="${kc2(s.vat1)}" zakl_dane2="${kc2(s.base2)}" dan2="${kc2(s.vat2)}"`;
   const rows = [
     ...a1,
+    ...a2,
     ...a4,
     ...(a5.base1 || a5.base2 ? [`<VetaA5 ${sum(a5)} />`] : []),
     ...b1,
     ...b2,
     ...(b3.base1 || b3.base2 ? [`<VetaB3 ${sum(b3)} />`] : []),
-    `<VetaC obrat23="${kc2(c.obrat23)}" obrat5="${kc2(c.obrat5)}" pln23="${kc2(c.pln23)}" pln5="${kc2(c.pln5)}" pln_rez_pren="${kc2(c.plnRezPren)}" rez_pren23="${kc2(c.rezPren23)}" rez_pren5="${kc2(c.rezPren5)}" />`,
+    `<VetaC${a2.length ? ` celk_zd_a2="${kc2(celkZdA2)}"` : ""} obrat23="${kc2(c.obrat23)}" obrat5="${kc2(c.obrat5)}" pln23="${kc2(c.pln23)}" pln5="${kc2(c.pln5)}" pln_rez_pren="${kc2(c.plnRezPren)}" rez_pren23="${kc2(c.rezPren23)}" rez_pren5="${kc2(c.rezPren5)}" />`,
   ];
 
   const xml = `${header("41.16.3")}
@@ -549,7 +614,33 @@ export function generateDphShv(input: {
 
 const LEGAL_FORM = /\b(s\.\s?r\.\s?o\.|spol\.|a\.\s?s\.|v\.\s?o\.\s?s\.|k\.\s?s\.|z\.\s?s\.|z\.\s?ú\.|o\.\s?p\.\s?s\.|družstvo|SE)\s*$/i;
 
-/** Builds the submitter block from the company's settings. */
+/**
+ * Splits one address line into VetaP ulice, c_pop and c_orient.
+ * "Masarykova 12/3a" gives the street, číslo popisné 12, číslo orientační 3a.
+ * In a village without streets the line is "Sedlec 3" or just "3": VetaP
+ * `ulice` is "Ulice (nebo část obce)" (dphdp3_epo2.xsd), so "Sedlec" stays
+ * there as the část obce and 3 is the číslo popisné; a bare number leaves
+ * ulice empty. "č. p." / "čp." before the number is dropped. c_pop is digits
+ * only in the XSD, so an evidenční číslo ("ev. č. 12") is not split and the
+ * whole line stays in ulice for the person to fix in EPO.
+ */
+export function splitCzStreet(line: string | null | undefined): { ulice: string; cPop: string; cOrient: string } {
+  const street = (line ?? "").trim();
+  if (/\bev\.?\s*č/i.test(street)) return { ulice: street, cPop: "", cOrient: "" };
+  const s = street.replace(/(?:^|[\s,]+)č\.?\s*p\.?\s*(?=\d)/i, " ").trim();
+  const m = s.match(/^(?:(.*?)[\s,]+)?(\d+)(?:\/(\w+))?$/);
+  if (!m) return { ulice: street, cPop: "", cOrient: "" };
+  return { ulice: m[1] ?? "", cPop: m[2]!, cOrient: m[3] ?? "" };
+}
+
+/**
+ * Builds the submitter block from the company's settings.
+ *
+ * A natural person files with the tax office of their place of residence
+ * (§ 13 odst. 1 daňového řádu), and VetaP holds "místo pobytu nebo sídla",
+ * so for typ_ds F the separate residence address wins when it is filled.
+ * The business address is used otherwise, as before.
+ */
 export function submitterFromTenant(t: {
   legalName: string;
   dic: string | null;
@@ -559,25 +650,29 @@ export function submitterFromTenant(t: {
   addressCountry: string;
   email: string | null;
   phone: string | null;
+  taxOffice?: number | null;
+  taxWorkplace?: number | null;
+  residenceStreet?: string | null;
+  residenceCity?: string | null;
+  residencePostalCode?: string | null;
 }): VatSubmitter {
   const legal = LEGAL_FORM.test(t.legalName.trim());
   const name = t.legalName.trim().split(/\s+/);
-  // "Masarykova 12/3a" → street, číslo popisné, číslo orientační.
-  const street = (t.addressStreet ?? "").trim();
-  const m = street.match(/^(.*?)[\s,]+(\d+)(?:\/(\w+))?$/);
+  const residence = !legal && (t.residenceStreet?.trim() || t.residenceCity?.trim());
+  const street = splitCzStreet(residence ? t.residenceStreet : t.addressStreet);
   return {
     dic: t.dic ?? "",
     typDs: legal ? "P" : "F",
     jmeno: legal ? "" : (name[0] ?? ""),
     prijmeni: legal ? "" : name.slice(1).join(" "),
     nazevPravOsoby: legal ? t.legalName.trim() : "",
-    obec: t.addressCity ?? "",
-    ulice: m ? m[1]! : street,
-    cPop: m ? m[2]! : "",
-    cOrient: m?.[3] ?? "",
-    psc: t.addressPostalCode ?? "",
+    obec: (residence ? t.residenceCity : t.addressCity) ?? "",
+    ...street,
+    psc: (residence ? t.residencePostalCode : t.addressPostalCode) ?? "",
     stat: t.addressCountry === "CZ" ? "ČESKÁ REPUBLIKA" : t.addressCountry,
     email: t.email ?? "",
     telefon: t.phone ?? "",
+    cUfo: t.taxOffice ?? null,
+    cPracufo: t.taxOffice != null ? (t.taxWorkplace ?? null) : null,
   };
 }

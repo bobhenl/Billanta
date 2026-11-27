@@ -11,9 +11,9 @@ export type LegislationDataset = (typeof LEGISLATION_DATASETS)[number];
 /** Last manual check per group (YYYY-MM-DD). */
 export const DATASET_CHECKED: Record<LegislationDataset, string> = {
   // EPO form list (DPHDP3, DPHKH1, DPHSHV): vat-filing.ts
-  vat_forms: '2026-10-17',
-  // EPO form list (DPFDP6, DPFDP7): apps/backend annual-filings.ts
-  dpfo_form: '2026-10-17',
+  vat_forms: '2026-11-27',
+  // EPO form list (DPFDP6, DPFDP7): annual-filings.ts
+  dpfo_form: '2026-11-27',
   // ČSSZ e-podání OSVČ (OSVC2023–2025): apps/backend annual-filings.ts
   cssz_form: '2026-10-17',
   // ČSSZ minimum bases, health minimum: cz-tax-years.ts, tax-minimums.ts

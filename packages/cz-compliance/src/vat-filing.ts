@@ -8,11 +8,16 @@ import { nextCzechWorkingDay } from './working-days.js';
  *
  * VAT_FORM_VERSIONS is the `verzePis` written into each EPO XML. When
  * Finanční správa publishes a new structure, update it here together with
- * the generator (apps/backend/src/exports/vat-returns.ts) and move
- * VAT_INFO_CHECKED to the day the guide and the rules were re-read.
+ * the generator (vat-returns.ts) and move DATASET_CHECKED.vat_forms to the
+ * day the guide and the rules were re-read.
+ *
+ * Checked 2026-11-27 on
+ * https://adisspr.mfcr.cz/dpr/adis/idpr_pub/epo2_info/popis_struktury_seznam.faces:
+ * DPHDP3 03.01.04, DPHKH1 03.01.15 and DPHSHV 02.01.05 (all of 11. 8. 2026).
+ * verzePis is the first two parts.
  */
 export const VAT_FORM_VERSIONS = {
-  DPHDP3: '01.02',
+  DPHDP3: '03.01',
   DPHKH1: '03.01',
   DPHSHV: '02.01'
 } as const;

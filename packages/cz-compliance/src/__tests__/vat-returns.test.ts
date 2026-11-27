@@ -6,6 +6,7 @@ import {
   generateDphDp3Identified,
   generateDphKh1,
   generateDphShv,
+  splitCzStreet,
   submitterFromTenant,
   supplierOrigin,
   type VatIssuedDoc,
@@ -88,7 +89,7 @@ describe("generateDphDp3", () => {
     expect(xml).toContain('<Veta1 obrat23="20000" dan23="4200" obrat5="1000" dan5="120" />');
     expect(xml).toContain('<Veta2 pln_sluzby="5000" />');
     expect(xml).toContain('<Veta4 pln23="10000" odp_tuz23_nar="2100" odp_sum_nar="2100" />');
-    expect(xml).toContain('<Veta6 dan_zocelk="4320" odp_zocelk="2100" dano_da="2220" dano_no="0" />');
+    expect(xml).toContain('<Veta6 dan_zocelk="4320" odp_zocelk="2100" dano="0" dano_da="2220" dano_no="0" />');
     expect(xml).toContain('mesic="9"');
     expect(xml).toContain('d_poddp="10.10.2026"');
     expect(xml).toContain('dic="8001011234"');
@@ -114,7 +115,7 @@ describe("generateDphDp3", () => {
       '<Veta4 pln23="10000" odp_tuz23_nar="2100" nar_zdp23="40000" od_zdp23="8400" nar_zdp5="3000" od_zdp5="360" odp_sum_nar="10860" />',
     );
     // ř. 62 = 4200 + 8400 + 360, ř. 63 = ř. 46: the self-assessment nets out.
-    expect(xml).toContain('<Veta6 dan_zocelk="12960" odp_zocelk="10860" dano_da="2100" dano_no="0" />');
+    expect(xml).toContain('<Veta6 dan_zocelk="12960" odp_zocelk="10860" dano="0" dano_da="2100" dano_no="0" />');
   });
   it("reports an excess deduction", () => {
     const xml = generateDphDp3({ issued: [], received: [received({})], submitter, period: { year: 2026, quarter: 3 }, today });
@@ -295,7 +296,7 @@ describe("generateDphDp3Identified", () => {
     expect(xml).not.toContain("<Veta4");
     expect(xml).not.toContain("odp_tuz");
     expect(xml).not.toContain("nar_zdp");
-    expect(xml).toContain('<Veta6 dan_zocelk="333" odp_zocelk="0" dano_da="333" dano_no="0" />');
+    expect(xml).toContain('<Veta6 dan_zocelk="333" dano="0" dano_da="333" dano_no="0" />');
   });
 
   it("returns nothing for a month without a foreign purchase or EU sale", () => {
@@ -305,7 +306,7 @@ describe("generateDphDp3Identified", () => {
   it("files an EU-sales-only month with ř. 21 and no tax", () => {
     const { xml } = run([], [euSale]);
     expect(xml).not.toContain("<Veta1");
-    expect(xml).toContain('<Veta6 dan_zocelk="0" odp_zocelk="0" dano_da="0" dano_no="0" />');
+    expect(xml).toContain('<Veta6 dan_zocelk="0" dano="0" dano_da="0" dano_no="0" />');
   });
 
   it("warns about a foreign purchase not marked as reverse charge with a rate", () => {
@@ -350,7 +351,7 @@ describe("rounding of the Czech VAT filings", () => {
       '<Veta4 pln23="500" odp_tuz23_nar="105" nar_zdp23="152" od_zdp23="32" nar_zdp5="10" od_zdp5="1" odp_sum_nar="138" />',
     );
     // ř. 62 = 211 + 13 + 33 + 2, ř. 63 = 105 + 32 + 1, ř. 64 = 259 − 138.
-    expect(xml).toContain('<Veta6 dan_zocelk="259" odp_zocelk="138" dano_da="121" dano_no="0" />');
+    expect(xml).toContain('<Veta6 dan_zocelk="259" odp_zocelk="138" dano="0" dano_da="121" dano_no="0" />');
   });
 
   it("DPHDP3: a tax line below one crown is still filed, as 1", () => {
@@ -368,7 +369,7 @@ describe("rounding of the Czech VAT filings", () => {
       today,
     });
     expect(xml).toContain('<Veta1 obrat23="-501" dan23="-105" />');
-    expect(xml).toContain('<Veta6 dan_zocelk="-105" odp_zocelk="0" dano_da="0" dano_no="105" />');
+    expect(xml).toContain('<Veta6 dan_zocelk="-105" odp_zocelk="0" dano="0" dano_da="0" dano_no="105" />');
   });
 
   it("DPHDP3: float noise in a sum does not add a crown", () => {
@@ -383,7 +384,7 @@ describe("rounding of the Czech VAT filings", () => {
     const tool = received({ number: "US-2", supplierDic: null, supplierCountry: "US", reverseCharge: true, parts: [{ ratePercent: 21, base: 300.4, vat: 63.08 }], totalCzk: 300.4 });
     const { xml } = generateDphDp3Identified({ issued: [], received: [ads, tool], submitter, period, today });
     expect(xml).toContain('<Veta1 p_sl23_e="153" dan_psl23_e="33" p_sl23_z="300" dan_psl23_z="64" />');
-    expect(xml).toContain('<Veta6 dan_zocelk="97" odp_zocelk="0" dano_da="97" dano_no="0" />');
+    expect(xml).toContain('<Veta6 dan_zocelk="97" dano="0" dano_da="97" dano_no="0" />');
   });
 
   it("identified person: 151.84 Kč at 21 % (31.8864 Kč) is 32 Kč", () => {
@@ -438,5 +439,100 @@ describe("rounding of the Czech VAT filings", () => {
     })!;
     expect(xml).toContain('k_stat="DE" c_vat="123456789" k_pln_eu="3" pln_pocet="2" pln_hodnota="1501"');
     expect(xml).toContain('k_stat="FR" c_vat="12345678901" k_pln_eu="3" pln_pocet="2" pln_hodnota="800"');
+  });
+});
+
+// EPO structures as of 2026-11-27: DPHDP3 03.01.04, DPHKH1 03.01.15,
+// DPHSHV 02.01.05 (adisspr.mfcr.cz popis_struktury_seznam and the *_epo2.xsd).
+describe("EPO structures of 2026", () => {
+  const tenant = {
+    legalName: "Jan Novák",
+    dic: "CZ8001011234",
+    addressStreet: "Masarykova 12/3a",
+    addressCity: "Brno",
+    addressPostalCode: "602 00",
+    addressCountry: "CZ",
+    email: null,
+    phone: null,
+  };
+  // A 152 Kč ad bought from an EU supplier: 21 % is 31.92 Kč, which rounds up to 32.
+  const ad = received({ number: "AD-1", supplierDic: "IE6388047V", reverseCharge: true, parts: [{ ratePercent: 21, base: 152, vat: 31.92 }], totalCzk: 152 });
+
+  it("identified person: 152 Kč of EU ads is ř. 5/6 152 and 32, Veta6 32, verzePis 03.01", () => {
+    const { xml } = generateDphDp3Identified({ issued: [], received: [ad], submitter, period, today });
+    expect(xml).toContain('<DPHDP3 verzePis="03.01">');
+    expect(xml).toContain('<Veta1 p_sl23_e="152" dan_psl23_e="32" />');
+    // As in the file EPO saves for an identified person: no ř. 63.
+    expect(xml).toContain('<Veta6 dan_zocelk="32" dano="0" dano_da="32" dano_no="0" />');
+    expect(xml).not.toContain("odp_zocelk");
+  });
+
+  it("payer: an EU service goes to ř. 5/6 and a third-country one to ř. 12/13, not to ř. 10/11", () => {
+    const us = received({ number: "US-1", supplierDic: null, supplierCountry: "US", reverseCharge: true, parts: [{ ratePercent: 21, base: 300, vat: 63 }], totalCzk: 300 });
+    const domestic = received({ number: "RC-1", reverseCharge: true, parts: [{ ratePercent: 21, base: 1000, vat: 210 }], totalCzk: 1000 });
+    const xml = generateDphDp3({ issued: [], received: [ad, us, domestic], submitter, period, today });
+    expect(xml).toContain('<DPHDP3 verzePis="03.01">');
+    expect(xml).toContain(
+      '<Veta1 p_sl23_e="152" dan_psl23_e="32" rez_pren23="1000" dan_rpren23="210" p_sl23_z="300" dan_psl23_z="63" />',
+    );
+    // ř. 43 covers ř. 3 to 13, so all three are deducted there: 152 + 300 + 1000 and 31.92 + 63 + 210 = 304.92.
+    expect(xml).toContain('<Veta4 nar_zdp23="1452" od_zdp23="305" odp_sum_nar="305" />');
+    expect(xml).toContain('<Veta6 dan_zocelk="305" odp_zocelk="305" dano="0" dano_da="0" dano_no="0" />');
+  });
+
+  it("KH: reverse-charge purchases from abroad go to A.2 and celk_zd_a2, not to B.1", () => {
+    const us = received({ number: "US-1", supplierDic: null, supplierCountry: "US", reverseCharge: true, parts: [{ ratePercent: 21, base: 300, vat: 63 }], totalCzk: 300 });
+    const { xml, warnings } = generateDphKh1({ issued: [], received: [ad, us], submitter, period, today });
+    expect(xml).toContain(
+      '<VetaA2 c_radku="1" k_stat="IE" vatid_dod="6388047V" c_evid_dd="AD-1" dppd="15.09.2026" zakl_dane1="152" dan1="31.92" zakl_dane2="0" dan2="0" />',
+    );
+    // Outside the EU there is no VAT ID, so k_stat and vatid_dod stay empty.
+    expect(xml).toContain('<VetaA2 c_radku="2" c_evid_dd="US-1" dppd="15.09.2026" zakl_dane1="300" dan1="63" zakl_dane2="0" dan2="0" />');
+    expect(xml).not.toContain("<VetaB1");
+    expect(xml).toContain('<VetaC celk_zd_a2="452" obrat23="0"');
+    expect(xml).toContain('rez_pren23="0" rez_pren5="0" />');
+    expect(warnings).toEqual([]);
+  });
+
+  it("writes c_ufo and c_pracufo into every VetaP when they are set", () => {
+    const s = submitterFromTenant({ ...tenant, taxOffice: 461, taxWorkplace: 3004 });
+    const dp3 = generateDphDp3({ issued: [issued({})], received: [], submitter: s, period, today });
+    const kh = generateDphKh1({ issued: [issued({})], received: [], submitter: s, period, today }).xml;
+    const shv = generateDphShv({ issued: [issued({ customerDic: "DE123456789", customerCountry: "DE" })], submitter: s, period, today })!;
+    for (const xml of [dp3, kh, shv]) expect(xml).toContain('<VetaP c_ufo="461" c_pracufo="3004" dic="8001011234"');
+    // Unset, they stay out and EPO asks for the office, as before.
+    expect(generateDphDp3({ issued: [issued({})], received: [], submitter, period, today })).not.toContain("c_ufo");
+    // A pracoviště without its office is dropped: it means nothing on its own.
+    expect(submitterFromTenant({ ...tenant, taxWorkplace: 3004 }).cPracufo).toBeNull();
+  });
+
+  it("names a legal person in zkrobchjm, the attribute the XSDs have", () => {
+    const s = submitterFromTenant({ ...tenant, legalName: "Acme s.r.o." });
+    const xml = generateDphDp3({ issued: [issued({})], received: [], submitter: s, period, today });
+    expect(xml).toContain('typ_ds="P" zkrobchjm="Acme s.r.o."');
+    expect(xml).not.toContain("nazev_prav_osoby");
+  });
+
+  it("splits a village address the way EPO wants it", () => {
+    expect(splitCzStreet("Sedlec 3")).toEqual({ ulice: "Sedlec", cPop: "3", cOrient: "" });
+    expect(splitCzStreet("Sedlec č. p. 3")).toEqual({ ulice: "Sedlec", cPop: "3", cOrient: "" });
+    expect(splitCzStreet("čp. 3")).toEqual({ ulice: "", cPop: "3", cOrient: "" });
+    expect(splitCzStreet("3")).toEqual({ ulice: "", cPop: "3", cOrient: "" });
+    expect(splitCzStreet("Masarykova 12/3a")).toEqual({ ulice: "Masarykova", cPop: "12", cOrient: "3a" });
+    // c_pop is digits only: an evidenční číslo is left whole for EPO.
+    expect(splitCzStreet("Sedlec ev. č. 12")).toEqual({ ulice: "Sedlec ev. č. 12", cPop: "", cOrient: "" });
+    const s = submitterFromTenant({ ...tenant, addressStreet: "Sedlec 3", addressCity: "Sedlec", addressPostalCode: "373 01" });
+    const xml = generateDphDp3({ issued: [issued({})], received: [], submitter: s, period, today });
+    expect(xml).toContain('naz_obce="Sedlec" ulice="Sedlec" c_pop="3" psc="37301"');
+    expect(xml).not.toContain("c_orient");
+  });
+
+  it("uses the residence address for a natural person when it is filled", () => {
+    const withHome = { ...tenant, residenceStreet: "Sedlec 3", residenceCity: "Sedlec", residencePostalCode: "373 01" };
+    expect(submitterFromTenant(withHome)).toMatchObject({ obec: "Sedlec", ulice: "Sedlec", cPop: "3", cOrient: "", psc: "373 01" });
+    // A company files from its sídlo, whatever is in the residence fields.
+    expect(submitterFromTenant({ ...withHome, legalName: "Acme s.r.o." })).toMatchObject({ obec: "Brno", ulice: "Masarykova", psc: "602 00" });
+    // Empty residence fields keep the business address.
+    expect(submitterFromTenant({ ...tenant, residenceStreet: " ", residenceCity: null })).toMatchObject({ obec: "Brno", cPop: "12" });
   });
 });
