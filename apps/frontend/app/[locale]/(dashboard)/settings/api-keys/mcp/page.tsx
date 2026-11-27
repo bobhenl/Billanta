@@ -27,13 +27,14 @@ export default async function McpGuidePage() {
   const copy = { copyLabel: tKeys('reveal.copy'), copiedLabel: tKeys('reveal.copied') };
   const claudeCode = `claude mcp add --transport http billanta ${url} --header "Authorization: Bearer sk_live_..."`;
   // mcp-remote bridges clients that only speak stdio; the key stays in an env var instead of the args.
+  // No space in the header arg: Claude Desktop on Windows splits args with spaces, so "Bearer " lives in the env value.
   const desktopConfig = JSON.stringify(
     {
       mcpServers: {
         billanta: {
           command: 'npx',
-          args: ['-y', 'mcp-remote', url, '--header', 'Authorization: Bearer ${BILLANTA_API_KEY}'],
-          env: { BILLANTA_API_KEY: 'sk_live_...' },
+          args: ['-y', 'mcp-remote', url, '--header', 'Authorization:${BILLANTA_API_KEY}'],
+          env: { BILLANTA_API_KEY: 'Bearer sk_live_...' },
         },
       },
     },
