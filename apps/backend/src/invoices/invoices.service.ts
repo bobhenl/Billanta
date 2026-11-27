@@ -89,6 +89,16 @@ import {
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 
+/**
+ * `review`: the draft was written by an AI assistant over MCP (src/mcp/).
+ * It lands in `pending_review` with the same marker and "draft ready" ping
+ * as the AI-service drafts, because AI never issues: a person checks it in
+ * the dashboard first.
+ */
+export interface DraftOptions {
+  review?: "mcp";
+}
+
 /** The fields the browser may send as ciphertext (Důvěrný režim). */
 function sealableValues(dto: Pick<UpdateInvoiceDto, "note_above" | "note_below" | "internal_note" | "line_items" | "buyer_contact_person">): unknown[] {
   return [dto.note_above, dto.note_below, dto.internal_note, dto.buyer_contact_person, ...(dto.line_items ?? []).map((i) => i.description)];
@@ -141,7 +151,7 @@ export function assertSealedCreditNote(
 /** The line a payment draft gets when the payment says nothing about what was paid for. */
 export const PAYMENT_DRAFT_PLACEHOLDER = "Platba PayPal";
 
-const ISSUABLE_STATUSES: ReadonlyArray<InvoiceRow["status"]> = ["draft", "pending_review"];
+export const ISSUABLE_STATUSES: ReadonlyArray<InvoiceRow["status"]> = ["draft", "pending_review"];
 
 /** Document number prefixes printed into the notes of a derived document. */
 const DOCUMENT_LABEL_CS: Record<InvoiceRow["documentType"], string> = {
@@ -645,13 +655,20 @@ export class InvoicesService {
    * so a foreign id simply isn't found. A draft may have no contact yet
    * (`customerRequiredError`); issuing it still needs one.
    */
-  async create(db: TenantDb, tenantId: string, dto: CreateInvoiceDto, source: "manual" | "api" = "manual", idempotencyKey: string | null = null) {
+  async create(
+    db: TenantDb,
+    tenantId: string,
+    dto: CreateInvoiceDto,
+    source: "manual" | "api" = "manual",
+    idempotencyKey: string | null = null,
+    opts: DraftOptions = {},
+  ) {
     return withIdempotencyKey(
       db,
       tenantId,
       idempotencyKey,
       "invoice",
-      () => this.insertDraft(db, tenantId, dto, source),
+      () => this.insertDraft(db, tenantId, dto, source, opts),
       (invoice) => invoice.id,
       // The first try's draft may since have been deleted; the client must not resend it either way.
       (id) =>
@@ -662,7 +679,7 @@ export class InvoicesService {
     );
   }
 
-  private async insertDraft(db: TenantDb, tenantId: string, dto: CreateInvoiceDto, source: "manual" | "api") {
+  private async insertDraft(db: TenantDb, tenantId: string, dto: CreateInvoiceDto, source: "manual" | "api", opts: DraftOptions = {}) {
     const missing = customerRequiredError("save_draft", dto.contact_id);
     if (missing) throw new BadRequestException(missing);
     const contact = dto.contact_id ? await this.requireContact(db, dto.contact_id) : null;
@@ -682,9 +699,9 @@ export class InvoicesService {
         ...(dto.buyer_contact_person === undefined && { buyerContactPerson: contact?.contactPerson ?? null }),
         issueDate: dto.issue_date ?? new Date(),
         encAmounts: dto.enc_amounts ?? null,
-        status: "draft",
+        status: opts.review ? "pending_review" : "draft",
         source,
-        rawAiPayload: dto.source_ai ? { prefilledByAi: true } : null,
+        rawAiPayload: opts.review ? { prefilledByAi: true, channel: opts.review } : dto.source_ai ? { prefilledByAi: true } : null,
         // A credit note or advance settlement of a locked invoice names the same client: it keeps the lock.
         ...(related?.accessLock && { accessLock: related.accessLock, accessLockUserId: related.accessLockUserId }),
       })
@@ -699,6 +716,7 @@ export class InvoicesService {
         .where(eq(schema.invoiceTemplates.id, dto.template_id));
     }
     await this.log(db, invoice, "created");
+    if (opts.review) this.ping(invoice, "draft_ready", "Nový návrh faktury ke kontrole");
     return invoice;
   }
 

@@ -3,6 +3,7 @@ import type { NextFunction, Response } from "express";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
+import { guardPath } from "../tenancy/role-access.guard";
 import { TenantContextMiddleware } from "../tenancy/tenant-context.middleware";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { apiKeyAllowsMethod, isApiKeyFormat } from "./api-key.util";
@@ -68,6 +69,10 @@ import { ApiKeysService } from "./api-keys.service";
  * update the `req.user = {...}` assignment in `handleApiKeyRequest` below to
  * match — that's the one place this class depends on it.
  */
+/** The remote MCP endpoint (src/mcp/mcp.controller.ts), as `guardPath` normalises it. */
+export const MCP_PATH = "v1/mcp";
+export const isMcpPath = (rawUrl: string) => guardPath(rawUrl) === MCP_PATH;
+
 @Injectable()
 export class ApiKeyOrJwtTenantContextMiddleware implements NestMiddleware {
   constructor(
@@ -109,7 +114,9 @@ export class ApiKeyOrJwtTenantContextMiddleware implements NestMiddleware {
       throw new UnauthorizedException("Invalid or revoked API key");
     }
 
-    if (!apiKeyAllowsMethod(result.scopes, req.method)) {
+    // Every MCP message is a POST, reads included, so the MCP endpoint checks
+    // the scope per tool instead (`mcpToolAllowed` in src/mcp/mcp-tools.ts).
+    if (!isMcpPath(req.originalUrl ?? req.url ?? "") && !apiKeyAllowsMethod(result.scopes, req.method)) {
       throw new ForbiddenException("This API key is read-only");
     }
 
@@ -142,6 +149,7 @@ export class ApiKeyOrJwtTenantContextMiddleware implements NestMiddleware {
         tenantId: result.tenantId,
         role: "service",
         apiKey: true,
+        apiKeyScopes: result.scopes,
       };
       req.tenantDb = drizzleTx(tx, schema);
 

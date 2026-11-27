@@ -37,6 +37,8 @@ import { PaymentAuditModule } from "./payment-audit/payment-audit.module";
 import { InvoiceTemplatesController } from "./invoice-templates/invoice-templates.controller";
 import { InvoiceTemplatesModule } from "./invoice-templates/invoice-templates.module";
 import { TimeTrackingController } from "./time-tracking/time-tracking.controller";
+import { McpController } from "./mcp/mcp.controller";
+import { McpModule } from "./mcp/mcp.module";
 import { TimeTrackingModule } from "./time-tracking/time-tracking.module";
 import { CardPaymentsModule } from "./card-payments/card-payments.module";
 import { CardPaymentsSettingsController } from "./card-payments/card-payments.controller";
@@ -172,6 +174,8 @@ import { ReferralsModule } from "./referrals/referrals.module";
     DemoModule,
     // Classroom mode: teachers, classes, student joins and the cleanup (docs/classroom-mode-plan.md).
     ClassroomModule,
+    // Remote MCP server for AI assistants, on the company's API keys.
+    McpModule,
   ],
   providers: [
     // Viewers are read-only and accountants stay out of company administration.
@@ -305,6 +309,9 @@ export class AppModule implements NestModule {
     // differently-shaped credential, so a guard alone can never be reached
     // for an API-key request on a route this middleware also covers.
     // AiController too: its invoice-suggestion route is public-API.
-    consumer.apply(ApiKeyOrJwtTenantContextMiddleware).forRoutes(InvoicesController, AiController, InvoiceTemplatesController, TimeTrackingController);
+    // McpController: the remote MCP endpoint takes API keys only (src/mcp/).
+    consumer
+      .apply(ApiKeyOrJwtTenantContextMiddleware)
+      .forRoutes(InvoicesController, AiController, InvoiceTemplatesController, TimeTrackingController, McpController);
   }
 }

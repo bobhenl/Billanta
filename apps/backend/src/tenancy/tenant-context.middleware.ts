@@ -69,6 +69,8 @@ export interface AuthenticatedUser {
    * guards stay dashboard-only even when the API-key middleware runs first.
    */
   apiKey?: boolean;
+  /** The key's `api_keys.scopes` (API-key path only); the MCP endpoint checks them per tool (src/mcp/). */
+  apiKeyScopes?: string[];
   /** Per-area overrides of the role's defaults (`tenant_memberships.permissions`), see permissions.ts. */
   permissions?: unknown;
   /** The dashboard session passed the two-factor check (JWT `mfa` claim). Unset for API keys and the AI service. */

@@ -43,6 +43,15 @@ Swagger UI: `/api/docs`. All routes are under `/api/v1/...`.
   `src/tenancy/permissions.ts`. Routes under `ADMIN_PREFIXES` in
   `role-access.guard.ts` are writable by owner/admin only. Add a new
   company-administration prefix there.
+- `POST /api/v1/mcp` (`src/mcp/`) is a remote MCP server for AI assistants,
+  on the company's `sk_live_` keys only. The tools call the services
+  directly, inside the key's RLS transaction. The middleware skips its
+  per-method scope check there; each tool checks the scope instead (read
+  tools need any key, write tools a read+write key). Keep it this way: no
+  tool issues, sends, cancels or deletes; drafts land in `pending_review`;
+  bank account, company e-mail and payment methods stay dashboard-only
+  (`DASHBOARD_ONLY_COMPANY_FIELDS`). A new tool goes into `MCP_TOOLS` with
+  the REST route it stands in for, so the role check matches.
 - `PlatformAdminGuard` (`src/partners/`) is for Billanta staff: an email in
   `PLATFORM_ADMIN_EMAILS` **and** a verified email (or a Google account).
 

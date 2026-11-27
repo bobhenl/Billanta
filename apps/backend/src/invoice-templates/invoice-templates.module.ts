@@ -11,5 +11,6 @@ import { InvoiceTemplatesService } from "./invoice-templates.service";
   imports: [InvoicesModule, AuthModule, ApiKeysModule],
   controllers: [InvoiceTemplatesController],
   providers: [InvoiceTemplatesService, CombinedAuthGuard, SubscriptionActiveGuard],
+  exports: [InvoiceTemplatesService],
 })
 export class InvoiceTemplatesModule {}

@@ -7,6 +7,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { eq } from "drizzle-orm";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 
@@ -53,28 +54,37 @@ export class SubscriptionActiveGuard implements CanActivate {
       throw new ForbiddenException("No tenant context available to check subscription status");
     }
 
-    // req.tenantDb already has app.current_tenant_id = tenantId set for
-    // this transaction (TenantContextMiddleware), so RLS already restricts
-    // this SELECT to at most the one row for this tenant.
-    const [tenant] = await req.tenantDb
-      .select({ status: schema.tenants.subscriptionStatus })
-      .from(schema.tenants)
-      .where(eq(schema.tenants.id, tenantId))
-      .limit(1);
-
-    if (!tenant) {
-      throw new ForbiddenException("Tenant not found");
-    }
-
-    if (tenant.status === "active" || tenant.status === "trialing") {
-      return true;
-    }
-
-    throw new ForbiddenException(
-      `Subscription status '${tenant.status}' does not permit this action. ` +
-        "'past_due' tenants are read-only; 'canceled' tenants are export-only (blueprint §5).",
-    );
+    await assertSubscriptionActive(req.tenantDb, tenantId);
+    return true;
   }
+}
+
+/**
+ * The guard's check on its own, for callers that reach a gated service
+ * without a route of their own (the MCP tools, src/mcp/).
+ */
+export async function assertSubscriptionActive(db: PostgresJsDatabase<typeof schema>, tenantId: string): Promise<void> {
+  // `db` already has app.current_tenant_id = tenantId set for this
+  // transaction (TenantContextMiddleware), so RLS already restricts this
+  // SELECT to at most the one row for this tenant.
+  const [tenant] = await db
+    .select({ status: schema.tenants.subscriptionStatus })
+    .from(schema.tenants)
+    .where(eq(schema.tenants.id, tenantId))
+    .limit(1);
+
+  if (!tenant) {
+    throw new ForbiddenException("Tenant not found");
+  }
+
+  if (tenant.status === "active" || tenant.status === "trialing") {
+    return;
+  }
+
+  throw new ForbiddenException(
+    `Subscription status '${tenant.status}' does not permit this action. ` +
+      "'past_due' tenants are read-only; 'canceled' tenants are export-only (blueprint §5).",
+  );
 }
 
 /** Convenience decorator equivalent to `@UseGuards(SubscriptionActiveGuard)`. */

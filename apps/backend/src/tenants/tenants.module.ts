@@ -8,5 +8,7 @@ import { TenantsService } from "./tenants.service";
   imports: [WelcomeTrialModule],
   controllers: [TenantsController],
   providers: [TenantsService],
+  // The MCP tools (src/mcp/) save settings through the same checks.
+  exports: [TenantsService],
 })
 export class TenantsModule {}

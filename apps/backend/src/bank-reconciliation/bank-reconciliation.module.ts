@@ -19,5 +19,6 @@ import { ConsentExpiryCron } from "./consent-expiry.cron";
   imports: [InvoicesModule, ExpensesModule],
   controllers: [BankReconciliationController, BankConnectionsController, BankRulesController],
   providers: [BankReconciliationService, BankConnectionsService, BankRulesService, BankSyncCron, ConsentExpiryCron],
+  exports: [BankReconciliationService],
 })
 export class BankReconciliationModule {}

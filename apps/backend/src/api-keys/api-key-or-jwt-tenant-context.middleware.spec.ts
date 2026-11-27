@@ -1,12 +1,12 @@
-import { HttpException } from "@nestjs/common";
+import { ForbiddenException, HttpException } from "@nestjs/common";
 import { describe, expect, it, vi } from "vitest";
 import { ApiKeyOrJwtTenantContextMiddleware } from "./api-key-or-jwt-tenant-context.middleware";
 
 const KEY = `sk_live_${"a".repeat(40)}`;
 
-function setup(countRequest: () => Promise<void>) {
+function setup(countRequest: () => Promise<void>, scopes: string[] = []) {
   const apiKeys = {
-    validateKey: vi.fn(async () => ({ apiKeyId: "key-1", tenantId: "tenant-1", scopes: [] })),
+    validateKey: vi.fn(async () => ({ apiKeyId: "key-1", tenantId: "tenant-1", scopes })),
     countRequest: vi.fn(countRequest),
     touchLastUsed: vi.fn(),
   };
@@ -41,5 +41,32 @@ describe("ApiKeyOrJwtTenantContextMiddleware – API quota", () => {
     await mw.use({ headers: { authorization: "Bearer eyJhbGciOi.x.y" } } as never, {} as never, vi.fn());
     expect(jwt.use).toHaveBeenCalled();
     expect(apiKeys.countRequest).not.toHaveBeenCalled();
+  });
+});
+
+describe("ApiKeyOrJwtTenantContextMiddleware – read-only keys", () => {
+  const run = async (url: string) => {
+    const { mw, begin, req } = setup(async () => undefined, ["read"]);
+    const next = vi.fn();
+    await mw.use({ ...req, method: "POST", originalUrl: url } as never, {} as never, next);
+    return { begin, error: next.mock.calls[0]?.[0] };
+  };
+
+  it("refuses a write to a REST route", async () => {
+    const { begin, error } = await run("/api/v1/invoices");
+    expect(error).toBeInstanceOf(ForbiddenException);
+    expect(begin).not.toHaveBeenCalled();
+  });
+
+  it("lets a POST to the MCP endpoint through, where each tool checks the scope", async () => {
+    const { begin, error } = await run("/api/v1/mcp");
+    expect(error).toBeUndefined();
+    expect(begin).toHaveBeenCalled();
+  });
+
+  it("does not treat a path that only starts like the MCP one as MCP", async () => {
+    const { begin, error } = await run("/api/v1/mcp-other");
+    expect(error).toBeInstanceOf(ForbiddenException);
+    expect(begin).not.toHaveBeenCalled();
   });
 });
