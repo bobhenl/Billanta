@@ -1345,6 +1345,8 @@ AS $$
   WHERE i.public_token = p_public_token
     AND i.status NOT IN ('draft', 'pending_review')
     AND a.show_in_portal
+    -- Encrypted files (0112) only open in a browser with the company key.
+    AND a.enc_meta IS NULL
   ORDER BY a.created_at;
 $$;
 
@@ -1364,6 +1366,8 @@ AS $$
     AND a.id = p_attachment_id
     AND i.status NOT IN ('draft', 'pending_review')
     AND a.show_in_portal
+    -- Encrypted files (0112) only open in a browser with the company key.
+    AND a.enc_meta IS NULL
   LIMIT 1;
 $$;
 
@@ -2110,6 +2114,14 @@ CREATE POLICY member_visibility ON invoice_attachments AS RESTRICTIVE
     ELSE EXISTS (SELECT 1 FROM invoices i WHERE i.id = invoice_attachments.invoice_id)
   END);
 
+-- Receipts follow their expense the same way (0112).
+DROP POLICY IF EXISTS member_visibility ON expense_attachments;
+CREATE POLICY member_visibility ON expense_attachments AS RESTRICTIVE
+  USING (CASE (SELECT app_view_mode())
+    WHEN 'full' THEN true
+    ELSE EXISTS (SELECT 1 FROM expenses e WHERE e.id = expense_attachments.expense_id)
+  END);
+
 -- ---------------------------------------------------------------------------
 -- Change history and notifications name clients and invoices (0111)
 -- ---------------------------------------------------------------------------
@@ -2207,5 +2219,12 @@ ALTER TABLE vault_email_queue ENABLE ROW LEVEL SECURITY;
 ALTER TABLE vault_email_queue FORCE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS tenant_isolation ON vault_email_queue;
 CREATE POLICY tenant_isolation ON vault_email_queue
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+-- Migration 0112: files attached to expenses (receipts), possibly encrypted in the browser.
+ALTER TABLE expense_attachments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE expense_attachments FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON expense_attachments;
+CREATE POLICY tenant_isolation ON expense_attachments
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);

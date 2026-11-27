@@ -849,7 +849,12 @@
       "qrFound": "Dados carregados do código QR",
       "qrCheck": "Preenchido a partir da fatura QR – fornecedor, montante, IVA e datas correspondem exatamente ao documento. Acrescente uma descrição e uma categoria.",
       "qrCheckPayment": "O QR de pagamento forneceu o montante, o símbolo variável e a data de vencimento. Preencha o resto ou carregue o documento completo.",
-      "qrDescription": "Fatura {number}"
+      "qrDescription": "Fatura {number}",
+      "aiOptIn": "Enviar o recibo para a IA – passa uma vez pelo servidor e não é guardado",
+      "aiOptInHint": "Sem esta opção, só é lido o código QR, no próprio navegador, e o resto preenche você.",
+      "receiptKeptLocal": "O recibo ficou no seu navegador. Ao guardar, será anexado cifrado.",
+      "receiptWillEncrypt": "Será anexado cifrado ao guardar: {name}",
+      "receiptNotStored": "A despesa foi guardada, mas não foi possível anexar o recibo. Adicione-o na página da despesa."
     },
     "noTenant": "Configure primeiro a sua empresa.",
     "loadError": "Não foi possível carregar as despesas",
@@ -5262,8 +5267,19 @@
         "bad_type": "Não é possível anexar este tipo de ficheiro.",
         "too_big": "O ficheiro tem mais de 5 MB.",
         "too_many": "Uma fatura pode ter no máximo 10 anexos.",
-        "generic": "Não foi possível guardar o anexo."
-      }
+        "generic": "Não foi possível guardar o anexo.",
+        "plan_required": "Cifrar anexos faz parte do plano Plus.",
+        "vault_category_off": "A cifragem de anexos não está ligada no modo confidencial."
+      },
+      "hintExpense": "O recibo ou a fatura do fornecedor desta despesa. PDF, imagens, Office, CSV/XML/TXT, máx. 5 MB, no máximo 10 ficheiros.",
+      "encryptsNew": "Os ficheiros novos são cifrados no seu navegador antes do envio.",
+      "encryptedName": "Ficheiro cifrado",
+      "encrypted": "Cifrado",
+      "openEncrypted": "Abrir (decifrado no seu navegador)",
+      "decryptFailed": "Não foi possível decifrar o ficheiro.",
+      "emailOnEncrypted": "Cifrado: só vai com o e-mail se o confirmar ao enviar (clique para desligar)",
+      "portalEncrypted": "O cliente não consegue abrir um anexo cifrado no link partilhado",
+      "previewLocal": "A pré-visualização foi feita apenas no seu navegador. O servidor não leu o ficheiro."
     },
     "quoteResponse": {
       "title": "Resposta do cliente",
@@ -14349,7 +14365,12 @@
       "keyLink": "Link do cliente com chave",
       "copyLink": "Copiar",
       "emailWaiting": "O e-mail aguarda o PDF. Sairá de um navegador com o modo desbloqueado, veja o aviso no topo.",
-      "pdfFollows": "Link enviado. Envie o PDF num e-mail adicional a partir do aviso no topo."
+      "pdfFollows": "Link enviado. Envie o PDF num e-mail adicional a partir do aviso no topo.",
+      "unlockFirst": "Sem desbloquear não é possível anexar ficheiros cifrados.",
+      "decryptFailed": "Não foi possível decifrar um anexo.",
+      "passFiles": "{n, plural, one {Anexar # ficheiro cifrado} other {Anexar # ficheiros cifrados}}",
+      "passFilesHint": "O navegador decifra-os e passam uma única vez pelo servidor, para este e-mail. O servidor não os guarda e apaga-os após a entrega.",
+      "passFilesWaiting": "Este documento espera que um navegador crie o PDF, e os anexos não podem esperar no servidor. Envie o e-mail sem eles ou configure o modo confidencial para enviar o link de imediato."
     },
     "categories": {
       "recommended": "Recomendado",
@@ -14369,11 +14390,18 @@
       },
       "attachments": {
         "title": "Anexos e recibos",
-        "description": "Ficheiros de documentos e despesas.",
+        "description": "Ficheiros dos documentos e recibos das despesas.",
         "loses": [
-          "Leitura de recibos por IA",
-          "Pré-visualização de anexos",
-          "Envio de anexos por e-mail e entrega ao contabilista"
+          "A IA só lê um recibo com o seu consentimento pontual: o ficheiro passa pelo servidor e não é guardado",
+          "Os anexos cifrados não aparecem no link partilhado com o cliente",
+          "O e-mail da fatura só os inclui se os desbloquear e confirmar ao enviar",
+          "O contabilista só os abre como membro da equipa com chave própria; as exportações não incluem ficheiros"
+        ],
+        "how": [
+          "Cada ficheiro é cifrado no seu navegador com uma chave própria antes de ir para o servidor.",
+          "O nome e o tipo do ficheiro também são cifrados. O servidor só conhece o tamanho e a data de envio.",
+          "A pré-visualização e a transferência decifram o ficheiro no seu navegador.",
+          "Os anexos mais antigos continuam legíveis até os cifrar com Cifrar anexos existentes."
         ]
       },
       "contacts": {
@@ -14395,7 +14423,8 @@
           "Painéis, rendimento líquido e gráficos",
           "Lembretes com valor e pagamentos QR criados pelo servidor"
         ]
-      }
+      },
+      "howTitle": "Como funciona:"
     },
     "enable": {
       "offTitle": "O Modo confidencial está desligado",
@@ -14480,7 +14509,9 @@
       "recoveryNew": "Criar um novo código de recuperação",
       "recoveryReplaced": "O novo código de recuperação está ativo",
       "categoriesTitle": "O que é cifrado",
-      "categoriesLead": "Mais opções em breve. Em cada uma vê o que deixaria de funcionar."
+      "categoriesLead": "Pode adicionar uma categoria mais tarde. Desligá-la só deixa de cifrar dados novos; o que está cifrado continua cifrado.",
+      "categoriesMin": "Mantenha pelo menos uma categoria ligada.",
+      "categoryOffConfirm": "Desligar esta categoria? Os ficheiros e textos novos deixam de ser cifrados. O que já está cifrado continua cifrado."
     },
     "clientLink": {
       "ready": "O link leva a chave dos textos cifrados (depois do #). Com ela o seu cliente vê o texto completo; o servidor nunca recebe a chave.",
@@ -14600,6 +14631,20 @@
       "item": "Linha {n}",
       "notSealed": "O servidor vê valores, datas, o número do documento, referências e clientes, para calcular o IVA, acompanhar vencimentos e conciliar pagamentos.",
       "more": "Como funciona e como verificar"
+    },
+    "sealFiles": {
+      "button": "Cifrar anexos existentes",
+      "title": "Cifrar anexos existentes",
+      "what": "O navegador transfere os anexos dos documentos e os recibos das despesas que o servidor ainda consegue ler, cifra-os e volta a enviá-los no lugar dos originais.",
+      "loses": "Os anexos cifrados desaparecem do link partilhado com o cliente, e o e-mail da fatura só os inclui após confirmação ao enviar.",
+      "resumable": "Os anexos de documentos bloqueados são ignorados. Se fechar a janela, da próxima vez continua onde parou.",
+      "cancel": "Voltar",
+      "confirm": "Cifrar",
+      "progress": "A cifrar… {n}",
+      "done": "{n, plural, one {# anexo cifrado} other {# anexos cifrados}}.",
+      "partial": "{n} cifrados, {failed} falharam. Tente novamente mais tarde.",
+      "nothing": "Não havia nada para cifrar.",
+      "failed": "A cifragem falhou. Os anexos já cifrados continuam cifrados."
     }
   },
   "vaultPublic": {

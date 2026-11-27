@@ -303,6 +303,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           editedAfterSend={editedAfterSend}
           hasCustomer={Boolean(contact)}
           confidential={confidential}
+          encryptedAttachments={(attachments ?? []).filter((a) => a.encMeta && a.sendWithEmail).map((a) => ({ id: a.id, encMeta: a.encMeta! }))}
           sealedDoc={sealedDoc}
         />
         {/* "Zašifrovat": only while some text of this document is still plain. */}

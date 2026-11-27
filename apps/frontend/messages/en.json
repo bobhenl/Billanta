@@ -850,7 +850,12 @@
       "qrFound": "Details loaded from the QR code",
       "qrCheck": "Filled from the QR invoice exactly as on the document. Add a description and category.",
       "qrCheckPayment": "The QR payment gave the amount, variable symbol and due date. Fill in the rest or upload the whole document.",
-      "qrDescription": "Invoice {number}"
+      "qrDescription": "Invoice {number}",
+      "aiOptIn": "Send the receipt to AI – it passes through the server once and is not stored",
+      "aiOptInHint": "Without this, only a QR code is read, right in your browser, and you fill in the rest.",
+      "receiptKeptLocal": "The receipt stayed in your browser. It will be attached, encrypted, when you save.",
+      "receiptWillEncrypt": "Will be attached encrypted when you save: {name}",
+      "receiptNotStored": "The expense is saved, but the receipt could not be attached. Add it on the expense page."
     },
     "noTenant": "Set up your company first.",
     "loadError": "Could not load expenses",
@@ -5270,8 +5275,19 @@
         "bad_type": "This file type can't be attached.",
         "too_big": "The file is larger than 5 MB.",
         "too_many": "An invoice can have at most 10 attachments.",
-        "generic": "Couldn't save the attachment."
-      }
+        "generic": "Couldn't save the attachment.",
+        "plan_required": "Encrypting attachments is part of the Plus plan.",
+        "vault_category_off": "Attachment encryption is not switched on in Confidential mode."
+      },
+      "hintExpense": "The receipt or supplier invoice for this expense. PDF, images, Office, CSV/XML/TXT, up to 5 MB, at most 10 files.",
+      "encryptsNew": "New files are encrypted in your browser before upload.",
+      "encryptedName": "Encrypted file",
+      "encrypted": "Encrypted",
+      "openEncrypted": "Open (decrypted in your browser)",
+      "decryptFailed": "The file could not be decrypted.",
+      "emailOnEncrypted": "Encrypted: goes with the email only if you confirm it when sending (click to turn off)",
+      "portalEncrypted": "The client cannot open an encrypted attachment in the shared link",
+      "previewLocal": "This preview was made in your browser only. The server did not read the file."
     },
     "quoteResponse": {
       "title": "Client's answer",
@@ -14354,7 +14370,12 @@
       "keyLink": "Client link with key",
       "copyLink": "Copy",
       "emailWaiting": "The e-mail is waiting for the PDF. It goes out from a browser with the mode unlocked, see the notice at the top.",
-      "pdfFollows": "Link sent. Send the PDF as a follow-up e-mail from the notice at the top."
+      "pdfFollows": "Link sent. Send the PDF as a follow-up e-mail from the notice at the top.",
+      "unlockFirst": "Encrypted attachments cannot be added without unlocking.",
+      "decryptFailed": "An attachment could not be decrypted.",
+      "passFiles": "{n, plural, one {Attach # encrypted file} other {Attach # encrypted files}}",
+      "passFilesHint": "Your browser decrypts them and they pass through the server once, into this email. The server does not keep them and deletes them after delivery.",
+      "passFilesWaiting": "This document waits for a browser to make the PDF, and the attachments must not wait on the server. Send the e-mail without them, or set Confidential mode to send the link right away."
     },
     "categories": {
       "recommended": "Recommended",
@@ -14374,11 +14395,18 @@
       },
       "attachments": {
         "title": "Attachments and receipts",
-        "description": "Files attached to documents and expenses.",
+        "description": "Files on documents and receipts on expenses.",
         "loses": [
-          "AI receipt extraction",
-          "Attachment previews",
-          "Sending attachments by email and handing them to your accountant"
+          "AI reads a receipt only with your one-time consent: the file passes through the server and is not stored",
+          "Encrypted attachments are not in the shared link for your client",
+          "The invoice email includes them only if you unlock and confirm when sending",
+          "Your accountant can open them only as a team member with their own key; exports do not contain files"
+        ],
+        "how": [
+          "Each file is encrypted in your browser with its own key before it goes to the server.",
+          "The file name and type are encrypted too. The server only knows the size and upload date.",
+          "Previews and downloads are decrypted in your browser.",
+          "Older attachments stay readable until you encrypt them with Encrypt existing attachments."
         ]
       },
       "contacts": {
@@ -14400,7 +14428,8 @@
           "Dashboards, net income and charts",
           "Reminders with amounts and QR payments created by the server"
         ]
-      }
+      },
+      "howTitle": "How it works:"
     },
     "enable": {
       "offTitle": "Confidential mode is off",
@@ -14485,7 +14514,9 @@
       "recoveryNew": "Create a new recovery code",
       "recoveryReplaced": "The new recovery code is active",
       "categoriesTitle": "What is encrypted",
-      "categoriesLead": "More options are coming. Each one shows what would stop working."
+      "categoriesLead": "You can add a category later. Turning one off only stops encrypting new data; what is encrypted stays encrypted.",
+      "categoriesMin": "Keep at least one category on.",
+      "categoryOffConfirm": "Turn this category off? New files and texts will no longer be encrypted. Anything already encrypted stays encrypted."
     },
     "plan": {
       "title": "Confidential mode is part of the Plus and Business plans",
@@ -14612,6 +14643,20 @@
       "item": "Item {n}",
       "notSealed": "The server sees amounts, dates, the document number, references and customers, so it can calculate VAT, track due dates and match payments.",
       "more": "How it works and how to check it"
+    },
+    "sealFiles": {
+      "button": "Encrypt existing attachments",
+      "title": "Encrypt existing attachments",
+      "what": "Your browser downloads the document attachments and expense receipts that the server can still read, encrypts them and uploads them back in their place.",
+      "loses": "Encrypted attachments disappear from the client’s shared link, and the invoice email includes them only after you confirm when sending.",
+      "resumable": "Attachments of locked documents are skipped. If you close the window, the next run continues where you left off.",
+      "cancel": "Back",
+      "confirm": "Encrypt",
+      "progress": "Encrypting… {n}",
+      "done": "{n, plural, one {# attachment encrypted} other {# attachments encrypted}}.",
+      "partial": "{n} encrypted, {failed} failed. Try again later.",
+      "nothing": "There was nothing to encrypt.",
+      "failed": "Encryption failed. Attachments already encrypted stay encrypted."
     }
   },
   "vaultPublic": {

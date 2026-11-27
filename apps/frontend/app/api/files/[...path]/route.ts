@@ -11,6 +11,7 @@ const ALLOWED = [
   // Route names stay case-sensitive (only the ids may be upper-case).
   /^invoices\/[0-9a-fA-F-]{36}\/(pdf|isdoc|ubl)$/,
   /^invoices\/[0-9a-fA-F-]{36}\/attachments\/[0-9a-fA-F-]{36}$/,
+  /^expenses\/[0-9a-fA-F-]{36}\/attachments\/[0-9a-fA-F-]{36}$/,
   /^tenants\/me\/logo$/,
   /^contacts\/export\.csv$/,
   /^classroom\/classes\/[0-9a-fA-F-]{36}\/progress\.csv$/,

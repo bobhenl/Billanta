@@ -15,5 +15,8 @@ export async function POST(request: Request, props: { params: Promise<{ id: stri
  if (!(file instanceof Blob)) return NextResponse.json({ error: 'no_file' }, { status: 400 });
  const body = new FormData();
  body.set('file', file, file instanceof File ? file.name : 'priloha');
+ // Důvěrný režim: the file is ciphertext and this is its sealed key, name and type.
+ const encMeta = incoming.get('enc_meta');
+ if (typeof encMeta === 'string' && encMeta) body.set('enc_meta', encMeta);
  return forwardJson(`/api/v1/invoices/${params.id}/attachments`, { method: 'POST', body });
 }
