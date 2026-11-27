@@ -2767,6 +2767,10 @@
         "profile_message": {
           "label": "Bericht via profiel",
           "hint": "Een bezoeker heeft je geschreven via het contactformulier op je openbare profiel."
+        },
+        "vat_filing_due": {
+          "label": "Btw-deadline",
+          "hint": "3 dagen vooraf en op de dag zelf, als er iets in te dienen is: btw-aangifte, controleaangifte of opgaaf ICP."
         }
       },
       "browserTitle": "Browsermeldingen",
@@ -9931,7 +9935,8 @@
       "buyer_details": "e-mails over gegevens die klanten hebben ingevuld",
       "weekly_digest": "het wekelijkse overzicht",
       "all": "alle optionele e-mailmeldingen",
-      "newsletter": "updates van Billanta over wijzigingen in belastingen en facturatie"
+      "newsletter": "updates van Billanta over wijzigingen in belastingen en facturatie",
+      "vat_filing_due": "e-mails over btw-deadlines"
     },
     "errors": {
       "invalid": "Deze link is ongeldig of onvolledig. Kopieer de volledige link uit de e-mail.",

@@ -2767,6 +2767,10 @@
         "profile_message": {
           "label": "Mensaje desde el perfil",
           "hint": "Un visitante le ha escrito mediante el formulario de contacto de su perfil público."
+        },
+        "vat_filing_due": {
+          "label": "Plazo de IVA",
+          "hint": "3 días antes y el día del plazo, cuando hay algo que presentar: declaración de IVA, declaración de control o declaración recapitulativa."
         }
       },
       "browserTitle": "Notificaciones del navegador",
@@ -9931,7 +9935,8 @@
       "buyer_details": "los correos sobre datos completados por clientes",
       "weekly_digest": "el resumen semanal",
       "all": "todas las notificaciones opcionales por correo",
-      "newsletter": "las novedades de Billanta sobre cambios fiscales y de facturación"
+      "newsletter": "las novedades de Billanta sobre cambios fiscales y de facturación",
+      "vat_filing_due": "correos sobre plazos de IVA"
     },
     "errors": {
       "invalid": "Este enlace no es válido o está incompleto. Pruebe a copiar el enlace completo del correo.",

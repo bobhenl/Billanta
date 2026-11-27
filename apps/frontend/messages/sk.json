@@ -2774,6 +2774,10 @@
         "profile_message": {
           "label": "Správa z profilu",
           "hint": "Návštevník vám napísal cez formulár Kontaktovať na verejnom profile."
+        },
+        "vat_filing_due": {
+          "label": "Termín pre DPH",
+          "hint": "3 dni vopred a v deň termínu, keď je čo podať: daňové priznanie, kontrolný výkaz alebo súhrnný výkaz."
         }
       },
       "browserTitle": "Oznámenia v prehliadači",
@@ -9845,7 +9849,8 @@
       "buyer_details": "e-maily o údajoch, ktoré doplnili odberatelia",
       "weekly_digest": "týždenný prehľad",
       "all": "všetky nepovinné upozornenia e-mailom",
-      "newsletter": "novinky Billanty o zmenách v daniach a fakturácii"
+      "newsletter": "novinky Billanty o zmenách v daniach a fakturácii",
+      "vat_filing_due": "e-maily o termínoch pre DPH"
     },
     "errors": {
       "invalid": "Odkaz je neplatný alebo neúplný. Skúste ho z e-mailu skopírovať celý.",

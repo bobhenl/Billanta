@@ -2767,6 +2767,10 @@
         "profile_message": {
           "label": "Wiadomość z profilu",
           "hint": "Odwiedzający napisał do Ciebie przez formularz kontaktowy na Twoim profilu publicznym."
+        },
+        "vat_filing_due": {
+          "label": "Termin VAT",
+          "hint": "3 dni wcześniej i w dniu terminu, gdy jest coś do złożenia: deklaracja VAT, raport kontrolny lub informacja podsumowująca."
         }
       },
       "browserTitle": "Powiadomienia w przeglądarce",
@@ -9932,7 +9936,8 @@
       "buyer_details": "e-maile o danych uzupełnionych przez klientów",
       "weekly_digest": "cotygodniowe podsumowanie",
       "all": "wszystkie opcjonalne powiadomienia e-mail",
-      "newsletter": "informacje od Billanta o zmianach w podatkach i fakturowaniu"
+      "newsletter": "informacje od Billanta o zmianach w podatkach i fakturowaniu",
+      "vat_filing_due": "e-maile o terminach VAT"
     },
     "errors": {
       "invalid": "Ten link jest nieprawidłowy lub niepełny. Spróbuj skopiować cały link z e-maila.",

@@ -2553,3 +2553,27 @@ export const tenantUsage = pgTable(
     pk: primaryKey({ columns: [table.tenantId, table.metric, table.period] }),
   }),
 );
+
+// ---------------------------------------------------------------------------
+// vat_filing_reminders – tenant-scoped. The VAT filing reminders a company
+// already got (src/exports/vat-filing-reminders.cron.ts): one row per
+// deadline kind, tax period ("2026-10", "2026-Q3") and stage ("ahead" =
+// a few days before, "due_day"). The daily cron skips what is here, so a
+// restart or a second run never mails the same deadline twice. Insert-only.
+// ---------------------------------------------------------------------------
+export const vatFilingReminders = pgTable(
+  "vat_filing_reminders",
+  {
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    kind: varchar("kind", { length: 32 }).notNull(),
+    period: varchar("period", { length: 7 }).notNull(),
+    stage: varchar("stage", { length: 16 }).notNull(),
+    dueDate: date("due_date", { mode: "string" }).notNull(),
+    sentAt: timestamp("sent_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.tenantId, table.kind, table.period, table.stage] }),
+  }),
+);

@@ -2774,6 +2774,10 @@
         "profile_message": {
           "label": "Profile message",
           "hint": "A visitor wrote to you through the Contact form on your public profile."
+        },
+        "vat_filing_due": {
+          "label": "VAT filing due",
+          "hint": "3 days ahead and on the due day, when there is something to file: VAT return, control statement or EC sales list."
         }
       },
       "browserTitle": "Browser notifications",
@@ -9939,7 +9943,8 @@
       "buyer_details": "emails about details filled in by customers",
       "weekly_digest": "the weekly digest",
       "all": "all optional email notifications",
-      "newsletter": "Billanta updates on tax and invoicing changes"
+      "newsletter": "Billanta updates on tax and invoicing changes",
+      "vat_filing_due": "e-mails about VAT filing deadlines"
     },
     "errors": {
       "invalid": "This link is invalid or incomplete. Try copying the whole link from the email.",

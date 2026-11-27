@@ -2767,6 +2767,10 @@
         "profile_message": {
           "label": "Message via le profil",
           "hint": "Un visiteur vous a écrit via le formulaire de contact de votre profil public."
+        },
+        "vat_filing_due": {
+          "label": "Échéance TVA",
+          "hint": "3 jours avant et le jour de l’échéance, quand il y a quelque chose à déposer : déclaration de TVA, relevé de contrôle ou état récapitulatif."
         }
       },
       "browserTitle": "Notifications du navigateur",
@@ -9931,7 +9935,8 @@
       "buyer_details": "les e-mails sur les coordonnées renseignées par les clients",
       "weekly_digest": "le récapitulatif hebdomadaire",
       "all": "toutes les notifications par e-mail facultatives",
-      "newsletter": "les actualités Billanta sur les évolutions fiscales et de facturation"
+      "newsletter": "les actualités Billanta sur les évolutions fiscales et de facturation",
+      "vat_filing_due": "e-mails sur les échéances de TVA"
     },
     "errors": {
       "invalid": "Ce lien est invalide ou incomplet. Essayez de copier le lien complet depuis l’e-mail.",

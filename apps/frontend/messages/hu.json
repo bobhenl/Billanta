@@ -2767,6 +2767,10 @@
         "profile_message": {
           "label": "Üzenet a profilon keresztül",
           "hint": "Egy látogató írt Önnek a nyilvános profilja Kapcsolat űrlapján."
+        },
+        "vat_filing_due": {
+          "label": "ÁFA-határidő",
+          "hint": "3 nappal előtte és a határidő napján, ha van mit beadni: áfabevallás, ellenőrző kimutatás vagy összesítő nyilatkozat."
         }
       },
       "browserTitle": "Böngészőértesítések",
@@ -9931,7 +9935,8 @@
       "buyer_details": "e-maileket a vevők által kitöltött adatokról",
       "weekly_digest": "heti összefoglalót",
       "all": "semmilyen opcionális e-mail-értesítést",
-      "newsletter": "Billanta-híreket az adózási és számlázási változásokról"
+      "newsletter": "Billanta-híreket az adózási és számlázási változásokról",
+      "vat_filing_due": "e-mailek az áfa-határidőkről"
     },
     "errors": {
       "invalid": "Ez a link érvénytelen vagy hiányos. Próbálja meg a teljes linket kimásolni az e-mailből.",

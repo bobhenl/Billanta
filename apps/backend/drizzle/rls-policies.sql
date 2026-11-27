@@ -2267,3 +2267,10 @@ DROP POLICY IF EXISTS tenant_isolation ON webauthn_challenges;
 CREATE POLICY tenant_isolation ON webauthn_challenges
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+-- Migration 0119: VAT filing reminders already sent (src/exports/vat-filing-reminders.cron.ts).
+ALTER TABLE vat_filing_reminders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE vat_filing_reminders FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON vat_filing_reminders;
+CREATE POLICY tenant_isolation ON vat_filing_reminders
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);

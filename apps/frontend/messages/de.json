@@ -2767,6 +2767,10 @@
         "profile_message": {
           "label": "Nachricht über das Profil",
           "hint": "Ein Besucher hat Ihnen über das Kontaktformular in Ihrem öffentlichen Profil geschrieben."
+        },
+        "vat_filing_due": {
+          "label": "USt-Frist",
+          "hint": "3 Tage vorher und am Fälligkeitstag, wenn etwas einzureichen ist: USt-Erklärung, Kontrollmeldung oder Zusammenfassende Meldung."
         }
       },
       "browserTitle": "Browser-Benachrichtigungen",
@@ -9932,7 +9936,8 @@
       "buyer_details": "E-Mails zu von Kunden ausgefüllten Daten",
       "weekly_digest": "der wöchentlichen Zusammenfassung",
       "all": "allen optionalen E-Mail-Benachrichtigungen",
-      "newsletter": "Billanta-Neuigkeiten zu Änderungen bei Steuern und Rechnungsstellung"
+      "newsletter": "Billanta-Neuigkeiten zu Änderungen bei Steuern und Rechnungsstellung",
+      "vat_filing_due": "E-Mails zu USt-Fristen"
     },
     "errors": {
       "invalid": "Dieser Link ist ungültig oder unvollständig. Kopieren Sie den gesamten Link aus der E-Mail.",

@@ -100,6 +100,7 @@ export class NotificationsService {
         .select({
           userId: schema.tenantMemberships.userId,
           prefs: schema.tenantMemberships.notificationPrefs,
+          role: schema.tenantMemberships.role,
           email: schema.users.email,
         })
         .from(schema.tenantMemberships)
@@ -116,7 +117,7 @@ export class NotificationsService {
       const rows: (typeof schema.notifications.$inferInsert)[] = [];
       for (const m of members) {
         if (notSeeing.has(m.userId)) continue;
-        const prefs = notificationPrefsOf(m.prefs);
+        const prefs = notificationPrefsOf(m.prefs, m.role);
         const channels = prefs.events[kind];
         if (channels.app) {
           rows.push({
@@ -300,12 +301,17 @@ export class NotificationsService {
   }
 
   async getPrefs(db: TenantDb, tenantId: string, userId: string) {
+    return (await this.storedPrefs(db, tenantId, userId)).prefs;
+  }
+
+  /** The member's prefs with defaults, and their role (some defaults depend on it). */
+  private async storedPrefs(db: TenantDb, tenantId: string, userId: string) {
     const [m] = await db
-      .select({ prefs: schema.tenantMemberships.notificationPrefs })
+      .select({ prefs: schema.tenantMemberships.notificationPrefs, role: schema.tenantMemberships.role })
       .from(schema.tenantMemberships)
       .where(and(eq(schema.tenantMemberships.tenantId, tenantId), eq(schema.tenantMemberships.userId, userId)))
       .limit(1);
-    return notificationPrefsOf(m?.prefs);
+    return { prefs: notificationPrefsOf(m?.prefs, m?.role), role: m?.role ?? null };
   }
 
   /** Settings → E-mailová upozornění: every e-mail type with its switch, the digest and quiet hours. */
@@ -330,7 +336,8 @@ export class NotificationsService {
   }
 
   async setPrefs(db: TenantDb, tenantId: string, userId: string, patch: NotificationPrefsPatch) {
-    const next = mergeNotificationPrefs(await this.getPrefs(db, tenantId, userId), patch);
+    const { prefs, role } = await this.storedPrefs(db, tenantId, userId);
+    const next = mergeNotificationPrefs(prefs, patch, role);
     await db
       .update(schema.tenantMemberships)
       .set({ notificationPrefs: next })

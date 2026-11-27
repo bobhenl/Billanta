@@ -2767,6 +2767,10 @@
         "profile_message": {
           "label": "Messaggio dal profilo",
           "hint": "Un visitatore Le ha scritto tramite il modulo di contatto del Suo profilo pubblico."
+        },
+        "vat_filing_due": {
+          "label": "Scadenza IVA",
+          "hint": "3 giorni prima e il giorno della scadenza, quando c’è qualcosa da presentare: dichiarazione IVA, comunicazione di controllo o elenco riepilogativo."
         }
       },
       "browserTitle": "Notifiche del browser",
@@ -9931,7 +9935,8 @@
       "buyer_details": "le e-mail sui dati compilati dai clienti",
       "weekly_digest": "il riepilogo settimanale",
       "all": "tutte le notifiche e-mail facoltative",
-      "newsletter": "gli aggiornamenti di Billanta sulle novità fiscali e di fatturazione"
+      "newsletter": "gli aggiornamenti di Billanta sulle novità fiscali e di fatturazione",
+      "vat_filing_due": "e-mail sulle scadenze IVA"
     },
     "errors": {
       "invalid": "Questo link non è valido o è incompleto. Provi a copiare l'intero link dall'e-mail.",
