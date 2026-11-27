@@ -204,6 +204,9 @@ const revolut: FintechFormat = {
     const description = cell("description");
     const reference = cell("reference");
     const currency = cell("payment currency", "currency");
+    // A card payment's description is just the merchant ("Google Ads"); the
+    // personal export says "Card Payment", the older one "CARD_PAYMENT".
+    const card = /^CARD[\s_]/.test(cell("type").toUpperCase());
     return buildRow({
       rawDate: cell("date completed (utc)", "completed date") || cell("date started (utc)", "started date"),
       utc: true,
@@ -212,7 +215,7 @@ const revolut: FintechFormat = {
       currency,
       fee,
       feeCurrency: cell("fee currency"),
-      counterpartyName: (incoming ? cell("payer") : "") || nameFromDescription(description, incoming),
+      counterpartyName: (incoming ? cell("payer") : "") || nameFromDescription(description, incoming) || (card && description) || null,
       counterpartyAccount: incoming ? null : cell("beneficiary iban", "beneficiary account number"),
       reference,
       message: reference || description,

@@ -191,6 +191,18 @@ describe("Revolut CSV exports", () => {
       ["-12.40", "0.20", null, "2026-10-01"],
     ]);
     expect(rows[0].counterpartyName).toBe("Jana Testova");
+    expect(rows[1].counterpartyName).toBe("Lidl");
+  });
+
+  it("takes the merchant of a card payment and refund as the counterparty, as the personal export spells the type", () => {
+    const csv = [
+      "Type,Product,Started Date,Completed Date,Description,Amount,Fee,Currency,State,Balance",
+      "Card Payment,Current,2026-10-01 17:04:31,2026-10-02 13:31:19,Google Ads,-152.03,0.00,CZK,COMPLETED,2552.85",
+      "Card Refund,Current,2026-10-03 19:08:48,2026-10-04 14:09:28,Taxi Firma,3.17,0.00,CZK,COMPLETED,2556.02",
+      "Transfer,Current,2026-10-05 10:00:00,2026-10-05 10:00:01,Rent October,-500.00,0.00,CZK,COMPLETED,2056.02",
+    ].join("\n");
+
+    expect(parseBankStatementCsv(csv).map((r) => r.counterpartyName)).toEqual(["Google Ads", "Taxi Firma", null]);
   });
 
   it("reads the older statement with Paid Out / Paid In columns and the currency in the header", () => {
