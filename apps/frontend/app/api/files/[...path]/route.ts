@@ -21,7 +21,8 @@ const ALLOWED = [
   /^exports\/(invoices\.csv|expenses\.csv|pohoda\.xml|money-s3\.xml|dphdp3\.xml|dphkh1\.xml|dphshv\.xml|sk\/dphv25\.xml|sk\/kvdph\.xml|sk\/svdph\.xml|annual-summary|annual-summary\.csv|annual-filings|tax-return-basis\.csv|tax-return-basis\.pdf)$/,
   // Důvěrný režim: what the browser builds the files and the year's reports from when amounts are sealed.
   /^exports\/(invoices-csv-inputs|vat-inputs|accounting-inputs|tax-return-basis-inputs|annual-filings-inputs)$/,
-  /^net-income\/inputs$/
+  /^net-income\/inputs$/,
+  /^payment-audit\/inputs$/
 ];
 
 // Downloads that carry personal data (rodné číslo) in the body rather than the URL.

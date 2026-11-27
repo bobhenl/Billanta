@@ -5605,7 +5605,8 @@
       "templates": "Șabloane de facturi",
       "netIncome": "După impozite (venit net)",
       "taxReturn": "Date pentru declarația fiscală",
-      "flatTax": "Merită impozitul forfetar?"
+      "flatTax": "Merită impozitul forfetar?",
+      "paymentAudit": "Audit anual al plăților"
     },
     "keywords": {
       "newInvoice": "emitere creare adăugare document",
@@ -7365,7 +7366,8 @@
     "flatTaxLink": "Merită impozitul forfetar? →",
     "taxReturnLink": "Rezumatul declarației fiscale",
     "netIncomeLink": "După impozite",
-    "sealedNote": "{count, plural, one {# document cu sume criptate nu este inclus} few {# documente cu sume criptate nu sunt incluse} other {# de documente cu sume criptate nu sunt incluse}} în totaluri."
+    "sealedNote": "{count, plural, one {# document cu sume criptate nu este inclus} few {# documente cu sume criptate nu sunt incluse} other {# de documente cu sume criptate nu sunt incluse}} în totaluri.",
+    "paymentAuditLink": "Audit plăți"
   },
   "siteSearch": {
     "title": "Căutați pe site",
@@ -15062,5 +15064,106 @@
       "passkey_failed": "Cheia de acces nu a putut fi verificată. Încercați din nou sau introduceți codul ori parola."
     },
     "usePasskey": "Confirmare cu cheie de acces"
+  },
+  "paymentAudit": {
+    "title": "Audit anual al plăților",
+    "intro": "Fiecare factură a anului comparată cu banii care au sosit cu adevărat prin bancă, PayPal, Stripe sau card, plus plățile fără factură. Util înainte de declarația fiscală.",
+    "back": "Înapoi la rapoarte",
+    "prev": "Anul anterior",
+    "next": "Anul următor",
+    "yearLabel": "Anul auditului",
+    "filterLabel": "Filtrează după stare",
+    "export": "Export CSV",
+    "noTenant": "Creați mai întâi o firmă.",
+    "loadError": "Auditul plăților nu a putut fi încărcat. Reîmprospătați pagina.",
+    "noAccess": {
+      "title": "Doar pentru proprietari și administratori",
+      "body": "Auditul arată toate plățile firmei împreună cu clienții, așa că îl văd doar proprietarul și administratorii."
+    },
+    "cards": {
+      "invoices": "Facturile anului",
+      "problems": "De verificat",
+      "underpaid": "Lipsește ({home})",
+      "withoutInvoice": "Plăți fără factură"
+    },
+    "filter": {
+      "problems": "De verificat",
+      "all": "Toate"
+    },
+    "status": {
+      "paid": "Plătită",
+      "paidFee": "Plătită, comision {fee}",
+      "paidFeeShort": "Plătită cu comision",
+      "underpaid": "Plătită parțial",
+      "overpaid": "Plătită în plus",
+      "unpaid": "Neplătită",
+      "manual": "Marcată manual, nicio plată găsită",
+      "sealed": "Sume criptate",
+      "unverified": "Nu se poate verifica (lipsește cursul)"
+    },
+    "txStatus": {
+      "no_invoice": "Fără factură",
+      "not_issued": "Doar la o ciornă sau factură anulată",
+      "ignored": "Ignorată"
+    },
+    "cols": {
+      "number": "Factură",
+      "date": "Data",
+      "party": "Client",
+      "payer": "Plătitor",
+      "currency": "Moneda",
+      "total": "Total",
+      "received": "Încasat",
+      "fee": "Comisioane",
+      "difference": "Diferență",
+      "differenceHome": "Diferență ({home})",
+      "status": "Stare",
+      "sources": "Surse",
+      "amount": "Sumă",
+      "source": "Sursă"
+    },
+    "csv": {
+      "kind": "Tip",
+      "invoice": "Factură",
+      "payment": "Plată fără factură"
+    },
+    "invoices": {
+      "heading": "Facturi",
+      "empty": "Nicio factură în această stare.",
+      "noProblems": "Toate facturile anului se potrivesc cu banii încasați.",
+      "note": "Facturile plătite contează în anul plății, cele neplătite în anul emiterii. O diferență explicată de un comision înregistrat apare ca „plătită cu comision”. O plată în altă monedă o comparăm la cursul oficial din ziua plății, cu o toleranță de {percent} %."
+    },
+    "transactions": {
+      "heading": "Plăți fără factură",
+      "intro": "Încasările anului care nu sunt asociate cu o factură emisă. Transferurile proprii din PayPal și schimburile valutare sunt excluse.",
+      "empty": "Fiecare încasare a anului are factura ei.",
+      "draft": "Ciornă",
+      "likelyTransfer": "Cel mai probabil un transfer propriu din PayPal"
+    },
+    "sources": {
+      "heading": "După sursă",
+      "empty": "Nicio plată încasată în acest an.",
+      "incoming": "Încasat",
+      "paired": "Asociat",
+      "withoutInvoice": "Fără factură",
+      "ignored": "Ignorat",
+      "ownMoves": "Transferuri și schimburi",
+      "feesNote": "Comisioanele facturilor anului în total: {fees}."
+    },
+    "sourceNames": {
+      "paypal": "PayPal",
+      "stripe": "Stripe",
+      "wise": "Wise",
+      "revolut": "Revolut",
+      "fio": "Fio",
+      "psd2": "PSD2",
+      "upload": "Extras încărcat",
+      "card": "Plată cu cardul"
+    },
+    "sealed": {
+      "locked": "Auditul nu a verificat încă {count, plural, one {# factură} few {# facturi} other {# de facturi}} cu sume criptate. După deblocarea seifului, acest browser le completează.",
+      "unreadable": "{count, plural, one {# factură nu a putut fi deschisă} few {# facturi nu au putut fi deschise} other {# de facturi nu au putut fi deschise}} și rămân cu starea „Sume criptate”.",
+      "failed": "Facturile criptate ({count}) nu au putut fi încărcate. Reîmprospătați pagina."
+    }
   }
 }

@@ -71,6 +71,12 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
               {t('netIncomeLink')}
             </Link>
           )}
+          {/* Lists every payment with its customer: the same owner/admin rule as the net income. */}
+          {access && canManage(access.role) && (
+            <Link href="/reports/payment-audit" className={link}>
+              {t('paymentAuditLink')}
+            </Link>
+          )}
           <Link href="/reports/tax-return" className={link}>
             {t('taxReturnLink')}
           </Link>

@@ -5606,7 +5606,8 @@
       "templates": "Szablony faktur",
       "netIncome": "Po opodatkowaniu (dochód netto)",
       "taxReturn": "Dane do zeznania podatkowego",
-      "flatTax": "Czy opłaca się podatek ryczałtowy?"
+      "flatTax": "Czy opłaca się podatek ryczałtowy?",
+      "paymentAudit": "Roczny audyt płatności"
     },
     "keywords": {
       "newInvoice": "wystaw utwórz dodaj dokument",
@@ -7366,7 +7367,8 @@
     "flatTaxLink": "Czy podatek ryczałtowy się opłaca? →",
     "taxReturnLink": "Podsumowanie do zeznania podatkowego",
     "netIncomeLink": "Po opodatkowaniu",
-    "sealedNote": "{count, plural, one {# dokument z zaszyfrowanymi kwotami nie jest wliczony} few {# dokumenty z zaszyfrowanymi kwotami nie są wliczone} many {# dokumentów z zaszyfrowanymi kwotami nie jest wliczonych} other {# dokumentu z zaszyfrowanymi kwotami nie jest wliczone}} do sum."
+    "sealedNote": "{count, plural, one {# dokument z zaszyfrowanymi kwotami nie jest wliczony} few {# dokumenty z zaszyfrowanymi kwotami nie są wliczone} many {# dokumentów z zaszyfrowanymi kwotami nie jest wliczonych} other {# dokumentu z zaszyfrowanymi kwotami nie jest wliczone}} do sum.",
+    "paymentAuditLink": "Audyt płatności"
   },
   "siteSearch": {
     "title": "Szukaj w witrynie",
@@ -15063,5 +15065,106 @@
       "passkey_failed": "Nie udało się zweryfikować klucza dostępu. Spróbuj ponownie albo wpisz kod lub hasło."
     },
     "usePasskey": "Potwierdź kluczem dostępu"
+  },
+  "paymentAudit": {
+    "title": "Roczny audyt płatności",
+    "intro": "Każda faktura roku w porównaniu z pieniędzmi, które naprawdę wpłynęły na konto, przez PayPal, Stripe lub kartą, oraz płatności bez faktury. Przydaje się przed zeznaniem podatkowym.",
+    "back": "Wróć do raportów",
+    "prev": "Poprzedni rok",
+    "next": "Następny rok",
+    "yearLabel": "Rok audytu",
+    "filterLabel": "Filtruj według statusu",
+    "export": "Eksport CSV",
+    "noTenant": "Najpierw załóż firmę.",
+    "loadError": "Nie udało się wczytać audytu płatności. Odśwież stronę.",
+    "noAccess": {
+      "title": "Tylko dla właścicieli i administratorów",
+      "body": "Audyt pokazuje wszystkie płatności firmy wraz z klientami, dlatego widzi go tylko właściciel i administratorzy."
+    },
+    "cards": {
+      "invoices": "Faktury roku",
+      "problems": "Do sprawdzenia",
+      "underpaid": "Brakuje ({home})",
+      "withoutInvoice": "Płatności bez faktury"
+    },
+    "filter": {
+      "problems": "Do sprawdzenia",
+      "all": "Wszystkie"
+    },
+    "status": {
+      "paid": "Opłacona",
+      "paidFee": "Opłacona, prowizja {fee}",
+      "paidFeeShort": "Opłacona z prowizją",
+      "underpaid": "Niedopłata",
+      "overpaid": "Nadpłata",
+      "unpaid": "Nieopłacona",
+      "manual": "Oznaczona ręcznie, brak płatności",
+      "sealed": "Zaszyfrowane kwoty",
+      "unverified": "Nie można sprawdzić (brak kursu)"
+    },
+    "txStatus": {
+      "no_invoice": "Bez faktury",
+      "not_issued": "Tylko przy szkicu lub anulowanej fakturze",
+      "ignored": "Zignorowana"
+    },
+    "cols": {
+      "number": "Faktura",
+      "date": "Data",
+      "party": "Nabywca",
+      "payer": "Płatnik",
+      "currency": "Waluta",
+      "total": "Razem",
+      "received": "Wpłynęło",
+      "fee": "Prowizje",
+      "difference": "Różnica",
+      "differenceHome": "Różnica ({home})",
+      "status": "Status",
+      "sources": "Źródła",
+      "amount": "Kwota",
+      "source": "Źródło"
+    },
+    "csv": {
+      "kind": "Rodzaj",
+      "invoice": "Faktura",
+      "payment": "Płatność bez faktury"
+    },
+    "invoices": {
+      "heading": "Faktury",
+      "empty": "Brak faktur w tym statusie.",
+      "noProblems": "Wszystkie faktury roku zgadzają się z pieniędzmi, które wpłynęły.",
+      "note": "Opłacone faktury liczą się do roku zapłaty, nieopłacone do roku wystawienia. Różnica wyjaśniona zapisaną prowizją to „opłacona z prowizją”. Płatność w innej walucie porównujemy po kursie urzędowym z dnia płatności z tolerancją {percent} %."
+    },
+    "transactions": {
+      "heading": "Płatności bez faktury",
+      "intro": "Wpływy roku niepowiązane z wystawioną fakturą. Własne przelewy z PayPala i wymiany walut są pominięte.",
+      "empty": "Każdy wpływ roku ma swoją fakturę.",
+      "draft": "Szkic",
+      "likelyTransfer": "Najpewniej własny przelew z PayPala"
+    },
+    "sources": {
+      "heading": "Według źródła",
+      "empty": "W tym roku nie wpłynęła żadna płatność.",
+      "incoming": "Wpłynęło",
+      "paired": "Powiązane",
+      "withoutInvoice": "Bez faktury",
+      "ignored": "Zignorowane",
+      "ownMoves": "Przelewy i wymiany",
+      "feesNote": "Prowizje przy fakturach roku łącznie: {fees}."
+    },
+    "sourceNames": {
+      "paypal": "PayPal",
+      "stripe": "Stripe",
+      "wise": "Wise",
+      "revolut": "Revolut",
+      "fio": "Fio",
+      "psd2": "PSD2",
+      "upload": "Wgrany wyciąg",
+      "card": "Płatność kartą"
+    },
+    "sealed": {
+      "locked": "Audyt nie sprawdził jeszcze {count, plural, one {# faktury} few {# faktur} many {# faktur} other {# faktury}} z zaszyfrowanymi kwotami. Po odblokowaniu sejfu ta przeglądarka je uzupełni.",
+      "unreadable": "{count, plural, one {Nie udało się otworzyć # faktury} few {Nie udało się otworzyć # faktur} many {Nie udało się otworzyć # faktur} other {Nie udało się otworzyć # faktury}}, zostaje przy nich status „Zaszyfrowane kwoty”.",
+      "failed": "Nie udało się wczytać zaszyfrowanych faktur ({count}). Odśwież stronę."
+    }
   }
 }

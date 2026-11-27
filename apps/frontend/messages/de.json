@@ -5606,7 +5606,8 @@
       "templates": "Rechnungsvorlagen",
       "netIncome": "Nach Steuern (Nettoeinkommen)",
       "taxReturn": "Unterlagen für die Steuererklärung",
-      "flatTax": "Lohnt sich die Pauschalsteuer?"
+      "flatTax": "Lohnt sich die Pauschalsteuer?",
+      "paymentAudit": "Jährliche Zahlungsprüfung"
     },
     "keywords": {
       "newInvoice": "ausstellen erstellen hinzufügen beleg",
@@ -7366,7 +7367,8 @@
     "flatTaxLink": "Lohnt sich die Pauschalsteuer? →",
     "taxReturnLink": "Übersicht für die Steuererklärung",
     "netIncomeLink": "Nach Steuern",
-    "sealedNote": "{count, plural, one {# Beleg mit verschlüsselten Beträgen ist} other {# Belege mit verschlüsselten Beträgen sind}} nicht in den Summen enthalten."
+    "sealedNote": "{count, plural, one {# Beleg mit verschlüsselten Beträgen ist} other {# Belege mit verschlüsselten Beträgen sind}} nicht in den Summen enthalten.",
+    "paymentAuditLink": "Zahlungsprüfung"
   },
   "siteSearch": {
     "title": "Website durchsuchen",
@@ -15063,5 +15065,106 @@
       "passkey_failed": "Der Passkey konnte nicht geprüft werden. Versuchen Sie es erneut oder geben Sie Ihren Code oder Ihr Passwort ein."
     },
     "usePasskey": "Mit Passkey bestätigen"
+  },
+  "paymentAudit": {
+    "title": "Jährliche Zahlungsprüfung",
+    "intro": "Jede Rechnung des Jahres im Vergleich mit dem Geld, das wirklich per Bank, PayPal, Stripe oder Karte eingegangen ist, und die Zahlungen ohne Rechnung. Nützlich vor der Steuererklärung.",
+    "back": "Zurück zu den Berichten",
+    "prev": "Vorheriges Jahr",
+    "next": "Nächstes Jahr",
+    "yearLabel": "Prüfungsjahr",
+    "filterLabel": "Nach Status filtern",
+    "export": "CSV exportieren",
+    "noTenant": "Legen Sie zuerst eine Firma an.",
+    "loadError": "Die Zahlungsprüfung konnte nicht geladen werden. Laden Sie die Seite neu.",
+    "noAccess": {
+      "title": "Nur für Inhaber und Administratoren",
+      "body": "Die Zahlungsprüfung zeigt alle Zahlungen der Firma mit den Kunden, daher sehen sie nur Inhaber und Administratoren."
+    },
+    "cards": {
+      "invoices": "Rechnungen des Jahres",
+      "problems": "Zu prüfen",
+      "underpaid": "Fehlt noch ({home})",
+      "withoutInvoice": "Zahlungen ohne Rechnung"
+    },
+    "filter": {
+      "problems": "Zu prüfen",
+      "all": "Alle"
+    },
+    "status": {
+      "paid": "Bezahlt",
+      "paidFee": "Bezahlt, Gebühr {fee}",
+      "paidFeeShort": "Bezahlt mit Gebühr",
+      "underpaid": "Unterzahlt",
+      "overpaid": "Überzahlt",
+      "unpaid": "Unbezahlt",
+      "manual": "Von Hand markiert, keine Zahlung gefunden",
+      "sealed": "Verschlüsselte Beträge",
+      "unverified": "Nicht prüfbar (Kurs fehlt)"
+    },
+    "txStatus": {
+      "no_invoice": "Ohne Rechnung",
+      "not_issued": "Nur bei Entwurf oder stornierter Rechnung",
+      "ignored": "Ignoriert"
+    },
+    "cols": {
+      "number": "Rechnung",
+      "date": "Datum",
+      "party": "Kunde",
+      "payer": "Zahler",
+      "currency": "Währung",
+      "total": "Gesamt",
+      "received": "Eingegangen",
+      "fee": "Gebühren",
+      "difference": "Differenz",
+      "differenceHome": "Differenz ({home})",
+      "status": "Status",
+      "sources": "Quellen",
+      "amount": "Betrag",
+      "source": "Quelle"
+    },
+    "csv": {
+      "kind": "Art",
+      "invoice": "Rechnung",
+      "payment": "Zahlung ohne Rechnung"
+    },
+    "invoices": {
+      "heading": "Rechnungen",
+      "empty": "Keine Rechnungen mit diesem Status.",
+      "noProblems": "Alle Rechnungen des Jahres passen zum eingegangenen Geld.",
+      "note": "Bezahlte Rechnungen zählen im Jahr der Zahlung, unbezahlte im Jahr der Ausstellung. Eine Differenz, die eine erfasste Gebühr erklärt, gilt als „bezahlt mit Gebühr“. Zahlungen in anderer Währung vergleichen wir zum amtlichen Kurs des Zahlungstags mit {percent} % Toleranz."
+    },
+    "transactions": {
+      "heading": "Zahlungen ohne Rechnung",
+      "intro": "Eingänge des Jahres, die keiner ausgestellten Rechnung zugeordnet sind. Eigene PayPal-Überträge und Währungsumtausch sind ausgenommen.",
+      "empty": "Jeder Zahlungseingang des Jahres hat seine Rechnung.",
+      "draft": "Entwurf",
+      "likelyTransfer": "Wahrscheinlich ein eigener Übertrag von PayPal"
+    },
+    "sources": {
+      "heading": "Nach Quelle",
+      "empty": "In diesem Jahr ist keine Zahlung eingegangen.",
+      "incoming": "Eingegangen",
+      "paired": "Zugeordnet",
+      "withoutInvoice": "Ohne Rechnung",
+      "ignored": "Ignoriert",
+      "ownMoves": "Überträge und Umtausch",
+      "feesNote": "Gebühren der Rechnungen des Jahres insgesamt: {fees}."
+    },
+    "sourceNames": {
+      "paypal": "PayPal",
+      "stripe": "Stripe",
+      "wise": "Wise",
+      "revolut": "Revolut",
+      "fio": "Fio",
+      "psd2": "PSD2",
+      "upload": "Hochgeladener Auszug",
+      "card": "Kartenzahlung"
+    },
+    "sealed": {
+      "locked": "Die Prüfung enthält {count, plural, one {# Rechnung} other {# Rechnungen}} mit verschlüsselten Beträgen noch nicht. Nach dem Entsperren des Tresors rechnet dieser Browser sie ein.",
+      "unreadable": "{count, plural, one {# Rechnung konnte nicht geöffnet werden} other {# Rechnungen konnten nicht geöffnet werden}} und behalten den Status „Verschlüsselte Beträge“.",
+      "failed": "Die verschlüsselten Rechnungen ({count}) konnten nicht geladen werden. Laden Sie die Seite neu."
+    }
   }
 }
