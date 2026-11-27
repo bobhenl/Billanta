@@ -73,6 +73,10 @@ REVOKE UPDATE, DELETE ON einvoice_status_events FROM faktur_app;
 -- refunded; deleting a row would hand the month's allowance back.
 REVOKE DELETE ON tenant_usage FROM faktur_app;
 
+-- VAT filing reminders already sent (migration 0119): a row deleted or
+-- rewritten would let the cron mail the same deadline again.
+REVOKE UPDATE, DELETE ON vat_filing_reminders FROM faktur_app;
+
 -- Global catalogs the app only reads; plans and terms change via migrations.
 REVOKE INSERT, UPDATE, DELETE ON subscription_plans, tos_versions FROM faktur_app;
 

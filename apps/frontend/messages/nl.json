@@ -2772,6 +2772,10 @@
         "bank_consent": {
           "label": "Toegang tot bankrekening",
           "hint": "Een week en een dag voordat je toestemming voor de bankkoppeling verloopt, en wanneer die verloopt. Vernieuwen kost één klik."
+        },
+        "vat_filing_due": {
+          "label": "Btw-deadline",
+          "hint": "3 dagen vooraf en op de dag zelf, als er iets in te dienen is: btw-aangifte, controleaangifte of opgaaf ICP."
         }
       },
       "browserTitle": "Browsermeldingen",
@@ -9937,7 +9941,8 @@
       "weekly_digest": "het wekelijkse overzicht",
       "all": "alle optionele e-mailmeldingen",
       "newsletter": "updates van Billanta over wijzigingen in belastingen en facturatie",
-      "bank_consent": "e-mails over verlopende toegang tot je bankrekening"
+      "bank_consent": "e-mails over verlopende toegang tot je bankrekening",
+      "vat_filing_due": "e-mails over btw-deadlines"
     },
     "errors": {
       "invalid": "Deze link is ongeldig of onvolledig. Kopieer de volledige link uit de e-mail.",

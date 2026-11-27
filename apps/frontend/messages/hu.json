@@ -2772,6 +2772,10 @@
         "bank_consent": {
           "label": "Bankszámla-hozzáférés",
           "hint": "Egy héttel és egy nappal azelőtt, hogy a bankkapcsolat engedélye lejár, valamint amikor lejárt. Egy kattintással megújíthatja."
+        },
+        "vat_filing_due": {
+          "label": "ÁFA-határidő",
+          "hint": "3 nappal előtte és a határidő napján, ha van mit beadni: áfabevallás, ellenőrző kimutatás vagy összesítő nyilatkozat."
         }
       },
       "browserTitle": "Böngészőértesítések",
@@ -9937,7 +9941,8 @@
       "weekly_digest": "heti összefoglalót",
       "all": "semmilyen opcionális e-mail-értesítést",
       "newsletter": "Billanta-híreket az adózási és számlázási változásokról",
-      "bank_consent": "e-maileket a bankszámla-hozzáférés lejártáról"
+      "bank_consent": "e-maileket a bankszámla-hozzáférés lejártáról",
+      "vat_filing_due": "e-mailek az áfa-határidőkről"
     },
     "errors": {
       "invalid": "Ez a link érvénytelen vagy hiányos. Próbálja meg a teljes linket kimásolni az e-mailből.",

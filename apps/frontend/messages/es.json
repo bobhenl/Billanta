@@ -2772,6 +2772,10 @@
         "bank_consent": {
           "label": "Acceso a la cuenta bancaria",
           "hint": "Una semana y un día antes de que caduque el consentimiento de la conexión bancaria, y cuando caduca. Se renueva con un clic."
+        },
+        "vat_filing_due": {
+          "label": "Plazo de IVA",
+          "hint": "3 días antes y el día del plazo, cuando hay algo que presentar: declaración de IVA, declaración de control o declaración recapitulativa."
         }
       },
       "browserTitle": "Notificaciones del navegador",
@@ -9937,7 +9941,8 @@
       "weekly_digest": "el resumen semanal",
       "all": "todas las notificaciones opcionales por correo",
       "newsletter": "las novedades de Billanta sobre cambios fiscales y de facturación",
-      "bank_consent": "los correos sobre la caducidad del acceso a la cuenta bancaria"
+      "bank_consent": "los correos sobre la caducidad del acceso a la cuenta bancaria",
+      "vat_filing_due": "correos sobre plazos de IVA"
     },
     "errors": {
       "invalid": "Este enlace no es válido o está incompleto. Pruebe a copiar el enlace completo del correo.",

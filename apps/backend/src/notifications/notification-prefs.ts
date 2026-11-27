@@ -26,6 +26,9 @@ export const NOTIFICATION_EVENTS = [
   // PSD2 bank access about to run out (a week ahead, on the last day) or gone.
   // E-mail on by default: missing it silently stops payment matching.
   "bank_consent",
+  // A VAT return, control statement or EC sales list is due in a few days
+  // (src/exports/vat-filing-reminders.cron.ts).
+  "vat_filing_due",
 ] as const;
 export type NotificationEvent = (typeof NOTIFICATION_EVENTS)[number];
 export const NOTIFICATION_CHANNELS = ["app", "email"] as const;
@@ -38,6 +41,18 @@ const EMAIL_ON_BY_DEFAULT: ReadonlySet<NotificationEvent> = new Set([
   "buyer_details",
   "bank_consent",
 ]);
+
+/**
+ * Filing reminders e-mail the people who file by default; a viewer can turn
+ * them on. Without a role the event stays off, so a caller that doesn't know
+ * the role never switches it on for someone by accident.
+ */
+const FILING_ROLES: ReadonlySet<string> = new Set(["owner", "admin", "accountant"]);
+
+function emailByDefault(event: NotificationEvent, role: string | null | undefined): boolean {
+  if (event === "vat_filing_due") return !!role && FILING_ROLES.has(role);
+  return EMAIL_ON_BY_DEFAULT.has(event);
+}
 
 export interface QuietHours {
   enabled: boolean;
@@ -102,8 +117,12 @@ export const notificationPrefsSchema = z.object({
 });
 export type NotificationPrefsPatch = z.infer<typeof notificationPrefsSchema>;
 
-/** Stored prefs with defaults filled in (in-app on for everything, email for payments and AI drafts). */
-export function notificationPrefsOf(stored: unknown): NotificationPrefs {
+/**
+ * Stored prefs with defaults filled in (in-app on for everything, email for
+ * payments and AI drafts, filing reminders by `role`). Pass the member's role
+ * wherever prefs are written back: the merge stores the filled-in defaults.
+ */
+export function notificationPrefsOf(stored: unknown, role?: string | null): NotificationPrefs {
   const s = (stored ?? {}) as {
     events?: Record<string, Partial<Record<NotificationChannel, unknown>> | undefined>;
     browserPopups?: unknown;
@@ -117,7 +136,7 @@ export function notificationPrefsOf(stored: unknown): NotificationPrefs {
         e,
         {
           app: typeof c.app === "boolean" ? c.app : true,
-          email: typeof c.email === "boolean" ? c.email : EMAIL_ON_BY_DEFAULT.has(e),
+          email: typeof c.email === "boolean" ? c.email : emailByDefault(e, role),
         },
       ];
     }),
@@ -130,8 +149,8 @@ export function notificationPrefsOf(stored: unknown): NotificationPrefs {
   };
 }
 
-export function mergeNotificationPrefs(current: unknown, patch: NotificationPrefsPatch): NotificationPrefs {
-  const base = notificationPrefsOf(current);
+export function mergeNotificationPrefs(current: unknown, patch: NotificationPrefsPatch, role?: string | null): NotificationPrefs {
+  const base = notificationPrefsOf(current, role);
   for (const e of NOTIFICATION_EVENTS) {
     const p = patch.events?.[e];
     if (!p) continue;

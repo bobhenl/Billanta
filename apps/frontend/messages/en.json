@@ -2779,6 +2779,10 @@
         "bank_consent": {
           "label": "Bank account access",
           "hint": "A week and a day before your bank connection consent expires, and when it does. Renewing takes one click."
+        },
+        "vat_filing_due": {
+          "label": "VAT filing due",
+          "hint": "3 days ahead and on the due day, when there is something to file: VAT return, control statement or EC sales list."
         }
       },
       "browserTitle": "Browser notifications",
@@ -9945,7 +9949,8 @@
       "weekly_digest": "the weekly digest",
       "all": "all optional email notifications",
       "newsletter": "Billanta updates on tax and invoicing changes",
-      "bank_consent": "emails about bank account access expiring"
+      "bank_consent": "emails about bank account access expiring",
+      "vat_filing_due": "e-mails about VAT filing deadlines"
     },
     "errors": {
       "invalid": "This link is invalid or incomplete. Try copying the whole link from the email.",

@@ -2772,6 +2772,10 @@
         "bank_consent": {
           "label": "Accès au compte bancaire",
           "hint": "Une semaine et un jour avant l’expiration du consentement de connexion bancaire, puis à l’expiration. Le renouvellement se fait en un clic."
+        },
+        "vat_filing_due": {
+          "label": "Échéance TVA",
+          "hint": "3 jours avant et le jour de l’échéance, quand il y a quelque chose à déposer : déclaration de TVA, relevé de contrôle ou état récapitulatif."
         }
       },
       "browserTitle": "Notifications du navigateur",
@@ -9937,7 +9941,8 @@
       "weekly_digest": "le récapitulatif hebdomadaire",
       "all": "toutes les notifications par e-mail facultatives",
       "newsletter": "les actualités Billanta sur les évolutions fiscales et de facturation",
-      "bank_consent": "les e-mails sur l’expiration de l’accès au compte bancaire"
+      "bank_consent": "les e-mails sur l’expiration de l’accès au compte bancaire",
+      "vat_filing_due": "e-mails sur les échéances de TVA"
     },
     "errors": {
       "invalid": "Ce lien est invalide ou incomplet. Essayez de copier le lien complet depuis l’e-mail.",

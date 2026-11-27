@@ -2772,6 +2772,10 @@
         "bank_consent": {
           "label": "Acces la contul bancar",
           "hint": "Cu o săptămână și cu o zi înainte să expire consimțământul pentru conexiunea bancară, și când expiră. Îl reînnoiți cu un singur clic."
+        },
+        "vat_filing_due": {
+          "label": "Termen TVA",
+          "hint": "Cu 3 zile înainte și în ziua termenului, când există ceva de depus: decont de TVA, declarație de control sau declarație recapitulativă."
         }
       },
       "browserTitle": "Notificări în browser",
@@ -9937,7 +9941,8 @@
       "weekly_digest": "rezumatul săptămânal",
       "all": "toate notificările opționale prin e-mail",
       "newsletter": "noutăți Billanta despre schimbările fiscale și de facturare",
-      "bank_consent": "e-mailuri despre expirarea accesului la contul bancar"
+      "bank_consent": "e-mailuri despre expirarea accesului la contul bancar",
+      "vat_filing_due": "e-mailuri despre termenele de TVA"
     },
     "errors": {
       "invalid": "Acest link este invalid sau incomplet. Încercați să copiați întregul link din e-mail.",

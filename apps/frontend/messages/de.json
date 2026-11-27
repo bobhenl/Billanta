@@ -2772,6 +2772,10 @@
         "bank_consent": {
           "label": "Kontozugriff",
           "hint": "Eine Woche und einen Tag bevor die Zustimmung zur Bankverbindung abläuft, und wenn sie abgelaufen ist. Erneuern geht mit einem Klick."
+        },
+        "vat_filing_due": {
+          "label": "USt-Frist",
+          "hint": "3 Tage vorher und am Fälligkeitstag, wenn etwas einzureichen ist: USt-Erklärung, Kontrollmeldung oder Zusammenfassende Meldung."
         }
       },
       "browserTitle": "Browser-Benachrichtigungen",
@@ -9938,7 +9942,8 @@
       "weekly_digest": "der wöchentlichen Zusammenfassung",
       "all": "allen optionalen E-Mail-Benachrichtigungen",
       "newsletter": "Billanta-Neuigkeiten zu Änderungen bei Steuern und Rechnungsstellung",
-      "bank_consent": "E-Mails zum Ablauf des Kontozugriffs"
+      "bank_consent": "E-Mails zum Ablauf des Kontozugriffs",
+      "vat_filing_due": "E-Mails zu USt-Fristen"
     },
     "errors": {
       "invalid": "Dieser Link ist ungültig oder unvollständig. Kopieren Sie den gesamten Link aus der E-Mail.",

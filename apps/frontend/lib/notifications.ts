@@ -21,7 +21,8 @@ export const NOTIFICATION_EVENTS = [
   'quote_response',
   'buyer_details',
   'profile_message',
-  'bank_consent'
+  'bank_consent',
+  'vat_filing_due'
 ] as const;
 export type NotificationEvent = (typeof NOTIFICATION_EVENTS)[number];
 
@@ -69,6 +70,7 @@ export const EVENT_TONE: Record<string, string> = {
   buyer_details: 'bg-cyan-500',
   profile_message: 'bg-violet-500',
   bank_consent: 'bg-amber-600',
+  vat_filing_due: 'bg-amber-600',
   security_alert: 'bg-red-600',
   billing: 'bg-orange-500'
 };

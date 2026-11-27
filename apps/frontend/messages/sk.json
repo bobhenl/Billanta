@@ -2779,6 +2779,10 @@
         "bank_consent": {
           "label": "Prístup k bankovému účtu",
           "hint": "Týždeň a deň predtým, ako vyprší súhlas s pripojením banky, a keď vyprší. Obnovíte ho jedným kliknutím."
+        },
+        "vat_filing_due": {
+          "label": "Termín pre DPH",
+          "hint": "3 dni vopred a v deň termínu, keď je čo podať: daňové priznanie, kontrolný výkaz alebo súhrnný výkaz."
         }
       },
       "browserTitle": "Oznámenia v prehliadači",
@@ -9851,7 +9855,8 @@
       "weekly_digest": "týždenný prehľad",
       "all": "všetky nepovinné upozornenia e-mailom",
       "newsletter": "novinky Billanty o zmenách v daniach a fakturácii",
-      "bank_consent": "e-maily o skončení prístupu k bankovému účtu"
+      "bank_consent": "e-maily o skončení prístupu k bankovému účtu",
+      "vat_filing_due": "e-maily o termínoch pre DPH"
     },
     "errors": {
       "invalid": "Odkaz je neplatný alebo neúplný. Skúste ho z e-mailu skopírovať celý.",

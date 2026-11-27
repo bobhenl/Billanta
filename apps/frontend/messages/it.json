@@ -2772,6 +2772,10 @@
         "bank_consent": {
           "label": "Accesso al conto bancario",
           "hint": "Una settimana e un giorno prima che scada il consenso al collegamento bancario, e quando scade. Si rinnova con un clic."
+        },
+        "vat_filing_due": {
+          "label": "Scadenza IVA",
+          "hint": "3 giorni prima e il giorno della scadenza, quando c’è qualcosa da presentare: dichiarazione IVA, comunicazione di controllo o elenco riepilogativo."
         }
       },
       "browserTitle": "Notifiche del browser",
@@ -9937,7 +9941,8 @@
       "weekly_digest": "il riepilogo settimanale",
       "all": "tutte le notifiche e-mail facoltative",
       "newsletter": "gli aggiornamenti di Billanta sulle novità fiscali e di fatturazione",
-      "bank_consent": "le e-mail sulla scadenza dell’accesso al conto bancario"
+      "bank_consent": "le e-mail sulla scadenza dell’accesso al conto bancario",
+      "vat_filing_due": "e-mail sulle scadenze IVA"
     },
     "errors": {
       "invalid": "Questo link non è valido o è incompleto. Provi a copiare l'intero link dall'e-mail.",

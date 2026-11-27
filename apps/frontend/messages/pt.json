@@ -2772,6 +2772,10 @@
         "bank_consent": {
           "label": "Acesso à conta bancária",
           "hint": "Uma semana e um dia antes de o consentimento da ligação bancária expirar, e quando expira. Renova-se com um clique."
+        },
+        "vat_filing_due": {
+          "label": "Prazo do IVA",
+          "hint": "3 dias antes e no dia do prazo, quando há algo a entregar: declaração de IVA, declaração de controlo ou declaração recapitulativa."
         }
       },
       "browserTitle": "Notificações do navegador",
@@ -9937,7 +9941,8 @@
       "weekly_digest": "o resumo semanal",
       "all": "todas as notificações por e-mail opcionais",
       "newsletter": "novidades da Billanta sobre alterações fiscais e de faturação",
-      "bank_consent": "e-mails sobre a expiração do acesso à conta bancária"
+      "bank_consent": "e-mails sobre a expiração do acesso à conta bancária",
+      "vat_filing_due": "e-mails sobre prazos do IVA"
     },
     "errors": {
       "invalid": "Esta ligação é inválida ou está incompleta. Experimente copiar a ligação completa do e-mail.",

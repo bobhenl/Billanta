@@ -51,14 +51,14 @@ export class EmailUnsubscribeService {
     }
     return this.inTenant(claims.tenantId, async (db) => {
       const [row] = await db
-        .select({ prefs: schema.tenantMemberships.notificationPrefs, companyName: schema.tenants.companyName })
+        .select({ prefs: schema.tenantMemberships.notificationPrefs, role: schema.tenantMemberships.role, companyName: schema.tenants.companyName })
         .from(schema.tenantMemberships)
         .innerJoin(schema.tenants, eq(schema.tenants.id, schema.tenantMemberships.tenantId))
         .where(and(eq(schema.tenantMemberships.tenantId, claims.tenantId), eq(schema.tenantMemberships.userId, claims.userId)))
         .limit(1);
       // No longer a member: nothing is sent to them from this company anyway.
       if (!row) return { type: claims.type, companyName: null, unsubscribed: true };
-      return { type: claims.type, companyName: row.companyName, unsubscribed: isUnsubscribed(notificationPrefsOf(row.prefs), claims.type) };
+      return { type: claims.type, companyName: row.companyName, unsubscribed: isUnsubscribed(notificationPrefsOf(row.prefs, row.role), claims.type) };
     });
   }
 
@@ -78,7 +78,7 @@ export class EmailUnsubscribeService {
     await this.inTenant(claims.tenantId, async (db) => {
       const where = and(eq(schema.tenantMemberships.tenantId, claims.tenantId), eq(schema.tenantMemberships.userId, claims.userId));
       const [row] = await db
-        .select({ prefs: schema.tenantMemberships.notificationPrefs })
+        .select({ prefs: schema.tenantMemberships.notificationPrefs, role: schema.tenantMemberships.role })
         .from(schema.tenantMemberships)
         .where(where)
         .limit(1)
@@ -86,7 +86,7 @@ export class EmailUnsubscribeService {
       if (!row) return;
       await db
         .update(schema.tenantMemberships)
-        .set({ notificationPrefs: mergeNotificationPrefs(row.prefs, unsubscribePatch(claims.type)) })
+        .set({ notificationPrefs: mergeNotificationPrefs(row.prefs, unsubscribePatch(claims.type), row.role) })
         .where(where);
     });
     return { type: claims.type, unsubscribed: true };

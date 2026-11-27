@@ -31,7 +31,7 @@ import {
   type SkVatFilingKind,
 } from "@faktur/cz-compliance";
 import { ReportRates } from "./uniform-rate";
-import { submitterFromTenant, type VatExportWarning, type VatPeriod, type VatReceivedDoc } from "./vat-returns";
+import { classifyIssued, submitterFromTenant, type VatExportWarning, type VatPeriod, type VatReceivedDoc } from "./vat-returns";
 import { skSubmitterFromTenant } from "./vat-returns-sk";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 import { redactSealedInvoice, redactSealedItem } from "../vault/sealed";
@@ -583,6 +583,36 @@ export class ExportsService {
   ): Promise<string | null> {
     const { issued, received } = await this.loadVatDocs(db, period, (c, s, d) => this.rateFor("EUR", c, s, d));
     return buildSkVatFiling(kind, { issued, received, submitter: skSubmitterFromTenant(tenant), period: vatPeriod });
+  }
+
+  /**
+   * Whether a VAT filing of the period has anything in it, asked of the same
+   * documents and builders as the download (the deadline reminder e-mail,
+   * src/exports/vat-filing-reminders.cron.ts). Sealed documents come in as
+   * envelopes with no amounts: they still count for the filing being due (a
+   * sale to an EU business is one by its buyer alone), but nothing sealed
+   * ever reaches `xml`. `xml` is null when the filing is not due.
+   */
+  async vatFilingCheck(
+    db: Db,
+    filing: { country: "CZ"; kind: CzVatFilingKind } | { country: "SK"; kind: SkVatFilingKind },
+    period: ExportPeriod,
+    vatPeriod: VatPeriod,
+    tenant: typeof schema.tenants.$inferSelect,
+  ): Promise<{ due: boolean; xml: string | null; warnings: VatExportWarning[]; sealed: boolean }> {
+    if (filing.country === "SK") {
+      const { issued, received } = await this.loadVatDocs(db, period, (c, s, d) => this.rateFor("EUR", c, s, d), false, "envelope");
+      const xml = buildSkVatFiling(filing.kind, { issued, received, submitter: skSubmitterFromTenant(tenant), period: vatPeriod });
+      return { due: xml !== null, xml, warnings: [], sealed: issued.some((d) => !!d.encAmounts) };
+    }
+    const identified = tenant.vatStatus === "identified";
+    const { issued, received } = await this.loadVatDocs(db, period, undefined, identified && filing.kind === "dp3", "envelope");
+    const { body, warnings } = buildCzVatFiling(filing.kind, { issued, received, submitter: submitterFromTenant(tenant), period: vatPeriod, identified });
+    // Its base is sealed, so the identified person's return leaves ř. 21 out, yet the sale makes the return due.
+    const sealedEuSale = issued.some((d) => !!d.encAmounts && classifyIssued(d) === "eu");
+    // A foreign purchase with no reverse-charge rate: the tax can't be worked out, but the return is most likely due.
+    const unmarked = warnings.some((w) => w.code === "foreign_purchase_unmarked");
+    return { due: body !== null || sealedEuSale || unmarked, xml: body, warnings, sealed: issued.some((d) => !!d.encAmounts) };
   }
 
   /**
