@@ -14759,7 +14759,8 @@
       "partlyPaid": "{n, plural, one {# documento pagato in parte è rimasto leggibile} other {# documenti pagati in parte sono rimasti leggibili}}. Si potranno cifrare dopo il pagamento completo."
     },
     "amounts": {
-      "paidSealed": "Gli importi del documento sono cifrati, quindi si può registrare solo il pagamento dell’intero importo. Il server non salva commissioni né importo accreditato."
+      "paidSealed": "Gli importi del documento sono cifrati, quindi si può registrare solo il pagamento dell’intero importo. Il server non salva commissioni né importo accreditato.",
+      "leftOut": "Esclusi {count, plural, one {# documento} other {# documenti}} con importi cifrati – sblocca la cassaforte"
     }
   },
   "vaultPublic": {

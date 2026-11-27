@@ -14771,7 +14771,8 @@
       "partlyPaid": "{n, plural, one {# partly paid document stayed readable} other {# partly paid documents stayed readable}}. They can be encrypted once paid in full."
     },
     "amounts": {
-      "paidSealed": "The document's amounts are encrypted, so only a payment in full can be recorded. The server keeps no fees or credited amount."
+      "paidSealed": "The document's amounts are encrypted, so only a payment in full can be recorded. The server keeps no fees or credited amount.",
+      "leftOut": "Excludes {count, plural, one {# document} other {# documents}} with encrypted amounts – unlock the vault"
     }
   },
   "vaultPublic": {

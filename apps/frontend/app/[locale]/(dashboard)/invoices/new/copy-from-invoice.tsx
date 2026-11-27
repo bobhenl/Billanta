@@ -7,6 +7,7 @@ import { Typeahead, type TypeaheadGroup } from '@/components/typeahead';
 import { useRouter } from '@/i18n/navigation';
 import { searchInvoicesToCopy, type InvoiceToCopy } from './actions';
 import { ConfidentialText } from '@/components/vault/confidential-text';
+import { SealedTotal } from '@/components/vault/sealed-amounts';
 
 /**
  * "Předvyplnit podle faktury": start the new invoice from the latest one or
@@ -73,7 +74,8 @@ export function CopyFromInvoicePanel() {
                     {row.contactName && <span className="text-muted-foreground"> · <ConfidentialText value={row.contactName} compact /></span>}
                   </span>
                   <span className="shrink-0 text-xs text-muted-foreground">
-                    {row.issueDate ? new Date(row.issueDate).toLocaleDateString(locale) : ''} <span className="amount">{money(row)}</span>
+                    {row.issueDate ? new Date(row.issueDate).toLocaleDateString(locale) : ''}{' '}
+                    {row.total == null || row.encAmounts ? <SealedTotal cipher={row.encAmounts} currency={row.currency} compact /> : <span className="amount">{money(row)}</span>}
                   </span>
                 </span>
               )}

@@ -14759,7 +14759,8 @@
       "partlyPaid": "{n, plural, one {# részben kifizetett bizonylat olvasható maradt} other {# részben kifizetett bizonylat olvasható maradt}}. Teljes kifizetés után titkosíthatók."
     },
     "amounts": {
-      "paidSealed": "A bizonylat összegei titkosítva vannak, ezért csak a teljes összeg kifizetése rögzíthető. Díjakat és jóváírt összeget a szerver nem tárol."
+      "paidSealed": "A bizonylat összegei titkosítva vannak, ezért csak a teljes összeg kifizetése rögzíthető. Díjakat és jóváírt összeget a szerver nem tárol.",
+      "leftOut": "{count, plural, one {# titkosított összegű bizonylat} other {# titkosított összegű bizonylat}} nélkül – oldja fel a széfet"
     }
   },
   "vaultPublic": {

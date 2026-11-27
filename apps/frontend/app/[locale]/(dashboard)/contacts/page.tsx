@@ -62,11 +62,14 @@ export default async function ContactsPage(props: { searchParams: Promise<Filter
     const s = stats.get(inv.contactId) ?? {
       count: 0,
       revenueHome: 0,
+      sealedHome: [],
       unpaid: 0,
       lastIssue: null
     };
     s.count += 1;
-    if (inv.currency === home) s.revenueHome += Number(inv.total);
+    // A sealed total is null: the list opens it after unlock instead of counting 0.
+    if (inv.currency === home && (inv.total == null || inv.encAmounts)) s.sealedHome.push(inv.encAmounts ?? '');
+    else if (inv.currency === home) s.revenueHome += Number(inv.total);
     if (inv.status !== 'paid') s.unpaid += 1;
     if (inv.issueDate && (!s.lastIssue || inv.issueDate > s.lastIssue)) s.lastIssue = inv.issueDate;
     stats.set(inv.contactId, s);

@@ -7,6 +7,7 @@ import { isSealed } from '@faktur/cz-compliance';
 import { toast } from '@/components/toaster';
 import { ConfidentialText } from '@/components/vault/confidential-text';
 import { useOpenedContacts } from '@/components/vault/opened-contacts';
+import { MoneySum } from '@/components/vault/sealed-amounts';
 import { useCanWrite } from '@/components/access-provider';
 import { Link, useRouter } from '@/i18n/navigation';
 import { fuzzyScore } from '@/lib/fuzzy';
@@ -29,6 +30,8 @@ export type ContactRow = Contact & {
     count: number;
     /** Invoiced in the company's own currency (other currencies are not added up). */
     revenueHome: number;
+    /** Totals envelopes of home-currency documents with sealed amounts, opened here after unlock. */
+    sealedHome: string[];
     unpaid: number;
     lastIssue: string | null;
   } | null;
@@ -269,7 +272,11 @@ export function ContactsList({
               </div>
               {row.stats && (
                 <div className="hidden shrink-0 text-right text-xs sm:block">
-                  {row.stats.revenueHome > 0 && <p className="font-semibold tabular-nums"><span className="amount">{formatMoney(row.stats.revenueHome, home, locale)}</span></p>}
+                  {row.stats.sealedHome.length > 0 ? (
+                    <p className="font-semibold tabular-nums"><MoneySum plain={row.stats.revenueHome} sealed={row.stats.sealedHome} currency={home} /></p>
+                  ) : (
+                    row.stats.revenueHome > 0 && <p className="font-semibold tabular-nums"><span className="amount">{formatMoney(row.stats.revenueHome, home, locale)}</span></p>
+                  )}
                   <p className="text-muted-foreground">
                     {t('stats.invoices', { count: row.stats.count })}
                     {row.stats.lastIssue && ` · ${formatDate(row.stats.lastIssue, locale)}`}

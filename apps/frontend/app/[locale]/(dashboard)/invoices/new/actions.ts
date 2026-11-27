@@ -29,7 +29,9 @@ export interface InvoiceToCopy {
   invoiceNumber: string | null;
   contactName: string | null;
   issueDate: string | null;
-  total: string | number;
+  /** Null when the amounts are sealed (Důvěrný režim): `encAmounts` holds them. */
+  total: string | number | null;
+  encAmounts?: string | null;
   currency: string;
   documentType: string;
 }
@@ -42,7 +44,7 @@ export async function searchInvoicesToCopy(query: string): Promise<InvoiceToCopy
     return rows
       .filter((r) => r.documentType !== 'credit_note')
       .slice(0, 8)
-      .map(({ id, invoiceNumber, contactName, issueDate, total, currency, documentType }) => ({ id, invoiceNumber, contactName, issueDate, total, currency, documentType }));
+      .map(({ id, invoiceNumber, contactName, issueDate, total, encAmounts, currency, documentType }) => ({ id, invoiceNumber, contactName, issueDate, total, encAmounts: encAmounts ?? null, currency, documentType }));
   } catch {
     return [];
   }

@@ -11,7 +11,8 @@ export interface PaletteInvoice {
   contact: string | null;
   ico: string | null;
   vs: string | null;
-  total: number;
+  /** Null when the amounts are sealed: the palette shows a lock, not 0. */
+  total: number | null;
   currency: string;
   date: string | null;
 }

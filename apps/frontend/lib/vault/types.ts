@@ -71,9 +71,11 @@ export interface VaultDocument {
   noteAbove: string | null;
   noteBelow: string | null;
   internalNote: string | null;
-  totalWithoutVat: number;
-  totalVat: number;
-  total: number;
+  /** Null when the amounts are sealed: `encAmounts` holds the totals. */
+  totalWithoutVat: number | null;
+  totalVat: number | null;
+  total: number | null;
+  encAmounts?: string | null;
   createdAt: string;
   items: {
     description: string;
@@ -83,6 +85,8 @@ export interface VaultDocument {
     unitPrice: number;
     vatRate: number | null;
     discountPercent: number;
+    /** The item's real numbers when sealed; the fields above are then the placeholder. */
+    encAmounts?: string | null;
     createdAt: string;
   }[];
 }

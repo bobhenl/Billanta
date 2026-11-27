@@ -14759,7 +14759,8 @@
       "partlyPaid": "{n, plural, one {# document plătit parțial a rămas lizibil} few {# documente plătite parțial au rămas lizibile} other {# de documente plătite parțial au rămas lizibile}}. Pot fi criptate după plata integrală."
     },
     "amounts": {
-      "paidSealed": "Sumele documentului sunt criptate, de aceea se poate înregistra doar plata integrală. Serverul nu păstrează comisioane sau suma creditată."
+      "paidSealed": "Sumele documentului sunt criptate, de aceea se poate înregistra doar plata integrală. Serverul nu păstrează comisioane sau suma creditată.",
+      "leftOut": "Fără {count, plural, one {# document} few {# documente} other {# de documente}} cu sume criptate – deblocați seiful"
     }
   },
   "vaultPublic": {

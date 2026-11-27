@@ -14759,7 +14759,8 @@
       "partlyPaid": "{n, plural, one {# document partiellement payé est resté lisible} other {# documents partiellement payés sont restés lisibles}}. Ils pourront être chiffrés une fois payés en totalité."
     },
     "amounts": {
-      "paidSealed": "Les montants du document sont chiffrés, seul un paiement intégral peut donc être enregistré. Le serveur ne conserve ni frais ni montant crédité."
+      "paidSealed": "Les montants du document sont chiffrés, seul un paiement intégral peut donc être enregistré. Le serveur ne conserve ni frais ni montant crédité.",
+      "leftOut": "Sans {count, plural, one {# document} other {# documents}} aux montants chiffrés – déverrouillez le coffre"
     }
   },
   "vaultPublic": {

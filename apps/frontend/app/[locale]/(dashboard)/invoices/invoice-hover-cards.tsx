@@ -6,6 +6,7 @@ import type { HomeCurrency } from '@faktur/cz-compliance';
 import { Link } from '@/i18n/navigation';
 import { formatDate, formatMoney, fxLabelOf, rateQuote, type InvoiceRow } from '@/lib/invoice-ui';
 import { ConfidentialText } from '@/components/vault/confidential-text';
+import { useOpenedTotals } from '@/components/vault/sealed-amounts';
 
 const OPEN_DELAY_MS = 300;
 const CLOSE_DELAY_MS = 150;
@@ -123,10 +124,18 @@ function HoverPopover({
 export function AmountHover({ row, home = 'CZK', children }: { row: InvoiceRow; home?: HomeCurrency; children: ReactNode }) {
   const t = useTranslations('invoices.hover');
   const locale = useLocale();
+  // Sealed amounts: the breakdown appears once this tab has opened the totals.
+  const { opened } = useOpenedTotals([row.encAmounts]);
+  const sealed = row.encAmounts ? opened?.get(row.encAmounts) : undefined;
+  const total = sealed ? sealed.totalWithVat : row.encAmounts ? null : row.total;
+  const totalVat = sealed ? sealed.totalVat : row.encAmounts ? null : row.totalVat;
+  const totalWithoutVat = sealed ? sealed.totalWithoutVat : row.encAmounts ? null : row.totalWithoutVat;
   const rate = row.exchangeRate ? Number(row.exchangeRate) : null;
   let info: string | null = null;
-  if (row.currency !== home && rate) {
-    const amount = formatMoney(row.total * rate, home, locale);
+  if (total == null || totalVat == null || totalWithoutVat == null) {
+    info = null;
+  } else if (row.currency !== home && rate) {
+    const amount = formatMoney(total * rate, home, locale);
     const quote = rateQuote(rate, row.currency, home);
     const rateText = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 3 }).format(quote.value);
     const vars = { amount, rate: rateText, pair: quote.pair, source: home === 'EUR' ? 'ECB' : 'ČNB' };
@@ -137,8 +146,8 @@ export function AmountHover({ row, home = 'CZK', children }: { row: InvoiceRow; 
       const date = formatDate(fx.kind === 'on' || fx.kind === 'ecb' ? fx.date : (row.taxableSupplyDate ?? row.issueDate), locale);
       info = date ? t('fx', { ...vars, date }) : t('fxNoDate', vars);
     }
-  } else if (row.currency === home && row.totalVat !== 0) {
-    info = t('breakdown', { base: formatMoney(row.totalWithoutVat, home, locale), vat: formatMoney(row.totalVat, home, locale) });
+  } else if (row.currency === home && totalVat !== 0) {
+    info = t('breakdown', { base: formatMoney(totalWithoutVat, home, locale), vat: formatMoney(totalVat, home, locale) });
   }
   if (!info) return <>{children}</>;
   return (

@@ -489,8 +489,9 @@ export function InvoiceForm({
     recentPlain.list ??= recentItems();
     const { tenantId, key } = vaultSession;
     const [plain, index] = await Promise.all([recentPlain.list, tenantId && key ? loadSealedIndex(tenantId, key).catch(() => null) : null]);
+    // A sealed item this key could not open has no price to suggest.
     const opened = index
-      ? [...index.entries.values()].flatMap((e) => e.items.map((i) => ({ description: i.description, unitPrice: i.unitPrice, vatRate: i.vatRate, lastUsed: i.createdAt })))
+      ? [...index.entries.values()].flatMap((e) => e.items.flatMap((i) => (i.unitPrice == null ? [] : [{ description: i.description, unitPrice: i.unitPrice, vatRate: i.vatRate, lastUsed: i.createdAt }])))
       : [];
     return matchItemSuggestions([...opened, ...plain], q);
   };

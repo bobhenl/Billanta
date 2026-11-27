@@ -42,9 +42,9 @@ export interface InvoiceRow {
   contactIco: string | null;
   contactColor?: string | null;
   /** Null when the amounts are sealed (category "amounts"): the browser opens `encAmounts`. */
-  totalWithoutVat: number;
-  totalVat: number;
-  total: number;
+  totalWithoutVat: number | null;
+  totalVat: number | null;
+  total: number | null;
   /** Category "amounts": the totals envelope; the totals above are then null. */
   encAmounts?: string | null;
   isOverdue: boolean;

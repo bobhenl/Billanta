@@ -14759,7 +14759,8 @@
       "partlyPaid": "{n, plural, one {# documento parcialmente pago continuou legível} other {# documentos parcialmente pagos continuaram legíveis}}. Podem ser cifrados depois de pagos na totalidade."
     },
     "amounts": {
-      "paidSealed": "Os valores do documento estão cifrados, por isso só é possível registar o pagamento total. O servidor não guarda comissões nem o valor creditado."
+      "paidSealed": "Os valores do documento estão cifrados, por isso só é possível registar o pagamento total. O servidor não guarda comissões nem o valor creditado.",
+      "leftOut": "Sem {count, plural, one {# documento} other {# documentos}} com valores cifrados – desbloqueie o cofre"
     }
   },
   "vaultPublic": {

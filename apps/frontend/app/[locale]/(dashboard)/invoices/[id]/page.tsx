@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { isSealed, SEALED_BUYER_SNAPSHOT_FIELDS } from '@faktur/cz-compliance';
 import { ConfidentialText } from '@/components/vault/confidential-text';
 import { ConfidentialJoin } from '@/components/vault/confidential-join';
-import { SealedItemAmount, SealedTotal, SealedTotalsBlock } from '@/components/vault/sealed-amounts';
+import { SealedItemAmount, SealedTotal, SealedTotalsBlock, SealedCustomField } from '@/components/vault/sealed-amounts';
 import { SealButton } from '@/components/vault/seal-button';
 import { ServerViewPanel } from '@/components/vault/server-view-panel';
 import type { ReactNode } from 'react';
@@ -710,7 +710,13 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                     {f.internal && <Lock className="h-3 w-3 text-warning" aria-label={t('internalField')} />}
                     {f.label}
                   </dt>
-                  <dd className="text-right font-medium tabular-nums">{customFieldText(f)}</dd>
+                  <dd className="text-right font-medium tabular-nums">
+                    {amountsSealed ? (
+                      <SealedCustomField field={f} fields={invoice.customFields ?? []} companyVars={companyVars} amountPaid={invoice.amountPaid} cipher={encAmounts} currency={invoice.currency} />
+                    ) : (
+                      customFieldText(f)
+                    )}
+                  </dd>
                 </div>
               ))}
             </dl>

@@ -138,7 +138,8 @@ export function rankCandidates(
       if (!paid && tx.variableSymbol && invoice.variableSymbol === tx.variableSymbol) reasons.push('vs');
       const contactEmail = invoice.contactId ? context.contactEmails?.get(invoice.contactId) : undefined;
       if (email && contactEmail?.trim().toLowerCase() === email) reasons.push('email');
-      if (Math.abs(invoice.total - amount) < 0.01) reasons.push('amount');
+      // A sealed total is null here: the amount cannot vouch for it (VS, payer and date still do).
+      if (invoice.total != null && Math.abs(invoice.total - amount) < 0.01) reasons.push('amount');
       if (name.length > 2 && invoice.contactName?.toLowerCase().includes(name)) reasons.push('name');
       let closeness = 0;
       if (paid) {

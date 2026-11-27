@@ -14771,7 +14771,8 @@
       "partlyPaid": "{n, plural, one {# částečně uhrazený doklad zůstal čitelný} few {# částečně uhrazené doklady zůstaly čitelné} other {# částečně uhrazených dokladů zůstalo čitelných}}. Zašifrovat půjdou po úplné úhradě."
     },
     "amounts": {
-      "paidSealed": "Částky dokladu jsou zašifrované, proto jde zaznamenat jen úhradu celé částky. Poplatky ani připsanou částku server neukládá."
+      "paidSealed": "Částky dokladu jsou zašifrované, proto jde zaznamenat jen úhradu celé částky. Poplatky ani připsanou částku server neukládá.",
+      "leftOut": "Bez {count, plural, one {# dokladu} few {# dokladů} other {# dokladů}} se zašifrovanými částkami – odemkněte trezor"
     }
   },
   "vaultPublic": {

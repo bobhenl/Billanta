@@ -7,6 +7,7 @@ import { isSealed, type VaultKey } from '@faktur/cz-compliance';
 import { Banner } from '@/components/banner';
 import { useVault } from '@/components/vault/vault-provider';
 import { buttonClass } from '@/lib/ui-classes';
+import { openDocumentAmounts, openItemAmounts } from '@/lib/vault/amounts';
 import { fetchAllVaultDocuments, openOrNull } from '@/lib/vault/sealed-index';
 import type { VaultDocument } from '@/lib/vault/types';
 
@@ -53,7 +54,11 @@ function toCsv(docs: VaultDocument[], header: string[]): string {
     const head = [d.documentType, d.invoiceNumber, d.status, day(d.issueDate), day(d.taxableSupplyDate), day(d.dueDate), day(d.paidAt), d.contactName, d.contactIco, d.variableSymbol, d.currency, d.totalWithoutVat, d.totalVat, d.total, d.noteAbove, d.noteBelow, d.internalNote];
     const items = d.items.length ? d.items : [null];
     for (const i of items) {
-      const tail = i ? [i.description, i.code, i.quantity, i.unit, i.unitPrice, i.vatRate, i.discountPercent] : ['', '', '', '', '', '', ''];
+      // A sealed item this key cannot open keeps empty numbers, never the placeholder.
+      const sealed = isSealed(i?.encAmounts);
+      const tail = i
+        ? [i.description, i.code, sealed ? null : i.quantity, i.unit, sealed ? null : i.unitPrice, sealed ? null : i.vatRate, sealed ? null : i.discountPercent]
+        : ['', '', '', '', '', '', ''];
       lines.push([...head, ...tail].map(cell).join(';'));
     }
   }
@@ -93,14 +98,28 @@ export function DecryptedExport({ range }: { range: { from: string; to: string }
       if (opened === null) unreadable++;
       return opened ?? t('unreadable');
     };
+    // Sealed amounts: the opened numbers replace the placeholder, the envelope is dropped from the file.
+    const totals = async (d: VaultDocument) => {
+      if (!isSealed(d.encAmounts)) return {};
+      const v = await openDocumentAmounts(k, d.encAmounts!).catch(() => null);
+      if (!v) unreadable++;
+      return { totalWithoutVat: v?.totalWithoutVat ?? null, totalVat: v?.totalVat ?? null, total: v?.totalWithVat ?? null, encAmounts: v ? null : d.encAmounts };
+    };
+    const amounts = async (i: VaultDocument['items'][number]) => {
+      if (!isSealed(i.encAmounts)) return {};
+      const v = await openItemAmounts(k, i.encAmounts!).catch(() => null);
+      if (!v) unreadable++;
+      return v ? { ...v, encAmounts: null } : {};
+    };
     const opened: VaultDocument[] = [];
     for (const d of docs) {
       opened.push({
         ...d,
+        ...(await totals(d)),
         noteAbove: await text(d.noteAbove),
         noteBelow: await text(d.noteBelow),
         internalNote: await text(d.internalNote),
-        items: await Promise.all(d.items.map(async (i) => ({ ...i, description: (await text(i.description)) ?? '' })))
+        items: await Promise.all(d.items.map(async (i) => ({ ...i, ...(await amounts(i)), description: (await text(i.description)) ?? '' })))
       });
     }
     return { opened, unreadable };

@@ -1,4 +1,5 @@
 import type { IsdocInvoiceInput, VatRateType } from './isdoc-generator.js';
+import { isSealed } from './vault/confidential.js';
 
 /**
  * The "amounts" category of Confidential mode. The browser seals each line
@@ -136,6 +137,32 @@ export function amountTotals(items: ItemAmounts[], options: { reverseCharge?: bo
     totalWithVat: sum((r) => r.totalWithVat),
     byRate,
   };
+}
+
+type TotalField = 'totalWithVat' | 'totalWithoutVat' | 'totalVat';
+
+/**
+ * A server sum plus the sealed documents' opened totals (keyed by their
+ * envelope). `missing` counts the sealed ones not opened (locked, or under
+ * another key), so a caller can say the sum is short instead of printing it
+ * as complete. Values that are not envelopes are ignored: they are already
+ * in the plain part.
+ */
+export function sumWithOpened(
+  plain: number,
+  sealed: (string | null | undefined)[],
+  opened: ReadonlyMap<string, DocumentAmounts> | null,
+  field: TotalField = 'totalWithVat',
+): { sum: number; missing: number } {
+  let sum = plain;
+  let missing = 0;
+  for (const cipher of sealed) {
+    if (!isSealed(cipher)) continue;
+    const totals = opened?.get(cipher);
+    if (totals) sum += totals[field];
+    else missing++;
+  }
+  return { sum: round2(sum), missing };
 }
 
 /** Quantities on printed documents: up to three decimals, Czech grouping. */

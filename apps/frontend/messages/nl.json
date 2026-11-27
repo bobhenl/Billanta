@@ -14759,7 +14759,8 @@
       "partlyPaid": "{n, plural, one {# deels betaald document is leesbaar gebleven} other {# deels betaalde documenten zijn leesbaar gebleven}}. Ze kunnen worden versleuteld zodra ze volledig betaald zijn."
     },
     "amounts": {
-      "paidSealed": "De bedragen van het document zijn versleuteld, daarom kan alleen een volledige betaling worden vastgelegd. Kosten en het bijgeschreven bedrag slaat de server niet op."
+      "paidSealed": "De bedragen van het document zijn versleuteld, daarom kan alleen een volledige betaling worden vastgelegd. Kosten en het bijgeschreven bedrag slaat de server niet op.",
+      "leftOut": "Zonder {count, plural, one {# document} other {# documenten}} met versleutelde bedragen – ontgrendel de kluis"
     }
   },
   "vaultPublic": {
