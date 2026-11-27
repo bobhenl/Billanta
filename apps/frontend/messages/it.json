@@ -2055,7 +2055,18 @@
       "taxCountryValue": "{country} · contabilità in {currency}",
       "taxCountryHint": "Determina le aliquote IVA, la valuta della contabilità e le esportazioni. L’indirizzo della sede non lo cambia. Può modificarlo nella configurazione iniziale finché non emette la prima fattura.",
       "taxCountryLocked": "Il Paese fiscale non può essere cambiato dopo la prima fattura emessa.",
-      "taxCountryChange": "Cambia"
+      "taxCountryChange": "Cambia",
+      "filingOffices": {
+        "title": "Uffici per le dichiarazioni",
+        "hint": "Dove presenta le dichiarazioni fiscali e i riepiloghi annuali. L’ufficio delle imposte viene scritto nei file XML per EPO (dichiarazione IVA, comunicazione di controllo, elenco riepilogativo, dichiarazione dei redditi); la cassa malattia e l’ufficio di previdenza sociale precompilano i riepiloghi annuali. Ciò che lascia vuoto si completa alla presentazione.",
+        "taxOffice": "Ufficio delle imposte (finanční úřad)",
+        "taxWorkplace": "Sede territoriale (územní pracoviště)",
+        "healthInsurer": "Cassa malattia",
+        "socialOffice": "Ufficio di previdenza sociale (OSSZ / PSSZ)",
+        "none": "Non scelto",
+        "residence": "Residenza (per gli uffici)",
+        "residenceHint": "Il suo indirizzo di residenza, se diverso da quello dell’attività. Gli uffici registrano una persona fisica alla sua residenza, quindi le dichiarazioni usano questo indirizzo al posto di quello dell’attività. Lasci vuoto se è lo stesso."
+      }
     },
     "team": {
       "title": "Team",
@@ -2260,7 +2271,7 @@
         "missingDic": "Aggiunga la partita IVA della Sua azienda nelle Impostazioni – è necessaria per gli adempimenti.",
         "rateUnavailable": "Impossibile caricare il cambio della ČNB. Riprovi tra poco.",
         "failed": "Impossibile generare il file.",
-        "disclaimer": "Controlli il file in EPO prima dell'invio e selezioni lì l'ufficio delle imposte. Le operazioni UE sono dichiarate come servizi (codice 3); i documenti senza partita IVA del fornitore vanno in B.3.",
+        "disclaimer": "Controlli il file in EPO prima dell'invio. L'ufficio delle imposte viene dalle impostazioni dell'azienda; se manca, lo selezioni in EPO. Le operazioni UE sono dichiarate come servizi (codice 3); i documenti senza partita IVA del fornitore vanno in B.3.",
         "formVersions": "L'esportazione crea XML nelle versioni DPHDP3 {dp3}, DPHKH1 {kh1} e DPHSHV {shv}. Abbiamo verificato l'ultima volta le regole e le versioni dei moduli il {date}.",
         "officialLink": "Informazioni aggiornate dell'Amministrazione finanziaria ceca",
         "guideLink": "Guida all'invio",

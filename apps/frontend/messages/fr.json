@@ -2055,7 +2055,18 @@
       "taxCountryValue": "{country} · comptabilité tenue en {currency}",
       "taxCountryHint": "Détermine les taux de TVA, la devise de votre comptabilité et les exports. L’adresse du siège ne le change pas. Vous pouvez le modifier dans la configuration de bienvenue jusqu’à l’émission de votre première facture.",
       "taxCountryLocked": "Le pays fiscal ne peut plus changer après la première facture émise.",
-      "taxCountryChange": "Modifier"
+      "taxCountryChange": "Modifier",
+      "filingOffices": {
+        "title": "Administrations pour les déclarations",
+        "hint": "Où vous déposez vos déclarations fiscales et récapitulatifs annuels. Le centre des impôts est inscrit dans les fichiers XML pour EPO (déclaration de TVA, rapport de contrôle, état récapitulatif, déclaration de revenus) ; la caisse d’assurance maladie et la caisse de sécurité sociale préremplissent les récapitulatifs annuels. Ce qui reste vide se complète lors du dépôt.",
+        "taxOffice": "Centre des impôts (finanční úřad)",
+        "taxWorkplace": "Antenne locale (územní pracoviště)",
+        "healthInsurer": "Caisse d’assurance maladie",
+        "socialOffice": "Caisse de sécurité sociale (OSSZ / PSSZ)",
+        "none": "Non choisi",
+        "residence": "Domicile (pour les administrations)",
+        "residenceHint": "Votre adresse de résidence, si elle diffère de l’adresse de l’entreprise. Les administrations enregistrent une personne physique à son domicile, les déclarations l’utilisent donc à la place de l’adresse de l’entreprise. Laissez vide si c’est la même."
+      }
     },
     "team": {
       "title": "Équipe",
@@ -2260,7 +2271,7 @@
         "missingDic": "Ajoutez le numéro de TVA de votre entreprise dans les Paramètres – les déclarations en ont besoin.",
         "rateUnavailable": "Impossible de charger le taux de change de la ČNB. Réessayez dans un instant.",
         "failed": "Impossible de générer le fichier.",
-        "disclaimer": "Vérifiez le fichier dans EPO avant le dépôt et choisissez-y le centre des impôts. Les livraisons UE sont déclarées comme services (code 3) ; les documents sans numéro de TVA du fournisseur vont en B.3.",
+        "disclaimer": "Vérifiez le fichier dans EPO avant le dépôt. Le centre des impôts vient des paramètres de l’entreprise ; s’il manque, choisissez-le dans EPO. Les livraisons UE sont déclarées comme services (code 3) ; les documents sans numéro de TVA du fournisseur vont en B.3.",
         "formVersions": "L’export crée du XML aux versions DPHDP3 {dp3}, DPHKH1 {kh1} et DPHSHV {shv}. Nous avons vérifié les règles et les versions des formulaires pour la dernière fois le {date}.",
         "officialLink": "Informations à jour de l’administration fiscale tchèque",
         "guideLink": "Guide de dépôt",

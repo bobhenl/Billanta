@@ -82,6 +82,19 @@ describe("DPFDP XML", () => {
     expect(xml).not.toContain("pr_sazba");
   });
 
+  it("takes the office from the company settings when the download form has none", () => {
+    const lines = computeDpfo({ year: 2025, income: 1_000_000, actualExpenses: 0, flatRate: 60, basis: "cash" });
+    const fromSettings = { ...person, taxOffice: undefined, submitter: { ...person.submitter, cUfo: 461, cPracufo: 3004 } };
+    const xml = generateDpfdp(lines, fromSettings);
+    expect(xml).toContain('rok="2025" c_ufo_cil="461"');
+    expect(xml).toContain('c_pracufo="3004"');
+    // An office typed into the download form wins, and the settings' pracoviště
+    // (which belongs to another office) is not mixed in.
+    const typed = generateDpfdp(lines, { ...fromSettings, taxOffice: 462 });
+    expect(typed).toContain('c_ufo_cil="462"');
+    expect(typed).not.toContain("c_pracufo");
+  });
+
   it("refuses a year without a published form", () => {
     expect(() => generateDpfdp(computeDpfo({ year: 2026, income: 1, actualExpenses: 0, flatRate: 60, basis: "cash" }), person)).toThrow(FormNotPublishedError);
   });

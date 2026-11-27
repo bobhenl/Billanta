@@ -2055,7 +2055,18 @@
       "taxCountryValue": "{country} · contabilidad en {currency}",
       "taxCountryHint": "Determina los tipos de IVA, la moneda de su contabilidad y las exportaciones. La dirección del domicilio social no lo cambia. Puede cambiarlo en la configuración inicial hasta que emita su primera factura.",
       "taxCountryLocked": "El país fiscal no se puede cambiar después de emitir la primera factura.",
-      "taxCountryChange": "Cambiar"
+      "taxCountryChange": "Cambiar",
+      "filingOffices": {
+        "title": "Organismos para las declaraciones",
+        "hint": "Dónde presenta sus declaraciones de impuestos y resúmenes anuales. La oficina tributaria se escribe en los archivos XML para EPO (declaración de IVA, informe de control, declaración recapitulativa, declaración de la renta); la aseguradora de salud y la oficina de seguridad social rellenan de antemano los resúmenes anuales. Lo que deje vacío lo completa al presentar.",
+        "taxOffice": "Oficina tributaria (finanční úřad)",
+        "taxWorkplace": "Delegación territorial (územní pracoviště)",
+        "healthInsurer": "Aseguradora de salud",
+        "socialOffice": "Oficina de seguridad social (OSSZ / PSSZ)",
+        "none": "Sin elegir",
+        "residence": "Domicilio (para las autoridades)",
+        "residenceHint": "Su domicilio permanente, si es distinto de la dirección del negocio. Las autoridades registran a una persona física por su domicilio, así que las declaraciones lo usan en lugar de la dirección del negocio. Déjelo vacío si es el mismo."
+      }
     },
     "team": {
       "title": "Equipo",
@@ -2260,7 +2271,7 @@
         "missingDic": "Añada el NIF-IVA de su empresa en Ajustes – las declaraciones lo necesitan.",
         "rateUnavailable": "No se ha podido cargar el tipo de cambio del ČNB. Inténtelo de nuevo en unos momentos.",
         "failed": "No se ha podido generar el archivo.",
-        "disclaimer": "Revise el archivo en EPO antes de presentarlo y seleccione allí la oficina tributaria. Las entregas a la UE se declaran como servicios (código 3); los documentos sin NIF-IVA del proveedor van a B.3.",
+        "disclaimer": "Revise el archivo en EPO antes de presentarlo. La oficina tributaria se toma de los ajustes de la empresa; si no está, selecciónela en EPO. Las entregas a la UE se declaran como servicios (código 3); los documentos sin NIF-IVA del proveedor van a B.3.",
         "formVersions": "La exportación genera XML en las versiones DPHDP3 {dp3}, DPHKH1 {kh1} y DPHSHV {shv}. Revisamos las normas y versiones de los formularios por última vez el {date}.",
         "officialLink": "Información actual de la Administración Financiera checa",
         "guideLink": "Guía de presentación",

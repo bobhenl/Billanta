@@ -2,7 +2,7 @@
 
 import { AddressInput } from '@/components/address-input';
 import { useMemo, useState, useTransition } from 'react';
-import { Building2, CreditCard, FileText, Globe2, Landmark, Lightbulb, Loader2, Lock, MapPin, Percent, Phone, Save, Search } from 'lucide-react';
+import { Building2, CreditCard, FileText, Globe2, Landmark, Lightbulb, Loader2, Lock, MapPin, Percent, Phone, Save, Search, Stamp } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { CompanyLookup, fetchContactSearch } from '@/components/company-lookup';
@@ -22,6 +22,7 @@ const VAT_STATUS_OPTIONS: VatStatus[] = ['payer', 'identified', 'non_payer'];
 import { BankAccounts } from './bank-accounts';
 import { BankCodeOptions } from '@/components/bank-code-options';
 import { editAccount } from '@/lib/bank-account-input';
+import { FILING_OFFICE_FIELDS, FilingOffices, NUMERIC_FILING_FIELDS } from './filing-offices';
 import { LogoUpload } from './logo-upload';
 import { advancesPayload, rowsFromAdvances, rowsKey, TaxAdvancesEditor, type AdvanceRow, type RegimeAnswers } from './tax-advances-editor';
 import { updateCompany } from '../actions';
@@ -47,7 +48,8 @@ const FIELDS = {
   bankAccountNumber: 'bank_account_number',
   bankAccountBankCode: 'bank_account_bank_code',
   bankAccountIban: 'bank_account_iban',
-  bankAccountSwift: 'bank_account_swift'
+  bankAccountSwift: 'bank_account_swift',
+  ...FILING_OFFICE_FIELDS
 } as const;
 type Field = keyof typeof FIELDS;
 type Values = Record<Field, string> & { vatStatus: VatStatus } & RegimeAnswers;
@@ -164,6 +166,7 @@ export function CompanyForm({
       }
       const raw = values[key].trim();
       if (key === 'dic' || key === 'bankAccountIban' || key === 'bankAccountSwift') patch[FIELDS[key]] = raw ? raw.toUpperCase() : null;
+      else if (NUMERIC_FILING_FIELDS.has(key)) patch[FIELDS[key]] = raw ? Number(raw) : null;
       else if (key === 'dataBoxId') patch[FIELDS[key]] = raw ? raw.toLowerCase() : null;
       else patch[FIELDS[key]] = raw || (REQUIRED.includes(key) ? raw : null);
     }
@@ -305,6 +308,12 @@ export function CompanyForm({
           {field('addressCountry', t('country'), { required: true, minLength: 2, maxLength: 2 }, 'sm:col-span-1', t('countryHint'))}
         </div>
       </Section>
+
+      {taxCountryOf(tenant) === 'CZ' && (
+        <Section icon={Stamp} title={t('filingOffices.title')} hint={t('filingOffices.hint')}>
+          <FilingOffices values={values} onChange={(patch) => setValues((v) => ({ ...v, ...patch }))} naturalPerson={!isLegalEntityName(values.legalName)} readOnly={readOnly} />
+        </Section>
+      )}
 
       <Section icon={Percent} title={t('vatStatus.title')}>
         <fieldset className="text-sm">

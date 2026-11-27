@@ -45,7 +45,10 @@ function yearOrThrow(year: number) {
  * (https://adisspr.mfcr.cz/dpr/adis/idpr_pub/epo2_info/popis_struktury_seznam.faces):
  * DPFDP7 01.01.02 covers 2024 and 2025, DPFDP6 03.01.01 covers 2021 to 2023.
  * `verzePis` takes the first two parts of the version, as for DPHKH1 03.01.
- * No form for 2026 exists yet (filed in 2027).
+ * No form for 2026 exists yet (filed in 2027). Re-checked 2026-11-27:
+ * unchanged, DPFDP7 01.01.02 of 23. 9. 2025, and in
+ * https://adisspr.mfcr.cz/adis/jepo/schema/dpfdp7_epo2.xsd VetaD c_ufo_cil
+ * is the one required office field.
  */
 export const DPFDP_FORMS: { years: [number, number]; form: string; dokument: string; verzePis: string }[] = [
   { years: [2021, 2023], form: "DPFDP6", dokument: "DP6", verzePis: "03.01" },
@@ -141,12 +144,15 @@ export function generateDpfdp(lines: DpfoLines, person: FilingPerson): string {
   if (!form) throw new FormNotPublishedError("DPFDP", lines.year);
   const r = lines.rows;
   const s = person.submitter;
+  // The download form wins; otherwise the office from the company settings.
+  const taxOffice = person.taxOffice ?? s.cUfo ?? undefined;
+  const taxWorkplace = person.taxWorkplace ?? (person.taxOffice == null ? (s.cPracufo ?? undefined) : undefined);
   const vetaD = attrs([
     ["dokument", form.dokument],
     ["k_uladis", "DPF"],
     ["dap_typ", "B"],
     ["rok", lines.year],
-    ["c_ufo_cil", person.taxOffice],
+    ["c_ufo_cil", taxOffice],
     ["pln_moc", "N"],
     ["audit", "N"],
     ["zdobd_od", `01.01.${lines.year}`],
@@ -178,7 +184,7 @@ export function generateDpfdp(lines: DpfoLines, person: FilingPerson): string {
     ["stat", s.stat],
     ["email", s.email],
     ["c_telef", s.telefon],
-    ["c_pracufo", person.taxWorkplace],
+    ["c_pracufo", taxWorkplace],
   ]);
   const vetaO = attrs([
     ["kc_zd7", r.r37],
@@ -368,7 +374,8 @@ export function generateCsszOsvc(lines: CsszLines, person: FilingPerson & { vari
 /**
  * The seven Czech health insurers. Each uses its own přehled form (PDF or
  * its own portal); none publishes an import format we could verify, so the
- * app shows the values to copy instead of a file.
+ * app shows the values to copy instead of a file. Codes as in the ČSSZ list
+ * C_ZPOJ; CZ_HEALTH_INSURERS (cz-social-offices.ts) has the official names.
  */
 export const HEALTH_INSURERS = [
   { code: "111", name: "Všeobecná zdravotní pojišťovna ČR" },

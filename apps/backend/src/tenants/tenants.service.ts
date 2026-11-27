@@ -1,5 +1,5 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException, NotImplementedException, Optional } from "@nestjs/common";
-import { TAX_ADVANCE_KINDS, normalizeTaxAdvances, vatPayerOf, type TaxAdvancePeriod, type VatStatus } from "@faktur/cz-compliance";
+import { TAX_ADVANCE_KINDS, isValidCzTaxOfficePair, normalizeTaxAdvances, vatPayerOf, type TaxAdvancePeriod, type VatStatus } from "@faktur/cz-compliance";
 import { and, eq, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
@@ -171,6 +171,13 @@ export class TenantsService {
       website: blankToNull(dto.website),
       registryNote: blankToNull(dto.registry_note),
       dataBoxId: blankToNull(dto.data_box_id),
+      taxOffice: dto.tax_office,
+      taxWorkplace: dto.tax_workplace,
+      healthInsurer: blankToNull(dto.health_insurer),
+      socialOffice: dto.social_office,
+      residenceStreet: blankToNull(dto.residence_street),
+      residenceCity: blankToNull(dto.residence_city),
+      residencePostalCode: blankToNull(dto.residence_postal_code),
       bankAccountNumber: blankToNull(dto.bank_account_number),
       bankAccountBankCode: blankToNull(dto.bank_account_bank_code),
       bankAccountIban: blankToNull(dto.bank_account_iban),
@@ -195,6 +202,13 @@ export class TenantsService {
     const slug = dto.public_profile?.slug;
     if (slug && (await this.profileSlugTaken(db, id, slug))) throw new ConflictException({ error: "slug_taken" });
     const [row] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, id)).limit(1);
+    // EPO rejects a pracoviště that belongs to another office, so the pair is
+    // checked as it will be stored, whichever half the patch changes.
+    if (dto.tax_office !== undefined || dto.tax_workplace !== undefined) {
+      const office = dto.tax_office !== undefined ? dto.tax_office : (row?.taxOffice ?? null);
+      const workplace = dto.tax_workplace !== undefined ? dto.tax_workplace : (row?.taxWorkplace ?? null);
+      if (!isValidCzTaxOfficePair(office ?? null, workplace ?? null)) throw new BadRequestException("tax_workplace_mismatch");
+    }
     Object.assign(values, vatFields(dto, row?.vatStatus));
     Object.assign(values, secondaryPeriodFields(dto, row));
     if (dto.country !== undefined) {

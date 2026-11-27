@@ -33,6 +33,16 @@ export default async function ExportsPage() {
   const sk = country === 'SK';
   // Office codes from the address, looked up here so the 60 kB table never reaches the browser.
   const offices = tenant && !sk ? lookupCzOffices(czOffices as unknown as CzOfficeTable, tenant.addressPostalCode, tenant.addressCity) : null;
+  // Offices picked in Settings → Company win: the business address is not always the trvalý pobyt that decides them.
+  // The pracoviště goes with its own office, never with the looked-up one.
+  const ownOffice = tenant?.taxOffice != null;
+  const prefill = {
+    taxOffice: ownOffice ? tenant!.taxOffice! : (offices?.taxOffice ?? null),
+    taxWorkplace: ownOffice ? (tenant!.taxWorkplace ?? null) : (offices?.taxWorkplace ?? null),
+    ossz: tenant?.socialOffice != null ? String(tenant.socialOffice) : (offices?.ossz ?? null),
+    dataBox: tenant?.dataBoxId ?? null,
+    insurer: tenant?.healthInsurer ?? null
+  };
   return (
     <div className="mx-auto max-w-3xl">
       <SettingsHeader title={t('title')} description={t('description')} />
@@ -51,7 +61,7 @@ export default async function ExportsPage() {
       {/* The DPFO and ČSSZ files are Czech forms; Slovak filing XML is not built. */}
       {!sk && (
         <div className="mt-5">
-          <AnnualFilings prefill={{ taxOffice: offices?.taxOffice ?? null, taxWorkplace: offices?.taxWorkplace ?? null, ossz: offices?.ossz ?? null, dataBox: tenant?.dataBoxId ?? null }} usage={features?.income_tax_export} />
+          <AnnualFilings prefill={prefill} usage={features?.income_tax_export} />
         </div>
       )}
       {/* Exports are what people hand to an accountant, so this is where the question comes up. */}

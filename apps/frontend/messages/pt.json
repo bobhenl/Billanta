@@ -2055,7 +2055,18 @@
       "taxCountryValue": "{country} · contabilidade em {currency}",
       "taxCountryHint": "Define as taxas de IVA, a moeda da contabilidade e as exportações. A morada da sede não o altera. Pode alterá-lo na configuração inicial até emitir a primeira fatura.",
       "taxCountryLocked": "O país fiscal não pode ser alterado depois da primeira fatura emitida.",
-      "taxCountryChange": "Alterar"
+      "taxCountryChange": "Alterar",
+      "filingOffices": {
+        "title": "Entidades para as declarações",
+        "hint": "Onde entrega as declarações fiscais e os resumos anuais. A repartição de finanças é escrita nos ficheiros XML para o EPO (declaração de IVA, declaração de controlo, declaração recapitulativa, declaração de rendimentos); a seguradora de saúde e a segurança social preenchem antecipadamente os resumos anuais. O que deixar vazio completa ao entregar.",
+        "taxOffice": "Repartição de finanças (finanční úřad)",
+        "taxWorkplace": "Serviço local (územní pracoviště)",
+        "healthInsurer": "Seguradora de saúde",
+        "socialOffice": "Segurança social (OSSZ / PSSZ)",
+        "none": "Não escolhido",
+        "residence": "Residência (para as autoridades)",
+        "residenceHint": "A sua morada de residência, se for diferente da morada da empresa. As autoridades registam uma pessoa singular pela residência, por isso as declarações usam-na em vez da morada da empresa. Deixe vazio se for a mesma."
+      }
     },
     "team": {
       "title": "Equipa",
@@ -2260,7 +2271,7 @@
         "missingDic": "Adicione o número de IVA da empresa nas Definições – as declarações precisam dele.",
         "rateUnavailable": "Não foi possível carregar a taxa de câmbio do ČNB. Tente novamente daqui a pouco.",
         "failed": "Não foi possível gerar o ficheiro.",
-        "disclaimer": "Reveja o ficheiro no EPO antes de o submeter e escolha lá a repartição de finanças. As operações intracomunitárias são declaradas como serviços (código 3); os documentos sem número de IVA do fornecedor vão para B.3.",
+        "disclaimer": "Reveja o ficheiro no EPO antes de o submeter. A repartição de finanças vem das definições da empresa; se faltar, escolha-a no EPO. As operações intracomunitárias são declaradas como serviços (código 3); os documentos sem número de IVA do fornecedor vão para B.3.",
         "formVersions": "A exportação cria XML nas versões DPHDP3 {dp3}, DPHKH1 {kh1} e DPHSHV {shv}. Verificámos as regras e as versões dos formulários pela última vez a {date}.",
         "officialLink": "Informação atualizada da Administração Financeira checa",
         "guideLink": "Guia de submissão",

@@ -2056,7 +2056,18 @@
       "taxCountryValue": "{country} · books kept in {currency}",
       "taxCountryHint": "Sets VAT rates, the currency of your books and exports. The registered address doesn't change it. You can change it in the welcome setup until you issue your first invoice.",
       "taxCountryLocked": "The tax country can't change after the first issued invoice.",
-      "taxCountryChange": "Change"
+      "taxCountryChange": "Change",
+      "filingOffices": {
+        "title": "Offices for filings",
+        "hint": "Where you file tax returns and annual statements. The tax office goes into the EPO XML files (VAT return, control statement, EC sales list, income tax return); the health insurer and the social security office prefill the yearly statements. Anything left empty can be filled in when filing.",
+        "taxOffice": "Tax office (finanční úřad)",
+        "taxWorkplace": "Local branch (územní pracoviště)",
+        "healthInsurer": "Health insurer",
+        "socialOffice": "Social security office (OSSZ / PSSZ)",
+        "none": "Not selected",
+        "residence": "Residence (for authorities)",
+        "residenceHint": "Your permanent address, if it differs from the business address. Authorities record a person under their residence, so the filings use it instead of the business address. Leave empty if it is the same."
+      }
     },
     "team": {
       "title": "Team",
@@ -2261,7 +2272,7 @@
         "missingDic": "Add your company's VAT ID in Settings – filings need it.",
         "rateUnavailable": "The ČNB exchange rate could not be loaded. Try again shortly.",
         "failed": "The file could not be generated.",
-        "disclaimer": "Review the file in EPO before filing and pick the tax office there. EU supplies are reported as services (code 3); documents without a supplier VAT ID go to B.3.",
+        "disclaimer": "Review the file in EPO before filing. The tax office comes from Settings → Business details; if it is not set, pick it in EPO. EU supplies are reported as services (code 3); documents without a supplier VAT ID go to B.3.",
         "formVersions": "The export creates XML in versions DPHDP3 {dp3}, DPHKH1 {kh1} and DPHSHV {shv}. We last checked the rules and form versions on {date}.",
         "officialLink": "Current information from the Czech Financial Administration",
         "guideLink": "Filing guide",

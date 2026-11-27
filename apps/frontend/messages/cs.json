@@ -2056,7 +2056,18 @@
       "taxCountryValue": "{country} · účetnictví v {currency}",
       "taxCountryHint": "Řídí sazby DPH, měnu účetnictví a exporty. Adresa sídla ji nemění. Změnit ji jde v úvodním nastavení, dokud nevystavíte první fakturu.",
       "taxCountryLocked": "Po vystavení první faktury už zemi zdanění změnit nelze.",
-      "taxCountryChange": "Změnit"
+      "taxCountryChange": "Změnit",
+      "filingOffices": {
+        "title": "Úřady pro podání",
+        "hint": "Kam podáváte daňová přiznání a přehledy. Finanční úřad se zapíše do XML pro EPO (přiznání k DPH, kontrolní a souhrnné hlášení, přiznání k dani z příjmů), pojišťovna a OSSZ předvyplní roční přehledy. Co nevyplníte, doplníte až při podání.",
+        "taxOffice": "Finanční úřad",
+        "taxWorkplace": "Územní pracoviště",
+        "healthInsurer": "Zdravotní pojišťovna",
+        "socialOffice": "OSSZ / PSSZ",
+        "none": "Nevybráno",
+        "residence": "Bydliště (pro úřady)",
+        "residenceHint": "Trvalý pobyt, pokud se liší od adresy sídla. Úřady vedou fyzickou osobu pod adresou bydliště, proto ji v podáních použijeme místo adresy podnikání. Když je stejná, nechte prázdné."
+      }
     },
     "team": {
       "title": "Tým",
@@ -2261,7 +2272,7 @@
         "missingDic": "Doplňte DIČ firmy v Nastavení – bez něj přiznání nelze vytvořit.",
         "rateUnavailable": "Kurz ČNB se nepodařilo načíst. Zkuste to za chvíli.",
         "failed": "Soubor se nepodařilo vytvořit.",
-        "disclaimer": "Soubor před podáním zkontrolujte v EPO a doplňte finanční úřad. Plnění do EU se vykazují jako služby (kód 3); doklady bez DIČ dodavatele spadají do B.3.",
+        "disclaimer": "Soubor před podáním zkontrolujte v EPO. Finanční úřad se vyplní z nastavení (Fakturační údaje), jinak ho vyberte v EPO. Plnění do EU se vykazují jako služby (kód 3); doklady bez DIČ dodavatele spadají do B.3.",
         "formVersions": "Export vytváří XML ve verzích DPHDP3 {dp3}, DPHKH1 {kh1} a DPHSHV {shv}. Pravidla a verze formulářů jsme naposledy ověřili {date}.",
         "officialLink": "Aktuální informace na webu Finanční správy",
         "guideLink": "Návod k podání",

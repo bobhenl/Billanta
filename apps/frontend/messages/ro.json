@@ -2055,7 +2055,18 @@
       "taxCountryValue": "{country} · contabilitate în {currency}",
       "taxCountryHint": "Stabilește cotele de TVA, moneda contabilității și exporturile. Adresa sediului nu o schimbă. O puteți modifica în configurarea inițială până emiteți prima factură.",
       "taxCountryLocked": "Țara fiscală nu se mai poate schimba după prima factură emisă.",
-      "taxCountryChange": "Schimbați"
+      "taxCountryChange": "Schimbați",
+      "filingOffices": {
+        "title": "Instituții pentru depuneri",
+        "hint": "Unde depuneți declarațiile fiscale și situațiile anuale. Administrația financiară se scrie în fișierele XML pentru EPO (decontul de TVA, declarația de control, declarația recapitulativă, declarația de impozit pe venit), iar casa de asigurări de sănătate și casa de asigurări sociale precompletează situațiile anuale. Ce lăsați gol completați la depunere.",
+        "taxOffice": "Administrația financiară (finanční úřad)",
+        "taxWorkplace": "Sediul teritorial (územní pracoviště)",
+        "healthInsurer": "Casa de asigurări de sănătate",
+        "socialOffice": "Casa de asigurări sociale (OSSZ / PSSZ)",
+        "none": "Neselectat",
+        "residence": "Domiciliu (pentru autorități)",
+        "residenceHint": "Adresa de domiciliu, dacă diferă de adresa firmei. Autoritățile evidențiază persoana fizică după domiciliu, de aceea depunerile o folosesc în locul adresei firmei. Lăsați gol dacă este aceeași."
+      }
     },
     "team": {
       "title": "Echipă",
@@ -2260,7 +2271,7 @@
         "missingDic": "Adăugați codul de TVA (DIČ) al firmei în Setări – declarațiile au nevoie de el.",
         "rateUnavailable": "Cursul de schimb ČNB nu a putut fi încărcat. Încercați din nou în curând.",
         "failed": "Fișierul nu a putut fi generat.",
-        "disclaimer": "Verificați fișierul în EPO înainte de depunere și alegeți acolo administrația fiscală. Livrările în UE sunt raportate ca servicii (cod 3); documentele fără codul de TVA al furnizorului intră la B.3.",
+        "disclaimer": "Verificați fișierul în EPO înainte de depunere. Administrația fiscală se preia din setările firmei; dacă lipsește, alegeți-o în EPO. Livrările în UE sunt raportate ca servicii (cod 3); documentele fără codul de TVA al furnizorului intră la B.3.",
         "formVersions": "Exportul creează XML în versiunile DPHDP3 {dp3}, DPHKH1 {kh1} și DPHSHV {shv}. Am verificat ultima dată regulile și versiunile formularelor la {date}.",
         "officialLink": "Informații actuale de la Administrația Financiară cehă",
         "guideLink": "Ghid de depunere",

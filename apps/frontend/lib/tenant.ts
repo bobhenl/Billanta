@@ -50,6 +50,15 @@ export interface TenantSettings {
   registryNote: string | null;
   /** ID datové schránky, lowercase; prefills the yearly přehled for ČSSZ. */
   dataBoxId?: string | null;
+  /** Offices for the filings (0124): c_ufo / c_pracufo for EPO, the insurer and OSSZ for the přehledy. Missing on an older backend. */
+  taxOffice?: number | null;
+  taxWorkplace?: number | null;
+  healthInsurer?: string | null;
+  socialOffice?: number | null;
+  /** Trvalý pobyt of an OSVČ for the filings (0124), when it differs from the business address. */
+  residenceStreet?: string | null;
+  residenceCity?: string | null;
+  residencePostalCode?: string | null;
   bankAccountNumber: string | null;
   bankAccountBankCode: string | null;
   bankAccountIban: string | null;

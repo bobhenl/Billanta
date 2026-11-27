@@ -2055,7 +2055,18 @@
       "taxCountryValue": "{country} · könyvelés pénzneme: {currency}",
       "taxCountryHint": "Ez határozza meg az ÁFA-kulcsokat, a könyvelés pénznemét és az exportokat. A székhely címe nem befolyásolja. Az első számla kiállításáig az üdvözlő beállításban módosíthatja.",
       "taxCountryLocked": "Az első kiállított számla után az adózási ország már nem módosítható.",
-      "taxCountryChange": "Módosítás"
+      "taxCountryChange": "Módosítás",
+      "filingOffices": {
+        "title": "Hivatalok a bevallásokhoz",
+        "hint": "Hová nyújtja be az adóbevallásokat és az éves kimutatásokat. Az adóhivatal bekerül az EPO XML-fájlokba (ÁFA-bevallás, ellenőrző jelentés, összesítő nyilatkozat, jövedelemadó-bevallás), az egészségbiztosító és a társadalombiztosítási hivatal pedig előre kitölti az éves kimutatásokat. Amit üresen hagy, a beadáskor pótolhatja.",
+        "taxOffice": "Adóhivatal (finanční úřad)",
+        "taxWorkplace": "Területi kirendeltség (územní pracoviště)",
+        "healthInsurer": "Egészségbiztosító",
+        "socialOffice": "Társadalombiztosítási hivatal (OSSZ / PSSZ)",
+        "none": "Nincs kiválasztva",
+        "residence": "Lakóhely (hivatalok számára)",
+        "residenceHint": "Állandó lakcíme, ha eltér a vállalkozás címétől. A hivatalok a magánszemélyt a lakóhelye szerint tartják nyilván, ezért a bevallások ezt használják a vállalkozás címe helyett. Ha ugyanaz, hagyja üresen."
+      }
     },
     "team": {
       "title": "Csapat",
@@ -2260,7 +2271,7 @@
         "missingDic": "Adja meg a cég ÁFA-azonosítóját a Beállításokban – a bevallásokhoz szükséges.",
         "rateUnavailable": "Nem sikerült betölteni a ČNB-árfolyamot. Próbálja újra hamarosan.",
         "failed": "A fájlt nem sikerült létrehozni.",
-        "disclaimer": "Benyújtás előtt ellenőrizze a fájlt az EPO-ban, és ott válassza ki az adóhivatalt. Az EU-n belüli teljesítéseket szolgáltatásként jelentjük (3-as kód); a szállító ÁFA-azonosítója nélküli bizonylatok a B.3 részbe kerülnek.",
+        "disclaimer": "Benyújtás előtt ellenőrizze a fájlt az EPO-ban. Az adóhivatal a cég beállításaiból kerül be; ha nincs megadva, válassza ki az EPO-ban. Az EU-n belüli teljesítéseket szolgáltatásként jelentjük (3-as kód); a szállító ÁFA-azonosítója nélküli bizonylatok a B.3 részbe kerülnek.",
         "formVersions": "Az export a következő verziójú XML-t hozza létre: DPHDP3 {dp3}, DPHKH1 {kh1} és DPHSHV {shv}. A szabályokat és a nyomtatványverziókat legutóbb ekkor ellenőriztük: {date}.",
         "officialLink": "Aktuális információk a cseh pénzügyi igazgatóságtól",
         "guideLink": "Útmutató a benyújtáshoz",

@@ -2055,7 +2055,18 @@
       "taxCountryValue": "{country} · boekhouding in {currency}",
       "taxCountryHint": "Bepaalt de btw-tarieven, de valuta van je boekhouding en de exports. Het vestigingsadres verandert dit niet. Je kunt het in de welkomstinstelling wijzigen tot je je eerste factuur uitgeeft.",
       "taxCountryLocked": "Het belastingland kan na de eerste uitgegeven factuur niet meer worden gewijzigd.",
-      "taxCountryChange": "Wijzigen"
+      "taxCountryChange": "Wijzigen",
+      "filingOffices": {
+        "title": "Instanties voor aangiften",
+        "hint": "Waar u belastingaangiften en jaaroverzichten indient. Het belastingkantoor komt in de XML-bestanden voor EPO (btw-aangifte, controleaangifte, opgaaf intracommunautaire prestaties, inkomstenbelasting); de zorgverzekeraar en het socialezekerheidskantoor vullen de jaaroverzichten vooraf in. Wat leeg blijft, vult u bij het indienen aan.",
+        "taxOffice": "Belastingkantoor (finanční úřad)",
+        "taxWorkplace": "Regionaal kantoor (územní pracoviště)",
+        "healthInsurer": "Zorgverzekeraar",
+        "socialOffice": "Socialezekerheidskantoor (OSSZ / PSSZ)",
+        "none": "Niet gekozen",
+        "residence": "Woonadres (voor instanties)",
+        "residenceHint": "Uw vaste woonadres, als dat afwijkt van het bedrijfsadres. Instanties registreren een natuurlijke persoon op het woonadres, dus de aangiften gebruiken dat in plaats van het bedrijfsadres. Laat leeg als het hetzelfde is."
+      }
     },
     "team": {
       "title": "Team",
@@ -2260,7 +2271,7 @@
         "missingDic": "Vul het btw-nummer van je bedrijf in bij Instellingen – de aangiften hebben het nodig.",
         "rateUnavailable": "De ČNB-wisselkoers kon niet worden geladen. Probeer het zo opnieuw.",
         "failed": "Het bestand kon niet worden aangemaakt.",
-        "disclaimer": "Controleer het bestand in EPO voordat je het indient en kies daar het belastingkantoor. EU-leveringen worden gemeld als diensten (code 3); documenten zonder btw-nummer van de leverancier komen in B.3.",
+        "disclaimer": "Controleer het bestand in EPO voordat je het indient. Het belastingkantoor komt uit de bedrijfsinstellingen; staat het er niet, kies het dan in EPO. EU-leveringen worden gemeld als diensten (code 3); documenten zonder btw-nummer van de leverancier komen in B.3.",
         "formVersions": "De export maakt XML in de versies DPHDP3 {dp3}, DPHKH1 {kh1} en DPHSHV {shv}. We hebben de regels en formulierversies voor het laatst gecontroleerd op {date}.",
         "officialLink": "Actuele informatie van de Tsjechische belastingdienst",
         "guideLink": "Handleiding voor de aangifte",

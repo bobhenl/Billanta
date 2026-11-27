@@ -1,7 +1,15 @@
 import { paymentMethodsSchema } from "../payment-methods";
 import { publicProfileSchema } from "../public-profile";
 import { templateVarsSchema } from "../template-vars";
-import { MONTH_KEY_PATTERN, TAX_ADVANCE_MAX, VAT_STATUSES } from "@faktur/cz-compliance";
+import {
+  czHealthInsurer,
+  czSocialOffice,
+  czTaxOffice,
+  czTaxWorkplace,
+  MONTH_KEY_PATTERN,
+  TAX_ADVANCE_MAX,
+  VAT_STATUSES,
+} from "@faktur/cz-compliance";
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 import { emailPrefsSchema } from "../email-prefs";
@@ -89,6 +97,19 @@ export const updateTenantSchema = z
       .toLowerCase()
       .regex(/^([a-z0-9]{7})?$/)
       .nullish(),
+    // Codes from the official lists only (cz-tax-offices / cz-social-offices):
+    // EPO and ČSSZ reject anything else. The office/pracoviště pair is
+    // checked in TenantsService.update against the stored values.
+    tax_office: z.number().int().refine((c) => czTaxOffice(c) !== null, "unknown_tax_office").nullish(),
+    tax_workplace: z.number().int().refine((c) => czTaxWorkplace(c) !== null, "unknown_tax_workplace").nullish(),
+    health_insurer: z
+      .string()
+      .refine((c) => c === "" || czHealthInsurer(c) !== null, "unknown_health_insurer")
+      .nullish(),
+    social_office: z.number().int().refine((c) => czSocialOffice(c) !== null, "unknown_social_office").nullish(),
+    residence_street: text(200),
+    residence_city: text(100),
+    residence_postal_code: text(10),
     bank_account_number: z
       .string()
       .regex(/^(\d{1,6}-)?\d{2,10}$/)
