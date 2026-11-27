@@ -1,8 +1,8 @@
 import { ConflictException, Injectable, Logger, NotFoundException, Optional } from "@nestjs/common";
-import { sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
-import { clientCipher, czechAccountToIban, generateQrInvoiceString, type InvoicePdfModel } from "@faktur/cz-compliance";
+import { clientCipher, czechAccountToIban, generateQrInvoiceString, replaceEnvelopes, type InvoicePdfModel } from "@faktur/cz-compliance";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
 import { InvoicesService } from "../invoices/invoices.service";
@@ -13,6 +13,7 @@ import { resolveInvoiceToken } from "../public-links/resolve";
 import { showsBrandCredit } from "../invoices/brand-credit";
 import { computeVatBreakdown, type InvoiceVatBreakdown } from "../invoices/invoice-total.util";
 import { isSealed } from "../vault/sealed";
+import { documentBuyerTexts } from "../vault/vault-email";
 
 export type AbuseReason = "fraud" | "not_ordered" | "spam" | "other";
 
@@ -32,6 +33,8 @@ const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{
 // implicit index signature for it), whereas a named `interface` does not
 // (tsc: "Index signature for type 'string' is missing").
 type PublicInvoiceHeaderRow = {
+  id?: string;
+  tenant_id?: string;
   invoice_number: string | null;
   variable_symbol: string | null;
   issue_date: string | Date | null;
@@ -146,6 +149,13 @@ export interface PublicInvoiceView {
    * (src/invoices/brand-credit.ts).
    */
   brandCredit: { ref: string | null } | null;
+  /**
+   * Důvěrný režim, category "contacts": the buyer's sealed name, address and
+   * contact person as the PDF prints them, as client ciphertext (like a
+   * sealed item's `sealed`). The page never shows them; the client's browser
+   * opens them only to draw the PDF. Empty for a readable buyer.
+   */
+  sealedBuyer: { cipher: string; keyId: string | null }[];
 }
 
 type BrandCreditRow = {
@@ -386,7 +396,42 @@ export class PublicInvoicesService {
         total - Number(header.amount_paid ?? 0) > 0.005,
       demo,
       brandCredit: brandCreditOfRow(creditRows[0]),
+      sealedBuyer: header.id && header.tenant_id ? await this.sealedBuyer(header.tenant_id, header.id) : [],
     };
+  }
+
+  /**
+   * The sealed buyer texts of one document, read like `pdfModel` does: the
+   * tenant id comes from the SECURITY DEFINER view row and the query runs in
+   * an RLS-scoped transaction for that tenant only.
+   */
+  private async sealedBuyer(tenantId: string, invoiceId: string): Promise<{ cipher: string; keyId: string | null }[]> {
+    try {
+      return await this.dbService.sql.begin(async (tx) => {
+        await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
+        const db = drizzleTx(tx, schema) as PostgresJsDatabase<typeof schema>;
+        const i = schema.invoices;
+        const c = schema.contacts;
+        const [invoice] = await db
+          .select({ buyerSnapshot: i.buyerSnapshot, buyerContactPerson: i.buyerContactPerson, contactId: i.contactId })
+          .from(i)
+          .where(eq(i.id, invoiceId))
+          .limit(1);
+        if (!invoice) return [];
+        const [contact] = invoice.contactId
+          ? await db
+              .select({ legalName: c.legalName, addressStreet: c.addressStreet, addressCity: c.addressCity, addressPostalCode: c.addressPostalCode })
+              .from(c)
+              .where(eq(c.id, invoice.contactId))
+              .limit(1)
+          : [];
+        return sealedBuyerCiphers(invoice, contact ?? null);
+      });
+    } catch (err) {
+      // The page works without it; only the browser PDF of a sealed buyer is then unavailable.
+      this.logger.warn(`Sealed buyer lookup failed for ${invoiceId}: ${err}`);
+      return [];
+    }
   }
 
   /**
@@ -451,12 +496,17 @@ export class PublicInvoicesService {
 /**
  * The PDF model as the client may see it: sealed item texts without the
  * company-key wrap (`clientCipher`, as on the page), sealed notes dropped.
- * A plain document comes back unchanged.
+ * The same goes for sealed buyer texts, also inside composed lines like
+ * "PSČ Město". A plain document comes back unchanged.
  */
 export function clientPdfModel(model: InvoicePdfModel): InvoicePdfModel {
   const note = (v: string | null) => (isSealed(v) ? null : v);
+  const buyer = (text: string) => replaceEnvelopes(text, (envelope) => clientCipher(envelope).cipher);
   return {
     ...model,
+    ...(model.customer
+      ? { customer: { ...model.customer, name: buyer(model.customer.name), lines: model.customer.lines.map((l) => ({ ...l, text: buyer(l.text) })) } }
+      : {}),
     noteAbove: note(model.noteAbove),
     notes: { ...model.notes, noteBelow: note(model.notes.noteBelow) },
     table: {
@@ -464,6 +514,16 @@ export function clientPdfModel(model: InvoicePdfModel): InvoicePdfModel {
       items: model.table.items.map((i) => (isSealed(i.description) ? { ...i, description: clientCipher(i.description).cipher } : i)),
     },
   };
+}
+
+/** The sealed buyer texts of a document (snapshot over contact, then contact person) as client ciphertext. */
+export function sealedBuyerCiphers(
+  invoice: { buyerSnapshot?: unknown; buyerContactPerson?: string | null },
+  contact: { legalName?: string | null; addressStreet?: string | null; addressCity?: string | null; addressPostalCode?: string | null } | null,
+): { cipher: string; keyId: string | null }[] {
+  return documentBuyerTexts(invoice, contact)
+    .filter((t): t is string => isSealed(t))
+    .map((t) => clientCipher(t));
 }
 
 /** `<invoice number>.pdf`, safe inside a quoted Content-Disposition filename (ASCII only, no quotes or path parts). */

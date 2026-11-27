@@ -291,7 +291,36 @@ export class BuyerDetailsService {
     } else if (result.auto) {
       result.outcome.autoIssue = "skipped";
     }
-    this.notifyUser(tenantId, target.invoice_id, result.details, result.resolution, result.outcome, result.previousContactName);
+    this.notifyUser(tenantId, target.invoice_id, result.details, result.resolution, result.outcome, result.previousContactName, result.seals);
+  }
+
+  /**
+   * Důvěrný režim: a member's browser sealed the customer's answer into a
+   * new contact (`pending` in the outcome); attach it and drop the readable
+   * copy. Only an encrypted contact is accepted, and only on a draft.
+   */
+  async resolvePending(db: TenantDb, tenantId: string, invoiceId: string, contactId: string) {
+    const invoice = await this.lockInvoice(db, invoiceId);
+    if (!invoice || !(DRAFT_STATUSES as readonly string[]).includes(invoice.status)) throw new NotFoundException("Invoice not found");
+    const outcome = invoice.buyerDetailsOutcome;
+    if (outcome?.mode !== "pending_seal") throw new ConflictException("no_pending_buyer");
+    const contact = await this.loadContact(db, contactId);
+    if (!contact) throw new NotFoundException("Contact not found");
+    if (!contactIsSealed(contact)) throw new BadRequestException("contact_plaintext");
+    const { pending: _pending, ...rest } = outcome;
+    const next: schema.BuyerDetailsOutcome = { ...rest, mode: "created", contactId };
+    await db
+      .update(schema.invoices)
+      .set({ contactId, buyerDetailsOutcome: next, updatedAt: new Date() })
+      .where(and(eq(schema.invoices.id, invoiceId), inArray(schema.invoices.status, [...DRAFT_STATUSES])));
+    await this.audit?.record(db, tenantId, {
+      entityType: "invoice",
+      entityId: invoiceId,
+      entityLabel: invoice.invoiceNumber ?? null,
+      action: "buyer_details_sealed",
+      changes: [{ field: "contactId", from: invoice.contactId, to: contactId }],
+    });
+    return { ok: true };
   }
 
   /** The transactional part of `submit`: lock, check, contact, attach, audit. */
@@ -310,8 +339,17 @@ export class BuyerDetailsService {
     const match = await this.findByIdentifier(db, details.ico, details.dic);
     const resolution = resolveBuyerContact({ attached, match, submitted: details });
 
-    let contactId: string;
-    if (resolution.mode === "created") {
+    // Důvěrný režim with contacts on: the server has no key to seal a new
+    // contact and must not keep one readable in the address book. The
+    // answer waits on the draft until a member's browser seals it
+    // (`resolvePending`). Updates of an existing contact already keep its
+    // sealed columns below.
+    const seals = await this.sealsContacts(db, tenantId);
+    const pendingSeal = seals && resolution.mode === "created";
+    let contactId: string | null;
+    if (pendingSeal) {
+      contactId = invoice.contactId;
+    } else if (resolution.mode === "created") {
       contactId = await this.insertContact(db, tenantId, resolution.values);
       await this.audit?.record(db, tenantId, { entityType: "contact", entityId: contactId, entityLabel: resolution.values.legalName, action: "created" });
     } else {
@@ -334,13 +372,15 @@ export class BuyerDetailsService {
       }
     }
 
-    const auto = shouldAutoIssue(invoice.buyerDetailsAutoIssue, resolution, attached?.id ?? null);
+    // No contact yet: nothing to issue to.
+    const auto = !pendingSeal && shouldAutoIssue(invoice.buyerDetailsAutoIssue, resolution, attached?.id ?? null);
     const outcome: schema.BuyerDetailsOutcome = {
-      mode: resolution.mode,
+      mode: pendingSeal ? "pending_seal" : resolution.mode,
       contactId,
       filled: resolution.filled,
       conflicts: resolution.conflicts,
       autoIssue: invoice.buyerDetailsAutoIssue && !auto ? "skipped" : null,
+      ...(pendingSeal && resolution.mode === "created" ? { pending: resolution.values } : {}),
     };
     const now = new Date();
     await db
@@ -355,7 +395,7 @@ export class BuyerDetailsService {
       action: "buyer_details_submitted",
       changes: [
         ...(invoice.contactId !== contactId ? [{ field: "contactId", from: invoice.contactId, to: contactId }] : []),
-        { field: "buyerDetails", from: null, to: resolution.mode },
+        { field: "buyerDetails", from: null, to: outcome.mode },
         ...resolution.conflicts.map((c) => ({ field: `conflict.${c.field}`, from: c.saved, to: c.submitted })),
       ],
     });
@@ -365,6 +405,7 @@ export class BuyerDetailsService {
       outcome,
       resolution,
       details,
+      seals,
       requestedBy: invoice.buyerDetailsRequestedBy,
       previousContactName: attached && attached.id !== contactId ? contactLabel(attached.legalName) : null,
     };
@@ -396,10 +437,13 @@ export class BuyerDetailsService {
     resolution: ContactResolution,
     outcome: schema.BuyerDetailsOutcome,
     previousContactName: string | null,
+    seals = false,
   ) {
     const parts: string[] = [];
-    if (resolution.mode === "created") {
-      parts.push(`Vytvořen nový kontakt ${details.legalName}.`);
+    if (outcome.mode === "pending_seal") {
+      parts.push("Údaje čekají na zašifrování: otevřete koncept a uložte je jako šifrovaný kontakt.");
+    } else if (resolution.mode === "created") {
+      parts.push(seals ? "Vytvořen nový kontakt." : `Vytvořen nový kontakt ${details.legalName}.`);
       if (previousContactName) parts.push(`Původní kontakt ${previousContactName} zůstal beze změny.`);
     } else if (resolution.mode === "existing") {
       parts.push(`Přiřazen uložený kontakt podle ${details.ico ? "IČO" : "DIČ"}.`);
@@ -420,13 +464,24 @@ export class BuyerDetailsService {
               : "Zkontrolujte koncept a vystavte ho.",
     );
     this.notifications?.notify(tenantId, "buyer_details", {
-      title: `Odběratel doplnil fakturační údaje: ${details.legalName}`.slice(0, 200),
+      // A company that encrypts contacts gets no customer names in its notifications.
+      title: (seals ? "Odběratel doplnil fakturační údaje" : `Odběratel doplnil fakturační údaje: ${details.legalName}`).slice(0, 200),
       body: parts.join(" ").slice(0, 1000),
       link: `/invoices/${invoiceId}`,
     });
   }
 
   // ------------------------------------------------------------ data access (small, so tests can stub it)
+
+  /** Whether the company encrypts contacts (Důvěrný režim, category "contacts"). */
+  async sealsContacts(db: TenantDb, tenantId: string): Promise<boolean> {
+    const [vault] = await db
+      .select({ categories: schema.tenantVaults.categories })
+      .from(schema.tenantVaults)
+      .where(eq(schema.tenantVaults.tenantId, tenantId))
+      .limit(1);
+    return Boolean(vault?.categories.includes("contacts"));
+  }
 
   /** The link's own list, else the company default. */
   async requiredFor(db: TenantDb, tenantId: string, invoice: InvoiceRow): Promise<BuyerDetailsField[]> {

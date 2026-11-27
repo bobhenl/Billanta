@@ -2,7 +2,7 @@ import { BadRequestException, ConflictException, ForbiddenException } from "@nes
 import { sealedMaxLength } from "@faktur/cz-compliance";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { loadPlanSummary } from "../billing/plan.guard";
-import { assertSealingAllowed, rekeyWrites, sealingAllowed, assertServerReadable, plainOrNull, redactSealedInvoice, redactSealedItem, sealableText, SEALED_PLACEHOLDER, textFilterVerdict } from "./sealed";
+import { assertOneDocumentKey, assertSealingAllowed, rekeyWrites, sealingAllowed, assertServerReadable, plainOrNull, redactSealedInvoice, redactSealedItem, sealableText, SEALED_PLACEHOLDER, textFilterVerdict } from "./sealed";
 
 vi.mock("../billing/plan.guard", () => ({ loadPlanSummary: vi.fn() }));
 
@@ -136,5 +136,14 @@ describe("textFilterVerdict", () => {
 
   it("never counts plain text or a look-alike as something to check", () => {
     expect(textFilterVerdict(false, ["Konzultace", null, "enc:v1: poznámka"], true)).toBe("miss");
+  });
+});
+
+describe("assertOneDocumentKey", () => {
+  const wrapA = `BBBBBBBBBBBBBBBB:${"A".repeat(64)}`;
+  const wrapB = `CCCCCCCCCCCCCCCC:${"B".repeat(64)}`;
+  it("lets plain and company-key texts sit next to one document key, but not two keys", () => {
+    expect(() => assertOneDocumentKey([`${envelope(24)}:${wrapA}`, envelope(24), "Plain", null, `${envelope(30)}:${wrapA}`])).not.toThrow();
+    expect(() => assertOneDocumentKey([`${envelope(24)}:${wrapA}`, `${envelope(24)}:${wrapB}`])).toThrow(BadRequestException);
   });
 });

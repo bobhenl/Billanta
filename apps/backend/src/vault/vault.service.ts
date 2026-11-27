@@ -9,7 +9,7 @@ import { loadPlanSummary } from "../billing/plan.guard";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
 import { documentKeyWrap } from "@faktur/cz-compliance";
 import { MAX_ATTACHMENT_BYTES } from "../invoices/invoice-attachments.service";
-import { confidentialPlanRequired, isSealed, rekeyWrites } from "./sealed";
+import { assertOneDocumentKey, confidentialPlanRequired, isSealed, rekeyWrites } from "./sealed";
 import { assertFileSealingAllowed, classifyUpload, ENCRYPTED_FILENAME, ENCRYPTED_MIME, type UploadedFileLike } from "./sealed-files";
 import { openablePage, vaultDocumentView } from "./documents";
 import { SEALED_BUYER_SNAPSHOT_FIELDS, SEALED_CONTACT_FIELDS } from "@faktur/cz-compliance";
@@ -556,13 +556,22 @@ export class VaultService {
   /**
    * Stores one document's printed texts re-encrypted under its own key (see
    * `rekeyWrites`). Like `seal`, only text columns change and not
-   * `updated_at`. A locked document needs the usual fresh re-auth.
+   * `updated_at`. A locked document needs the usual fresh re-auth. The
+   * buyer can only be re-keyed in the document's own snapshot: a draft
+   * without one shows the live contact, which this never changes.
    */
   async rekey(db: TenantDb, tenantId: string, user: AuthenticatedUser, id: string, dto: RekeyInvoiceDto) {
     await this.requireVault(db, tenantId);
     await assertInvoiceOpen(db, id, user);
     const [invoice] = await db
-      .select({ id: schema.invoices.id, invoiceNumber: schema.invoices.invoiceNumber, noteAbove: schema.invoices.noteAbove, noteBelow: schema.invoices.noteBelow })
+      .select({
+        id: schema.invoices.id,
+        invoiceNumber: schema.invoices.invoiceNumber,
+        noteAbove: schema.invoices.noteAbove,
+        noteBelow: schema.invoices.noteBelow,
+        buyerSnapshot: schema.invoices.buyerSnapshot,
+        buyerContactPerson: schema.invoices.buyerContactPerson,
+      })
       .from(schema.invoices)
       .where(and(eq(schema.invoices.id, id), eq(schema.invoices.tenantId, tenantId)))
       .limit(1);
@@ -573,12 +582,30 @@ export class VaultService {
       .where(eq(schema.invoiceLineItems.invoiceId, id));
     const byId = new Map(stored.map((i) => [i.id, i.description]));
     if (dto.items.some((i) => !byId.has(i.id))) throw new NotFoundException("rekey_unknown_item");
+    const snapshot = (invoice.buyerSnapshot ?? {}) as Record<string, unknown>;
+    const buyer = Object.entries(dto.buyer ?? {}).filter((e): e is [string, `enc:v1:${string}`] => typeof e[1] === "string");
     rekeyWrites([
       ...(dto.noteAbove ? [{ incoming: dto.noteAbove, stored: invoice.noteAbove }] : []),
       ...(dto.noteBelow ? [{ incoming: dto.noteBelow, stored: invoice.noteBelow }] : []),
       ...dto.items.map((i) => ({ incoming: i.description, stored: byId.get(i.id) })),
+      ...buyer.map(([k, v]) => ({ incoming: v, stored: snapshot[k] as string | undefined })),
+      ...(dto.buyerContactPerson ? [{ incoming: dto.buyerContactPerson, stored: invoice.buyerContactPerson }] : []),
     ]);
-    const notes = { ...(dto.noteAbove ? { noteAbove: dto.noteAbove } : {}), ...(dto.noteBelow ? { noteBelow: dto.noteBelow } : {}) };
+    const nextSnapshot = buyer.length ? { ...snapshot, ...Object.fromEntries(buyer) } : null;
+    // What the document prints afterwards, the texts this re-key left alone included.
+    assertOneDocumentKey([
+      dto.noteAbove ?? invoice.noteAbove,
+      dto.noteBelow ?? invoice.noteBelow,
+      ...stored.map((s) => dto.items.find((i) => i.id === s.id)?.description ?? s.description),
+      ...SEALED_BUYER_SNAPSHOT_FIELDS.map((k) => (nextSnapshot ?? snapshot)[k] as string | undefined),
+      dto.buyerContactPerson ?? invoice.buyerContactPerson,
+    ]);
+    const notes = {
+      ...(dto.noteAbove ? { noteAbove: dto.noteAbove } : {}),
+      ...(dto.noteBelow ? { noteBelow: dto.noteBelow } : {}),
+      ...(nextSnapshot ? { buyerSnapshot: nextSnapshot as typeof invoice.buyerSnapshot } : {}),
+      ...(dto.buyerContactPerson ? { buyerContactPerson: dto.buyerContactPerson } : {}),
+    };
     if (Object.keys(notes).length) await db.update(schema.invoices).set(notes).where(eq(schema.invoices.id, id));
     for (const item of dto.items) {
       await db
@@ -587,6 +614,6 @@ export class VaultService {
         .where(and(eq(schema.invoiceLineItems.id, item.id), eq(schema.invoiceLineItems.invoiceId, id)));
     }
     await this.audit?.record(db, tenantId, { entityType: "invoice", entityId: id, entityLabel: invoice.invoiceNumber, action: "sealed" });
-    return { rekeyed: Object.keys(notes).length + dto.items.length };
+    return { rekeyed: [dto.noteAbove, dto.noteBelow, dto.buyerContactPerson].filter(Boolean).length + buyer.length + dto.items.length };
   }
 }

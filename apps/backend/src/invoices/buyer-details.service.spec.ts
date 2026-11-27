@@ -34,7 +34,7 @@ const contact = (over: Partial<BuyerContact> = {}): BuyerContact => ({
 type Inv = Record<string, unknown>;
 
 function setup(
-  opts: { invoice?: Inv | null; attached?: BuyerContact | null; match?: BuyerContact | null; target?: boolean; required?: BuyerDetailsField[] } = {}
+  opts: { invoice?: Inv | null; attached?: BuyerContact | null; match?: BuyerContact | null; target?: boolean; required?: BuyerDetailsField[]; seals?: boolean } = {}
 ) {
   const invoice: Inv | null =
     opts.invoice === null
@@ -68,7 +68,8 @@ function setup(
   vi.spyOn(svc, "requiredFor").mockResolvedValue(opts.required ?? ["email", "ico"]);
   const insertContact = vi.spyOn(svc, "insertContact").mockResolvedValue("c-new");
   const updateContact = vi.spyOn(svc, "updateContact").mockResolvedValue();
-  return { svc, invoices, notifications, audit, target, insertContact, updateContact, invoiceUpdates };
+  vi.spyOn(svc, "sealsContacts").mockResolvedValue(opts.seals ?? false);
+  return { svc, db: db as never, invoices, notifications, audit, target, insertContact, updateContact, invoiceUpdates };
 }
 
 describe("BuyerDetailsService.submit", () => {
@@ -204,5 +205,61 @@ describe("BuyerDetailsService.submit on a draft without a customer", () => {
     expect(t.updateContact).not.toHaveBeenCalled();
     expect(t.invoices.issue).not.toHaveBeenCalled();
     expect(t.invoiceUpdates[0]).toMatchObject({ contactId: "c-saved", buyerDetailsOutcome: { mode: "existing", conflicts: [], autoIssue: "skipped" } });
+  });
+});
+
+describe("BuyerDetailsService with encrypted contacts (Důvěrný režim)", () => {
+  beforeEach(() => vi.restoreAllMocks());
+  const ENV = "enc:v1:AAAAAAAAAAAAAAAA:QQQQQQQQQQQQQQQQQQQQQQQQ";
+
+  it("creates no readable contact: the answer waits on the draft, nothing is issued and the notification has no name", async () => {
+    const t = setup({ invoice: { contactId: null, buyerDetailsAutoIssue: true }, attached: null, seals: true });
+    await t.svc.submit(TOKEN, body);
+    expect(t.insertContact).not.toHaveBeenCalled();
+    expect(t.updateContact).not.toHaveBeenCalled();
+    expect(t.invoiceUpdates[0]).toMatchObject({
+      contactId: null,
+      buyerDetailsOutcome: { mode: "pending_seal", contactId: null, autoIssue: "skipped", pending: { legalName: "Nová firma s.r.o.", ico: "12345678" } },
+    });
+    expect(t.invoices.issue).not.toHaveBeenCalled();
+    const sent = t.notifications.notify.mock.calls[0] as unknown as [string, string, { title: string; body: string }];
+    expect(sent[2].title).not.toContain("Nová firma");
+    expect(sent[2].body).not.toContain("Nová firma");
+  });
+
+  it("still creates the contact for a company that does not encrypt contacts", async () => {
+    const t = setup({ invoice: { contactId: null }, attached: null, seals: false });
+    await t.svc.submit(TOKEN, body);
+    expect(t.insertContact).toHaveBeenCalled();
+    expect(t.invoiceUpdates[0]).toMatchObject({ contactId: "c-new", buyerDetailsOutcome: { mode: "created" } });
+  });
+
+  const pending = (over: Inv = {}) => ({
+    invoice: {
+      contactId: null,
+      buyerDetailsSubmittedAt: new Date(),
+      buyerDetailsOutcome: { mode: "pending_seal", contactId: null, filled: [], conflicts: [], autoIssue: null, pending: { legalName: "Nová firma s.r.o." } },
+      ...over,
+    },
+  });
+
+  it("attaches the contact the browser sealed and drops the readable copy", async () => {
+    const t = setup({ ...pending(), attached: contact({ id: "c-sealed", legalName: ENV }) });
+    await expect(t.svc.resolvePending(t.db, "t-1", "inv-1", "c-sealed")).resolves.toEqual({ ok: true });
+    expect(t.invoiceUpdates[0]).toMatchObject({ contactId: "c-sealed", buyerDetailsOutcome: { mode: "created", contactId: "c-sealed" } });
+    expect(JSON.stringify(t.invoiceUpdates[0])).not.toContain("Nová firma");
+  });
+
+  it("refuses a readable contact, a draft with nothing pending, and an issued document", async () => {
+    const plain = setup({ ...pending(), attached: contact({ id: "c-plain" }) });
+    await expect(plain.svc.resolvePending(plain.db, "t-1", "inv-1", "c-plain")).rejects.toThrow("contact_plaintext");
+    expect(plain.invoiceUpdates).toEqual([]);
+
+    const done = setup({ invoice: { buyerDetailsOutcome: { mode: "created", contactId: "c-attached", filled: [], conflicts: [], autoIssue: null } } });
+    await expect(done.svc.resolvePending(done.db, "t-1", "inv-1", "c-attached")).rejects.toBeInstanceOf(ConflictException);
+
+    const issued = setup({ ...pending({ status: "issued" }), attached: contact({ id: "c-sealed", legalName: ENV }) });
+    await expect(issued.svc.resolvePending(issued.db, "t-1", "inv-1", "c-sealed")).rejects.toBeInstanceOf(NotFoundException);
+    expect(issued.invoiceUpdates).toEqual([]);
   });
 });

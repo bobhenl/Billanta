@@ -1042,13 +1042,13 @@ describe("invoiceFileBase", () => {
 describe("InvoicesService.sendInvoice with browser-rendered files (Důvěrný režim)", () => {
   const files = { pdf: Buffer.from("%PDF-1.3") };
   const sealedItem = { ...lineItems[0]!, description: "enc:v1:AAAAAAAAAAAAAAAA:BBBBBBBBBBBBBBBBBBBBBBBB" };
-  const setup = (invoice: ReturnType<typeof makeInvoice>, items: typeof lineItems) => {
+  const setup = (invoice: ReturnType<typeof makeInvoice>, items: typeof lineItems, contact = makeContact()) => {
     const emailService = { sendInvoiceEmail: vi.fn().mockResolvedValue(undefined) };
     const service = new InvoicesService(emailService as unknown as EmailService, { generate: vi.fn() } as unknown as InvoicePdfService);
     const select = vi
       .fn()
       .mockReturnValueOnce(makeSelectChain([invoice]))
-      .mockReturnValueOnce(makeSelectChain([makeContact()]))
+      .mockReturnValueOnce(makeSelectChain([contact]))
       .mockReturnValueOnce(makeSelectChain(items));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return { emailService, service, db: { select, update: vi.fn() } as any };
@@ -1057,6 +1057,17 @@ describe("InvoicesService.sendInvoice with browser-rendered files (Důvěrný re
   it("refuses files for a plain invoice: the server renders its own", async () => {
     const { emailService, service, db } = setup(makeInvoice(), lineItems);
     await expect(service.sendInvoice(db, "inv-1", undefined, undefined, files)).rejects.toThrow("not_confidential");
+    expect(emailService.sendInvoiceEmail).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["an encrypted contact", {}, { legalName: sealedItem.description }],
+    ["an encrypted buyer snapshot", { buyerSnapshot: { legalName: sealedItem.description } }, {}],
+    ["an encrypted contact person", { buyerContactPerson: sealedItem.description }, {}],
+  ])("counts %s as sealed, with every item plain", async (_label, invoice, contact) => {
+    // Past the not_confidential check; the draft then stops at its missing number.
+    const { emailService, service, db } = setup(makeInvoice({ invoiceNumber: null, status: "draft", ...invoice }), lineItems, makeContact(contact));
+    await expect(service.sendInvoice(db, "inv-1", undefined, undefined, files)).rejects.toThrow("invoice_not_issued");
     expect(emailService.sendInvoiceEmail).not.toHaveBeenCalled();
   });
 

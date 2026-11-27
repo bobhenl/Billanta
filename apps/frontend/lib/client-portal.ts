@@ -18,7 +18,8 @@ export interface ClientPortalDocument {
 }
 
 export interface ClientPortal {
-  customerName: string;
+  /** Null when the name is encrypted (Důvěrný režim). */
+  customerName: string | null;
   companyName: string;
   documents: ClientPortalDocument[];
   outstanding: { currency: string; amount: number; overdue: number }[];

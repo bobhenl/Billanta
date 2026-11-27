@@ -1,7 +1,7 @@
 import { NotFoundException } from "@nestjs/common";
 import { describe, expect, it, vi } from "vitest";
 import { generateDataKey, generateDocumentKey, seal, sealWithDocumentKey } from "@faktur/cz-compliance";
-import { clientPdfModel, pdfFilename, PublicInvoicesService } from "./public-invoices.service";
+import { clientPdfModel, pdfFilename, PublicInvoicesService, sealedBuyerCiphers } from "./public-invoices.service";
 
 const TOKEN = "3f2504e0-4f89-41d3-9a0c-0305e82c3301";
 
@@ -78,11 +78,11 @@ describe("PublicInvoicesService.findByPublicToken totals", () => {
     customer_country: "CZ",
   });
 
-  function view(reverseCharge: boolean, items: typeof lines = lines) {
+  function view(reverseCharge: boolean, items: typeof lines = lines, extra: Record<string, unknown> = {}, begin?: () => Promise<unknown>) {
     const execute = vi.fn();
     for (const rows of [
       [{ blocked: false }],
-      [header],
+      [{ ...header, ...extra }],
       items,
       [{ company_name: "Dodavatel s.r.o.", bank_account_iban: "CZ6508000000192000145399", bank_account_number: null, bank_account_bank_code: null }],
       [],
@@ -94,7 +94,8 @@ describe("PublicInvoicesService.findByPublicToken totals", () => {
     ]) {
       execute.mockResolvedValueOnce(rows);
     }
-    const service = new PublicInvoicesService({ db: { execute } } as never);
+    const sql = { begin: vi.fn(begin ?? (async () => [])) };
+    const service = new PublicInvoicesService({ db: { execute }, sql } as never);
     return service.findByPublicToken(TOKEN);
   }
 
@@ -131,6 +132,17 @@ describe("PublicInvoicesService.findByPublicToken totals", () => {
     expect(v.subtotal).toBe(5400);
   });
 
+  it("hands out the sealed buyer only as client ciphertext, and stays up when that lookup fails", async () => {
+    const cipher = { cipher: "enc:v1:a:b", keyId: "w" };
+    const v = await view(false, lines, { id: "inv-1", tenant_id: "tenant-1" }, async () => [cipher]);
+    expect(v.sealedBuyer).toEqual([cipher]);
+    const failed = await view(false, lines, { id: "inv-1", tenant_id: "tenant-1" }, async () => {
+      throw new Error("db down");
+    });
+    expect(failed.sealedBuyer).toEqual([]);
+    expect(failed.total).toBe(2178);
+  });
+
   it("charges no VAT under reverse charge", async () => {
     const v = await view(true);
     expect(v.vatTotal).toBe(0);
@@ -161,6 +173,42 @@ describe("clientPdfModel", () => {
     expect(out.table.items[1].description).toBe("Plain");
     // The wrapped document key stays on the server.
     expect(JSON.stringify(out)).not.toContain(doc.wrap.split(":")[1]);
+  });
+});
+
+describe("sealed buyer for the client", () => {
+  it("strips the company-key wrap from every sealed buyer text, also inside composed lines", async () => {
+    const company = await generateDataKey();
+    const doc = await generateDocumentKey(company);
+    const name = await sealWithDocumentKey(doc, "Novák s.r.o.");
+    const zip = await sealWithDocumentKey(doc, "602 00");
+    const city = await sealWithDocumentKey(doc, "Brno");
+    const short = (e: string) => e.split(":").slice(0, 4).join(":");
+    const out = clientPdfModel({
+      noteAbove: null,
+      notes: { noteBelow: null },
+      table: { items: [] },
+      customer: { name, lines: [{ text: zip + " " + city }, { text: "IČO: 27604977" }] },
+    } as never) as unknown as { customer: { name: string; lines: { text: string }[] } };
+    expect(out.customer.name).toBe(short(name));
+    expect(out.customer.lines).toEqual([{ text: short(zip) + " " + short(city) }, { text: "IČO: 27604977" }]);
+    expect(JSON.stringify(out)).not.toContain(doc.wrap.split(":")[1]);
+  });
+
+  it("lists the sealed texts the document prints, snapshot over contact, and nothing for a plain buyer", async () => {
+    const company = await generateDataKey();
+    const doc = await generateDocumentKey(company);
+    const snapName = await sealWithDocumentKey(doc, "Novák s.r.o.");
+    const person = await seal(company, "Jana");
+    const ciphers = sealedBuyerCiphers(
+      { buyerSnapshot: { legalName: snapName }, buyerContactPerson: person },
+      { legalName: await seal(company, "Live name"), addressStreet: "Dlouhá 5", addressCity: null, addressPostalCode: null },
+    );
+    expect(ciphers).toEqual([
+      { cipher: snapName.split(":").slice(0, 4).join(":"), keyId: doc.wrap.split(":")[0] },
+      { cipher: person, keyId: null },
+    ]);
+    expect(sealedBuyerCiphers({ buyerSnapshot: null }, { legalName: "Plain", addressStreet: null, addressCity: null, addressPostalCode: null })).toEqual([]);
   });
 });
 

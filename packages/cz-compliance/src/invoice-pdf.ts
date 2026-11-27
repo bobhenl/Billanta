@@ -137,6 +137,11 @@ const customerTexts = (model: InvoicePdfModel): string[] =>
 
 const holdsEnvelope = (v: string | null) => !!v && (isSealed(v) || new RegExp(ENVELOPE_IN_TEXT.source).test(v));
 
+/** `text` with every envelope in it replaced by `fn(envelope)`, for composed lines like the buyer block's. */
+export function replaceEnvelopes(text: string, fn: (envelope: string) => string): string {
+  return text.replace(new RegExp(ENVELOPE_IN_TEXT.source, 'g'), (m) => fn(m));
+}
+
 /** The model with every sealed text replaced by `open(text)`; plain texts pass through. */
 export async function openInvoicePdfModel(model: InvoicePdfModel, open: (value: string) => Promise<string>): Promise<InvoicePdfModel> {
   const opened = async (v: string | null) => (v && isSealed(v) ? open(v) : v);

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { generateDataKey, open, openInvoicePdfModel, renderInvoicePdf, seal, sealableModelTexts, type InvoicePdfModel } from '../index.js';
+import { generateDataKey, open, openInvoicePdfModel, renderInvoicePdf, replaceEnvelopes, seal, sealableModelTexts, type InvoicePdfModel } from '../index.js';
 
 /** Only the fields the sealed-text checks look at; the renderer must refuse before drawing anything. */
 function model(noteAbove: string | null, noteBelow: string | null, descriptions: string[]): InvoicePdfModel {
@@ -55,5 +55,14 @@ describe('shared invoice PDF renderer, Důvěrný režim', () => {
     cityOnly.customer.lines = [{ text: `602 00 ${await seal(key, 'Brno')}` }];
     await expect(renderInvoicePdf(PDFDocument as never, cityOnly, null)).rejects.toThrow('confidential_content');
     expect(PDFDocument).not.toHaveBeenCalled();
+  });
+
+
+  it('replaces each envelope inside a composed line and leaves the rest', async () => {
+    const key = await generateDataKey();
+    const zip = await seal(key, '60200');
+    const city = await seal(key, 'Brno');
+    expect(replaceEnvelopes(zip + ' ' + city, (e) => (e === zip ? 'Z' : 'C'))).toBe('Z C');
+    expect(replaceEnvelopes('Kontaktní osoba: Jana', () => 'x')).toBe('Kontaktní osoba: Jana');
   });
 });

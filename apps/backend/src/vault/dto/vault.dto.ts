@@ -139,6 +139,12 @@ export const rekeyInvoiceSchema = z.object({
   noteAbove: sealed.optional(),
   noteBelow: sealed.optional(),
   items: z.array(z.object({ id: z.string().uuid(), description: sealed })).max(500).default([]),
+  /** The buyer as printed (the document's snapshot), so the client's browser can draw it in the PDF. */
+  buyer: z
+    .object({ legalName: sealed.optional(), addressStreet: sealed.optional(), addressCity: sealed.optional(), addressPostalCode: sealed.optional() })
+    .strict()
+    .optional(),
+  buyerContactPerson: sealed.optional(),
 });
 export class RekeyInvoiceDto extends createZodDto(rekeyInvoiceSchema) {}
 

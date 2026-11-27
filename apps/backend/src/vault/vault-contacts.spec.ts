@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException } from "@nestjs/common";
+import { BadRequestException, ConflictException, ForbiddenException } from "@nestjs/common";
 import { PgDialect } from "drizzle-orm/pg-core";
 import type { SQL } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
@@ -84,5 +84,46 @@ describe("VaultService.plainContacts", () => {
     const { db } = fakeDb(vaultRow(["texts", "attachments"]));
     const error = await new VaultService().plainContacts(db, "t1", { limit: 20 }).catch((e: Error) => e);
     expect((error as Error).message).toBe("vault_category_off");
+  });
+});
+
+describe("VaultService.rekey with the buyer", () => {
+  const ID = "3f2504e0-4f89-41d3-9a0c-0305e82c3301";
+  const user = { id: "u1", tenantId: "t1", role: "owner" } as never;
+  const wrapA = `BBBBBBBBBBBBBBBB:${"A".repeat(64)}`;
+  const wrapB = `CCCCCCCCCCCCCCCC:${"B".repeat(64)}`;
+  const docEnv = (n: number, wrap = wrapA) => `${env(n)}:${wrap}`;
+  const issued = (over: Record<string, unknown> = {}) => ({
+    id: ID,
+    invoiceNumber: "2026-0001",
+    noteAbove: null,
+    noteBelow: null,
+    buyerSnapshot: { legalName: env(1), addressCity: env(2), ico: "27604977" },
+    buyerContactPerson: env(3),
+    ...over,
+  });
+  const run = (invoice: Record<string, unknown>, items: unknown[], dto: Record<string, unknown>) => {
+    const fake = fakeDb(vaultRow(["texts", "contacts"]), [{ lockedAt: null }], [invoice], items, []);
+    return { fake, result: new VaultService().rekey(fake.db, "t1", user, ID, { items: [], ...dto } as never) };
+  };
+
+  it("re-keys the buyer only inside the document's snapshot and keeps its other fields", async () => {
+    const { fake, result } = run(issued(), [{ id: "i1", description: docEnv(9) }], { buyer: { legalName: docEnv(4), addressCity: docEnv(5) }, buyerContactPerson: docEnv(6) });
+    await expect(result).resolves.toEqual({ rekeyed: 3 });
+    expect(fake.sets).toEqual([{ buyerSnapshot: { legalName: docEnv(4), addressCity: docEnv(5), ico: "27604977" }, buyerContactPerson: docEnv(6) }]);
+  });
+
+  it("refuses a buyer field the snapshot does not hold sealed (a draft follows its live contact)", async () => {
+    const { fake, result } = run(issued({ buyerSnapshot: null }), [], { buyer: { legalName: docEnv(4) } });
+    await expect(result).rejects.toThrow(ConflictException);
+    expect(fake.sets).toEqual([]);
+    const plain = run(issued({ buyerSnapshot: { legalName: "Novák s.r.o." } }), [], { buyer: { legalName: docEnv(4) } });
+    await expect(plain.result).rejects.toThrow("rekey_plain_text");
+  });
+
+  it("refuses a buyer under another key than the items it leaves alone", async () => {
+    const { fake, result } = run(issued(), [{ id: "i1", description: docEnv(9, wrapB) }], { buyer: { legalName: docEnv(4), addressCity: docEnv(5) }, buyerContactPerson: docEnv(6) });
+    await expect(result).rejects.toThrow("rekey_one_document_key");
+    expect(fake.sets).toEqual([]);
   });
 });

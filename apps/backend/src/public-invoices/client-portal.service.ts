@@ -4,6 +4,7 @@ import { DbService } from "../db/db.service";
 import { computeInvoiceTotal } from "../invoices/invoice-total.util";
 import { invoiceLinkOf } from "../public-links/public-link";
 import { resolvePortalToken } from "../public-links/resolve";
+import { isSealed } from "../vault/sealed";
 
 type PortalRow = { customer_name: string; company_name: string; profile_slug: string | null; link_prefix: string | null };
 
@@ -41,7 +42,8 @@ export interface ClientPortalDocument {
 }
 
 export interface ClientPortalView {
-  customerName: string;
+  /** Null when the name is encrypted (Důvěrný režim): the portal then shows no name at all. */
+  customerName: string | null;
   companyName: string;
   documents: ClientPortalDocument[];
   /** Outstanding balance per currency. */
@@ -102,6 +104,6 @@ export class ClientPortalService {
     }
     const outstanding = [...byCurrency.values()].map((o) => ({ ...o, amount: Math.round(o.amount * 100) / 100, overdue: Math.round(o.overdue * 100) / 100 }));
 
-    return { customerName: head.customer_name, companyName: head.company_name, documents, outstanding };
+    return { customerName: isSealed(head.customer_name) ? null : head.customer_name, companyName: head.company_name, documents, outstanding };
   }
 }

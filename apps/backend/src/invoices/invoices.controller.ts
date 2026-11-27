@@ -453,6 +453,19 @@ export class InvoicesController {
     });
   }
 
+  @Post(":id/buyer-details-pending")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "Attach the encrypted contact a member's browser made from the customer's own details (Důvěrný režim)",
+    description: "Only while the draft's answer waits to be encrypted (mode pending_seal); the contact must already be encrypted.",
+  })
+  resolveBuyerDetailsPending(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() body: unknown) {
+    const parsed = z.object({ contactId: z.string().uuid() }).safeParse(body ?? {});
+    if (!parsed.success) throw new BadRequestException("Invalid contact");
+    assertMayDo(req.user, "invoices.send");
+    return this.buyerDetails.resolvePending(req.tenantDb!, req.user!.tenantId, id, parsed.data.contactId);
+  }
+
   @Delete(":id/buyer-details-request")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "Close the buyer-details link of a draft (it stops working at once)" })

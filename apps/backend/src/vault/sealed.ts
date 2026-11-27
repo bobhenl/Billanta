@@ -29,6 +29,16 @@ export function rekeyWrites(pairs: { incoming: string; stored: string | null | u
   if (pairs.some((p) => !isSealed(p.stored))) throw new ConflictException("rekey_plain_text");
 }
 
+/**
+ * After a re-key, every printed text under a document key must be under the
+ * same one: a client link carries a single key, and a buyer re-keyed under a
+ * different key than the items would leave its PDF half unreadable.
+ */
+export function assertOneDocumentKey(texts: (string | null | undefined)[]): void {
+  const wraps = new Set(texts.map(documentKeyWrap).filter(Boolean));
+  if (wraps.size > 1) throw new BadRequestException("rekey_one_document_key");
+}
+
 /** 409 code: the document holds encrypted text, so the server can't render it. */
 export const CONFIDENTIAL_CONTENT = "confidential_content";
 

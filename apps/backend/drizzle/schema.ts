@@ -754,10 +754,25 @@ export const invoices = pgTable(
  * IČO/DIČ, `filled` = completed the contact already on the draft, `created` =
  * a new contact. `filled` lists the fields that were empty and got a value;
  * `conflicts` the ones that differ and were left unchanged.
+ * `pending_seal` = a new contact for a company that encrypts contacts: the
+ * answer waits in `pending` until a member's browser seals it, and
+ * `contactId` is whatever the draft had (maybe none).
  */
 export type BuyerDetailsOutcome = {
-  mode: "existing" | "filled" | "created";
-  contactId: string;
+  mode: "existing" | "filled" | "created" | "pending_seal";
+  contactId: string | null;
+  pending?: {
+    legalName: string;
+    isPerson: boolean;
+    email: string | null;
+    phone: string | null;
+    ico: string | null;
+    dic: string | null;
+    addressStreet: string | null;
+    addressCity: string | null;
+    addressPostalCode: string | null;
+    addressCountry: string;
+  };
   filled: string[];
   conflicts: { field: string; saved: string | null; submitted: string | null }[];
   autoIssue: "issued" | "sent" | "skipped" | "failed" | null;
