@@ -435,7 +435,7 @@ export function TaxModelEditor({
                 />
               )}
               {members.length > 1 && (
-                <div className="col-span-2 flex flex-wrap items-end gap-x-4 gap-y-2 sm:col-span-full">
+                <div className="col-span-2 flex flex-wrap items-end gap-x-4 gap-y-2 sm:order-last sm:col-span-full">
                   <label className="block min-w-0 text-xs font-semibold text-muted-foreground">
                     <span className="block">{t('partnerMember')}</span>
                     <select
