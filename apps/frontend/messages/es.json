@@ -2767,6 +2767,10 @@
         "profile_message": {
           "label": "Mensaje desde el perfil",
           "hint": "Un visitante le ha escrito mediante el formulario de contacto de su perfil público."
+        },
+        "bank_consent": {
+          "label": "Acceso a la cuenta bancaria",
+          "hint": "Una semana y un día antes de que caduque el consentimiento de la conexión bancaria, y cuando caduca. Se renueva con un clic."
         }
       },
       "browserTitle": "Notificaciones del navegador",
@@ -9931,7 +9935,8 @@
       "buyer_details": "los correos sobre datos completados por clientes",
       "weekly_digest": "el resumen semanal",
       "all": "todas las notificaciones opcionales por correo",
-      "newsletter": "las novedades de Billanta sobre cambios fiscales y de facturación"
+      "newsletter": "las novedades de Billanta sobre cambios fiscales y de facturación",
+      "bank_consent": "los correos sobre la caducidad del acceso a la cuenta bancaria"
     },
     "errors": {
       "invalid": "Este enlace no es válido o está incompleto. Pruebe a copiar el enlace completo del correo.",

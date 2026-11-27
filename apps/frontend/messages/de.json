@@ -2767,6 +2767,10 @@
         "profile_message": {
           "label": "Nachricht über das Profil",
           "hint": "Ein Besucher hat Ihnen über das Kontaktformular in Ihrem öffentlichen Profil geschrieben."
+        },
+        "bank_consent": {
+          "label": "Kontozugriff",
+          "hint": "Eine Woche und einen Tag bevor die Zustimmung zur Bankverbindung abläuft, und wenn sie abgelaufen ist. Erneuern geht mit einem Klick."
         }
       },
       "browserTitle": "Browser-Benachrichtigungen",
@@ -9932,7 +9936,8 @@
       "buyer_details": "E-Mails zu von Kunden ausgefüllten Daten",
       "weekly_digest": "der wöchentlichen Zusammenfassung",
       "all": "allen optionalen E-Mail-Benachrichtigungen",
-      "newsletter": "Billanta-Neuigkeiten zu Änderungen bei Steuern und Rechnungsstellung"
+      "newsletter": "Billanta-Neuigkeiten zu Änderungen bei Steuern und Rechnungsstellung",
+      "bank_consent": "E-Mails zum Ablauf des Kontozugriffs"
     },
     "errors": {
       "invalid": "Dieser Link ist ungültig oder unvollständig. Kopieren Sie den gesamten Link aus der E-Mail.",

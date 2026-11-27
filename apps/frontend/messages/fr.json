@@ -2767,6 +2767,10 @@
         "profile_message": {
           "label": "Message via le profil",
           "hint": "Un visiteur vous a écrit via le formulaire de contact de votre profil public."
+        },
+        "bank_consent": {
+          "label": "Accès au compte bancaire",
+          "hint": "Une semaine et un jour avant l’expiration du consentement de connexion bancaire, puis à l’expiration. Le renouvellement se fait en un clic."
         }
       },
       "browserTitle": "Notifications du navigateur",
@@ -9931,7 +9935,8 @@
       "buyer_details": "les e-mails sur les coordonnées renseignées par les clients",
       "weekly_digest": "le récapitulatif hebdomadaire",
       "all": "toutes les notifications par e-mail facultatives",
-      "newsletter": "les actualités Billanta sur les évolutions fiscales et de facturation"
+      "newsletter": "les actualités Billanta sur les évolutions fiscales et de facturation",
+      "bank_consent": "les e-mails sur l’expiration de l’accès au compte bancaire"
     },
     "errors": {
       "invalid": "Ce lien est invalide ou incomplet. Essayez de copier le lien complet depuis l’e-mail.",

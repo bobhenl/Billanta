@@ -2767,6 +2767,10 @@
         "profile_message": {
           "label": "Bericht via profiel",
           "hint": "Een bezoeker heeft je geschreven via het contactformulier op je openbare profiel."
+        },
+        "bank_consent": {
+          "label": "Toegang tot bankrekening",
+          "hint": "Een week en een dag voordat je toestemming voor de bankkoppeling verloopt, en wanneer die verloopt. Vernieuwen kost één klik."
         }
       },
       "browserTitle": "Browsermeldingen",
@@ -9931,7 +9935,8 @@
       "buyer_details": "e-mails over gegevens die klanten hebben ingevuld",
       "weekly_digest": "het wekelijkse overzicht",
       "all": "alle optionele e-mailmeldingen",
-      "newsletter": "updates van Billanta over wijzigingen in belastingen en facturatie"
+      "newsletter": "updates van Billanta over wijzigingen in belastingen en facturatie",
+      "bank_consent": "e-mails over verlopende toegang tot je bankrekening"
     },
     "errors": {
       "invalid": "Deze link is ongeldig of onvolledig. Kopieer de volledige link uit de e-mail.",

@@ -23,12 +23,21 @@ export const NOTIFICATION_EVENTS = [
   // A visitor's message from the public profile ("Kontaktovat"). In-app only
   // unless the member opts into e-mail; nothing is ever sent to the visitor.
   "profile_message",
+  // PSD2 bank access about to run out (a week ahead, on the last day) or gone.
+  // E-mail on by default: missing it silently stops payment matching.
+  "bank_consent",
 ] as const;
 export type NotificationEvent = (typeof NOTIFICATION_EVENTS)[number];
 export const NOTIFICATION_CHANNELS = ["app", "email"] as const;
 export type NotificationChannel = (typeof NOTIFICATION_CHANNELS)[number];
 
-const EMAIL_ON_BY_DEFAULT: ReadonlySet<NotificationEvent> = new Set(["invoice_paid", "draft_ready", "quote_response", "buyer_details"]);
+const EMAIL_ON_BY_DEFAULT: ReadonlySet<NotificationEvent> = new Set([
+  "invoice_paid",
+  "draft_ready",
+  "quote_response",
+  "buyer_details",
+  "bank_consent",
+]);
 
 export interface QuietHours {
   enabled: boolean;

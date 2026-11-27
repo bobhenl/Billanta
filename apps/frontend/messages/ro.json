@@ -2767,6 +2767,10 @@
         "profile_message": {
           "label": "Mesaj din profil",
           "hint": "Un vizitator v-a scris prin formularul de contact din profilul public."
+        },
+        "bank_consent": {
+          "label": "Acces la contul bancar",
+          "hint": "Cu o săptămână și cu o zi înainte să expire consimțământul pentru conexiunea bancară, și când expiră. Îl reînnoiți cu un singur clic."
         }
       },
       "browserTitle": "Notificări în browser",
@@ -9931,7 +9935,8 @@
       "buyer_details": "e-mailuri despre datele completate de clienți",
       "weekly_digest": "rezumatul săptămânal",
       "all": "toate notificările opționale prin e-mail",
-      "newsletter": "noutăți Billanta despre schimbările fiscale și de facturare"
+      "newsletter": "noutăți Billanta despre schimbările fiscale și de facturare",
+      "bank_consent": "e-mailuri despre expirarea accesului la contul bancar"
     },
     "errors": {
       "invalid": "Acest link este invalid sau incomplet. Încercați să copiați întregul link din e-mail.",
