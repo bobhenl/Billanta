@@ -1946,7 +1946,8 @@
         "errors": {
           "month": "Indique el mes desde el que se aplica cada fila.",
           "duplicate": "Dos filas tienen el mismo mes. Combínelas en una.",
-          "amount": "Los anticipos deben ser números entre 0 y 10.000.000."
+          "amount": "Los anticipos deben ser números entre 0 y 10.000.000.",
+          "secondary_activity_period_invalid": "La actividad secundaria no puede terminar antes de empezar."
         },
         "flatTaxLabel": {
           "flat": "Impuesto fijo",
@@ -1961,7 +1962,10 @@
           "yes": "Sí",
           "no": "No",
           "main": "Principal",
-          "secondary": "Secundaria"
+          "secondary": "Secundaria",
+          "secondaryFrom": "Actividad secundaria desde",
+          "secondaryTo": "Hasta",
+          "secondaryPeriodHint": "Opcional, por ejemplo si estudia solo hasta un día concreto. Un campo vacío significa sin límite. Fuera de este periodo la actividad cuenta como principal."
         },
         "minimumAsk": {
           "flatTax": "Para mostrar el mínimo legal, indíquenos si está en el régimen de impuesto fijo:",
@@ -14175,9 +14179,15 @@
         "custom": "Otro importe…",
         "customAmount": "Deducciones totales del año"
       },
-      "secondaryActivity": "Actividad secundaria (estudiante, empleado, permiso parental…)",
       "secondaryActivityHint": "Por debajo de un beneficio anual de {amount} CZK no se paga seguridad social. El seguro de salud se paga sobre el beneficio real, sin mínimo.",
-      "secondaryActivityUnknown": "Aún no se conoce el umbral de {year}, así que la seguridad social siempre se cuenta."
+      "secondaryActivityUnknown": "Aún no se conoce el umbral de {year}, así que la seguridad social siempre se cuenta.",
+      "secondaryActivityState": "Actividad secundaria:",
+      "secondaryWholeYear": "todo el año",
+      "secondaryNone": "no",
+      "secondaryActivityChange": "Cambiar en los ajustes de la empresa",
+      "secondaryActivityPartial": "El umbral baja una doceava parte por cada mes sin actividad secundaria. Los meses de actividad principal siempre cotizan.",
+      "secondaryActivityLegacy": "Activado antes en este informe. Ahora se configura en los ajustes de la empresa.",
+      "secondaryActivityLegacyClear": "Desactivar"
     },
     "errors": {
       "duplicate_partner": "Dos socios tienen el mismo id. Quite uno y vuelva a añadirlo.",

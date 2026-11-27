@@ -92,6 +92,9 @@ const asPeriods = (rows: AdvanceRow[]): TaxAdvancePeriod[] =>
 export interface RegimeAnswers {
   flatTax: '' | 'yes' | 'no';
   activity: '' | ActivityKind;
+  /** Days of the vedlejší činnost ("YYYY-MM-DD"), '' = open on that side. */
+  secondaryFrom: string;
+  secondaryTo: string;
 }
 
 export const regimeOf = (a: RegimeAnswers): AdvanceRegime => ({
@@ -206,6 +209,35 @@ export function TaxAdvancesEditor({
                 <span className="font-medium">{t('regime.activity')}</span>
               </InfoHint>
               <Choice name={t('regime.activity')} value={answers.activity} options={activities} disabled={readOnly} onPick={(v) => onAnswers({ activity: v })} />
+            </div>
+          )}
+          {answers.flatTax !== 'yes' && answers.activity === 'secondary' && (
+            <div className="space-y-1">
+              <div className="grid grid-cols-2 gap-2 sm:max-w-sm">
+                <label className="block min-w-0 text-xs font-semibold text-muted-foreground">
+                  {t('regime.secondaryFrom')}
+                  <input
+                    type="date"
+                    className={cn(inputClass, 'mt-1')}
+                    value={answers.secondaryFrom}
+                    max={answers.secondaryTo || undefined}
+                    disabled={readOnly}
+                    onChange={(e) => onAnswers({ secondaryFrom: e.target.value })}
+                  />
+                </label>
+                <label className="block min-w-0 text-xs font-semibold text-muted-foreground">
+                  {t('regime.secondaryTo')}
+                  <input
+                    type="date"
+                    className={cn(inputClass, 'mt-1')}
+                    value={answers.secondaryTo}
+                    min={answers.secondaryFrom || undefined}
+                    disabled={readOnly}
+                    onChange={(e) => onAnswers({ secondaryTo: e.target.value })}
+                  />
+                </label>
+              </div>
+              <p className="text-xs text-muted-foreground">{t('regime.secondaryPeriodHint')}</p>
             </div>
           )}
         </div>

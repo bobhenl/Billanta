@@ -1947,7 +1947,8 @@
         "errors": {
           "month": "U každého řádku vyplňte měsíc, od kterého platí.",
           "duplicate": "Dva řádky mají stejný měsíc. Spojte je do jednoho.",
-          "amount": "Zálohy musí být čísla od 0 do 10 000 000."
+          "amount": "Zálohy musí být čísla od 0 do 10 000 000.",
+          "secondary_activity_period_invalid": "Vedlejší činnost nemůže skončit dřív, než začne."
         },
         "flatTaxLabel": {
           "flat": "Paušální daň",
@@ -1962,7 +1963,10 @@
           "yes": "Ano",
           "no": "Ne",
           "main": "Hlavní",
-          "secondary": "Vedlejší"
+          "secondary": "Vedlejší",
+          "secondaryFrom": "Vedlejší činnost od",
+          "secondaryTo": "Do",
+          "secondaryPeriodHint": "Nepovinné, třeba když studujete jen do určitého dne. Prázdné pole znamená bez omezení. Mimo toto období se počítá hlavní činnost."
         },
         "minimumAsk": {
           "flatTax": "Pro zákonné minimum potřebujeme vědět, jestli jste v paušálním režimu:",
@@ -14183,9 +14187,15 @@
         "custom": "Jiná částka…",
         "customAmount": "Slevy celkem za rok"
       },
-      "secondaryActivity": "Vedlejší činnost (student, zaměstnanec, rodičovská…)",
       "secondaryActivityHint": "Pod rozhodnou částkou {amount} Kč zisku za rok se neplatí sociální pojištění. Zdravotní se platí ze skutečného zisku, bez minima.",
-      "secondaryActivityUnknown": "Pro rok {year} rozhodnou částku neznáme, sociální pojištění se počítá vždy."
+      "secondaryActivityUnknown": "Pro rok {year} rozhodnou částku neznáme, sociální pojištění se počítá vždy.",
+      "secondaryActivityState": "Vedlejší činnost:",
+      "secondaryWholeYear": "celý rok",
+      "secondaryNone": "ne",
+      "secondaryActivityChange": "Změnit v nastavení firmy",
+      "secondaryActivityPartial": "Rozhodná částka se snižuje o dvanáctinu za každý měsíc bez vedlejší činnosti. Měsíce hlavní činnosti se pojišťují vždy.",
+      "secondaryActivityLegacy": "Zapnuto dříve přímo v tomto přehledu. Teď se to nastavuje v nastavení firmy.",
+      "secondaryActivityLegacyClear": "Vypnout"
     },
     "errors": {
       "duplicate_partner": "Dva společníci mají stejné označení. Odeberte jednoho a přidejte ho znovu.",

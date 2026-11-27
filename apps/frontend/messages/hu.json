@@ -1946,7 +1946,8 @@
         "errors": {
           "month": "Minden sornál adja meg a hónapot, amelytől érvényes.",
           "duplicate": "Két sornak ugyanaz a hónapja. Vonja össze őket egybe.",
-          "amount": "Az előlegek 0 és 10 000 000 közötti számok lehetnek."
+          "amount": "Az előlegek 0 és 10 000 000 közötti számok lehetnek.",
+          "secondary_activity_period_invalid": "A mellékfoglalkozás nem érhet véget a kezdete előtt."
         },
         "flatTaxLabel": {
           "flat": "Átalányadó",
@@ -1961,7 +1962,10 @@
           "yes": "Igen",
           "no": "Nem",
           "main": "Fő",
-          "secondary": "Mellék"
+          "secondary": "Mellék",
+          "secondaryFrom": "Mellékfoglalkozás ettől",
+          "secondaryTo": "Eddig",
+          "secondaryPeriodHint": "Nem kötelező, például ha csak egy adott napig tanul. Az üres mező korlátlan időt jelent. Ezen az időszakon kívül főfoglalkozásnak számít."
         },
         "minimumAsk": {
           "flatTax": "A törvényes minimum megjelenítéséhez adja meg, hogy átalányadózást alkalmaz-e:",
@@ -14175,9 +14179,15 @@
         "custom": "Más összeg…",
         "customAmount": "Éves kedvezmények összesen"
       },
-      "secondaryActivity": "Mellékállású tevékenység (diák, alkalmazott, szülői szabadság…)",
       "secondaryActivityHint": "Évi {amount} CZK nyereség alatt nem kell társadalombiztosítást fizetni. Az egészségbiztosítást a tényleges nyereség után kell fizetni, minimum nélkül.",
-      "secondaryActivityUnknown": "A {year}. évi határt még nem ismerjük, ezért a társadalombiztosítás mindig számít."
+      "secondaryActivityUnknown": "A {year}. évi határt még nem ismerjük, ezért a társadalombiztosítás mindig számít.",
+      "secondaryActivityState": "Mellékfoglalkozás:",
+      "secondaryWholeYear": "egész évben",
+      "secondaryNone": "nem",
+      "secondaryActivityChange": "Módosítás a cég beállításaiban",
+      "secondaryActivityPartial": "A határösszeg minden mellékfoglalkozás nélküli hónappal egy tizenketted résszel csökken. A főfoglalkozás hónapjai mindig biztosítottak.",
+      "secondaryActivityLegacy": "Korábban közvetlenül ebben a kimutatásban kapcsolták be. Most a cég beállításaiban adható meg.",
+      "secondaryActivityLegacyClear": "Kikapcsolás"
     },
     "errors": {
       "duplicate_partner": "Két partnernek azonos az azonosítója. Távolítsa el az egyiket, és adja hozzá újra.",

@@ -13,6 +13,14 @@ const text = (max: number) => z.string().trim().max(max).nullish();
 
 const advanceAmount = z.number().nonnegative().max(TAX_ADVANCE_MAX).nullish();
 const yearInRange = (m: string) => Number(m.slice(0, 4)) >= 2000 && Number(m.slice(0, 4)) <= 2100;
+/** "YYYY-MM-DD" of a real day (no 2026-02-30). */
+const calendarDay = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/)
+  .refine((d) => {
+    const t = Date.parse(`${d}T00:00:00Z`);
+    return yearInRange(d) && !Number.isNaN(t) && new Date(t).toISOString().slice(0, 10) === d;
+  }, "invalid_date");
 
 /**
  * OSVČ monthly advances with history: each entry applies from its month
@@ -61,6 +69,9 @@ export const updateTenantSchema = z
     flat_tax_regime: z.boolean().nullable(),
     /** OSVČ: hlavní or vedlejší činnost, null = not answered. */
     activity_kind: z.enum(["main", "secondary"]).nullable(),
+    /** The days of the vedlejší činnost, null = open on that side (from ≤ to is checked against the stored row in the service). */
+    secondary_activity_from: calendarDay.nullable(),
+    secondary_activity_to: calendarDay.nullable(),
     address_street: text(200),
     address_city: text(100),
     address_postal_code: text(10),

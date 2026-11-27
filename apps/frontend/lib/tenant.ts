@@ -28,6 +28,9 @@ export interface TenantSettings {
   flatTaxRegime?: boolean | null;
   /** OSVČ: hlavní / vedlejší činnost; null or missing = not answered yet. */
   activityKind?: 'main' | 'secondary' | null;
+  /** The days of the vedlejší činnost ("YYYY-MM-DD"), null = open on that side; missing on an older backend. */
+  secondaryActivityFrom?: string | null;
+  secondaryActivityTo?: string | null;
   /** Fields a customer must fill in on a buyer-details link (0054); missing on an older backend. */
   buyerDetailsRequired?: BuyerDetailsField[];
   addressStreet: string | null;

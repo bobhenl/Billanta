@@ -199,6 +199,10 @@ export const tenants = pgTable("tenants", {
   // minimums "Použít" fills and the default deadlines) and hlavní / vedlejší činnost ('main' | 'secondary').
   flatTaxRegime: boolean("flat_tax_regime"),
   activityKind: text("activity_kind").$type<"main" | "secondary">(),
+  // The days of the vedlejší činnost (0121), null = open on that side; outside them the activity is the main one.
+  // Read by the "Po zdanění" report (netIncomeSecondaryMonths in @faktur/cz-compliance).
+  secondaryActivityFrom: date("secondary_activity_from", { mode: "string" }),
+  secondaryActivityTo: date("secondary_activity_to", { mode: "string" }),
   addressStreet: text("address_street"),
   addressCity: text("address_city"),
   addressPostalCode: varchar("address_postal_code", { length: 10 }),

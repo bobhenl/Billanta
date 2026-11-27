@@ -1946,7 +1946,8 @@
         "errors": {
           "month": "Geben Sie für jede Zeile den Monat an, ab dem sie gilt.",
           "duplicate": "Zwei Zeilen haben denselben Monat. Fassen Sie sie zu einer zusammen.",
-          "amount": "Vorauszahlungen müssen Zahlen von 0 bis 10.000.000 sein."
+          "amount": "Vorauszahlungen müssen Zahlen von 0 bis 10.000.000 sein.",
+          "secondary_activity_period_invalid": "Die Nebentätigkeit kann nicht enden, bevor sie beginnt."
         },
         "flatTaxLabel": {
           "flat": "Pauschalsteuer",
@@ -1961,7 +1962,10 @@
           "yes": "Ja",
           "no": "Nein",
           "main": "Haupttätigkeit",
-          "secondary": "Nebentätigkeit"
+          "secondary": "Nebentätigkeit",
+          "secondaryFrom": "Nebentätigkeit ab",
+          "secondaryTo": "Bis",
+          "secondaryPeriodHint": "Optional, zum Beispiel wenn Sie nur bis zu einem bestimmten Tag studieren. Ein leeres Feld bedeutet ohne Begrenzung. Außerhalb dieses Zeitraums gilt die Tätigkeit als Haupttätigkeit."
         },
         "minimumAsk": {
           "flatTax": "Um das gesetzliche Minimum anzuzeigen, teilen Sie uns mit, ob Sie die Pauschalsteuer-Regelung nutzen:",
@@ -14176,9 +14180,15 @@
         "custom": "Anderer Betrag…",
         "customAmount": "Ermäßigungen im Jahr gesamt"
       },
-      "secondaryActivity": "Nebentätigkeit (Student, Angestellter, Elternzeit…)",
       "secondaryActivityHint": "Unter einem Jahresgewinn von {amount} CZK fällt keine Sozialversicherung an. Die Krankenversicherung wird vom tatsächlichen Gewinn gezahlt, ohne Minimum.",
-      "secondaryActivityUnknown": "Die Grenze für {year} ist noch nicht bekannt, die Sozialversicherung wird daher immer gerechnet."
+      "secondaryActivityUnknown": "Die Grenze für {year} ist noch nicht bekannt, die Sozialversicherung wird daher immer gerechnet.",
+      "secondaryActivityState": "Nebentätigkeit:",
+      "secondaryWholeYear": "ganzes Jahr",
+      "secondaryNone": "nein",
+      "secondaryActivityChange": "In den Firmeneinstellungen ändern",
+      "secondaryActivityPartial": "Der Schwellenbetrag sinkt um ein Zwölftel für jeden Monat ohne Nebentätigkeit. Monate mit Haupttätigkeit sind immer versichert.",
+      "secondaryActivityLegacy": "Früher direkt in dieser Übersicht eingeschaltet. Jetzt wird es in den Firmeneinstellungen festgelegt.",
+      "secondaryActivityLegacyClear": "Ausschalten"
     },
     "errors": {
       "duplicate_partner": "Zwei Partner haben dieselbe ID. Entfernen Sie einen und fügen Sie ihn erneut hinzu.",

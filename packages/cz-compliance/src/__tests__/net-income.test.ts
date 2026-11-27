@@ -4,9 +4,11 @@ import {
   computeNetIncome,
   netIncomeAmountOf,
   netIncomeReportOf,
+  netIncomeSecondaryMonths,
   netIncomeSpanOf,
   sealedNetIncomeEnvelopes,
   type DocumentAmounts,
+  type NetIncomeActivity,
   type NetIncomeInputs,
   type NetIncomeInvoice,
   type NetIncomeTaxModel,
@@ -218,5 +220,84 @@ describe('computeNetIncome in a secondary activity', () => {
   it('keeps social insurance in a year without a known threshold', () => {
     const r = computeNetIncome(one(true, 2031), [{ amount: 100_000, shares: null }], yearSpan(2031));
     expect(r.totals.social).toBeGreaterThan(0);
+  });
+});
+
+describe('vedlejší činnost from company settings', () => {
+  const year = (legacy: boolean) => ({ ...rates, tax_scope: 'one_person' as const, tax_credits: 30_840, secondary_activity: legacy, partners: {} });
+  const one = (legacy = false): NetIncomeTaxModel => ({ ...model, shared_expenses: [], extra_income: [], years: { 2026: year(legacy) } });
+  const whole = { year: 2026, month: 1, months: 12 };
+  const secondary = (from: string | null, to: string | null): NetIncomeActivity => ({ kind: 'secondary', from, to });
+  const income = (amount: number) => [{ amount, shares: null }];
+  const flags = (s: string) => [...s].map((c) => c === 'x');
+
+  it('lists the months touched by the period and the months not wholly inside it', () => {
+    const r = netIncomeSecondaryMonths(secondary('2025-09-01', '2026-06-15'), one(), 2026);
+    expect(r.source).toBe('settings');
+    expect(r.secondary).toEqual(flags('xxxxxx......'));
+    // June is partly secondary and partly main: it counts for both.
+    expect(r.main).toEqual(flags('.....xxxxxxx'));
+  });
+
+  it('takes a period ending on the last day of the month as covering it, leap years too', () => {
+    expect(netIncomeSecondaryMonths(secondary(null, '2026-02-28'), one(), 2026).main).toEqual(flags('..xxxxxxxxxx'));
+    expect(netIncomeSecondaryMonths(secondary(null, '2028-02-28'), one(), 2028).main).toEqual(flags('.xxxxxxxxxxx'));
+    expect(netIncomeSecondaryMonths(secondary(null, '2028-02-29'), one(), 2028).main).toEqual(flags('..xxxxxxxxxx'));
+    expect(netIncomeSecondaryMonths(secondary('2026-03-10', null), one(), 2026)).toMatchObject({ secondary: flags('..xxxxxxxxxx'), main: flags('xxx.........') });
+  });
+
+  it('reads the old report switch as a whole year only while settings say nothing', () => {
+    expect(netIncomeSecondaryMonths(null, one(true), 2026)).toMatchObject({ source: 'legacy', secondary: flags('xxxxxxxxxxxx') });
+    expect(netIncomeSecondaryMonths({ kind: null, from: null, to: null }, one(false), 2026)).toMatchObject({ source: 'none', secondary: flags('............') });
+    expect(netIncomeSecondaryMonths({ kind: 'main', from: null, to: null }, one(true), 2026)).toMatchObject({ source: 'settings', secondary: flags('............') });
+  });
+
+  it('drops social insurance for a whole year of secondary activity under the rozhodná částka', () => {
+    // 290 000 income → 116 000 profit, under 117 521 in 2026.
+    expect(computeNetIncome(one(), income(290_000), whole, secondary(null, null)).totals.social).toBe(0);
+  });
+
+  it('lets a main activity in settings win over the old report switch', () => {
+    expect(computeNetIncome(one(true), income(290_000), whole, { kind: 'main', from: null, to: null }).totals.social).toBe(18_630);
+  });
+
+  it('insures only the main months when the secondary half year stays under the reduced částka', () => {
+    // Jan–Jun secondary: 117 521 − 6 × 9 794 = 58 757; half of the 116 000 profit is 58 000, under it.
+    // § 5b: only 6/12 of the profit is insured → 58 000 × 55 % × 29.2 %.
+    const r = computeNetIncome(one(), income(290_000), whole, secondary(null, '2026-06-30'));
+    expect(r.totals.social).toBe(9_315);
+  });
+
+  it('reduces the částka by twelfths rounded up, not by a plain share', () => {
+    // 293 790 income → 117 516 profit; half is 58 758, just over 58 757 (a plain half of the částka would be 58 760.5).
+    const r = computeNetIncome(one(), income(293_790), whole, secondary(null, '2026-06-30'));
+    expect(r.totals.base).toBe(117_516);
+    expect(r.totals.social).toBe(18_873);
+  });
+
+  it('tests a month on its own: a secondary month goes free, a main or mixed month is insured', () => {
+    const activity = secondary(null, '2026-06-15');
+    const month = (m: number) => computeNetIncome(one(), income(20_000), { year: 2026, month: m, months: 1 }, activity).totals.social;
+    // 20 000 → 8 000 profit, under a twelfth of the částka.
+    expect(month(3)).toBe(0);
+    expect(month(6)).toBe(1_285);
+    expect(month(7)).toBe(1_285);
+  });
+
+  it('keeps full social insurance in a year the secondary period does not reach', () => {
+    expect(computeNetIncome(one(true), income(290_000), whole, secondary('2027-01-01', null)).totals.social).toBe(18_630);
+  });
+
+  it('builds the report, its months and the sealed report with the settings', () => {
+    const activity = secondary(null, '2026-03-31');
+    const q1 = inputs({ model: one(), activity, invoices: [plain('P1', '2026-01-15', 9_000)] });
+    const r = netIncomeReportOf(q1);
+    expect(r.secondary.secondary).toEqual(flags('xxx.........'));
+    expect(r.result.totals.social).toBe(0);
+    // 9 000 → 3 600 profit: only health insurance, in the quarter and in January alone.
+    expect(r.result.totals.taxes).toBe(243);
+    expect(r.byMonth![0]!.taxes).toBe(243);
+    const sealedOut = buildSealedNetIncome(inputs({ model: one(), activity, invoices: [], sealedDocs: [sealed('S1', '2026-01-15', 1)] }), new Map([[env(1), amounts(9_000, 0)]]));
+    expect(sealedOut.report!.result.totals.social).toBe(0);
   });
 });

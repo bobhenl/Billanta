@@ -10,7 +10,7 @@ import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
 import { applyBuyerSnapshot } from "../invoices/party-snapshot";
 import { amountsSealed } from "../vault/sealed-amounts";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
-import { netIncomeAmountOf, netIncomeReportOf, netIncomeSpanOf, type NetIncomeInputs, type NetIncomeInvoice, type SealedNetIncomeDoc } from "@faktur/cz-compliance";
+import { netIncomeAmountOf, netIncomeReportOf, netIncomeSpanOf, type NetIncomeActivity, type NetIncomeInputs, type NetIncomeInvoice, type SealedNetIncomeDoc } from "@faktur/cz-compliance";
 import { creatorShares, type Shares, sharesSchema, type TaxModel, taxModelOf } from "./tax-model";
 
 type Db = PostgresJsDatabase<typeof schema>;
@@ -181,9 +181,21 @@ export class NetIncomeService {
       invoices,
       missingRates,
       sealedDocs,
+      // Company settings decide vedlejší činnost (the report's own old switch only while they say nothing).
+      activity: activityOf(tenant),
     };
     return { inputs, sealedIds: sealedDocs.map((d) => d.id) };
   }
+}
+
+/** Hlavní / vedlejší činnost from Settings → Company; the days only matter for a secondary one. */
+export function activityOf(
+  tenant: Pick<typeof schema.tenants.$inferSelect, "activityKind" | "secondaryActivityFrom" | "secondaryActivityTo"> | undefined,
+): NetIncomeActivity {
+  const kind = tenant?.activityKind ?? null;
+  return kind === "secondary"
+    ? { kind, from: tenant?.secondaryActivityFrom ?? null, to: tenant?.secondaryActivityTo ?? null }
+    : { kind, from: null, to: null };
 }
 
 function sharesOrNull(v: unknown): Shares | null {

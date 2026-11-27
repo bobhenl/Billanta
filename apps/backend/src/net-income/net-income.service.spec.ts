@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const guard = vi.hoisted(() => ({ loadPlanSummary: vi.fn() }));
 vi.mock("../billing/plan.guard", () => guard);
 
-import { NetIncomeService } from "./net-income.service";
+import { activityOf, NetIncomeService } from "./net-income.service";
 import { DEFAULT_TAX_MODEL } from "./tax-model";
 
 const partner = (i: number) => ({ id: `p${i}`, name: `Partner ${i}`, share: 1, tax_credits: 30_840 });
@@ -53,5 +53,13 @@ describe("NetIncomeService.saveModel – partner cap", () => {
     const fake = db(1);
     await save(fake, 5);
     expect(fake.update).toHaveBeenCalled();
+  });
+});
+
+describe("activityOf", () => {
+  it("passes the vedlejší činnost days only for a secondary activity", () => {
+    expect(activityOf({ activityKind: "secondary", secondaryActivityFrom: null, secondaryActivityTo: "2026-06-30" })).toEqual({ kind: "secondary", from: null, to: "2026-06-30" });
+    expect(activityOf({ activityKind: "main", secondaryActivityFrom: "2026-01-01", secondaryActivityTo: "2026-06-30" })).toEqual({ kind: "main", from: null, to: null });
+    expect(activityOf({ activityKind: null, secondaryActivityFrom: null, secondaryActivityTo: null })).toEqual({ kind: null, from: null, to: null });
   });
 });

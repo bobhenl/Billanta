@@ -50,7 +50,7 @@ const FIELDS = {
   bankAccountSwift: 'bank_account_swift'
 } as const;
 type Field = keyof typeof FIELDS;
-type Values = Record<Field, string> & { vatStatus: VatStatus; flatTax: RegimeAnswers['flatTax']; activity: RegimeAnswers['activity'] };
+type Values = Record<Field, string> & { vatStatus: VatStatus } & RegimeAnswers;
 
 const REQUIRED: Field[] = ['companyName', 'legalName', 'addressCountry'];
 
@@ -60,6 +60,8 @@ function toValues(t: TenantSettings): Values {
   v.vatStatus = vatStatusOf(t);
   v.flatTax = t.flatTaxRegime == null ? '' : t.flatTaxRegime ? 'yes' : 'no';
   v.activity = t.activityKind ?? '';
+  v.secondaryFrom = t.secondaryActivityFrom ?? '';
+  v.secondaryTo = t.secondaryActivityTo ?? '';
   return v;
 }
 
@@ -156,10 +158,19 @@ export function CompanyForm({
         patch.activity_kind = values.activity || null;
         continue;
       }
+      if (key === 'secondaryFrom' || key === 'secondaryTo') {
+        patch[key === 'secondaryFrom' ? 'secondary_activity_from' : 'secondary_activity_to'] = values[key] || null;
+        continue;
+      }
       const raw = values[key].trim();
       if (key === 'dic' || key === 'bankAccountIban' || key === 'bankAccountSwift') patch[FIELDS[key]] = raw ? raw.toUpperCase() : null;
       else if (key === 'dataBoxId') patch[FIELDS[key]] = raw ? raw.toLowerCase() : null;
       else patch[FIELDS[key]] = raw || (REQUIRED.includes(key) ? raw : null);
+    }
+    if (values.secondaryFrom && values.secondaryTo && values.secondaryFrom > values.secondaryTo) {
+      toast({ text: t('advances.errors.secondary_activity_period_invalid'), tone: 'err' });
+      document.getElementById('zalohy')?.scrollIntoView({ behavior: 'smooth' });
+      return;
     }
     // The backend replaces the whole list, so send every period whenever one changed.
     if (advancesDirty) {
@@ -344,7 +355,7 @@ export function CompanyForm({
               onChange={setAdvanceRows}
               country={values.addressCountry}
               readOnly={readOnly}
-              answers={{ flatTax: values.flatTax, activity: values.activity }}
+              answers={{ flatTax: values.flatTax, activity: values.activity, secondaryFrom: values.secondaryFrom, secondaryTo: values.secondaryTo }}
               onAnswers={(patch) => setValues((v) => ({ ...v, ...patch }))}
             />
           </Section>
