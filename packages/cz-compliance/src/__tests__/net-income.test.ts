@@ -9,6 +9,7 @@ import {
   type DocumentAmounts,
   type NetIncomeInputs,
   type NetIncomeInvoice,
+  type NetIncomeItem,
   type NetIncomeTaxModel,
   type SealedNetIncomeDoc,
 } from '../index.js';
@@ -218,5 +219,143 @@ describe('computeNetIncome in a secondary activity', () => {
   it('keeps social insurance in a year without a known threshold', () => {
     const r = computeNetIncome(one(true, 2031), [{ amount: 100_000, shares: null }], yearSpan(2031));
     expect(r.totals.social).toBeGreaterThan(0);
+  });
+});
+
+describe('actual payments of a year', () => {
+  type Actuals = Pick<NetIncomeTaxModel['years'][string], 'actual_tax' | 'actual_social' | 'actual_health' | 'actual_refund'>;
+  const year2024 = (actual: Actuals = {}, scope: 'one_person' | 'per_partner' = 'one_person') => ({
+    ...rates,
+    tax_scope: scope,
+    tax_credits: 30_840,
+    partners: {},
+    ...actual,
+  });
+  // Equal default shares, but A brings 70 % of the income: an even split would give each half.
+  const pairModel = (actual?: Actuals, scope?: 'one_person' | 'per_partner'): NetIncomeTaxModel => ({
+    ...model,
+    shared_expenses: [],
+    extra_income: [],
+    years: { 2024: year2024(actual, scope) },
+  });
+  const income: NetIncomeItem[] = [
+    { amount: 700_000, shares: { a: 1 } },
+    { amount: 300_000, shares: { b: 1 } },
+  ];
+  const year = { year: 2024, month: 1, months: 12 };
+  const sheet = { actual_tax: 11_220, actual_social: 22_856, actual_health: 6_162 };
+
+  it('leaves the estimate alone when nothing is entered', () => {
+    const r = computeNetIncome(pairModel(), income, year);
+    expect(r.actual).toBeNull();
+    expect(r.totals.refund).toBe(0);
+    expect(r.totals.taxes).toBe(r.totals.incomeTax + r.totals.social + r.totals.health);
+    expect(r.totals.social).not.toBe(22_856);
+  });
+
+  it('replaces the estimate and splits it by each partner’s income, not by the default shares', () => {
+    const r = computeNetIncome(pairModel(sheet), income, year);
+    expect(r.actual).toEqual({ incomeTax: true, social: true, health: true, refund: false });
+    expect(r.partners.map((p) => p.incomeTax)).toEqual([7_854, 3_366]);
+    expect(r.partners.map((p) => p.social)).toEqual([15_999, 6_857]);
+    expect(r.partners.map((p) => p.health)).toEqual([4_313, 1_849]);
+    expect(r.totals.taxes).toBe(11_220 + 22_856 + 6_162);
+    expect(r.partners.map((p) => p.net)).toEqual([700_000 - 7_854 - 15_999 - 4_313, 300_000 - 3_366 - 6_857 - 1_849]);
+    // A whole year takes all of it, whatever income it is measured against.
+    expect(computeNetIncome(pairModel(sheet), income, year, 4_000_000).totals.social).toBe(22_856);
+  });
+
+  it('takes each actual amount on its own', () => {
+    const estimate = computeNetIncome(pairModel(), income, year);
+    const r = computeNetIncome(pairModel({ actual_social: 22_856 }), income, year);
+    expect(r.actual).toEqual({ incomeTax: false, social: true, health: false, refund: false });
+    expect(r.totals.social).toBe(22_856);
+    expect(r.partners.map((p) => p.incomeTax)).toEqual(estimate.partners.map((p) => p.incomeTax));
+    expect(r.partners.map((p) => p.health)).toEqual(estimate.partners.map((p) => p.health));
+    expect(r.totals.taxes).toBe(estimate.totals.incomeTax + 22_856 + estimate.totals.health);
+
+    const health = computeNetIncome(pairModel({ actual_health: 6_162 }), income, year);
+    expect(health.totals.health).toBe(6_162);
+    expect(health.totals.social).toBe(estimate.totals.social);
+    expect(health.totals.incomeTax).toBe(estimate.totals.incomeTax);
+
+    const tax = computeNetIncome(pairModel({ actual_tax: 11_220 }), income, year);
+    expect(tax.totals.incomeTax).toBe(11_220);
+    expect(tax.totals.social).toBe(estimate.totals.social);
+  });
+
+  it('shares a refund or a doplatek out by the same income shares', () => {
+    const back = computeNetIncome(pairModel({ ...sheet, actual_refund: -3_000 }), income, year);
+    expect(back.actual!.refund).toBe(true);
+    expect(back.partners.map((p) => p.refund)).toEqual([-2_100, -900]);
+    expect(back.totals.taxes).toBe(11_220 + 22_856 + 6_162 - 3_000);
+    const extra = computeNetIncome(pairModel({ actual_refund: 1_000 }), income, year);
+    expect(extra.partners.map((p) => p.refund)).toEqual([700, 300]);
+    expect(extra.totals.taxes).toBe(computeNetIncome(pairModel(), income, year).totals.taxes + 1_000);
+  });
+
+  it('belongs to its own year only, not to a later one inheriting the settings', () => {
+    const r = computeNetIncome(pairModel(sheet), income, { year: 2025, month: 1, months: 12 });
+    expect(r.actual).toBeNull();
+    expect(r.totals.taxes).toBe(computeNetIncome(pairModel(), income, { year: 2025, month: 1, months: 12 }).totals.taxes);
+  });
+
+  it('counts with one partner, but not when several are taxed each on their own', () => {
+    expect(computeNetIncome(pairModel(sheet, 'per_partner'), income, year).actual).toBeNull();
+    const solo: NetIncomeTaxModel = { ...pairModel(sheet, 'per_partner'), partners: [model.partners[0]!] };
+    expect(computeNetIncome(solo, income, year).totals.social).toBe(22_856);
+  });
+
+  describe('in a month or a quarter', () => {
+    const paid = { actual_tax: 10_000, actual_social: 20_000, actual_health: 5_000 };
+    // 40 % of the year's income in January, 60 % in March.
+    const invoices = [plain('J1', '2024-01-10', 300_000, { partnerShares: { a: 1 } }), plain('J2', '2024-01-20', 100_000, { partnerShares: { b: 1 } }), plain('M1', '2024-03-05', 600_000)];
+    const yearInputs = (over: Partial<NetIncomeInputs> = {}): NetIncomeInputs =>
+      wire({
+        period: { year: 2024, month: null, quarter: null, months: 12, from: '2024-01-01', to: '2025-01-01' },
+        vatPayer: true,
+        model: pairModel(paid),
+        invoices,
+        missingRates: 0,
+        sealedDocs: [],
+        ...over,
+      });
+    const january = { year: 2024, month: 1, quarter: null, months: 1, from: '2024-01-01', to: '2024-02-01' };
+
+    it('gives each month of the year its share of the year’s income', () => {
+      const r = netIncomeReportOf(yearInputs());
+      expect(r.result.totals.taxes).toBe(35_000);
+      // An even spread would put 2 917 into every month.
+      expect(r.byMonth!.map((m) => m.taxes)).toEqual([14_000, 0, 21_000, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    });
+
+    it('prorates a month by the year income the server sends, split by that month’s income', () => {
+      const r = netIncomeReportOf(yearInputs({ period: january, invoices: invoices.slice(0, 2), yearIncome: { invoices: 1_000_000, sealedDocs: [] } }));
+      expect(r.result.totals.taxes).toBe(14_000);
+      expect(r.result.partners.map((p) => p.taxes)).toEqual([10_500, 3_500]);
+      expect(r.result.partners.map((p) => p.social)).toEqual([6_000, 2_000]);
+    });
+
+    it('counts the year’s extra income in what the month is measured against', () => {
+      const withFee = pairModel(paid);
+      withFee.extra_income = [{ date: '2024-07-01', label: 'Poplatek', amount: 600_000, shares: null }];
+      const r = netIncomeReportOf(yearInputs({ model: withFee, period: january, invoices: invoices.slice(0, 2), yearIncome: { invoices: 1_000_000, sealedDocs: [] } }));
+      expect(r.result.totals.taxes).toBe(8_750);
+    });
+
+    it('spreads the year evenly when its income is not known or is nothing', () => {
+      const unknown = netIncomeReportOf(yearInputs({ period: january, invoices: invoices.slice(0, 2) }));
+      expect(unknown.result.totals.taxes).toBe(2_917);
+      const none = netIncomeReportOf(yearInputs({ period: january, invoices: [], yearIncome: { invoices: 0, sealedDocs: [] } }));
+      expect(none.result.totals.taxes).toBe(2_917);
+    });
+
+    it('adds the year’s sealed documents in the browser, and waits for every one of them', () => {
+      const yearIncome = { invoices: 400_000, sealedDocs: [{ documentType: 'invoice' as const, encAmounts: env(1), rate: 1 }] };
+      const out = buildSealedNetIncome(yearInputs({ period: january, invoices: invoices.slice(0, 2), yearIncome }), new Map([[env(1), amounts(600_000)]]));
+      expect(out.report!.result.totals.taxes).toBe(14_000);
+      expect(sealedNetIncomeEnvelopes({ sealedDocs: [], yearIncome })).toEqual([env(1)]);
+      expect(buildSealedNetIncome(yearInputs({ period: january, yearIncome }), new Map())).toEqual({ report: null, missing: 1 });
+    });
   });
 });

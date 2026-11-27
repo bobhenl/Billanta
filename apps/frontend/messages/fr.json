@@ -14076,7 +14076,8 @@
       "health": "Assurance maladie",
       "taxes": "Total impôt et cotisations",
       "sharedExpenses": "Dépenses communes",
-      "net": "Revenu net"
+      "net": "Revenu net",
+      "refund": "Complément / remboursement"
     },
     "formula": "Base = revenus − {flat} % de frais forfaitaires. Impôt de {tax} % de la base, cotisations sociales de {socialRate} % sur {socialBase} % de la base, assurance maladie de {healthRate} % sur {healthBase} % de la base.",
     "estimateNote": "Une estimation approximative : sans acomptes minimaux, sans la tranche d’impôt à 23 % et sans arrondi de la base. Elle ne remplace ni la déclaration de revenus ni les décomptes annuels.",
@@ -14182,7 +14183,16 @@
       },
       "secondaryActivity": "Activité secondaire (étudiant, salarié, congé parental…)",
       "secondaryActivityHint": "En dessous d’un bénéfice annuel de {amount} CZK, aucune cotisation sociale n’est due. L’assurance maladie se paie sur le bénéfice réel, sans minimum.",
-      "secondaryActivityUnknown": "Le seuil de {year} n’est pas encore connu, les cotisations sociales sont donc toujours comptées."
+      "secondaryActivityUnknown": "Le seuil de {year} n’est pas encore connu, les cotisations sociales sont donc toujours comptées.",
+      "actual": {
+        "title": "Réellement payé pour l’année",
+        "hint": "Après le dépôt de la déclaration et des relevés, saisissez ce que vous avez vraiment payé. Le montant est réparti entre les associés selon leurs factures.",
+        "actual_tax": "Impôt sur le revenu",
+        "actual_social": "Cotisations sociales",
+        "actual_health": "Assurance maladie",
+        "actual_refund": "Complément (+) / remboursement (−)",
+        "refundHint": "Saisissez un complément payé plus tard en positif et un trop-perçu remboursé avec un signe moins. Un champ vide utilise l’estimation."
+      }
     },
     "errors": {
       "duplicate_partner": "Deux associés ont le même identifiant. Supprimez-en un et ajoutez-le à nouveau.",
@@ -14219,6 +14229,12 @@
       "locked": "Le rapport n’inclut pas encore {count, plural, one {# document} other {# documents}} aux montants chiffrés. Déverrouillez le coffre et ce navigateur les ajoutera.",
       "unreadable": "{count, plural, one {# document n’a pas pu être ouvert} other {# documents n’ont pas pu être ouverts}}, le rapport ne montre donc que les documents non chiffrés.",
       "failed": "Les documents chiffrés ({count}) n’ont pas pu être chargés. Le rapport ne montre que les documents non chiffrés. Rechargez la page."
+    },
+    "actual": {
+      "badgeActual": "réel",
+      "badgeEstimate": "estimation",
+      "note": "Les lignes marquées « réel » sont les montants réellement payés pour {year}, répartis entre les associés selon leurs revenus.",
+      "noteProrated": "Les lignes marquées « réel » sont la part de cette période des montants payés pour {year}, selon son poids dans les revenus de l’année, répartie entre les associés selon leurs revenus."
     }
   },
   "bankRules": {

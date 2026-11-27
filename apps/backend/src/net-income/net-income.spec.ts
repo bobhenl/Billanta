@@ -134,6 +134,17 @@ describe("taxModelSchema", () => {
     const zero = { ...trio, partners: trio.partners.map((p) => ({ ...p, share: 0 })) };
     expect(taxModelSchema.safeParse(zero).success).toBe(false);
   });
+
+  it("keeps a year without actual payments as it was and checks the ones entered", () => {
+    const year = { ...Object.fromEntries(RATE_KEYS.map((k) => [k, DEFAULT_TAX_MODEL[k]])), partners: {} };
+    const parse = (actual: object) => taxModelSchema.safeParse({ ...trio, years: { "2024": { ...year, ...actual } } });
+    const old = parse({});
+    expect(old.success && old.data.years["2024"]!.actual_tax).toBeUndefined();
+    expect(parse({ actual_tax: 11_220, actual_social: 22_856, actual_health: 6_162, actual_refund: -1_500 }).success).toBe(true);
+    expect(parse({ actual_social: null }).success).toBe(true);
+    expect(parse({ actual_tax: -1 }).success).toBe(false);
+    expect(parse({ actual_health: 10.5 }).success).toBe(false);
+  });
 });
 
 describe("sharedExpenseAmount, dated expenses", () => {

@@ -14076,7 +14076,8 @@
       "health": "Asigurări de sănătate",
       "taxes": "Impozit și asigurări în total",
       "sharedExpenses": "Cheltuieli comune",
-      "net": "Venit net"
+      "net": "Venit net",
+      "refund": "Plată suplimentară / rambursare"
     },
     "formula": "Baza = venit − {flat} % cheltuieli forfetare. Impozit {tax} % din bază, asigurări sociale {socialRate} % din {socialBase} % din bază, asigurări de sănătate {healthRate} % din {healthBase} % din bază.",
     "estimateNote": "O estimare aproximativă: fără avansuri minime, fără cota de impozit de 23 % și fără rotunjirea bazei. Nu înlocuiește declarația fiscală și nici declarațiile anuale.",
@@ -14182,7 +14183,16 @@
       },
       "secondaryActivity": "Activitate secundară (student, angajat, concediu parental…)",
       "secondaryActivityHint": "Sub un profit anual de {amount} CZK nu se plătesc asigurări sociale. Asigurarea de sănătate se plătește din profitul real, fără minim.",
-      "secondaryActivityUnknown": "Pragul pentru {year} nu este încă cunoscut, așa că asigurările sociale se calculează mereu."
+      "secondaryActivityUnknown": "Pragul pentru {year} nu este încă cunoscut, așa că asigurările sociale se calculează mereu.",
+      "actual": {
+        "title": "Plătit efectiv pentru an",
+        "hint": "După depunerea declarației și a situațiilor, introduceți ce ați plătit cu adevărat. Suma se împarte între asociați după facturile lor.",
+        "actual_tax": "Impozit pe venit",
+        "actual_social": "Asigurări sociale",
+        "actual_health": "Asigurări de sănătate",
+        "actual_refund": "Plată suplimentară (+) / rambursare (−)",
+        "refundHint": "Introduceți o plată făcută ulterior ca pozitivă, iar o sumă rambursată cu semnul minus. Un câmp gol folosește estimarea."
+      }
     },
     "errors": {
       "duplicate_partner": "Doi parteneri au același id. Eliminați unul și adăugați-l din nou.",
@@ -14219,6 +14229,12 @@
       "locked": "Raportul nu include încă {count, plural, one {# document} few {# documente} other {# de documente}} cu sume criptate. Deblocați seiful și acest browser le adaugă.",
       "unreadable": "Nu s-au putut deschide {count, plural, one {# document} few {# documente} other {# de documente}}, așa că raportul arată doar documentele necriptate.",
       "failed": "Documentele criptate ({count}) nu s-au putut încărca. Raportul arată doar documentele necriptate. Reîncărcați pagina."
+    },
+    "actual": {
+      "badgeActual": "efectiv",
+      "badgeEstimate": "estimare",
+      "note": "Rândurile marcate „efectiv” sunt sumele plătite efectiv pentru {year}, împărțite între asociați după veniturile lor.",
+      "noteProrated": "Rândurile marcate „efectiv” sunt partea acestei perioade din plățile pentru {year}, după ponderea ei în veniturile anului, împărțită între asociați după veniturile lor."
     }
   },
   "bankRules": {

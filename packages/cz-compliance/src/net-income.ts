@@ -44,6 +44,23 @@ export interface NetIncomeYearSettings extends NetIncomeRates {
   /** Vedlejší činnost (a student, an employee…): no social insurance below the rozhodná částka. */
   secondary_activity?: boolean;
   partners: Record<string, { tax_credits: number }>;
+  /**
+   * What was really paid for this year (whole Kč), entered after the přiznání
+   * and přehledy are filed; null or missing = use the estimate. `actual_refund`
+   * is signed: + a doplatek paid later, − a přeplatek refunded.
+   */
+  actual_tax?: number | null;
+  actual_social?: number | null;
+  actual_health?: number | null;
+  actual_refund?: number | null;
+}
+
+/** The actual amounts of a year, each null when not entered. */
+export interface NetIncomeActuals {
+  incomeTax: number | null;
+  social: number | null;
+  health: number | null;
+  refund: number | null;
 }
 
 export interface NetIncomeTaxModel extends NetIncomeRates {
@@ -70,6 +87,25 @@ export interface NetIncomeYear extends NetIncomeRates {
   secondary_activity: boolean;
   /** "per_partner": each partner's credits. */
   partners: Map<string, { tax_credits: number }>;
+  /** What was really paid, or null for an estimate only (see actualsOf). */
+  actual: NetIncomeActuals | null;
+}
+
+/**
+ * The actual amounts apply only to the year they were entered for, never to
+ * a later year that inherits its settings. They are one taxpayer's payments
+ * shared out by income, so they count with "one_person" or a single partner;
+ * per partner each one files their own, which the model does not track.
+ */
+function actualsOf(model: NetIncomeTaxModel, entry: NetIncomeYearSettings | undefined): NetIncomeActuals | null {
+  if (!entry || (entry.tax_scope !== 'one_person' && model.partners.length !== 1)) return null;
+  const actual: NetIncomeActuals = {
+    incomeTax: entry.actual_tax ?? null,
+    social: entry.actual_social ?? null,
+    health: entry.actual_health ?? null,
+    refund: entry.actual_refund ?? null,
+  };
+  return Object.values(actual).some((v) => v != null) ? actual : null;
 }
 
 /** The settings in force in `year`: its own entry, else the nearest earlier one, else the top level. */
@@ -89,6 +125,7 @@ export function netIncomeSettingsFor(model: NetIncomeTaxModel, year: number): Ne
     tax_credits: entry?.tax_credits ?? 0,
     secondary_activity: entry?.secondary_activity ?? false,
     partners,
+    actual: actualsOf(model, model.years[String(year)]),
   };
 }
 
@@ -118,6 +155,8 @@ export interface NetIncomeLine {
   incomeTax: number;
   social: number;
   health: number;
+  /** The year's doplatek (+) or vrácení (−), when entered; 0 otherwise. */
+  refund: number;
   taxes: number;
   sharedExpenses: number;
   net: number;
@@ -137,6 +176,8 @@ export interface NetIncomeResult {
   /** The `years` entry the rates came from, null = the top-level ones. */
   settingsYear: number | null;
   taxScope: NetIncomeTaxScope;
+  /** Which lines hold what was really paid instead of the estimate; null = all estimated. */
+  actual: { incomeTax: boolean; social: boolean; health: boolean; refund: boolean } | null;
   partners: NetIncomePartnerLine[];
   totals: NetIncomeLine;
 }
@@ -232,7 +273,19 @@ function taxOf(income: number, rates: NetIncomeYear, yearlyCredits: number, frac
   const uninsured = rates.secondary_activity && secondaryThreshold != null && base < secondaryThreshold * fraction;
   const social = uninsured ? 0 : Math.round((base * rates.social_base_percent * rates.social_rate_percent) / 10_000);
   const health = Math.round((base * rates.health_base_percent * rates.health_rate_percent) / 10_000);
-  return { flatExpenses, base, taxBeforeCredits, credits, incomeTax, social, health, taxes: incomeTax + social + health, capped: flat > cap };
+  return { flatExpenses, base, taxBeforeCredits, credits, incomeTax, social, health, refund: 0, taxes: incomeTax + social + health, capped: flat > cap };
+}
+
+/**
+ * The part of the year's actual payments that falls on a span with `income`:
+ * its share of the year's income, the way the partners' spreadsheet split it
+ * month by month. A whole year takes all of it. Without the year's income
+ * (unknown, or nothing earned) the payments still happened, so they are
+ * spread evenly over the months instead.
+ */
+function actualPortion(months: number, income: number, yearIncome: number | null | undefined): number {
+  if (months === 12) return 1;
+  return yearIncome != null && yearIncome > 0 ? income / yearIncome : months / 12;
 }
 
 /**
@@ -247,8 +300,11 @@ function taxOf(income: number, rates: NetIncomeYear, yearlyCredits: number, frac
  * the net, split by their own shares. Everything is in whole Kč.
  *
  * An estimate: no minimum insurance, no 23 % band, no tax base rounding.
+ * Once the year's actual payments are entered, each one replaces its
+ * estimated line, split by the partners' income shares; a shorter span takes
+ * its part by `yearIncome`, the whole year's income (see actualPortion).
  */
-export function computeNetIncome(model: NetIncomeTaxModel, items: NetIncomeItem[], span: NetIncomeSpan): NetIncomeResult {
+export function computeNetIncome(model: NetIncomeTaxModel, items: NetIncomeItem[], span: NetIncomeSpan, yearIncome?: number | null): NetIncomeResult {
   const { months } = span;
   const fraction = months / 12;
   const rates = netIncomeSettingsFor(model, span.year);
@@ -267,10 +323,22 @@ export function computeNetIncome(model: NetIncomeTaxModel, items: NetIncomeItem[
     taxes = model.partners.map((_, i) => {
       const line = Object.fromEntries(TAX_KEYS.map((k) => [k, parts[k][i]!])) as Record<(typeof TAX_KEYS)[number], number>;
       const incomeTax = line.taxBeforeCredits - line.credits;
-      return { ...line, incomeTax, taxes: incomeTax + line.social + line.health, capped: one.capped };
+      return { ...line, incomeTax, refund: 0, taxes: incomeTax + line.social + line.health, capped: one.capped };
     });
   } else {
     taxes = model.partners.map((p, i) => taxOf(incomes[i]!, rates, rates.partners.get(p.id)!.tax_credits, fraction, threshold));
+  }
+
+  const actual = rates.actual;
+  if (actual) {
+    const portion = actualPortion(months, total, yearIncome);
+    for (const key of ['incomeTax', 'social', 'health', 'refund'] as const) {
+      const paid = actual[key];
+      if (paid == null) continue;
+      const parts = allocateWholeKc(weights.map((w) => paid * portion * w));
+      taxes.forEach((line, i) => (line[key] = parts[i]!));
+    }
+    for (const line of taxes) line.taxes = line.incomeTax + line.social + line.health + line.refund;
   }
 
   const partners = model.partners.map((p, i): NetIncomePartnerLine => {
@@ -297,11 +365,13 @@ export function computeNetIncome(model: NetIncomeTaxModel, items: NetIncomeItem[
     incomeTax: sum('incomeTax'),
     social: sum('social'),
     health: sum('health'),
+    refund: sum('refund'),
     taxes: sum('taxes'),
     sharedExpenses: sum('sharedExpenses'),
     net: sum('net'),
   };
-  return { months, settingsYear: rates.source, taxScope: rates.tax_scope, partners, totals };
+  const flags = actual && { incomeTax: actual.incomeTax != null, social: actual.social != null, health: actual.health != null, refund: actual.refund != null };
+  return { months, settingsYear: rates.source, taxScope: rates.tax_scope, actual: flags, partners, totals };
 }
 
 /** `partnerId: null` = the one taxpayer of a "one_person" year. */
@@ -407,6 +477,13 @@ export interface NetIncomeInputs {
   /** Plain documents left out for want of a rate. */
   missingRates: number;
   sealedDocs: SealedNetIncomeDoc[];
+  /**
+   * The whole year's invoice income, for a month or quarter of a year with
+   * actual payments entered (they are prorated by it); missing otherwise.
+   * `invoices` sums the plain documents in CZK; the sealed ones come as
+   * envelopes for the browser to add. Extra income is in the model already.
+   */
+  yearIncome?: { invoices: number; sealedDocs: Pick<SealedNetIncomeDoc, 'documentType' | 'encAmounts' | 'rate'>[] } | null;
 }
 
 export interface NetIncomeReport {
@@ -445,14 +522,18 @@ export function netIncomeReportOf(inputs: Omit<NetIncomeInputs, 'sealedDocs'>): 
     ...extraIncome.filter((e) => month == null || Number(e.date.slice(5, 7)) === month).map((e) => ({ amount: e.amount, shares: e.shares })),
   ];
 
+  const yearExtra = model.extra_income.filter((e) => e.date.startsWith(`${period.year}-`)).reduce((s, e) => s + e.amount, 0);
+  const given = inputs.yearIncome ? inputs.yearIncome.invoices + yearExtra : null;
   // One-off and dated shared expenses are placed by the same calendar months as the extra income above.
-  const result = computeNetIncome(model, itemsOf(null), span);
+  const result = computeNetIncome(model, itemsOf(null), span, given);
+  // A year's own items are its income; the months below take their part of the actual payments by it.
+  const yearIncome = span.months === 12 ? result.totals.income : given;
   // Each month on its own (credits and the paušál cap at 1/12), to compare them side by side.
   const byMonth =
     span.months > 1
       ? Array.from({ length: span.months }, (_, i) => {
           const month = span.month + i;
-          const r = computeNetIncome(model, itemsOf(month), { year: period.year, month, months: 1 });
+          const r = computeNetIncome(model, itemsOf(month), { year: period.year, month, months: 1 }, yearIncome);
           return { month, income: r.totals.income, taxes: r.totals.taxes, sharedExpenses: r.totals.sharedExpenses, net: r.totals.net };
         })
       : null;
@@ -473,8 +554,9 @@ export function netIncomeReportOf(inputs: Omit<NetIncomeInputs, 'sealedDocs'>): 
 }
 
 /** Every envelope the inputs need opened. */
-export function sealedNetIncomeEnvelopes(inputs: Pick<NetIncomeInputs, 'sealedDocs'>): string[] {
-  return inputs.sealedDocs.flatMap((d) => (isSealed(d.encAmounts) ? [d.encAmounts] : []));
+export function sealedNetIncomeEnvelopes(inputs: Pick<NetIncomeInputs, 'sealedDocs' | 'yearIncome'>): string[] {
+  const docs = [...inputs.sealedDocs, ...(inputs.yearIncome?.sealedDocs ?? [])];
+  return [...new Set(docs.flatMap((d) => (isSealed(d.encAmounts) ? [d.encAmounts] : [])))];
 }
 
 /**
@@ -511,8 +593,20 @@ export function buildSealedNetIncome(inputs: NetIncomeInputs, opened: ReadonlyMa
       claimedShares: doc.claimedShares,
     });
   }
+  // The year's sealed documents (the period's among them) join its plain income total.
+  let yearIncome = inputs.yearIncome ?? null;
+  if (yearIncome) {
+    let invoices = yearIncome.invoices;
+    const counted = new Set(inputs.sealedDocs.map((d) => d.encAmounts));
+    for (const doc of yearIncome.sealedDocs) {
+      const totals = opened.get(doc.encAmounts);
+      if (!totals) missing += counted.has(doc.encAmounts) ? 0 : 1;
+      else if (doc.rate != null) invoices += round2(netIncomeAmountOf(totals, doc.documentType, inputs.vatPayer) * doc.rate);
+    }
+    yearIncome = { invoices, sealedDocs: [] };
+  }
   if (missing > 0) return { report: null, missing };
   // In the order paid, as the server lists them (a stable sort keeps the server's order within a day).
   const invoices = [...inputs.invoices, ...sealed].sort((a, b) => (a.paidAt < b.paidAt ? -1 : a.paidAt > b.paidAt ? 1 : 0));
-  return { report: netIncomeReportOf({ ...inputs, invoices, missingRates }), missing: 0 };
+  return { report: netIncomeReportOf({ ...inputs, invoices, missingRates, yearIncome }), missing: 0 };
 }

@@ -48,6 +48,11 @@ export interface YearSettings extends TaxRates {
   tax_credits: number;
   secondary_activity?: boolean;
   partners: Record<string, { tax_credits: number }>;
+  /** What was really paid for this year (whole Kč); null or missing = the estimate. Refund: + doplatek, − vrácení. */
+  actual_tax?: number | null;
+  actual_social?: number | null;
+  actual_health?: number | null;
+  actual_refund?: number | null;
 }
 
 export interface SharedExpense {
@@ -110,6 +115,8 @@ export interface NetIncomeLine {
   incomeTax: number;
   social: number;
   health: number;
+  /** The year's doplatek (+) or vrácení (−); 0 unless entered. */
+  refund: number;
   taxes: number;
   sharedExpenses: number;
   net: number;
@@ -125,6 +132,8 @@ export interface NetIncomeReport {
     months: number;
     settingsYear: number | null;
     taxScope: TaxScope;
+    /** Lines holding what was really paid instead of the estimate; null = all estimated. */
+    actual: { incomeTax: boolean; social: boolean; health: boolean; refund: boolean } | null;
     partners: (NetIncomeLine & { id: string; name: string; sharePercent: number; capped: boolean })[];
     totals: NetIncomeLine;
   };

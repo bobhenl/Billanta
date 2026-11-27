@@ -14,6 +14,9 @@ import { setInvoicePartnerShares } from './actions';
 import { partnerColors, partnerTags, SharesPicker } from './shares-picker';
 import { TaxModelEditor } from './tax-model-editor';
 
+/** The lines the year's actual payments can replace; each gets a badge once any of them is entered. */
+const ACTUAL_KEYS = ['incomeTax', 'social', 'health', 'refund'] as const;
+
 const ROWS: { key: keyof NetIncomeLine; strong?: boolean; minus?: boolean }[] = [
   { key: 'income', strong: true },
   { key: 'flatExpenses', minus: true },
@@ -23,6 +26,7 @@ const ROWS: { key: keyof NetIncomeLine; strong?: boolean; minus?: boolean }[] = 
   { key: 'incomeTax' },
   { key: 'social' },
   { key: 'health' },
+  { key: 'refund' },
   { key: 'taxes', strong: true },
   { key: 'sharedExpenses', minus: true },
   { key: 'net', strong: true }
@@ -48,6 +52,18 @@ export function NetIncomeView({
   const many = result.partners.length > 1;
   const nameOf = (p: Pick<TaxPartner, 'name'>, i: number) => p.name || (many ? t('partnerFallback', { n: i + 1 }) : t('partnerMe'));
   const totals = result.totals;
+  const actual = result.actual;
+  // The doplatek / vrácení row only shows once it is entered.
+  const rows = ROWS.filter((r) => r.key !== 'refund' || actual?.refund);
+  const badge = (key: keyof NetIncomeLine) => {
+    if (!actual || !(ACTUAL_KEYS as readonly string[]).includes(key)) return null;
+    const real = actual[key as (typeof ACTUAL_KEYS)[number]];
+    return (
+      <span className={cn('ml-2 rounded-full px-2 py-0.5 text-[11px] font-semibold', real ? 'bg-primary/10 text-primary' : 'bg-secondary text-muted-foreground')}>
+        {t(real ? 'actual.badgeActual' : 'actual.badgeEstimate')}
+      </span>
+    );
+  };
   const monthName = (m: number) => new Intl.DateTimeFormat(locale, { month: 'long' }).format(new Date(report.period.year, m - 1, 1));
 
   return (
@@ -89,10 +105,11 @@ export function NetIncomeView({
               </tr>
             </thead>
             <tbody>
-              {ROWS.map((r) => (
+              {rows.map((r) => (
                 <tr key={r.key} className={cn('border-t border-border', r.strong && 'font-bold', r.key === 'net' && 'text-primary')}>
                   <th scope="row" className="sticky left-0 bg-card px-4 py-2 text-left font-[inherit]">
                     {t(`table.${r.key}`)}
+                    {badge(r.key)}
                   </th>
                   {result.partners.map((p) => (
                     <td key={p.id} className="px-3 py-2 text-right tabular-nums">
@@ -115,6 +132,7 @@ export function NetIncomeView({
             healthRate: settings.health_rate_percent
           })}{' '}
           {many && result.taxScope === 'one_person' && `${t('onePersonNote')} `}
+          {actual && `${t(result.months < 12 ? 'actual.noteProrated' : 'actual.note', { year: report.period.year })} `}
           {t('estimateNote')}
         </p>
       </section>

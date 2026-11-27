@@ -14076,7 +14076,8 @@
       "health": "Contributi sanitari",
       "taxes": "Totale imposte e contributi",
       "sharedExpenses": "Spese comuni",
-      "net": "Reddito netto"
+      "net": "Reddito netto",
+      "refund": "Conguaglio / rimborso"
     },
     "formula": "Base = reddito − {flat} % di spese forfettarie. Imposta {tax} % della base, previdenza {socialRate} % del {socialBase} % della base, sanità {healthRate} % del {healthBase} % della base.",
     "estimateNote": "Una stima indicativa: senza acconti minimi, senza l’aliquota del 23 % e senza arrotondamento della base. Non sostituisce la dichiarazione dei redditi né i prospetti annuali.",
@@ -14182,7 +14183,16 @@
       },
       "secondaryActivity": "Attività secondaria (studente, dipendente, congedo parentale…)",
       "secondaryActivityHint": "Sotto un utile annuo di {amount} CZK non si pagano i contributi sociali. L’assicurazione sanitaria si paga sull’utile effettivo, senza minimo.",
-      "secondaryActivityUnknown": "La soglia per il {year} non è ancora nota, quindi i contributi sociali vengono sempre conteggiati."
+      "secondaryActivityUnknown": "La soglia per il {year} non è ancora nota, quindi i contributi sociali vengono sempre conteggiati.",
+      "actual": {
+        "title": "Pagato effettivamente per l’anno",
+        "hint": "Dopo aver presentato la dichiarazione e i riepiloghi, inserisci quanto hai pagato davvero. Viene ripartito tra i soci in base alle loro fatture.",
+        "actual_tax": "Imposta sul reddito",
+        "actual_social": "Contributi previdenziali",
+        "actual_health": "Contributi sanitari",
+        "actual_refund": "Conguaglio (+) / rimborso (−)",
+        "refundHint": "Inserisci un conguaglio pagato in seguito come positivo e un rimborso con il segno meno. Un campo vuoto usa la stima."
+      }
     },
     "errors": {
       "duplicate_partner": "Due soci hanno lo stesso id. Ne rimuova uno e lo aggiunga di nuovo.",
@@ -14219,6 +14229,12 @@
       "locked": "Il report non include ancora {count, plural, one {# documento} other {# documenti}} con importi cifrati. Sblocca la cassaforte e questo browser li aggiungerà.",
       "unreadable": "{count, plural, one {# documento non si è potuto aprire} other {# documenti non si sono potuti aprire}}, quindi il report mostra solo i documenti non cifrati.",
       "failed": "Non è stato possibile caricare i documenti cifrati ({count}). Il report mostra solo i documenti non cifrati. Ricarica la pagina."
+    },
+    "actual": {
+      "badgeActual": "effettivo",
+      "badgeEstimate": "stima",
+      "note": "Le righe segnate «effettivo» sono gli importi realmente pagati per il {year}, ripartiti tra i soci in base ai loro ricavi.",
+      "noteProrated": "Le righe segnate «effettivo» sono la quota di questo periodo di quanto pagato per il {year}, in base al suo peso sui ricavi dell’anno, ripartita tra i soci in base ai loro ricavi."
     }
   },
   "bankRules": {

@@ -14077,7 +14077,8 @@
       "health": "Ubezpieczenie zdrowotne",
       "taxes": "Podatek i ubezpieczenia łącznie",
       "sharedExpenses": "Wspólne wydatki",
-      "net": "Dochód netto"
+      "net": "Dochód netto",
+      "refund": "Dopłata / zwrot"
     },
     "formula": "Podstawa = przychód − {flat} % wydatków ryczałtowych. Podatek {tax} % podstawy, ubezpieczenie społeczne {socialRate} % z {socialBase} % podstawy, zdrowotne {healthRate} % z {healthBase} % podstawy.",
     "estimateNote": "Orientacyjne oszacowanie: bez minimalnych zaliczek, bez progu podatkowego 23 % i bez zaokrąglania podstawy. Nie zastępuje zeznania podatkowego ani rocznych rozliczeń.",
@@ -14183,7 +14184,16 @@
       },
       "secondaryActivity": "Działalność dodatkowa (student, pracownik, urlop rodzicielski…)",
       "secondaryActivityHint": "Poniżej rocznego zysku {amount} CZK nie płaci się ubezpieczenia społecznego. Zdrowotne płaci się od faktycznego zysku, bez minimum.",
-      "secondaryActivityUnknown": "Progu na rok {year} jeszcze nie znamy, więc ubezpieczenie społeczne jest zawsze liczone."
+      "secondaryActivityUnknown": "Progu na rok {year} jeszcze nie znamy, więc ubezpieczenie społeczne jest zawsze liczone.",
+      "actual": {
+        "title": "Faktycznie zapłacono za rok",
+        "hint": "Po złożeniu zeznania i rozliczeń wpisz, ile naprawdę zapłaciłeś. Kwota zostanie podzielona między wspólników według ich faktur.",
+        "actual_tax": "Podatek dochodowy",
+        "actual_social": "Ubezpieczenie społeczne",
+        "actual_health": "Ubezpieczenie zdrowotne",
+        "actual_refund": "Dopłata (+) / zwrot (−)",
+        "refundHint": "Dopłatę zapłaconą później wpisz jako dodatnią, a zwróconą nadpłatę ze znakiem minus. Puste pole oznacza szacunek."
+      }
     },
     "errors": {
       "duplicate_partner": "Dwóch wspólników ma ten sam identyfikator. Usuń jednego i dodaj go ponownie.",
@@ -14220,6 +14230,12 @@
       "locked": "Raport nie obejmuje jeszcze {count, plural, one {# dokumentu} few {# dokumentów} many {# dokumentów} other {# dokumentu}} z zaszyfrowanymi kwotami. Odblokuj sejf, a ta przeglądarka je doliczy.",
       "unreadable": "Nie udało się otworzyć {count, plural, one {# dokumentu} few {# dokumentów} many {# dokumentów} other {# dokumentu}}, więc raport pokazuje tylko niezaszyfrowane dokumenty.",
       "failed": "Nie udało się wczytać zaszyfrowanych dokumentów ({count}). Raport pokazuje tylko niezaszyfrowane dokumenty. Odśwież stronę."
+    },
+    "actual": {
+      "badgeActual": "faktycznie",
+      "badgeEstimate": "szacunek",
+      "note": "Pozycje oznaczone „faktycznie” to kwoty naprawdę zapłacone za {year}, podzielone między wspólników według ich przychodów.",
+      "noteProrated": "Pozycje oznaczone „faktycznie” to część płatności za {year} przypadająca na ten okres według jego udziału w przychodach roku, podzielona między wspólników według ich przychodów."
     }
   },
   "bankRules": {

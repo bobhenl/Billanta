@@ -13,6 +13,7 @@ const DAY = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
 
 const percent = (max: number) => z.number().finite().min(0).max(max);
 const money = (min: number, max: number) => z.number().finite().min(min).max(max);
+const wholeKc = (min: number, max: number) => z.number().int().min(min).max(max);
 
 /** {partnerId: weight}; at least one positive weight. */
 export const sharesSchema = z
@@ -94,6 +95,16 @@ const yearSettingsSchema = z.object({
   /** Vedlejší činnost: no social insurance below the rozhodná částka. */
   secondary_activity: z.boolean().default(false),
   partners: z.record(z.string().regex(PARTNER_ID), yearPartnerSchema).refine((p) => Object.keys(p).length <= 20, "too_many_partners"),
+  /**
+   * What was really paid for this year, entered once the přiznání and
+   * přehledy are filed; null or missing = the estimate. Used with
+   * "one_person" (or a single partner), split by income.
+   */
+  actual_tax: wholeKc(0, 1_000_000_000).nullish(),
+  actual_social: wholeKc(0, 1_000_000_000).nullish(),
+  actual_health: wholeKc(0, 1_000_000_000).nullish(),
+  /** + a doplatek paid later, − a přeplatek refunded. */
+  actual_refund: wholeKc(-1_000_000_000, 1_000_000_000).nullish(),
 });
 
 export type YearSettings = z.infer<typeof yearSettingsSchema>;

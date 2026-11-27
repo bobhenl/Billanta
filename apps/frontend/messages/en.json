@@ -14084,7 +14084,8 @@
       "health": "Health insurance",
       "taxes": "Tax and insurance total",
       "sharedExpenses": "Shared expenses",
-      "net": "Net income"
+      "net": "Net income",
+      "refund": "Paid extra / refunded"
     },
     "formula": "Base = income − {flat} % flat-rate expenses. Tax {tax} % of the base, social {socialRate} % of {socialBase} % of the base, health {healthRate} % of {healthBase} % of the base.",
     "estimateNote": "A rough estimate: no minimum advances, no 23 % tax band and no rounding of the base. It does not replace the tax return or the yearly statements.",
@@ -14190,7 +14191,16 @@
       },
       "secondaryActivity": "Secondary activity (student, employee, parental leave…)",
       "secondaryActivityHint": "Below a yearly profit of {amount} CZK no social insurance is due. Health insurance is paid from the actual profit, with no minimum.",
-      "secondaryActivityUnknown": "The threshold for {year} is not known yet, so social insurance is always counted."
+      "secondaryActivityUnknown": "The threshold for {year} is not known yet, so social insurance is always counted.",
+      "actual": {
+        "title": "Actually paid for the year",
+        "hint": "Once your tax return and insurance statements are filed, enter what you really paid. It is split between the partners by their invoices.",
+        "actual_tax": "Income tax",
+        "actual_social": "Social insurance",
+        "actual_health": "Health insurance",
+        "actual_refund": "Paid extra (+) / refunded (−)",
+        "refundHint": "Enter an amount paid later as positive and a refunded overpayment with a minus sign. An empty field uses the estimate."
+      }
     },
     "errors": {
       "duplicate_partner": "Two partners have the same id. Remove one and add it again.",
@@ -14227,6 +14237,12 @@
       "locked": "This report does not include {count, plural, one {# document} other {# documents}} with sealed amounts yet. Unlock the vault and this browser adds them.",
       "unreadable": "{count, plural, one {# document could not be opened} other {# documents could not be opened}}, so the report shows only the unsealed documents.",
       "failed": "The sealed documents ({count}) could not be loaded. The report shows only the unsealed documents. Try reloading the page."
+    },
+    "actual": {
+      "badgeActual": "actual",
+      "badgeEstimate": "estimate",
+      "note": "Lines marked “actual” are what was really paid for {year}, split between the partners by their income.",
+      "noteProrated": "Lines marked “actual” are this period’s part of what was paid for {year}, by its share of the year’s income, split between the partners by their income."
     }
   },
   "bankRules": {
