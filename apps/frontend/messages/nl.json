@@ -841,6 +841,7 @@
       "vatBreakdown": "Grondslag {base} + btw {vat}",
       "reverseChargeLabel": "Btw verlegd (§ 92a)",
       "reverseChargeHint": "De leverancier heeft zonder btw gefactureerd en jij draagt de btw af. Vul het bedrag zonder btw in; de btw wordt in de aangifte zowel afgedragen als afgetrokken (rijen 10/11 en 43/44) en het document komt in deel B.1 van de controleaangifte.",
+      "reverseChargeHintIdentified": "Vul het bedrag zonder btw in. De btw van {rate} % geef je aan in de btw-aangifte over de maand van het document en betaal je uiterlijk de 25e van de volgende maand. Als geïdentificeerde persoon kun je die niet aftrekken.",
       "amountLabelReverseCharge": "Bedrag excl. btw",
       "vatBreakdownReverseCharge": "Grondslag {base}, zelf af te dragen btw {vat}",
       "reverseChargeRequiredHint": "Voor deel B.1 zijn het btw-nummer van de leverancier en het documentnummer nodig.",

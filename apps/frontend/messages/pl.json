@@ -841,6 +841,7 @@
       "vatBreakdown": "Podstawa {base} + VAT {vat}",
       "reverseChargeLabel": "Odwrotne obciążenie (§ 92a)",
       "reverseChargeHint": "Dostawca zafakturował bez VAT, a podatek rozliczasz Ty. Wpisz kwotę bez VAT; VAT jest w deklaracji jednocześnie należny i odliczany (wiersze 10/11 i 43/44), a dokument trafia do sekcji B.1 raportu kontrolnego.",
+      "reverseChargeHintIdentified": "Wpisz kwotę bez VAT. VAT {rate} % wykazujesz w deklaracji VAT za miesiąc dokumentu i płacisz do 25. dnia następnego miesiąca. Jako osoba zidentyfikowana nie możesz go odliczyć.",
       "amountLabelReverseCharge": "Kwota bez VAT",
       "vatBreakdownReverseCharge": "Podstawa {base}, VAT do samonaliczenia {vat}",
       "reverseChargeRequiredHint": "Sekcja B.1 wymaga NIP dostawcy i numeru dokumentu.",

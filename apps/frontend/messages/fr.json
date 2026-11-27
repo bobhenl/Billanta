@@ -841,6 +841,7 @@
       "vatBreakdown": "Base {base} + TVA {vat}",
       "reverseChargeLabel": "Autoliquidation (§ 92a)",
       "reverseChargeHint": "Le fournisseur a facturé sans TVA et c’est vous qui l’autoliquidez. Saisissez le montant HT ; la TVA est à la fois due et déduite dans la déclaration (lignes 10/11 et 43/44), et le document figure dans la section B.1 du relevé de contrôle.",
+      "reverseChargeHintIdentified": "Saisissez le montant HT. Vous déclarez la TVA de {rate} % dans la déclaration de TVA du mois du document et la payez au plus tard le 25 du mois suivant. En tant que personne identifiée, vous ne pouvez pas la déduire.",
       "amountLabelReverseCharge": "Montant HT",
       "vatBreakdownReverseCharge": "Base {base}, TVA à autoliquider {vat}",
       "reverseChargeRequiredHint": "La section B.1 exige le numéro de TVA du fournisseur et le numéro du document.",

@@ -841,6 +841,7 @@
       "vatBreakdown": "Alap {base} + ÁFA {vat}",
       "reverseChargeLabel": "Fordított adózás (§ 92a)",
       "reverseChargeHint": "A szállító ÁFA nélkül számlázott, az adót Ön számolja el. Adja meg az ÁFA nélküli összeget; az ÁFA a bevallásban egyszerre fizetendő és levonható (10/11. és 43/44. sor), a bizonylat pedig az összesítő jelentés B.1 szakaszába kerül.",
+      "reverseChargeHintIdentified": "Adja meg az ÁFA nélküli összeget. A(z) {rate} %-os ÁFÁ-t a bizonylat hónapjára vonatkozó ÁFA-bevallásban vallja be, és a következő hónap 25. napjáig fizeti meg. Azonosított személyként nem vonhatja le.",
       "amountLabelReverseCharge": "Nettó összeg",
       "vatBreakdownReverseCharge": "Alap {base}, önadózással megállapítandó ÁFA {vat}",
       "reverseChargeRequiredHint": "A B.1 szakaszhoz szükséges a szállító közösségi adószáma és a bizonylatszám.",

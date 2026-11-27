@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { fetchHomeCurrency } from '@/lib/tenant';
+import { homeCurrencyOf } from '@faktur/cz-compliance';
+import { fetchTenant, taxCountryOf, vatStatusOf } from '@/lib/tenant';
 import { apiFetch, ApiError } from '@/lib/api-client';
 import type { Expense } from '@/lib/expense-ui';
 import { ExpenseForm, type SupplierOption } from '../../expense-form';
@@ -19,12 +20,20 @@ export default async function EditExpensePage(props: { params: Promise<{ id: str
   const gate = await writeGate('expenses', `/expenses/${params.id}`, 'expenses.create');
   if (gate) return gate;
   if (!UUID.test(params.id)) notFound();
-  const [expense, suppliers] = await Promise.all([
+  const [expense, suppliers, tenant] = await Promise.all([
     apiFetch<Expense>(`/api/v1/expenses/${params.id}`).catch((err) => {
       if (err instanceof ApiError && err.status === 404) notFound();
       throw err;
     }),
-    apiFetch<SupplierOption[]>('/api/v1/contacts').catch(() => [])
+    apiFetch<SupplierOption[]>('/api/v1/contacts').catch(() => []),
+    fetchTenant().catch(() => null)
   ]);
-  return <ExpenseForm expense={expense} suppliers={suppliers.map(({ id, legalName, ico }) => ({ id, legalName, ico }))} home={await fetchHomeCurrency()} />;
+  return (
+    <ExpenseForm
+      expense={expense}
+      suppliers={suppliers.map(({ id, legalName, ico }) => ({ id, legalName, ico }))}
+      home={homeCurrencyOf(taxCountryOf(tenant))}
+      identified={vatStatusOf(tenant) === 'identified'}
+    />
+  );
 }

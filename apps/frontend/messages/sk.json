@@ -842,6 +842,7 @@
       "vatBreakdown": "Základ {base} + DPH {vat}",
       "reverseChargeLabel": "Prenesenie daňovej povinnosti (§ 92a)",
       "reverseChargeHint": "Zadajte sumu bez DPH. Daň priznáte aj odpočítate vy a doklad pôjde do oddielu B.1 kontrolného výkazu.",
+      "reverseChargeHintIdentified": "Zadajte sumu bez DPH. Daň {rate} % priznáte v daňovom priznaní k DPH za mesiac dokladu a zaplatíte ju do 25. dňa nasledujúceho mesiaca. Ako identifikovaná osoba si ju odpočítať nemôžete.",
       "amountLabelReverseCharge": "Suma bez DPH",
       "vatBreakdownReverseCharge": "Základ {base}, DPH na priznanie {vat}",
       "reverseChargeRequiredHint": "Oddiel B.1 potrebuje DIČ dodávateľa a číslo dokladu.",

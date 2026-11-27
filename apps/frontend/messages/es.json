@@ -841,6 +841,7 @@
       "vatBreakdown": "Base {base} + IVA {vat}",
       "reverseChargeLabel": "Inversión del sujeto pasivo (§ 92a)",
       "reverseChargeHint": "El proveedor ha facturado sin IVA y usted lo liquida. Introduzca el importe sin IVA; el IVA se declara y se deduce a la vez en la declaración (filas 10/11 y 43/44), y el documento va a la sección B.1 del informe de control.",
+      "reverseChargeHintIdentified": "Introduzca el importe sin IVA. Declarará el IVA del {rate} % en la declaración de IVA del mes del documento y lo pagará antes del día 25 del mes siguiente. Como persona identificada no puede deducirlo.",
       "amountLabelReverseCharge": "Importe sin IVA",
       "vatBreakdownReverseCharge": "Base {base}, IVA autoliquidado {vat}",
       "reverseChargeRequiredHint": "La sección B.1 requiere el NIF-IVA del proveedor y el número de documento.",

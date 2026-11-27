@@ -842,6 +842,7 @@
       "vatBreakdown": "Base {base} + VAT {vat}",
       "reverseChargeLabel": "Reverse charge (§ 92a)",
       "reverseChargeHint": "Enter the amount without VAT. You both pay and deduct the VAT, and the document goes to section B.1 of the control statement.",
+      "reverseChargeHintIdentified": "Enter the amount without VAT. You report the {rate}% VAT in the VAT return for the document's month and pay it by the 25th of the following month. As an identified person you cannot deduct it.",
       "amountLabelReverseCharge": "Amount excl. VAT",
       "vatBreakdownReverseCharge": "Base {base}, VAT to self-assess {vat}",
       "reverseChargeRequiredHint": "Section B.1 needs the supplier's VAT ID and the document number.",

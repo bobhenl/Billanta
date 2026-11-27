@@ -841,6 +841,7 @@
       "vatBreakdown": "Bază {base} + TVA {vat}",
       "reverseChargeLabel": "Taxare inversă (§ 92a)",
       "reverseChargeHint": "Furnizorul a facturat fără TVA, iar TVA-ul îl calculați dumneavoastră. Introduceți suma fără TVA; TVA-ul este atât datorat, cât și dedus în decont (rândurile 10/11 și 43/44), iar documentul intră în secțiunea B.1 a declarației de control.",
+      "reverseChargeHintIdentified": "Introduceți suma fără TVA. TVA-ul de {rate} % îl declarați în decontul de TVA pentru luna documentului și îl plătiți până la data de 25 a lunii următoare. Ca persoană identificată nu îl puteți deduce.",
       "amountLabelReverseCharge": "Sumă fără TVA",
       "vatBreakdownReverseCharge": "Bază {base}, TVA de autolichidat {vat}",
       "reverseChargeRequiredHint": "Secțiunea B.1 necesită codul de TVA al furnizorului și numărul documentului.",

@@ -842,6 +842,7 @@
       "vatBreakdown": "Základ {base} + DPH {vat}",
       "reverseChargeLabel": "Přenesená daňová povinnost (§ 92a)",
       "reverseChargeHint": "Zadejte částku bez DPH. Daň přiznáte i odečtete vy a doklad půjde do oddílu B.1 kontrolního hlášení.",
+      "reverseChargeHintIdentified": "Zadejte částku bez DPH. Daň {rate} % přiznáte v přiznání k DPH za měsíc dokladu a zaplatíte do 25. dne dalšího měsíce. Odpočet si jako identifikovaná osoba neuplatníte.",
       "amountLabelReverseCharge": "Částka bez DPH",
       "vatBreakdownReverseCharge": "Základ {base}, DPH k přiznání {vat}",
       "reverseChargeRequiredHint": "Oddíl B.1 potřebuje DIČ dodavatele a číslo dokladu.",
