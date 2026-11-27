@@ -26,6 +26,7 @@ import { PayerNote } from "./payer-note";
 import { CardPayButton } from "./card-pay-button";
 import { PaymentDetails, type PaymentDetailRow } from "./payment-details";
 import { PrintButton } from "./print-button";
+import { SealedItemText, SealedNotice, SealedTextsProvider } from "./sealed-texts";
 import { InfoHint } from "@/components/info-hint";
 import { buttonClass } from "@/lib/ui-classes";
 import { cn } from "@/lib/utils";
@@ -45,7 +46,8 @@ function siteHref(path: string, ref: string | null, tags: Record<string, string>
 // Generic, non-revealing preview card; see privateLinkMetadata.
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
-  return privateLinkMetadata(locale);
+  // The page may carry a document key after #: send no referrer anywhere (next.config.mjs sets the header too).
+  return { ...(await privateLinkMetadata(locale)), referrer: "no-referrer" };
 }
 
 /**
@@ -247,7 +249,13 @@ export default async function PublicInvoicePage({
         ]
       : [];
 
+  // "Důvěrný režim": the texts arrive as ciphertext and open in the browser with the key from the link (sealed-texts.tsx).
+  const sealedItems = invoice.lineItems.map((item) => (item.confidential && item.sealed ? item.sealed : null));
+  const sealed = invoice.lineItems.some((item) => item.confidential);
+  const sealedKeyIds = [...new Set(sealedItems.flatMap((item) => (item?.keyId ? [item.keyId] : [])))];
+
   return (
+    <SealedTextsProvider items={sealedItems} preview={Boolean(preview)}>
     <div className="mx-auto max-w-3xl px-4 py-6 sm:py-14 print:py-0" data-print-sheet>
       {invoice.demo && <PublicDemoNotice />}
 
@@ -283,7 +291,9 @@ export default async function PublicInvoicePage({
             )}
           </div>
           {/* The real document once it has a number; an unnumbered one can only be printed from the page. */}
-          {invoice.invoiceNumber ? (
+          {/* The server can't print what it can't read, so a sealed document prints from this page.
+              TODO: switch to the shared in-browser PDF renderer once it lands. */}
+          {invoice.invoiceNumber && !sealed ? (
             <a
               href={`/api/public/invoices/${token}/pdf`}
               download
@@ -400,6 +410,7 @@ export default async function PublicInvoicePage({
 
         <section className="mt-8">
           <h2 className="text-sm font-semibold text-muted-foreground">{t("lineItemsTitle")}</h2>
+          {sealed && <SealedNotice keyIds={sealedKeyIds} />}
           <div className="mt-2 overflow-x-auto rounded-lg border border-border">
             <table className="w-full border-collapse text-sm">
               <thead>
@@ -415,7 +426,7 @@ export default async function PublicInvoicePage({
                 {invoice.lineItems.map((item, index) => (
                   <tr key={index} className="border-b border-border align-top last:border-b-0">
                     <td className="px-3 py-2.5 sm:px-4">
-                      {item.confidential ? <span className="italic text-muted-foreground">{t("confidentialItem")}</span> : <span className="break-words">{item.description}</span>}
+                      {item.confidential ? <SealedItemText index={index} /> : <span className="break-words">{item.description}</span>}
                       {/* On a phone the quantity, unit price and VAT columns fold into one line under the name. */}
                       <span className="mt-0.5 block text-xs text-muted-foreground tabular-nums sm:hidden">
                         {item.quantity} × {currencyFormatter.format(item.unitPrice)}
@@ -529,5 +540,6 @@ export default async function PublicInvoicePage({
         )}
       </div>
     </div>
+    </SealedTextsProvider>
   );
 }

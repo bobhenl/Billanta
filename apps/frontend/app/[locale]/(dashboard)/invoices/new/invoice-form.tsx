@@ -27,7 +27,7 @@ import { NetEstimate } from '@/components/net-estimate';
 import { CopyFromInvoicePanel } from './copy-from-invoice';
 import { fetchExchangeRate, saveInvoice, suggestInvoice, suggestItems } from './actions';
 import type { VaultKey } from '@faktur/cz-compliance';
-import { sealDraft } from '@/lib/vault/content';
+import { documentKeyFor, sealDraft } from '@/lib/vault/content';
 import type {
   AiSettings,
   AresPrefill,
@@ -208,7 +208,7 @@ export function InvoiceForm({
   confidential
 }: {
   /** "Důvěrný režim" is on: texts can be encrypted in the browser before saving (ConfidentialInvoiceForm). */
-  confidential?: { sealByDefault: boolean; getKey: () => Promise<VaultKey | null> };
+  confidential?: { sealByDefault: boolean; getKey: () => Promise<VaultKey | null>; keySource?: InvoiceTemplate | null };
   mode?: InvoiceFormMode;
   defaults: FormDefaults;
   ai: AiSettings | null;
@@ -722,7 +722,7 @@ export function InvoiceForm({
     const sealedInput = async (): Promise<InvoiceDraftInput | null> => {
       if (!sealing) return input;
       const key = await confidential!.getKey();
-      return key ? sealDraft(key, input) : null;
+      return key ? sealDraft(key, input, await documentKeyFor(key, confidential!.keySource)) : null;
     };
     const queue = async () => {
       const payload = await sealedInput();

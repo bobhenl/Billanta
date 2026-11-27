@@ -1,5 +1,5 @@
-import { ConflictException, ForbiddenException } from "@nestjs/common";
-import { isSealed, sealedMaxLength } from "@faktur/cz-compliance";
+import { BadRequestException, ConflictException, ForbiddenException } from "@nestjs/common";
+import { documentKeyWrap, isSealed, sealedMaxLength } from "@faktur/cz-compliance";
 import { z } from "zod";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type * as schema from "../../drizzle/schema";
@@ -15,6 +15,19 @@ import { FEATURE_MIN_PLAN } from "../billing/plans";
  */
 
 export { isSealed };
+
+/**
+ * Which of a re-key's fields may be written: only ciphertext over
+ * ciphertext (plain text becomes sealed through "Zašifrovat", with its plan
+ * check), and every new envelope under one and the same document key, or
+ * the client link could open only part of the document. Throws on anything
+ * else, so a half-applied re-key can't happen.
+ */
+export function rekeyWrites(pairs: { incoming: string; stored: string | null | undefined }[]): void {
+  const wraps = new Set(pairs.map((p) => documentKeyWrap(p.incoming)));
+  if (wraps.has(null) || wraps.size > 1) throw new BadRequestException("rekey_one_document_key");
+  if (pairs.some((p) => !isSealed(p.stored))) throw new ConflictException("rekey_plain_text");
+}
 
 /** 409 code: the document holds encrypted text, so the server can't render it. */
 export const CONFIDENTIAL_CONTENT = "confidential_content";

@@ -768,7 +768,15 @@
     "print": "Imprimer / PDF",
     "downloadPdf": "Télécharger le PDF",
     "downloadPdfShort": "PDF",
-    "confidentialItem": "Ligne confidentielle"
+    "confidentialItem": "Ligne confidentielle",
+    "sealed": {
+      "noKey": "Certains textes sont chiffrés. Le texte complet se trouve dans le lien de l’e-mail d’origine.",
+      "openedLink": "La clé de votre lien a ouvert les textes chiffrés. Ce navigateur la garde en mémoire, les liens suivants ouvriront donc aussi le document.",
+      "openedStored": "Une clé gardée par ce navigateur depuis un lien précédent a ouvert les textes chiffrés.",
+      "openedPreview": "Aperçu : la clé du lien a ouvert les textes. Elle n’a pas été enregistrée dans ce navigateur.",
+      "forget": "Oublier la clé dans ce navigateur",
+      "forgotten": "La clé a été supprimée de ce navigateur. Le texte complet se trouve dans le lien de l’e-mail d’origine."
+    }
   },
   "expenses": {
     "title": "Dépenses",
@@ -14294,7 +14302,10 @@
     "actions": {
       "blocked": "Indisponible en Mode confidentiel : le serveur ne peut pas lire un document chiffré. Désactivez la pièce jointe PDF/ISDOC dans les réglages des e-mails ou envoyez un lien.",
       "pdfUnavailable": "Le PDF n'est pas disponible en Mode confidentiel. Vous pouvez imprimer le détail depuis votre navigateur (Ctrl+P).",
-      "sendHint": "Ce document est chiffré : l'e-mail part avec un lien seulement, le serveur ne peut pas joindre de PDF ou d'ISDOC."
+      "sendHint": "Ce document est chiffré : l'e-mail part avec un lien seulement, le serveur ne peut pas joindre de PDF ou d'ISDOC.",
+      "linkCopied": "Lien avec clé copié",
+      "keyLink": "Lien client avec clé",
+      "copyLink": "Copier"
     },
     "categories": {
       "recommended": "Recommandé",
@@ -14308,7 +14319,8 @@
           "Pièce jointe PDF/ISDOC dans les e-mails",
           "Recherche dans le texte des lignes et des notes, suggestions de lignes",
           "Pré-remplissage des documents par IA",
-          "Descriptions de lignes sur le lien public et dans les exports pour le comptable (Pohoda, Money, CSV)"
+          "Lien public : votre client voit le texte complet uniquement via le lien avec clé du détail du document. Un lien sans clé (par ex. d’une relance automatique) ne l’affiche que sur un appareil où le client a déjà ouvert le lien complet",
+          "Descriptions de lignes dans les exports pour le comptable (Pohoda, Money, CSV)"
         ]
       },
       "attachments": {
@@ -14425,6 +14437,17 @@
       "recoveryReplaced": "Le nouveau code de secours est actif",
       "categoriesTitle": "Ce qui est chiffré",
       "categoriesLead": "D'autres options arrivent. Pour chacune, vous voyez ce qui cesserait de fonctionner."
+    },
+    "clientLink": {
+      "ready": "Le lien contient la clé des textes chiffrés (après le #). Votre client voit avec elle le texte complet, le serveur ne reçoit jamais la clé.",
+      "locked": "Ce document est chiffré. Déverrouillez le coffre et le lien recevra la clé dont votre client a besoin pour lire le texte complet.",
+      "prepare": "Ce document a été chiffré avant l’arrivée des clés client. Donnez-lui sa propre clé, puis vous pourrez l’envoyer dans le lien. Seuls des textes rechiffrés partent vers le serveur.",
+      "failed": "Impossible de préparer la clé client. Veuillez réessayer.",
+      "loading": "Préparation de la clé client…",
+      "unlock": "Déverrouiller le coffre",
+      "prepareButton": "Préparer le lien client",
+      "shareOnly": "Envoyez-le uniquement à votre client. Quiconque a le lien complet peut aussi lire les textes chiffrés.",
+      "serverEmail": "L’e-mail envoyé par le serveur contient le lien sans la clé. Votre client y voit les montants, mais pas les textes chiffrés, sauf s’il a déjà ouvert le lien avec la clé dans le même navigateur. Pour qu’il les lise, envoyez-lui vous-même le lien ci-dessus."
     }
   }
 }

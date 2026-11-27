@@ -769,7 +769,15 @@
     "print": "Tlač / PDF",
     "downloadPdf": "Stiahnuť PDF",
     "downloadPdfShort": "PDF",
-    "confidentialItem": "Dôverná položka"
+    "confidentialItem": "Dôverná položka",
+    "sealed": {
+      "noKey": "Niektoré texty sú zašifrované. Celé znenie je v odkaze z pôvodného e-mailu.",
+      "openedLink": "Zašifrované texty otvoril kľúč z vášho odkazu. Tento prehliadač si ho zapamätá, takže doklad otvorí aj z neskorších odkazov.",
+      "openedStored": "Zašifrované texty otvoril kľúč, ktorý si tento prehliadač zapamätal z predchádzajúceho odkazu.",
+      "openedPreview": "Náhľad: texty otvoril kľúč z odkazu. Do tohto prehliadača sa neuložil.",
+      "forget": "Zabudnúť kľúč v tomto prehliadači",
+      "forgotten": "Kľúč je z tohto prehliadača vymazaný. Celé znenie je v odkaze z pôvodného e-mailu."
+    }
   },
   "expenses": {
     "title": "Výdavky",
@@ -14203,7 +14211,10 @@
     "actions": {
       "blocked": "Nedostupné v Dôvernom režime: server zašifrovaný doklad neprečíta. Vypnite prílohu PDF/ISDOC v nastaveniach e-mailov alebo pošlite odkaz.",
       "pdfUnavailable": "PDF je nedostupné v Dôvernom režime. Detail môžete vytlačiť z prehliadača (Ctrl+P).",
-      "sendHint": "Doklad je zašifrovaný: e-mail odíde len s odkazom, PDF ani ISDOC server priložiť nemôže."
+      "sendHint": "Doklad je zašifrovaný: e-mail odíde len s odkazom, PDF ani ISDOC server priložiť nemôže.",
+      "linkCopied": "Odkaz s kľúčom skopírovaný",
+      "keyLink": "Odkaz pre klienta s kľúčom",
+      "copyLink": "Kopírovať"
     },
     "categories": {
       "recommended": "Odporúčané",
@@ -14217,7 +14228,8 @@
           "Príloha PDF/ISDOC v e-maile",
           "Hľadanie podľa textu položiek a poznámok, návrhy položiek",
           "AI predvyplnenie dokladu",
-          "Popisy položiek na verejnom odkaze a v exportoch pre účtovníka (Pohoda, Money, CSV)"
+          "Verejný odkaz: celé znenie vidí klient iba v odkaze s kľúčom z detailu dokladu. Odkaz bez kľúča (napr. z automatickej upomienky) ho ukáže iba v zariadení, kde klient predtým otvoril celý odkaz",
+          "Popisy položiek v exportoch pre účtovníka (Pohoda, Money, CSV)"
         ]
       },
       "attachments": {
@@ -14341,6 +14353,17 @@
       "upgrade": "Zobraziť tarify",
       "downgradedTitle": "Šifrovanie ďalších dokladov je v tarifoch Plus a Firma",
       "downgradedBody": "Zašifrované doklady naďalej odomknete, prečítate aj upravíte. Nové doklady sa však ukladajú bez šifrovania."
+    },
+    "clientLink": {
+      "ready": "Odkaz obsahuje kľúč k zašifrovaným textom (za znakom #). Klient s ním uvidí celé znenie, server kľúč nikdy nedostane.",
+      "locked": "Doklad je zašifrovaný. Odomknite trezor a odkaz dostane kľúč, s ktorým klient uvidí celé znenie.",
+      "prepare": "Tento doklad bol zašifrovaný ešte pred kľúčmi pre klientov. Pripravte mu vlastný kľúč, potom ho môžete poslať v odkaze. Na server odídu len znova zašifrované texty.",
+      "failed": "Kľúč pre klienta sa nepodarilo pripraviť. Skúste to znova.",
+      "loading": "Pripravujem kľúč pre klienta…",
+      "unlock": "Odomknúť trezor",
+      "prepareButton": "Pripraviť odkaz pre klienta",
+      "shareOnly": "Pošlite ho iba klientovi. Kto má celý odkaz, prečíta aj zašifrované texty.",
+      "serverEmail": "E-mail, ktorý odošle server, obsahuje odkaz bez kľúča. Klient v ňom uvidí sumy, ale nie zašifrované texty, ak predtým neotvoril odkaz s kľúčom v tom istom prehliadači. Aby ich videl, pošlite mu odkaz vyššie sami."
     }
   }
 }

@@ -768,7 +768,15 @@
     "print": "Afdrukken / PDF",
     "downloadPdf": "PDF downloaden",
     "downloadPdfShort": "PDF",
-    "confidentialItem": "Vertrouwelijke regel"
+    "confidentialItem": "Vertrouwelijke regel",
+    "sealed": {
+      "noKey": "Sommige teksten zijn versleuteld. De volledige tekst staat in de link uit de oorspronkelijke e-mail.",
+      "openedLink": "De sleutel uit uw link heeft de versleutelde teksten geopend. Deze browser onthoudt hem, dus latere links openen het document ook.",
+      "openedStored": "Een sleutel die deze browser van een eerdere link heeft onthouden, heeft de versleutelde teksten geopend.",
+      "openedPreview": "Voorbeeld: de sleutel uit de link heeft de teksten geopend. Hij is niet in deze browser opgeslagen.",
+      "forget": "Sleutel in deze browser vergeten",
+      "forgotten": "De sleutel is uit deze browser verwijderd. De volledige tekst staat in de link uit de oorspronkelijke e-mail."
+    }
   },
   "expenses": {
     "title": "Kosten",
@@ -14294,7 +14302,10 @@
     "actions": {
       "blocked": "Niet beschikbaar in de Vertrouwelijke modus: de server kan een versleuteld document niet lezen. Zet de pdf/ISDOC-bijlage uit in de e-mailinstellingen of stuur een link.",
       "pdfUnavailable": "Pdf is niet beschikbaar in de Vertrouwelijke modus. Je kunt de detailpagina vanuit je browser afdrukken (Ctrl+P).",
-      "sendHint": "Dit document is versleuteld: de e-mail gaat alleen met een link, de server kan geen pdf of ISDOC bijvoegen."
+      "sendHint": "Dit document is versleuteld: de e-mail gaat alleen met een link, de server kan geen pdf of ISDOC bijvoegen.",
+      "linkCopied": "Link met sleutel gekopieerd",
+      "keyLink": "Klantlink met sleutel",
+      "copyLink": "Kopiëren"
     },
     "categories": {
       "recommended": "Aanbevolen",
@@ -14308,7 +14319,8 @@
           "Pdf/ISDOC-bijlage in e-mails",
           "Zoeken op tekst van regels en notities, regelsuggesties",
           "Documenten vooraf invullen met AI",
-          "Regelomschrijvingen op de openbare link en in exports voor de boekhouder (Pohoda, Money, CSV)"
+          "Openbare link: uw klant ziet de volledige tekst alleen via de link met sleutel uit het documentdetail. Een link zonder sleutel (bijv. uit een automatische herinnering) toont hem alleen op een apparaat waar de klant de volledige link eerder heeft geopend",
+          "Regelomschrijvingen in exports voor de boekhouder (Pohoda, Money, CSV)"
         ]
       },
       "attachments": {
@@ -14425,6 +14437,17 @@
       "recoveryReplaced": "De nieuwe herstelcode geldt",
       "categoriesTitle": "Wat wordt versleuteld",
       "categoriesLead": "Meer opties volgen. Bij elke zie je wat er niet meer zou werken."
+    },
+    "clientLink": {
+      "ready": "De link bevat de sleutel tot de versleutelde teksten (na het #). Uw klant ziet daarmee de volledige tekst, de server krijgt de sleutel nooit.",
+      "locked": "Dit document is versleuteld. Ontgrendel de kluis en de link krijgt de sleutel waarmee uw klant de volledige tekst ziet.",
+      "prepare": "Dit document is versleuteld voordat er klantsleutels waren. Geef het een eigen sleutel, daarna kunt u het in de link versturen. Naar de server gaan alleen opnieuw versleutelde teksten.",
+      "failed": "De klantsleutel kon niet worden voorbereid. Probeer het opnieuw.",
+      "loading": "Klantsleutel voorbereiden…",
+      "unlock": "Kluis ontgrendelen",
+      "prepareButton": "Klantlink voorbereiden",
+      "shareOnly": "Stuur hem alleen naar uw klant. Wie de volledige link heeft, kan ook de versleutelde teksten lezen.",
+      "serverEmail": "De e-mail die de server verstuurt, bevat de link zonder sleutel. Uw klant ziet daar de bedragen, maar niet de versleutelde teksten, tenzij hij de link met sleutel eerder in dezelfde browser heeft geopend. Stuur hem de link hierboven zelf, zodat hij ze kan lezen."
     }
   }
 }

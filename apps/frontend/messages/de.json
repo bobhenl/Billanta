@@ -768,7 +768,15 @@
     "print": "Drucken / PDF",
     "downloadPdf": "PDF herunterladen",
     "downloadPdfShort": "PDF",
-    "confidentialItem": "Vertrauliche Position"
+    "confidentialItem": "Vertrauliche Position",
+    "sealed": {
+      "noKey": "Einige Texte sind verschlüsselt. Der volle Wortlaut steht im Link aus der ursprünglichen E-Mail.",
+      "openedLink": "Der Schlüssel aus Ihrem Link hat die verschlüsselten Texte geöffnet. Dieser Browser merkt ihn sich, spätere Links öffnen den Beleg also auch.",
+      "openedStored": "Ein Schlüssel, den sich dieser Browser von einem früheren Link gemerkt hat, hat die verschlüsselten Texte geöffnet.",
+      "openedPreview": "Vorschau: Der Schlüssel aus dem Link hat die Texte geöffnet. Er wurde in diesem Browser nicht gespeichert.",
+      "forget": "Schlüssel in diesem Browser vergessen",
+      "forgotten": "Der Schlüssel ist aus diesem Browser gelöscht. Der volle Wortlaut steht im Link aus der ursprünglichen E-Mail."
+    }
   },
   "expenses": {
     "title": "Ausgaben",
@@ -14295,7 +14303,10 @@
     "actions": {
       "blocked": "Im Vertraulichen Modus nicht verfügbar: Der Server kann einen verschlüsselten Beleg nicht lesen. Schalten Sie den PDF/ISDOC-Anhang in den E-Mail-Einstellungen aus oder senden Sie einen Link.",
       "pdfUnavailable": "PDF ist im Vertraulichen Modus nicht verfügbar. Sie können die Detailseite aus dem Browser drucken (Strg+P).",
-      "sendHint": "Dieser Beleg ist verschlüsselt: Die E-Mail enthält nur einen Link, PDF oder ISDOC kann der Server nicht anhängen."
+      "sendHint": "Dieser Beleg ist verschlüsselt: Die E-Mail enthält nur einen Link, PDF oder ISDOC kann der Server nicht anhängen.",
+      "linkCopied": "Link mit Schlüssel kopiert",
+      "keyLink": "Kundenlink mit Schlüssel",
+      "copyLink": "Kopieren"
     },
     "categories": {
       "recommended": "Empfohlen",
@@ -14309,7 +14320,8 @@
           "PDF/ISDOC-Anhang in E-Mails",
           "Suche im Text von Positionen und Notizen, Positionsvorschläge",
           "KI-Vorausfüllen von Belegen",
-          "Positionsbeschreibungen im öffentlichen Link und in Exporten für die Buchhaltung (Pohoda, Money, CSV)"
+          "Öffentlicher Link: Ihr Kunde sieht den vollen Wortlaut nur über den Link mit Schlüssel aus der Belegansicht. Ein Link ohne Schlüssel (z. B. aus einer automatischen Mahnung) zeigt ihn nur auf einem Gerät, auf dem der Kunde vorher den vollständigen Link geöffnet hat",
+          "Positionsbeschreibungen in Exporten für die Buchhaltung (Pohoda, Money, CSV)"
         ]
       },
       "attachments": {
@@ -14426,6 +14438,17 @@
       "recoveryReplaced": "Der neue Wiederherstellungscode gilt",
       "categoriesTitle": "Was verschlüsselt wird",
       "categoriesLead": "Weitere Optionen folgen. Bei jeder sehen Sie, was nicht mehr funktionieren würde."
+    },
+    "clientLink": {
+      "ready": "Der Link enthält den Schlüssel zu den verschlüsselten Texten (nach dem #). Ihr Kunde sieht damit den vollen Wortlaut, der Server bekommt den Schlüssel nie.",
+      "locked": "Der Beleg ist verschlüsselt. Entsperren Sie den Tresor, dann bekommt der Link den Schlüssel, mit dem Ihr Kunde den vollen Wortlaut sieht.",
+      "prepare": "Dieser Beleg wurde verschlüsselt, bevor es Kundenschlüssel gab. Geben Sie ihm einen eigenen Schlüssel, dann können Sie ihn im Link senden. An den Server gehen nur neu verschlüsselte Texte.",
+      "failed": "Der Kundenschlüssel konnte nicht vorbereitet werden. Bitte versuchen Sie es erneut.",
+      "loading": "Kundenschlüssel wird vorbereitet…",
+      "unlock": "Tresor entsperren",
+      "prepareButton": "Kundenlink vorbereiten",
+      "shareOnly": "Senden Sie ihn nur an Ihren Kunden. Wer den ganzen Link hat, kann auch die verschlüsselten Texte lesen.",
+      "serverEmail": "Die E-Mail vom Server enthält den Link ohne Schlüssel. Ihr Kunde sieht dort die Beträge, aber nicht die verschlüsselten Texte, außer er hat den Link mit Schlüssel vorher im selben Browser geöffnet. Damit er sie lesen kann, senden Sie ihm den Link oben selbst."
     }
   }
 }

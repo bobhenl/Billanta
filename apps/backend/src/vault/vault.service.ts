@@ -6,8 +6,10 @@ import { AuditService } from "../audit/audit.service";
 import { planAllows } from "../billing/plan-access";
 import { loadPlanSummary } from "../billing/plan.guard";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
-import { isSealed } from "./sealed";
-import type { EnableVaultDto, MemberWrapDto, PlainInvoicesQueryDto, RecoveryWrapDto, SealInvoicesDto, VaultSettingsDto } from "./dto/vault.dto";
+import { documentKeyWrap } from "@faktur/cz-compliance";
+import { isSealed, rekeyWrites } from "./sealed";
+import { assertInvoiceOpen } from "../invoices/invoice-lock";
+import type { EnableVaultDto, MemberWrapDto, PlainInvoicesQueryDto, RecoveryWrapDto, RekeyInvoiceDto, SealInvoicesDto, VaultSettingsDto } from "./dto/vault.dto";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 type WrapRow = typeof schema.vaultKeyWraps.$inferSelect;
@@ -187,6 +189,9 @@ export class VaultService {
         noteBelow: plain(r.noteBelow),
         internalNote: plain(r.internalNote),
         items: items.filter((it) => it.invoiceId === r.id && !isSealed(it.description)).map(({ id, description }) => ({ id, description })),
+        // The key the document's sealed printed texts already use, so the rest joins it (one key per client link).
+        documentKeyWrap:
+          [r.noteAbove, r.noteBelow, ...items.filter((it) => it.invoiceId === r.id).map((it) => it.description)].map(documentKeyWrap).find(Boolean) ?? null,
       })),
     };
   }
@@ -222,5 +227,42 @@ export class VaultService {
       sealed++;
     }
     return { sealed };
+  }
+
+  /**
+   * Stores one document's printed texts re-encrypted under its own key (see
+   * `rekeyWrites`). Like `seal`, only text columns change and not
+   * `updated_at`. A locked document needs the usual fresh re-auth.
+   */
+  async rekey(db: TenantDb, tenantId: string, user: AuthenticatedUser, id: string, dto: RekeyInvoiceDto) {
+    await this.requireVault(db, tenantId);
+    await assertInvoiceOpen(db, id, user);
+    const [invoice] = await db
+      .select({ id: schema.invoices.id, invoiceNumber: schema.invoices.invoiceNumber, noteAbove: schema.invoices.noteAbove, noteBelow: schema.invoices.noteBelow })
+      .from(schema.invoices)
+      .where(and(eq(schema.invoices.id, id), eq(schema.invoices.tenantId, tenantId)))
+      .limit(1);
+    if (!invoice) throw new NotFoundException("Invoice not found");
+    const stored = await db
+      .select({ id: schema.invoiceLineItems.id, description: schema.invoiceLineItems.description })
+      .from(schema.invoiceLineItems)
+      .where(eq(schema.invoiceLineItems.invoiceId, id));
+    const byId = new Map(stored.map((i) => [i.id, i.description]));
+    if (dto.items.some((i) => !byId.has(i.id))) throw new NotFoundException("rekey_unknown_item");
+    rekeyWrites([
+      ...(dto.noteAbove ? [{ incoming: dto.noteAbove, stored: invoice.noteAbove }] : []),
+      ...(dto.noteBelow ? [{ incoming: dto.noteBelow, stored: invoice.noteBelow }] : []),
+      ...dto.items.map((i) => ({ incoming: i.description, stored: byId.get(i.id) })),
+    ]);
+    const notes = { ...(dto.noteAbove ? { noteAbove: dto.noteAbove } : {}), ...(dto.noteBelow ? { noteBelow: dto.noteBelow } : {}) };
+    if (Object.keys(notes).length) await db.update(schema.invoices).set(notes).where(eq(schema.invoices.id, id));
+    for (const item of dto.items) {
+      await db
+        .update(schema.invoiceLineItems)
+        .set({ description: item.description })
+        .where(and(eq(schema.invoiceLineItems.id, item.id), eq(schema.invoiceLineItems.invoiceId, id)));
+    }
+    await this.audit?.record(db, tenantId, { entityType: "invoice", entityId: id, entityLabel: invoice.invoiceNumber, action: "sealed" });
+    return { rekeyed: Object.keys(notes).length + dto.items.length };
   }
 }

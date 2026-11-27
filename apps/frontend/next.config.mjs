@@ -70,7 +70,11 @@ const nextConfig = {
           { key: 'Content-Security-Policy', value: "frame-ancestors *; form-action 'none'; base-uri 'none'" },
           { key: 'X-Robots-Tag', value: 'noindex' }
         ]
-      }
+      },
+      // The client's invoice link can carry the document key after #. Browsers never send the
+      // fragment, but nothing from this page should leak even its address to another site.
+      { source: '/i/:path*', headers: [{ key: 'Referrer-Policy', value: 'no-referrer' }] },
+      { source: '/:locale/i/:path*', headers: [{ key: 'Referrer-Policy', value: 'no-referrer' }] }
     ];
   },
   async rewrites() {

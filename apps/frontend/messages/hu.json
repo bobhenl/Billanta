@@ -768,7 +768,15 @@
     "print": "Nyomtatás / PDF",
     "downloadPdf": "PDF letöltése",
     "downloadPdfShort": "PDF",
-    "confidentialItem": "Bizalmas tétel"
+    "confidentialItem": "Bizalmas tétel",
+    "sealed": {
+      "noKey": "Néhány szöveg titkosított. A teljes szöveg az eredeti e-mailben kapott linkben van.",
+      "openedLink": "Az Ön linkjében lévő kulcs megnyitotta a titkosított szövegeket. Ez a böngésző megjegyzi, így a későbbi linkek is megnyitják a bizonylatot.",
+      "openedStored": "A titkosított szövegeket egy kulcs nyitotta meg, amelyet ez a böngésző egy korábbi linkből jegyzett meg.",
+      "openedPreview": "Előnézet: a szövegeket a link kulcsa nyitotta meg. Ebben a böngészőben nem lett elmentve.",
+      "forget": "Kulcs elfelejtése ebben a böngészőben",
+      "forgotten": "A kulcs törölve ebből a böngészőből. A teljes szöveg az eredeti e-mailben kapott linkben van."
+    }
   },
   "expenses": {
     "title": "Költségek",
@@ -14294,7 +14302,10 @@
     "actions": {
       "blocked": "Bizalmas módban nem érhető el: a szerver nem tudja elolvasni a titkosított bizonylatot. Kapcsolja ki a PDF/ISDOC-mellékletet az e-mail-beállításokban, vagy küldjön linket.",
       "pdfUnavailable": "A PDF Bizalmas módban nem érhető el. A részleteket kinyomtathatja a böngészőből (Ctrl+P).",
-      "sendHint": "Ez a bizonylat titkosított: az e-mail csak linkkel megy ki, a szerver nem tud PDF-et vagy ISDOC-ot csatolni."
+      "sendHint": "Ez a bizonylat titkosított: az e-mail csak linkkel megy ki, a szerver nem tud PDF-et vagy ISDOC-ot csatolni.",
+      "linkCopied": "Kulcsos link kimásolva",
+      "keyLink": "Ügyféllink kulccsal",
+      "copyLink": "Másolás"
     },
     "categories": {
       "recommended": "Ajánlott",
@@ -14308,7 +14319,8 @@
           "PDF/ISDOC-melléklet az e-mailekben",
           "Keresés a tételek és megjegyzések szövegében, tételjavaslatok",
           "Bizonylat kitöltése AI-jal",
-          "Tételleírások a nyilvános linken és a könyvelőnek szóló exportokban (Pohoda, Money, CSV)"
+          "Nyilvános link: ügyfele a teljes szöveget csak a bizonylat részleteiből kapott kulcsos linken látja. A kulcs nélküli link (pl. automatikus emlékeztetőből) csak olyan eszközön mutatja, ahol az ügyfél korábban megnyitotta a teljes linket",
+          "Tételleírások a könyvelőnek szóló exportokban (Pohoda, Money, CSV)"
         ]
       },
       "attachments": {
@@ -14425,6 +14437,17 @@
       "recoveryReplaced": "Az új helyreállító kód érvényes",
       "categoriesTitle": "Mi titkosítódik",
       "categoriesLead": "További lehetőségek jönnek. Mindegyiknél látja, mi nem működne."
+    },
+    "clientLink": {
+      "ready": "A link tartalmazza a titkosított szövegek kulcsát (a # után). Ügyfele ezzel a teljes szöveget látja, a szerver soha nem kapja meg a kulcsot.",
+      "locked": "A bizonylat titkosított. Oldja fel a széfet, és a link megkapja a kulcsot, amellyel ügyfele a teljes szöveget látja.",
+      "prepare": "Ezt a bizonylatot még az ügyfélkulcsok előtt titkosították. Adjon neki saját kulcsot, utána elküldheti a linkben. A szerverre csak újratitkosított szövegek kerülnek.",
+      "failed": "Nem sikerült előkészíteni az ügyfélkulcsot. Próbálja újra.",
+      "loading": "Ügyfélkulcs előkészítése…",
+      "unlock": "Széf feloldása",
+      "prepareButton": "Ügyfélink előkészítése",
+      "shareOnly": "Csak az ügyfelének küldje el. Akinél a teljes link van, a titkosított szövegeket is elolvashatja.",
+      "serverEmail": "A szerver által küldött e-mailben a link kulcs nélkül szerepel. Ügyfele ott látja az összegeket, de a titkosított szövegeket nem, hacsak korábban meg nem nyitotta a kulcsos linket ugyanabban a böngészőben. Hogy lássa őket, küldje el neki a fenti linket saját maga."
     }
   }
 }

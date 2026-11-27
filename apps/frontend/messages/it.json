@@ -768,7 +768,15 @@
     "print": "Stampa / PDF",
     "downloadPdf": "Scarica PDF",
     "downloadPdfShort": "PDF",
-    "confidentialItem": "Riga riservata"
+    "confidentialItem": "Riga riservata",
+    "sealed": {
+      "noKey": "Alcuni testi sono cifrati. Il testo completo è nel link dell’e-mail originale.",
+      "openedLink": "La chiave del tuo link ha aperto i testi cifrati. Questo browser la ricorda, quindi anche i link successivi apriranno il documento.",
+      "openedStored": "I testi cifrati sono stati aperti da una chiave che questo browser ha ricordato da un link precedente.",
+      "openedPreview": "Anteprima: la chiave del link ha aperto i testi. Non è stata salvata in questo browser.",
+      "forget": "Dimentica la chiave in questo browser",
+      "forgotten": "La chiave è stata eliminata da questo browser. Il testo completo è nel link dell’e-mail originale."
+    }
   },
   "expenses": {
     "title": "Spese",
@@ -14294,7 +14302,10 @@
     "actions": {
       "blocked": "Non disponibile nella Modalità riservata: il server non può leggere un documento cifrato. Disattiva l'allegato PDF/ISDOC nelle impostazioni e-mail oppure invia un link.",
       "pdfUnavailable": "Il PDF non è disponibile nella Modalità riservata. Puoi stampare il dettaglio dal browser (Ctrl+P).",
-      "sendHint": "Questo documento è cifrato: l'e-mail parte solo con un link, il server non può allegare PDF o ISDOC."
+      "sendHint": "Questo documento è cifrato: l'e-mail parte solo con un link, il server non può allegare PDF o ISDOC.",
+      "linkCopied": "Link con chiave copiato",
+      "keyLink": "Link per il cliente con chiave",
+      "copyLink": "Copia"
     },
     "categories": {
       "recommended": "Consigliato",
@@ -14308,7 +14319,8 @@
           "Allegato PDF/ISDOC nelle e-mail",
           "Ricerca nel testo di righe e note, suggerimenti di righe",
           "Compilazione dei documenti con IA",
-          "Descrizioni delle righe nel link pubblico e negli export per il commercialista (Pohoda, Money, CSV)"
+          "Link pubblico: il cliente vede il testo completo solo con il link con chiave dal dettaglio del documento. Un link senza chiave (ad es. da un sollecito automatico) lo mostra solo su un dispositivo dove il cliente ha già aperto il link completo",
+          "Descrizioni delle righe negli export per il commercialista (Pohoda, Money, CSV)"
         ]
       },
       "attachments": {
@@ -14425,6 +14437,17 @@
       "recoveryReplaced": "Il nuovo codice di recupero è attivo",
       "categoriesTitle": "Cosa viene cifrato",
       "categoriesLead": "Altre opzioni in arrivo. Per ciascuna vedi cosa smetterebbe di funzionare."
+    },
+    "clientLink": {
+      "ready": "Il link contiene la chiave dei testi cifrati (dopo il #). Con essa il cliente vede il testo completo, il server non riceve mai la chiave.",
+      "locked": "Il documento è cifrato. Sblocca la cassaforte e il link riceverà la chiave con cui il cliente vede il testo completo.",
+      "prepare": "Questo documento è stato cifrato prima delle chiavi per i clienti. Dagli una chiave propria, poi potrai inviarlo nel link. Al server arrivano solo testi cifrati di nuovo.",
+      "failed": "Impossibile preparare la chiave del cliente. Riprova.",
+      "loading": "Preparazione della chiave del cliente…",
+      "unlock": "Sblocca la cassaforte",
+      "prepareButton": "Prepara il link per il cliente",
+      "shareOnly": "Invialo solo al tuo cliente. Chi ha il link completo può leggere anche i testi cifrati.",
+      "serverEmail": "L’e-mail inviata dal server contiene il link senza chiave. Il cliente vedrà gli importi, ma non i testi cifrati, a meno che non abbia già aperto il link con chiave nello stesso browser. Perché li veda, inviagli tu il link qui sopra."
     }
   }
 }

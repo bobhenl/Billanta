@@ -80,3 +80,15 @@ export const sealInvoicesSchema = z.object({
     .max(50),
 });
 export class SealInvoicesDto extends createZodDto(sealInvoicesSchema) {}
+
+/**
+ * "Připravit odkaz pro klienta": the browser re-encrypts the printed texts of
+ * one document under a key of that document, so the client link can carry
+ * that key. Ciphertext replaces ciphertext; the server never sees either key.
+ */
+export const rekeyInvoiceSchema = z.object({
+  noteAbove: sealed.optional(),
+  noteBelow: sealed.optional(),
+  items: z.array(z.object({ id: z.string().uuid(), description: sealed })).max(500).default([]),
+});
+export class RekeyInvoiceDto extends createZodDto(rekeyInvoiceSchema) {}

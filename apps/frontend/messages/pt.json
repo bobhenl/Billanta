@@ -768,7 +768,15 @@
     "print": "Imprimir / PDF",
     "downloadPdf": "Descarregar PDF",
     "downloadPdfShort": "PDF",
-    "confidentialItem": "Linha confidencial"
+    "confidentialItem": "Linha confidencial",
+    "sealed": {
+      "noKey": "Alguns textos estão cifrados. O texto completo está no link do e-mail original.",
+      "openedLink": "A chave do seu link abriu os textos cifrados. Este navegador guarda-a, por isso os links seguintes também abrem o documento.",
+      "openedStored": "Uma chave que este navegador guardou de um link anterior abriu os textos cifrados.",
+      "openedPreview": "Pré-visualização: a chave do link abriu os textos. Não foi guardada neste navegador.",
+      "forget": "Esquecer a chave neste navegador",
+      "forgotten": "A chave foi apagada deste navegador. O texto completo está no link do e-mail original."
+    }
   },
   "expenses": {
     "title": "Despesas",
@@ -14294,7 +14302,10 @@
     "actions": {
       "blocked": "Indisponível no Modo confidencial: o servidor não consegue ler um documento cifrado. Desative o anexo PDF/ISDOC nas definições de e-mail ou envie uma ligação.",
       "pdfUnavailable": "O PDF não está disponível no Modo confidencial. Pode imprimir o detalhe a partir do navegador (Ctrl+P).",
-      "sendHint": "Este documento está cifrado: o e-mail segue apenas com uma ligação, o servidor não pode anexar PDF nem ISDOC."
+      "sendHint": "Este documento está cifrado: o e-mail segue apenas com uma ligação, o servidor não pode anexar PDF nem ISDOC.",
+      "linkCopied": "Link com chave copiado",
+      "keyLink": "Link do cliente com chave",
+      "copyLink": "Copiar"
     },
     "categories": {
       "recommended": "Recomendado",
@@ -14308,7 +14319,8 @@
           "Anexo PDF/ISDOC nos e-mails",
           "Pesquisa pelo texto das linhas e notas, sugestões de linhas",
           "Preenchimento de documentos por IA",
-          "Descrições das linhas na ligação pública e nas exportações para o contabilista (Pohoda, Money, CSV)"
+          "Ligação pública: o seu cliente vê o texto completo só através da ligação com chave do detalhe do documento. Uma ligação sem chave (p. ex. de um lembrete automático) só o mostra num dispositivo onde o cliente já abriu a ligação completa",
+          "Descrições das linhas nas exportações para o contabilista (Pohoda, Money, CSV)"
         ]
       },
       "attachments": {
@@ -14425,6 +14437,17 @@
       "recoveryReplaced": "O novo código de recuperação está ativo",
       "categoriesTitle": "O que é cifrado",
       "categoriesLead": "Mais opções em breve. Em cada uma vê o que deixaria de funcionar."
+    },
+    "clientLink": {
+      "ready": "O link leva a chave dos textos cifrados (depois do #). Com ela o seu cliente vê o texto completo; o servidor nunca recebe a chave.",
+      "locked": "Este documento está cifrado. Desbloqueie o cofre e o link recebe a chave de que o seu cliente precisa para ler o texto completo.",
+      "prepare": "Este documento foi cifrado antes de existirem chaves de cliente. Dê-lhe uma chave própria e depois pode enviá-lo no link. Para o servidor só vão textos cifrados de novo.",
+      "failed": "Não foi possível preparar a chave do cliente. Tente novamente.",
+      "loading": "A preparar a chave do cliente…",
+      "unlock": "Desbloquear o cofre",
+      "prepareButton": "Preparar o link do cliente",
+      "shareOnly": "Envie-o apenas ao seu cliente. Quem tiver o link completo também pode ler os textos cifrados.",
+      "serverEmail": "O e-mail que o servidor envia tem o link sem a chave. O seu cliente vê lá os valores, mas não os textos cifrados, a menos que já tenha aberto o link com chave no mesmo navegador. Para que os veja, envie-lhe você mesmo o link acima."
     }
   }
 }
