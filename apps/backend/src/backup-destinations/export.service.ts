@@ -45,6 +45,23 @@ export interface ExportBundle {
   >;
   contacts: (typeof schema.contacts.$inferSelect)[];
   expenses: (typeof schema.expenses.$inferSelect)[];
+  /** Optional only for bundles built before it existed (fixtures). */
+  recurringTemplates?: (typeof schema.recurringInvoiceTemplates.$inferSelect)[];
+  /**
+   * Confidential mode: what a restore needs to open the envelopes in the
+   * bundle (`enc:v1:` texts, contacts, amounts). Only the key check and the
+   * recovery-code wrap: the code is high-entropy, while a member's password
+   * wrap would let whoever holds the backup guess the password offline.
+   */
+  vault?: {
+    settings: typeof schema.tenantVaults.$inferSelect;
+    wraps: (typeof schema.vaultKeyWraps.$inferSelect)[];
+  } | null;
+}
+
+/** The key wraps a backup may carry: the recovery-code wrap only (see `ExportBundle.vault`). */
+export function backupWraps<T extends { kind: string }>(wraps: T[]): T[] {
+  return wraps.filter((w) => w.kind === "recovery");
 }
 
 /**
@@ -88,7 +105,8 @@ export class ExportService {
 
   /**
    * Queries exactly one tenant's own data — `invoices` (+ their
-   * `invoice_line_items`), `contacts`, `expenses`, plus a handful of
+   * `invoice_line_items`), `contacts`, `expenses`, recurring templates, the
+   * vault's key check and recovery wrap, plus a handful of
    * identifying `tenants` columns for the bundle header — through the
    * RLS-scoped `db` passed in. See this class's doc comment for why this is
    * safe by construction rather than by convention.
@@ -124,6 +142,9 @@ export class ExportService {
 
     const contacts = await db.select().from(schema.contacts);
     const expenses = await db.select().from(schema.expenses);
+    const recurringTemplates = await db.select().from(schema.recurringInvoiceTemplates);
+    const [vaultSettings] = await db.select().from(schema.tenantVaults).limit(1);
+    const vaultWraps = vaultSettings ? backupWraps(await db.select().from(schema.vaultKeyWraps)) : [];
 
     return {
       exportedAt: new Date().toISOString(),
@@ -134,6 +155,8 @@ export class ExportService {
       })),
       contacts,
       expenses,
+      recurringTemplates,
+      vault: vaultSettings ? { settings: vaultSettings, wraps: vaultWraps } : null,
     };
   }
 
