@@ -58,6 +58,8 @@ export function invoiceBody(input: InvoiceDraftInput) {
     issue_place: text(input.issuePlace),
     issued_by_name: text(input.issuedByName),
     ...(input.amountPaid !== undefined ? { amount_paid: input.amountPaid } : {}),
+    // Category "amounts": envelopes only; the plain item numbers are then the placeholder.
+    ...(input.encAmounts ? { enc_amounts: input.encAmounts } : {}),
     custom_fields: input.customFields
       .map((f) => ({ label: f.label.trim(), value: f.value.trim(), kind: f.kind ?? 'text', internal: Boolean(f.internal) }))
       .filter((f) => f.label && f.value),
@@ -68,7 +70,8 @@ export function invoiceBody(input: InvoiceDraftInput) {
       code: item.code?.trim() || null,
       unit_price: item.unitPrice,
       vat_rate: item.vatRate,
-      discount_percent: item.discountPercent
+      discount_percent: item.discountPercent,
+      ...(item.encAmounts ? { enc_amounts: item.encAmounts } : {})
     }))
   };
 }

@@ -470,7 +470,8 @@
     },
     "dragToReorder": "Přetáhněte pro změnu pořadí",
     "exportsCta": "Exporty pro účetní",
-    "emptyHintReadOnly": "Zatím tu nejsou žádné doklady. Jakmile firma vystaví první fakturu, uvidíte tu tržby, graf i odběratele."
+    "emptyHintReadOnly": "Zatím tu nejsou žádné doklady. Jakmile firma vystaví první fakturu, uvidíte tu tržby, graf i odběratele.",
+    "sealedNote": "{count, plural, one {# doklad se zašifrovanými částkami není započten} few {# doklady se zašifrovanými částkami nejsou započteny} other {# dokladů se zašifrovanými částkami není započteno}} v součtech."
   },
   "invoices": {
     "hover": {
@@ -784,7 +785,8 @@
       "openedPreview": "Náhled: texty otevřel klíč z odkazu. Do tohoto prohlížeče se neuložil.",
       "forget": "Zapomenout klíč v tomto prohlížeči",
       "forgotten": "Klíč je z tohoto prohlížeče smazaný. Plné znění je v odkazu z původního e-mailu."
-    }
+    },
+    "confidentialAmount": "Důvěrná částka"
   },
   "expenses": {
     "title": "Výdaje",
@@ -4780,7 +4782,10 @@
       "empty_input": "Napište, co se má fakturovat.",
       "symbol_invalid": "Symboly smí obsahovat jen číslice (VS a SS max. 10, KS max. 4).",
       "reason_required": "Napište důvod úpravy.",
-      "ai_credits_exhausted": "AI kredity na tento měsíc došly. Další přibudou prvního, víc jich má vyšší tarif, nebo použijte vlastní klíč."
+      "ai_credits_exhausted": "AI kredity na tento měsíc došly. Další přibudou prvního, víc jich má vyšší tarif, nebo použijte vlastní klíč.",
+      "amounts_plaintext": "Doklad se neuložil: částky nebyly zašifrované. Zkuste to znovu.",
+      "amounts_sealed": "Částky dokladu jsou zašifrované a server s nimi tuto akci neudělá.",
+      "amounts_partly_paid": "Částečně uhrazený doklad nejde zašifrovat. Zašifrujte ho po úplné úhradě."
     },
     "copy": {
       "title": "Předvyplnit podle jiné faktury",
@@ -7319,7 +7324,8 @@
     },
     "flatTaxLink": "Vyplatí se paušální daň? →",
     "taxReturnLink": "Podklady pro daňové přiznání →",
-    "netIncomeLink": "Po zdanění"
+    "netIncomeLink": "Po zdanění",
+    "sealedNote": "{count, plural, one {# doklad se zašifrovanými částkami není započten} few {# doklady se zašifrovanými částkami nejsou započteny} other {# dokladů se zašifrovanými částkami není započteno}} v součtech."
   },
   "siteSearch": {
     "title": "Hledat na webu",
@@ -14390,7 +14396,8 @@
       "sealOnHint": "Popisy položek a poznámky uvidíte jen vy a členové s klíčem. PDF, ISDOC a UBL vytvoří váš prohlížeč, návrhy položek se hledají jen ve vašem prohlížeči.",
       "sealOffHint": "Doklad se uloží bez šifrování, jako dřív.",
       "aiConsent": "Poslat tento text AI – jednorázově odejde na server a k poskytovateli AI, neuloží se",
-      "aiConsentHint": "Server text neukládá ani nezapisuje do logů. Co AI vrátí, se při uložení zašifruje ve vašem prohlížeči. Souhlas platí jen pro jedno spuštění."
+      "aiConsentHint": "Server text neukládá ani nezapisuje do logů. Co AI vrátí, se při uložení zašifruje ve vašem prohlížeči. Souhlas platí jen pro jedno spuštění.",
+      "amountsPartlyPaid": "Zašifrované částky nejdou uložit s částečnou úhradou. Smažte uhrazenou částku a doklad po zaplacení označte jako zaplacený."
     },
     "actions": {
       "blocked": "Zašifrované texty se nepodařilo otevřít. Odemkněte trezor správným klíčem a zkuste to znovu.",
@@ -14466,12 +14473,24 @@
       },
       "amounts": {
         "title": "Částky",
-        "description": "Ceny, DPH a součty dokladů.",
+        "description": "Množství, jednotkové ceny, sazby DPH, slevy a součty dokladů. Číslo dokladu, variabilní symbol, splatnost, měna a stav zůstávají čitelné.",
         "loses": [
-          "Automatické párování bankovních plateb",
-          "Přehledy DPH, kontrolní hlášení a exporty DPH",
-          "Dashboardy, čistý příjem a grafy",
-          "Upomínky s částkou a QR platba vytvořená serverem"
+          "Automatické párování plateb podle částky: platba s VS zašifrovaného dokladu počká na vaše ruční potvrzení",
+          "Částečné úhrady: zašifrovaný doklad jde označit jen jako celý zaplacený, bez poplatků a připsané částky",
+          "Exporty pro účetní, přiznání a přehledy DPH ze serveru: doklady se zašifrovanými částkami odmítnou a vypíšou je",
+          "Odeslání přes Peppol, AI návrhy s částkami a platba kartou",
+          "Dashboard, čistý příjem a přehledy počítají jen nezašifrované doklady a napíšou, kolik jich vynechaly",
+          "Upomínky, týdenní souhrn a součty po splatnosti v e-mailech částku neuvedou"
+        ],
+        "how": [
+          "Každá položka se ve vašem prohlížeči zašifruje jako celek: množství, cena, sazba DPH a sleva. Součty dokladu mají vlastní obálku. Vše pod klíčem dokladu, takže je otevře i odkaz pro klienta.",
+          "Server místo čísel ukládá nuly, takže žádný jeho součet neobsahuje skutečnou částku.",
+          "Doklady z AI (Telegram, WhatsApp) mají částky čitelné, dokud je neuložíte v editoru.",
+          "Dřívější doklady zůstanou čitelné, dokud je nezašifrujete tlačítkem Zašifrovat stávající částky."
+        ],
+        "changes": [
+          "PDF, ISDOC, UBL a QR platbu vytvoří váš prohlížeč, na odkazu pro klienta prohlížeč klienta",
+          "Opakované faktury kopírují zašifrované částky beze změny"
         ]
       },
       "howTitle": "Jak to funguje:",
@@ -14735,7 +14754,25 @@
       "nothing": "Nebylo co šifrovat.",
       "failed": "Šifrování se nepovedlo. Už zašifrované kontakty zůstávají zašifrované."
     },
-    "emailSealed": "E-mail odběratele je zašifrovaný, server mu nic nepošle. Pošlete fakturu z vlastní pošty nebo zkopírujte odkaz pro klienta."
+    "emailSealed": "E-mail odběratele je zašifrovaný, server mu nic nepošle. Pošlete fakturu z vlastní pošty nebo zkopírujte odkaz pro klienta.",
+    "sealAmounts": {
+      "button": "Zašifrovat stávající částky",
+      "title": "Zašifrovat stávající částky",
+      "what": "Prohlížeč načte doklady, jejichž částky jsou na serveru čitelné, zašifruje množství, ceny, sazby DPH, slevy a součty a uloží je zpět. Na serveru místo nich zůstanou nuly.",
+      "keeps": "Číslo dokladu, variabilní symbol, splatnost, měna a stav zůstanou čitelné, takže platby podle VS dál najdete.",
+      "loses": "Server pak u těchto dokladů nevytvoří PDF, ISDOC ani exporty pro účetní a nezapočítá je do přehledů. Zaplacený doklad zůstane zaplacený.",
+      "resumable": "Zamčené a částečně uhrazené doklady se přeskočí. Když okno zavřete, příště se pokračuje tam, kde jste skončili.",
+      "cancel": "Zpět",
+      "confirm": "Zašifrovat",
+      "progress": "Šifruji… {n}",
+      "done": "{n, plural, one {Zašifrovány částky # dokladu} few {Zašifrovány částky # dokladů} other {Zašifrovány částky # dokladů}}.",
+      "nothing": "Nebylo co šifrovat.",
+      "failed": "Šifrování se nepovedlo. Už zašifrované doklady zůstávají zašifrované.",
+      "partlyPaid": "{n, plural, one {# částečně uhrazený doklad zůstal čitelný} few {# částečně uhrazené doklady zůstaly čitelné} other {# částečně uhrazených dokladů zůstalo čitelných}}. Zašifrovat půjdou po úplné úhradě."
+    },
+    "amounts": {
+      "paidSealed": "Částky dokladu jsou zašifrované, proto jde zaznamenat jen úhradu celé částky. Poplatky ani připsanou částku server neukládá."
+    }
   },
   "vaultPublic": {
     "integrity": {

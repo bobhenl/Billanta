@@ -1,5 +1,6 @@
 'use client';
 
+import { SealedTotal } from '@/components/vault/sealed-amounts';
 import type { HomeCurrency } from '@faktur/cz-compliance';
 import { Fragment, useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import {
@@ -301,7 +302,8 @@ export function InvoicesTable({
   const totalsByCurrency = useMemo(() => {
     const map = new Map<string, number>();
     for (const row of rows) {
-      if (row.status === 'cancelled' || row.documentType === 'quote') continue;
+      // A sealed document has no server total; the footer sums only what the server knows.
+      if (row.status === 'cancelled' || row.documentType === 'quote' || row.encAmounts) continue;
       map.set(row.currency, (map.get(row.currency) ?? 0) + row.total);
     }
     return [...map.entries()];
@@ -360,8 +362,11 @@ export function InvoicesTable({
       case 'variableSymbol':
         return <span className="font-mono text-xs text-muted-foreground">{row.variableSymbol ?? '–'}</span>;
       case 'totalWithoutVat':
+        if (row.encAmounts) return <span className="tabular-nums text-muted-foreground"><SealedTotal cipher={row.encAmounts} currency={row.currency} field="totalWithoutVat" compact /></span>;
         return <span className="tabular-nums text-muted-foreground"><span className="amount">{formatMoney(row.totalWithoutVat, row.currency, locale)}</span></span>;
       case 'total':
+        // Sealed amounts: opened here, no hover breakdown (the server has no numbers to show).
+        if (row.encAmounts) return <span className="font-semibold tabular-nums"><SealedTotal cipher={row.encAmounts} currency={row.currency} compact /></span>;
         return (
           <span className="font-semibold tabular-nums">
             <AmountHover row={row} home={home}><span className="amount">{formatMoney(row.total, row.currency, locale)}</span></AmountHover>

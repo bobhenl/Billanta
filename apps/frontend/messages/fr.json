@@ -470,7 +470,8 @@
     },
     "dragToReorder": "Faire glisser pour réordonner",
     "exportsCta": "Exports pour le comptable",
-    "emptyHintReadOnly": "Il n’y a pas encore de documents. Dès que l’entreprise émettra sa première facture, vous verrez ici le chiffre d’affaires, un graphique et les clients."
+    "emptyHintReadOnly": "Il n’y a pas encore de documents. Dès que l’entreprise émettra sa première facture, vous verrez ici le chiffre d’affaires, un graphique et les clients.",
+    "sealedNote": "{count, plural, one {# document aux montants chiffrés n’est pas inclus} other {# documents aux montants chiffrés ne sont pas inclus}} dans les totaux."
   },
   "invoices": {
     "hover": {
@@ -783,7 +784,8 @@
       "openedPreview": "Aperçu : la clé du lien a ouvert les textes. Elle n’a pas été enregistrée dans ce navigateur.",
       "forget": "Oublier la clé dans ce navigateur",
       "forgotten": "La clé a été supprimée de ce navigateur. Le texte complet se trouve dans le lien de l’e-mail d’origine."
-    }
+    },
+    "confidentialAmount": "Montant confidentiel"
   },
   "expenses": {
     "title": "Dépenses",
@@ -4773,7 +4775,10 @@
       "empty_input": "Décrivez ce qu’il faut facturer.",
       "symbol_invalid": "Les symboles ne peuvent contenir que des chiffres (VS et SS jusqu’à 10, KS jusqu’à 4).",
       "reason_required": "Indiquez le motif de la modification.",
-      "ai_credits_exhausted": "Les crédits IA de ce mois sont épuisés. Les suivants arrivent le 1er ; une formule supérieure en a plus, ou utilisez votre propre clé."
+      "ai_credits_exhausted": "Les crédits IA de ce mois sont épuisés. Les suivants arrivent le 1er ; une formule supérieure en a plus, ou utilisez votre propre clé.",
+      "amounts_plaintext": "Le document n’a pas été enregistré : les montants n’étaient pas chiffrés. Veuillez réessayer.",
+      "amounts_sealed": "Les montants du document sont chiffrés, le serveur ne peut donc pas effectuer cette action.",
+      "amounts_partly_paid": "Un document partiellement payé ne peut pas être chiffré. Chiffrez-le une fois payé en totalité."
     },
     "copy": {
       "title": "Pré-remplir à partir d’une autre facture",
@@ -7311,7 +7316,8 @@
     },
     "flatTaxLink": "L’impôt forfaitaire est-il avantageux ? →",
     "taxReturnLink": "Récapitulatif pour la déclaration d’impôt",
-    "netIncomeLink": "Après impôts"
+    "netIncomeLink": "Après impôts",
+    "sealedNote": "{count, plural, one {# document aux montants chiffrés n’est pas inclus} other {# documents aux montants chiffrés ne sont pas inclus}} dans les totaux."
   },
   "siteSearch": {
     "title": "Rechercher sur le site",
@@ -14385,7 +14391,8 @@
       "sealOnHint": "Seuls vous et les membres disposant de la clé verront les descriptions de lignes et les notes. Votre navigateur crée le PDF, l’ISDOC et l’UBL ; les suggestions de lignes sont cherchées uniquement dans votre navigateur.",
       "sealOffHint": "Le document est enregistré sans chiffrement, comme avant.",
       "aiConsent": "Envoyer ce texte à l’IA – il part une seule fois vers le serveur et le fournisseur d’IA, sans être enregistré",
-      "aiConsentHint": "Le serveur n’enregistre pas le texte et ne le journalise pas. Ce que l’IA renvoie est chiffré dans votre navigateur à l’enregistrement. L’accord ne vaut que pour cette exécution."
+      "aiConsentHint": "Le serveur n’enregistre pas le texte et ne le journalise pas. Ce que l’IA renvoie est chiffré dans votre navigateur à l’enregistrement. L’accord ne vaut que pour cette exécution.",
+      "amountsPartlyPaid": "Des montants chiffrés ne peuvent pas être enregistrés avec un paiement partiel. Effacez le montant payé et marquez le document comme payé une fois réglé."
     },
     "actions": {
       "blocked": "Impossible d'ouvrir les textes chiffrés. Déverrouillez le coffre avec la bonne clé et réessayez.",
@@ -14461,12 +14468,24 @@
       },
       "amounts": {
         "title": "Montants",
-        "description": "Prix, TVA et totaux des documents.",
+        "description": "Quantités, prix unitaires, taux de TVA, remises et totaux des documents. Le numéro du document, le symbole variable (VS), l’échéance, la devise et le statut restent lisibles.",
         "loses": [
-          "Rapprochement automatique des paiements bancaires",
-          "Rapports TVA, déclaration de contrôle et exports TVA",
-          "Tableaux de bord, revenu net et graphiques",
-          "Relances avec montant et paiements QR créés par le serveur"
+          "Rapprochement automatique des paiements par montant : un paiement portant le VS d’un document chiffré attend votre confirmation manuelle",
+          "Paiements partiels : un document chiffré ne peut être marqué que comme payé en totalité, sans frais ni montant crédité",
+          "Exports pour le comptable, déclarations et rapports de TVA du serveur : ils refusent les documents aux montants chiffrés et les listent",
+          "Envoi via Peppol, suggestions de l’IA avec montants et paiement par carte",
+          "Le tableau de bord, le revenu net et les rapports ne comptent que les documents non chiffrés et indiquent combien ils en ont laissé de côté",
+          "Les relances, le résumé hebdomadaire et les totaux en retard dans les e-mails n’indiquent pas le montant"
+        ],
+        "how": [
+          "Chaque ligne est chiffrée d’un seul bloc dans votre navigateur : quantité, prix, taux de TVA et remise. Les totaux du document ont leur propre enveloppe. Le tout avec la clé du document, donc le lien client les ouvre aussi.",
+          "Le serveur enregistre des zéros à la place des chiffres, aucune de ses sommes ne contient donc un vrai montant.",
+          "Les documents issus de l’IA (Telegram, WhatsApp) gardent des montants lisibles jusqu’à ce que vous les enregistriez dans l’éditeur.",
+          "Les documents antérieurs restent lisibles jusqu’à ce que vous les chiffriez avec le bouton Chiffrer les montants existants."
+        ],
+        "changes": [
+          "Le PDF, l’ISDOC, l’UBL et le paiement QR sont créés par votre navigateur, et sur le lien client par celui du client",
+          "Les factures récurrentes copient les montants chiffrés sans les modifier"
         ]
       },
       "howTitle": "Comment ça marche :",
@@ -14723,7 +14742,25 @@
       "nothing": "Il n’y avait rien à chiffrer.",
       "failed": "Le chiffrement a échoué. Les contacts déjà chiffrés le restent."
     },
-    "emailSealed": "L’e-mail du client est chiffré, le serveur n’y envoie donc rien. Envoyez la facture depuis votre messagerie ou copiez le lien client."
+    "emailSealed": "L’e-mail du client est chiffré, le serveur n’y envoie donc rien. Envoyez la facture depuis votre messagerie ou copiez le lien client.",
+    "sealAmounts": {
+      "button": "Chiffrer les montants existants",
+      "title": "Chiffrer les montants existants",
+      "what": "Le navigateur charge les documents dont les montants sont lisibles sur le serveur, chiffre les quantités, prix, taux de TVA, remises et totaux, puis les enregistre. Des zéros restent à leur place sur le serveur.",
+      "keeps": "Le numéro du document, le VS, l’échéance, la devise et le statut restent lisibles, vous retrouvez donc toujours les paiements par VS.",
+      "loses": "Le serveur ne créera plus de PDF, d’ISDOC ni d’exports comptables pour ces documents et ne les comptera pas dans les rapports. Un document payé reste payé.",
+      "resumable": "Les documents verrouillés et partiellement payés sont ignorés. Si vous fermez la fenêtre, la prochaine fois reprend là où vous vous êtes arrêté.",
+      "cancel": "Retour",
+      "confirm": "Chiffrer",
+      "progress": "Chiffrement… {n}",
+      "done": "{n, plural, one {Montants de # document chiffrés} other {Montants de # documents chiffrés}}.",
+      "nothing": "Rien à chiffrer.",
+      "failed": "Le chiffrement a échoué. Les documents déjà chiffrés restent chiffrés.",
+      "partlyPaid": "{n, plural, one {# document partiellement payé est resté lisible} other {# documents partiellement payés sont restés lisibles}}. Ils pourront être chiffrés une fois payés en totalité."
+    },
+    "amounts": {
+      "paidSealed": "Les montants du document sont chiffrés, seul un paiement intégral peut donc être enregistré. Le serveur ne conserve ni frais ni montant crédité."
+    }
   },
   "vaultPublic": {
     "integrity": {

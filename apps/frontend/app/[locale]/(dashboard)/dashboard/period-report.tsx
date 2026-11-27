@@ -164,6 +164,7 @@ export function PeriodReport({
             {loading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" aria-hidden="true" />}
           </h2>
           <p className="text-xs text-muted-foreground">{t('hint')}</p>
+          {(stats.sealed?.count ?? 0) > 0 && <p className="mt-1 text-xs text-muted-foreground">{t('sealedNote', { count: stats.sealed!.count })}</p>}
         </div>
         {compact ? (
           <Link href="/reports" className="text-xs font-semibold text-primary hover:underline">

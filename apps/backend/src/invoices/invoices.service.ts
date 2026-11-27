@@ -87,6 +87,13 @@ type InvoiceRow = typeof schema.invoices.$inferSelect;
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
 type LineItemInput = NonNullable<UpdateInvoiceDto["line_items"]>[number];
 
+/** Category "amounts": the item envelopes in the input's line order, for the browser to fill in the numbers. */
+type SealedInputAmounts = { items: string[]; reverseCharge: boolean };
+function sealedInputAmounts(invoice: Pick<InvoiceRow, "encAmounts" | "reverseCharge">, lineItems: Pick<LineItemRow, "encAmounts">[]): SealedInputAmounts | null {
+  if (!amountsSealed(invoice)) return null;
+  return { items: lineItems.map((i) => i.encAmounts ?? ""), reverseCharge: invoice.reverseCharge };
+}
+
 /** The line a payment draft gets when the payment says nothing about what was paid for. */
 export const PAYMENT_DRAFT_PLACEHOLDER = "Platba PayPal";
 
@@ -2293,7 +2300,11 @@ export class InvoicesService {
   }
 
   /** The ISDOC input with envelopes as they are, for the browser to finish (see `invoicePdfModel`). */
-  async invoiceIsdocInput(db: TenantDb, tenantId: string, invoiceId: string): Promise<{ filename: string; input: IsdocInvoiceInput }> {
+  async invoiceIsdocInput(
+    db: TenantDb,
+    tenantId: string,
+    invoiceId: string,
+  ): Promise<{ filename: string; input: IsdocInvoiceInput; sealedAmounts: SealedInputAmounts | null }> {
     const { invoice, contact, tenant, lineItems, related } = await this.loadIssuedInvoiceForDocument(db, tenantId, invoiceId);
     const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
     const input = buildIsdocInvoiceInputSealed(invoice, contact, tenant, lineItems, totals);
@@ -2301,6 +2312,7 @@ export class InvoicesService {
     return {
       filename: `${invoiceFileBase(invoice)}.isdoc`,
       input: deposit ? { ...input, totals: { ...input.totals, paidDepositsAmount: deposit } } : input,
+      sealedAmounts: sealedInputAmounts(invoice, lineItems),
     };
   }
 
@@ -2317,9 +2329,13 @@ export class InvoicesService {
   }
 
   /** The UBL input with envelopes as they are, for the browser to finish (see `invoicePdfModel`). */
-  async invoiceUblInput(db: TenantDb, tenantId: string, invoiceId: string): Promise<{ filename: string; input: IsdocInvoiceInput; options: UblOptions }> {
-    const { invoice, input, options } = await this.ublInput(db, tenantId, invoiceId, true);
-    return { filename: `${invoiceFileBase(invoice)}.xml`, input, options };
+  async invoiceUblInput(
+    db: TenantDb,
+    tenantId: string,
+    invoiceId: string,
+  ): Promise<{ filename: string; input: IsdocInvoiceInput; options: UblOptions; sealedAmounts: SealedInputAmounts | null }> {
+    const { invoice, input, options, lineItems } = await this.ublInput(db, tenantId, invoiceId, true);
+    return { filename: `${invoiceFileBase(invoice)}.xml`, input, options, sealedAmounts: sealedInputAmounts(invoice, lineItems) };
   }
 
   private async ublInput(db: TenantDb, tenantId: string, invoiceId: string, keepSealed = false) {
@@ -2348,7 +2364,7 @@ export class InvoicesService {
       paymentMethod: invoice.paymentMethod,
       paymentMethodLabel: invoice.paymentMethodLabel,
     };
-    return { invoice, input, options };
+    return { invoice, input, options, lineItems };
   }
 
   /**

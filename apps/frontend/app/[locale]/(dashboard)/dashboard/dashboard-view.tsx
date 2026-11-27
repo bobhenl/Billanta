@@ -35,6 +35,7 @@ import {
 import { useLocale, useTranslations } from 'next-intl';
 import { DragHandle, moveBy, useDragSort } from '@/components/drag-sort';
 import { InfoHint } from '@/components/info-hint';
+import { SealedTotal } from '@/components/vault/sealed-amounts';
 import { Modal, buttonClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { Link, useRouter } from '@/i18n/navigation';
@@ -317,6 +318,7 @@ export function DashboardView({
         </div>
       )}
       {summary.foreignCurrencyCount > 0 && <p className="mt-2 text-xs text-muted-foreground">{t('foreignNote', { count: summary.foreignCurrencyCount })}</p>}
+      {(summary.sealed?.count ?? 0) > 0 && <p className="mt-2 text-xs text-muted-foreground">{t('sealedNote', { count: summary.sealed!.count })}</p>}
 
       {tiles.length > 0 && (
         // One swipeable row on a phone: wrapped, the shortcuts took up a whole screen.
@@ -484,7 +486,13 @@ function DocList({ docs, showDue = false }: { docs: DashboardDoc[]; showDue?: bo
               <span title={tGloss(`status.${status}`)} className={cn('hidden shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold sm:inline-flex', STATUS_BADGE_CLASSES[status])}>
                 {status === 'overdue' ? tDoc('overdue') : tStatus(status)}
               </span>
-              <span className="w-28 shrink-0 text-right font-semibold tabular-nums"><span className="amount">{formatMoney(doc.total, doc.currency, locale)}</span></span>
+              <span className="w-28 shrink-0 text-right font-semibold tabular-nums">
+                {doc.total == null ? (
+                  <SealedTotal cipher={doc.encAmounts} currency={doc.currency} compact />
+                ) : (
+                  <span className="amount">{formatMoney(doc.total, doc.currency, locale)}</span>
+                )}
+              </span>
             </Link>
           </li>
         );

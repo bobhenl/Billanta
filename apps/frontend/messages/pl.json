@@ -470,7 +470,8 @@
     },
     "dragToReorder": "Przeciągnij, aby zmienić kolejność",
     "exportsCta": "Eksporty dla księgowej",
-    "emptyHintReadOnly": "Nie ma jeszcze dokumentów. Gdy firma wystawi pierwszą fakturę, zobaczysz tu przychody, wykres i klientów."
+    "emptyHintReadOnly": "Nie ma jeszcze dokumentów. Gdy firma wystawi pierwszą fakturę, zobaczysz tu przychody, wykres i klientów.",
+    "sealedNote": "{count, plural, one {# dokument z zaszyfrowanymi kwotami nie jest wliczony} few {# dokumenty z zaszyfrowanymi kwotami nie są wliczone} many {# dokumentów z zaszyfrowanymi kwotami nie jest wliczonych} other {# dokumentu z zaszyfrowanymi kwotami nie jest wliczone}} do sum."
   },
   "invoices": {
     "hover": {
@@ -783,7 +784,8 @@
       "openedPreview": "Podgląd: teksty otworzył klucz z linku. Nie został zapisany w tej przeglądarce.",
       "forget": "Zapomnij klucz w tej przeglądarce",
       "forgotten": "Klucz został usunięty z tej przeglądarki. Pełna treść jest w linku z pierwotnego e-maila."
-    }
+    },
+    "confidentialAmount": "Kwota poufna"
   },
   "expenses": {
     "title": "Wydatki",
@@ -4773,7 +4775,10 @@
       "empty_input": "Opisz, co chcesz zafakturować.",
       "symbol_invalid": "Symbole mogą zawierać tylko cyfry (VS i SS do 10, KS do 4).",
       "reason_required": "Podaj powód zmiany.",
-      "ai_credits_exhausted": "Kredyty AI na ten miesiąc się skończyły. Nowe pojawią się 1. dnia, wyższy plan ma ich więcej, możesz też użyć własnego klucza."
+      "ai_credits_exhausted": "Kredyty AI na ten miesiąc się skończyły. Nowe pojawią się 1. dnia, wyższy plan ma ich więcej, możesz też użyć własnego klucza.",
+      "amounts_plaintext": "Dokument nie został zapisany: kwoty nie były zaszyfrowane. Spróbuj ponownie.",
+      "amounts_sealed": "Kwoty dokumentu są zaszyfrowane, więc serwer nie może tego wykonać.",
+      "amounts_partly_paid": "Częściowo opłaconego dokumentu nie można zaszyfrować. Zaszyfruj go po pełnej zapłacie."
     },
     "copy": {
       "title": "Wypełnij na podstawie innej faktury",
@@ -7312,7 +7317,8 @@
     },
     "flatTaxLink": "Czy podatek ryczałtowy się opłaca? →",
     "taxReturnLink": "Podsumowanie do zeznania podatkowego",
-    "netIncomeLink": "Po opodatkowaniu"
+    "netIncomeLink": "Po opodatkowaniu",
+    "sealedNote": "{count, plural, one {# dokument z zaszyfrowanymi kwotami nie jest wliczony} few {# dokumenty z zaszyfrowanymi kwotami nie są wliczone} many {# dokumentów z zaszyfrowanymi kwotami nie jest wliczonych} other {# dokumentu z zaszyfrowanymi kwotami nie jest wliczone}} do sum."
   },
   "siteSearch": {
     "title": "Szukaj w witrynie",
@@ -14386,7 +14392,8 @@
       "sealOnHint": "Opisy pozycji i notatki zobaczysz tylko Ty i członkowie z kluczem. PDF, ISDOC i UBL utworzy Twoja przeglądarka, podpowiedzi pozycji są wyszukiwane tylko w Twojej przeglądarce.",
       "sealOffHint": "Dokument zapisze się bez szyfrowania, jak dotąd.",
       "aiConsent": "Wyślij ten tekst do AI – jednorazowo trafi na serwer i do dostawcy AI, nie zostanie zapisany",
-      "aiConsentHint": "Serwer nie zapisuje tekstu ani nie umieszcza go w logach. To, co zwróci AI, zostanie zaszyfrowane w Twojej przeglądarce przy zapisie. Zgoda dotyczy tylko tego jednego uruchomienia."
+      "aiConsentHint": "Serwer nie zapisuje tekstu ani nie umieszcza go w logach. To, co zwróci AI, zostanie zaszyfrowane w Twojej przeglądarce przy zapisie. Zgoda dotyczy tylko tego jednego uruchomienia.",
+      "amountsPartlyPaid": "Zaszyfrowanych kwot nie można zapisać z płatnością częściową. Usuń opłaconą kwotę i po zapłacie oznacz dokument jako opłacony."
     },
     "actions": {
       "blocked": "Nie udało się otworzyć zaszyfrowanych tekstów. Odblokuj sejf właściwym kluczem i spróbuj ponownie.",
@@ -14462,12 +14469,24 @@
       },
       "amounts": {
         "title": "Kwoty",
-        "description": "Ceny, VAT i sumy dokumentów.",
+        "description": "Ilości, ceny jednostkowe, stawki VAT, rabaty i sumy dokumentów. Numer dokumentu, symbol zmienny (VS), termin płatności, waluta i status pozostają czytelne.",
         "loses": [
-          "Automatyczne dopasowanie płatności bankowych",
-          "Raporty VAT, JPK i eksporty VAT",
-          "Pulpity, dochód netto i wykresy",
-          "Przypomnienia z kwotą i płatności QR tworzone przez serwer"
+          "Automatyczne dopasowanie płatności według kwoty: płatność z VS zaszyfrowanego dokumentu czeka na Twoje ręczne potwierdzenie",
+          "Płatności częściowe: zaszyfrowany dokument można oznaczyć tylko jako opłacony w całości, bez opłat i zaksięgowanej kwoty",
+          "Eksporty dla księgowego, zeznania i zestawienia VAT z serwera: odrzucają dokumenty z zaszyfrowanymi kwotami i je wypisują",
+          "Wysyłka przez Peppol, sugestie AI z kwotami i płatność kartą",
+          "Pulpit, dochód netto i raporty liczą tylko niezaszyfrowane dokumenty i podają, ile pominęły",
+          "Przypomnienia, cotygodniowe podsumowanie i sumy zaległości w e-mailach nie podają kwoty"
+        ],
+        "how": [
+          "Każda pozycja jest szyfrowana w Twojej przeglądarce w całości: ilość, cena, stawka VAT i rabat. Sumy dokumentu mają własną kopertę. Wszystko kluczem dokumentu, więc link dla klienta też je otworzy.",
+          "Serwer zamiast liczb zapisuje zera, więc żadna jego suma nie zawiera prawdziwej kwoty.",
+          "Dokumenty z AI (Telegram, WhatsApp) mają czytelne kwoty, dopóki nie zapiszesz ich w edytorze.",
+          "Wcześniejsze dokumenty pozostaną czytelne, dopóki nie zaszyfrujesz ich przyciskiem Zaszyfruj istniejące kwoty."
+        ],
+        "changes": [
+          "PDF, ISDOC, UBL i płatność QR tworzy Twoja przeglądarka, a w linku dla klienta przeglądarka klienta",
+          "Faktury cykliczne kopiują zaszyfrowane kwoty bez zmian"
         ]
       },
       "howTitle": "Jak to działa:",
@@ -14724,7 +14743,25 @@
       "nothing": "Nie było nic do zaszyfrowania.",
       "failed": "Szyfrowanie nie powiodło się. Już zaszyfrowane kontakty pozostają zaszyfrowane."
     },
-    "emailSealed": "E-mail klienta jest zaszyfrowany, więc serwer nic na niego nie wyśle. Wyślij fakturę z własnej poczty albo skopiuj link dla klienta."
+    "emailSealed": "E-mail klienta jest zaszyfrowany, więc serwer nic na niego nie wyśle. Wyślij fakturę z własnej poczty albo skopiuj link dla klienta.",
+    "sealAmounts": {
+      "button": "Zaszyfruj istniejące kwoty",
+      "title": "Zaszyfruj istniejące kwoty",
+      "what": "Przeglądarka wczyta dokumenty, których kwoty są czytelne na serwerze, zaszyfruje ilości, ceny, stawki VAT, rabaty i sumy i zapisze je z powrotem. Na serwerze zostaną w ich miejscu zera.",
+      "keeps": "Numer dokumentu, VS, termin płatności, waluta i status pozostaną czytelne, więc płatności według VS nadal znajdziesz.",
+      "loses": "Serwer nie utworzy wtedy dla tych dokumentów PDF, ISDOC ani eksportów dla księgowego i nie uwzględni ich w raportach. Opłacony dokument pozostanie opłacony.",
+      "resumable": "Zablokowane i częściowo opłacone dokumenty zostaną pominięte. Jeśli zamkniesz okno, następnym razem praca będzie kontynuowana od miejsca, w którym skończyłeś.",
+      "cancel": "Wróć",
+      "confirm": "Zaszyfruj",
+      "progress": "Szyfrowanie… {n}",
+      "done": "{n, plural, one {Zaszyfrowano kwoty # dokumentu} few {Zaszyfrowano kwoty # dokumentów} many {Zaszyfrowano kwoty # dokumentów} other {Zaszyfrowano kwoty # dokumentu}}.",
+      "nothing": "Nie było nic do zaszyfrowania.",
+      "failed": "Szyfrowanie się nie powiodło. Już zaszyfrowane dokumenty pozostają zaszyfrowane.",
+      "partlyPaid": "{n, plural, one {# częściowo opłacony dokument pozostał czytelny} few {# częściowo opłacone dokumenty pozostały czytelne} many {# częściowo opłaconych dokumentów pozostało czytelnych} other {# częściowo opłaconego dokumentu pozostało czytelne}}. Można je zaszyfrować po pełnej zapłacie."
+    },
+    "amounts": {
+      "paidSealed": "Kwoty dokumentu są zaszyfrowane, dlatego można zapisać tylko zapłatę całej kwoty. Serwer nie przechowuje opłat ani zaksięgowanej kwoty."
+    }
   },
   "vaultPublic": {
     "integrity": {

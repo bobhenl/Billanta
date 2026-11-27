@@ -470,7 +470,8 @@
     },
     "dragToReorder": "Arrastrar para reordenar",
     "exportsCta": "Exportaciones para el asesor",
-    "emptyHintReadOnly": "Todavía no hay documentos. Cuando la empresa emita su primera factura, aquí verá los ingresos, un gráfico y los clientes."
+    "emptyHintReadOnly": "Todavía no hay documentos. Cuando la empresa emita su primera factura, aquí verá los ingresos, un gráfico y los clientes.",
+    "sealedNote": "{count, plural, one {# documento con importes cifrados no está incluido} other {# documentos con importes cifrados no están incluidos}} en los totales."
   },
   "invoices": {
     "hover": {
@@ -783,7 +784,8 @@
       "openedPreview": "Vista previa: la clave del enlace abrió los textos. No se guardó en este navegador.",
       "forget": "Olvidar la clave en este navegador",
       "forgotten": "La clave se ha borrado de este navegador. El texto completo está en el enlace del correo original."
-    }
+    },
+    "confidentialAmount": "Importe confidencial"
   },
   "expenses": {
     "title": "Gastos",
@@ -4773,7 +4775,10 @@
       "empty_input": "Describa qué quiere facturar.",
       "symbol_invalid": "Los símbolos solo pueden contener dígitos (VS y SS hasta 10, KS hasta 4).",
       "reason_required": "Indique el motivo del cambio.",
-      "ai_credits_exhausted": "Los créditos de IA de este mes se han agotado. Llegan nuevos el día 1; un plan superior tiene más, o use su propia clave."
+      "ai_credits_exhausted": "Los créditos de IA de este mes se han agotado. Llegan nuevos el día 1; un plan superior tiene más, o use su propia clave.",
+      "amounts_plaintext": "El documento no se ha guardado: los importes no estaban cifrados. Inténtalo de nuevo.",
+      "amounts_sealed": "Los importes del documento están cifrados, así que el servidor no puede hacerlo.",
+      "amounts_partly_paid": "Un documento pagado parcialmente no se puede cifrar. Cífralo cuando esté pagado del todo."
     },
     "copy": {
       "title": "Rellenar a partir de otra factura",
@@ -7311,7 +7316,8 @@
     },
     "flatTaxLink": "¿Le compensa el impuesto de tarifa plana? →",
     "taxReturnLink": "Resumen para la declaración de impuestos",
-    "netIncomeLink": "Después de impuestos"
+    "netIncomeLink": "Después de impuestos",
+    "sealedNote": "{count, plural, one {# documento con importes cifrados no está incluido} other {# documentos con importes cifrados no están incluidos}} en los totales."
   },
   "siteSearch": {
     "title": "Buscar en el sitio",
@@ -14385,7 +14391,8 @@
       "sealOnHint": "Solo tú y los miembros con la clave veréis las descripciones y notas. Tu navegador crea el PDF, ISDOC y UBL; las sugerencias de líneas se buscan solo en tu navegador.",
       "sealOffHint": "El documento se guarda sin cifrar, como hasta ahora.",
       "aiConsent": "Enviar este texto a la IA: irá una sola vez al servidor y al proveedor de IA y no se guardará",
-      "aiConsentHint": "El servidor no guarda ni registra el texto. Lo que devuelva la IA se cifra en tu navegador al guardar. El consentimiento vale solo para esta ejecución."
+      "aiConsentHint": "El servidor no guarda ni registra el texto. Lo que devuelva la IA se cifra en tu navegador al guardar. El consentimiento vale solo para esta ejecución.",
+      "amountsPartlyPaid": "Los importes cifrados no se pueden guardar con un pago parcial. Borra el importe pagado y marca el documento como pagado cuando se pague."
     },
     "actions": {
       "blocked": "No se pudieron abrir los textos cifrados. Desbloquea la caja fuerte con la clave correcta y vuelve a intentarlo.",
@@ -14461,12 +14468,24 @@
       },
       "amounts": {
         "title": "Importes",
-        "description": "Precios, IVA y totales de documentos.",
+        "description": "Cantidades, precios unitarios, tipos de IVA, descuentos y totales de los documentos. El número del documento, el símbolo variable (VS), el vencimiento, la moneda y el estado siguen siendo legibles.",
         "loses": [
-          "Conciliación automática de pagos bancarios",
-          "Informes de IVA, declaración de control y exportaciones de IVA",
-          "Paneles, ingreso neto y gráficos",
-          "Recordatorios con importe y pagos QR creados por el servidor"
+          "Conciliación automática de pagos por importe: un pago con el VS de un documento cifrado espera tu confirmación manual",
+          "Pagos parciales: un documento cifrado solo puede marcarse como pagado en su totalidad, sin comisiones ni importe abonado",
+          "Exportaciones para el contable, declaraciones e informes de IVA del servidor: rechazan los documentos con importes cifrados y los enumeran",
+          "Envío por Peppol, sugerencias de IA con importes y pago con tarjeta",
+          "El panel, los ingresos netos y los informes solo cuentan documentos sin cifrar e indican cuántos han dejado fuera",
+          "Los recordatorios, el resumen semanal y los totales vencidos en los correos no incluyen el importe"
+        ],
+        "how": [
+          "Cada línea se cifra en tu navegador como un todo: cantidad, precio, tipo de IVA y descuento. Los totales del documento tienen su propio sobre. Todo con la clave del documento, así que el enlace del cliente también los abre.",
+          "El servidor guarda ceros en lugar de las cifras, así que ninguna de sus sumas contiene un importe real.",
+          "Los documentos creados por IA (Telegram, WhatsApp) tienen importes legibles hasta que los guardes en el editor.",
+          "Los documentos anteriores siguen legibles hasta que los cifres con el botón Cifrar importes existentes."
+        ],
+        "changes": [
+          "El PDF, ISDOC, UBL y el pago QR los crea tu navegador, y en el enlace del cliente el navegador del cliente",
+          "Las facturas recurrentes copian los importes cifrados sin cambios"
         ]
       },
       "howTitle": "Cómo funciona:",
@@ -14723,7 +14742,25 @@
       "nothing": "No había nada que cifrar.",
       "failed": "El cifrado ha fallado. Los contactos ya cifrados siguen cifrados."
     },
-    "emailSealed": "El e-mail del cliente está cifrado, así que el servidor no le envía nada. Envía la factura desde tu correo o copia el enlace para el cliente."
+    "emailSealed": "El e-mail del cliente está cifrado, así que el servidor no le envía nada. Envía la factura desde tu correo o copia el enlace para el cliente.",
+    "sealAmounts": {
+      "button": "Cifrar importes existentes",
+      "title": "Cifrar importes existentes",
+      "what": "El navegador carga los documentos cuyos importes son legibles en el servidor, cifra cantidades, precios, tipos de IVA, descuentos y totales y los vuelve a guardar. En el servidor quedan ceros en su lugar.",
+      "keeps": "El número del documento, el VS, el vencimiento, la moneda y el estado siguen legibles, así que seguirás encontrando los pagos por VS.",
+      "loses": "El servidor ya no creará PDF, ISDOC ni exportaciones contables de estos documentos y no los contará en los informes. Un documento pagado sigue pagado.",
+      "resumable": "Los documentos bloqueados y los pagados parcialmente se omiten. Si cierras la ventana, la próxima vez se continúa donde lo dejaste.",
+      "cancel": "Volver",
+      "confirm": "Cifrar",
+      "progress": "Cifrando… {n}",
+      "done": "{n, plural, one {Importes de # documento cifrados} other {Importes de # documentos cifrados}}.",
+      "nothing": "No había nada que cifrar.",
+      "failed": "El cifrado ha fallado. Los documentos ya cifrados siguen cifrados.",
+      "partlyPaid": "{n, plural, one {# documento pagado parcialmente sigue legible} other {# documentos pagados parcialmente siguen legibles}}. Se podrán cifrar cuando estén pagados del todo."
+    },
+    "amounts": {
+      "paidSealed": "Los importes del documento están cifrados, por eso solo se puede registrar el pago completo. El servidor no guarda comisiones ni el importe abonado."
+    }
   },
   "vaultPublic": {
     "integrity": {

@@ -470,7 +470,8 @@
     },
     "dragToReorder": "Trageți pentru a reordona",
     "exportsCta": "Exporturi pentru contabil",
-    "emptyHintReadOnly": "Nu există încă documente. După ce firma emite prima factură, aici veți vedea venituri, un grafic și clienți."
+    "emptyHintReadOnly": "Nu există încă documente. După ce firma emite prima factură, aici veți vedea venituri, un grafic și clienți.",
+    "sealedNote": "{count, plural, one {# document cu sume criptate nu este inclus} few {# documente cu sume criptate nu sunt incluse} other {# de documente cu sume criptate nu sunt incluse}} în totaluri."
   },
   "invoices": {
     "hover": {
@@ -783,7 +784,8 @@
       "openedPreview": "Previzualizare: cheia din link a deschis textele. Nu a fost salvată în acest browser.",
       "forget": "Uitați cheia în acest browser",
       "forgotten": "Cheia a fost ștearsă din acest browser. Textul complet este în linkul din e-mailul inițial."
-    }
+    },
+    "confidentialAmount": "Sumă confidențială"
   },
   "expenses": {
     "title": "Cheltuieli",
@@ -4773,7 +4775,10 @@
       "empty_input": "Descrieți ce doriți să facturați.",
       "symbol_invalid": "Simbolurile pot conține doar cifre (VS și SS până la 10, KS până la 4).",
       "reason_required": "Introduceți motivul modificării.",
-      "ai_credits_exhausted": "Creditele AI pe luna aceasta s-au terminat. Altele noi vin pe 1, un plan superior are mai multe, sau folosiți propria cheie."
+      "ai_credits_exhausted": "Creditele AI pe luna aceasta s-au terminat. Altele noi vin pe 1, un plan superior are mai multe, sau folosiți propria cheie.",
+      "amounts_plaintext": "Documentul nu a fost salvat: sumele nu erau criptate. Încercați din nou.",
+      "amounts_sealed": "Sumele documentului sunt criptate, așa că serverul nu poate face acest lucru.",
+      "amounts_partly_paid": "Un document plătit parțial nu poate fi criptat. Criptați-l după plata integrală."
     },
     "copy": {
       "title": "Precompletați dintr-o altă factură",
@@ -7311,7 +7316,8 @@
     },
     "flatTaxLink": "Merită impozitul forfetar? →",
     "taxReturnLink": "Rezumatul declarației fiscale",
-    "netIncomeLink": "După impozite"
+    "netIncomeLink": "După impozite",
+    "sealedNote": "{count, plural, one {# document cu sume criptate nu este inclus} few {# documente cu sume criptate nu sunt incluse} other {# de documente cu sume criptate nu sunt incluse}} în totaluri."
   },
   "siteSearch": {
     "title": "Căutați pe site",
@@ -14385,7 +14391,8 @@
       "sealOnHint": "Descrierile pozițiilor și notele le veți vedea doar dvs. și membrii cu cheie. PDF, ISDOC și UBL le creează browserul dvs.; sugestiile de poziții se caută doar în browserul dvs.",
       "sealOffHint": "Documentul se salvează fără criptare, ca până acum.",
       "aiConsent": "Trimiteți acest text la AI – ajunge o singură dată la server și la furnizorul AI și nu se salvează",
-      "aiConsentHint": "Serverul nu salvează și nu înregistrează textul. Ce returnează AI se criptează în browserul dvs. la salvare. Acordul este valabil doar pentru această rulare."
+      "aiConsentHint": "Serverul nu salvează și nu înregistrează textul. Ce returnează AI se criptează în browserul dvs. la salvare. Acordul este valabil doar pentru această rulare.",
+      "amountsPartlyPaid": "Sumele criptate nu pot fi salvate cu o plată parțială. Ștergeți suma plătită și, după plată, marcați documentul ca plătit."
     },
     "actions": {
       "blocked": "Textele criptate nu au putut fi deschise. Deblocați seiful cu cheia corectă și încercați din nou.",
@@ -14461,12 +14468,24 @@
       },
       "amounts": {
         "title": "Sume",
-        "description": "Prețuri, TVA și totalurile documentelor.",
+        "description": "Cantități, prețuri unitare, cote TVA, reduceri și totalurile documentelor. Numărul documentului, simbolul variabil (VS), scadența, moneda și starea rămân lizibile.",
         "loses": [
-          "Potrivirea automată a plăților bancare",
-          "Rapoarte TVA, declarația de control și exporturi TVA",
-          "Tablouri de bord, venitul net și grafice",
-          "Mementouri cu sumă și plăți QR create de server"
+          "Potrivirea automată a plăților după sumă: o plată cu VS-ul unui document criptat așteaptă confirmarea dvs. manuală",
+          "Plăți parțiale: un document criptat poate fi marcat doar ca plătit integral, fără comisioane și suma creditată",
+          "Exporturile pentru contabil, declarațiile și rapoartele TVA de pe server: refuză documentele cu sume criptate și le listează",
+          "Trimiterea prin Peppol, sugestiile AI cu sume și plata cu cardul",
+          "Panoul, venitul net și rapoartele numără doar documentele necriptate și spun câte au omis",
+          "Mementourile, rezumatul săptămânal și totalurile restante din e-mailuri nu includ suma"
+        ],
+        "how": [
+          "Fiecare poziție se criptează în browserul dvs. ca întreg: cantitate, preț, cotă TVA și reducere. Totalurile documentului au propriul plic. Totul sub cheia documentului, astfel încât și linkul pentru client le deschide.",
+          "Serverul stochează zerouri în locul cifrelor, așa că niciuna dintre sumele lui nu conține o sumă reală.",
+          "Documentele din AI (Telegram, WhatsApp) au sume lizibile până când le salvați în editor.",
+          "Documentele anterioare rămân lizibile până când le criptați cu butonul Criptează sumele existente."
+        ],
+        "changes": [
+          "PDF-ul, ISDOC, UBL și plata QR le creează browserul dvs., iar pe linkul pentru client browserul clientului",
+          "Facturile recurente copiază sumele criptate neschimbate"
         ]
       },
       "howTitle": "Cum funcționează:",
@@ -14723,7 +14742,25 @@
       "nothing": "Nu a fost nimic de criptat.",
       "failed": "Criptarea a eșuat. Contactele deja criptate rămân criptate."
     },
-    "emailSealed": "E-mailul clientului este criptat, așa că serverul nu trimite nimic la el. Trimiteți factura din propriul e-mail sau copiați linkul pentru client."
+    "emailSealed": "E-mailul clientului este criptat, așa că serverul nu trimite nimic la el. Trimiteți factura din propriul e-mail sau copiați linkul pentru client.",
+    "sealAmounts": {
+      "button": "Criptează sumele existente",
+      "title": "Criptează sumele existente",
+      "what": "Browserul încarcă documentele ale căror sume sunt lizibile pe server, criptează cantitățile, prețurile, cotele TVA, reducerile și totalurile și le salvează înapoi. Pe server rămân zerouri în locul lor.",
+      "keeps": "Numărul documentului, VS, scadența, moneda și starea rămân lizibile, deci găsiți în continuare plățile după VS.",
+      "loses": "Serverul nu va mai crea pentru aceste documente PDF, ISDOC sau exporturi pentru contabil și nu le va număra în rapoarte. Un document plătit rămâne plătit.",
+      "resumable": "Documentele blocate și cele plătite parțial sunt omise. Dacă închideți fereastra, data viitoare se continuă de unde ați rămas.",
+      "cancel": "Înapoi",
+      "confirm": "Criptează",
+      "progress": "Se criptează… {n}",
+      "done": "{n, plural, one {Au fost criptate sumele a # document} few {Au fost criptate sumele a # documente} other {Au fost criptate sumele a # de documente}}.",
+      "nothing": "Nu era nimic de criptat.",
+      "failed": "Criptarea a eșuat. Documentele deja criptate rămân criptate.",
+      "partlyPaid": "{n, plural, one {# document plătit parțial a rămas lizibil} few {# documente plătite parțial au rămas lizibile} other {# de documente plătite parțial au rămas lizibile}}. Pot fi criptate după plata integrală."
+    },
+    "amounts": {
+      "paidSealed": "Sumele documentului sunt criptate, de aceea se poate înregistra doar plata integrală. Serverul nu păstrează comisioane sau suma creditată."
+    }
   },
   "vaultPublic": {
     "integrity": {

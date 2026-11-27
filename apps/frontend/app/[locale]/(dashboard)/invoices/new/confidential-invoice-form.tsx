@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { isSealed, open, type VaultKey } from '@faktur/cz-compliance';
 import { useVault } from '@/components/vault/vault-provider';
 import { draftIsSealed, openDraft } from '@/lib/vault/content';
+import { amountsAreSealed, openAmounts } from '@/lib/vault/amounts';
 import { contactIsSealed, openContact, openContacts } from '@/lib/vault/contacts';
 import { buttonClass } from '@/lib/ui-classes';
 import { InvoiceForm } from './invoice-form';
@@ -15,7 +16,8 @@ import type { InvoiceTemplate } from './types';
 const buyerIsSealed = (template: InvoiceTemplate | null) => contactIsSealed(template?.contact) || isSealed(template?.buyerContactPerson);
 
 async function openTemplate(key: VaultKey, template: InvoiceTemplate): Promise<InvoiceTemplate> {
-  const texts = draftIsSealed(template) ? await openDraft(key, template) : template;
+  const opened = draftIsSealed(template) ? await openDraft(key, template) : template;
+  const texts = await openAmounts(key, opened);
   return {
     ...texts,
     contact: texts.contact ? await openContact(key, texts.contact) : texts.contact,
@@ -34,7 +36,8 @@ export function ConfidentialInvoiceForm(props: ComponentProps<typeof InvoiceForm
   const { vault, key, requestUnlock } = useVault();
   const template = props.template ?? null;
   const textsSealed = draftIsSealed(template);
-  const sealed = textsSealed || buyerIsSealed(template);
+  const amountsSealed = amountsAreSealed(template);
+  const sealed = textsSealed || amountsSealed || buyerIsSealed(template);
   const [opened, setOpened] = useState<InvoiceTemplate | null | 'failed'>(sealed ? null : template);
   // Starred customers only need opening for their names; locked, they show a lock.
   const [starred, setStarred] = useState(props.starred);
@@ -97,7 +100,8 @@ export function ConfidentialInvoiceForm(props: ComponentProps<typeof InvoiceForm
         getKey: requestUnlock,
         // An edit keeps the document's key, so a client link sent before still opens it; a copy gets its own.
         keySource: props.mode?.kind === 'edit' ? template : null,
-        buyerSealed: buyerIsSealed(template) && mayKeepSealed
+        buyerSealed: buyerIsSealed(template) && mayKeepSealed,
+        amountsSealed: amountsSealed && mayKeepSealed
       }}
     />
   );

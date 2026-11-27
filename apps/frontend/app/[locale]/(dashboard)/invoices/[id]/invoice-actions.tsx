@@ -75,7 +75,8 @@ export function InvoiceActions({
   hasCustomer = true,
   confidential = false,
   encryptedAttachments = [],
-  sealedDoc = null
+  sealedDoc = null,
+  amountsSealed = false
 }: {
   id: string;
   documentType: DocumentType;
@@ -103,6 +104,8 @@ export function InvoiceActions({
   encryptedAttachments?: { id: string; encMeta: string }[];
   /** The printed texts when some are encrypted: the browser puts their key into the client link. */
   sealedDoc?: SealedDocument | null;
+  /** Category "amounts": `total` is a placeholder; only a full payment without sums can be recorded. */
+  amountsSealed?: boolean;
 }) {
   const t = useTranslations('doc');
   const tVault = useTranslations('vault.actions');
@@ -144,14 +147,15 @@ export function InvoiceActions({
   const [payUnit, setPayUnit] = useState<'amount' | 'percent'>('amount');
   const [payValue, setPayValue] = useState('');
   const payNumber = Number(payValue.replace(',', '.')) || 0;
-  const payAmount = payMode === 'full' ? undefined : Math.round((payUnit === 'percent' ? (total * payNumber) / 100 : payNumber) * 100) / 100;
-  const payInvalid = payMode === 'partial' && !(payAmount && payAmount > 0);
+  const payAmount = payMode === 'full' || amountsSealed ? undefined : Math.round((payUnit === 'percent' ? (total * payNumber) / 100 : payNumber) * 100) / 100;
+  const payInvalid = !amountsSealed && payMode === 'partial' && !(payAmount && payAmount > 0);
   // Provider fees (PayPal, Stripe, Wise…) and the home currency actually credited → net margin on the detail.
   const [feeValue, setFeeValue] = useState('');
   const [editReason, setEditReason] = useState('');
   const [receivedValue, setReceivedValue] = useState('');
   const num = (v: string) => Number(v.replace(/\s/g, '').replace(',', '.')) || undefined;
-  const net = { fee: num(feeValue), receivedCzk: currency === home ? undefined : num(receivedValue) };
+  // The server keeps no sums of a sealed document, fees and the credited amount included.
+  const net = amountsSealed ? {} : { fee: num(feeValue), receivedCzk: currency === home ? undefined : num(receivedValue) };
 
   // The area level first, then the finer actions from Settings → Team (the backend checks the same).
   const canWriteArea = useCanWrite('invoices');
@@ -464,7 +468,7 @@ export function InvoiceActions({
       <Modal
         open={dialog === 'paid'}
         onClose={() => setDialog(null)}
-        title={payMode === 'partial' ? t('partial.record') : t('confirm.paidTitle')}
+        title={payMode === 'partial' && !amountsSealed ? t('partial.record') : t('confirm.paidTitle')}
         footer={
           <>
             <button type="button" className={buttonClass.secondary} onClick={() => setDialog(null)}>
@@ -476,12 +480,13 @@ export function InvoiceActions({
               disabled={pending || payInvalid}
               onClick={() => act(() => markInvoicePaid(id, paidAt, payAmount, net), payAmount && payAmount < remaining ? t('done.partial') : t('done.paid'))}
             >
-              {payMode === 'full' ? t('actions.markPaid') : t('partial.record')}
+              {payMode === 'full' || amountsSealed ? t('actions.markPaid') : t('partial.record')}
             </button>
           </>
         }
       >
-        <div className="mb-3 grid grid-cols-2 gap-2 text-sm">
+        {amountsSealed && <p className="mb-3 text-sm text-muted-foreground">{tVaultRoot('amounts.paidSealed')}</p>}
+        <div className={`mb-3 grid grid-cols-2 gap-2 text-sm ${amountsSealed ? 'hidden' : ''}`}>
           {(['full', 'partial'] as const).map((m) => (
             <button
               key={m}
@@ -493,7 +498,7 @@ export function InvoiceActions({
             </button>
           ))}
         </div>
-        {payMode === 'partial' && (
+        {payMode === 'partial' && !amountsSealed && (
           <div className="mb-3">
             <span className="mb-1 block text-xs font-semibold text-muted-foreground">{t('partial.amountLabel')}</span>
             <div className="flex gap-2">
@@ -511,7 +516,7 @@ export function InvoiceActions({
           <span className="mb-1 block text-xs font-semibold text-muted-foreground">{t('fields.paidAt')}</span>
           <input type="date" className={inputClass} value={paidAt} onChange={(e) => setPaidAt(e.target.value)} />
         </label>
-        <details className="mt-3 rounded-lg border border-border px-3 py-2 text-sm">
+        <details className={`mt-3 rounded-lg border border-border px-3 py-2 text-sm ${amountsSealed ? 'hidden' : ''}`}>
           <summary className="cursor-pointer font-semibold text-muted-foreground">{t('net.toggle')}</summary>
           <p className="mt-1 text-xs text-muted-foreground">{t('net.hint')}</p>
           <div className={`mt-2 grid gap-2 ${currency === home ? '' : 'sm:grid-cols-2'}`}>

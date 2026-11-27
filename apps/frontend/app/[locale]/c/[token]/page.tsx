@@ -20,9 +20,13 @@ export const dynamic = 'force-dynamic';
 const FILTERS = ['all', 'unpaid', 'paid', 'quotes'] as const;
 type Filter = (typeof FILTERS)[number];
 
+// A sealed document's balance is unknown here: while it is issued, it counts as unpaid.
+const unpaid = (d: ClientPortalDocument) =>
+  d.balance == null ? d.status === 'issued' && d.documentType !== 'quote' && d.documentType !== 'credit_note' : d.balance > 0;
+
 const matches = (d: ClientPortalDocument, f: Filter) =>
   f === 'all' ||
-  (f === 'unpaid' && d.balance > 0) ||
+  (f === 'unpaid' && unpaid(d)) ||
   (f === 'paid' && d.status === 'paid') ||
   (f === 'quotes' && d.documentType === 'quote');
 
@@ -41,7 +45,7 @@ const STATE_CLASSES: Record<DocState, string> = {
 
 function docState(d: ClientPortalDocument): DocState {
   if (d.status === 'cancelled') return 'cancelled';
-  if (d.balance > 0) return d.overdue ? 'overdue' : 'unpaid';
+  if (unpaid(d)) return d.overdue ? 'overdue' : 'unpaid';
   if (d.documentType === 'quote') return d.clientResponse ?? 'quote';
   return d.status === 'paid' ? 'paid' : 'issued';
 }
@@ -143,7 +147,11 @@ export default async function ClientPortalPage({
                     </div>
                   </div>
                   <div className="shrink-0 text-right">
-                    <div className="font-semibold tabular-nums">{formatMoney(d.balance > 0 ? d.balance : d.total, d.currency, locale)}</div>
+                    <div className="font-semibold tabular-nums">{d.total == null ? (
+                        <span className="text-sm font-normal italic text-muted-foreground">{tInvoice('confidentialAmount')}</span>
+                      ) : (
+                        formatMoney(d.balance != null && d.balance > 0 ? d.balance : d.total, d.currency, locale)
+                      )}</div>
                     <span className={cn('inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold', STATE_CLASSES[state])}>{t(`state.${state}`)}</span>
                   </div>
                   <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />

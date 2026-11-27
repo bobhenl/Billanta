@@ -118,6 +118,15 @@ function makeLineItems(): LineItemRow[] {
 describe("InvoicePdfService.generate", () => {
   const service = new InvoicePdfService();
 
+  it("refuses a document with sealed amounts instead of printing the zero placeholders", async () => {
+    const invoice = makeInvoice({ encAmounts: `enc:v1:AAAAAAAAAAAAAAAA:${"Q".repeat(24)}` });
+    const lineItems = makeLineItems();
+    await expect(service.generate(invoice, makeContact(), makeTenant(), lineItems, computeVatBreakdown(lineItems))).rejects.toMatchObject({
+      status: 409,
+      message: "confidential_content",
+    });
+  });
+
   it("produces a non-empty, valid PDF buffer", async () => {
     const invoice = makeInvoice();
     const tenant = makeTenant();

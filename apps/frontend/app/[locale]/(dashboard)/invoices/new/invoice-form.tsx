@@ -33,6 +33,7 @@ import { lookupPrefillByIco } from '@/lib/company-lookup-actions';
 import { fetchAllContacts } from '@/lib/vault/actions';
 import { contactIsSealed, contactsConfidential, matchContacts, openContact, openContacts, sealBuyer, sealsContacts } from '@/lib/vault/contacts';
 import { documentKeyFor, sealDraft } from '@/lib/vault/content';
+import { sealAmounts, sealsAmounts } from '@/lib/vault/amounts';
 import { matchItemSuggestions } from '@/lib/vault/item-suggestions';
 import { invalidateSealedIndex, loadSealedIndex } from '@/lib/vault/sealed-index';
 import type {
@@ -221,6 +222,8 @@ export function InvoiceForm({
     keySource?: InvoiceTemplate | null;
     /** The starting point's customer was encrypted (category "contacts"): its copies on the document stay encrypted. */
     buyerSealed?: boolean;
+    /** The starting point's amounts were encrypted (category "amounts"): they stay encrypted, the server refuses plain ones over them. */
+    amountsSealed?: boolean;
   };
   mode?: InvoiceFormMode;
   defaults: FormDefaults;
@@ -473,6 +476,8 @@ export function InvoiceForm({
   // except an AI run the member ticks for (item suggestions are matched in the browser).
   const [sealIt, setSealIt] = useState(Boolean(confidential?.sealByDefault));
   const sealing = Boolean(confidential && sealIt);
+  // Amounts follow the texts' switch while the category is on; once sealed they stay sealed.
+  const sealsAmountsNow = Boolean(confidential && ((sealIt && sealsAmounts(vaultState.vault)) || confidential.amountsSealed));
   const vaultSession = useVault();
   const [recentPlain] = useState<{ list: Promise<ItemSuggestion[]> | null }>({ list: null });
   // Encrypting: the item box asks nothing with the typed text. Plain history (fetched once, no query)
@@ -790,14 +795,20 @@ export function InvoiceForm({
     // Offline, or the customer itself still waits in the queue: a new draft goes into the
     // offline queue. Numbering, issuing and edits need the server, so they wait for a connection.
     const queuedCustomer = customer?.kind === 'contact' && customer.id.startsWith(OFFLINE_CONTACT_PREFIX);
+    // Category "amounts": the server keeps no paid sum of a sealed document; it is marked paid afterwards instead.
+    if (sealsAmountsNow && !issuedEdit && paidAmount) return setError(tVault('amountsPartlyPaid'));
     const canQueue = mode.kind === 'create' && !issue && Boolean(offline.scope);
     // "Důvěrný režim": the texts are encrypted here, so the server (and the offline queue) only ever get envelopes.
     const sealedInput = async (): Promise<InvoiceDraftInput | null> => {
       let out = input;
-      if (sealing) {
+      if (sealing || sealsAmountsNow) {
         const key = await confidential!.getKey();
         if (!key) return null;
-        out = await sealDraft(key, out, await documentKeyFor(key, confidential!.keySource));
+        // One document key for the texts and the amounts, so a client link opens both.
+        const docKey = await documentKeyFor(key, confidential!.keySource);
+        if (sealing) out = await sealDraft(key, out, docKey);
+        // The server keeps no plain paid sum of a sealed document (checked above, so this is 0 or untouched).
+        if (sealsAmountsNow) out = await sealAmounts(docKey, { ...out, amountPaid: out.amountPaid === undefined ? undefined : 0 }, { reverseCharge: out.reverseCharge });
       }
       // Encrypted contacts: the document's contact person, and a register pick saved as a new contact.
       if (sealsBuyer) {

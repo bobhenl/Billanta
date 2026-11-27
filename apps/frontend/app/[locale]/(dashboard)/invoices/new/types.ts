@@ -90,6 +90,8 @@ export interface FormItem {
   unitPrice: number;
   vatRate: number | null;
   discountPercent: number;
+  /** Category "amounts": the sealed numbers; the plain ones above are then the placeholder. Set only on save. */
+  encAmounts?: string | null;
 }
 
 /** Everything the form sends; maps 1:1 onto the backend's `invoiceFieldsSchema`. */
@@ -129,6 +131,8 @@ export interface InvoiceDraftInput {
   /** Already received at creation (absolute amount), undefined = leave as is. */
   amountPaid?: number;
   items: FormItem[];
+  /** Category "amounts": the sealed totals, set on save together with the items' envelopes. */
+  encAmounts?: string | null;
   prefilledByAi: boolean;
   templateId?: string | null;
 }
@@ -304,7 +308,19 @@ export interface InvoiceTemplate {
   issuePlace?: string | null;
   issuedByName?: string | null;
   customFields?: CustomField[];
-  items?: { description: string; quantity: number; unit?: string | null; code?: string | null; unitPrice: number; vatRate: number | null; discountPercent?: number }[];
+  items?: {
+    description: string;
+    quantity: number;
+    unit?: string | null;
+    code?: string | null;
+    unitPrice: number;
+    vatRate: number | null;
+    discountPercent?: number;
+    /** Category "amounts": opened in the browser before the form sees the numbers. */
+    encAmounts?: string | null;
+  }[];
+  /** Category "amounts": the sealed totals of the starting point. */
+  encAmounts?: string | null;
   // edit mode only
   issueDate?: string | null;
   dueDate?: string | null;

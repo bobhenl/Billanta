@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { isSealed, SEALED_BUYER_SNAPSHOT_FIELDS } from '@faktur/cz-compliance';
 import { ConfidentialText } from '@/components/vault/confidential-text';
 import { ConfidentialJoin } from '@/components/vault/confidential-join';
+import { SealedItemAmount, SealedTotal, SealedTotalsBlock } from '@/components/vault/sealed-amounts';
 import { SealButton } from '@/components/vault/seal-button';
 import { ServerViewPanel } from '@/components/vault/server-view-panel';
 import type { ReactNode } from 'react';
@@ -154,7 +155,11 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   const buyerTexts = snapshot
     ? [snapshot.legalName, snapshot.addressStreet, snapshot.addressCity, snapshot.addressPostalCode]
     : [contact?.legalName, contact?.addressStreet, contact?.addressCity, contact?.addressPostalCode];
-  const confidential = [invoice.noteAbove, invoice.noteBelow, invoice.buyerContactPerson, ...buyerTexts, ...items.map((item) => item.description)].some(isSealed);
+  // Category "amounts": the server sent placeholders; every number below is opened in the browser.
+  const amountsSealed = Boolean(detail.amountsSealed);
+  const encAmounts = invoice.encAmounts ?? null;
+  const confidential =
+    amountsSealed || [invoice.noteAbove, invoice.noteBelow, invoice.buyerContactPerson, ...buyerTexts, ...items.map((item) => item.description)].some(isSealed);
   // The browser opens these to put the document key into the client link (components/vault/client-link.tsx).
   // Only a snapshot can be re-keyed: a draft without one follows the live contact.
   const sealedBuyer = snapshot
@@ -166,7 +171,9 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
         noteBelow: invoice.noteBelow ?? null,
         items: items.map((item) => ({ id: item.id, description: item.description })),
         buyer: sealedBuyer,
-        buyerContactPerson: isSealed(invoice.buyerContactPerson) ? invoice.buyerContactPerson : null
+        buyerContactPerson: isSealed(invoice.buyerContactPerson) ? invoice.buyerContactPerson : null,
+        encAmounts,
+        itemAmounts: items.filter((item) => isSealed(item.encAmounts)).map((item) => ({ id: item.id, encAmounts: item.encAmounts as string }))
       }
     : null;
   const hasPlainText = texts.some((text) => Boolean(text?.trim()) && !isSealed(text));
@@ -285,14 +292,16 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
         </div>
         <div className="sm:text-right">
           <div className="text-xs uppercase tracking-wide text-muted-foreground">{t('totalDue')}</div>
-          <div className="text-3xl font-extrabold tabular-nums"><span className="amount">{money(totals.totalWithVat)}</span></div>
-          {invoice.status === 'issued' && Number(invoice.amountPaid ?? 0) > 0 && (
+          <div className="text-3xl font-extrabold tabular-nums">
+            {amountsSealed ? <SealedTotal cipher={encAmounts} currency={invoice.currency} /> : <span className="amount">{money(totals.totalWithVat)}</span>}
+          </div>
+          {!amountsSealed && invoice.status === 'issued' && Number(invoice.amountPaid ?? 0) > 0 && (
             <div className="mt-1 text-sm">
               <span className="font-semibold text-success"><span className="amount">{t('partial.paid', { amount: money(Number(invoice.amountPaid)) })}</span></span>
               <span className="text-muted-foreground"> · <span className="amount">{t('partial.remaining', { amount: money(Math.max(0, totals.totalWithVat - Number(invoice.amountPaid))) })}</span></span>
             </div>
           )}
-          {home === 'CZK' && invoice.documentType !== 'credit_note' && totals.totalWithoutVat > 0 && <NetEstimate base={totals.totalWithoutVat} currency={invoice.currency} czkRate={rate} fees={netFees} fxLoss={fxLoss} />}
+          {!amountsSealed && home === 'CZK' && invoice.documentType !== 'credit_note' && totals.totalWithoutVat > 0 && <NetEstimate base={totals.totalWithoutVat} currency={invoice.currency} czkRate={rate} fees={netFees} fxLoss={fxLoss} />}
           {/* Only what the report counts: invoices and credit notes. */}
           {partners.length >= 2 && (invoice.documentType === 'invoice' || invoice.documentType === 'credit_note') && (
             <PartnerSplit id={invoice.id} number={invoice.invoiceNumber ?? title} partners={partners} initial={invoice.partnerShares ?? null} />
@@ -321,6 +330,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           confidential={confidential}
           encryptedAttachments={(attachments ?? []).filter((a) => a.encMeta && a.sendWithEmail).map((a) => ({ id: a.id, encMeta: a.encMeta! }))}
           sealedDoc={sealedDoc}
+          amountsSealed={amountsSealed}
         />
         {/* "Zašifrovat": only while some text of this document is still plain. */}
         {hasPlainText && <SealButton scope={{ kind: 'invoice', invoiceId: invoice.id }} compact className="mt-2" />}
@@ -415,12 +425,24 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               <li key={item.id} className="py-2.5 first:pt-0">
                 <div className="flex justify-between gap-3">
                   <ConfidentialText value={item.description} className="min-w-0 break-words" />
-                  <span className="shrink-0 font-semibold tabular-nums"><span className="amount">{money(item.lineTotalWithoutVat)}</span></span>
+                  <span className="shrink-0 font-semibold tabular-nums">
+                    {isSealed(item.encAmounts) ? (
+                      <SealedItemAmount cipher={item.encAmounts} currency={invoice.currency} field="line" />
+                    ) : (
+                      <span className="amount">{money(item.lineTotalWithoutVat)}</span>
+                    )}
+                  </span>
                 </div>
                 <div className="mt-0.5 text-xs tabular-nums text-muted-foreground">
-                  {Number(item.quantity).toLocaleString(locale)} {item.unit ?? ''} × {money(Number(item.unitPrice))}
-                  {Number(item.discountPercent) ? ` · ${t('items.discount')} ${Number(item.discountPercent)} %` : ''}
-                  {item.vatRate === null ? '' : ` · ${t('items.vat')} ${Number(item.vatRate)} %`}
+                  {isSealed(item.encAmounts) ? (
+                    <SealedItemAmount cipher={item.encAmounts} currency={invoice.currency} field="summary" unit={item.unit} />
+                  ) : (
+                    <>
+                      {Number(item.quantity).toLocaleString(locale)} {item.unit ?? ''} × {money(Number(item.unitPrice))}
+                      {Number(item.discountPercent) ? ` · ${t('items.discount')} ${Number(item.discountPercent)} %` : ''}
+                      {item.vatRate === null ? '' : ` · ${t('items.vat')} ${Number(item.vatRate)} %`}
+                    </>
+                  )}
                 </div>
               </li>
             ))}
@@ -438,7 +460,27 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                 </tr>
               </thead>
               <tbody>
-                {items.map((item) => (
+                {items.map((item) =>
+                  isSealed(item.encAmounts) ? (
+                    <tr key={item.id} className="border-b border-border/60 last:border-b-0">
+                      <td className="py-2.5 pr-2"><ConfidentialText value={item.description} /></td>
+                      <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums">
+                        <SealedItemAmount cipher={item.encAmounts} currency={invoice.currency} field="quantity" unit={item.unit} />
+                      </td>
+                      <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums">
+                        <SealedItemAmount cipher={item.encAmounts} currency={invoice.currency} field="unitPrice" />
+                      </td>
+                      <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums text-muted-foreground">
+                        <SealedItemAmount cipher={item.encAmounts} currency={invoice.currency} field="discount" />
+                      </td>
+                      <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums text-muted-foreground">
+                        <SealedItemAmount cipher={item.encAmounts} currency={invoice.currency} field="vat" />
+                      </td>
+                      <td className="whitespace-nowrap py-2.5 pl-2 text-right font-semibold tabular-nums">
+                        <SealedItemAmount cipher={item.encAmounts} currency={invoice.currency} field="line" />
+                      </td>
+                    </tr>
+                  ) : (
                   <tr key={item.id} className="border-b border-border/60 last:border-b-0">
                     <td className="py-2.5 pr-2"><ConfidentialText value={item.description} /></td>
                     <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums">
@@ -453,13 +495,15 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                     </td>
                     <td className="whitespace-nowrap py-2.5 pl-2 text-right font-semibold tabular-nums"><span className="amount">{money(item.lineTotalWithoutVat)}</span></td>
                   </tr>
-                ))}
+                  )
+                )}
               </tbody>
             </table>
           </div>
 
           <div className="mt-4 flex justify-end">
             <dl className="w-full max-w-xs space-y-1 text-sm">
+              {amountsSealed ? <SealedTotalsBlock cipher={encAmounts} currency={invoice.currency} /> : <>
               {totals.byRate.map((r) => (
                 <div key={r.vatRatePercent} className="flex justify-between text-muted-foreground">
                   <dt>{t('vatAt', { rate: r.vatRatePercent })}</dt>
@@ -480,9 +524,10 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                 <dt>{t('totalDue')}</dt>
                 <dd className="tabular-nums"><span className="amount">{money(totals.totalWithVat)}</span></dd>
               </div>
+              </>}
             </dl>
           </div>
-          {quote && (
+          {quote && !amountsSealed && (
             <p className="mt-3 text-right text-xs text-muted-foreground">
               <span className="amount">{fx.kind === 'hidden'
                 ? t('fxHidden', {

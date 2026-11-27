@@ -6,6 +6,7 @@ import { apiFetch } from '@/lib/api-client';
 import { backendMessage } from '@/lib/action-error';
 import type { RekeyPayload } from './content';
 import type { PlainContactBatch, sealContactBatch } from './contacts';
+import type { PlainAmountsDocument, sealPlainAmounts } from './amounts';
 import type { Contact } from '@/app/[locale]/(dashboard)/invoices/new/types';
 import type { PlainAttachment, PlainInvoice, VaultDocumentPage, VaultEmailMode, VaultStatus } from './types';
 
@@ -131,6 +132,24 @@ export async function storeSealedContacts(sealed: Awaited<ReturnType<typeof seal
     invoices: sealed.invoices.map((i) => ({ ...only({ id: i.id, buyerContactPerson: i.buyerContactPerson }), buyer: only(i.buyer) }))
   };
   const result = await call<{ contacts: number; invoices: number }>('/api/v1/vault/contacts/seal', json('POST', body));
+  if (result.ok) revalidatePath('/', 'layout');
+  return result;
+}
+
+/** Documents whose amounts are still plain (not locked, not partly paid). */
+export async function fetchPlainAmounts() {
+  return call<{ remaining: number; skippedPartlyPaid: number; invoices: PlainAmountsDocument[] }>('/api/v1/vault/invoices/plain-amounts?limit=20');
+}
+
+/** Stores the amounts envelopes; the server writes the placeholder into the plain columns itself. */
+export async function storeSealedAmounts(invoices: Awaited<ReturnType<typeof sealPlainAmounts>>[]) {
+  const body = {
+    invoices: invoices
+      .filter((i) => isSealed(i.encAmounts) && i.items.every((it) => isSealed(it.encAmounts)))
+      .map((i) => ({ id: i.id, encAmounts: i.encAmounts, items: i.items.map((it) => ({ id: it.id, encAmounts: it.encAmounts })) }))
+  };
+  if (!body.invoices.length) return { ok: true as const, value: { sealed: 0, skipped: 0 } };
+  const result = await call<{ sealed: number; skipped: number }>('/api/v1/vault/invoices/seal-amounts', json('POST', body));
   if (result.ok) revalidatePath('/', 'layout');
   return result;
 }
