@@ -5,7 +5,7 @@ import { isSealed, type VaultCategory, type VaultWrap } from '@faktur/cz-complia
 import { apiFetch } from '@/lib/api-client';
 import { backendMessage } from '@/lib/action-error';
 import type { RekeyPayload } from './content';
-import type { PlainInvoice, VaultDocumentPage, VaultStatus } from './types';
+import type { PlainInvoice, VaultDocumentPage, VaultEmailMode, VaultStatus } from './types';
 
 type Result<T> = { ok: true; value: T } | { ok: false; error: string };
 
@@ -48,8 +48,9 @@ export async function replaceRecoveryWrap(recovery: VaultWrap) {
   return result;
 }
 
-export async function updateVaultSettings(sealNew: boolean) {
-  const result = await call<VaultStatus>('/api/v1/vault/settings', json('PATCH', { sealNew }));
+export async function updateVaultSettings(input: boolean | { sealNew?: boolean; emailMode?: VaultEmailMode; autoSendPdf?: boolean }) {
+  const body = typeof input === 'boolean' ? { sealNew: input } : input;
+  const result = await call<VaultStatus>('/api/v1/vault/settings', json('PATCH', body));
   if (result.ok) revalidatePath('/', 'layout');
   return result;
 }

@@ -6,7 +6,7 @@
  * browser's localStorage, so a later link without it (a reminder the server
  * sent) still opens there. Nothing in here makes a request.
  */
-import { importDocumentKey, isSealed, openWithDocumentKey } from './confidential.js';
+import { importDocumentKey, isSealed, openWithDocumentKey } from './vault/confidential.js';
 
 const FRAGMENT_RE = /(?:^#|&)k=([A-Za-z0-9_-]{43})(?:&|$)/;
 export const CLIENT_KEYS_STORAGE = 'billanta-client-keys';

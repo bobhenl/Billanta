@@ -254,6 +254,8 @@ const INVOICE_ACTION_ROUTES: [RegExp, PermissionAction][] = [
   [/^v1\/invoices\/[^/]+\/(issue|refresh-parties)$/, "invoices.issue"],
   [/^v1\/invoices\/[^/]+\/(send|remind|einvoice|buyer-details-request|public-link(\/rotate)?)$/, "invoices.send"],
   [/^v1\/invoices\/[^/]+\/cancel$/, "invoices.cancel"],
+  // Sending (or dropping) an encrypted document's e-mail that waited for its PDF.
+  [/^v1\/vault\/invoices\/emails\/[^/]+\/(send|send-texts|dismiss)$/, "invoices.send"],
 ];
 
 const EXPORT_FILE = /\.(csv|xml|pdf)$/;

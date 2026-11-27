@@ -78,6 +78,8 @@ export class VaultService {
       enabled: true as const,
       planAllowed,
       sealNew: vault.sealNew,
+      emailMode: vault.emailMode,
+      autoSendPdf: vault.autoSendPdf,
       categories: vault.categories,
       keyCheck: vault.keyCheck,
       enabledAt: vault.createdAt,
@@ -144,7 +146,15 @@ export class VaultService {
   async updateSettings(db: TenantDb, tenantId: string, user: AuthenticatedUser, dto: VaultSettingsDto) {
     if (user.role !== "owner" && user.role !== "admin") throw new ForbiddenException("forbidden");
     await this.requireVault(db, tenantId);
-    await db.update(schema.tenantVaults).set({ sealNew: dto.sealNew, updatedAt: new Date() }).where(eq(schema.tenantVaults.tenantId, tenantId));
+    await db
+      .update(schema.tenantVaults)
+      .set({
+        ...(dto.sealNew !== undefined ? { sealNew: dto.sealNew } : {}),
+        ...(dto.emailMode !== undefined ? { emailMode: dto.emailMode } : {}),
+        ...(dto.autoSendPdf !== undefined ? { autoSendPdf: dto.autoSendPdf } : {}),
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.tenantVaults.tenantId, tenantId));
     return this.status(db, tenantId, user.id);
   }
 

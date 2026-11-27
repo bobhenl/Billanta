@@ -722,6 +722,13 @@
       "when": 1793601000000,
       "tag": "0105_tenant_usage",
       "breakpoints": true
+    },
+    {
+      "idx": 104,
+      "version": "7",
+      "when": 1793601400000,
+      "tag": "0110_vault_email_queue",
+      "breakpoints": true
     }
   ]
 }

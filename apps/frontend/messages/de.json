@@ -245,7 +245,8 @@
         "cookies": "Cookie-Richtlinie",
         "cookieSettings": "Cookie-Einstellungen",
         "dpa": "Auftragsverarbeitungsvertrag",
-        "contact": "Kontakt"
+        "contact": "Kontakt",
+        "confidential": "Vertraulicher Modus und Sicherheit"
       },
       "account": {
         "title": "Konto",
@@ -7361,7 +7362,8 @@
         "buyer_details_submitted": "hat die Rechnungsangaben ausgefüllt für",
         "buyer_details_cancelled": "hat die Anfrage nach Kundenangaben geschlossen für",
         "profile_order": "erstellt durch eine Bestellung über das öffentliche Profil:",
-        "link_renamed": "hat den öffentlichen Link umbenannt"
+        "link_renamed": "hat den öffentlichen Link umbenannt",
+        "send_waiting_pdf": "zum Versand mit PDF vorgemerkt:"
       },
       "tenant": {
         "updated": "hat die Unternehmensdaten bearbeitet",
@@ -14304,10 +14306,12 @@
     "actions": {
       "blocked": "Im Vertraulichen Modus nicht verfügbar: Der Server kann einen verschlüsselten Beleg nicht lesen. Schalten Sie den PDF/ISDOC-Anhang in den E-Mail-Einstellungen aus oder senden Sie einen Link.",
       "pdfUnavailable": "PDF ist im Vertraulichen Modus nicht verfügbar. Sie können die Detailseite aus dem Browser drucken (Strg+P).",
-      "sendHint": "Dieser Beleg ist verschlüsselt: Die E-Mail enthält nur einen Link, PDF oder ISDOC kann der Server nicht anhängen.",
+      "sendHint": "Das Dokument ist verschlüsselt, daher kann der Server weder PDF noch ISDOC selbst erstellen. Je nach Einstellung geht der Link sofort und das PDF aus Ihrem Browser, oder nur der Link.",
       "linkCopied": "Link mit Schlüssel kopiert",
       "keyLink": "Kundenlink mit Schlüssel",
-      "copyLink": "Kopieren"
+      "copyLink": "Kopieren",
+      "emailWaiting": "Die E-Mail wartet auf das PDF. Sie wird aus einem Browser mit entsperrtem Modus gesendet, siehe Hinweis oben.",
+      "pdfFollows": "Link gesendet. Das PDF senden Sie als Nachtrag über den Hinweis oben."
     },
     "categories": {
       "recommended": "Empfohlen",
@@ -14498,6 +14502,167 @@
         "vatRate": "MwSt.-Satz %",
         "discountPercent": "Rabatt %"
       }
+    },
+    "outbox": {
+      "badge": "{n, plural, one {# E-Mail wartet} other {# E-Mails warten}} auf den Versand mit PDF",
+      "open": "Anzeigen",
+      "title": "E-Mails, die auf das PDF warten",
+      "back": "Schließen",
+      "send": "Senden ({n})",
+      "unlockAndSend": "Entsperren und senden ({n})",
+      "lead": "Ein verschlüsseltes Dokument kann der Server nicht selbst in ein PDF umwandeln. Das PDF entsteht erst hier, in einem Browser mit entsperrtem Vertraulichen Modus.",
+      "passThroughPdf": "Das PDF wird in Ihrem Browser erstellt. Der Server leitet es einmal an den Empfänger weiter und speichert es nicht.",
+      "passThroughTexts": "Nach dem Klick auf Senden gehen die entschlüsselten Texte dieser Dokumente einmal über den Server: Er erstellt daraus das PDF und verschickt es per E-Mail. Er speichert und protokolliert sie nicht.",
+      "unnumbered": "Ohne Nummer",
+      "kind": {
+        "invoice": "Ganze E-Mail wartet",
+        "invoice_pdf": "PDF zu einem gesendeten Link"
+      },
+      "dismiss": "Nicht senden",
+      "settingsHint": "Wann und wie das PDF verschickt wird, legen Sie fest in den",
+      "settingsLink": "Einstellungen des Vertraulichen Modus",
+      "sent": "{n, plural, one {# E-Mail gesendet} other {# E-Mails gesendet}}",
+      "failed": "{n, plural, one {# E-Mail konnte nicht gesendet werden} other {# E-Mails konnten nicht gesendet werden}}"
+    },
+    "emailSettings": {
+      "title": "E-Mails zu verschlüsselten Dokumenten",
+      "lead": "Was passiert, wenn Sie ein verschlüsseltes Dokument senden. Link, Betrag, Fälligkeit, Verwendungszweck und QR-Zahlung gehen immer mit.",
+      "mode": {
+        "link_now": "Link sofort, PDF später",
+        "wait": "Warten und alles zusammen senden",
+        "link_only": "Nur Link, nie ein PDF"
+      },
+      "modeHint": {
+        "link_now": "Der Kunde bekommt sofort eine E-Mail mit dem Link. Das PDF folgt in einer zweiten E-Mail, sobald jemand aus dem Team es aus einem Browser mit entsperrtem Modus sendet.",
+        "wait": "Die E-Mail geht erst mit dem PDF raus, aus dem Browser eines Teammitglieds mit entsperrtem Modus. Bis dahin bekommt der Kunde nichts.",
+        "link_only": "Der Kunde bekommt nur den Link und öffnet das Dokument dort. Der Server erhält die Texte nie."
+      },
+      "autoSend": "PDFs automatisch senden",
+      "autoSendHint": "Sobald jemand aus dem Team die App mit entsperrtem Modus öffnet, gehen wartende PDFs ohne weiteren Klick raus.",
+      "passThrough": "Jedes gesendete PDF geht einmal über den Server, weil die E-Mail von dort verschickt wird. Der Server speichert und protokolliert es nicht.",
+      "saved": "Gespeichert",
+      "failed": "Speichern fehlgeschlagen"
+    },
+    "device": {
+      "title": "Entsperrung auf diesem Gerät merken",
+      "hint": "Der Modus bleibt auch nach dem Schließen des Browsers entsperrt, ohne 12-Stunden-Grenze, damit wartende PDFs rausgehen können, wann immer Sie die App öffnen. Der Schlüssel liegt so im Browser, dass er nicht gelesen oder kopiert werden kann. Sperren, Ausschalten dieser Option oder Abmelden entfernt ihn.",
+      "risk": "Nur auf einem eigenen Gerät einschalten, das sonst niemand nutzt. Wer diesen Browser öffnet, sieht die verschlüsselten Texte.",
+      "on": "Dieses Gerät merkt sich die Entsperrung",
+      "off": "Die Entsperrung läuft wieder nach 12 Stunden ab",
+      "failed": "Das hat nicht geklappt. Entsperren Sie zuerst den Modus."
+    },
+    "serverView": {
+      "title": "Was der Server sieht",
+      "lead": "So sind die Texte dieses Dokuments auf dem Server gespeichert. Entschlüsseln kann sie nur ein Browser mit entsperrtem Modus.",
+      "server": "Der Server hat:",
+      "you": "Sie sehen:",
+      "noteAbove": "Text über den Positionen",
+      "noteBelow": "Text unter den Positionen",
+      "internalNote": "Interne Notiz",
+      "item": "Position {n}",
+      "notSealed": "Beträge, Daten, Dokumentnummer, Verwendungszweck und Kunden sieht der Server, um die MwSt. zu berechnen, Fälligkeiten zu überwachen und Zahlungen zuzuordnen.",
+      "more": "Wie es funktioniert und wie Sie es prüfen"
     }
+  },
+  "vaultPublic": {
+    "integrity": {
+      "title": "Code-Prüfung",
+      "lead": "Bei jedem Build der App werden die SHA-256-Hashes des Verschlüsselungscodes und der Dateien, die ihn enthalten, festgehalten.",
+      "sourceHash": "Quelldatei {path}",
+      "repo": "Öffentlicher Quellcode",
+      "repoPlanned": "Wir planen, ihn in einem eigenen GitHub-Repository zu veröffentlichen.",
+      "chunks": "Dateien, die Ihr Browser lädt",
+      "check": "In diesem Browser prüfen",
+      "match": "Stimmt überein",
+      "mismatch": "Stimmt nicht überein",
+      "error": "Datei konnte nicht geladen werden",
+      "loadedHere": "auf dieser Seite geladen",
+      "missing": "Das Manifest ist noch nicht verfügbar. Es entsteht beim Produktions-Build.",
+      "honest": "Manifest und Dateien kommen vom selben Server, ein Treffer zeigt also nur, dass das Manifest beschreibt, was ausgeliefert wird. Die echte Prüfung ist der Vergleich der Hashes mit einem Build aus dem veröffentlichten Quellcode."
+    },
+    "demo": {
+      "label": "Schreiben Sie einen beliebigen Satz",
+      "placeholder": "Zum Beispiel: Beratung zum Firmenverkauf, 12 Stunden",
+      "send": "Verschlüsseln und senden",
+      "keyNote": "Der Schlüssel entsteht nur für diese Seite und wird nie gesendet. Nach dem Neuladen ist er weg.",
+      "typed": "Was Sie geschrieben haben",
+      "typedHint": "Bleibt nur in Ihrem Browser.",
+      "sent": "Was an den Server ging",
+      "sentHint": "Der genaue Inhalt der Anfrage POST {path}.",
+      "received": "Was der Server bekam (HTTP {status})",
+      "receivedHint": "Der Server gibt genau das zurück, was er erhalten hat. Er speichert nichts.",
+      "open": "Hier entschlüsseln",
+      "openedAs": "Ihr Browser hat es zurück entschlüsselt zu:",
+      "rateLimited": "Zu viele Versuche. Bitte warten Sie ein paar Minuten.",
+      "failed": "Die Anfrage ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "devtoolsTitle": "Prüfen Sie es selbst in den Browser-Werkzeugen",
+      "devtoolsSteps": [
+        "Drücken Sie F12 (auf dem Mac Cmd+Option+I) und öffnen Sie den Tab Netzwerk (Network).",
+        "Klicken Sie erneut auf Verschlüsseln und senden.",
+        "Klicken Sie in der Liste auf die Anfrage „echo“ und öffnen Sie Payload (Nutzlast) und Response (Antwort).",
+        "Sie sehen nur eine Zeichenkette enc:v1:…, nicht Ihren Satz. Strg+F im Netzwerk-Tab durchsucht alle Anfragen: Suchen Sie dort ein Wort aus Ihrem Satz."
+      ]
+    },
+    "csp": {
+      "liveTitle": "Der Content-Security-Policy-Header dieser Seite, gerade eben abgerufen",
+      "liveMissing": "Der Header konnte nicht gelesen werden. Sie finden ihn in den Browser-Werkzeugen bei der Anfrage für diese Seite."
+    }
+  },
+  "securityPage": {
+    "seoTitle": "Vertraulicher Modus: was der Server sieht und was nicht",
+    "eyebrow": "Sicherheit",
+    "title": "Vertraulicher Modus: Dokumenttexte, die der Server nicht lesen kann",
+    "lead": "Positionsbeschreibungen und Notizen werden in Ihrem Browser verschlüsselt. Der Server bekommt nur eine verschlüsselte Zeichenkette und hat keinen Schlüssel dafür. Hier können Sie es selbst ausprobieren und prüfen.",
+    "featuresLink": "Alle Funktionen",
+    "demoTitle": "Probieren Sie es aus",
+    "demoLead": "Ohne Anmeldung. Die Seite verschlüsselt Ihren Satz mit demselben Code wie die App und sendet ihn wirklich an den Server. Nebeneinander sehen Sie, was Sie geschrieben haben, was gesendet wurde und was der Server bekam.",
+    "howTitle": "So funktioniert es",
+    "howSteps": [
+      {
+        "title": "Der Schlüssel entsteht bei Ihnen",
+        "body": "Beim Einschalten erzeugt der Browser einen zufälligen AES-256-Schlüssel. Der Server bekommt nur Kopien davon, gesperrt mit Ihrem Passwort, Passkey oder Wiederherstellungscode."
+      },
+      {
+        "title": "Verschlüsselt vor dem Senden",
+        "body": "Eine Positionsbeschreibung oder Notiz wird verschlüsselt, bevor sie den Browser verlässt. Der Server speichert eine Zeichenkette enc:v1:… und macht nichts damit."
+      },
+      {
+        "title": "Entschlüsselt nur bei Ihnen",
+        "body": "Nach dem Entsperren hält der Browser den Schlüssel so, dass die Seite ihn nutzen, aber seinen Inhalt nicht lesen kann."
+      }
+    ],
+    "hiddenTitle": "Was der Server nicht sieht",
+    "hidden": [
+      "Positionsbeschreibungen",
+      "Text über und unter den Positionen",
+      "Interne Notizen",
+      "Den Schlüssel und das Passwort, das ihn entsperrt"
+    ],
+    "visibleTitle": "Was der Server sieht und warum",
+    "visible": [
+      "Beträge und MwSt. – für Berechnungen, Steuererklärungen und Zahlungsabgleich",
+      "Ausstellungs- und Fälligkeitsdatum – für Mahnungen",
+      "Dokumentnummer und Verwendungszweck",
+      "Den Kunden und seine E-Mail – damit das Dokument versendet werden kann"
+    ],
+    "cspTitle": "Der Browser kontrolliert, wohin die Seite Daten senden darf",
+    "cspBody": "Die App, Dokumentlinks und diese Seite werden mit einem Content-Security-Policy-Header ausgeliefert, der connect-src 'self' enthält. Der Browser lehnt dann selbst jede Anfrage einer solchen Seite an einen anderen Server ab, auch wenn ein Skript es versucht. Entschlüsselter Text kann auf diesem Weg nicht hinaus.",
+    "cspHow": "Jeder kann den Header lesen: Klicken Sie in den Browser-Werkzeugen (F12, Tab Netzwerk) auf die erste Anfrage, die Seite selbst, und suchen Sie in den Antwort-Headern Content-Security-Policy.",
+    "limitsTitle": "Wo die Grenzen liegen",
+    "limits": [
+      "Den Code der App liefert unser Server. Wäre er kompromittiert, könnte er anderen Code liefern. Die Veröffentlichung von Code und Hashes macht eine solche Änderung erkennbar, verhindert sie aber nicht von selbst.",
+      "Wenn Sie ein verschlüsseltes Dokument mit PDF per E-Mail senden, gehen seine Texte einmal über den Server, weil die E-Mail von dort verschickt wird. Die App sagt es vorher, und der Server speichert und protokolliert sie nicht. Senden Sie nur den Link, bekommt der Server die Texte nie.",
+      "Beträge, Daten, Nummern und Kunden verschlüsselt der Modus nicht, siehe oben.",
+      "Für verschlüsselte Dokumente erstellt der Server kein ISDOC und keine anderen maschinenlesbaren Formate.",
+      "Die Regel connect-src gilt für eine direkt geladene Seite. Wechseln Sie ohne Neuladen von der öffentlichen Website in die App, gilt bis zum Neuladen die Regel der vorherigen Seite.",
+      "Wer Zugang zu Ihrem entsperrten Browser hat, sieht die Texte. Der Modus schützt vor dem Server, nicht vor jemandem an Ihrem Computer.",
+      "Wenn Sie Passwort und Wiederherstellungscode vergessen und keinen Passkey haben, kann niemand die Texte wiederherstellen, auch wir nicht."
+    ],
+    "verifyTitle": "Code-Prüfung",
+    "verifyLead": "Bei jedem Build schreiben wir die SHA-256-Hashes des Verschlüsselungscodes in eine öffentliche Datei. Ihr Browser kann sie hier nachrechnen.",
+    "planned": [
+      "Den Verschlüsselungscode (eine Datei ohne Abhängigkeiten) veröffentlichen wir in einem eigenen GitHub-Repository, damit sich die Hashes mit einem eigenen Build vergleichen lassen.",
+      "Eine unabhängige Prüfung des Codes ist geplant."
+    ]
   }
 }

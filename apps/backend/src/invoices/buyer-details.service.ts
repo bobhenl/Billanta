@@ -373,8 +373,9 @@ export class BuyerDetailsService {
       return "failed";
     }
     try {
-      await this.inTenant(tenantId, "system", (db) => this.invoices.sendInvoice(db, invoiceId, tenantId));
-      return "sent";
+      const sent = await this.inTenant(tenantId, "system", (db) => this.invoices.sendInvoice(db, invoiceId, tenantId));
+      // An encrypted document in "wait" mode: the e-mail waits for a member's browser to add the PDF.
+      return (sent as { vaultEmail?: string } | undefined)?.vaultEmail === "waiting" ? "issued" : "sent";
     } catch (err) {
       outcome.autoIssueError = errorText(err);
       return "issued";

@@ -245,7 +245,8 @@
         "cookies": "Zásady cookies",
         "cookieSettings": "Nastavení cookies",
         "dpa": "Zpracovatelská smlouva (DPA)",
-        "contact": "Kontakt"
+        "contact": "Kontakt",
+        "confidential": "Důvěrný režim a zabezpečení"
       },
       "account": {
         "title": "Účet",
@@ -7368,7 +7369,8 @@
         "buyer_details_submitted": "doplnil(a) fakturační údaje k",
         "buyer_details_cancelled": "zrušil(a) žádost o údaje odběratele k",
         "profile_order": "vytvořil(a) objednávkou z veřejného profilu koncept",
-        "link_renamed": "přejmenoval(a) veřejný odkaz"
+        "link_renamed": "přejmenoval(a) veřejný odkaz",
+        "send_waiting_pdf": "zařadil(a) k odeslání s PDF"
       },
       "tenant": {
         "updated": "upravil(a) údaje firmy",
@@ -14308,10 +14310,12 @@
     "actions": {
       "blocked": "Nedostupné v Důvěrném režimu: server zašifrovaný doklad nepřečte. Vypněte přílohu PDF/ISDOC v nastavení e-mailů, nebo pošlete odkaz.",
       "pdfUnavailable": "PDF je nedostupné v Důvěrném režimu. Detail můžete vytisknout z prohlížeče (Ctrl+P).",
-      "sendHint": "Doklad je zašifrovaný: e-mail odejde jen s odkazem, PDF ani ISDOC server přiložit nemůže.",
+      "sendHint": "Doklad je zašifrovaný: server sám PDF ani ISDOC nevytvoří. Podle nastavení Důvěrného režimu odejde odkaz hned a PDF z vašeho prohlížeče, nebo jen odkaz.",
       "linkCopied": "Odkaz s klíčem zkopírován",
       "keyLink": "Odkaz pro klienta s klíčem",
-      "copyLink": "Kopírovat"
+      "copyLink": "Kopírovat",
+      "emailWaiting": "E-mail čeká na PDF. Odešle se z prohlížeče s odemčeným režimem, viz upozornění nahoře.",
+      "pdfFollows": "Odkaz odeslán. PDF pošlete doplňujícím e-mailem z upozornění nahoře."
     },
     "categories": {
       "recommended": "Doporučeno",
@@ -14509,6 +14513,167 @@
         "vatRate": "Sazba DPH %",
         "discountPercent": "Sleva %"
       }
+    },
+    "outbox": {
+      "badge": "{n, plural, one {# e-mail čeká} few {# e-maily čekají} other {# e-mailů čeká}} na odeslání s PDF",
+      "open": "Zobrazit",
+      "title": "E-maily čekající na PDF",
+      "back": "Zavřít",
+      "send": "Odeslat ({n})",
+      "unlockAndSend": "Odemknout a odeslat ({n})",
+      "lead": "Zašifrovaný doklad server sám do PDF nepřevede. PDF vznikne až tady, v prohlížeči s odemčeným Důvěrným režimem.",
+      "passThroughPdf": "PDF se vytvoří ve vašem prohlížeči. Server ho jednou přepošle příjemci a neuloží ho.",
+      "passThroughTexts": "Po kliknutí na Odeslat projdou rozšifrované texty těchto dokladů jednou serverem: ten z nich vytvoří PDF a pošle ho e-mailem. Neuloží je ani nezapíše do logu.",
+      "unnumbered": "Bez čísla",
+      "kind": {
+        "invoice": "Celý e-mail čeká",
+        "invoice_pdf": "Doplnění PDF k odkazu"
+      },
+      "dismiss": "Neposílat",
+      "settingsHint": "Kdy a jak se PDF posílá, nastavíte v",
+      "settingsLink": "nastavení Důvěrného režimu",
+      "sent": "{n, plural, one {Odeslán # e-mail} few {Odeslány # e-maily} other {Odesláno # e-mailů}}",
+      "failed": "{n, plural, one {# e-mail se nepodařilo odeslat} few {# e-maily se nepodařilo odeslat} other {# e-mailů se nepodařilo odeslat}}"
+    },
+    "emailSettings": {
+      "title": "E-maily zašifrovaných dokladů",
+      "lead": "Co se stane, když odešlete zašifrovaný doklad. Odkaz, částka, splatnost, variabilní symbol a QR platba odcházejí vždy.",
+      "mode": {
+        "link_now": "Odkaz hned, PDF později",
+        "wait": "Počkat a poslat vše najednou",
+        "link_only": "Jen odkaz, nikdy PDF"
+      },
+      "modeHint": {
+        "link_now": "Odběratel dostane hned e-mail s odkazem. PDF přijde druhým e-mailem, jakmile ho někdo z týmu odešle z prohlížeče s odemčeným režimem.",
+        "wait": "E-mail odejde až s PDF, z prohlížeče člena týmu s odemčeným režimem. Do té doby odběratel nic nedostane.",
+        "link_only": "Odběratel dostane jen odkaz a doklad si otevře sám. Texty dokladu server nikdy nedostane."
+      },
+      "autoSend": "Posílat PDF automaticky",
+      "autoSendHint": "Jakmile někdo z týmu otevře aplikaci s odemčeným režimem, čekající PDF odejdou bez dalšího kliknutí.",
+      "passThrough": "Každé odeslané PDF jednou projde serverem, protože e-mail odchází odtud. Server ho neuloží ani nezapíše do logu.",
+      "saved": "Uloženo",
+      "failed": "Uložení se nepodařilo"
+    },
+    "device": {
+      "title": "Pamatovat odemčení na tomto zařízení",
+      "hint": "Režim zůstane odemčený i po zavření prohlížeče, bez limitu 12 hodin, takže čekající PDF se mohou odeslat, kdykoli aplikaci otevřete. Klíč je v prohlížeči uložený tak, že ho nejde přečíst ani zkopírovat. Zruší ho tlačítko Zamknout, vypnutí této volby nebo odhlášení.",
+      "risk": "Zapínejte jen na vlastním zařízení, ke kterému nemá přístup nikdo další. Kdo otevře tento prohlížeč, uvidí zašifrované texty.",
+      "on": "Odemčení se na tomto zařízení pamatuje",
+      "off": "Odemčení se zase zruší po 12 hodinách",
+      "failed": "Nepodařilo se. Nejdřív režim odemkněte."
+    },
+    "serverView": {
+      "title": "Co vidí server",
+      "lead": "Takto jsou texty tohoto dokladu uložené na serveru. Rozšifrovat je umí jen prohlížeč s odemčeným režimem.",
+      "server": "Server má:",
+      "you": "Vy vidíte:",
+      "noteAbove": "Text nad položkami",
+      "noteBelow": "Text pod položkami",
+      "internalNote": "Interní poznámka",
+      "item": "Položka {n}",
+      "notSealed": "Částky, data, číslo dokladu, symboly a odběratele server vidí, aby mohl počítat DPH, hlídat splatnost a párovat platby.",
+      "more": "Jak to funguje a jak si to ověřit"
     }
+  },
+  "vaultPublic": {
+    "integrity": {
+      "title": "Ověření kódu",
+      "lead": "Při každém sestavení aplikace se spočítají otisky SHA-256 šifrovacího kódu a souborů, které ho obsahují.",
+      "sourceHash": "Zdrojový soubor {path}",
+      "repo": "Veřejný zdrojový kód",
+      "repoPlanned": "Plánujeme ho zveřejnit v samostatném repozitáři na GitHubu.",
+      "chunks": "Soubory, které prohlížeč načítá",
+      "check": "Zkontrolovat v tomto prohlížeči",
+      "match": "Shoduje se",
+      "mismatch": "Neshoduje se",
+      "error": "Soubor se nepodařilo stáhnout",
+      "loadedHere": "načteno na této stránce",
+      "missing": "Manifest zatím není k dispozici. Vzniká při produkčním sestavení.",
+      "honest": "Manifest i soubory posílá stejný server, takže shoda jen potvrzuje, že manifest popisuje to, co se právě posílá. Skutečné ověření je porovnat otisky se sestavením ze zveřejněného zdrojového kódu."
+    },
+    "demo": {
+      "label": "Napište libovolnou větu",
+      "placeholder": "Třeba: Konzultace k prodeji firmy, 12 hodin",
+      "send": "Zašifrovat a odeslat",
+      "keyNote": "Klíč vznikne jen pro tuto stránku a nikam se neposílá. Po obnovení stránky zmizí.",
+      "typed": "Co jste napsali",
+      "typedHint": "Zůstává jen ve vašem prohlížeči.",
+      "sent": "Co odešlo na server",
+      "sentHint": "Přesné tělo požadavku POST {path}.",
+      "received": "Co server dostal (HTTP {status})",
+      "receivedHint": "Server vrací přesně to, co přijal. Nic neukládá.",
+      "open": "Rozšifrovat tady",
+      "openedAs": "Váš prohlížeč to rozšifroval zpět na:",
+      "rateLimited": "Příliš mnoho pokusů. Zkuste to za pár minut.",
+      "failed": "Požadavek se nepodařil. Zkuste to znovu.",
+      "devtoolsTitle": "Ověřte si to sami v nástrojích prohlížeče",
+      "devtoolsSteps": [
+        "Stiskněte F12 (na Macu Cmd+Option+I) a otevřete kartu Síť (Network).",
+        "Klikněte znovu na Zašifrovat a odeslat.",
+        "V seznamu klikněte na požadavek „echo“ a otevřete Payload (Datová část) a Response (Odpověď).",
+        "Uvidíte jen řetězec enc:v1:…, vaši větu ne. Ctrl+F v kartě Síť hledá ve všech požadavcích: zkuste tam najít slovo z vaší věty."
+      ]
+    },
+    "csp": {
+      "liveTitle": "Hlavička Content-Security-Policy této stránky, načtená právě teď",
+      "liveMissing": "Hlavičku se nepodařilo načíst. Najdete ji v nástrojích prohlížeče u požadavku na tuto stránku."
+    }
+  },
+  "securityPage": {
+    "seoTitle": "Důvěrný režim: co server vidí a co ne",
+    "eyebrow": "Zabezpečení",
+    "title": "Důvěrný režim: texty dokladů, které server nepřečte",
+    "lead": "Popisy položek a poznámky se šifrují ve vašem prohlížeči. Server dostane jen zašifrovaný řetězec a klíč k němu nemá. Tady si to můžete sami vyzkoušet a ověřit.",
+    "featuresLink": "Všechny funkce",
+    "demoTitle": "Vyzkoušejte si to",
+    "demoLead": "Bez přihlášení. Stránka zašifruje vaši větu stejným kódem jako aplikace a opravdu ji pošle na server. Vedle sebe uvidíte, co jste napsali, co odešlo a co server dostal.",
+    "howTitle": "Jak to funguje",
+    "howSteps": [
+      {
+        "title": "Klíč vznikne u vás",
+        "body": "Při zapnutí režimu vytvoří prohlížeč náhodný klíč AES-256. Server dostane jen jeho kopie zamčené vaším heslem, passkey nebo záchranným kódem."
+      },
+      {
+        "title": "Šifruje se před odesláním",
+        "body": "Popis položky nebo poznámka se zašifruje dřív, než opustí prohlížeč. Server uloží řetězec enc:v1:… a nic s ním nedělá."
+      },
+      {
+        "title": "Rozšifruje se jen u vás",
+        "body": "Po odemčení drží prohlížeč klíč tak, že ho stránka může použít, ale nemůže přečíst jeho obsah."
+      }
+    ],
+    "hiddenTitle": "Co server nevidí",
+    "hidden": [
+      "Popisy položek",
+      "Text nad a pod položkami",
+      "Interní poznámky",
+      "Klíč ani heslo, kterým se odemyká"
+    ],
+    "visibleTitle": "Co server vidí a proč",
+    "visible": [
+      "Částky a DPH – kvůli výpočtům, přiznáním a párování plateb",
+      "Data vystavení a splatnosti – kvůli upomínkám",
+      "Číslo dokladu a variabilní symbol",
+      "Odběratele a jeho e-mail – aby mohl doklad odeslat"
+    ],
+    "cspTitle": "Prohlížeč hlídá, kam stránka smí posílat data",
+    "cspBody": "Aplikace, odkazy na doklady i tato stránka chodí s hlavičkou Content-Security-Policy, která obsahuje connect-src 'self'. Prohlížeč pak sám odmítne každý požadavek z takové stránky na jiný server, i kdyby se o něj nějaký skript pokusil. Rozšifrovaný text touto cestou jinam neodejde.",
+    "cspHow": "Hlavičku si přečte kdokoli: v nástrojích prohlížeče (F12, karta Síť) klikněte na první požadavek, tedy na samotnou stránku, a v hlavičkách odpovědi najděte Content-Security-Policy.",
+    "limitsTitle": "Kde jsou hranice",
+    "limits": [
+      "Kód aplikace posílá náš server. Kdyby byl napadený, mohl by poslat jiný kód. Zveřejnění kódu a otisků umožňuje takovou změnu odhalit, ale samo jí nezabrání.",
+      "Když zašifrovaný doklad pošlete e-mailem s PDF, jeho texty jednou projdou serverem, protože e-mail odchází odtud. Aplikace to řekne předem a server je neuloží ani nezapíše do logu. Když pošlete jen odkaz, server texty nedostane vůbec.",
+      "Částky, data, čísla a odběratele režim nešifruje, viz výše.",
+      "Pro zašifrované doklady server nevytvoří ISDOC ani jiné strojové formáty.",
+      "Pravidlo connect-src platí pro stránku načtenou přímo. Když do aplikace přejdete z veřejného webu bez nového načtení, platí pravidlo stránky, ze které jste přišli, dokud stránku neobnovíte.",
+      "Kdo má přístup k vašemu odemčenému prohlížeči, texty uvidí. Režim chrání před serverem, ne před někým u vašeho počítače.",
+      "Když zapomenete heslo i záchranný kód a nemáte passkey, texty nikdo neobnoví, ani my."
+    ],
+    "verifyTitle": "Ověření kódu",
+    "verifyLead": "Při každém sestavení zapíšeme otisky SHA-256 šifrovacího kódu do veřejného souboru. Váš prohlížeč je může přepočítat přímo tady.",
+    "planned": [
+      "Šifrovací kód (jeden soubor bez závislostí) zveřejníme v samostatném repozitáři na GitHubu, aby šlo otisky porovnat s vlastním sestavením.",
+      "Nezávislá kontrola kódu je v plánu."
+    ]
   }
 }

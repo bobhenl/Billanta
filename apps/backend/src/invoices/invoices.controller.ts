@@ -559,7 +559,7 @@ export class InvoicesController {
   async send(@Req() req: TenantScopedRequest, @Param("id") id: string) {
     assertMayDo(req.user, "invoices.send");
     await assertInvoiceOpen(req.tenantDb!, id, req.user!);
-    return this.invoicesService.sendInvoice(req.tenantDb!, id, req.user!.tenantId);
+    return this.invoicesService.sendInvoice(req.tenantDb!, id, req.user!.tenantId, req.user!.id);
   }
 
   @Post(":id/remind")
