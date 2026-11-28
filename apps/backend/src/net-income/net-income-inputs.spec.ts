@@ -57,6 +57,22 @@ function fakeDb(rows: ReturnType<typeof invoice>[], taxModel: unknown = null) {
 const Q1 = { year: 2026, month: null, quarter: 1 };
 const sealedRow = (over: Record<string, unknown> = {}) => invoice("S1", { encAmounts: ENV, currency: "EUR", exchangeRate: "25", ...over });
 
+describe("NetIncomeService.inputs: what arrived in CZK", () => {
+  it("taxes the invoiced amount at the rate and keeps what the fee and rate took as fees", async () => {
+    // 10 000 EUR without VAT at 25; 290 400 Kč arrived with VAT, i.e. 240 000 Kč of it is the base.
+    const { db } = fakeDb([invoice("P1", { currency: "EUR", exchangeRate: "25", receivedCzk: "290400" })]);
+    const inputs = await new NetIncomeService().inputs(db, "t1", Q1);
+    expect(inputs.invoices).toEqual([expect.objectContaining({ amount: 10_000, income: 250_000, fees: 10_000, source: "received" })]);
+  });
+
+  it("without a rate counts what arrived and no fees", async () => {
+    const { db } = fakeDb([invoice("P1", { currency: "EUR", exchangeRate: null, receivedCzk: "290400" })]);
+    const inputs = await new NetIncomeService().inputs(db, "t1", Q1);
+    expect(inputs.invoices).toEqual([expect.objectContaining({ income: 240_000, fees: 0, source: "received" })]);
+    expect(inputs.missingRates).toBe(0);
+  });
+});
+
 describe("NetIncomeService.inputs (Confidential mode)", () => {
   it("hands out the sealed documents with their envelope and rate, never an amount", async () => {
     const { db } = fakeDb([invoice("P1"), sealedRow()]);

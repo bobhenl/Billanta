@@ -14264,6 +14264,7 @@
       "social": "Contributi previdenziali",
       "health": "Contributi sanitari",
       "taxes": "Totale imposte e contributi",
+      "fees": "Commissioni e conversione",
       "sharedExpenses": "Spese comuni",
       "net": "Reddito netto",
       "refund": "Conguaglio / rimborso"
@@ -14282,8 +14283,8 @@
     },
     "list": {
       "title": "Redditi nel periodo ({count})",
-      "hint": "Fatture pagate in base al giorno del pagamento, più gli altri redditi dalle impostazioni. Per una fattura in valuta estera conta ciò che è effettivamente arrivato sul conto (ad es. dopo la conversione in PayPal), altrimenti il tasso di cambio.",
-      "hintVat": "Fatture pagate in base al giorno del pagamento, IVA esclusa, più gli altri redditi dalle impostazioni. Per una fattura in valuta estera conta ciò che è effettivamente arrivato sul conto, altrimenti il tasso di cambio.",
+      "hint": "Fatture pagate in base al giorno del pagamento, più gli altri redditi dalle impostazioni. Una fattura in valuta estera è tassata sull’importo convertito al tasso di cambio. Quanto è arrivato in meno sul conto (commissione PayPal, cambio peggiore) compare nella riga «Commissioni e conversione» e si sottrae solo dal reddito netto.",
+      "hintVat": "Fatture pagate in base al giorno del pagamento, IVA esclusa, più gli altri redditi dalle impostazioni. Una fattura in valuta estera è tassata sull’importo convertito al tasso di cambio. Quanto è arrivato in meno sul conto compare nella riga «Commissioni e conversione» e si sottrae solo dal reddito netto.",
       "empty": "Nessuna fattura pagata in questo periodo.",
       "show": "Mostra tutti i redditi ({count})",
       "paidOn": "pagata il {date}",
@@ -14297,7 +14298,8 @@
       "saved": "Ripartizione salvata.",
       "failed": "Impossibile salvare la ripartizione.",
       "filter": "Filtra per etichetta",
-      "filterAll": "Tutto"
+      "filterAll": "Tutto",
+      "fees": "commissioni e conversione {amount}"
     },
     "shares": {
       "custom": "Rapporto personalizzato…",

@@ -14265,6 +14265,7 @@
       "social": "Ubezpieczenie społeczne",
       "health": "Ubezpieczenie zdrowotne",
       "taxes": "Podatek i ubezpieczenia łącznie",
+      "fees": "Opłaty i przewalutowanie",
       "sharedExpenses": "Wspólne wydatki",
       "net": "Dochód netto",
       "refund": "Dopłata / zwrot"
@@ -14283,8 +14284,8 @@
     },
     "list": {
       "title": "Przychody w okresie ({count})",
-      "hint": "Zapłacone faktury według dnia zapłaty oraz inne przychody z ustawień. Przy fakturze zagranicznej liczy się kwota, która faktycznie wpłynęła na konto (np. po przewalutowaniu w PayPalu), w przeciwnym razie kurs waluty.",
-      "hintVat": "Zapłacone faktury według dnia zapłaty, bez VAT, oraz inne przychody z ustawień. Przy fakturze zagranicznej liczy się kwota, która faktycznie wpłynęła na konto, w przeciwnym razie kurs waluty.",
+      "hint": "Zapłacone faktury według dnia zapłaty oraz inne przychody z ustawień. Faktura zagraniczna jest opodatkowana w kwocie przeliczonej po kursie. To, o ile mniej faktycznie wpłynęło na konto (opłata PayPala, gorszy kurs), pokazuje wiersz „Opłaty i przewalutowanie” i odejmuje się tylko od dochodu netto.",
+      "hintVat": "Zapłacone faktury według dnia zapłaty, bez VAT, oraz inne przychody z ustawień. Faktura zagraniczna jest opodatkowana w kwocie przeliczonej po kursie. To, o ile mniej faktycznie wpłynęło na konto, pokazuje wiersz „Opłaty i przewalutowanie” i odejmuje się tylko od dochodu netto.",
       "empty": "W tym okresie nie ma zapłaconych faktur.",
       "show": "Pokaż wszystkie przychody ({count})",
       "paidOn": "zapłacono {date}",
@@ -14298,7 +14299,8 @@
       "saved": "Podział zapisany.",
       "failed": "Nie udało się zapisać podziału.",
       "filter": "Filtruj według etykiety",
-      "filterAll": "Wszystko"
+      "filterAll": "Wszystko",
+      "fees": "opłaty i przewalutowanie {amount}"
     },
     "shares": {
       "custom": "Własny podział…",

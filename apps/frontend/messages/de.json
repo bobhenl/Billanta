@@ -14265,6 +14265,7 @@
       "social": "Sozialversicherung",
       "health": "Krankenversicherung",
       "taxes": "Steuer und Versicherung gesamt",
+      "fees": "Gebühren und Umrechnung",
       "sharedExpenses": "Gemeinsame Ausgaben",
       "net": "Nettoeinkommen",
       "refund": "Nachzahlung / Erstattung"
@@ -14283,8 +14284,8 @@
     },
     "list": {
       "title": "Einnahmen im Zeitraum ({count})",
-      "hint": "Bezahlte Rechnungen nach Zahlungsdatum, dazu sonstige Einnahmen aus den Einstellungen. Bei einer Fremdwährungsrechnung zählt, was tatsächlich auf dem Konto ankam (z. B. nach Umrechnung in PayPal), sonst der Wechselkurs.",
-      "hintVat": "Bezahlte Rechnungen nach Zahlungsdatum, ohne USt., dazu sonstige Einnahmen aus den Einstellungen. Bei einer Fremdwährungsrechnung zählt, was tatsächlich auf dem Konto ankam, sonst der Wechselkurs.",
+      "hint": "Bezahlte Rechnungen nach Zahlungsdatum, dazu sonstige Einnahmen aus den Einstellungen. Eine Fremdwährungsrechnung wird mit dem zum Kurs umgerechneten Betrag versteuert. Was weniger auf dem Konto ankam (PayPal-Gebühr, schlechterer Kurs), steht in der Zeile „Gebühren und Umrechnung“ und mindert nur das Nettoeinkommen.",
+      "hintVat": "Bezahlte Rechnungen nach Zahlungsdatum, ohne USt., dazu sonstige Einnahmen aus den Einstellungen. Eine Fremdwährungsrechnung wird mit dem zum Kurs umgerechneten Betrag versteuert. Was weniger auf dem Konto ankam, steht in der Zeile „Gebühren und Umrechnung“ und mindert nur das Nettoeinkommen.",
       "empty": "Keine bezahlten Rechnungen in diesem Zeitraum.",
       "show": "Alle Einnahmen anzeigen ({count})",
       "paidOn": "bezahlt am {date}",
@@ -14298,7 +14299,8 @@
       "saved": "Aufteilung gespeichert.",
       "failed": "Die Aufteilung konnte nicht gespeichert werden.",
       "filter": "Nach Kürzel filtern",
-      "filterAll": "Alle"
+      "filterAll": "Alle",
+      "fees": "Gebühren und Umrechnung {amount}"
     },
     "shares": {
       "custom": "Eigenes Verhältnis…",

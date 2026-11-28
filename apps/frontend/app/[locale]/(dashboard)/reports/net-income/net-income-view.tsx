@@ -28,6 +28,7 @@ const ROWS: { key: keyof NetIncomeLine; strong?: boolean; minus?: boolean }[] = 
   { key: 'health' },
   { key: 'refund' },
   { key: 'taxes', strong: true },
+  { key: 'fees', minus: true },
   { key: 'sharedExpenses', minus: true },
   { key: 'net', strong: true }
 ];
@@ -53,8 +54,8 @@ export function NetIncomeView({
   const nameOf = (p: Pick<TaxPartner, 'name'>, i: number) => p.name || (many ? t('partnerFallback', { n: i + 1 }) : t('partnerMe'));
   const totals = result.totals;
   const actual = result.actual;
-  // The doplatek / vrácení row only shows once it is entered.
-  const rows = ROWS.filter((r) => r.key !== 'refund' || actual?.refund);
+  // The doplatek / vrácení row only shows once it is entered, the fees one once some invoice has them.
+  const rows = ROWS.filter((r) => (r.key !== 'refund' || actual?.refund) && (r.key !== 'fees' || totals.fees));
   const badge = (key: keyof NetIncomeLine) => {
     if (!actual || !(ACTUAL_KEYS as readonly string[]).includes(key)) return null;
     const real = actual[key as (typeof ACTUAL_KEYS)[number]];
@@ -324,7 +325,8 @@ function IncomeList({
             </p>
             <p className="text-xs text-muted-foreground">
               {t('list.paidOn', { date: day(inv.paidAt) })}
-              <span className="amount">{inv.currency !== 'CZK' && ` · ${formatMoney(inv.amount, inv.currency, locale)} · ${t(`list.source.${inv.source}`)}`}</span>
+              <span className="amount">{inv.currency !== 'CZK' && ` · ${formatMoney(inv.amount, inv.currency, locale)} · ${t(`list.source.${inv.source}`)}`}
+                {inv.fees ? ` · ${t('list.fees', { amount: formatKc(inv.fees, locale) })}` : ''}</span>
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 sm:justify-end">

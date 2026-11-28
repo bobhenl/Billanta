@@ -57,6 +57,7 @@ const plain = (id: string, paidAt: string, income: number, over: Partial<NetInco
   currency: 'CZK',
   amount: income,
   income,
+  fees: 0,
   source: 'czk',
   partnerShares: null,
   claimedShares: null,
@@ -120,6 +121,19 @@ describe('netIncomeReportOf', () => {
     expect(r.result.totals.sharedExpenses).toBe(18_000);
     expect(r.settings).toMatchObject({ ...rates, source: null, tax_scope: 'per_partner', partners: { a: { tax_credits: 30_840 } } });
     expect(r.tips).toContainEqual({ code: 'year_settings_missing', year: 2026, from: null });
+  });
+
+  it('taxes the invoiced amount and takes the fees off the net only, split like their invoice', () => {
+    const paid = plain('P2', '2026-02-20', 50_000, { currency: 'EUR', amount: 2_000, fees: 1_500, source: 'received', partnerShares: { b: 1 } });
+    const withFees = netIncomeReportOf(inputs({ invoices: [plain('P1', '2026-01-15', 100_000), paid] }));
+    const without = netIncomeReportOf(inputs({ invoices: [plain('P1', '2026-01-15', 100_000), { ...paid, fees: 0 }] }));
+    const [a, b] = withFees.result.partners;
+    expect(b!.income).toBe(without.result.partners[1]!.income);
+    expect(b!.taxes).toBe(without.result.partners[1]!.taxes);
+    expect([a!.fees, b!.fees]).toEqual([0, 1_500]);
+    expect(b!.net).toBe(without.result.partners[1]!.net - 1_500);
+    expect(withFees.result.totals.fees).toBe(1_500);
+    expect(withFees.byMonth!.map((m) => m.fees)).toEqual([0, 1_500, 0]);
   });
 
   it('has no month breakdown for a single month', () => {

@@ -14264,6 +14264,7 @@
       "social": "Seguro social",
       "health": "Seguro de salud",
       "taxes": "Total de impuestos y seguros",
+      "fees": "Comisiones y conversión",
       "sharedExpenses": "Gastos compartidos",
       "net": "Ingreso neto",
       "refund": "Pago adicional / devolución"
@@ -14282,8 +14283,8 @@
     },
     "list": {
       "title": "Ingresos del periodo ({count})",
-      "hint": "Facturas pagadas según la fecha de pago, más otros ingresos de los ajustes. En una factura en moneda extranjera se toma lo que realmente llegó a la cuenta (p. ej., tras la conversión en PayPal); si no, el tipo de cambio.",
-      "hintVat": "Facturas pagadas según la fecha de pago, sin IVA, más otros ingresos de los ajustes. En una factura en moneda extranjera se toma lo que realmente llegó a la cuenta; si no, el tipo de cambio.",
+      "hint": "Facturas pagadas según la fecha de pago, más otros ingresos de los ajustes. Una factura en moneda extranjera tributa por su importe convertido al tipo de cambio. Lo que llegó de menos a la cuenta (comisión de PayPal, peor tipo) aparece en la fila «Comisiones y conversión» y solo se resta del ingreso neto.",
+      "hintVat": "Facturas pagadas según la fecha de pago, sin IVA, más otros ingresos de los ajustes. Una factura en moneda extranjera tributa por su importe convertido al tipo de cambio. Lo que llegó de menos a la cuenta aparece en la fila «Comisiones y conversión» y solo se resta del ingreso neto.",
       "empty": "No hay facturas pagadas en este periodo.",
       "show": "Mostrar todos los ingresos ({count})",
       "paidOn": "pagada el {date}",
@@ -14297,7 +14298,8 @@
       "saved": "Reparto guardado.",
       "failed": "No se ha podido guardar el reparto.",
       "filter": "Filtrar por etiqueta",
-      "filterAll": "Todo"
+      "filterAll": "Todo",
+      "fees": "comisiones y conversión {amount}"
     },
     "shares": {
       "custom": "Proporción propia…",

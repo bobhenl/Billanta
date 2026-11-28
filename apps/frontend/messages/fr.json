@@ -14264,6 +14264,7 @@
       "social": "Cotisations sociales",
       "health": "Assurance maladie",
       "taxes": "Total impôt et cotisations",
+      "fees": "Frais et conversion",
       "sharedExpenses": "Dépenses communes",
       "net": "Revenu net",
       "refund": "Complément / remboursement"
@@ -14282,8 +14283,8 @@
     },
     "list": {
       "title": "Revenus de la période ({count})",
-      "hint": "Factures payées selon la date de paiement, plus les autres revenus des paramètres. Pour une facture en devise, on retient ce qui est réellement arrivé sur le compte (p. ex. après conversion dans PayPal), sinon le taux de change.",
-      "hintVat": "Factures payées selon la date de paiement, hors TVA, plus les autres revenus des paramètres. Pour une facture en devise, on retient ce qui est réellement arrivé sur le compte, sinon le taux de change.",
+      "hint": "Factures payées selon la date de paiement, plus les autres revenus des paramètres. Une facture en devise est imposée sur son montant converti au taux de change. Ce qui est arrivé en moins sur le compte (frais PayPal, taux moins bon) figure sur la ligne « Frais et conversion » et ne se déduit que du revenu net.",
+      "hintVat": "Factures payées selon la date de paiement, hors TVA, plus les autres revenus des paramètres. Une facture en devise est imposée sur son montant converti au taux de change. Ce qui est arrivé en moins sur le compte figure sur la ligne « Frais et conversion » et ne se déduit que du revenu net.",
       "empty": "Aucune facture payée sur cette période.",
       "show": "Afficher tous les revenus ({count})",
       "paidOn": "payée le {date}",
@@ -14297,7 +14298,8 @@
       "saved": "Répartition enregistrée.",
       "failed": "Impossible d’enregistrer la répartition.",
       "filter": "Filtrer par étiquette",
-      "filterAll": "Tout"
+      "filterAll": "Tout",
+      "fees": "frais et conversion {amount}"
     },
     "shares": {
       "custom": "Répartition personnalisée…",

@@ -14272,6 +14272,7 @@
       "social": "Social insurance",
       "health": "Health insurance",
       "taxes": "Tax and insurance total",
+      "fees": "Fees and conversion",
       "sharedExpenses": "Shared expenses",
       "net": "Net income",
       "refund": "Paid extra / refunded"
@@ -14290,8 +14291,8 @@
     },
     "list": {
       "title": "Income in the period ({count})",
-      "hint": "Paid invoices by the day paid, plus other income from the settings. For a foreign invoice it takes what actually reached the account (e.g. after conversion in PayPal), otherwise the exchange rate.",
-      "hintVat": "Paid invoices by the day paid, without VAT, plus other income from the settings. For a foreign invoice it takes what actually reached the account, otherwise the exchange rate.",
+      "hint": "Paid invoices by the day paid, plus other income from the settings. A foreign invoice is taxed at its amount converted at the exchange rate. Whatever less actually reached the account (a PayPal fee, a worse rate) shows in the \"Fees and conversion\" row and comes off the net income only.",
+      "hintVat": "Paid invoices by the day paid, without VAT, plus other income from the settings. A foreign invoice is taxed at its amount converted at the exchange rate. Whatever less actually reached the account shows in the \"Fees and conversion\" row and comes off the net income only.",
       "empty": "No paid invoices in this period.",
       "show": "Show all income ({count})",
       "paidOn": "paid {date}",
@@ -14305,7 +14306,8 @@
       "saved": "Split saved.",
       "failed": "Could not save the split.",
       "filter": "Filter by tag",
-      "filterAll": "All"
+      "filterAll": "All",
+      "fees": "fees and conversion {amount}"
     },
     "shares": {
       "custom": "Own ratio…",

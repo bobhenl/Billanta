@@ -14264,6 +14264,7 @@
       "social": "Társadalombiztosítás",
       "health": "Egészségbiztosítás",
       "taxes": "Adó és biztosítás összesen",
+      "fees": "Díjak és átváltás",
       "sharedExpenses": "Közös költségek",
       "net": "Nettó jövedelem",
       "refund": "Utólagos befizetés / visszatérítés"
@@ -14282,8 +14283,8 @@
     },
     "list": {
       "title": "Bevételek az időszakban ({count})",
-      "hint": "Kifizetett számlák a kifizetés napja szerint, valamint a beállításokban megadott egyéb bevételek. Devizás számlánál azt vesszük, ami ténylegesen megérkezett a számlára (pl. PayPal-átváltás után), egyébként az árfolyamot.",
-      "hintVat": "Kifizetett számlák a kifizetés napja szerint, ÁFA nélkül, valamint a beállításokban megadott egyéb bevételek. Devizás számlánál azt vesszük, ami ténylegesen megérkezett a számlára, egyébként az árfolyamot.",
+      "hint": "Kifizetett számlák a kifizetés napja szerint, valamint a beállításokban megadott egyéb bevételek. A devizás számla adója az árfolyamon átszámított összegből számol. Amennyivel kevesebb érkezett ténylegesen a számlára (PayPal-díj, rosszabb árfolyam), azt a „Díjak és átváltás” sor mutatja, és csak a nettó jövedelemből vonódik le.",
+      "hintVat": "Kifizetett számlák a kifizetés napja szerint, ÁFA nélkül, valamint a beállításokban megadott egyéb bevételek. A devizás számla adója az árfolyamon átszámított összegből számol. Amennyivel kevesebb érkezett ténylegesen a számlára, azt a „Díjak és átváltás” sor mutatja, és csak a nettó jövedelemből vonódik le.",
       "empty": "Ebben az időszakban nincs kifizetett számla.",
       "show": "Minden bevétel megjelenítése ({count})",
       "paidOn": "kifizetve: {date}",
@@ -14297,7 +14298,8 @@
       "saved": "A felosztás elmentve.",
       "failed": "A felosztást nem sikerült menteni.",
       "filter": "Szűrés címke szerint",
-      "filterAll": "Mind"
+      "filterAll": "Mind",
+      "fees": "díjak és átváltás {amount}"
     },
     "shares": {
       "custom": "Saját arány…",

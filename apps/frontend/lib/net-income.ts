@@ -120,6 +120,8 @@ export interface NetIncomeLine {
   /** The year's doplatek (+) or vrácení (−); 0 unless entered. */
   refund: number;
   taxes: number;
+  /** Payment fees and exchange-rate loss (a gain negative). */
+  fees: number;
   sharedExpenses: number;
   net: number;
 }
@@ -144,7 +146,7 @@ export interface NetIncomeReport {
   activity?: NetIncomeActivity | null;
   /** The report year month by month in secondary / main activity. */
   secondary?: NetIncomeSecondaryYear;
-  byMonth: { month: number; income: number; taxes: number; sharedExpenses: number; net: number }[] | null;
+  byMonth: { month: number; income: number; taxes: number; fees: number; sharedExpenses: number; net: number }[] | null;
   invoices: {
     id: string;
     number: string;
@@ -153,6 +155,8 @@ export interface NetIncomeReport {
     currency: string;
     amount: number;
     income: number;
+    /** `income` less what arrived in CZK (a rate gain negative). */
+    fees: number;
     source: 'czk' | 'received' | 'converted';
     partnerShares: Shares | null;
     /** The creator's partner when they claim their own invoices; applies while partnerShares is null. */

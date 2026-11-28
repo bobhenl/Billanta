@@ -14264,6 +14264,7 @@
       "social": "Asigurări sociale",
       "health": "Asigurări de sănătate",
       "taxes": "Impozit și asigurări în total",
+      "fees": "Comisioane și conversie",
       "sharedExpenses": "Cheltuieli comune",
       "net": "Venit net",
       "refund": "Plată suplimentară / rambursare"
@@ -14282,8 +14283,8 @@
     },
     "list": {
       "title": "Venituri în perioadă ({count})",
-      "hint": "Facturi plătite după data plății, plus alte venituri din setări. Pentru o factură în valută se ia suma care a ajuns efectiv în cont (de ex. după conversia în PayPal), altfel cursul de schimb.",
-      "hintVat": "Facturi plătite după data plății, fără TVA, plus alte venituri din setări. Pentru o factură în valută se ia suma care a ajuns efectiv în cont, altfel cursul de schimb.",
+      "hint": "Facturi plătite după data plății, plus alte venituri din setări. O factură în valută se impozitează la suma convertită la curs. Cât a ajuns efectiv mai puțin în cont (comisionul PayPal, un curs mai slab) apare pe rândul „Comisioane și conversie” și se scade doar din venitul net.",
+      "hintVat": "Facturi plătite după data plății, fără TVA, plus alte venituri din setări. O factură în valută se impozitează la suma convertită la curs. Cât a ajuns efectiv mai puțin în cont apare pe rândul „Comisioane și conversie” și se scade doar din venitul net.",
       "empty": "Nicio factură plătită în această perioadă.",
       "show": "Afișați toate veniturile ({count})",
       "paidOn": "plătită la {date}",
@@ -14297,7 +14298,8 @@
       "saved": "Împărțirea a fost salvată.",
       "failed": "Împărțirea nu a putut fi salvată.",
       "filter": "Filtrează după etichetă",
-      "filterAll": "Tot"
+      "filterAll": "Tot",
+      "fees": "comisioane și conversie {amount}"
     },
     "shares": {
       "custom": "Raport propriu…",

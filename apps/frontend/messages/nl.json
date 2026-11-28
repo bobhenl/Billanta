@@ -14264,6 +14264,7 @@
       "social": "Sociale verzekering",
       "health": "Zorgverzekering",
       "taxes": "Belasting en premies totaal",
+      "fees": "Kosten en omrekening",
       "sharedExpenses": "Gedeelde kosten",
       "net": "Netto-inkomen",
       "refund": "Bijbetaling / teruggave"
@@ -14282,8 +14283,8 @@
     },
     "list": {
       "title": "Inkomsten in de periode ({count})",
-      "hint": "Betaalde facturen op datum van betaling, plus overige inkomsten uit de instellingen. Bij een buitenlandse factuur telt wat echt op de rekening is binnengekomen (bijv. na omrekening in PayPal), anders de wisselkoers.",
-      "hintVat": "Betaalde facturen op datum van betaling, zonder btw, plus overige inkomsten uit de instellingen. Bij een buitenlandse factuur telt wat echt op de rekening is binnengekomen, anders de wisselkoers.",
+      "hint": "Betaalde facturen op datum van betaling, plus overige inkomsten uit de instellingen. Een buitenlandse factuur wordt belast op het tegen de wisselkoers omgerekende bedrag. Wat er minder op de rekening binnenkwam (PayPal-kosten, slechtere koers) staat in de regel \"Kosten en omrekening\" en gaat alleen van het netto-inkomen af.",
+      "hintVat": "Betaalde facturen op datum van betaling, zonder btw, plus overige inkomsten uit de instellingen. Een buitenlandse factuur wordt belast op het tegen de wisselkoers omgerekende bedrag. Wat er minder op de rekening binnenkwam staat in de regel \"Kosten en omrekening\" en gaat alleen van het netto-inkomen af.",
       "empty": "Geen betaalde facturen in deze periode.",
       "show": "Alle inkomsten tonen ({count})",
       "paidOn": "betaald {date}",
@@ -14297,7 +14298,8 @@
       "saved": "Verdeling opgeslagen.",
       "failed": "De verdeling kon niet worden opgeslagen.",
       "filter": "Filteren op label",
-      "filterAll": "Alles"
+      "filterAll": "Alles",
+      "fees": "kosten en omrekening {amount}"
     },
     "shares": {
       "custom": "Eigen verhouding…",

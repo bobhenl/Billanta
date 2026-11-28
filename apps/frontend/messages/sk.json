@@ -14176,6 +14176,7 @@
       "social": "Sociálne poistenie",
       "health": "Zdravotné poistenie",
       "taxes": "Daň a poistenie spolu",
+      "fees": "Poplatky a konverzia",
       "sharedExpenses": "Spoločné výdavky",
       "net": "Čistý príjem",
       "refund": "Doplatok / vrátenie"
@@ -14194,8 +14195,8 @@
     },
     "list": {
       "title": "Príjmy v období ({count})",
-      "hint": "Uhradené faktúry podľa dňa úhrady a ostatné príjmy z nastavenia. Pri zahraničnej faktúre sa berie suma, ktorá naozaj prišla na účet (napr. po prevode v PayPali), inak prepočet kurzom.",
-      "hintVat": "Uhradené faktúry podľa dňa úhrady, bez DPH, a ostatné príjmy z nastavenia. Pri zahraničnej faktúre sa berie suma, ktorá naozaj prišla na účet, inak prepočet kurzom.",
+      "hint": "Uhradené faktúry podľa dňa úhrady a ostatné príjmy z nastavenia. Zahraničná faktúra sa zdaňuje v sume prepočítanej kurzom. O koľko menej naozaj prišlo na účet (poplatok PayPalu, horší kurz), ukazuje riadok „Poplatky a konverzia“ a odpočíta sa len od čistého príjmu.",
+      "hintVat": "Uhradené faktúry podľa dňa úhrady, bez DPH, a ostatné príjmy z nastavenia. Zahraničná faktúra sa zdaňuje v sume prepočítanej kurzom. O koľko menej naozaj prišlo na účet, ukazuje riadok „Poplatky a konverzia“ a odpočíta sa len od čistého príjmu.",
       "empty": "V tomto období nie sú žiadne uhradené faktúry.",
       "show": "Zobraziť všetky príjmy ({count})",
       "paidOn": "uhradené {date}",
@@ -14209,7 +14210,8 @@
       "saved": "Rozdelenie uložené.",
       "failed": "Rozdelenie sa nepodarilo uložiť.",
       "filter": "Filtrovať podľa štítku",
-      "filterAll": "Všetko"
+      "filterAll": "Všetko",
+      "fees": "poplatky a konverzia {amount}"
     },
     "shares": {
       "custom": "Vlastný pomer…",

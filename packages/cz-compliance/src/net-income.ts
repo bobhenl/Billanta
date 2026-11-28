@@ -144,10 +144,15 @@ export function creatorShares(model: NetIncomeTaxModel, createdByUserId: string 
   return partner ? { [partner.id]: 1 } : null;
 }
 
-/** One piece of income in CZK; `shares` = its own split, null = the default shares. */
+/**
+ * One piece of income in CZK; `shares` = its own split, null = the default
+ * shares. `fees`: what was lost on the way (PayPal's fee, a worse rate), off
+ * the net only, since the tax is on the invoiced amount.
+ */
 export interface NetIncomeItem {
   amount: number;
   shares: PartnerShares | null;
+  fees?: number;
 }
 
 export interface NetIncomeLine {
@@ -162,6 +167,8 @@ export interface NetIncomeLine {
   /** The year's doplatek (+) or vrácení (−), when entered; 0 otherwise. */
   refund: number;
   taxes: number;
+  /** Payment fees and exchange-rate loss (a gain negative). */
+  fees: number;
   sharedExpenses: number;
   net: number;
 }
@@ -248,11 +255,13 @@ function sharedExpenseItems(model: NetIncomeTaxModel, span: NetIncomeSpan): NetI
   return model.shared_expenses.map((e) => ({ amount: sharedExpenseAmount(e, span), shares: e.shares }));
 }
 
-function splitAmong(model: NetIncomeTaxModel, items: NetIncomeItem[]): number[] {
+function splitAmong(model: NetIncomeTaxModel, items: NetIncomeItem[], value: (item: NetIncomeItem) => number = (i) => i.amount): number[] {
   const exact = model.partners.map(() => 0);
   const index = new Map(model.partners.map((p, i) => [p.id, i]));
   for (const item of items) {
-    for (const [id, f] of partnerSplitOf(item.shares, model)) exact[index.get(id)!]! += item.amount * f;
+    const v = value(item);
+    if (v === 0) continue;
+    for (const [id, f] of partnerSplitOf(item.shares, model)) exact[index.get(id)!]! += v * f;
   }
   return allocateWholeKc(exact);
 }
@@ -341,7 +350,7 @@ export function insuredProfitShare(base: number, s: SecondarySpan | null): numbe
   return secondaryIncome >= limit ? 1 : s.main / s.months;
 }
 
-type TaxPart = Omit<NetIncomeLine, 'income' | 'sharedExpenses' | 'net'>;
+type TaxPart = Omit<NetIncomeLine, 'income' | 'fees' | 'sharedExpenses' | 'net'>;
 const TAX_KEYS = ['flatExpenses', 'base', 'taxBeforeCredits', 'credits', 'social', 'health'] as const;
 
 /**
@@ -383,8 +392,9 @@ function actualPortion(months: number, income: number, yearIncome: number | null
  * are worked out once on the total, and every line is then divided by the
  * partners' shares of the income. Either way: flat-rate expenses capped (the
  * yearly cap prorated), credits prorated, social and health insurance from
- * the assessment-base share of the profit. Shared business expenses come off
- * the net, split by their own shares. Everything is in whole Kč.
+ * the assessment-base share of the profit. Payment fees and shared business
+ * expenses come off the net only, each split by its own shares. Everything is
+ * in whole Kč.
  *
  * An estimate: no minimum insurance, no 23 % band, no tax base rounding.
  * Once the year's actual payments are entered, each one replaces its
@@ -407,6 +417,7 @@ export function computeNetIncome(
   const inSpan = (flags: boolean[]) => flags.slice(span.month - 1, span.month - 1 + months).filter(Boolean).length;
   const secondary = threshold == null ? null : { threshold, months, secondary: inSpan(byMonth.secondary), main: inSpan(byMonth.main) };
   const incomes = splitAmong(model, items);
+  const fees = splitAmong(model, items, (i) => i.fees ?? 0);
   const expenses = splitAmong(model, sharedExpenseItems(model, span));
   const total = incomes.reduce((s, v) => s + v, 0);
   const weightSum = model.partners.reduce((s, p) => s + p.share, 0);
@@ -446,8 +457,9 @@ export function computeNetIncome(
       sharePercent: Math.round(weights[i]! * 1000) / 10,
       income,
       ...taxes[i]!,
+      fees: fees[i]!,
       sharedExpenses,
-      net: income - taxes[i]!.taxes - sharedExpenses,
+      net: income - taxes[i]!.taxes - fees[i]! - sharedExpenses,
     };
   });
 
@@ -463,6 +475,7 @@ export function computeNetIncome(
     health: sum('health'),
     refund: sum('refund'),
     taxes: sum('taxes'),
+    fees: sum('fees'),
     sharedExpenses: sum('sharedExpenses'),
     net: sum('net'),
   };
@@ -548,8 +561,10 @@ export interface NetIncomeInvoice {
   currency: string;
   /** In the document's currency, a credit note negative. */
   amount: number;
-  /** In CZK. */
+  /** In CZK at the rate: what the tax is on. */
   income: number;
+  /** `income` less what actually arrived in CZK (fees, rate loss; a gain negative); 0 when unknown. */
+  fees: number;
   source: 'czk' | 'received' | 'converted';
   partnerShares: PartnerShares | null;
   /** The creator's partner when they claim their own invoices; used when partnerShares is null. */
@@ -557,7 +572,7 @@ export interface NetIncomeInvoice {
 }
 
 /** A paid document with sealed amounts: everything but the amounts, plus its totals envelope and the rate into CZK (null: none found). */
-export interface SealedNetIncomeDoc extends Omit<NetIncomeInvoice, 'amount' | 'income' | 'source'> {
+export interface SealedNetIncomeDoc extends Omit<NetIncomeInvoice, 'amount' | 'income' | 'fees' | 'source'> {
   documentType: 'invoice' | 'credit_note';
   encAmounts: string;
   rate: number | null;
@@ -597,7 +612,7 @@ export interface NetIncomeReport {
   /** The report year month by month in secondary / main activity. */
   secondary: NetIncomeSecondaryYear;
   /** Each month of a quarter or year on its own; null for a month. */
-  byMonth: { month: number; income: number; taxes: number; sharedExpenses: number; net: number }[] | null;
+  byMonth: { month: number; income: number; taxes: number; fees: number; sharedExpenses: number; net: number }[] | null;
   invoices: NetIncomeInvoice[];
   extraIncome: (NetIncomeTaxModel['extra_income'][number] & { index: number })[];
   missingRates: number;
@@ -620,7 +635,7 @@ export function netIncomeReportOf(inputs: Omit<NetIncomeInputs, 'sealedDocs'>): 
   const extraIncome = model.extra_income.map((e, index) => ({ ...e, index })).filter((e) => e.date >= period.from && e.date < period.to);
 
   const itemsOf = (month: number | null): NetIncomeItem[] => [
-    ...invoices.filter((i) => month == null || i.month === month).map((i) => ({ amount: i.income, shares: i.partnerShares ?? i.claimedShares })),
+    ...invoices.filter((i) => month == null || i.month === month).map((i) => ({ amount: i.income, fees: i.fees, shares: i.partnerShares ?? i.claimedShares })),
     ...extraIncome.filter((e) => month == null || Number(e.date.slice(5, 7)) === month).map((e) => ({ amount: e.amount, shares: e.shares })),
   ];
 
@@ -636,7 +651,7 @@ export function netIncomeReportOf(inputs: Omit<NetIncomeInputs, 'sealedDocs'>): 
       ? Array.from({ length: span.months }, (_, i) => {
           const month = span.month + i;
           const r = computeNetIncome(model, itemsOf(month), { year: period.year, month, months: 1 }, inputs.activity, yearIncome);
-          return { month, income: r.totals.income, taxes: r.totals.taxes, sharedExpenses: r.totals.sharedExpenses, net: r.totals.net };
+          return { month, income: r.totals.income, taxes: r.totals.taxes, fees: r.totals.fees, sharedExpenses: r.totals.sharedExpenses, net: r.totals.net };
         })
       : null;
 
@@ -692,6 +707,7 @@ export function buildSealedNetIncome(inputs: NetIncomeInputs, opened: ReadonlyMa
       currency: doc.currency,
       amount: round2(amount),
       income: round2(amount * doc.rate),
+      fees: 0,
       source: doc.currency === 'CZK' ? 'czk' : 'converted',
       partnerShares: doc.partnerShares,
       claimedShares: doc.claimedShares,

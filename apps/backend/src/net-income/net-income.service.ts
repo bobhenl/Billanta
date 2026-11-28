@@ -127,7 +127,7 @@ export class NetIncomeService {
     // seconds on a cold cache. Ask for them all at once; the loop below then reads the cache.
     await Promise.all(
       rows
-        .filter(({ invoice }) => invoice.currency !== "CZK" && (amountsSealed(invoice) || !(Number(invoice.receivedCzk) > 0)))
+        .filter(({ invoice }) => invoice.currency !== "CZK")
         .map(({ invoice }) => rateOf(invoice.currency, invoice.exchangeRate, invoice.paidAt!).catch(() => null)),
     );
 
@@ -160,15 +160,20 @@ export class NetIncomeService {
       const sign = invoice.documentType === "credit_note" ? -1 : 1;
       const amount = netIncomeAmountOf(totals, invoice.documentType, vatPayer);
       let income: number;
+      let fees = 0;
       let source: NetIncomeInvoice["source"];
       const received = Number(invoice.receivedCzk);
       if (invoice.currency === "CZK") {
         income = amount;
         source = "czk";
       } else if (invoice.receivedCzk != null && received > 0) {
-        // What actually arrived (after PayPal's fee and rate); a VAT payer keeps the base part of it.
+        // The tax is on the invoiced amount at the rate (as in the tax return); what PayPal's fee and
+        // its worse rate took off the way comes off the net only. A VAT payer keeps the base part.
         const baseShare = vatPayer && totals.totalWithVat ? totals.totalWithoutVat / totals.totalWithVat : 1;
-        income = received * baseShare * sign;
+        const arrived = received * baseShare * sign;
+        const rate = await rateOf(invoice.currency, invoice.exchangeRate, paidAt).catch(() => null);
+        income = rate == null ? arrived : amount * rate;
+        fees = income - arrived;
         source = "received";
       } else {
         const rate = await rateOf(invoice.currency, invoice.exchangeRate, paidAt);
@@ -179,7 +184,7 @@ export class NetIncomeService {
         income = amount * rate;
         source = "converted";
       }
-      invoices.push({ ...listed, amount: round2(amount), income: round2(income), source });
+      invoices.push({ ...listed, amount: round2(amount), income: round2(income), fees: round2(fees), source });
     }
 
     const inputs: NetIncomeInputs = {

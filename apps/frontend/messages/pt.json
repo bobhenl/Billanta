@@ -14264,6 +14264,7 @@
       "social": "Segurança social",
       "health": "Seguro de saúde",
       "taxes": "Total de impostos e contribuições",
+      "fees": "Comissões e conversão",
       "sharedExpenses": "Despesas partilhadas",
       "net": "Rendimento líquido",
       "refund": "Pagamento adicional / reembolso"
@@ -14282,8 +14283,8 @@
     },
     "list": {
       "title": "Rendimentos no período ({count})",
-      "hint": "Faturas pagas pela data de pagamento, mais outros rendimentos das definições. Numa fatura em moeda estrangeira conta o que realmente chegou à conta (p. ex. após conversão no PayPal); caso contrário, a taxa de câmbio.",
-      "hintVat": "Faturas pagas pela data de pagamento, sem IVA, mais outros rendimentos das definições. Numa fatura em moeda estrangeira conta o que realmente chegou à conta; caso contrário, a taxa de câmbio.",
+      "hint": "Faturas pagas pela data de pagamento, mais outros rendimentos das definições. Uma fatura em moeda estrangeira é tributada pelo valor convertido à taxa de câmbio. O que chegou a menos à conta (comissão do PayPal, taxa pior) aparece na linha «Comissões e conversão» e só se desconta do rendimento líquido.",
+      "hintVat": "Faturas pagas pela data de pagamento, sem IVA, mais outros rendimentos das definições. Uma fatura em moeda estrangeira é tributada pelo valor convertido à taxa de câmbio. O que chegou a menos à conta aparece na linha «Comissões e conversão» e só se desconta do rendimento líquido.",
       "empty": "Não há faturas pagas neste período.",
       "show": "Mostrar todos os rendimentos ({count})",
       "paidOn": "paga a {date}",
@@ -14297,7 +14298,8 @@
       "saved": "Repartição guardada.",
       "failed": "Não foi possível guardar a repartição.",
       "filter": "Filtrar por etiqueta",
-      "filterAll": "Tudo"
+      "filterAll": "Tudo",
+      "fees": "comissões e conversão {amount}"
     },
     "shares": {
       "custom": "Proporção própria…",
