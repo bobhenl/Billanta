@@ -82,6 +82,7 @@ import { MeNewsletterController } from "./newsletter/newsletter.controller";
 import { AccountantDirectoryModule } from "./accountant-directory/accountant-directory.module";
 import { AccountantListingController } from "./accountant-directory/accountant-listing.controller";
 import { LegislationModule } from "./legislation/legislation.module";
+import { FormSchemasModule } from "./form-schemas/form-schemas.module";
 import { ReferralsController } from "./referrals/referrals.controller";
 import { ReferralsModule } from "./referrals/referrals.module";
 
@@ -170,6 +171,8 @@ import { ReferralsModule } from "./referrals/referrals.module";
     AccountantDirectoryModule,
     // Weekly check of the official tax form and minimum pages; alerts for staff (no tenant context).
     LegislationModule,
+    // Daily check of the EPO form XSDs; blocks a form our export no longer passes (no tenant context).
+    FormSchemasModule,
     // Public demo playground: start, seed and the 15-minute cleanup (no tenant context).
     DemoModule,
     // Classroom mode: teachers, classes, student joins and the cleanup (docs/classroom-mode-plan.md).

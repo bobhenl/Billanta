@@ -2363,6 +2363,31 @@
           "received_reverse_charge_code_missing": "Teljesítési kód nélküli befogadott, fordított adózású bizonylatok: {documents}. Adja meg a kódot a költségnél, és töltse le újra a fájlt, különben az EPO elutasítja.",
           "received_reverse_charge_dic_missing": "Befogadott, fordított adózású bizonylatok a szállító ÁFA-azonosítója nélkül, kimaradtak a B.1 részből: {documents}.",
           "received_reverse_charge_number_missing": "Befogadott, fordított adózású bizonylatok bizonylatszám nélkül (dátum szerint feltüntetve), kimaradtak a B.1 részből: {documents}."
+        },
+        "formBlocked": "Az adóhatóság módosította ezt a nyomtatványt, és az exportunk még nem felel meg az új változatnak. A letöltést a javításig kikapcsoltuk, és szólunk, ha újra elérhető.",
+        "confirm": {
+          "title": "Ellenőrizze az adatokat letöltés előtt",
+          "back": "Vissza",
+          "downloadAndOpenEpo": "Letöltés és az EPO megnyitása",
+          "form": "Nyomtatvány",
+          "period": "Időszak",
+          "office": "Adóhivatal",
+          "officeMissing": "nincs megadva, az EPO-ban választja ki",
+          "output": "Fizetendő adó",
+          "deduction": "Levonható adó",
+          "payable": "Befizetendő adó",
+          "refund": "Többletlevonás",
+          "khRows": "Sorok az A és B szakaszban",
+          "shvRows": "Sorok",
+          "shvTotal": "Teljesítések értéke",
+          "schemaProblems": "Az EPO valószínűleg elutasítja a fájlt, nem felel meg a hivatalos sémának: {problems}. Írjon nekünk, kijavítjuk.",
+          "epoTitle": "Benyújtás az EPO-n",
+          "epoSteps": [
+            "Az EPO-ban válassza a Načíst ze souboru → Můj počítač → Procházet lehetőséget és a letöltött fájlt.",
+            "Nézze át a Protokol chyb listát. A hibákat javítsa, a figyelmeztetések csak tájékoztató jellegűek.",
+            "Küldje el adatfiókon vagy elektronikus aláírással, és őrizze meg a visszaigazolást."
+          ],
+          "responsibility": "Ellenőriztem az adatokat. A Billanta a bevallást a bizonylataimból állítja össze, de a tartalmáért és a benyújtásáért én felelek."
         }
       },
       "annual": {
@@ -2414,7 +2439,7 @@
             "when": "A legegyszerűbb, ha van adatfiókja: csak csatolja az XML-t egy üzenethez, aláírás nem szükséges.",
             "steps": [
               "Töltse le a fenti XML-t – minden bevallás külön fájl.",
-              "Javasoljuk, hogy először töltse be az EPO-ba (Načtení souboru → Kontrola), adja meg az adóhivatalt, javítsa a figyelmeztetéseket, majd mentse vissza XML-ként.",
+              "Javasoljuk, hogy először töltse be az EPO-ba (Načíst ze souboru → Kontrola), adja meg az adóhivatalt, javítsa a figyelmeztetéseket, majd mentse vissza XML-ként.",
               "Jelentkezzen be az adatfiókjába, és írjon új üzenetet az adóhivatalának (az adatfiók-azonosítója a hivatalok listájában található).",
               "Üzenetenként egy XML-fájlt csatoljon.",
               "Küldje el, és őrizze meg a kézbesítési igazolást."
@@ -2425,7 +2450,7 @@
             "when": "A Pénzügyi Igazgatóság webes űrlapja. Beküldés az adatfiókján keresztül (az EPO-ból bejelentkezve) vagy minősített elektronikus aláírással.",
             "steps": [
               "Töltse le a fenti XML-t.",
-              "Nyissa meg az EPO → Elektronická podání → Načtení souboru menüpontot, és válassza ki az XML-t.",
+              "Nyissa meg az EPO → Načíst ze souboru → Můj počítač → Procházet menüpontot, és válassza ki az XML-t.",
               "Ellenőrizze a D és P részt: adóhivatal, területi kirendeltség és elérhetőségek.",
               "Kattintson a Kontrola gombra, és javítsa a hibákat; a figyelmeztetések csak tájékoztató jellegűek.",
               "Válassza a Pokračovat v podání → Odeslat přes datovou schránku lehetőséget, vagy küldje el elektronikus aláírással.",
@@ -2438,7 +2463,7 @@
             "steps": [
               "Töltse le a fenti XML-t.",
               "Jelentkezzen be a MOJE daně portálra banki azonosítójával vagy eID-jával.",
-              "Az EPO-ban válassza a Načtení souboru lehetőséget, és töltse fel az XML-t.",
+              "Az EPO-ban válassza a Načíst ze souboru lehetőséget, és töltse fel az XML-t.",
               "Ellenőrizze, adja meg az adóhivatalt, és futtassa a Kontrola funkciót.",
               "Nyújtsa be a Podat gombbal; az igazolást a dokumentumai áttekintésében találja."
             ]
@@ -2551,7 +2576,8 @@
           "form_not_published": "A hatóság még nem tette közzé az erre az évre vonatkozó nyomtatványt.",
           "year_not_supported": "Erre az évre még nincsenek meg a paraméterek.",
           "invalid_filings_query": "Kérjük, ellenőrizze a megadott adatokat; valaminek hibás a formátuma.",
-          "generic": "A fájlt nem sikerült létrehozni."
+          "generic": "A fájlt nem sikerült létrehozni.",
+          "form_blocked": "Az adóhatóság módosította ezt a nyomtatványt, és az exportunk még nem felel meg az új változatnak. A letöltést a javításig kikapcsoltuk."
         },
         "disclaimer": "Az alkalmazásban lévő bizonylatok alapján, a tipikus egyéni vállalkozói esetre (csak vállalkozási bevétel, alapkedvezmények) előre kitöltve. Ez nem adótanácsadás. Benyújtás előtt mindent ellenőrizzen; a benyújtást Ön végzi az EPO-n, a ČSSZ ePortálon, a biztosító portálján vagy az adatfiókján keresztül.",
         "modes": {
@@ -2560,7 +2586,8 @@
           "60": "60 %-os átalány (engedélyköteles ipar)",
           "80": "80 %-os átalány (kézműipar)",
           "actual": "Tényleges költségek"
-        }
+        },
+        "schemaProblems": "A fájl letöltődött, de az EPO valószínűleg elutasítja, nem felel meg a hivatalos sémának: {problems}. Írjon nekünk, kijavítjuk."
       }
     },
     "invoices": {

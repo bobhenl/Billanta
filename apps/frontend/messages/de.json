@@ -2363,6 +2363,31 @@
           "received_reverse_charge_code_missing": "Eingegangene Reverse-Charge-Belege ohne Leistungscode: {documents}. Ergänzen Sie den Code bei der Ausgabe und laden Sie die Datei erneut herunter, sonst lehnt EPO sie ab.",
           "received_reverse_charge_dic_missing": "Eingegangene Reverse-Charge-Belege ohne USt-IdNr. des Lieferanten, nicht in Abschnitt B.1 enthalten: {documents}.",
           "received_reverse_charge_number_missing": "Eingegangene Reverse-Charge-Belege ohne Belegnummer (nach Datum angezeigt), nicht in Abschnitt B.1 enthalten: {documents}."
+        },
+        "formBlocked": "Die Finanzverwaltung hat dieses Formular geändert und unser Export erfüllt die neue Fassung noch nicht. Der Download ist bis zur Korrektur ausgeschaltet. Wir melden uns, sobald er wieder geht.",
+        "confirm": {
+          "title": "Angaben vor dem Download prüfen",
+          "back": "Zurück",
+          "downloadAndOpenEpo": "Herunterladen und EPO öffnen",
+          "form": "Formular",
+          "period": "Zeitraum",
+          "office": "Finanzamt",
+          "officeMissing": "nicht gesetzt, Sie wählen es in EPO",
+          "output": "Ausgangssteuer",
+          "deduction": "Vorsteuerabzug",
+          "payable": "Zu zahlende Steuer",
+          "refund": "Vorsteuerüberhang",
+          "khRows": "Zeilen in den Abschnitten A und B",
+          "shvRows": "Zeilen",
+          "shvTotal": "Wert der Leistungen",
+          "schemaProblems": "EPO wird die Datei wahrscheinlich ablehnen, sie entspricht nicht dem offiziellen Schema: {problems}. Schreiben Sie uns, wir beheben es.",
+          "epoTitle": "Einreichung über EPO",
+          "epoSteps": [
+            "Wählen Sie in EPO Načíst ze souboru → Můj počítač → Procházet und die heruntergeladene Datei.",
+            "Gehen Sie das Protokol chyb durch. Fehler beheben, Hinweise sind nur informativ.",
+            "Senden Sie über die Datenbox oder mit elektronischer Signatur und bewahren Sie die Bestätigung auf."
+          ],
+          "responsibility": "Ich habe die Angaben geprüft. Billanta erstellt die Erklärung aus meinen Belegen, für Inhalt und Einreichung bin aber ich verantwortlich."
         }
       },
       "annual": {
@@ -2414,7 +2439,7 @@
             "when": "Am einfachsten, wenn Sie ein Datenpostfach haben: einfach die XML an eine Nachricht anhängen, keine Signatur nötig.",
             "steps": [
               "Laden Sie die XML oben herunter – jede Meldung ist eine eigene Datei.",
-              "Wir empfehlen, sie zuerst in EPO zu laden (Načtení souboru → Kontrola), das Finanzamt auszufüllen, Warnungen zu beheben und sie dann wieder als XML zu speichern.",
+              "Wir empfehlen, sie zuerst in EPO zu laden (Načíst ze souboru → Kontrola), das Finanzamt auszufüllen, Warnungen zu beheben und sie dann wieder als XML zu speichern.",
               "Melden Sie sich in Ihrem Datenpostfach an und schreiben Sie eine neue Nachricht an Ihr Finanzamt (dessen Postfach-ID steht in der Liste der Finanzämter).",
               "Hängen Sie pro Nachricht eine XML-Datei an.",
               "Senden Sie die Nachricht ab und bewahren Sie die Zustellbestätigung auf."
@@ -2425,7 +2450,7 @@
             "when": "Das Webformular der Finanzverwaltung. Einreichen über Ihr Datenpostfach (Anmeldung aus EPO) oder mit qualifizierter elektronischer Signatur.",
             "steps": [
               "Laden Sie die XML oben herunter.",
-              "Öffnen Sie EPO → Elektronická podání → Načtení souboru und wählen Sie die XML.",
+              "Öffnen Sie EPO → Načíst ze souboru → Můj počítač → Procházet und wählen Sie die XML.",
               "Prüfen Sie die Abschnitte D und P: Finanzamt, Dienststelle und Kontaktdaten.",
               "Klicken Sie auf Kontrola und beheben Sie Fehler; Warnungen dienen nur zur Information.",
               "Wählen Sie Pokračovat v podání → Odeslat přes datovou schránku oder senden Sie mit elektronischer Signatur.",
@@ -2438,7 +2463,7 @@
             "steps": [
               "Laden Sie die XML oben herunter.",
               "Melden Sie sich mit Bankidentität oder eID im Portal MOJE daně an.",
-              "Wählen Sie in EPO Načtení souboru und laden Sie die XML hoch.",
+              "Wählen Sie in EPO Načíst ze souboru und laden Sie die XML hoch.",
               "Prüfen Sie sie, füllen Sie das Finanzamt aus und führen Sie Kontrola aus.",
               "Reichen Sie mit Podat ein; die Bestätigung finden Sie in der Übersicht Ihrer Dokumente."
             ]
@@ -2551,7 +2576,8 @@
           "form_not_published": "Die Behörde hat das Formular für dieses Jahr noch nicht veröffentlicht.",
           "year_not_supported": "Für dieses Jahr liegen uns die Parameter noch nicht vor.",
           "invalid_filings_query": "Bitte prüfen Sie Ihre Angaben; etwas hat ein falsches Format.",
-          "generic": "Die Datei konnte nicht erstellt werden."
+          "generic": "Die Datei konnte nicht erstellt werden.",
+          "form_blocked": "Die Finanzverwaltung hat dieses Formular geändert und unser Export erfüllt die neue Fassung noch nicht. Der Download ist bis zur Korrektur ausgeschaltet."
         },
         "disclaimer": "Vorausgefüllt aus den Belegen in der App für den typischen Fall eines Einzelunternehmers (nur Einkünfte aus Gewerbebetrieb, Grundabzüge). Dies ist keine Steuerberatung. Prüfen Sie alles vor dem Einreichen; Sie reichen selbst über EPO, das ePortal der ČSSZ, das Portal Ihrer Krankenversicherung oder Ihr Datenpostfach ein.",
         "modes": {
@@ -2560,7 +2586,8 @@
           "60": "Pauschale 60 % (Gewerbe)",
           "80": "Pauschale 80 % (Handwerk)",
           "actual": "Tatsächliche Ausgaben"
-        }
+        },
+        "schemaProblems": "Die Datei wurde heruntergeladen, EPO wird sie aber wahrscheinlich ablehnen, sie entspricht nicht dem offiziellen Schema: {problems}. Schreiben Sie uns, wir beheben es."
       }
     },
     "invoices": {

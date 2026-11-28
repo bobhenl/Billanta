@@ -7,7 +7,7 @@ import { nextVatDeadlines } from '@faktur/cz-compliance';
 import { InfoHint } from '@/components/info-hint';
 import { cn } from '@/lib/utils';
 
-const EPO_URL = 'https://adisspr.mfcr.cz/pmd/epo/formulare';
+export const EPO_URL = 'https://adisspr.mfcr.cz/pmd/epo/formulare';
 const MOJE_DANE_URL = 'https://adisspr.mfcr.cz/pmd/home';
 const DS_URL = 'https://www.mojedatovaschranka.cz/';
 const FU_DS_URL = 'https://financnisprava.gov.cz/cs/financni-sprava/organizace-a-struktura/financni-urady';

@@ -2370,6 +2370,31 @@
           "dp3Hint": "DPHDP3 for the month – tax on services bought abroad (lines 5 and 6, outside the EU lines 12 and 13) and services to the EU (line 21), no deduction.",
           "noControlStatement": "An identified person does not file a control statement, only the return and, if needed, the EC sales list.",
           "nothingToReport": "No service bought abroad or sold to the EU this month, so no return is due."
+        },
+        "formBlocked": "The tax administration changed this form and our export does not meet the new version yet. We turned the download off until we fix it and will let you know when it is back.",
+        "confirm": {
+          "title": "Check the details before you download",
+          "back": "Back",
+          "downloadAndOpenEpo": "Download and open EPO",
+          "form": "Form",
+          "period": "Period",
+          "office": "Tax office",
+          "officeMissing": "not set, you pick it in EPO",
+          "output": "Output tax",
+          "deduction": "Input tax deduction",
+          "payable": "Tax to pay",
+          "refund": "Excess deduction",
+          "khRows": "Rows in sections A and B",
+          "shvRows": "Rows",
+          "shvTotal": "Value of supplies",
+          "schemaProblems": "EPO will probably reject the file, it does not match the official schema: {problems}. Let us know and we will fix it.",
+          "epoTitle": "Filing through EPO",
+          "epoSteps": [
+            "In EPO choose Načíst ze souboru → Můj počítač → Procházet and pick the downloaded file.",
+            "Go through Protokol chyb. Fix the errors; warnings are for information only.",
+            "Send it through your data box or with an electronic signature and keep the confirmation."
+          ],
+          "responsibility": "I have checked the details. Billanta builds the return from my documents, but I am responsible for its content and for filing it."
         }
       },
       "annual": {
@@ -2421,7 +2446,7 @@
             "when": "Simplest if you have a data box: just attach the XML to a message, no signature needed.",
             "steps": [
               "Download the XML above – each filing is a separate file.",
-              "We recommend loading it into EPO first (Načtení souboru → Kontrola), filling in the tax office and fixing warnings, then saving it back as XML.",
+              "We recommend loading it into EPO first (Načíst ze souboru → Kontrola), filling in the tax office and fixing warnings, then saving it back as XML.",
               "Log in to your data box and write a new message to your tax office (its box ID is in the office list).",
               "Attach one XML file per message.",
               "Send it and keep the delivery receipt."
@@ -2432,7 +2457,7 @@
             "when": "The Financial Administration's web form. Submit through your data box (logging in from EPO) or with a qualified electronic signature.",
             "steps": [
               "Download the XML above.",
-              "Open EPO → Elektronická podání → Načtení souboru and pick the XML.",
+              "Open EPO → Načíst ze souboru → Můj počítač → Procházet and pick the XML.",
               "Check sections D and P: tax office, regional branch and contact details.",
               "Click Kontrola and fix errors; warnings are informational.",
               "Choose Pokračovat v podání → Odeslat přes datovou schránku, or send with an electronic signature.",
@@ -2445,7 +2470,7 @@
             "steps": [
               "Download the XML above.",
               "Log in to the MOJE daně portal with your bank identity or eID.",
-              "In EPO choose Načtení souboru and upload the XML.",
+              "In EPO choose Načíst ze souboru and upload the XML.",
               "Check it, fill in the tax office and run Kontrola.",
               "Submit with Podat; the confirmation is in your documents overview."
             ]
@@ -2558,7 +2583,8 @@
           "form_not_published": "The authority has not published the form for this year yet.",
           "year_not_supported": "We do not have the parameters for this year yet.",
           "invalid_filings_query": "Please check the details you entered; something has the wrong format.",
-          "generic": "Could not create the file."
+          "generic": "Could not create the file.",
+          "form_blocked": "The tax administration changed this form and our export does not meet the new version yet. We turned the download off until we fix it."
         },
         "disclaimer": "Prefilled from the documents in the app for the typical sole-trader case (business income only, basic credits). This is not tax advice. Check everything before filing; you file yourself through EPO, the ČSSZ ePortal, your insurer’s portal or your data box.",
         "modes": {
@@ -2567,7 +2593,8 @@
           "60": "Flat rate 60 % (trades)",
           "80": "Flat rate 80 % (crafts)",
           "actual": "Actual expenses"
-        }
+        },
+        "schemaProblems": "The file was downloaded, but EPO will probably reject it, it does not match the official schema: {problems}. Let us know and we will fix it."
       }
     },
     "invoices": {

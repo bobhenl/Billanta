@@ -1,12 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Download, Landmark, Loader2 } from 'lucide-react';
+import { Download, ExternalLink, Landmark, Loader2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { VAT_FORM_VERSIONS, VAT_INFO_CHECKED, VAT_OFFICIAL_URL } from '@faktur/cz-compliance';
+import { VAT_FORM_VERSIONS, VAT_INFO_CHECKED, VAT_OFFICIAL_URL, czTaxOffice } from '@faktur/cz-compliance';
 import { Link } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
-import { inputClass } from '@/lib/ui-classes';
+import { Modal } from '@/components/modal';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
+import { schemaProblems } from '@/lib/schema-problems';
+import { EPO_URL } from './epo-guide';
+import { vatFilingSummary, type VatFilingSummary } from './vat-filing-summary';
 import { toast } from '@/components/toaster';
 import { cn } from '@/lib/utils';
 import { FeatureBadge } from '@/components/plan-lock';
@@ -26,7 +30,9 @@ const FILES_SK = [
   { key: 'sv', path: 'sk/svdph.xml' }
 ] as const;
 
-const SK_OFFICIAL_URL = 'https://www.financnasprava.sk/sk/podnikatelia/dane/dan-z-pridanej-hodnoty';
+type Pending = { key: string; name: string; body: string; warnings: string[]; problems: string[]; summary: VatFilingSummary | null };
+
+const SK_OFFICIAL_URL ='https://www.financnasprava.sk/sk/podnikatelia/dane/dan-z-pridanej-hodnoty';
 /** `X-Vat-Warnings` (URI-encoded JSON `[{ code, document }]`) grouped by code. */
 function vatWarnings(header: string | null): Map<string, string[]> {
   if (!header) return new Map();
@@ -81,12 +87,20 @@ export function VatFilings({
   const [busy, setBusy] = useState<string | null>(null);
   // Kept on screen (not a toast): the person needs the document numbers to go and fix them.
   const [warnings, setWarnings] = useState<string[]>([]);
+  // The built file waits here until the person has read the summary and taken responsibility for it.
+  const [pending, setPending] = useState<Pending | null>(null);
+  const [confirmed, setConfirmed] = useState(false);
   const years = Array.from({ length: 6 }, (_, i) => String(now.getFullYear() - i));
   // An identified person's tax period is always the calendar month.
   const monthly = mode === 'month' || identified;
   const query = monthly ? `year=${year}&month=${month}` : `year=${year}&quarter=${quarter}`;
   // The server's file name for the same period (exports.controller.ts).
   const label = monthly ? `${year}-${month.padStart(2, '0')}` : `${year}-Q${quarter}`;
+
+  const periodText = monthly
+    ? new Date(Number(year), Number(month) - 1, 1).toLocaleDateString(locale, { month: 'long', year: 'numeric' })
+    : `${common('quarter', { q: quarter })} ${year}`;
+  const money = new Intl.NumberFormat(locale, { style: 'currency', currency: sk ? 'EUR' : 'CZK', maximumFractionDigits: 0 });
 
   const nothingToReport = (key: string) => (identified && key === 'dp3' ? common('identified.nothingToReport') : t('nothingToReport'));
 
@@ -99,7 +113,9 @@ export function VatFilings({
     }
     const reason = text.includes('filing_needs_full_view')
       ? tLock('filingNeedsFullView')
-      : res.status === 404
+      : text.includes('form_blocked')
+        ? common('formBlocked')
+        : res.status === 404
         ? nothingToReport(key)
         : res.status === 400
           ? t('missingDic')
@@ -128,16 +144,28 @@ export function VatFilings({
       toast({ text: nothingToReport(key), tone: 'info' });
       return;
     }
-    saveText(`${path.replace(/^sk\//, '').replace(/\.xml$/, '')}-${label}.xml`, out.body, 'application/xml;charset=utf-8');
-    showWarnings(groupWarnings(out.warnings));
+    review(key, `${path.replace(/^sk\//, '').replace(/\.xml$/, '')}-${label}.xml`, out.body, groupWarnings(out.warnings), []);
   }
 
-  function showWarnings(grouped: Map<string, string[]>) {
-    setWarnings(
-      [...grouped].map(([code, documents]) =>
-        t.has(`warnings.${code}`) ? t(`warnings.${code}`, { documents: documents.join(', ') }) : documents.join(', ')
-      )
+  function warningTexts(grouped: Map<string, string[]>) {
+    return [...grouped].map(([code, documents]) =>
+      t.has(`warnings.${code}`) ? t(`warnings.${code}`, { documents: documents.join(', ') }) : documents.join(', ')
     );
+  }
+
+  function review(key: string, name: string, body: string, grouped: Map<string, string[]>, problems: string[]) {
+    setConfirmed(false);
+    setPending({ key, name, body, warnings: warningTexts(grouped), problems, summary: sk ? null : vatFilingSummary(body) });
+  }
+
+  function save(openEpo: boolean) {
+    if (!pending || !confirmed) return;
+    saveText(pending.name, pending.body, 'application/xml;charset=utf-8');
+    // Opened in the same click as the download, so the browser does not block it.
+    if (openEpo) window.open(EPO_URL, '_blank', 'noopener');
+    // Kept on the page after the dialog closes: the person needs the document numbers to fix them.
+    setWarnings(pending.warnings);
+    setPending(null);
   }
 
   async function download(key: string, path: string) {
@@ -147,16 +175,10 @@ export function VatFilings({
       const res = await fetch(`/api/files/exports/${path}?${query}`);
       if (await isAmountsSealedRefusal(res)) return await downloadSealed(key, path);
       if (!res.ok) return await explain(key, res);
-      const blob = await res.blob();
+      const body = await res.text();
       const name = /filename="([^"]+)"/.exec(res.headers.get('content-disposition') ?? '')?.[1] ?? path;
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = name;
-      a.click();
-      URL.revokeObjectURL(url);
-      // The file downloads anyway; EPO would reject it until these are fixed.
-      showWarnings(vatWarnings(res.headers.get('x-vat-warnings')));
+      // The file can be saved anyway; EPO would reject it until these are fixed.
+      review(key, name, body, vatWarnings(res.headers.get('x-vat-warnings')), schemaProblems(res.headers.get('x-schema-problems')));
     } catch {
       toast({ text: common('failed'), tone: 'err' });
     } finally {
@@ -230,6 +252,91 @@ export function VatFilings({
           {text}
         </Banner>
       ))}
+      <Modal
+        open={pending !== null}
+        onClose={() => setPending(null)}
+        title={common('confirm.title')}
+        footer={
+          <>
+            <button type="button" className={buttonClass.secondary} onClick={() => setPending(null)}>
+              {common('confirm.back')}
+            </button>
+            <button type="button" className={sk ? buttonClass.primary : buttonClass.secondary} disabled={!confirmed} onClick={() => save(false)}>
+              <Download className="h-4 w-4" />
+              {common('download')}
+            </button>
+            {!sk && (
+              <button type="button" className={buttonClass.primary} disabled={!confirmed} onClick={() => save(true)}>
+                <ExternalLink className="h-4 w-4" />
+                {common('confirm.downloadAndOpenEpo')}
+              </button>
+            )}
+          </>
+        }
+      >
+        {pending && (
+          <div className="space-y-3">
+            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5">
+              <dt className="text-muted-foreground">{common('confirm.form')}</dt>
+              <dd className="font-medium">{t(`files.${pending.key}.title`)}</dd>
+              <dt className="text-muted-foreground">{common('confirm.period')}</dt>
+              <dd className="font-medium">{periodText}</dd>
+              {pending.summary && (
+                <>
+                  <dt className="text-muted-foreground">{common('confirm.office')}</dt>
+                  <dd className="font-medium">{czTaxOffice(pending.summary.office)?.name ?? common('confirm.officeMissing')}</dd>
+                </>
+              )}
+              {pending.summary?.dp3 && (
+                <>
+                  <dt className="text-muted-foreground">{common('confirm.output')}</dt>
+                  <dd className="font-medium tabular-nums">{money.format(pending.summary.dp3.output)}</dd>
+                  <dt className="text-muted-foreground">{common('confirm.deduction')}</dt>
+                  <dd className="font-medium tabular-nums">{money.format(pending.summary.dp3.deduction)}</dd>
+                  <dt className="text-muted-foreground">{pending.summary.dp3.refund > 0 ? common('confirm.refund') : common('confirm.payable')}</dt>
+                  <dd className="font-semibold tabular-nums">{money.format(pending.summary.dp3.refund > 0 ? pending.summary.dp3.refund : pending.summary.dp3.payable)}</dd>
+                </>
+              )}
+              {pending.summary?.khRows != null && (
+                <>
+                  <dt className="text-muted-foreground">{common('confirm.khRows')}</dt>
+                  <dd className="font-medium tabular-nums">{pending.summary.khRows}</dd>
+                </>
+              )}
+              {pending.summary?.shv && (
+                <>
+                  <dt className="text-muted-foreground">{common('confirm.shvRows')}</dt>
+                  <dd className="font-medium tabular-nums">{pending.summary.shv.rows}</dd>
+                  <dt className="text-muted-foreground">{common('confirm.shvTotal')}</dt>
+                  <dd className="font-medium tabular-nums">{money.format(pending.summary.shv.total)}</dd>
+                </>
+              )}
+            </dl>
+            {pending.problems.length > 0 && (
+              <Banner tone="err">{common('confirm.schemaProblems', { problems: pending.problems.join(', ') })}</Banner>
+            )}
+            {pending.warnings.map((text) => (
+              <Banner key={text} tone="warn">
+                {text}
+              </Banner>
+            ))}
+            {!sk && (
+              <div>
+                <p className="font-semibold">{common('confirm.epoTitle')}</p>
+                <ol className="mt-1 list-decimal space-y-0.5 pl-5 text-muted-foreground">
+                  {(common.raw('confirm.epoSteps') as string[]).map((step) => (
+                    <li key={step}>{step}</li>
+                  ))}
+                </ol>
+              </div>
+            )}
+            <label className="flex items-start gap-2 rounded-lg border border-border p-3">
+              <input type="checkbox" className="mt-0.5 h-4 w-4 shrink-0" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} />
+              <span>{common('confirm.responsibility')}</span>
+            </label>
+          </div>
+        )}
+      </Modal>
       <p className="mt-4 text-xs text-muted-foreground">{t('disclaimer')}</p>
       {sk ? (
         <p className="mt-2 text-xs text-muted-foreground">

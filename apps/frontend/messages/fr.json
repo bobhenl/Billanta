@@ -2363,6 +2363,31 @@
           "received_reverse_charge_code_missing": "Documents reçus en autoliquidation sans code de livraison : {documents}. Ajoutez le code sur la dépense et téléchargez à nouveau le fichier, sinon EPO le rejettera.",
           "received_reverse_charge_dic_missing": "Documents reçus en autoliquidation sans numéro de TVA du fournisseur, exclus de la section B.1 : {documents}.",
           "received_reverse_charge_number_missing": "Documents reçus en autoliquidation sans numéro de document (affichés par date), exclus de la section B.1 : {documents}."
+        },
+        "formBlocked": "L'administration fiscale a modifié ce formulaire et notre export ne respecte pas encore la nouvelle version. Le téléchargement est coupé le temps de corriger, nous vous préviendrons dès qu'il revient.",
+        "confirm": {
+          "title": "Vérifiez les données avant le téléchargement",
+          "back": "Retour",
+          "downloadAndOpenEpo": "Télécharger et ouvrir EPO",
+          "form": "Formulaire",
+          "period": "Période",
+          "office": "Centre des impôts",
+          "officeMissing": "non renseigné, vous le choisissez dans EPO",
+          "output": "TVA collectée",
+          "deduction": "TVA déductible",
+          "payable": "TVA à payer",
+          "refund": "Crédit de TVA",
+          "khRows": "Lignes des sections A et B",
+          "shvRows": "Lignes",
+          "shvTotal": "Valeur des prestations",
+          "schemaProblems": "EPO refusera probablement le fichier, il ne respecte pas le schéma officiel : {problems}. Écrivez-nous, nous corrigerons.",
+          "epoTitle": "Dépôt via EPO",
+          "epoSteps": [
+            "Dans EPO, choisissez Načíst ze souboru → Můj počítač → Procházet puis le fichier téléchargé.",
+            "Parcourez le Protokol chyb. Corrigez les erreurs, les avertissements sont seulement informatifs.",
+            "Envoyez via la boîte de données ou avec une signature électronique et gardez la confirmation."
+          ],
+          "responsibility": "J'ai vérifié les données. Billanta établit la déclaration à partir de mes pièces, mais j'en reste responsable, contenu et dépôt compris."
         }
       },
       "annual": {
@@ -2414,7 +2439,7 @@
             "when": "Le plus simple si vous avez une boîte de données : joignez simplement le XML à un message, sans signature.",
             "steps": [
               "Téléchargez le XML ci-dessus – chaque déclaration est un fichier distinct.",
-              "Nous vous conseillons de le charger d’abord dans EPO (Načtení souboru → Kontrola), d’indiquer le centre des impôts et de corriger les avertissements, puis de l’enregistrer à nouveau en XML.",
+              "Nous vous conseillons de le charger d’abord dans EPO (Načíst ze souboru → Kontrola), d’indiquer le centre des impôts et de corriger les avertissements, puis de l’enregistrer à nouveau en XML.",
               "Connectez-vous à votre boîte de données et rédigez un nouveau message à votre centre des impôts (son identifiant de boîte figure dans la liste des centres).",
               "Joignez un seul fichier XML par message.",
               "Envoyez-le et conservez l’accusé de remise."
@@ -2425,7 +2450,7 @@
             "when": "Le formulaire en ligne de l’administration fiscale. Déposez via votre boîte de données (connexion depuis EPO) ou avec une signature électronique qualifiée.",
             "steps": [
               "Téléchargez le XML ci-dessus.",
-              "Ouvrez EPO → Elektronická podání → Načtení souboru et sélectionnez le XML.",
+              "Ouvrez EPO → Načíst ze souboru → Můj počítač → Procházet et sélectionnez le XML.",
               "Vérifiez les sections D et P : centre des impôts, antenne locale et coordonnées.",
               "Cliquez sur Kontrola et corrigez les erreurs ; les avertissements sont informatifs.",
               "Choisissez Pokračovat v podání → Odeslat přes datovou schránku, ou envoyez avec une signature électronique.",
@@ -2438,7 +2463,7 @@
             "steps": [
               "Téléchargez le XML ci-dessus.",
               "Connectez-vous au portail MOJE daně avec votre identité bancaire ou votre eID.",
-              "Dans EPO, choisissez Načtení souboru et téléversez le XML.",
+              "Dans EPO, choisissez Načíst ze souboru et téléversez le XML.",
               "Vérifiez-le, indiquez le centre des impôts et lancez Kontrola.",
               "Déposez avec Podat ; la confirmation se trouve dans l’aperçu de vos documents."
             ]
@@ -2551,7 +2576,8 @@
           "form_not_published": "L’administration n’a pas encore publié le formulaire pour cette année.",
           "year_not_supported": "Nous n’avons pas encore les paramètres pour cette année.",
           "invalid_filings_query": "Vérifiez les informations saisies ; l’une d’elles a un format incorrect.",
-          "generic": "Impossible de créer le fichier."
+          "generic": "Impossible de créer le fichier.",
+          "form_blocked": "L'administration fiscale a modifié ce formulaire et notre export ne respecte pas encore la nouvelle version. Le téléchargement est coupé le temps de corriger."
         },
         "disclaimer": "Prérempli à partir des documents de l’application pour le cas type d’un entrepreneur individuel (revenus d’activité uniquement, réductions de base). Ceci n’est pas un conseil fiscal. Vérifiez tout avant le dépôt ; vous déposez vous-même via EPO, l’ePortal de la ČSSZ, le portail de votre caisse ou votre boîte de données.",
         "modes": {
@@ -2560,7 +2586,8 @@
           "60": "Forfait 60 % (activités commerciales)",
           "80": "Forfait 80 % (artisanat)",
           "actual": "Dépenses réelles"
-        }
+        },
+        "schemaProblems": "Le fichier est téléchargé, mais EPO le refusera probablement, il ne respecte pas le schéma officiel : {problems}. Écrivez-nous, nous corrigerons."
       }
     },
     "invoices": {

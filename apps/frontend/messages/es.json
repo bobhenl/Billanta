@@ -2363,6 +2363,31 @@
           "received_reverse_charge_code_missing": "Documentos recibidos con inversión del sujeto pasivo sin código de operación: {documents}. Añada el código en el gasto y vuelva a descargar el archivo; de lo contrario, EPO lo rechazará.",
           "received_reverse_charge_dic_missing": "Documentos recibidos con inversión del sujeto pasivo sin NIF-IVA del proveedor, excluidos de la sección B.1: {documents}.",
           "received_reverse_charge_number_missing": "Documentos recibidos con inversión del sujeto pasivo sin número de documento (mostrados por fecha), excluidos de la sección B.1: {documents}."
+        },
+        "formBlocked": "La administración tributaria cambió este formulario y nuestra exportación aún no cumple la nueva versión. Hemos desactivado la descarga hasta corregirlo y le avisaremos cuando vuelva.",
+        "confirm": {
+          "title": "Revise los datos antes de descargar",
+          "back": "Volver",
+          "downloadAndOpenEpo": "Descargar y abrir EPO",
+          "form": "Formulario",
+          "period": "Período",
+          "office": "Oficina tributaria",
+          "officeMissing": "sin indicar, la elige en EPO",
+          "output": "IVA repercutido",
+          "deduction": "IVA deducible",
+          "payable": "IVA a pagar",
+          "refund": "Exceso de deducción",
+          "khRows": "Filas en las secciones A y B",
+          "shvRows": "Filas",
+          "shvTotal": "Valor de las prestaciones",
+          "schemaProblems": "Es probable que EPO rechace el archivo, no cumple el esquema oficial: {problems}. Escríbanos y lo corregimos.",
+          "epoTitle": "Presentación por EPO",
+          "epoSteps": [
+            "En EPO elija Načíst ze souboru → Můj počítač → Procházet y el archivo descargado.",
+            "Revise el Protokol chyb. Corrija los errores; los avisos son solo informativos.",
+            "Envíelo por el buzón de datos o con firma electrónica y guarde la confirmación."
+          ],
+          "responsibility": "He revisado los datos. Billanta prepara la declaración con mis documentos, pero yo respondo de su contenido y de su presentación."
         }
       },
       "annual": {
@@ -2414,7 +2439,7 @@
             "when": "Lo más sencillo si tiene buzón de datos: basta con adjuntar el XML a un mensaje, sin firma.",
             "steps": [
               "Descargue el XML de arriba – cada declaración es un archivo independiente.",
-              "Recomendamos cargarlo primero en EPO (Načtení souboru → Kontrola), indicar la oficina tributaria y corregir las advertencias, y después guardarlo de nuevo como XML.",
+              "Recomendamos cargarlo primero en EPO (Načíst ze souboru → Kontrola), indicar la oficina tributaria y corregir las advertencias, y después guardarlo de nuevo como XML.",
               "Inicie sesión en su buzón de datos y escriba un nuevo mensaje a su oficina tributaria (el identificador de su buzón figura en la lista de oficinas).",
               "Adjunte un archivo XML por mensaje.",
               "Envíelo y conserve el acuse de entrega."
@@ -2425,7 +2450,7 @@
             "when": "El formulario web de la Administración Financiera. Preséntelo a través de su buzón de datos (iniciando sesión desde EPO) o con firma electrónica cualificada.",
             "steps": [
               "Descargue el XML de arriba.",
-              "Abra EPO → Elektronická podání → Načtení souboru y seleccione el XML.",
+              "Abra EPO → Načíst ze souboru → Můj počítač → Procházet y seleccione el XML.",
               "Revise las secciones D y P: oficina tributaria, delegación territorial y datos de contacto.",
               "Haga clic en Kontrola y corrija los errores; las advertencias son informativas.",
               "Elija Pokračovat v podání → Odeslat přes datovou schránku, o envíelo con firma electrónica.",
@@ -2438,7 +2463,7 @@
             "steps": [
               "Descargue el XML de arriba.",
               "Inicie sesión en el portal MOJE daně con su identidad bancaria o eID.",
-              "En EPO, elija Načtení souboru y suba el XML.",
+              "En EPO, elija Načíst ze souboru y suba el XML.",
               "Revíselo, indique la oficina tributaria y ejecute Kontrola.",
               "Preséntelo con Podat; la confirmación aparece en el resumen de sus documentos."
             ]
@@ -2551,7 +2576,8 @@
           "form_not_published": "La autoridad aún no ha publicado el formulario para este año.",
           "year_not_supported": "Todavía no disponemos de los parámetros para este año.",
           "invalid_filings_query": "Revise los datos introducidos; alguno tiene un formato incorrecto.",
-          "generic": "No se ha podido crear el archivo."
+          "generic": "No se ha podido crear el archivo.",
+          "form_blocked": "La administración tributaria cambió este formulario y nuestra exportación aún no cumple la nueva versión. Hemos desactivado la descarga hasta corregirlo."
         },
         "disclaimer": "Rellenado a partir de los documentos de la aplicación para el caso típico de autónomo (solo ingresos de la actividad, deducciones básicas). Esto no es asesoramiento fiscal. Revíselo todo antes de presentarlo; usted mismo presenta a través de EPO, el ePortal de la ČSSZ, el portal de su aseguradora o su buzón de datos.",
         "modes": {
@@ -2560,7 +2586,8 @@
           "60": "A tanto alzado 60 % (actividades comerciales)",
           "80": "A tanto alzado 80 % (oficios artesanales)",
           "actual": "Gastos reales"
-        }
+        },
+        "schemaProblems": "El archivo se descargó, pero es probable que EPO lo rechace, no cumple el esquema oficial: {problems}. Escríbanos y lo corregimos."
       }
     },
     "invoices": {

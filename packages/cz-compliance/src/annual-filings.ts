@@ -16,7 +16,7 @@
 import { czTaxYear } from "./cz-tax-years.js";
 import { withXmlDisclaimer } from "./export-disclaimer.js";
 import { OSVC_FLAT_EXPENSE_CAPS, type OsvcFlatRate } from "./osvc-annual.js";
-import { dicNumber, header, xmlAttr, type VatSubmitter } from "./vat-returns.js";
+import { dicNumber, epoPhone, header, xmlAttr, type VatSubmitter } from "./vat-returns.js";
 
 /** Which day makes income count for a year: paid (daňová evidence) or DUZP (účetnictví). */
 export type AccountingBasis = "cash" | "accrual";
@@ -183,7 +183,7 @@ export function generateDpfdp(lines: DpfoLines, person: FilingPerson): string {
     ["k_stat", "CZ"],
     ["stat", s.stat],
     ["email", s.email],
-    ["c_telef", s.telefon],
+    ["c_telef", epoPhone(s.telefon)],
     ["c_pracufo", taxWorkplace],
   ]);
   const vetaO = attrs([

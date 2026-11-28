@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { FILING_PERSON_PATTERNS, FormNotPublishedError, generateCsszOsvc, generateDpfdp, type AnnualFilingsInputs, type VaultKey } from '@faktur/cz-compliance';
 import { useVault } from '@/components/vault/vault-provider';
 import { isAmountsSealedRefusal, saveText, sealedFilingLines } from '@/lib/vault/sealed-exports';
+import { schemaProblems } from '@/lib/schema-problems';
 
 interface Filings {
   year: number;
@@ -79,7 +80,7 @@ const CSSZ_ROWS = ['r24', 'r25', 'r27', 'r28', 'r32', 'r33', 'r34', 'r35', 'r36'
 const CSSZ_STRONG = new Set(['r32', 'r34', 'r36']);
 const HEALTH_ROWS = ['profit', 'baseFromProfit', 'minBase', 'base', 'premium', 'paid', 'balance', 'nextAdvance'] as const;
 const HEALTH_STRONG = new Set(['premium', 'balance', 'nextAdvance']);
-const ERROR_CODES = ['form_not_published', 'year_not_supported', 'invalid_filings_query'] as const;
+const ERROR_CODES = ['form_not_published', 'year_not_supported', 'invalid_filings_query', 'form_blocked'] as const;
 
 /** Office codes from Settings → Company or looked up from the company address on the server, and the data box from Settings. */
 export interface AnnualFilingsPrefill {
@@ -290,6 +291,8 @@ export function AnnualFilings({ prefill, usage }: { prefill: AnnualFilingsPrefil
       a.download = name;
       a.click();
       URL.revokeObjectURL(url);
+      const problems = schemaProblems(res.headers.get('x-schema-problems'));
+      if (problems.length > 0) setError(t('schemaProblems', { problems: problems.join(', ') }));
     } catch {
       setError(t('errors.generic'));
     } finally {

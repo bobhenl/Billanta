@@ -2363,6 +2363,31 @@
           "received_reverse_charge_code_missing": "Ontvangen documenten met verlegde btw zonder leveringscode: {documents}. Vul de code in bij de uitgave en download het bestand opnieuw, anders weigert EPO het.",
           "received_reverse_charge_dic_missing": "Ontvangen documenten met verlegde btw zonder btw-nummer van de leverancier, weggelaten uit sectie B.1: {documents}.",
           "received_reverse_charge_number_missing": "Ontvangen documenten met verlegde btw zonder documentnummer (getoond op datum), weggelaten uit sectie B.1: {documents}."
+        },
+        "formBlocked": "De belastingdienst heeft dit formulier gewijzigd en onze export voldoet nog niet aan de nieuwe versie. Downloaden staat uit tot we het hebben opgelost. We laten het weten zodra het weer kan.",
+        "confirm": {
+          "title": "Controleer de gegevens voor het downloaden",
+          "back": "Terug",
+          "downloadAndOpenEpo": "Downloaden en EPO openen",
+          "form": "Formulier",
+          "period": "Periode",
+          "office": "Belastingkantoor",
+          "officeMissing": "niet ingesteld, u kiest het in EPO",
+          "output": "Verschuldigde btw",
+          "deduction": "Aftrekbare btw",
+          "payable": "Te betalen btw",
+          "refund": "Teruggave",
+          "khRows": "Regels in secties A en B",
+          "shvRows": "Regels",
+          "shvTotal": "Waarde van de leveringen",
+          "schemaProblems": "EPO wijst het bestand waarschijnlijk af, het voldoet niet aan het officiële schema: {problems}. Laat het ons weten, dan lossen we het op.",
+          "epoTitle": "Indienen via EPO",
+          "epoSteps": [
+            "Kies in EPO Načíst ze souboru → Můj počítač → Procházet en het gedownloade bestand.",
+            "Loop het Protokol chyb na. Herstel de fouten, waarschuwingen zijn alleen ter informatie.",
+            "Verstuur via de databox of met een elektronische handtekening en bewaar de bevestiging."
+          ],
+          "responsibility": "Ik heb de gegevens gecontroleerd. Billanta stelt de aangifte samen uit mijn documenten, maar ik ben verantwoordelijk voor de inhoud en het indienen."
         }
       },
       "annual": {
@@ -2414,7 +2439,7 @@
             "when": "Het eenvoudigst als je een databox hebt: voeg de XML gewoon toe aan een bericht, een handtekening is niet nodig.",
             "steps": [
               "Download de XML hierboven – elke aangifte is een apart bestand.",
-              "We raden aan het eerst in EPO te laden (Načtení souboru → Kontrola), het belastingkantoor in te vullen en waarschuwingen op te lossen, en het dan weer als XML op te slaan.",
+              "We raden aan het eerst in EPO te laden (Načíst ze souboru → Kontrola), het belastingkantoor in te vullen en waarschuwingen op te lossen, en het dan weer als XML op te slaan.",
               "Log in op je databox en schrijf een nieuw bericht aan je belastingkantoor (de box-ID staat in de lijst met kantoren).",
               "Voeg één XML-bestand per bericht toe.",
               "Verstuur het en bewaar het ontvangstbewijs."
@@ -2425,7 +2450,7 @@
             "when": "Het webformulier van de belastingdienst. Dien in via je databox (inloggen vanuit EPO) of met een gekwalificeerde elektronische handtekening.",
             "steps": [
               "Download de XML hierboven.",
-              "Open EPO → Elektronická podání → Načtení souboru en kies de XML.",
+              "Open EPO → Načíst ze souboru → Můj počítač → Procházet en kies de XML.",
               "Controleer de secties D en P: belastingkantoor, regionaal kantoor en contactgegevens.",
               "Klik op Kontrola en los fouten op; waarschuwingen zijn ter informatie.",
               "Kies Pokračovat v podání → Odeslat přes datovou schránku, of verstuur met een elektronische handtekening.",
@@ -2438,7 +2463,7 @@
             "steps": [
               "Download de XML hierboven.",
               "Log in op het portaal MOJE daně met je bankidentiteit of eID.",
-              "Kies in EPO Načtení souboru en upload de XML.",
+              "Kies in EPO Načíst ze souboru en upload de XML.",
               "Controleer het, vul het belastingkantoor in en voer Kontrola uit.",
               "Dien in met Podat; de bevestiging staat in je documentenoverzicht."
             ]
@@ -2551,7 +2576,8 @@
           "form_not_published": "De instantie heeft het formulier voor dit jaar nog niet gepubliceerd.",
           "year_not_supported": "We hebben de parameters voor dit jaar nog niet.",
           "invalid_filings_query": "Controleer de ingevulde gegevens; iets heeft een verkeerd formaat.",
-          "generic": "Het bestand kon niet worden aangemaakt."
+          "generic": "Het bestand kon niet worden aangemaakt.",
+          "form_blocked": "De belastingdienst heeft dit formulier gewijzigd en onze export voldoet nog niet aan de nieuwe versie. Downloaden staat uit tot we het hebben opgelost."
         },
         "disclaimer": "Vooraf ingevuld op basis van de documenten in de app voor de gangbare situatie van een zzp’er (alleen inkomsten uit onderneming, basiskortingen). Dit is geen belastingadvies. Controleer alles voordat je indient; je dient zelf in via EPO, het ČSSZ ePortal, het portaal van je verzekeraar of je databox.",
         "modes": {
@@ -2560,7 +2586,8 @@
           "60": "Forfaitair 60 % (handel en bedrijf)",
           "80": "Forfaitair 80 % (ambachten)",
           "actual": "Werkelijke kosten"
-        }
+        },
+        "schemaProblems": "Het bestand is gedownload, maar EPO wijst het waarschijnlijk af, het voldoet niet aan het officiële schema: {problems}. Laat het ons weten, dan lossen we het op."
       }
     },
     "invoices": {

@@ -2363,6 +2363,31 @@
           "received_reverse_charge_code_missing": "Otrzymane dokumenty z odwrotnym obciążeniem bez kodu dostawy: {documents}. Uzupełnij kod przy wydatku i pobierz plik ponownie, inaczej EPO go odrzuci.",
           "received_reverse_charge_dic_missing": "Otrzymane dokumenty z odwrotnym obciążeniem bez NIP dostawcy, pominięte w sekcji B.1: {documents}.",
           "received_reverse_charge_number_missing": "Otrzymane dokumenty z odwrotnym obciążeniem bez numeru dokumentu (pokazane według daty), pominięte w sekcji B.1: {documents}."
+        },
+        "formBlocked": "Administracja podatkowa zmieniła ten formularz, a nasz eksport nie spełnia jeszcze nowej wersji. Pobieranie wyłączyliśmy do czasu poprawki. Damy znać, gdy znów będzie dostępne.",
+        "confirm": {
+          "title": "Sprawdź dane przed pobraniem",
+          "back": "Wstecz",
+          "downloadAndOpenEpo": "Pobierz i otwórz EPO",
+          "form": "Formularz",
+          "period": "Okres",
+          "office": "Urząd skarbowy",
+          "officeMissing": "nieustawiony, wybierzesz go w EPO",
+          "output": "Podatek należny",
+          "deduction": "Odliczenie podatku",
+          "payable": "Podatek do zapłaty",
+          "refund": "Nadwyżka odliczenia",
+          "khRows": "Wiersze w sekcjach A i B",
+          "shvRows": "Wiersze",
+          "shvTotal": "Wartość świadczeń",
+          "schemaProblems": "EPO prawdopodobnie odrzuci plik, nie odpowiada oficjalnemu schematowi: {problems}. Napisz do nas, poprawimy to.",
+          "epoTitle": "Złożenie przez EPO",
+          "epoSteps": [
+            "W EPO wybierz Načíst ze souboru → Můj počítač → Procházet i pobrany plik.",
+            "Przejrzyj Protokol chyb. Popraw błędy, ostrzeżenia mają charakter informacyjny.",
+            "Wyślij przez skrzynkę danych lub z podpisem elektronicznym i zachowaj potwierdzenie."
+          ],
+          "responsibility": "Sprawdziłem(-am) dane. Billanta tworzy deklarację z moich dokumentów, ale za jej treść i złożenie odpowiadam ja."
         }
       },
       "annual": {
@@ -2414,7 +2439,7 @@
             "when": "Najprościej, jeśli masz skrzynkę danych: wystarczy dołączyć XML do wiadomości, bez podpisu.",
             "steps": [
               "Pobierz powyższy XML – każde zgłoszenie to osobny plik.",
-              "Zalecamy najpierw wczytać go do EPO (Načtení souboru → Kontrola), uzupełnić urząd skarbowy i poprawić ostrzeżenia, a potem zapisać z powrotem jako XML.",
+              "Zalecamy najpierw wczytać go do EPO (Načíst ze souboru → Kontrola), uzupełnić urząd skarbowy i poprawić ostrzeżenia, a potem zapisać z powrotem jako XML.",
               "Zaloguj się do skrzynki danych i napisz nową wiadomość do swojego urzędu skarbowego (ID jego skrzynki znajdziesz na liście urzędów).",
               "Do jednej wiadomości dołącz jeden plik XML.",
               "Wyślij ją i zachowaj potwierdzenie doręczenia."
@@ -2425,7 +2450,7 @@
             "when": "Formularz internetowy administracji skarbowej. Złożenie przez skrzynkę danych (logując się z EPO) albo z kwalifikowanym podpisem elektronicznym.",
             "steps": [
               "Pobierz powyższy XML.",
-              "Otwórz EPO → Elektronická podání → Načtení souboru i wybierz XML.",
+              "Otwórz EPO → Načíst ze souboru → Můj počítač → Procházet i wybierz XML.",
               "Sprawdź sekcje D i P: urząd skarbowy, oddział terenowy i dane kontaktowe.",
               "Kliknij Kontrola i popraw błędy; ostrzeżenia mają charakter informacyjny.",
               "Wybierz Pokračovat v podání → Odeslat přes datovou schránku albo wyślij z podpisem elektronicznym.",
@@ -2438,7 +2463,7 @@
             "steps": [
               "Pobierz powyższy XML.",
               "Zaloguj się do portalu MOJE daně przez identyfikację bankową lub eID.",
-              "W EPO wybierz Načtení souboru i prześlij XML.",
+              "W EPO wybierz Načíst ze souboru i prześlij XML.",
               "Sprawdź go, uzupełnij urząd skarbowy i uruchom Kontrola.",
               "Złóż przyciskiem Podat; potwierdzenie znajdziesz w przeglądzie dokumentów."
             ]
@@ -2551,7 +2576,8 @@
           "form_not_published": "Urząd nie opublikował jeszcze formularza na ten rok.",
           "year_not_supported": "Nie mamy jeszcze parametrów na ten rok.",
           "invalid_filings_query": "Sprawdź wpisane dane; coś ma nieprawidłowy format.",
-          "generic": "Nie udało się utworzyć pliku."
+          "generic": "Nie udało się utworzyć pliku.",
+          "form_blocked": "Administracja podatkowa zmieniła ten formularz, a nasz eksport nie spełnia jeszcze nowej wersji. Pobieranie wyłączyliśmy do czasu poprawki."
         },
         "disclaimer": "Wstępnie wypełnione na podstawie dokumentów w aplikacji dla typowego przypadku przedsiębiorcy jednoosobowego (tylko przychody z działalności, podstawowe ulgi). To nie jest doradztwo podatkowe. Przed złożeniem wszystko sprawdź; składasz sam przez EPO, ePortal ČSSZ, portal swojej kasy lub skrzynkę danych.",
         "modes": {
@@ -2560,7 +2586,8 @@
           "60": "Ryczałt 60 % (pozostałe działalności)",
           "80": "Ryczałt 80 % (rzemiosło)",
           "actual": "Rzeczywiste wydatki"
-        }
+        },
+        "schemaProblems": "Plik został pobrany, ale EPO prawdopodobnie go odrzuci, nie odpowiada oficjalnemu schematowi: {problems}. Napisz do nas, poprawimy to."
       }
     },
     "invoices": {

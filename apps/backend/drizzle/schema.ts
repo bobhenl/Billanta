@@ -2240,6 +2240,20 @@ export const platformAlerts = pgTable(
   }),
 );
 
+/** NOT tenant-scoped (0126). The EPO XSD per form and whether our sample exports still pass it. */
+export const formSchemas = pgTable("form_schemas", {
+  form: varchar("form", { length: 20 }).primaryKey(),
+  url: text("url").notNull(),
+  hash: text("hash"),
+  xsd: text("xsd"),
+  status: varchar("status", { length: 16 }).$type<"ok" | "blocked">().notNull().default("ok"),
+  errors: text("errors"),
+  lastError: text("last_error"),
+  lastCheckedAt: timestamp("last_checked_at", { withTimezone: true }),
+  lastChangedAt: timestamp("last_changed_at", { withTimezone: true }),
+  blockedAt: timestamp("blocked_at", { withTimezone: true }),
+});
+
 // ---------------------------------------------------------------------------
 // demo_sessions – one row per demo company (0068): the visitor's salted IP
 // hash for the per-IP limits and the AI call count. Not readable by the app

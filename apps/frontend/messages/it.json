@@ -2363,6 +2363,31 @@
           "received_reverse_charge_code_missing": "Documenti ricevuti in inversione contabile senza codice operazione: {documents}. Aggiunga il codice sulla spesa e scarichi di nuovo il file, altrimenti EPO lo rifiuta.",
           "received_reverse_charge_dic_missing": "Documenti ricevuti in inversione contabile senza partita IVA del fornitore, esclusi dalla sezione B.1: {documents}.",
           "received_reverse_charge_number_missing": "Documenti ricevuti in inversione contabile senza numero di documento (indicati per data), esclusi dalla sezione B.1: {documents}."
+        },
+        "formBlocked": "L'amministrazione fiscale ha cambiato questo modulo e il nostro export non rispetta ancora la nuova versione. Abbiamo sospeso il download finché non lo correggiamo e vi avviseremo quando torna disponibile.",
+        "confirm": {
+          "title": "Controlla i dati prima di scaricare",
+          "back": "Indietro",
+          "downloadAndOpenEpo": "Scarica e apri EPO",
+          "form": "Modulo",
+          "period": "Periodo",
+          "office": "Ufficio delle imposte",
+          "officeMissing": "non impostato, lo scegli in EPO",
+          "output": "IVA a debito",
+          "deduction": "IVA detraibile",
+          "payable": "IVA da versare",
+          "refund": "Eccedenza di detrazione",
+          "khRows": "Righe nelle sezioni A e B",
+          "shvRows": "Righe",
+          "shvTotal": "Valore delle prestazioni",
+          "schemaProblems": "Probabilmente EPO rifiuterà il file, non rispetta lo schema ufficiale: {problems}. Scrivici e lo correggiamo.",
+          "epoTitle": "Invio tramite EPO",
+          "epoSteps": [
+            "In EPO scegli Načíst ze souboru → Můj počítač → Procházet e il file scaricato.",
+            "Controlla il Protokol chyb. Correggi gli errori, gli avvisi sono solo informativi.",
+            "Invia tramite casella dati o con firma elettronica e conserva la conferma."
+          ],
+          "responsibility": "Ho controllato i dati. Billanta prepara la dichiarazione dai miei documenti, ma del contenuto e dell'invio rispondo io."
         }
       },
       "annual": {
@@ -2414,7 +2439,7 @@
             "when": "La via più semplice se ha una casella dati: basta allegare l'XML a un messaggio, senza firma.",
             "steps": [
               "Scarichi l'XML qui sopra – ogni adempimento è un file separato.",
-              "Consigliamo di caricarlo prima in EPO (Načtení souboru → Kontrola), compilare l'ufficio delle imposte e correggere gli avvisi, quindi salvarlo di nuovo come XML.",
+              "Consigliamo di caricarlo prima in EPO (Načíst ze souboru → Kontrola), compilare l'ufficio delle imposte e correggere gli avvisi, quindi salvarlo di nuovo come XML.",
               "Acceda alla Sua casella dati e scriva un nuovo messaggio al Suo ufficio delle imposte (l'ID della sua casella è nell'elenco degli uffici).",
               "Alleghi un solo file XML per messaggio.",
               "Lo invii e conservi la ricevuta di consegna."
@@ -2425,7 +2450,7 @@
             "when": "Il modulo web dell'Amministrazione finanziaria. Si invia tramite la casella dati (accedendo da EPO) o con una firma elettronica qualificata.",
             "steps": [
               "Scarichi l'XML qui sopra.",
-              "Apra EPO → Elektronická podání → Načtení souboru e selezioni l'XML.",
+              "Apra EPO → Načíst ze souboru → Můj počítač → Procházet e selezioni l'XML.",
               "Controlli le sezioni D e P: ufficio delle imposte, sede territoriale e recapiti.",
               "Clicchi su Kontrola e corregga gli errori; gli avvisi sono solo informativi.",
               "Scelga Pokračovat v podání → Odeslat přes datovou schránku, oppure invii con firma elettronica.",
@@ -2438,7 +2463,7 @@
             "steps": [
               "Scarichi l'XML qui sopra.",
               "Acceda al portale MOJE daně con la Sua identità bancaria o eID.",
-              "In EPO scelga Načtení souboru e carichi l'XML.",
+              "In EPO scelga Načíst ze souboru e carichi l'XML.",
               "Lo controlli, compili l'ufficio delle imposte ed esegua Kontrola.",
               "Invii con Podat; la conferma si trova nel riepilogo dei Suoi documenti."
             ]
@@ -2551,7 +2576,8 @@
           "form_not_published": "L'autorità non ha ancora pubblicato il modulo per quest'anno.",
           "year_not_supported": "Non abbiamo ancora i parametri per quest'anno.",
           "invalid_filings_query": "Verifichi i dati inseriti; qualcosa ha un formato errato.",
-          "generic": "Impossibile creare il file."
+          "generic": "Impossibile creare il file.",
+          "form_blocked": "L'amministrazione fiscale ha cambiato questo modulo e il nostro export non rispetta ancora la nuova versione. Abbiamo sospeso il download finché non lo correggiamo."
         },
         "disclaimer": "Precompilato in base ai documenti nell'app per il caso tipico del lavoratore autonomo (solo redditi d'impresa, sconti di base). Non costituisce consulenza fiscale. Controlli tutto prima dell'invio; la presentazione avviene a cura Sua tramite EPO, l'ePortal della ČSSZ, il portale della Sua cassa sanitaria o la Sua casella dati.",
         "modes": {
@@ -2560,7 +2586,8 @@
           "60": "Forfettario 60 % (attività commerciali)",
           "80": "Forfettario 80 % (artigianato)",
           "actual": "Spese effettive"
-        }
+        },
+        "schemaProblems": "Il file è stato scaricato, ma probabilmente EPO lo rifiuterà, non rispetta lo schema ufficiale: {problems}. Scrivici e lo correggiamo."
       }
     },
     "invoices": {

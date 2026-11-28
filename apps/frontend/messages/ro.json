@@ -2363,6 +2363,31 @@
           "received_reverse_charge_code_missing": "Documente primite cu taxare inversă fără cod de livrare: {documents}. Adăugați codul pe cheltuială și descărcați din nou fișierul, altfel EPO îl respinge.",
           "received_reverse_charge_dic_missing": "Documente primite cu taxare inversă fără codul de TVA al furnizorului, omise din secțiunea B.1: {documents}.",
           "received_reverse_charge_number_missing": "Documente primite cu taxare inversă fără număr de document (afișate după dată), omise din secțiunea B.1: {documents}."
+        },
+        "formBlocked": "Administrația fiscală a modificat acest formular, iar exportul nostru nu respectă încă noua versiune. Am oprit descărcarea până îl reparăm și vă anunțăm când revine.",
+        "confirm": {
+          "title": "Verificați datele înainte de descărcare",
+          "back": "Înapoi",
+          "downloadAndOpenEpo": "Descarcă și deschide EPO",
+          "form": "Formular",
+          "period": "Perioadă",
+          "office": "Administrația fiscală",
+          "officeMissing": "nesetată, o alegeți în EPO",
+          "output": "TVA colectată",
+          "deduction": "TVA deductibilă",
+          "payable": "TVA de plată",
+          "refund": "Deducere excedentară",
+          "khRows": "Rânduri în secțiunile A și B",
+          "shvRows": "Rânduri",
+          "shvTotal": "Valoarea livrărilor",
+          "schemaProblems": "EPO va respinge probabil fișierul, nu corespunde schemei oficiale: {problems}. Scrieți-ne și îl reparăm.",
+          "epoTitle": "Depunere prin EPO",
+          "epoSteps": [
+            "În EPO alegeți Načíst ze souboru → Můj počítač → Procházet și fișierul descărcat.",
+            "Parcurgeți Protokol chyb. Corectați erorile, avertismentele sunt doar informative.",
+            "Trimiteți prin căsuța de date sau cu semnătură electronică și păstrați confirmarea."
+          ],
+          "responsibility": "Am verificat datele. Billanta întocmește declarația din documentele mele, dar eu răspund de conținutul și depunerea ei."
         }
       },
       "annual": {
@@ -2414,7 +2439,7 @@
             "when": "Cel mai simplu dacă aveți cutie de date: atașați XML-ul la un mesaj, fără semnătură.",
             "steps": [
               "Descărcați XML-ul de mai sus – fiecare declarație este un fișier separat.",
-              "Vă recomandăm să îl încărcați mai întâi în EPO (Načtení souboru → Kontrola), să completați administrația fiscală și să remediați avertismentele, apoi să îl salvați din nou ca XML.",
+              "Vă recomandăm să îl încărcați mai întâi în EPO (Načíst ze souboru → Kontrola), să completați administrația fiscală și să remediați avertismentele, apoi să îl salvați din nou ca XML.",
               "Conectați-vă la cutia de date și scrieți un mesaj nou către administrația fiscală (ID-ul cutiei ei este în lista administrațiilor).",
               "Atașați câte un fișier XML la fiecare mesaj.",
               "Trimiteți-l și păstrați confirmarea de livrare."
@@ -2425,7 +2450,7 @@
             "when": "Formularul web al Administrației Financiare. Depuneți prin cutia de date (conectându-vă din EPO) sau cu semnătură electronică calificată.",
             "steps": [
               "Descărcați XML-ul de mai sus.",
-              "Deschideți EPO → Elektronická podání → Načtení souboru și alegeți XML-ul.",
+              "Deschideți EPO → Načíst ze souboru → Můj počítač → Procházet și alegeți XML-ul.",
               "Verificați secțiunile D și P: administrația fiscală, unitatea teritorială și datele de contact.",
               "Faceți clic pe Kontrola și remediați erorile; avertismentele sunt informative.",
               "Alegeți Pokračovat v podání → Odeslat přes datovou schránku sau trimiteți cu semnătură electronică.",
@@ -2438,7 +2463,7 @@
             "steps": [
               "Descărcați XML-ul de mai sus.",
               "Conectați-vă la portalul MOJE daně cu identitatea bancară sau cartea de identitate electronică.",
-              "În EPO alegeți Načtení souboru și încărcați XML-ul.",
+              "În EPO alegeți Načíst ze souboru și încărcați XML-ul.",
               "Verificați-l, completați administrația fiscală și rulați Kontrola.",
               "Depuneți cu Podat; confirmarea se află în prezentarea documentelor dumneavoastră."
             ]
@@ -2551,7 +2576,8 @@
           "form_not_published": "Autoritatea nu a publicat încă formularul pentru acest an.",
           "year_not_supported": "Încă nu avem parametrii pentru acest an.",
           "invalid_filings_query": "Verificați datele introduse; ceva are un format greșit.",
-          "generic": "Fișierul nu a putut fi creat."
+          "generic": "Fișierul nu a putut fi creat.",
+          "form_blocked": "Administrația fiscală a modificat acest formular, iar exportul nostru nu respectă încă noua versiune. Am oprit descărcarea până îl reparăm."
         },
         "disclaimer": "Precompletat din documentele din aplicație pentru cazul tipic de liber-profesionist (doar venituri din activitate, deduceri de bază). Nu este consultanță fiscală. Verificați totul înainte de depunere; depuneți singur prin EPO, ePortalul ČSSZ, portalul casei de asigurări sau cutia de date.",
         "modes": {
@@ -2560,7 +2586,8 @@
           "60": "Forfetar 60 % (activități autorizate)",
           "80": "Forfetar 80 % (meșteșuguri)",
           "actual": "Cheltuieli reale"
-        }
+        },
+        "schemaProblems": "Fișierul s-a descărcat, dar EPO îl va respinge probabil, nu corespunde schemei oficiale: {problems}. Scrieți-ne și îl reparăm."
       }
     },
     "invoices": {

@@ -2363,6 +2363,31 @@
           "received_reverse_charge_code_missing": "Documentos recebidos com autoliquidação sem código de operação: {documents}. Adicione o código na despesa e descarregue o ficheiro novamente; caso contrário, o EPO rejeita-o.",
           "received_reverse_charge_dic_missing": "Documentos recebidos com autoliquidação sem o número de IVA do fornecedor, excluídos da secção B.1: {documents}.",
           "received_reverse_charge_number_missing": "Documentos recebidos com autoliquidação sem número de documento (indicados pela data), excluídos da secção B.1: {documents}."
+        },
+        "formBlocked": "A administração fiscal alterou este formulário e a nossa exportação ainda não cumpre a nova versão. Desligámos a transferência até corrigirmos e avisamos quando voltar.",
+        "confirm": {
+          "title": "Verifique os dados antes de transferir",
+          "back": "Voltar",
+          "downloadAndOpenEpo": "Transferir e abrir o EPO",
+          "form": "Formulário",
+          "period": "Período",
+          "office": "Repartição de finanças",
+          "officeMissing": "não definida, escolhe-a no EPO",
+          "output": "IVA liquidado",
+          "deduction": "IVA dedutível",
+          "payable": "IVA a pagar",
+          "refund": "Excesso de dedução",
+          "khRows": "Linhas nas secções A e B",
+          "shvRows": "Linhas",
+          "shvTotal": "Valor das prestações",
+          "schemaProblems": "É provável que o EPO rejeite o ficheiro, não cumpre o esquema oficial: {problems}. Escreva-nos e corrigimos.",
+          "epoTitle": "Entrega pelo EPO",
+          "epoSteps": [
+            "No EPO escolha Načíst ze souboru → Můj počítač → Procházet e o ficheiro transferido.",
+            "Reveja o Protokol chyb. Corrija os erros; os avisos são apenas informativos.",
+            "Envie pela caixa de dados ou com assinatura eletrónica e guarde a confirmação."
+          ],
+          "responsibility": "Verifiquei os dados. A Billanta prepara a declaração a partir dos meus documentos, mas sou eu o responsável pelo conteúdo e pela entrega."
         }
       },
       "annual": {
@@ -2414,7 +2439,7 @@
             "when": "A opção mais simples se tiver caixa de dados: basta anexar o XML a uma mensagem, sem assinatura.",
             "steps": [
               "Descarregue o XML acima – cada declaração é um ficheiro separado.",
-              "Recomendamos carregá-lo primeiro no EPO (Načtení souboru → Kontrola), preencher a repartição de finanças e corrigir os avisos e depois guardá-lo novamente como XML.",
+              "Recomendamos carregá-lo primeiro no EPO (Načíst ze souboru → Kontrola), preencher a repartição de finanças e corrigir os avisos e depois guardá-lo novamente como XML.",
               "Inicie sessão na sua caixa de dados e escreva uma nova mensagem para a sua repartição de finanças (o ID da caixa está na lista de repartições).",
               "Anexe um ficheiro XML por mensagem.",
               "Envie e guarde o comprovativo de entrega."
@@ -2425,7 +2450,7 @@
             "when": "O formulário web da Administração Financeira. Submeta pela caixa de dados (iniciando sessão a partir do EPO) ou com assinatura eletrónica qualificada.",
             "steps": [
               "Descarregue o XML acima.",
-              "Abra EPO → Elektronická podání → Načtení souboru e escolha o XML.",
+              "Abra EPO → Načíst ze souboru → Můj počítač → Procházet e escolha o XML.",
               "Verifique as secções D e P: repartição de finanças, serviço local e contactos.",
               "Clique em Kontrola e corrija os erros; os avisos são apenas informativos.",
               "Escolha Pokračovat v podání → Odeslat přes datovou schránku ou envie com assinatura eletrónica.",
@@ -2438,7 +2463,7 @@
             "steps": [
               "Descarregue o XML acima.",
               "Inicie sessão no portal MOJE daně com a sua identidade bancária ou eID.",
-              "No EPO, escolha Načtení souboru e carregue o XML.",
+              "No EPO, escolha Načíst ze souboru e carregue o XML.",
               "Verifique-o, preencha a repartição de finanças e execute Kontrola.",
               "Submeta com Podat; a confirmação fica na sua lista de documentos."
             ]
@@ -2551,7 +2576,8 @@
           "form_not_published": "A autoridade ainda não publicou o formulário para este ano.",
           "year_not_supported": "Ainda não temos os parâmetros para este ano.",
           "invalid_filings_query": "Verifique os dados introduzidos; há algo com formato incorreto.",
-          "generic": "Não foi possível criar o ficheiro."
+          "generic": "Não foi possível criar o ficheiro.",
+          "form_blocked": "A administração fiscal alterou este formulário e a nossa exportação ainda não cumpre a nova versão. Desligámos a transferência até corrigirmos."
         },
         "disclaimer": "Pré-preenchido a partir dos documentos na app para o caso típico de empresário em nome individual (apenas rendimentos empresariais, deduções básicas). Não constitui aconselhamento fiscal. Verifique tudo antes de submeter; a submissão é feita por si através do EPO, do ePortal da ČSSZ, do portal da sua seguradora ou da sua caixa de dados.",
         "modes": {
@@ -2560,7 +2586,8 @@
           "60": "Forfetário 60 % (atividades comerciais)",
           "80": "Forfetário 80 % (ofícios)",
           "actual": "Despesas efetivas"
-        }
+        },
+        "schemaProblems": "O ficheiro foi transferido, mas é provável que o EPO o rejeite, não cumpre o esquema oficial: {problems}. Escreva-nos e corrigimos."
       }
     },
     "invoices": {

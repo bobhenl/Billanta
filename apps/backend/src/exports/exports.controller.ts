@@ -27,6 +27,7 @@ import {
 import { taxReturnCsv, taxReturnFileName, taxReturnPdf, type TaxReturnReport } from "./tax-return-basis";
 import { tenantCountry, tenantHomeCurrencyOf } from "../tenants/home-currency";
 import { spendFeature } from "../billing/plan-limits";
+import { FormSchemasService } from "../form-schemas/form-schemas.service";
 import type { PlanFeature } from "../billing/plans";
 
 const vatPeriodSchema = z.object({
@@ -166,7 +167,10 @@ const accountingFormatSchema = z.enum(["pohoda", "money-s3"]);
 @UseGuards(JwtAuthGuard)
 @Controller("v1/exports")
 export class ExportsController {
-  constructor(private readonly exportsService: ExportsService) {}
+  constructor(
+    private readonly exportsService: ExportsService,
+    private readonly formSchemas: FormSchemasService,
+  ) {}
 
   @Get("invoices.csv")
   @ApiOperation({
@@ -429,8 +433,11 @@ export class ExportsController {
     const parsed = filingBodySchema.safeParse(body);
     if (!parsed.success) throw new BadRequestException("invalid_filings_query");
     const { lines, tenant } = await this.loadFilings(req, parsed.data);
+    const form = dpfdpFormFor(lines.dpfo.year)?.form.toLowerCase();
+    if (form) await this.formSchemas.assertAvailable(form);
     const xml = this.filingFile(() => generateDpfdp(lines.dpfo, { submitter: submitterFromTenant(tenant), ...parsed.data }));
     await this.spend(req, "income_tax_export");
+    if (form) await this.schemaProblemsHeader(res, form, xml);
     this.send(res, xml, "application/xml; charset=utf-8", `dpfdp-${lines.dpfo.year}.xml`);
   }
 
@@ -501,6 +508,7 @@ export class ExportsController {
     const forms = { dpfdp: dpfdpFormFor(summary.year)?.form ?? null, cssz: (CSSZ_OSVC_YEARS as readonly number[]).includes(summary.year) };
     const { file } = parsed.data;
     if ((file === "dpfdp" && !forms.dpfdp) || (file === "osvc" && !forms.cssz)) throw new NotFoundException("form_not_published");
+    if (file === "dpfdp" && forms.dpfdp) await this.formSchemas.assertAvailable(forms.dpfdp.toLowerCase());
     if (file) await this.spend(req, "income_tax_export");
     return {
       vatPayer: summary.vatPayer,
@@ -560,6 +568,7 @@ export class ExportsController {
   async vatInputs(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>) {
     const filing = VAT_INPUT_FILINGS.get(query.filing ?? "");
     if (!filing) throw new BadRequestException("invalid_filing");
+    if (filing.country === "CZ") await this.formSchemas.assertAvailable(query.filing!);
     await this.assertCompleteView(req);
     const period = parseVatPeriod(query);
     const tenant = filing.country === "SK" ? await this.skTenant(req) : await this.czTenant(req, filing.kind, period.vat);
@@ -624,6 +633,8 @@ export class ExportsController {
     kind: "dp3" | "kh1" | "shv",
     period: ExportPeriod & { vat: VatPeriod; label: string },
   ) {
+    const name = { dp3: "dphdp3", kh1: "dphkh1", shv: "dphshv" }[kind];
+    await this.formSchemas.assertAvailable(name);
     await this.assertCompleteView(req);
     const tenant = await this.czTenant(req, kind, period.vat);
     let body: string | null;
@@ -637,13 +648,13 @@ export class ExportsController {
     if (body == null) {
       throw new NotFoundException(kind === "dp3" ? "No VAT due for an identified person in this month" : "No EU supplies to report in this period");
     }
-    const name = { dp3: "dphdp3", kh1: "dphkh1", shv: "dphshv" }[kind];
     // The file still downloads; the export box reads this header and names
     // the documents to fix (e.g. a reverse-charge invoice without kód
     // předmětu plnění, which EPO would reject). URI-encoded JSON, since
     // document numbers may hold non-ASCII characters.
     await this.spend(req, "vat_filings");
     if (warnings.length) res.setHeader("X-Vat-Warnings", encodeURIComponent(JSON.stringify(warnings)));
+    await this.schemaProblemsHeader(res, name, body);
     this.send(res, body, "application/xml; charset=utf-8", `${name}-${period.label}.xml`);
   }
 
@@ -662,6 +673,16 @@ export class ExportsController {
   private async assertCompleteView(req: TenantScopedRequest) {
     const [row] = await req.tenantDb!.execute<{ complete: boolean }>(sql`SELECT app_view_complete() AS complete`);
     if (!row?.complete) throw new ConflictException("filing_needs_full_view");
+  }
+
+  /**
+   * What in this file the current XSD rejects, as element/attribute paths
+   * without values (X-Schema-Problems, URI-encoded JSON). The file still
+   * downloads: the person sees what EPO will refuse before uploading it.
+   */
+  private async schemaProblemsHeader(res: Response, form: string, xml: string) {
+    const problems = await this.formSchemas.exportProblems(form, xml);
+    if (problems.length) res.setHeader("X-Schema-Problems", encodeURIComponent(JSON.stringify(problems)));
   }
 
   private async spend(req: TenantScopedRequest, feature: PlanFeature) {

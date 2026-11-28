@@ -2370,6 +2370,31 @@
           "dp3Hint": "DPHDP3 za měsíc – daň ze služeb nakoupených v zahraničí (ř. 5 a 6, mimo EU ř. 12 a 13) a služby do EU (ř. 21), bez odpočtu.",
           "noControlStatement": "Identifikovaná osoba kontrolní hlášení nepodává, stačí přiznání a případně souhrnné hlášení.",
           "nothingToReport": "V tomto měsíci jste nenakoupili službu ze zahraničí ani neprodali službu do EU, přiznání se nepodává."
+        },
+        "formBlocked": "Tento formulář Finanční správa změnila a náš export jeho novou podobu zatím nesplňuje. Stahování jsme dočasně vypnuli, než ho opravíme. Ozveme se, až bude zase k dispozici.",
+        "confirm": {
+          "title": "Zkontrolujte údaje před stažením",
+          "back": "Zpět",
+          "downloadAndOpenEpo": "Stáhnout a otevřít EPO",
+          "form": "Formulář",
+          "period": "Období",
+          "office": "Finanční úřad",
+          "officeMissing": "nevyplněn, vyberete ho v EPO",
+          "output": "Daň na výstupu",
+          "deduction": "Odpočet daně",
+          "payable": "Vlastní daň k úhradě",
+          "refund": "Nadměrný odpočet",
+          "khRows": "Řádků v oddílech A a B",
+          "shvRows": "Řádků",
+          "shvTotal": "Hodnota plnění",
+          "schemaProblems": "EPO soubor pravděpodobně odmítne, neodpovídá oficiálnímu schématu: {problems}. Napište nám, opravíme to.",
+          "epoTitle": "Podání přes EPO",
+          "epoSteps": [
+            "V EPO zvolte Načíst ze souboru → Můj počítač → Procházet a vyberte stažený soubor.",
+            "Projděte Protokol chyb. Chyby opravte, upozornění jsou jen informativní.",
+            "Odešlete podání přes datovou schránku nebo s elektronickým podpisem a uložte si potvrzení."
+          ],
+          "responsibility": "Zkontroloval(a) jsem údaje. Billanta přiznání sestavuje z mých dokladů, ale za jeho obsah a podání odpovídám já."
         }
       },
       "annual": {
@@ -2421,7 +2446,7 @@
             "when": "Nejjednodušší, pokud máte datovou schránku. XML stačí přiložit ke zprávě, není potřeba žádný podpis.",
             "steps": [
               "Stáhněte XML výše (přiznání, kontrolní hlášení, případně souhrnné hlášení) – každé podání je samostatný soubor.",
-              "Doporučujeme soubor nejdřív nahrát do EPO (Načtení souboru → Kontrola), doplnit finanční úřad a opravit případná upozornění. Opravený soubor pak uložte zpět jako XML.",
+              "Doporučujeme soubor nejdřív nahrát do EPO (Načíst ze souboru → Kontrola), doplnit finanční úřad a opravit případná upozornění. Opravený soubor pak uložte zpět jako XML.",
               "Přihlaste se do datové schránky a napište novou zprávu svému finančnímu úřadu (jeho ID schránky najdete v seznamu úřadů).",
               "Přiložte jeden XML soubor na jednu zprávu. Předmět může být např. „Přiznání k DPH 06/2026“.",
               "Odešlete a uložte si doručenku. Finanční správa potvrdí přijetí do datové schránky."
@@ -2432,7 +2457,7 @@
             "when": "Webový formulář Finanční správy. Odeslat jde přes datovou schránku (přihlášením do ní přímo z EPO) nebo s uznávaným elektronickým podpisem.",
             "steps": [
               "Stáhněte XML výše.",
-              "Otevřete EPO → Elektronická podání → Načtení souboru a vyberte stažený XML.",
+              "Otevřete EPO → Načíst ze souboru → Můj počítač → Procházet a vyberte stažený XML.",
               "Zkontrolujte věty D a P: finanční úřad, územní pracoviště a kontaktní údaje. Doplňte, co chybí.",
               "Klikněte na Kontrola a opravte chyby. Upozornění jsou jen informativní.",
               "Zvolte Pokračovat v podání → Odeslat přes datovou schránku (přihlásíte se do ní) nebo Odeslat s elektronickým podpisem.",
@@ -2445,7 +2470,7 @@
             "steps": [
               "Stáhněte XML výše.",
               "Přihlaste se na portál MOJE daně bankovní identitou nebo eObčankou.",
-              "V části Elektronická podání (EPO) zvolte Načtení souboru a nahrajte XML.",
+              "V části Elektronická podání (EPO) zvolte Načíst ze souboru a nahrajte XML.",
               "Zkontrolujte, doplňte finanční úřad a spusťte Kontrolu.",
               "Odešlete tlačítkem Podat. Potvrzení najdete v přehledu písemností na portálu."
             ]
@@ -2558,7 +2583,8 @@
           "form_not_published": "Formulář pro tento rok úřad ještě nezveřejnil.",
           "year_not_supported": "Pro tento rok zatím nemáme parametry.",
           "invalid_filings_query": "Zkontrolujte vyplněné údaje, něco nemá správný tvar.",
-          "generic": "Soubor se nepodařilo vytvořit."
+          "generic": "Soubor se nepodařilo vytvořit.",
+          "form_blocked": "Tento formulář Finanční správa změnila a náš export jeho novou podobu zatím nesplňuje. Stahování jsme dočasně vypnuli, než ho opravíme."
         },
         "disclaimer": "Předvyplněno z dokladů v aplikaci podle běžného případu OSVČ (jen příjmy z podnikání, základní slevy). Nejde o daňové poradenství. Před podáním vše zkontrolujte, podáváte sami přes EPO, ePortál ČSSZ, portál pojišťovny nebo datovou schránku.",
         "modes": {
@@ -2567,7 +2593,8 @@
           "60": "Paušál 60 % (živnosti)",
           "80": "Paušál 80 % (řemesla)",
           "actual": "Skutečné výdaje"
-        }
+        },
+        "schemaProblems": "Soubor se stáhl, ale EPO ho pravděpodobně odmítne, neodpovídá oficiálnímu schématu: {problems}. Napište nám, opravíme to."
       }
     },
     "invoices": {

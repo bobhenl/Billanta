@@ -5,10 +5,19 @@ const limits = vi.hoisted(() => ({ spendFeature: vi.fn() }));
 vi.mock("../billing/plan-limits", () => limits);
 
 import { ExportsController } from "./exports.controller";
+import { FormSchemasService } from "../form-schemas/form-schemas.service";
 
 const TENANT = { id: "t1", dic: "CZ12345678", vatStatus: "payer", country: "CZ" };
 
-function setup(tenant: Record<string, unknown> = TENANT, complete = true) {
+/** The real guard over a fake table: `blocked` forms are in status blocked, `xsd` is stored for every form. */
+function formSchemas(blocked: string[] = [], xsd: string | null = null) {
+  const forms = ["dphdp3", "dphkh1", "dphshv", "dpfdp6", "dpfdp7"];
+  const rows = forms.map((form) => ({ form, url: "", hash: null, xsd, status: blocked.includes(form) ? "blocked" : "ok" }));
+  const db = { select: () => ({ from: async () => rows }) };
+  return new FormSchemasService({ db } as never, { sendPlatformEmail: vi.fn() } as never);
+}
+
+function setup(tenant: Record<string, unknown> = TENANT, complete = true, schemas = formSchemas()) {
   const service = {
     pohodaXml: vi.fn(async () => "<pohoda/>"),
     moneyS3Xml: vi.fn(async () => "<money/>"),
@@ -22,7 +31,7 @@ function setup(tenant: Record<string, unknown> = TENANT, complete = true) {
   const chain: any = { from: () => chain, where: () => Promise.resolve([tenant]) };
   const req = { tenantDb: { select: () => chain, execute: vi.fn(async () => [{ complete }]) }, user: { tenantId: "t1" } };
   const res = { setHeader: vi.fn(), send: vi.fn() };
-  return { controller: new ExportsController(service as never), service, req, res };
+  return { controller: new ExportsController(service as never, schemas), service, req, res };
 }
 
 const refusal = new ForbiddenException({ error: "plan_required" });
@@ -144,6 +153,48 @@ describe("ExportsController vat-inputs (sealed amounts, built in the browser)", 
     expect(czech.service.vatInputs).not.toHaveBeenCalled();
     // A refused filing is not counted on the plan.
     expect(limits.spendFeature).not.toHaveBeenCalled();
+  });
+});
+
+describe("ExportsController with a form blocked by the schema check", () => {
+  const blocked = { status: 409, message: "form_blocked" };
+
+  it("refuses that form's file and its sealed inputs before anything is built or spent", async () => {
+    const { controller, service, req, res } = setup(TENANT, true, formSchemas(["dphkh1"]));
+    await expect(controller.kh1(req as never, { year: "2026", month: "3" }, res as never)).rejects.toMatchObject(blocked);
+    await expect(controller.vatInputs(req as never, { filing: "dphkh1", year: "2026", month: "3" })).rejects.toMatchObject(blocked);
+    expect(service.vatReturn).not.toHaveBeenCalled();
+    expect(service.vatInputs).not.toHaveBeenCalled();
+    expect(limits.spendFeature).not.toHaveBeenCalled();
+    expect(res.send).not.toHaveBeenCalled();
+  });
+
+  it("leaves the other forms open", async () => {
+    const { controller, req, res } = setup(TENANT, true, formSchemas(["dphkh1"]));
+    await controller.dp3(req as never, { year: "2026", month: "3" }, res as never);
+    await controller.vatInputs(req as never, { filing: "dphshv", year: "2026", month: "3" });
+    expect(res.send).toHaveBeenCalledTimes(1);
+  });
+
+  it("blocks the DAP form of the year asked for, also for the sealed path", async () => {
+    const person = { ...TENANT, legalName: "Jan Novák", addressStreet: "Dlouhá 1", addressCity: "Praha", addressPostalCode: "11000" };
+    const { controller, req } = setup(person, true, formSchemas(["dpfdp7"]));
+    await expect(controller.filingsInputs(req as never, { year: "2025", activity: "H", file: "dpfdp" })).rejects.toMatchObject(blocked);
+    // The inputs without a file to build are the on-screen figures: still open.
+    await expect(controller.filingsInputs(req as never, { year: "2025", activity: "H" })).resolves.toMatchObject({ forms: { dpfdp: "DPFDP7" } });
+    const older = setup(person, true, formSchemas(["dpfdp6"]));
+    await expect(older.controller.filingsInputs(older.req as never, { year: "2025", activity: "H", file: "dpfdp" })).resolves.toBeTruthy();
+  });
+
+  it("names what the stored XSD rejects in a real export, without its values", async () => {
+    const xsd = `<?xml version="1.0"?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"><xs:element name="Pisemnost"><xs:complexType><xs:attribute name="c_telef"><xs:simpleType><xs:restriction base="xs:string"><xs:maxLength value="14"/></xs:restriction></xs:simpleType></xs:attribute></xs:complexType></xs:element></xs:schema>`;
+    const { controller, service, req, res } = setup(TENANT, true, formSchemas([], xsd));
+    service.vatReturn.mockResolvedValue({ body: '<Pisemnost c_telef="+420 777 123 456" />', warnings: [] });
+    await controller.dp3(req as never, { year: "2026", month: "3" }, res as never);
+    const header = res.setHeader.mock.calls.find(([name]) => name === "X-Schema-Problems");
+    expect(JSON.parse(decodeURIComponent(header![1] as string))).toEqual(["Pisemnost/@c_telef: maxLength"]);
+    expect(header![1]).not.toContain("777");
+    expect(res.send).toHaveBeenCalledTimes(1);
   });
 });
 

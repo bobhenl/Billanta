@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { parseCnbRates } from "../cnb-rates.js";
 import {
   classifyIssued,
+  epoPhone,
   generateDphDp3,
   generateDphDp3Identified,
   generateDphKh1,
@@ -253,6 +254,28 @@ describe("generateDphShv", () => {
   });
   it("returns null with nothing to report", () => {
     expect(generateDphShv({ issued: [issued({})], submitter, period, today })).toBeNull();
+  });
+  it("leaves out e-mail and phone, which the DPHSHV VetaP does not have", () => {
+    const eu = { customerDic: "DE123456789", customerCountry: "DE", parts: [{ ratePercent: 0, base: 3000, vat: 0 }] };
+    const xml = generateDphShv({ issued: [issued(eu)], submitter: { ...submitter, telefon: "777123456" }, period, today })!;
+    const vetaP = xml.match(/<VetaP [^>]*>/)![0];
+    expect(vetaP).not.toMatch(/ email=| c_telef=/);
+    // The other forms keep them.
+    const dp3 = generateDphDp3({ issued: [issued(eu)], received: [], submitter: { ...submitter, telefon: "777123456" }, period, today });
+    expect(dp3.match(/<VetaP [^>]*>/)![0]).toMatch(/ email="jan@example.cz" c_telef="777123456"/);
+  });
+});
+
+describe("epoPhone", () => {
+  it("fits c_telef (at most 14 characters): separators first, then the Czech prefix", () => {
+    expect(epoPhone("+420 777 123 456")).toBe("+420777123456");
+    expect(epoPhone("(+420) 777-123-456")).toBe("+420777123456");
+    expect(epoPhone("+421 905 123 456")).toBe("+421905123456");
+    expect(epoPhone("00420 777 123 456 78")).toBe("77712345678");
+  });
+  it("leaves out a number still too long rather than cutting it", () => {
+    expect(epoPhone("+44 20 7946 0958 1234")).toBe("");
+    expect(epoPhone(null)).toBe("");
   });
 });
 

@@ -65,6 +65,7 @@ export * from './vat-filing-files.js';
 export * from './sealed-exports.js';
 export * from './accounting-xml.js';
 export * from './annual-filings.js';
+export * from './epo-schema-fixtures.js';
 export * from './tax-return-files.js';
 export * from './sealed-annual.js';
 export * from './net-income.js';

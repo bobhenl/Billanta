@@ -185,7 +185,19 @@ function periodAttr(period: VatPeriod) {
 // still loads the file and asks for the office, so an unset one is left out
 // rather than guessed. A legal person's name goes to `zkrobchjm`: the XSDs
 // have no other name attribute for typ_ds P.
-function vetaP(s: VatSubmitter, extra = "") {
+/**
+ * The phone as the EPO forms take it: c_telef is at most 14 characters, so
+ * "+420 600 123 456" (16) fails the XSD. Separators go first, then the Czech
+ * prefix; a number still too long is left out rather than cut.
+ */
+export function epoPhone(phone: string | null | undefined): string {
+  let p = (phone ?? "").replace(/[\s\-./()]/g, "");
+  if (p.length > 14) p = p.replace(/^(\+|00)420/, "");
+  return p.length <= 14 ? p : "";
+}
+
+// DPHSHV's VetaP has no email or c_telef attribute; the XSD rejects them.
+function vetaP(s: VatSubmitter, extra = "", contact = true) {
   const attrs: [string, string][] = [
     ["c_ufo", s.cUfo != null ? String(s.cUfo) : ""],
     ["c_pracufo", s.cPracufo != null ? String(s.cPracufo) : ""],
@@ -203,8 +215,12 @@ function vetaP(s: VatSubmitter, extra = "") {
     ["c_orient", s.cOrient],
     ["psc", s.psc.replace(/\s/g, "")],
     ["stat", s.stat],
-    ["email", s.email],
-    ["c_telef", s.telefon],
+    ...(contact
+      ? ([
+          ["email", s.email],
+          ["c_telef", epoPhone(s.telefon)],
+        ] as [string, string][])
+      : []),
   ];
   const body = attrs
     .filter(([, v]) => v)
@@ -617,7 +633,7 @@ export function generateDphShv(input: {
   return `${header("45.5.1")}
 <DPHSHV verzePis="${VAT_FORM_VERSIONS.DPHSHV}">
   <VetaD k_uladis="DPH" dokument="SHV" rok="${input.period.year}" ${periodAttr(input.period)} shvies_forma="R" d_poddp="${input.today ? czDate(input.today) : pragueToday()}" />
-  ${vetaP(input.submitter)}
+  ${vetaP(input.submitter, "", false)}
   ${vetaR.join("\n  ")}
 </DPHSHV>
 </Pisemnost>
