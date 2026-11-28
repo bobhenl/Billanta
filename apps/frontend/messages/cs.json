@@ -5213,6 +5213,8 @@
     "bulkPartial": "Hotovo {ok}, nezdařilo se {failed}",
     "columnsButton": "Sloupce",
     "sumLabel": "Součet (bez storen a nabídek)",
+    "sumHome": "≈ {amount}",
+    "sumHomeHint": "Cizí měny přepočtené kurzem každé faktury.",
     "rowActions": "Akce dokladu",
     "type": {
       "invoice": "Faktura",

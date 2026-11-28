@@ -5206,6 +5206,8 @@
     "bulkPartial": "Kész: {ok}, sikertelen: {failed}",
     "columnsButton": "Oszlopok",
     "sumLabel": "Összesen (sztornózott bizonylatok és árajánlatok nélkül)",
+    "sumHome": "≈ {amount}",
+    "sumHomeHint": "A devizák az egyes számlák saját árfolyamán átszámítva.",
     "rowActions": "Bizonylat műveletei",
     "type": {
       "invoice": "Számla",

@@ -5206,6 +5206,8 @@
     "bulkPartial": "Réussis {ok}, échecs {failed}",
     "columnsButton": "Colonnes",
     "sumLabel": "Total (hors documents annulés et devis)",
+    "sumHome": "≈ {amount}",
+    "sumHomeHint": "Devises converties au taux de chaque facture.",
     "rowActions": "Actions sur le document",
     "type": {
       "invoice": "Facture",

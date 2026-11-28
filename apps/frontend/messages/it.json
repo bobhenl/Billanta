@@ -5206,6 +5206,8 @@
     "bulkPartial": "Completati {ok}, non riusciti {failed}",
     "columnsButton": "Colonne",
     "sumLabel": "Totale (esclusi annullati e preventivi)",
+    "sumHome": "≈ {amount}",
+    "sumHomeHint": "Valute estere convertite al cambio di ciascuna fattura.",
     "rowActions": "Azioni sul documento",
     "type": {
       "invoice": "Fattura",

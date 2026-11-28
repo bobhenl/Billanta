@@ -5206,6 +5206,8 @@
     "bulkPartial": "Zrobione {ok}, nieudane {failed}",
     "columnsButton": "Kolumny",
     "sumLabel": "Suma (bez anulowanych i ofert)",
+    "sumHome": "≈ {amount}",
+    "sumHomeHint": "Waluty obce przeliczone po kursie każdej faktury.",
     "rowActions": "Akcje dokumentu",
     "type": {
       "invoice": "Faktura",

@@ -55,8 +55,8 @@ const saveTarget = (target: EventTarget | null): HTMLFormElement | null => {
  * App-wide keyboard shortcuts for the dashboard. Ctrl+K lives in the
  * palette; Ctrl+S submits the current form (the invoice form adds
  * Ctrl+Shift+S to save and issue). Ctrl+N and Ctrl+T are reserved by the browser, hence N / Alt+N for a new invoice.
- * Ctrl+F (or /) focuses the page's own search box (`data-page-search`);
- * pressed again while it has focus, the browser's find takes over.
+ * / focuses the page's own search box (`data-page-search`). Ctrl+F stays
+ * the browser's find: people use it to look for a number on the page.
  */
 export function KeyboardShortcuts({ hidden = [] }: { hidden?: string[] }) {
   const t = useTranslations('shortcuts');
@@ -84,7 +84,7 @@ export function KeyboardShortcuts({ hidden = [] }: { hidden?: string[] }) {
         return;
       }
 
-      if ((mod && key === 'f' && !event.shiftKey && !event.altKey) || (key === '/' && !mod && !isTyping(event.target))) {
+      if (key === '/' && !mod && !event.altKey && !isTyping(event.target)) {
         const search = document.querySelector<HTMLInputElement>('[data-page-search]');
         if (search && document.activeElement !== search) {
           event.preventDefault();
@@ -149,7 +149,6 @@ export function KeyboardShortcuts({ hidden = [] }: { hidden?: string[] }) {
       title: t('groups.general'),
       rows: [
         [['Ctrl', 'K'], t('palette')],
-        [['Ctrl', 'F'], t('search')],
         [['/'], t('search')],
         [['Ctrl', 'S'], t('saveForm')],
         [['F'], t('filters')],

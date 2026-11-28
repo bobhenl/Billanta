@@ -5206,6 +5206,8 @@
     "bulkPartial": "Gelukt {ok}, mislukt {failed}",
     "columnsButton": "Kolommen",
     "sumLabel": "Totaal (zonder geannuleerde documenten en offertes)",
+    "sumHome": "≈ {amount}",
+    "sumHomeHint": "Vreemde valuta omgerekend tegen de koers van elke factuur.",
     "rowActions": "Documentacties",
     "type": {
       "invoice": "Factuur",

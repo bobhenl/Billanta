@@ -5206,6 +5206,8 @@
     "bulkPartial": "Reușite {ok}, eșuate {failed}",
     "columnsButton": "Coloane",
     "sumLabel": "Total (fără anulate și oferte)",
+    "sumHome": "≈ {amount}",
+    "sumHomeHint": "Valutele convertite la cursul fiecărei facturi.",
     "rowActions": "Acțiuni pentru document",
     "type": {
       "invoice": "Factură",

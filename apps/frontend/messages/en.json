@@ -5213,6 +5213,8 @@
     "bulkPartial": "Done {ok}, failed {failed}",
     "columnsButton": "Columns",
     "sumLabel": "Total (excluding cancelled and quotes)",
+    "sumHome": "≈ {amount}",
+    "sumHomeHint": "Foreign currencies converted at each invoice's own rate.",
     "rowActions": "Document actions",
     "type": {
       "invoice": "Invoice",

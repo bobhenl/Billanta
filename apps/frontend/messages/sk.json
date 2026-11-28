@@ -5213,6 +5213,8 @@
     "bulkPartial": "Hotovo {ok}, nepodarilo sa {failed}",
     "columnsButton": "Stĺpce",
     "sumLabel": "Súčet (bez storien a ponúk)",
+    "sumHome": "≈ {amount}",
+    "sumHomeHint": "Cudzie meny prepočítané kurzom každej faktúry.",
     "rowActions": "Akcie dokladu",
     "type": {
       "invoice": "Faktúra",

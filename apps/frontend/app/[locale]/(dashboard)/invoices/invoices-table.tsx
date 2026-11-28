@@ -312,6 +312,22 @@ export function InvoicesTable({
     return [...map.entries()];
   }, [rows]);
 
+  // Mixed currencies also get one total in the home currency, at each invoice's
+  // own rate. Left out when a document has no rate or is sealed, so it never
+  // shows a sum that silently misses something.
+  const homeTotal = useMemo(() => {
+    if (totalsByCurrency.length < 2) return null;
+    let sum = 0;
+    for (const row of rows) {
+      if (row.status === 'cancelled' || row.documentType === 'quote') continue;
+      if (row.encAmounts || row.total == null) return null;
+      const rate = row.currency === home ? 1 : Number(row.exchangeRate);
+      if (!rate) return null;
+      sum += row.total * rate;
+    }
+    return sum;
+  }, [rows, totalsByCurrency, home]);
+
   const runBulk = (label: string, ids: string[], fn: (id: string) => Promise<ActionResult<unknown>>) =>
     startTransition(async () => {
       const results = await Promise.all(ids.map((id) => fn(id)));
@@ -686,6 +702,12 @@ export function InvoicesTable({
                       <MoneySum plain={sum.plain} sealed={sum.sealed} currency={currency} />
                     </span>
                   ))}
+                  {homeTotal != null && (
+                    <span className="font-bold tabular-nums" title={t('sumHomeHint')}>
+                      {' = '}
+                      <span className="amount">{t('sumHome', { amount: formatMoney(homeTotal, home, locale) })}</span>
+                    </span>
+                  )}
                 </td>
               </tr>
             </tfoot>

@@ -5206,6 +5206,8 @@
     "bulkPartial": "Concluídos {ok}, com erro {failed}",
     "columnsButton": "Colunas",
     "sumLabel": "Total (sem anulados nem orçamentos)",
+    "sumHome": "≈ {amount}",
+    "sumHomeHint": "Moedas estrangeiras convertidas à taxa de cada fatura.",
     "rowActions": "Ações do documento",
     "type": {
       "invoice": "Fatura",

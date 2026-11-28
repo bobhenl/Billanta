@@ -5206,6 +5206,8 @@
     "bulkPartial": "Erledigt {ok}, fehlgeschlagen {failed}",
     "columnsButton": "Spalten",
     "sumLabel": "Summe (ohne stornierte Belege und Angebote)",
+    "sumHome": "≈ {amount}",
+    "sumHomeHint": "Fremdwährungen zum Kurs der jeweiligen Rechnung umgerechnet.",
     "rowActions": "Aktionen für den Beleg",
     "type": {
       "invoice": "Rechnung",

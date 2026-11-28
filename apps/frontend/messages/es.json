@@ -5206,6 +5206,8 @@
     "bulkPartial": "Completados {ok}, fallidos {failed}",
     "columnsButton": "Columnas",
     "sumLabel": "Total (sin anulados ni presupuestos)",
+    "sumHome": "≈ {amount}",
+    "sumHomeHint": "Monedas extranjeras convertidas al tipo de cada factura.",
     "rowActions": "Acciones del documento",
     "type": {
       "invoice": "Factura",
