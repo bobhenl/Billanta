@@ -394,6 +394,13 @@ describe("rounding of the Czech VAT filings", () => {
     expect(xml).toContain('<Veta1 p_sl23_e="152" dan_psl23_e="32" />');
   });
 
+  it("rounds whole crowns from the exact amount, never from one already taken to haléře", () => {
+    // Via haléře the tax would be 30.00 → 30 and the base 152.50 → 153.
+    const ads = received({ number: "IE-12", supplierDic: "IE6388047V", reverseCharge: true, parts: [{ ratePercent: 21, base: 152.496, vat: 30.004 }], totalCzk: 152.496 });
+    const { xml } = generateDphDp3Identified({ issued: [], received: [ads], submitter, period, today });
+    expect(xml).toContain('<Veta1 p_sl23_e="152" dan_psl23_e="31" />');
+  });
+
   it("DPHKH1 keeps the haléře of the documents and part C sums them", () => {
     const { xml } = generateDphKh1({
       issued: [

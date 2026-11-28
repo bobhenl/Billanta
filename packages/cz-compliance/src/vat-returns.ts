@@ -112,18 +112,21 @@ const KH_THRESHOLD = 10_000;
 
 export const xmlAttr = (v: string) =>
   v.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[c]!);
-// Sums are taken to haléře first (§ 146 odst. 3 DŘ counts to two decimals),
-// so float noise such as 30.000000004 does not add a crown when rounding up.
 const haler = (n: number) => Math.round(n * 100) / 100;
+// Whole-crown rounding works on the exact amount, not on one already taken to
+// haléře: 30.004 of tax is 31, not 30, and a base of 152.495 is 152, not 153.
+// Only float noise (0.11 + 3.99 + 0.9 = 5.000000000000001) is cut, at 6 decimals,
+// far below a haléř, so it never adds a crown when rounding up.
+const exact = (n: number) => Math.round(n * 1e6) / 1e6;
 // `+ 0` turns -0 into 0, so a credit note that cancels out prints "0".
 /** Mathematical rounding to whole Kč, halves away from zero (bases, deductions). */
-export const roundKc = (n: number) => Math.sign(n) * Math.round(Math.abs(haler(n))) + 0;
+export const roundKc = (n: number) => Math.sign(n) * Math.round(Math.abs(exact(n))) + 0;
 /**
  * Tax to whole Kč upward: "Daň se zaokrouhluje na celé koruny nahoru"
  * (§ 146 odst. 1 zák. 280/2009 Sb.). Up means toward +∞, so a negative
  * line from credit notes never states less tax than owed.
  */
-export const taxKc = (n: number) => Math.ceil(haler(n)) + 0;
+export const taxKc = (n: number) => Math.ceil(exact(n)) + 0;
 const int = (n: number) => String(roundKc(n));
 const upKc = (n: number) => String(taxKc(n));
 /** KH may carry haléře (pokyny 25 5564/1, "včetně haléřové položky"), so it keeps document values. */
