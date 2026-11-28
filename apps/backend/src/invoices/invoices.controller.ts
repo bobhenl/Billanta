@@ -34,6 +34,7 @@ import { RequireActiveSubscription } from "../billing/require-active-subscriptio
 import { parseIdempotencyKey } from "../common/idempotency";
 import { MAX_VOICE_NOTE_BYTES, voiceNoteType } from "../ai/voice-transcription";
 import { assertMayDo } from "../tenancy/permissions";
+import { seesSplit, withoutSplit } from "./split-access";
 import { ApiKeySecretsInterceptor, refuseApiKey } from "./api-key-limits";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import {
@@ -141,12 +142,6 @@ class RefreshPartiesDto extends createZodDto(
   }),
 ) {}
 
-/** The partner split is "Po zdanění" data, which only owners and admins may see. */
-function withoutSplit<T>(row: T, user: { role: string }): T {
-  if (user.role === "owner" || user.role === "admin" || !row || typeof row !== "object" || !("partnerShares" in row)) return row;
-  return { ...row, partnerShares: null };
-}
-
 /**
  * No controller-level `@UseGuards(...)` here (deliberately, since a recent
  * pass added the public API): the two representative "call our API to
@@ -184,10 +179,11 @@ export class InvoicesController {
   })
   async list(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>) {
     const parsed = listInvoicesQuerySchema.parse(query);
-    // Who gets which invoice is "Po zdanění" data: other roles can't filter by it.
-    const partner = req.user!.role === "owner" || req.user!.role === "admin" ? parsed.partner : undefined;
+    // Who gets which invoice is "Po zdanění" data: only those who see the split can filter by it.
+    const sees = await seesSplit(req);
+    const partner = sees ? parsed.partner : undefined;
     const rows = await this.invoicesService.list(req.tenantDb!, { ...parsed, partner }, req.user!.tenantId);
-    return rows.map((row) => withoutSplit(maskLockedRow(row, req.user!), req.user!));
+    return rows.map((row) => withoutSplit(maskLockedRow(row, req.user!), sees));
   }
 
   // Declared before `:id` so the literal path is never captured as an id.
@@ -291,7 +287,7 @@ export class InvoicesController {
   @ApiOperation({ summary: "Get an invoice by id" })
   async findOne(@Req() req: TenantScopedRequest, @Param("id") id: string) {
     await assertInvoiceOpen(req.tenantDb!, id, req.user!);
-    return withoutSplit(await this.invoicesService.findOne(req.tenantDb!, id), req.user!);
+    return withoutSplit(await this.invoicesService.findOne(req.tenantDb!, id), await seesSplit(req));
   }
 
   @Patch(":id")
