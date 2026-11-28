@@ -28,7 +28,7 @@ const invoice = (id: string, over: Record<string, unknown> = {}) => ({
 });
 
 /** A tenant DB: the tenant row, the period's invoices and their items, whatever the query. */
-function fakeDb(rows: ReturnType<typeof invoice>[], taxModel: unknown = null) {
+function fakeDb(rows: ReturnType<typeof invoice>[], taxModel: unknown = null, payments: { invoiceId: string; currency: string; fee: string }[] = []) {
   const itemQueries: unknown[] = [];
   const items = [{ invoiceId: "P1", quantity: "2", unitPrice: "5000", vatRate: "21", discountPercent: "0" }];
   const db = {
@@ -45,7 +45,9 @@ function fakeDb(rows: ReturnType<typeof invoice>[], taxModel: unknown = null) {
               ? [{ id: "t1", country: "CZ", dicVatPayer: true, taxModel, invoiceFormPrefs: null }]
               : table === schema.invoices
                 ? rows.map((r) => ({ invoice: r, contact: { legalName: "Alfa s.r.o." } }))
-                : items,
+                : table === schema.bankTransactions
+                  ? payments
+                  : items,
           ).then(ok, fail),
       };
       return q;
@@ -60,9 +62,31 @@ const sealedRow = (over: Record<string, unknown> = {}) => invoice("S1", { encAmo
 describe("NetIncomeService.inputs: what arrived in CZK", () => {
   it("taxes the invoiced amount at the rate and keeps what the fee and rate took as fees", async () => {
     // 10 000 EUR without VAT at 25; 290 400 Kč arrived with VAT, i.e. 240 000 Kč of it is the base.
-    const { db } = fakeDb([invoice("P1", { currency: "EUR", exchangeRate: "25", receivedCzk: "290400" })]);
+    // What arrived is after PayPal's fee already: the payment's fee is not counted twice.
+    const { db } = fakeDb([invoice("P1", { currency: "EUR", exchangeRate: "25", receivedCzk: "290400" })], null, [{ invoiceId: "P1", currency: "EUR", fee: "3" }]);
     const inputs = await new NetIncomeService().inputs(db, "t1", Q1);
     expect(inputs.invoices).toEqual([expect.objectContaining({ amount: 10_000, income: 250_000, fees: 10_000, source: "received" })]);
+  });
+
+  it("takes the fee of each payment of a CZK invoice", async () => {
+    const payments = [
+      { invoiceId: "P1", currency: "CZK", fee: "18.52" },
+      { invoiceId: "P1", currency: "CZK", fee: "-1.48" },
+      { invoiceId: "P2", currency: "CZK", fee: "99" },
+    ];
+    const { db } = fakeDb([invoice("P1")], null, payments);
+    const inputs = await new NetIncomeService().inputs(db, "t1", Q1);
+    expect(inputs.invoices).toEqual([expect.objectContaining({ income: 10_000, fees: 20, source: "czk" })]);
+  });
+
+  it("takes a foreign fee at the invoice's rate while the payment is not converted yet", async () => {
+    const payments = [
+      { invoiceId: "P1", currency: "EUR", fee: "2" },
+      { invoiceId: "P1", currency: "USD", fee: "7" },
+    ];
+    const { db } = fakeDb([invoice("P1", { currency: "EUR", exchangeRate: "25" })], null, payments);
+    const inputs = await new NetIncomeService().inputs(db, "t1", Q1);
+    expect(inputs.invoices).toEqual([expect.objectContaining({ income: 250_000, fees: 50, source: "converted" })]);
   });
 
   it("without a rate counts what arrived and no fees", async () => {

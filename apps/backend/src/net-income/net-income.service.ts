@@ -120,6 +120,18 @@ export class NetIncomeService {
     // A sealed document's items hold only the placeholder: no need to load them.
     const ids = rows.filter((r) => !amountsSealed(r.invoice)).map((r) => r.invoice.id);
     const items = ids.length ? await db.select().from(schema.invoiceLineItems).where(inArray(schema.invoiceLineItems.invoiceId, ids)) : [];
+    // The fees PayPal (or Stripe, Wise) kept back from each payment, by the invoice it paid.
+    const payments = ids.length
+      ? await db
+          .select({ invoiceId: schema.bankTransactions.matchedInvoiceId, currency: schema.bankTransactions.currency, fee: schema.bankTransactions.fee })
+          .from(schema.bankTransactions)
+          .where(and(inArray(schema.bankTransactions.matchedInvoiceId, ids), isNotNull(schema.bankTransactions.fee)))
+      : [];
+    /** The payments' fees in CZK; a fee in the invoice's currency at its rate, any other one left out. */
+    const paymentFees = (invoiceId: string, currency: string, rate: number) =>
+      payments
+        .filter((p) => p.invoiceId === invoiceId)
+        .reduce((s, p) => s + (p.currency === "CZK" ? 1 : p.currency === currency ? rate : 0) * Math.abs(Number(p.fee) || 0), 0);
     const rateOf = async (currency: string, exchangeRate: unknown, paidAt: Date) =>
       (await rates.rate(currency, Number(exchangeRate) || null, paidAt, period.year)) ?? (await getHomeRate("CZK", currency, paidAt));
 
@@ -165,10 +177,12 @@ export class NetIncomeService {
       const received = Number(invoice.receivedCzk);
       if (invoice.currency === "CZK") {
         income = amount;
+        fees = sign * paymentFees(invoice.id, "CZK", 1);
         source = "czk";
       } else if (invoice.receivedCzk != null && received > 0) {
         // The tax is on the invoiced amount at the rate (as in the tax return); what PayPal's fee and
         // its worse rate took off the way comes off the net only. A VAT payer keeps the base part.
+        // What arrived is already after the fee, so the payments' fees are not added again.
         const baseShare = vatPayer && totals.totalWithVat ? totals.totalWithoutVat / totals.totalWithVat : 1;
         const arrived = received * baseShare * sign;
         const rate = await rateOf(invoice.currency, invoice.exchangeRate, paidAt).catch(() => null);
@@ -182,6 +196,8 @@ export class NetIncomeService {
           continue;
         }
         income = amount * rate;
+        // Not converted yet (still on the PayPal balance): only the fee is known so far.
+        fees = sign * paymentFees(invoice.id, invoice.currency, rate);
         source = "converted";
       }
       invoices.push({ ...listed, amount: round2(amount), income: round2(income), fees: round2(fees), source });
