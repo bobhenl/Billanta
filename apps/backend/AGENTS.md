@@ -52,6 +52,11 @@ Swagger UI: `/api/docs`. All routes are under `/api/v1/...`.
   bank account, company e-mail and payment methods stay dashboard-only
   (`DASHBOARD_ONLY_COMPANY_FIELDS`). A new tool goes into `MCP_TOOLS` with
   the REST route it stands in for, so the role check matches.
+- REST on an `sk_live_` key (`req.user.apiKey`) may create and edit drafts
+  only: `refuseApiKey` in `src/invoices/api-key-limits.ts` blocks delete,
+  cancel, edits with `edit_reason`, refresh-parties and the client-link
+  routes, and `ApiKeySecretsInterceptor` strips client links from responses.
+  The AI service JWT (role service, no `apiKey`) is not affected.
 - `PlatformAdminGuard` (`src/partners/`) is for Billanta staff: an email in
   `PLATFORM_ADMIN_EMAILS` **and** a verified email (or a Google account).
 

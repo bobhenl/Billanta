@@ -15,6 +15,7 @@ import type { DashboardService } from "../dashboard/dashboard.service";
 import { createExpenseSchema } from "../expenses/dto/create-expense.dto";
 import type { ExpensesService } from "../expenses/expenses.service";
 import type { InvoiceTemplatesService } from "../invoice-templates/invoice-templates.service";
+import { isSecretKey } from "../invoices/api-key-limits";
 import { createInvoiceSchema, invoiceFieldsSchema, listInvoicesQuerySchema, updateInvoiceSchema } from "../invoices/dto/create-invoice.dto";
 import { assertInvoiceOpen, maskLockedRow } from "../invoices/invoice-lock";
 import type { InvoicesService } from "../invoices/invoices.service";
@@ -104,15 +105,13 @@ export const mcpToolAllowed = (scopes: readonly string[] | undefined, tool: Pick
 export const mcpRoleAllowed = (user: AuthenticatedUser, tool: McpTool, args: unknown) =>
   roleMayAccess(user.role, tool.rest.method, tool.rest.path, user.permissions, tool.rest.path === "v1/tenants/me" ? args : undefined);
 
-/** Customer links and other secrets that the assistant has no use for. */
-const SECRET_KEYS = new Set(["publicToken", "publicKey", "portalToken", "buyerDetailsToken", "feedToken"]);
-
 export function scrub(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(scrub);
   if (!value || typeof value !== "object" || value instanceof Date) return value;
   const out: Record<string, unknown> = {};
   for (const [key, v] of Object.entries(value)) {
-    if (SECRET_KEYS.has(key) || key.endsWith("Encrypted")) continue;
+    // Customer links and other secrets, the same list the REST API hides from keys.
+    if (isSecretKey(key)) continue;
     // The partner split is "Po zdanění" data, owner/admin only (withoutSplit in invoices.controller.ts).
     out[key] = key === "partnerShares" ? null : scrub(v);
   }

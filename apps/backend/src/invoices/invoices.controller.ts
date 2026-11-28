@@ -34,6 +34,7 @@ import { RequireActiveSubscription } from "../billing/require-active-subscriptio
 import { parseIdempotencyKey } from "../common/idempotency";
 import { MAX_VOICE_NOTE_BYTES, voiceNoteType } from "../ai/voice-transcription";
 import { assertMayDo } from "../tenancy/permissions";
+import { ApiKeySecretsInterceptor, refuseApiKey } from "./api-key-limits";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import {
   ConvertInvoiceDto,
@@ -161,6 +162,7 @@ function withoutSplit<T>(row: T, user: { role: string }): T {
 @ApiTags("invoices")
 @ApiBearerAuth()
 @Controller("v1/invoices")
+@UseInterceptors(ApiKeySecretsInterceptor)
 export class InvoicesController {
   constructor(
     private readonly invoicesService: InvoicesService,
@@ -296,6 +298,8 @@ export class InvoicesController {
   @UseGuards(CombinedAuthGuard)
   @ApiOperation({ summary: "Edit a draft (line_items, when sent, replaces all items)" })
   async update(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: UpdateInvoiceDto) {
+    // Without edit_reason the service accepts drafts only, so this keeps keys off issued documents.
+    if (dto.edit_reason?.trim()) refuseApiKey(req.user);
     await assertInvoiceOpen(req.tenantDb!, id, req.user!);
     return this.invoicesService.update(req.tenantDb!, req.user!.tenantId, id, dto);
   }
@@ -304,6 +308,7 @@ export class InvoicesController {
   @UseGuards(CombinedAuthGuard)
   @ApiOperation({ summary: "Delete an unissued draft" })
   remove(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    refuseApiKey(req.user);
     assertMayDo(req.user, "invoices.cancel");
     return this.invoicesService.remove(req.tenantDb!, id);
   }
@@ -525,6 +530,7 @@ export class InvoicesController {
   @UseGuards(CombinedAuthGuard)
   @ApiOperation({ summary: "Issue a new secret client link for the document (the old link stops working)" })
   rotatePublicLink(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    refuseApiKey(req.user);
     assertMayDo(req.user, "invoices.send");
     return this.invoicesService.rotatePublicToken(req.tenantDb!, id);
   }
@@ -533,6 +539,7 @@ export class InvoicesController {
   @UseGuards(CombinedAuthGuard)
   @ApiOperation({ summary: "Set or clear the custom readable name in front of the client link's key (cosmetic; the key stays the secret)" })
   setPublicSlug(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: PublicSlugDto) {
+    refuseApiKey(req.user);
     assertMayDo(req.user, "invoices.send");
     return this.invoicesService.setPublicSlug(req.tenantDb!, id, dto.slug);
   }
@@ -585,6 +592,7 @@ export class InvoicesController {
   @UseGuards(CombinedAuthGuard)
   @ApiOperation({ summary: "Cancel (storno) an issued document; its number stays used" })
   cancel(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    refuseApiKey(req.user);
     assertMayDo(req.user, "invoices.cancel");
     return this.invoicesService.cancel(req.tenantDb!, id);
   }
@@ -598,6 +606,7 @@ export class InvoicesController {
       "This explicit, audit-logged action re-takes them from today's company settings / contact.",
   })
   refreshParties(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: RefreshPartiesDto) {
+    refuseApiKey(req.user);
     assertMayDo(req.user, "invoices.issue");
     return this.invoicesService.refreshPartySnapshot(req.tenantDb!, req.user!.tenantId, id, dto.party, dto.reason);
   }
